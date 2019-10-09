@@ -12,28 +12,52 @@ import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import org.intellij.datavis.inlays.components.GraphicsPanel
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import java.awt.Desktop
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
-  private var lastSnapshots = listOf<File>()
+class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
+  private var lastSnapshots = listOf<RSnapshot>()
   private var lastIndex = -1
 
+  private val lastNumber: Int?
+    get() = if (lastIndex >= 0) lastSnapshots[lastIndex].number else null
+
+  private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val panel = GraphicsPanel(project)
 
   init {
     setContent(panel.component)
     val groups = createActionHolderGroups(project)
     toolbar = RGraphicsToolbar(groups).component
+
+    panel.component.let { c ->
+      c.addComponentListener(object : ComponentAdapter() {
+        override fun componentResized(e: ComponentEvent?) {
+          queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
+            override fun run() {
+              val repository = RGraphicsRepository.getInstance(project)
+              val oldParameters = repository.getScreenParameters()
+              val newParameters = RGraphicsUtils.ScreenParameters(c.size.width, c.size.height, oldParameters?.resolution)
+              RGraphicsRepository.getInstance(project).setScreenParameters(newParameters)
+            }
+          })
+        }
+      })
+    }
 
     RGraphicsRepository.getInstance(project).addSnapshotListener { snapshots ->
       ApplicationManager.getApplication().invokeLater {
@@ -42,14 +66,17 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
   }
 
-  private fun refresh(snapshots: List<File>) {
-    lastSnapshots = snapshots
+  private fun refresh(snapshots: List<RSnapshot>) {
     if (snapshots.isNotEmpty()) {
-      lastIndex = lastSnapshots.lastIndex
+      if (snapshots.size != lastSnapshots.size) {
+        lastIndex = snapshots.lastIndex
+      }
+      lastSnapshots = snapshots
       showCurrent()
     } else {
       reset()
     }
+    RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
   }
 
   private fun reset() {
@@ -59,7 +86,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   }
 
   private fun showCurrent() {
-    panel.refresh(lastSnapshots[lastIndex])
+    panel.refresh(lastSnapshots[lastIndex].file)
   }
 
   private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
@@ -74,6 +101,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       override fun onClick() {
         lastIndex--
         showCurrent()
+        RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
       }
     }
 
@@ -88,9 +116,11 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       override fun onClick() {
         lastIndex++
         showCurrent()
+        RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
       }
     }
 
+    // TODO [mine]: reimplement this
     class ExportGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
       override val title = EXPORT_GRAPHICS_ACTION_TITLE
       override val description = EXPORT_GRAPHICS_ACTION_DESCRIPTION
@@ -110,7 +140,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
             val destination = wrapper.file
             createDestinationFile(destination)
             val source = lastSnapshots[lastIndex]
-            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            Files.copy(source.file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
           } catch (e: Exception) {
             val details = e.message?.let { ".\n$it" } ?: ""
             val header = RBundle.message("graphics.panel.file.saver.failure.header")
@@ -120,6 +150,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       }
     }
 
+    // TODO [mine]: reimplement this
     class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
       override val title = ZOOM_GRAPHICS_ACTION_TITLE
       override val description = ZOOM_GRAPHICS_ACTION_DESCRIPTION
@@ -130,7 +161,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
       override fun onClick() {
         val snapshot = lastSnapshots[lastIndex]
-        Desktop.getDesktop().open(snapshot)
+        Desktop.getDesktop().open(snapshot.file)
       }
     }
 
@@ -207,6 +238,10 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   companion object {
     const val TOOL_WINDOW_ID = "R Graphics"
+
+    private const val RESIZE_TASK_NAME = "Resize graphics"
+    private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
+    private const val RESIZE_TIME_SPAN = 500
 
     private val EXPORT_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.export.title")
     private val ZOOM_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.zoom.title")

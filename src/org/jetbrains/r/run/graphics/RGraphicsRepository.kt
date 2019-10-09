@@ -6,14 +6,13 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import java.io.File
 
 class RGraphicsRepository(private val project: Project) {
   private val states = mutableSetOf<RGraphicsState>()
-  private val snapshotListeners = mutableListOf<(List<File>) -> Unit>()
+  private val snapshotListeners = mutableListOf<(List<RSnapshot>) -> Unit>()
 
   private val stateListener = object : RGraphicsState.Listener {
-    override fun onCurrentChange(snapshots: List<File>) {
+    override fun onCurrentChange(snapshots: List<RSnapshot>) {
       notifySnapshots(snapshots)
     }
 
@@ -35,7 +34,7 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun addSnapshotListener(listener: (List<File>) -> Unit) {
+  fun addSnapshotListener(listener: (List<RSnapshot>) -> Unit) {
     snapshotListeners.add(listener)
     currentState?.let {
       listener(it.snapshots)
@@ -43,8 +42,8 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun clearSnapshot(index: Int) {
-    currentState?.clearSnapshot(index)
+  fun clearSnapshot(number: Int) {
+    currentState?.clearSnapshot(number)
   }
 
   @Synchronized
@@ -62,7 +61,14 @@ class RGraphicsRepository(private val project: Project) {
     currentState?.changeScreenParameters(parameters)
   }
 
-  private fun notifySnapshots(snapshots: List<File>) {
+  @Synchronized
+  fun setCurrentSnapshotNumber(number: Int?) {
+    currentState?.let { state ->
+      state.currentSnapshotNumber = number
+    }
+  }
+
+  private fun notifySnapshots(snapshots: List<RSnapshot>) {
     for (listener in snapshotListeners) {
       listener(snapshots)
     }

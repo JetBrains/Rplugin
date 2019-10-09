@@ -8,89 +8,96 @@ import com.intellij.openapi.diagnostic.Logger
 import java.io.File
 
 class RBasicGraphicsState(override val tracedDirectory: File, initialParameters: RGraphicsUtils.ScreenParameters?) : RGraphicsState {
-  private var lastTimestamp: Long? = null
-  private var lastFiles: List<File>? = null
+  private var lastSnapshots: List<RSnapshot>? = null
 
   private val listeners: MutableList<RGraphicsState.Listener> = mutableListOf()
 
-  override val snapshots: List<File>
-    get() = lastFiles ?: listOf()
+  override val snapshots: List<RSnapshot>
+    get() = lastSnapshots ?: listOf()
 
   private val mutableScreenParameters = MutableLiveScreenParameters(initialParameters)
   override val screenParameters: LiveScreenParameters
     get() = mutableScreenParameters
 
-  override fun update() {
-    fun checkUpdated(files: List<File>, timestamp: Long?): Boolean {
-      val last = lastFiles
-      return if (last != null) {
-        // No need to check against ID since each command creates a new plot
-        files.count() != last.count() ||
-        files.isNotEmpty() && timestamp!! > lastTimestamp!!
+  override var currentSnapshotNumber: Int? = null
+    set(value) {
+      field = if (value != null) {
+        val last = lastSnapshots
+        if (last != null) {
+          if (value in last.indices) {
+            value
+          } else {
+            throw IndexOutOfBoundsException("Expected snapshot number from range ${last.indices} but got $value")
+          }
+        } else {
+          throw IndexOutOfBoundsException("Cannot set snapshot number to $value: state hasn't got any snapshots")
+        }
       } else {
-        files.isNotEmpty()
+        value
       }
     }
 
-    fun File.snapshotId(): Long {
-      val name = this.name
-      val startIndex = 9
-      val endIndex = name.length - 4
-      return name.substring(startIndex, endIndex).toLong()
+  override fun update() {
+    fun checkUpdated(snapshots: List<RSnapshot>): Boolean {
+      val last = lastSnapshots
+      return if (last != null) {
+        val lastIdentities = last.map { it.identity }
+        val currentIdentities = snapshots.map { it.identity }
+        return lastIdentities != currentIdentities
+      } else {
+        snapshots.isNotEmpty()
+      }
     }
 
-    data class Snapshot(
-      val file: File,
-      val timestamp: Long,
-      val id: Long
-    )
-
-    tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let {
-      val files = it.asList()
-      val snapshots = files.map { f -> Snapshot(f, f.lastModified(), f.snapshotId()) }
-      val timestamp = snapshots.map { s -> s.timestamp }.max()
-      if (checkUpdated(files, timestamp)) {
-        val ordered = snapshots.sortedWith(compareBy(Snapshot::timestamp, Snapshot::id))
-        lastTimestamp = timestamp
-        ordered.map { s -> s.file }.also { fs ->
-          lastFiles = fs
-          for (listener in listeners) {
-            listener.onCurrentChange(fs)
-          }
+    tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
+      val allSnapshots = files.mapNotNull { RSnapshot.from(it) }
+      val (snapshots, sketches) = allSnapshots.partition { it.type != RSnapshotType.SKETCH }
+      val numbers2versions = snapshots.groupBy { it.number }
+      val mostRecent = numbers2versions.mapNotNull { entry -> entry.value.maxBy { it.version } }.sortedBy { it.number }
+      if (checkUpdated(mostRecent)) {
+        lastSnapshots = mostRecent
+        for (listener in listeners) {
+          listener.onCurrentChange(mostRecent)
         }
+      }
+
+      // TODO [mine]: remove previous versions
+      for (sketch in sketches) {
+        sketch.file.delete()
       }
     }
   }
 
   override fun reset() {
-    lastFiles?.let { files ->
-      for (file in files) {
-        file.delete()
+    lastSnapshots?.let { snapshots ->
+      for (snapshot in snapshots) {
+        snapshot.file.delete()
       }
     }
-    lastFiles = null
-    lastTimestamp = null
+    lastSnapshots = null
     for (listener in listeners) {
       listener.onReset()
     }
   }
 
-  override fun clearSnapshot(index: Int) {
-    lastFiles?.let { files ->
-      val file = files[index]
-      if (file.delete()) {
-        val shrunken = files.minus(file)
-        for (listener in listeners) {
-          listener.onCurrentChange(shrunken)
+  override fun clearSnapshot(number: Int) {
+    lastSnapshots?.let { snapshots ->
+      // TODO [mine]: this lookup is a kind of stupid. I guess it should be replaced with a map
+      snapshots.find { it.number == number }?.let { snapshot ->
+        if (snapshot.file.delete()) {
+          val shrunken = snapshots.minus(snapshot)
+          for (listener in listeners) {
+            listener.onCurrentChange(shrunken)
+          }
+          lastSnapshots = shrunken
         }
-        lastFiles = shrunken
       }
     }
   }
 
   override fun addListener(listener: RGraphicsState.Listener) {
     listeners.add(listener)
-    lastFiles?.let {
+    lastSnapshots?.let {
       listener.onCurrentChange(it)
     }
   }

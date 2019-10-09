@@ -209,6 +209,15 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getGraphicsDumpMethod(), Empty.getDefaultInstance())
   }
 
+  fun graphicsRescale(snapshotNumber: Int, newWidth: Double, newHeight: Double): RIExecutionResult {
+    val request = Service.GraphicsRescaleRequest.newBuilder()
+      .setSnapshotNumber(snapshotNumber)
+      .setNewWidth(newWidth)
+      .setNewHeight(newHeight)
+      .build()
+    return executeRequest(RPIServiceGrpc.getGraphicsRescaleMethod(), request)
+  }
+
   fun graphicsReset(): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getGraphicsResetMethod(), Empty.getDefaultInstance())
   }

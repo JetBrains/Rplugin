@@ -13,18 +13,19 @@ interface LiveScreenParameters {
 }
 
 interface RGraphicsState {
-  val snapshots: List<File>
+  val snapshots: List<RSnapshot>
   val tracedDirectory: File
   val screenParameters: LiveScreenParameters
+  var currentSnapshotNumber: Int?
   fun update()
   fun reset()
-  fun clearSnapshot(index: Int)
+  fun clearSnapshot(number: Int)
   fun addListener(listener: Listener)
   fun removeListener(listener: Listener)
   fun changeScreenParameters(parameters: RGraphicsUtils.ScreenParameters)
 
   interface Listener {
-    fun onCurrentChange(snapshots: List<File>)
+    fun onCurrentChange(snapshots: List<RSnapshot>)
     fun onReset()
   }
 }

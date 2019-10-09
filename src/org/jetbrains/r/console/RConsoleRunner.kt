@@ -199,11 +199,16 @@ internal class UpdateGraphicsHandler(
 
   init {
     state.screenParameters.addListener { parameters ->
+      val oldParameters = screenParameters
       screenParameters = parameters
-      if (isLoaded) {
-        rInterop.graphicsReset()
+      if (oldParameters == null || oldParameters.resolution != parameters.resolution) {
+        if (isLoaded) {
+          rInterop.graphicsReset()
+        }
+        onReset()
+      } else {
+        onRescale()
       }
-      onReset()
     }
   }
 
@@ -229,20 +234,26 @@ internal class UpdateGraphicsHandler(
     }
 
     isLoaded = initializeDevice()
-    if (isLoaded) {
-      // On Windows a white snapshot will be created after very first user command.
-      // To prevent this, we need to manually dump graphics device and delete this snapshot
-      // TODO [mine]: this approach deletes all snapshots after every device reset which is awkward, should be replaced with a more fine-grained solution
-      clearAllSnapshots()
+  }
+
+  private fun onRescale() {
+    state.currentSnapshotNumber?.let { snapshotNumber ->
+      rescale(snapshotNumber)
     }
   }
 
   override fun onCommandExecuted() {
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        rInterop.graphicsDump()
-        state.update()
+        rescale(-1)
       }
+    }
+  }
+
+  private fun rescale(snapshotNumber: Int) {
+    screenParameters?.let { parameters ->
+      rInterop.graphicsRescale(snapshotNumber, parameters.width.toDouble(), parameters.height.toDouble())
+      state.update()
     }
   }
 }
