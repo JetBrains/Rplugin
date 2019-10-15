@@ -33,6 +33,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
 import java.util.*
+import java.awt.Dimension
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.RowSorter
@@ -209,11 +210,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getGraphicsDumpMethod(), Empty.getDefaultInstance())
   }
 
-  fun graphicsRescale(snapshotNumber: Int, newWidth: Double, newHeight: Double): RIExecutionResult {
+  fun graphicsRescale(snapshotNumber: Int?, newDimension: Dimension): RIExecutionResult {
     val request = Service.GraphicsRescaleRequest.newBuilder()
-      .setSnapshotNumber(snapshotNumber)
-      .setNewWidth(newWidth)
-      .setNewHeight(newHeight)
+      .setSnapshotNumber(snapshotNumber ?: -1)
+      .setNewWidth(newDimension.width.toDouble())
+      .setNewHeight(newDimension.height.toDouble())
       .build()
     return executeRequest(RPIServiceGrpc.getGraphicsRescaleMethod(), request)
   }

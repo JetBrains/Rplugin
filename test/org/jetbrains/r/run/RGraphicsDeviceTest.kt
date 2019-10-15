@@ -9,9 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
-import org.jetbrains.r.run.graphics.RGraphicsState
 import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer
@@ -31,23 +29,14 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   @Volatile
   private var currentSnapshots: List<File>? = null
 
-  private val listener = object : RGraphicsState.Listener {
-    override fun onCurrentChange(update: RSnapshotsUpdate) {
-      currentSnapshots = update.normal.map { it.file }
-    }
-
-    override fun onReset() {
-      // Nothing to do here
-    }
-  }
-
   override fun setUp() {
     super.setUp()
     val screenDimension = Dimension(640, 480)
-    val screenParameters = RGraphicsUtils.ScreenParameters(screenDimension, null)
-    val graphicsState = RGraphicsUtils.createGraphicsState(screenParameters)
-    graphicsState.addListener(listener)
-    graphicsHandler = UpdateGraphicsHandler(myFixture.project, rInterop, graphicsState, screenDimension)
+    val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
+    graphicsDevice.addListener { update ->
+      currentSnapshots = update.normal.map { it.file }
+    }
+    graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     currentSnapshots = null
 
     // Shadow directory for snapshots produced by current implementation

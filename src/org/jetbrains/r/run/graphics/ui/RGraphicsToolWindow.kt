@@ -17,12 +17,10 @@ import com.intellij.util.ui.update.Update
 import org.intellij.datavis.inlays.components.GraphicsPanel
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.run.graphics.*
 import java.awt.Desktop
-import org.jetbrains.r.run.graphics.RGraphicsRepository
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RSnapshot
-import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import org.jetbrains.r.settings.RGraphicsSettings
+import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.io.File
@@ -30,7 +28,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
+class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
   private var lastZoomed = listOf<RSnapshot>()
   private var lastIndex = -1
@@ -39,6 +37,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     get() = if (lastIndex >= 0) lastNormal[lastIndex].number else null
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
+  private val repository = RGraphicsRepository.getInstance(project)
   private val panel = GraphicsPanel(project)
 
   init {
@@ -46,22 +45,17 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     val groups = createActionHolderGroups(project)
     toolbar = RGraphicsToolbar(groups).component
 
-    panel.component.let { c ->
-      c.addComponentListener(object : ComponentAdapter() {
-        override fun componentResized(e: ComponentEvent?) {
-          queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-            override fun run() {
-              val repository = RGraphicsRepository.getInstance(project)
-              val oldParameters = repository.getScreenParameters()
-              val newParameters = RGraphicsUtils.ScreenParameters(c.size, oldParameters?.resolution)
-              RGraphicsRepository.getInstance(project).setScreenParameters(newParameters)
-            }
-          })
-        }
-      })
-    }
+    panel.component.addComponentListener(object : ComponentAdapter() {
+      override fun componentResized(e: ComponentEvent?) {
+        queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
+          override fun run() {
+            postScreenDimension()
+          }
+        })
+      }
+    })
 
-    RGraphicsRepository.getInstance(project).addSnapshotListener { snapshotUpdate ->
+    repository.addSnapshotListener { snapshotUpdate ->
       ApplicationManager.getApplication().invokeLater {
         refresh(snapshotUpdate)
       }
@@ -71,8 +65,16 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun refresh(update: RSnapshotsUpdate) {
     val normal = update.normal
     if (normal.isNotEmpty()) {
-      if (normal.size != lastNormal.size) {
-        lastIndex = normal.lastIndex
+      val loadedNumber = loadSnapshotNumber()
+      lastIndex = if (loadedNumber != null) {
+        val suggested = normal.indexOfFirst { it.number == loadedNumber }
+        if (suggested >= 0) {
+          suggested
+        } else {
+          normal.lastIndex
+        }
+      } else {
+        normal.lastIndex
       }
       lastNormal = normal
       lastZoomed = update.zoomed
@@ -80,7 +82,8 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     } else {
       reset()
     }
-    RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
+    postSnapshotNumber()
+    postScreenDimension()
   }
 
   private fun reset() {
@@ -106,7 +109,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override fun onClick() {
         lastIndex--
         showCurrent()
-        RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
+        postSnapshotNumber()
       }
     }
 
@@ -121,11 +124,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override fun onClick() {
         lastIndex++
         showCurrent()
-        RGraphicsRepository.getInstance(project).setCurrentSnapshotNumber(lastNumber)
+        postSnapshotNumber()
       }
     }
 
-    // TODO [mine]: reimplement this
     class ExportGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
       override val title = EXPORT_GRAPHICS_ACTION_TITLE
       override val description = EXPORT_GRAPHICS_ACTION_DESCRIPTION
@@ -178,7 +180,9 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
-        RGraphicsRepository.getInstance(project).clearSnapshot(lastIndex)
+        lastNumber?.let { number ->
+          repository.clearSnapshot(number)
+        }
       }
     }
 
@@ -191,13 +195,11 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
-        RGraphicsRepository.getInstance(project).clearAllSnapshots()
+        repository.clearAllSnapshots()
       }
     }
 
     class TuneGraphicsDeviceActionHolder : RGraphicsToolbar.ActionHolder {
-      private val repository = RGraphicsRepository.getInstance(project)
-
       override val title = TUNE_GRAPHICS_DEVICE_ACTION_TITLE
       override val description = TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION
       override val icon = TUNE_GRAPHICS_DEVICE_ACTION_ICON
@@ -207,12 +209,14 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
       override fun onClick() {
         fun getInitialParameters(): RGraphicsUtils.ScreenParameters {
-          return repository.getScreenParameters() ?: RGraphicsUtils.getDefaultScreenParameters()
+          return repository.configuration?.screenParameters ?: RGraphicsSettings.getScreenParameters(project)
         }
 
         RGraphicsSettingsDialog(getInitialParameters()) { parameters ->
           RGraphicsSettings.setScreenParameters(project, parameters)
-          repository.setScreenParameters(parameters)
+          repository.configuration?.let { oldConfiguration ->
+            repository.configuration = oldConfiguration.copy(screenParameters = parameters)
+          }
         }.show()
       }
     }
@@ -238,6 +242,30 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         TuneGraphicsDeviceActionHolder()
       )
     )
+  }
+
+  private fun postScreenDimension() {
+    fun getAdjustedDimension(): Dimension {
+      val panelDimension = panel.component.size
+      val toolPanelHeight = panel.getToolPanelHeight() ?: 0
+      return Dimension(panelDimension.width, panelDimension.height - toolPanelHeight)
+    }
+
+    repository.configuration?.let { oldConfiguration ->
+      val parameters = oldConfiguration.screenParameters
+      val newParameters = parameters.copy(dimension = getAdjustedDimension())
+      repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+    }
+  }
+
+  private fun postSnapshotNumber() {
+    repository.configuration?.let { oldConfiguration ->
+      repository.configuration = oldConfiguration.copy(snapshotNumber = lastNumber)
+    }
+  }
+
+  private fun loadSnapshotNumber(): Int? {
+    return repository.configuration?.snapshotNumber
   }
 
   companion object {

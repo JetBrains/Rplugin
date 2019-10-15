@@ -35,6 +35,12 @@ class GraphicsPanel(private val project: Project) {
 
   fun getImageHeight(): Int = currentEditor?.document?.value?.height ?: 0  // TODO [mine]: Have I break anything by removing delta?
 
+  fun getToolPanelHeight(): Int? {
+    return currentEditor?.let { editor ->
+      editor.component.components[0].preferredSize.height
+    }
+  }
+
   fun reset() {
     closeEditor(NO_GRAPHICS)
   }

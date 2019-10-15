@@ -55,8 +55,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
 
   fun testHtmlOutput() {
     val screenDimension = Dimension(640, 480)
-    UpdateGraphicsHandler(project, rInterop, RGraphicsUtils.createGraphicsState(
-                          RGraphicsUtils.ScreenParameters(screenDimension, null)), screenDimension)
+    UpdateGraphicsHandler(RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null))
     rInterop.executeCode("library(plotly)", true)
     val result = doRunChunk("""
       ```{r}

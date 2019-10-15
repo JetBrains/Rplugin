@@ -24,7 +24,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -39,8 +38,8 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
+import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsRepository
-import org.jetbrains.r.run.graphics.RGraphicsState
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.run.viewer.RViewerRepository
@@ -49,8 +48,6 @@ import org.jetbrains.r.run.viewer.RViewerUtils
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindowListener
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
-import java.awt.Dimension
-import java.io.File
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -84,11 +81,12 @@ class RConsoleRunner(private val project: Project,
             })
             ConsoleHistoryController(RConsoleRootType.instance, "", consoleView).install()
 
-            // Setup console listener for graphics state
-            val graphicsState = RGraphicsUtils.createGraphicsState(RGraphicsSettings.getScreenParameters(project))
-            graphicsState.addListener(RGraphicsToolWindowListener(project))
+            // Setup console listener for graphics device
+            val resolution = RGraphicsSettings.getScreenParameters(project).resolution
+            val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
+            graphicsDevice.addListener(RGraphicsToolWindowListener(project))
             consoleView.addOnSelectListener {
-              RGraphicsRepository.getInstance(project).setActiveState(graphicsState)
+              RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
             }
 
             // Setup console listener for HTML viewer
@@ -110,7 +108,7 @@ class RConsoleRunner(private val project: Project,
 
             // Setup custom graphical device (it's more time consuming so it should be the last one)
             runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-              val graphicsHandler = UpdateGraphicsHandler(project, rInterop, graphicsState, null)
+              val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
               consoleView.executeActionHandler.addListener(graphicsHandler)
             }
           }
@@ -186,77 +184,13 @@ class RConsoleRunner(private val project: Project,
 }
 
 @VisibleForTesting
-internal class UpdateGraphicsHandler(
-  private val project: Project,
-  private val rInterop: RInterop,
-  private val state: RGraphicsState,
-  private val initialDimension: Dimension?
-) : RConsoleExecuteActionHandler.Listener {
-
-  private val tracedDirectory: File
-    get() = state.tracedDirectory
-
-  private var isLoaded: Boolean = false
-  private var screenParameters: RGraphicsUtils.ScreenParameters? = null
-
-  init {
-    state.screenParameters.addListener { parameters ->
-      val oldParameters = screenParameters
-      screenParameters = parameters
-      if (oldParameters == null || oldParameters.resolution != parameters.resolution) {
-        if (isLoaded) {
-          rInterop.graphicsReset()
-        }
-        onReset()
-      } else {
-        onRescale()
-      }
-    }
-  }
-
+internal class UpdateGraphicsHandler(private val device: RGraphicsDevice) : RConsoleExecuteActionHandler.Listener {
   override fun onReset() {
-    fun initializeDevice(): Boolean {
-      val initProperties = RGraphicsUtils.calculateInitProperties(tracedDirectory.absolutePath, initialDimension, screenParameters?.resolution)
-      val graphicsInit = rInterop.graphicsInit(initProperties)
-      return if (graphicsInit.stderr.isNotBlank()) {
-        Logger.getInstance(javaClass).error(graphicsInit.stderr)
-        false
-      } else {
-        true
-      }
-    }
-
-    fun clearAllSnapshots() {
-      rInterop.graphicsDump()
-      tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let {
-        for (file in it) {
-          file.delete()
-        }
-      }
-    }
-
-    isLoaded = initializeDevice()
-  }
-
-  private fun onRescale() {
-    state.currentSnapshotNumber?.let { snapshotNumber ->
-      rescale(snapshotNumber)
-    }
+    device.reset()
   }
 
   override fun onCommandExecuted() {
-    if (isLoaded) {
-      ApplicationManager.getApplication().executeOnPooledThread {
-        rescale(-1)
-      }
-    }
-  }
-
-  private fun rescale(snapshotNumber: Int) {
-    screenParameters?.let { parameters ->
-      rInterop.graphicsRescale(snapshotNumber, parameters.width.toDouble(), parameters.height.toDouble())
-      state.update()
-    }
+    device.update()
   }
 }
 

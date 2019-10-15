@@ -8,67 +8,58 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 
 class RGraphicsRepository(private val project: Project) {
-  private val states = mutableSetOf<RGraphicsState>()
+  private val devices = mutableSetOf<RGraphicsDevice>()
   private val snapshotListeners = mutableListOf<(RSnapshotsUpdate) -> Unit>()
 
-  private val stateListener = object : RGraphicsState.Listener {
-    override fun onCurrentChange(update: RSnapshotsUpdate) {
-      notifySnapshots(update)
-    }
+  private var currentDevice: RGraphicsDevice? = null
 
-    override fun onReset() {
-      notifySnapshots(RSnapshotsUpdate.empty)
+  var configuration: RGraphicsDevice.Configuration?
+    get() {
+      return synchronized(this) {
+        currentDevice?.configuration
+      }
     }
-  }
-
-  private var currentState: RGraphicsState? = null
+    set(value) {
+      if (value != null) {
+        synchronized(this) {
+          currentDevice?.let { device ->
+            device.configuration = value
+          }
+        }
+      }
+    }
 
   @Synchronized
-  fun setActiveState(state: RGraphicsState) {
-    if (state !in states) {
-      states.add(state)
-      state.addListener(stateListener)
+  fun setActiveDevice(device: RGraphicsDevice) {
+    if (device !in devices) {
+      devices.add(device)
+      device.addListener { update ->
+        notifyUpdate(update)
+      }
     }
-    currentState = state
-    notifySnapshots(state.snapshots)
+    currentDevice = device
+    notifyUpdate(device.lastUpdate)
   }
 
   @Synchronized
   fun addSnapshotListener(listener: (RSnapshotsUpdate) -> Unit) {
     snapshotListeners.add(listener)
-    currentState?.let {
-      listener(it.snapshots)
+    currentDevice?.let { device ->
+      listener(device.lastUpdate)
     }
   }
 
   @Synchronized
   fun clearSnapshot(number: Int) {
-    currentState?.clearSnapshot(number)
+    currentDevice?.clearSnapshot(number)
   }
 
   @Synchronized
   fun clearAllSnapshots() {
-    currentState?.reset()
+    currentDevice?.clearAllSnapshots()
   }
 
-  @Synchronized
-  fun getScreenParameters(): RGraphicsUtils.ScreenParameters? {
-    return currentState?.screenParameters?.currentValue
-  }
-
-  @Synchronized
-  fun setScreenParameters(parameters: RGraphicsUtils.ScreenParameters) {
-    currentState?.changeScreenParameters(parameters)
-  }
-
-  @Synchronized
-  fun setCurrentSnapshotNumber(number: Int?) {
-    currentState?.let { state ->
-      state.currentSnapshotNumber = number
-    }
-  }
-
-  private fun notifySnapshots(update: RSnapshotsUpdate) {
+  private fun notifyUpdate(update: RSnapshotsUpdate) {
     for (listener in snapshotListeners) {
       listener(update)
     }

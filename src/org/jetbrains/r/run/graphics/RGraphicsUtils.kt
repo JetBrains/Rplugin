@@ -10,6 +10,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.rinterop.RInterop
 import java.awt.Dimension
 import java.awt.Toolkit
 import java.io.File
@@ -129,19 +130,6 @@ object RGraphicsUtils {
   }
 
   fun calculateInitProperties(snapshotDirectory: String, dimension: Dimension?, resolution: Int?): InitProperties {
-    fun getParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
-      return if (dimension != null) {
-        ScreenParameters(dimension, resolution)
-      } else {
-        val parameters = getDefaultScreenParameters(false)
-        if (resolution != null) {
-          parameters.copy(resolution = resolution)
-        } else {
-          parameters
-        }
-      }
-    }
-
     fun getScaleFactor(parameters: ScreenParameters): Double {
       return if (SystemInfo.isMac && parameters.resolution != null) {
         parameters.resolution.toDouble() / MINIMAL_GRAPHICS_RESOLUTION
@@ -151,16 +139,17 @@ object RGraphicsUtils {
     }
 
     val path = FileUtil.toSystemIndependentName(snapshotDirectory)
-    val parameters = getParameters(dimension, resolution)
+    val parameters = createParameters(dimension, resolution)
     val scaleFactor = getScaleFactor(parameters)
     return InitProperties(path, parameters, scaleFactor)
   }
 
-  fun createGraphicsState(screenParameters: ScreenParameters?): RGraphicsState {
+  fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
     // Note: 'FileUtil.createTempFile()' will break unit-tests
     val tmpDirectory = Files.createTempDirectory("rplugin-graphics").toFile()
     tmpDirectory.deleteOnExit()
-    return RBasicGraphicsState(tmpDirectory, screenParameters)
+    val parameters = createParameters(screenDimension, resolution)
+    return RVirtualGraphicsDevice(rInterop, tmpDirectory, parameters)
   }
 
   fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {
@@ -174,5 +163,18 @@ object RGraphicsUtils {
     }
     val adjustedResolution = if (isFullScreenMode) resolution else max(resolution / RESOLUTION_MULTIPLIER, MINIMAL_GRAPHICS_RESOLUTION)
     return ScreenParameters(screenSize, adjustedResolution)
+  }
+
+  private fun createParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
+    return if (dimension != null) {
+      ScreenParameters(dimension, resolution)
+    } else {
+      val parameters = getDefaultScreenParameters(false)
+      if (resolution != null) {
+        parameters.copy(resolution = resolution)
+      } else {
+        parameters
+      }
+    }
   }
 }
