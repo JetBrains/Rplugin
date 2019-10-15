@@ -42,6 +42,7 @@ import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
@@ -120,7 +121,7 @@ object RunChunkHandler {
     val cacheDirectory = ChunkPathManager.getCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
     FileUtil.delete(File(cacheDirectory))
     val screenParameters = if (ApplicationManager.getApplication().isHeadlessEnvironment) {
-      RGraphicsUtils.ScreenParameters(800, 600, null)
+      RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
       RGraphicsUtils.getDefaultScreenParameters()
     }

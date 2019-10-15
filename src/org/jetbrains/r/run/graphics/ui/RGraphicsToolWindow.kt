@@ -21,6 +21,7 @@ import java.awt.Desktop
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -30,11 +31,12 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
-  private var lastSnapshots = listOf<RSnapshot>()
+  private var lastNormal = listOf<RSnapshot>()
+  private var lastZoomed = listOf<RSnapshot>()
   private var lastIndex = -1
 
   private val lastNumber: Int?
-    get() = if (lastIndex >= 0) lastSnapshots[lastIndex].number else null
+    get() = if (lastIndex >= 0) lastNormal[lastIndex].number else null
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val panel = GraphicsPanel(project)
@@ -51,7 +53,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
             override fun run() {
               val repository = RGraphicsRepository.getInstance(project)
               val oldParameters = repository.getScreenParameters()
-              val newParameters = RGraphicsUtils.ScreenParameters(c.size.width, c.size.height, oldParameters?.resolution)
+              val newParameters = RGraphicsUtils.ScreenParameters(c.size, oldParameters?.resolution)
               RGraphicsRepository.getInstance(project).setScreenParameters(newParameters)
             }
           })
@@ -59,19 +61,21 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       })
     }
 
-    RGraphicsRepository.getInstance(project).addSnapshotListener { snapshots ->
+    RGraphicsRepository.getInstance(project).addSnapshotListener { snapshotUpdate ->
       ApplicationManager.getApplication().invokeLater {
-        refresh(snapshots)
+        refresh(snapshotUpdate)
       }
     }
   }
 
-  private fun refresh(snapshots: List<RSnapshot>) {
-    if (snapshots.isNotEmpty()) {
-      if (snapshots.size != lastSnapshots.size) {
-        lastIndex = snapshots.lastIndex
+  private fun refresh(update: RSnapshotsUpdate) {
+    val normal = update.normal
+    if (normal.isNotEmpty()) {
+      if (normal.size != lastNormal.size) {
+        lastIndex = normal.lastIndex
       }
-      lastSnapshots = snapshots
+      lastNormal = normal
+      lastZoomed = update.zoomed
       showCurrent()
     } else {
       reset()
@@ -80,13 +84,14 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun reset() {
-    lastSnapshots = listOf()
+    lastNormal = listOf()
+    lastZoomed = listOf()
     lastIndex = -1
     panel.reset()
   }
 
   private fun showCurrent() {
-    panel.refresh(lastSnapshots[lastIndex].file)
+    panel.refresh(lastNormal[lastIndex].file)
   }
 
   private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
@@ -111,7 +116,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override val icon = NEXT_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastIndex < lastSnapshots.lastIndex
+        get() = lastIndex < lastNormal.lastIndex
 
       override fun onClick() {
         lastIndex++
@@ -127,7 +132,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override val icon = EXPORT_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastSnapshots.isNotEmpty()
+        get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
         val title = RBundle.message("graphics.panel.file.saver.title")
@@ -139,7 +144,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
           try {
             val destination = wrapper.file
             createDestinationFile(destination)
-            val source = lastSnapshots[lastIndex]
+            val source = lastNormal[lastIndex]
             Files.copy(source.file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
           } catch (e: Exception) {
             val details = e.message?.let { ".\n$it" } ?: ""
@@ -150,17 +155,16 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       }
     }
 
-    // TODO [mine]: reimplement this
     class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
       override val title = ZOOM_GRAPHICS_ACTION_TITLE
       override val description = ZOOM_GRAPHICS_ACTION_DESCRIPTION
       override val icon = ZOOM_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastSnapshots.isNotEmpty()
+        get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
-        val snapshot = lastSnapshots[lastIndex]
+        val snapshot = lastZoomed[lastIndex]
         Desktop.getDesktop().open(snapshot.file)
       }
     }
@@ -171,7 +175,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override val icon = CLEAR_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastSnapshots.isNotEmpty()
+        get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
         RGraphicsRepository.getInstance(project).clearSnapshot(lastIndex)
@@ -184,7 +188,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override val icon = CLEAR_ALL_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastSnapshots.isNotEmpty()
+        get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
         RGraphicsRepository.getInstance(project).clearAllSnapshots()

@@ -7,13 +7,23 @@ package org.jetbrains.r.run.graphics
 
 import java.io.File
 
+data class RSnapshotsUpdate(
+  val normal: List<RSnapshot>,
+  val zoomed: List<RSnapshot>
+) {
+  companion object {
+    val empty: RSnapshotsUpdate
+      get() = RSnapshotsUpdate(listOf(), listOf())
+  }
+}
+
 interface LiveScreenParameters {
   val currentValue: RGraphicsUtils.ScreenParameters?
   fun addListener(listener: (RGraphicsUtils.ScreenParameters) -> Unit)
 }
 
 interface RGraphicsState {
-  val snapshots: List<RSnapshot>
+  val snapshots: RSnapshotsUpdate
   val tracedDirectory: File
   val screenParameters: LiveScreenParameters
   var currentSnapshotNumber: Int?
@@ -25,7 +35,7 @@ interface RGraphicsState {
   fun changeScreenParameters(parameters: RGraphicsUtils.ScreenParameters)
 
   interface Listener {
-    fun onCurrentChange(snapshots: List<RSnapshot>)
+    fun onCurrentChange(update: RSnapshotsUpdate)
     fun onReset()
   }
 }

@@ -18,6 +18,7 @@ import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import java.awt.Dimension
 import java.io.File
 
 class RunChunkTest : RConsoleBaseTestCase() {
@@ -53,8 +54,9 @@ class RunChunkTest : RConsoleBaseTestCase() {
   }
 
   fun testHtmlOutput() {
+    val screenDimension = Dimension(640, 480)
     UpdateGraphicsHandler(project, rInterop, RGraphicsUtils.createGraphicsState(
-                          RGraphicsUtils.ScreenParameters(640, 480, null)))
+                          RGraphicsUtils.ScreenParameters(screenDimension, null)), screenDimension)
     rInterop.executeCode("library(plotly)", true)
     val result = doRunChunk("""
       ```{r}

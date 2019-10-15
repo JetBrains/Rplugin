@@ -9,15 +9,15 @@ import com.intellij.openapi.project.Project
 
 class RGraphicsRepository(private val project: Project) {
   private val states = mutableSetOf<RGraphicsState>()
-  private val snapshotListeners = mutableListOf<(List<RSnapshot>) -> Unit>()
+  private val snapshotListeners = mutableListOf<(RSnapshotsUpdate) -> Unit>()
 
   private val stateListener = object : RGraphicsState.Listener {
-    override fun onCurrentChange(snapshots: List<RSnapshot>) {
-      notifySnapshots(snapshots)
+    override fun onCurrentChange(update: RSnapshotsUpdate) {
+      notifySnapshots(update)
     }
 
     override fun onReset() {
-      notifySnapshots(listOf())
+      notifySnapshots(RSnapshotsUpdate.empty)
     }
   }
 
@@ -34,7 +34,7 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun addSnapshotListener(listener: (List<RSnapshot>) -> Unit) {
+  fun addSnapshotListener(listener: (RSnapshotsUpdate) -> Unit) {
     snapshotListeners.add(listener)
     currentState?.let {
       listener(it.snapshots)
@@ -68,9 +68,9 @@ class RGraphicsRepository(private val project: Project) {
     }
   }
 
-  private fun notifySnapshots(snapshots: List<RSnapshot>) {
+  private fun notifySnapshots(update: RSnapshotsUpdate) {
     for (listener in snapshotListeners) {
-      listener(snapshots)
+      listener(update)
     }
   }
 

@@ -8,12 +8,13 @@ import com.intellij.openapi.diagnostic.Logger
 import java.io.File
 
 class RBasicGraphicsState(override val tracedDirectory: File, initialParameters: RGraphicsUtils.ScreenParameters?) : RGraphicsState {
-  private var lastSnapshots: List<RSnapshot>? = null
+  private var lastNormal: List<RSnapshot>? = null
+  private var lastZoomed: List<RSnapshot> = mutableListOf()
 
   private val listeners: MutableList<RGraphicsState.Listener> = mutableListOf()
 
-  override val snapshots: List<RSnapshot>
-    get() = lastSnapshots ?: listOf()
+  override val snapshots: RSnapshotsUpdate
+    get() = RSnapshotsUpdate(lastNormal ?: listOf(), lastZoomed)
 
   private val mutableScreenParameters = MutableLiveScreenParameters(initialParameters)
   override val screenParameters: LiveScreenParameters
@@ -22,7 +23,7 @@ class RBasicGraphicsState(override val tracedDirectory: File, initialParameters:
   override var currentSnapshotNumber: Int? = null
     set(value) {
       field = if (value != null) {
-        val last = lastSnapshots
+        val last = lastNormal
         if (last != null) {
           if (value in last.indices) {
             value
@@ -39,7 +40,7 @@ class RBasicGraphicsState(override val tracedDirectory: File, initialParameters:
 
   override fun update() {
     fun checkUpdated(snapshots: List<RSnapshot>): Boolean {
-      val last = lastSnapshots
+      val last = lastNormal
       return if (last != null) {
         val lastIdentities = last.map { it.identity }
         val currentIdentities = snapshots.map { it.identity }
@@ -49,56 +50,77 @@ class RBasicGraphicsState(override val tracedDirectory: File, initialParameters:
       }
     }
 
-    tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
-      val allSnapshots = files.mapNotNull { RSnapshot.from(it) }
-      val (snapshots, sketches) = allSnapshots.partition { it.type != RSnapshotType.SKETCH }
-      val numbers2versions = snapshots.groupBy { it.number }
-      val mostRecent = numbers2versions.mapNotNull { entry -> entry.value.maxBy { it.version } }.sortedBy { it.number }
-      if (checkUpdated(mostRecent)) {
-        lastSnapshots = mostRecent
-        for (listener in listeners) {
-          listener.onCurrentChange(mostRecent)
+    fun <K: Comparable<K>>shrunkGroups(groups: Map<Int, List<RSnapshot>>, key: (RSnapshot) -> K): List<RSnapshot> {
+      fun shrunk(snapshots: List<RSnapshot>, key: (RSnapshot) -> K): RSnapshot? {
+        return if (snapshots.isNotEmpty()) {
+          val ordered = snapshots.sortedBy { key(it) }
+          for (i in 0 until ordered.size - 1) {
+            ordered[i].file.delete()
+          }
+          ordered.last()
+        } else {
+          null
         }
       }
 
-      // TODO [mine]: remove previous versions
-      for (sketch in sketches) {
-        sketch.file.delete()
+      return groups.mapNotNull { entry -> shrunk(entry.value, key) }.sortedBy { it.number }
+    }
+
+    tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
+      val allSnapshots = files.mapNotNull { RSnapshot.from(it) }
+      val type2snapshots = allSnapshots.groupBy { it.type }
+      val normal = type2snapshots[RSnapshotType.NORMAL] ?: listOf()
+      val zoomed = type2snapshots[RSnapshotType.ZOOMED] ?: listOf()
+      val sketches = type2snapshots[RSnapshotType.SKETCH] ?: listOf()
+      val numbers2normal = normal.groupBy { it.number }
+      val mostRecentNormal = shrunkGroups(numbers2normal) { it.version }
+      val numbers2zoomed = zoomed.groupBy { it.number }
+      val mostOldZoomed = shrunkGroups(numbers2zoomed) { -it.version }  // Note: minus was intentional
+      if (checkUpdated(mostRecentNormal)) {
+        lastNormal = mostRecentNormal
+        lastZoomed = mostOldZoomed
+        notifyListenersOnUpdate()
       }
+      deleteSnapshots(sketches)
     }
   }
 
   override fun reset() {
-    lastSnapshots?.let { snapshots ->
-      for (snapshot in snapshots) {
-        snapshot.file.delete()
-      }
+    lastNormal?.let { normal ->
+      deleteSnapshots(normal)
+      deleteSnapshots(lastZoomed)
     }
-    lastSnapshots = null
+    lastNormal = null
     for (listener in listeners) {
       listener.onReset()
     }
   }
 
   override fun clearSnapshot(number: Int) {
-    lastSnapshots?.let { snapshots ->
-      // TODO [mine]: this lookup is a kind of stupid. I guess it should be replaced with a map
-      snapshots.find { it.number == number }?.let { snapshot ->
+    fun shrunk(snapshots: List<RSnapshot>, number: Int): List<RSnapshot> {
+      val snapshot = snapshots.find { it.number == number }
+      return if (snapshot != null) {
         if (snapshot.file.delete()) {
-          val shrunken = snapshots.minus(snapshot)
-          for (listener in listeners) {
-            listener.onCurrentChange(shrunken)
-          }
-          lastSnapshots = shrunken
+          snapshots.minus(snapshot)
+        } else {
+          snapshots
         }
+      } else {
+        snapshots
       }
+    }
+
+    lastNormal?.let { normal ->
+      lastNormal = shrunk(normal, number)
+      lastZoomed = shrunk(lastZoomed, number)
+      notifyListenersOnUpdate()
     }
   }
 
   override fun addListener(listener: RGraphicsState.Listener) {
     listeners.add(listener)
-    lastSnapshots?.let {
-      listener.onCurrentChange(it)
+    lastNormal?.let {
+      listener.onCurrentChange(RSnapshotsUpdate(it, lastZoomed))
     }
   }
 
@@ -108,6 +130,14 @@ class RBasicGraphicsState(override val tracedDirectory: File, initialParameters:
 
   override fun changeScreenParameters(parameters: RGraphicsUtils.ScreenParameters) {
     mutableScreenParameters.postParameters(parameters)
+  }
+
+  private fun notifyListenersOnUpdate() {
+    lastNormal?.let { normal ->
+      for (listener in listeners) {
+        listener.onCurrentChange(RSnapshotsUpdate(normal, lastZoomed))
+      }
+    }
   }
 
   class MutableLiveScreenParameters(private var currentParameters: RGraphicsUtils.ScreenParameters?) : LiveScreenParameters {
@@ -133,5 +163,11 @@ class RBasicGraphicsState(override val tracedDirectory: File, initialParameters:
 
   companion object {
     private val LOGGER = Logger.getInstance(RBasicGraphicsState::class.java)
+
+    private fun deleteSnapshots(snapshots: List<RSnapshot>) {
+      for (snapshot in snapshots) {
+        snapshot.file.delete()
+      }
+    }
   }
 }

@@ -6,23 +6,28 @@
 package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RHelpersUtil
+import java.awt.Dimension
 import java.awt.Toolkit
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.math.max
 
 object RGraphicsUtils {
   data class ScreenParameters(
-    val width: Int,
-    val height: Int,
+    val dimension: Dimension,
     val resolution: Int?
-  )
+  ) {
+    val width: Int
+      get() = dimension.width
+
+    val height: Int
+      get() = dimension.height
+  }
 
   data class InstallProperties(
     val packagePath: String,
@@ -46,6 +51,7 @@ object RGraphicsUtils {
   private const val QUAD_HD_HEIGHT = 1440
   private const val ULTRA_HD_HEIGHT = 2160
 
+  private const val RESOLUTION_MULTIPLIER = 4
   private const val MINIMAL_GRAPHICS_RESOLUTION = 75
   private const val FALLBACK_RESOLUTION = 150
   private const val FULL_HD_RESOLUTION = 300
@@ -119,17 +125,33 @@ object RGraphicsUtils {
   }
 
   fun calculateInitProperties(snapshotDirectory: String, screenParameters: ScreenParameters?): InitProperties {
+    return calculateInitProperties(snapshotDirectory, screenParameters?.dimension, screenParameters?.resolution)
+  }
+
+  fun calculateInitProperties(snapshotDirectory: String, dimension: Dimension?, resolution: Int?): InitProperties {
+    fun getParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
+      return if (dimension != null) {
+        ScreenParameters(dimension, resolution)
+      } else {
+        val parameters = getDefaultScreenParameters(false)
+        if (resolution != null) {
+          parameters.copy(resolution = resolution)
+        } else {
+          parameters
+        }
+      }
+    }
+
     fun getScaleFactor(parameters: ScreenParameters): Double {
-      val resolution = parameters.resolution
-      return if (SystemInfo.isMac && resolution != null) {
-        resolution.toDouble() / MINIMAL_GRAPHICS_RESOLUTION
+      return if (SystemInfo.isMac && parameters.resolution != null) {
+        parameters.resolution.toDouble() / MINIMAL_GRAPHICS_RESOLUTION
       } else {
         1.0
       }
     }
 
     val path = FileUtil.toSystemIndependentName(snapshotDirectory)
-    val parameters = screenParameters ?: getDefaultScreenParameters()
+    val parameters = getParameters(dimension, resolution)
     val scaleFactor = getScaleFactor(parameters)
     return InitProperties(path, parameters, scaleFactor)
   }
@@ -141,9 +163,8 @@ object RGraphicsUtils {
     return RBasicGraphicsState(tmpDirectory, screenParameters)
   }
 
-  fun getDefaultScreenParameters(): ScreenParameters {
+  fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {
     val screenSize = Toolkit.getDefaultToolkit().screenSize
-    val width = screenSize.width
     val height = screenSize.height
     val resolution = when {
       height >= ULTRA_HD_HEIGHT -> ULTRA_HD_RESOLUTION
@@ -151,6 +172,7 @@ object RGraphicsUtils {
       height >= FULL_HD_HEIGHT -> FULL_HD_RESOLUTION
       else -> FALLBACK_RESOLUTION
     }
-    return ScreenParameters(width, height, resolution)
+    val adjustedResolution = if (isFullScreenMode) resolution else max(resolution / RESOLUTION_MULTIPLIER, MINIMAL_GRAPHICS_RESOLUTION)
+    return ScreenParameters(screenSize, adjustedResolution)
   }
 }

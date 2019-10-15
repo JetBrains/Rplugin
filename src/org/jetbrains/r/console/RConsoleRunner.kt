@@ -49,6 +49,7 @@ import org.jetbrains.r.run.viewer.RViewerUtils
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindowListener
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
+import java.awt.Dimension
 import java.io.File
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -109,7 +110,7 @@ class RConsoleRunner(private val project: Project,
 
             // Setup custom graphical device (it's more time consuming so it should be the last one)
             runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-              val graphicsHandler = UpdateGraphicsHandler(project, rInterop, graphicsState)
+              val graphicsHandler = UpdateGraphicsHandler(project, rInterop, graphicsState, null)
               consoleView.executeActionHandler.addListener(graphicsHandler)
             }
           }
@@ -188,7 +189,8 @@ class RConsoleRunner(private val project: Project,
 internal class UpdateGraphicsHandler(
   private val project: Project,
   private val rInterop: RInterop,
-  private val state: RGraphicsState
+  private val state: RGraphicsState,
+  private val initialDimension: Dimension?
 ) : RConsoleExecuteActionHandler.Listener {
 
   private val tracedDirectory: File
@@ -214,7 +216,7 @@ internal class UpdateGraphicsHandler(
 
   override fun onReset() {
     fun initializeDevice(): Boolean {
-      val initProperties = RGraphicsUtils.calculateInitProperties(tracedDirectory.absolutePath, screenParameters)
+      val initProperties = RGraphicsUtils.calculateInitProperties(tracedDirectory.absolutePath, initialDimension, screenParameters?.resolution)
       val graphicsInit = rInterop.graphicsInit(initProperties)
       return if (graphicsInit.stderr.isNotBlank()) {
         Logger.getInstance(javaClass).error(graphicsInit.stderr)

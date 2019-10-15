@@ -7,6 +7,7 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import java.awt.Dimension
 
 @State(name = "RGraphicsSettings", storages = [Storage("rGraphicsSettings.xml")])
 class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>(RGraphicsSettingsState()) {
@@ -23,7 +24,7 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
           setScreenParameters(project, it)
         }
       } else {
-        RGraphicsUtils.ScreenParameters(width, height, resolution)
+        RGraphicsUtils.ScreenParameters(Dimension(width, height), resolution)
       }
     }
 

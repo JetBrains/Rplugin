@@ -13,6 +13,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.ui.RDimensionPreference
 import org.jetbrains.r.ui.calculateDialogPreferredSize
+import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.GridLayout
@@ -45,7 +46,7 @@ class RGraphicsSettingsDialog(
       val height = currentUnitModel.convertInputToPixels(heightInputField.text)
       val resolution = resolutionInputField.text.toIntOrNull()
       return if (width != null && height != null && resolution != null) {
-        RGraphicsUtils.ScreenParameters(width, height, resolution)
+        RGraphicsUtils.ScreenParameters(Dimension(width, height), resolution)
       } else {
         null
       }
