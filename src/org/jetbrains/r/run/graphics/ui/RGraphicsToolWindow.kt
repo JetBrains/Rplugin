@@ -33,8 +33,14 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   private var lastZoomed = listOf<RSnapshot>()
   private var lastIndex = -1
 
+  private val lastSnapshot: RSnapshot?
+    get() = if (lastIndex in lastNormal.indices) lastNormal[lastIndex] else null
+
   private val lastNumber: Int?
-    get() = if (lastIndex >= 0) lastNormal[lastIndex].number else null
+    get() = lastSnapshot?.number
+
+  private val lastFile: File?
+    get() = lastSnapshot?.file
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
@@ -94,7 +100,12 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   }
 
   private fun showCurrent() {
-    panel.refresh(lastNormal[lastIndex].file)
+    lastSnapshot?.let { snapshot ->
+      when (snapshot.error) {
+        RSnapshotError.MARGIN -> panel.showMessage(MARGINS_TOO_LARGE_MESSAGE)
+        else -> panel.refresh(snapshot.file)
+      }
+    }
   }
 
   private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
@@ -134,7 +145,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       override val icon = EXPORT_GRAPHICS_ACTION_ICON
 
       override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
+        get() = lastNormal.isNotEmpty() && lastSnapshot?.error == null
 
       override fun onClick() {
         val title = RBundle.message("graphics.panel.file.saver.title")
@@ -146,8 +157,9 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
           try {
             val destination = wrapper.file
             createDestinationFile(destination)
-            val source = lastNormal[lastIndex]
-            Files.copy(source.file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            lastFile?.let { source ->
+              Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
           } catch (e: Exception) {
             val details = e.message?.let { ".\n$it" } ?: ""
             val header = RBundle.message("graphics.panel.file.saver.failure.header")
@@ -274,6 +286,8 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
+
+    private val MARGINS_TOO_LARGE_MESSAGE = RBundle.message("graphics.panel.error.margins.too.large")
 
     private val EXPORT_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.export.title")
     private val ZOOM_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.zoom.title")

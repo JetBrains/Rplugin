@@ -21,6 +21,7 @@ class GraphicsPanel(private val project: Project) {
   private val rootPanel = EmptyComponentPanel(label)
 
   private var currentEditor: ImageEditor? = null
+  private var lastToolPanelHeight: Int = 0
 
   val component = rootPanel.component
 
@@ -33,12 +34,19 @@ class GraphicsPanel(private val project: Project) {
     }
   }
 
+  fun showMessage(message: String) {
+    closeEditor(message)
+  }
+
   fun getImageHeight(): Int = currentEditor?.document?.value?.height ?: 0  // TODO [mine]: Have I break anything by removing delta?
 
   fun getToolPanelHeight(): Int? {
-    return currentEditor?.let { editor ->
-      editor.component.components[0].preferredSize.height
+    if (lastToolPanelHeight == 0) {
+      currentEditor?.let { editor ->
+        lastToolPanelHeight = editor.component.components[0].preferredSize.height
+      }
     }
+    return lastToolPanelHeight
   }
 
   fun reset() {

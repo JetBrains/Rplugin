@@ -106,8 +106,16 @@ class RVirtualGraphicsDevice(
   private fun rescale(snapshotNumber: Int?, newDimension: Dimension) {
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        rInterop.graphicsRescale(snapshotNumber, newDimension)
-        lookForNewSnapshots(snapshotNumber)
+        val result = rInterop.graphicsRescale(snapshotNumber, newDimension)
+        if (result.stderr.isBlank()) {
+          val output = result.stdout.let { it.substring(4, it.length - 1) }
+          LOGGER.warn("Output was: $output")
+          if (output == "TRUE") {
+            lookForNewSnapshots(snapshotNumber)
+          }
+        } else {
+          LOGGER.error(result.stderr)
+        }
       }
     }
   }
