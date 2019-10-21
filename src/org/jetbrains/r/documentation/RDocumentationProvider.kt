@@ -6,7 +6,6 @@
 package org.jetbrains.r.documentation
 
 import com.google.common.base.CharMatcher
-import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.AbstractDocumentationProvider
@@ -19,10 +18,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.util.PsiTreeUtil
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.RFileType
-import org.jetbrains.r.bin.RBinFileType
-import org.jetbrains.r.bin.psi.RBinBase
+import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -52,6 +50,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   private val keywords = listOf("TRUE", "FALSE", "NULL", "NA", "Inf", "NaN", "NA_integer_", "NA_real_", "NA_complex_", "NA_character_",
                                 "if", "else", "repeat", "while", "function", "return", "for", "in", "next", "break", "...")
+  private val brackets = listOf("(", ")", "[", "]", "[[", "]]", "{", "}", ",", ";")
 
   private val separator = File.separator
 
@@ -64,35 +63,32 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   override fun getCustomDocumentationElement(editor: Editor, file: PsiFile, contextElement: PsiElement?): PsiElement? {
     if (contextElement == null) return null
 
-    val elementText = contextElement.text
-    if (elementText.isBlank()) {
-      return null
+    if (hasNoDocumentation(contextElement) && editor.caretModel.currentCaret.offset == contextElement.textRange.startOffset) {
+      return getElementForDocumentation(PsiTreeUtil.prevLeaf(contextElement))
     }
 
+    return getElementForDocumentation(contextElement)
+  }
+
+  private fun getElementForDocumentation(contextElement: PsiElement?): PsiElement? {
+    val elementText = contextElement?.text ?: return null
     return when {
+      hasNoDocumentation(contextElement) -> null
       contextElement is RPsiElement -> contextElement
       elementText == "%%" || elementText == "%/%" -> contextElement.parent
       elementText.startsWith("%") -> // resolve to infix operator reference
         contextElement.parent.reference!!.resolve()
-      elementText.startsWith("#") -> // comments
-        null
-      elementText.all { it.isDigit() } -> null
-      elementText in listOf("(", "[", "[[") -> {
-        val util = TargetElementUtil.getInstance()
-        var prevSibling = if (elementText == "(") contextElement.parent.prevSibling else contextElement.prevSibling
-        prevSibling = if (prevSibling.text == "\n") null else prevSibling
-        if (util.findTargetElement(editor, util.getAllAccepted(), editor.getCaretModel().getOffset()) is RBinBase) {
-          prevSibling
-        }
-        else {
-          getCustomDocumentationElement(editor, file, prevSibling)
-        }
-      }
-      elementText in listOf(")", "]", "]]") -> null
       keywords.contains(elementText) -> contextElement
       else -> contextElement.parent
     }
+  }
 
+  private fun hasNoDocumentation(contextElement: PsiElement): Boolean {
+    val elementText = contextElement.text
+    return elementText.isBlank() ||
+           elementText.startsWith("#") ||
+           elementText.all { it.isDigit() } ||
+           elementText in brackets
   }
 
 
@@ -211,7 +207,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   private inline fun checkPossibilityReturnDocumentation(reference: PsiElement, exitWithReport: (message: String?) -> Unit) {
     val containingFile = reference.containingFile
 
-    if (containingFile.fileType !in listOf(RFileType, RBinFileType)) {
+    if (containingFile.language != RLanguage.INSTANCE) {
       exitWithReport(null)
     }
 

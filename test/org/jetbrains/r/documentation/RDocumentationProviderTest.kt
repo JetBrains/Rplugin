@@ -5,8 +5,8 @@
 package org.jetbrains.r.documentation
 
 import com.intellij.codeInsight.documentation.DocumentationManager
+import com.intellij.codeInsight.documentation.DocumentationManager.ORIGINAL_ELEMENT_KEY
 import com.intellij.openapi.application.PathManager
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
@@ -195,6 +195,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   fun testCaretBeforeBrackets() {
     doTest("print<caret>(1)", "print", "base")
+    doTest("packageDescription<caret>(\"dplyr\")", "packageDescription", "utils")
     doTest("20 / euro<caret>[\"ATS\"]", "euro", "datasets")
   }
 
@@ -222,8 +223,11 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
   private fun doTest(text: String, page: String, pack: String) {
 
     myFixture.configureByText("test.R", text)
-    val originalElement = getOriginalDocElement()
-    val docElement = getDocElement()
+    val docElement = DocumentationManager.getInstance(myFixture.project).findTargetElement(myFixture.editor, myFixture.file)
+    val originalPointer = docElement.getUserData(ORIGINAL_ELEMENT_KEY)
+    val originalElement = if (originalPointer != null) originalPointer.getElement() else null
+    assertNotNull("No original element at ${psiUnderCaret()?.text}", originalElement)
+    originalElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     val docText = docProvider.generateDoc(docElement, originalElement)
 
@@ -252,13 +256,5 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     }
   }
 
-  private fun getDocElement(): PsiElement? {
-    return DocumentationManager.getInstance(myFixture.project).findTargetElement(myFixture.editor, myFixture.file)
-  }
-
-  private fun getOriginalDocElement(): PsiElement {
-    val docElement = myFixture.file.findElementAt(myFixture.editor.caretModel.offset)
-    assertTrue("No element found at caret", docElement != null)
-    return docElement!!
-  }
+  private fun psiUnderCaret() = myFixture.file.findElementAt(myFixture.editor.caretModel.offset)
 }
