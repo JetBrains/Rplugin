@@ -48,12 +48,12 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<Pair<String, TableType>, List<TableManipulationColumn>>() }
 
+  override val rMarkdownChunkOptions by lazy { rInterop.rMarkdownChunkOptions }
+
   override val variables
     get() = rInterop.currentEnvLoader.variables.map { it.name to it.value }.toMap()
   override val loadedPackages
     get() = rInterop.loadedPackages
-  override val rMarkdownChunkOptions
-    get() = rInterop.rMarkdownChunkOptions
   override val workingDir
     get() = rInterop.workingDir
 
