@@ -8,13 +8,11 @@ import com.intellij.openapi.ui.ValidationInfo
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.interpreter.RBasicInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.settings.RInterpreterSettings
 import java.awt.BorderLayout
 
-class RAddNewInterpreterPanel(existingInterpreters: List<String>) : RInterpreterPanel() {
+class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RInterpreterPanel() {
   override val panelName = PANEL_NAME
 
   private val manageInterpreterPanel = RManageInterpreterPanel(PANEL_HINT, true) {
@@ -25,27 +23,9 @@ class RAddNewInterpreterPanel(existingInterpreters: List<String>) : RInterpreter
     get() = manageInterpreterPanel.currentSelection?.interpreterPath
 
   init {
-    fun getSuggestedInterpreters(suggestedPaths: List<String>): List<RInterpreterInfo> {
-      return mutableListOf<RInterpreterInfo>().apply {
-        val existing = RInterpreterSettings.existingInterpreters
-        addAll(existing)
-        for (path in suggestedPaths) {
-          if (find { it.interpreterPath == path } == null) {
-            RBasicInterpreterInfo.from(SUGGESTED_INTERPRETER_NAME, path)?.let { inflated ->
-              add(inflated)
-            }
-          }
-        }
-        if (size > existing.size) {
-          RInterpreterSettings.knownInterpreters = this
-        }
-      }
-    }
-
     layout = BorderLayout()
-    val suggested = getSuggestedInterpreters(existingInterpreters)
-    manageInterpreterPanel.initialInterpreters = suggested
-    manageInterpreterPanel.initialSelection = suggested.firstOrNull()
+    manageInterpreterPanel.initialInterpreters = existingInterpreters
+    manageInterpreterPanel.initialSelection = existingInterpreters.firstOrNull()
     manageInterpreterPanel.reset()
     add(manageInterpreterPanel.component, BorderLayout.NORTH)
   }
@@ -72,7 +52,6 @@ class RAddNewInterpreterPanel(existingInterpreters: List<String>) : RInterpreter
   companion object {
     private val PANEL_NAME = RBundle.message("project.settings.new.interpreter")
     private val PANEL_HINT = RBundle.message("project.settings.base.interpreter")
-    private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
     private val CHECK_INTERPRETER_TITLE = RBundle.message("project.settings.check.interpreter")
     private val MISSING_INTERPRETER_TEXT = RBundle.message("project.settings.missing.interpreter")
     private val INVALID_INTERPRETER_TEXT = RBundle.message("project.settings.invalid.interpreter")

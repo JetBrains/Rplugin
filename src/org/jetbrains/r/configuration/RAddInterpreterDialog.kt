@@ -24,6 +24,7 @@ class RAddInterpreterDialog {
     private val INVALID_INTERPRETER_DESCRIPTION = RBundle.message("project.settings.invalid.interpreter.description")
     private val INTERPRETER_DUPLICATE_TITLE = RBundle.message("project.settings.interpreter.duplicate.title")
     private val INTERPRETER_DUPLICATE_DESCRIPTION = RBundle.message("project.settings.interpreter.duplicate.description")
+    private val ADDED_INTERPRETER_NAME = RBundle.message("project.settings.added.interpreter")
 
     private val homeChooserDescriptor = object : FileChooserDescriptor(true, false, false, false, false, false) {
       override fun isFileVisible(file: VirtualFile, showHiddenFiles: Boolean): Boolean {
@@ -57,8 +58,8 @@ class RAddInterpreterDialog {
           val path = PathUtil.toSystemDependentName(it.path)
           if (checkDuplicate(existingInterpreters, path)) {
             val (version, e) = tryGetInterpreterVersion(path)
-            if (version != null) {
-              val interpreter = RBasicInterpreterInfo(it.name, path, version)
+            if (version != null && RInterpreterUtil.isSupportedVersion(version)) {
+              val interpreter = RBasicInterpreterInfo(ADDED_INTERPRETER_NAME, path, version)
               onAdded(interpreter)
             } else {
               val details = e?.message?.let { m -> ":\n$m" } ?: ""

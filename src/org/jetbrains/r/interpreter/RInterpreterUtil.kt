@@ -15,7 +15,9 @@ import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.EnvironmentUtil
+import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
@@ -23,13 +25,14 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object RInterpreterUtil {
-
   const val DEFAULT_TIMEOUT = 5 * 60 * 1000 // 5 min
   const val EDT_TIMEOUT = 5 * 1000 // 5 sec
 
   private const val INTERPRETER_GROUP_ID = "RInterpreter"
   private const val INTERPRETER_ALIVE_TIMEOUT = 2000L
   private val R_DISTRO_REGEX = "R-.*".toRegex()
+
+  private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
 
   private val fromPathVariable: ArrayList<String>
     get() {
@@ -89,6 +92,31 @@ object RInterpreterUtil {
 
   fun isSupportedVersion(version: Version?): Boolean {
     return version != null && version.isOrGreaterThan(3, 3) && version.lessThan(3, 7)
+  }
+
+  fun suggestAllInterpreters(enabledOnly: Boolean): List<RInterpreterInfo> {
+    fun suggestAllExisting(): List<RInterpreterInfo> {
+      return mutableListOf<RInterpreterInfo>().apply {
+        addAll(RInterpreterSettings.existingInterpreters)
+        val suggestedPaths = suggestAllHomePaths()
+        for (path in suggestedPaths) {
+          if (findByPath(path) == null) {
+            RBasicInterpreterInfo.from(SUGGESTED_INTERPRETER_NAME, path)?.let { inflated ->
+              add(inflated)
+              RInterpreterSettings.addOrEnableInterpreter(inflated)
+            }
+          }
+        }
+      }
+    }
+
+    val existing = suggestAllExisting()
+    return if (enabledOnly) {
+      val disabledPaths = RInterpreterSettings.disabledPaths
+      existing.filter { it.interpreterPath !in disabledPaths }
+    } else {
+      existing
+    }
   }
 
   fun suggestHomePath(): String {

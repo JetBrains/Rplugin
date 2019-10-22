@@ -34,3 +34,7 @@ data class RBasicInterpreterInfo(
     }
   }
 }
+
+fun List<RInterpreterInfo>.findByPath(path: String): RInterpreterInfo? {
+  return find { it.interpreterPath == path }
+}

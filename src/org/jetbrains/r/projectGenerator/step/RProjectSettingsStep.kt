@@ -6,16 +6,15 @@ package org.jetbrains.r.projectGenerator.step
 
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.openapi.util.SystemInfo.isWindows
-import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.ui.HideableDecorator
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
+import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
@@ -124,11 +123,9 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     val container = JPanel(BorderLayout())
     val decoratorPanel = JPanel(VerticalFlowLayout())
 
-    val existingInterpreters = ProgressManager.getInstance().runProcessWithProgressSynchronously(
-      ThrowableComputable<List<String>, Exception> {
-        RInterpreterUtil.suggestAllHomePaths()
-      },
-      RBundle.message("project.settings.interpreters.loading"), false, null)
+    val existingInterpreters = getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
+      RInterpreterUtil.suggestAllInterpreters(false)
+    }
 
     val newInterpreterPanel = RAddNewInterpreterPanel(existingInterpreters)
 

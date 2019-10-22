@@ -33,6 +33,7 @@ import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
@@ -125,16 +126,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
   private fun ensureActiveInterpreterStored() {
-    fun findAmong(existing: List<RInterpreterInfo>): RInterpreterInfo? {
-      return existing.find { it.interpreterPath == interpreterPath }
-    }
-
-    val known = RInterpreterSettings.knownInterpreters
-    if (findAmong(known) == null) {
-      rInterpreter?.let { suggested ->
-        val interpreter = RBasicInterpreterInfo("Suggested", suggested.interpreterPath, suggested.version)
-        RInterpreterSettings.addInterpreter(interpreter)
-      }
+    rInterpreter?.let { suggested ->
+      val interpreter = RBasicInterpreterInfo(SUGGESTED_INTERPRETER_NAME, suggested.interpreterPath, suggested.version)
+      RInterpreterSettings.addOrEnableInterpreter(interpreter)
     }
   }
 
@@ -217,6 +211,10 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       VfsUtil.markDirtyAndRefresh(false, true, true, libraryRoot)
       WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
     }
+  }
+
+  companion object {
+    private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
   }
 }
 

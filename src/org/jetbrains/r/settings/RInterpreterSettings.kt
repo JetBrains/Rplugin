@@ -8,6 +8,7 @@ import com.intellij.openapi.components.*
 import org.jetbrains.r.interpreter.RBasicInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.interpreter.findByPath
 
 // NOTE: if you're interested in what kind of tricky games are played on list of strings below
 // than you should know that PersistentStateComponent is able to save neither data class
@@ -32,11 +33,17 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
       return getInstance().state.triples
     }
 
-    /**
-     * List of all existing known interpreters.
-     * **Note:** contrary to [knownInterpreters], this list is additionally filtered
-     * in order to contain existing interpreters only.
-     */
+    var disabledPaths: Set<String>
+      get() {
+        return getInstance().state.disabledPaths.toSet()
+      }
+      private set(newPaths) {
+        getInstance().state.disabledPaths.apply {
+          clear()
+          addAll(newPaths)
+        }
+      }
+
     val existingInterpreters: List<RInterpreterInfo>
       get() {
         val known = knownInterpreters
@@ -48,12 +55,7 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
         }
       }
 
-    /**
-     * List of all known interpreters.
-     * **Note:** unlike [existingInterpreters] this list doesn't check
-     * whether interpreters it contains exist thus it is faster.
-     */
-    var knownInterpreters: List<RInterpreterInfo>
+    private var knownInterpreters: List<RInterpreterInfo>
       get() {
         return getTriples().chunked(3) { it.toInterpreter() }
       }
@@ -63,20 +65,40 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
         triples.addAll(interpreters.flatMap { it.toTriple() })
       }
 
-    fun addInterpreter(interpreter: RInterpreterInfo) {
-      getTriples().addAll(interpreter.toTriple())
+    fun addOrEnableInterpreter(interpreter: RInterpreterInfo) {
+      val known = knownInterpreters
+      val path = interpreter.interpreterPath
+      if (known.findByPath(path) == null) {
+        knownInterpreters = known.plus(interpreter)
+      }
+      getInstance().state.disabledPaths.remove(path)
     }
 
-    fun removeInterpreter(interpreter: RInterpreterInfo) {
-      val triples = getTriples()
-      val chunks = triples.chunked(3)
-      val shrunken = chunks.filter { it[1] != interpreter.interpreterPath }
-      triples.clear()
-      triples.addAll(shrunken.flatten())
+    fun setEnabledInterpreters(interpreters: List<RInterpreterInfo>) {
+      val oldKnown = knownInterpreters
+      val newKnown = mutableListOf<RInterpreterInfo>().apply {
+        addAll(interpreters)
+        for (interpreter in oldKnown) {
+          if (findByPath(interpreter.interpreterPath) == null) {
+            add(interpreter)
+          }
+        }
+      }
+      val newDisabledPaths = mutableSetOf<String>().apply {
+        for (interpreter in oldKnown) {
+          add(interpreter.interpreterPath)
+        }
+        for (interpreter in interpreters) {
+          remove(interpreter.interpreterPath)
+        }
+      }
+      knownInterpreters = newKnown
+      disabledPaths = newDisabledPaths
     }
   }
 }
 
 class RInterpreterSettingsState : BaseState() {
   var triples: MutableList<String> by list<String>()
+  var disabledPaths: MutableList<String> by list<String>()
 }

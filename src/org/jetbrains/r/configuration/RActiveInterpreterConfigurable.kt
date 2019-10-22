@@ -11,8 +11,10 @@ import com.intellij.openapi.wm.ToolWindowManager
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
@@ -41,7 +43,9 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
       return if (this.isNotBlank()) existing.find { it.interpreterPath == this } else null
     }
 
-    val existing = RInterpreterSettings.existingInterpreters
+    val existing = getSynchronously(LOADING_INTERPRETERS_TEXT) {
+      RInterpreterUtil.suggestAllInterpreters(true)
+    }
     val selection = settings.interpreterPath.findAmong(existing)
     panel.initialSelection = selection
     panel.initialInterpreters = existing
@@ -64,7 +68,7 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
       }
     }
 
-    RInterpreterSettings.knownInterpreters = panel.currentInterpreters
+    RInterpreterSettings.setEnabledInterpreters(panel.currentInterpreters)
     val path = panel.currentSelection?.interpreterPath ?: ""
     val previousPath = settings.interpreterPath
     if (path != previousPath) {
@@ -84,5 +88,9 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
 
   override fun createComponent(): JComponent? {
     return wrapper
+  }
+
+  companion object {
+    private val LOADING_INTERPRETERS_TEXT = RBundle.message("project.settings.interpreters.loading")
   }
 }
