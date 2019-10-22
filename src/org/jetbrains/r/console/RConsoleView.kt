@@ -39,7 +39,7 @@ class RConsoleView(val rInterop: RInterop,
     get() = executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT &&
             executeActionHandler.state != RConsoleExecuteActionHandler.State.DEBUG_PROMPT
 
-  internal val debugger = RDebugger(this)
+  internal val debugger = RDebugger(this).also { Disposer.register(this, it) }
   val executeActionHandler = RConsoleExecuteActionHandler(this)
 
   private val onSelectListeners = mutableListOf<() -> Unit>()

@@ -9,10 +9,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.openapi.wm.impl.FocusManagerImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
@@ -21,13 +19,11 @@ import icons.org.jetbrains.r.RBundle
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*
-import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.rendering.editor.RunAllState
 import org.jetbrains.r.rendering.editor.runAllState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
-import javax.swing.FocusManager
 
 
 fun isChunkFenceLang(element: PsiElement) =

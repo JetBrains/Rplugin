@@ -19,6 +19,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
@@ -26,6 +27,7 @@ import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.actions.editor
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rendering.RMarkdownProcessor
 import org.jetbrains.r.rendering.chunk.RunChunkHandler

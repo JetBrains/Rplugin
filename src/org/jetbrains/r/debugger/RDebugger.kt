@@ -10,6 +10,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.idea.ActionsBundle
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
@@ -54,7 +55,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class RDebugger(private val consoleView: RConsoleView) {
+class RDebugger(private val consoleView: RConsoleView) : Disposable {
   @Volatile var isEnabled = false
     private set
   private val actions = mutableListOf<AnAction>()
@@ -413,6 +414,10 @@ class RDebugger(private val consoleView: RConsoleView) {
                         ConsoleViewContentType.ERROR_OUTPUT)
     }
     return resultPromise
+  }
+
+  override fun dispose() {
+    positionHighlighter.hide()
   }
 
   private fun executeImpl(sourceFile: VirtualFile, source: String, fileId: String): Promise<Unit> {
