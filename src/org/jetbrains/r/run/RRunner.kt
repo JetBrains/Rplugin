@@ -12,6 +12,7 @@ import com.intellij.execution.runners.GenericProgramRunner
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.ui.AppUIUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
@@ -26,21 +27,23 @@ abstract class RRunner : GenericProgramRunner<RunnerSettings>() {
 
   override fun doExecute(state: RunProfileState, environment: ExecutionEnvironment): RunContentDescriptor? {
     if (state !is RCommandLineState) return null
-    FileDocumentManager.getInstance().saveAllDocuments()
     val project = environment.project
-    val console = state.console
-    RConsoleToolWindowFactory.getToolWindow(project)?.show {}
+    AppUIUtil.invokeOnEdt {
+      FileDocumentManager.getInstance().saveAllDocuments()
+      RConsoleToolWindowFactory.getToolWindow(project)?.show {}
+    }
     ApplicationManager.getApplication().executeOnPooledThread {
+      val console = RConsoleManager.getInstance(project).currentConsoleAsync.blockingGet(5000) ?: return@executeOnPooledThread
       if (isRunningCommand(console)) return@executeOnPooledThread
       val configuration = environment.runProfile as RRunConfiguration
       val workingDir = configuration.workingDirectoryPath
       console.rInterop.setWorkingDir(workingDir)
-      doExecute(state, environment)
+      doExecute(console, environment)
     }
     return null
   }
 
-  protected abstract fun doExecute(state: RCommandLineState, environment: ExecutionEnvironment)
+  protected abstract fun doExecute(console: RConsoleView, environment: ExecutionEnvironment)
 
   private fun isRunningCommand(console: RConsoleView?): Boolean {
     if (console == null) return false

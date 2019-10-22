@@ -12,8 +12,8 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.vfs.LocalFileSystem
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.run.RRunner
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.run.RCommandLineState
 import org.jetbrains.r.run.configuration.RRunConfiguration
 
 class RDebugRunner : RRunner() {
@@ -23,8 +23,7 @@ class RDebugRunner : RRunner() {
     return super.canRun(executorId, profile) && executorId == DefaultDebugExecutor.EXECUTOR_ID
   }
 
-  override fun doExecute(state: RCommandLineState, environment: ExecutionEnvironment) {
-    val console = state.console
+  override fun doExecute(console: RConsoleView, environment: ExecutionEnvironment) {
     val configuration = environment.runProfile as RRunConfiguration
     val scriptPath = configuration.scriptPath
     try {

@@ -8,8 +8,8 @@ package org.jetbrains.r.run
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.util.text.StringUtil
 import icons.org.jetbrains.r.run.RRunner
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.run.configuration.RRunConfiguration
 
 class RRunRunner : RRunner() {
@@ -19,8 +19,7 @@ class RRunRunner : RRunner() {
     return super.canRun(executorId, profile) && executorId == DefaultRunExecutor.EXECUTOR_ID
   }
 
-  override fun doExecute(state: RCommandLineState, environment: ExecutionEnvironment) {
-    val console = state.console
+  override fun doExecute(console: RConsoleView, environment: ExecutionEnvironment) {
     val configuration = environment.runProfile as RRunConfiguration
     val scriptPath = configuration.scriptPath
     console.rInterop.sourceFile(scriptPath)

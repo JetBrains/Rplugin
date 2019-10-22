@@ -5,40 +5,26 @@
 
 package org.jetbrains.r.run
 
-import com.intellij.execution.DefaultExecutionResult
-import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.options.ConfigurationException
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
+import com.intellij.openapi.actionSystem.AnAction
 import org.jetbrains.r.run.configuration.RRunConfiguration
-import org.jetbrains.r.run.configuration.RRunConfigurationUtils
 
 class RCommandLineState(environment: ExecutionEnvironment,
                         private val myRunConfiguration: RRunConfiguration) : CommandLineState(environment) {
-  val console: RConsoleView by lazy {
-    RConsoleManager.getInstance(myRunConfiguration.project).currentConsoleAsync.blockingGet(10000)!!
-  }
-
   override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
-    return DefaultExecutionResult(console, startProcess())
+    return object : ExecutionResult {
+      override fun getExecutionConsole() = null
+      override fun getProcessHandler() = null
+      override fun getActions() = emptyArray<AnAction>()
+    }
   }
 
   override fun startProcess(): ProcessHandler {
-    checkRunConfiguration()
-    return console.rInterop.processHandler
-  }
-
-  private fun checkRunConfiguration() {
-    try {
-      RRunConfigurationUtils.checkConfiguration(myRunConfiguration)
-    } catch (e: ConfigurationException) {
-      throw ExecutionException(e)
-    }
+    throw NotImplementedError()
   }
 }
