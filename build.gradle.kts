@@ -87,15 +87,15 @@ allprojects {
     }
 
     intellij {
-        version = prop("ideaVersion")
+        version = "PC-${ideaMajor()}.${ideaMinor()}-EAP-CANDIDATE-SNAPSHOT"
         downloadSources = !CI
         updateSinceUntilBuild = true
         instrumentCode = false
         ideaDependencyCachePath = dependencyCachePath
 
         tasks.withType<PatchPluginXmlTask> {
-            sinceBuild(prop("sinceBuild"))
-            untilBuild(prop("untilBuild"))
+            sinceBuild("${ideaMajor()}.${ideaMinor()}")
+            untilBuild("${ideaMajor()}.*")
         }
     }
 
@@ -151,7 +151,7 @@ allprojects {
 }
 
 project(":") {
-    version = "2019.3.${prop("buildNumber")}"
+    version = "${ideaMajor()}.${ideaMinor()}.${prop("buildNumber")}"
     intellij {
         pluginName = "rplugin"
         setPlugins("markdown", "yaml")
@@ -270,3 +270,7 @@ val Project.dependencyCachePath get(): String {
     }
     return cachePath.absolutePath
 }
+
+fun Build_gradle.ideaMinor() = prop("ideaMinor")
+
+fun Build_gradle.ideaMajor() = prop("ideaMajor")
