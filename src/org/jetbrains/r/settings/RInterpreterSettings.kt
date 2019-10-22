@@ -32,7 +32,28 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
       return getInstance().state.triples
     }
 
-    var existingInterpreters: List<RInterpreterInfo>
+    /**
+     * List of all existing known interpreters.
+     * **Note:** contrary to [knownInterpreters], this list is additionally filtered
+     * in order to contain existing interpreters only.
+     */
+    val existingInterpreters: List<RInterpreterInfo>
+      get() {
+        val known = knownInterpreters
+        return known.filter { it.exists() }.also {
+          // Automatically remove non-existing interpreters
+          if (it.size < known.size) {
+            knownInterpreters = it
+          }
+        }
+      }
+
+    /**
+     * List of all known interpreters.
+     * **Note:** unlike [existingInterpreters] this list doesn't check
+     * whether interpreters it contains exist thus it is faster.
+     */
+    var knownInterpreters: List<RInterpreterInfo>
       get() {
         return getTriples().chunked(3) { it.toInterpreter() }
       }

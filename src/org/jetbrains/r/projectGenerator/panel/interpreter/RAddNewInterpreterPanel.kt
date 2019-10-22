@@ -11,7 +11,6 @@ import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RBasicInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.R_UNKNOWN
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.awt.BorderLayout
 
@@ -27,13 +26,15 @@ class RAddNewInterpreterPanel(existingInterpreters: List<String>) : RInterpreter
 
   init {
     fun getSuggestedInterpreters(suggestedPaths: List<String>): List<RInterpreterInfo> {
-      val existing = RInterpreterSettings.existingInterpreters
-      return if (existing.isEmpty()) {
-        suggestedPaths.map {
-          RBasicInterpreterInfo(SUGGESTED_INTERPRETER_NAME, it, R_UNKNOWN)
+      return mutableListOf<RInterpreterInfo>().apply {
+        addAll(RInterpreterSettings.existingInterpreters)
+        for (path in suggestedPaths) {
+          if (find { it.interpreterPath == path } == null) {
+            RBasicInterpreterInfo.from(SUGGESTED_INTERPRETER_NAME, path)?.let { inflated ->
+              add(inflated)
+            }
+          }
         }
-      } else {
-        existing
       }
     }
 

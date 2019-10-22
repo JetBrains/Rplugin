@@ -96,7 +96,7 @@ object RInterpreterUtil {
 
   private fun suggestHomePaths(): List<String> {
     if (SystemInfo.isWindows) {
-      return fromPathVariable.takeIf { it.isNotEmpty() } ?: suggestHomePathInProgramFiles()
+      return fromPathVariable.union(suggestHomePathInProgramFiles()).toList()
     }
     try {
       val rFromPath = CapturingProcessHandler(GeneralCommandLine("which", "R"))

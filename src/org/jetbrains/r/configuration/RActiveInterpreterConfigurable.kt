@@ -64,7 +64,7 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
       }
     }
 
-    RInterpreterSettings.existingInterpreters = panel.currentInterpreters
+    RInterpreterSettings.knownInterpreters = panel.currentInterpreters
     val path = panel.currentSelection?.interpreterPath ?: ""
     val previousPath = settings.interpreterPath
     if (path != previousPath) {

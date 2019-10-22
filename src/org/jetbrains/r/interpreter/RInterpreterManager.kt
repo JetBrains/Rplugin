@@ -129,8 +129,8 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       return existing.find { it.interpreterPath == interpreterPath }
     }
 
-    val existing = RInterpreterSettings.existingInterpreters
-    if (findAmong(existing) == null) {
+    val known = RInterpreterSettings.knownInterpreters
+    if (findAmong(known) == null) {
       rInterpreter?.let { suggested ->
         val interpreter = RBasicInterpreterInfo("Suggested", suggested.interpreterPath, suggested.version)
         RInterpreterSettings.addInterpreter(interpreter)
