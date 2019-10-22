@@ -131,11 +131,13 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   override fun updateState() {
+    val cachedMirrors = state.cranMirrors
     state = State.EMPTY
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
-    state = State(loadLibraryPaths(), installedPackages, name2installedPackages, getUserPath(), getMirrors(), getRepositories())
+    val mirrors = if (cachedMirrors.isNotEmpty()) cachedMirrors else getMirrors()
+    state = State(loadLibraryPaths(), installedPackages, name2installedPackages, getUserPath(), mirrors, getRepositories())
   }
 
   private fun getUserPath(): String {
