@@ -57,6 +57,14 @@ object RInterpreterUtil {
     RNotificationUtil.notifyError(project, INTERPRETER_GROUP_ID, "R Interpreter Failure", message)
   }
 
+  fun tryGetVersionByPath(interpreterPath: String): Version? {
+    return try {
+      getVersionByPath(interpreterPath)
+    } catch (_: Exception) {
+      null
+    }
+  }
+
   fun getVersionByPath(interpreterPath: String): Version? {
     fun checkOutput(inputStream: InputStream): Version? {
       return inputStream.bufferedReader().use {

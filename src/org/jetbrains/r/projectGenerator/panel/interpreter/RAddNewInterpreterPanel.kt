@@ -27,13 +27,17 @@ class RAddNewInterpreterPanel(existingInterpreters: List<String>) : RInterpreter
   init {
     fun getSuggestedInterpreters(suggestedPaths: List<String>): List<RInterpreterInfo> {
       return mutableListOf<RInterpreterInfo>().apply {
-        addAll(RInterpreterSettings.existingInterpreters)
+        val existing = RInterpreterSettings.existingInterpreters
+        addAll(existing)
         for (path in suggestedPaths) {
           if (find { it.interpreterPath == path } == null) {
             RBasicInterpreterInfo.from(SUGGESTED_INTERPRETER_NAME, path)?.let { inflated ->
               add(inflated)
             }
           }
+        }
+        if (size > existing.size) {
+          RInterpreterSettings.knownInterpreters = this
         }
       }
     }

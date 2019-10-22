@@ -25,8 +25,9 @@ data class RBasicInterpreterInfo(
   companion object {
     fun from(name: String, path: String): RBasicInterpreterInfo? {
       return if (File(path).exists()) {
-        // TODO [mine]: call process to get interpreter version
-        RBasicInterpreterInfo(name, path, R_UNKNOWN)
+        RInterpreterUtil.tryGetVersionByPath(path)?.let { version ->
+          RBasicInterpreterInfo(name, path, version)
+        }
       } else {
         null
       }
