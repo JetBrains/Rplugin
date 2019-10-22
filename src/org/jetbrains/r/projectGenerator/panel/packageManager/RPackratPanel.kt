@@ -25,7 +25,6 @@ import icons.org.jetbrains.r.projectGenerator.panel.packageManager.getAllPackrat
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import java.awt.Component
-import java.io.File
 import java.util.*
 import java.util.function.Consumer
 import javax.swing.JComboBox
@@ -111,7 +110,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     val packratSettingsList = StringJoiner(", ", "list(", ")")
     packratSettings.forEach { packratSettingsList.add(it) }
 
-    initializePackage(project, listOf(baseDir.path, packratSettingsList.toString()))
+    initializePackage(project, baseDir, listOf(baseDir.path, packratSettingsList.toString()))
     focusFile(project, baseDir, ".Rprofile")
   }
 

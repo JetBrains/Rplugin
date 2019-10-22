@@ -54,7 +54,7 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
     }
   }
 
-  protected fun initializePackage(project: Project, args: List<String>) {
+  protected fun initializePackage(project: Project, baseDir: VirtualFile, args: List<String>) {
     ProgressManager.getInstance().run(
       object : Task.Modal(project, initializingTitle, false) {
         override fun run(indicator: ProgressIndicator) {
@@ -64,6 +64,7 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
           if (result.exitCode != 0) {
             reportPackageInstallationFailure("${result.stdout.dropWhile { it != '\n' }.drop(1)}\n${result.stderr}")
           }
+          baseDir.fileSystem.refresh(false)
         }
       })
   }

@@ -54,7 +54,7 @@ abstract class RRcppPackageManagerPanel(rProjectSettings: RProjectSettings) : RP
     rcppSettings.forEach { rcppSettingsString.add("${it.key} = ${it.value}") }
     rcppSettings.clear()
 
-    initializePackage(project, listOf(rPackageName, packageDir, parentDirPath, rcppSettingsString.toString()))
+    initializePackage(project, baseDir, listOf(rPackageName, packageDir, parentDirPath, rcppSettingsString.toString()))
     focusFile(project, baseDir, "Read-and-delete-me")
   }
 }

@@ -34,7 +34,7 @@ class RDefaultPackagePanel(rProjectSettings: RProjectSettings) : RPackageManager
     val parentDirPath = baseDir.parent.path
     val packageDir = baseDir.name
 
-    initializePackage(project, listOf(packageDir, parentDirPath))
+    initializePackage(project, baseDir, listOf(packageDir, parentDirPath))
     focusFile(project, baseDir, "Read-and-delete-me")
   }
 }

@@ -29,7 +29,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
   override fun getSettingsPanel(): JComponent? {
     val defaultPanel = RDefaultPackagePanel(rProjectSettings)
     val panels = listOf(defaultPanel, RPackratPanel(rProjectSettings), RRcppPanel(rProjectSettings),
-                        RRcppArmadilloPanel(rProjectSettings), RRcppEigenPanel(rProjectSettings))
+                        RRcppArmadilloPanel(rProjectSettings), RRcppEigenPanel(rProjectSettings), RDevtoolsPanel(rProjectSettings))
     settingsPanel = RPackageManagerGroupPanel("Choose package manager", getLogo(), rProjectSettings, panels, defaultPanel).apply {
       addChangeListener(Runnable { stateChanged() })
     }
