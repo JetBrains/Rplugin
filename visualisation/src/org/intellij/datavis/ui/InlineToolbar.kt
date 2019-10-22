@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
 import java.awt.*
 import javax.swing.JPanel
@@ -17,7 +18,9 @@ class InlineToolbar(val cell: PsiElement,
                     toolbarActions: ActionGroup) : JPanel(BorderLayout()) {
 
   private var couldUpdateBound = false
-  private val actionToolBar = ActionManager.getInstance().createActionToolbar("Editor", toolbarActions, true)
+  private val actionToolBar = ActionManager.getInstance().createActionToolbar("Editor", toolbarActions, true).apply {
+    setTargetComponent(editor.contentComponent)
+  }
 
   init {
     val component = actionToolBar.component

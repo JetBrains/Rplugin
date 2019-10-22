@@ -9,7 +9,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.openapi.wm.impl.FocusManagerImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
@@ -18,10 +21,13 @@ import icons.org.jetbrains.r.RBundle
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*
+import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.rendering.editor.RunAllState
 import org.jetbrains.r.rendering.editor.runAllState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import javax.swing.FocusManager
 
 
 fun isChunkFenceLang(element: PsiElement) =
@@ -56,7 +62,7 @@ class RunChunksAboveAction: AbstractRunChunksAboveAction(), RPromotedAction {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
     val offset = e.codeFence?.textRange?.startOffset ?: editor.caretModel.offset
-    runInRange(editor, file, 0, offset - 1)
+    showConsoleAndRun(e) { runInRange(editor, file, 0, offset - 1) }
   }
 }
 
@@ -69,7 +75,7 @@ class RunChunksBelowAction: AbstractRunChunksBelowAction(), RPromotedAction {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
     val offset = e.codeFence?.textRange?.startOffset ?: editor.caretModel.offset
-    runInRange(editor, file, offset, Int.MAX_VALUE)
+    showConsoleAndRun(e) { runInRange(editor, file, offset, Int.MAX_VALUE) }
   }
 }
 
@@ -80,7 +86,7 @@ class RunChunkAction : AbstractRunChunkAction(), RPromotedAction {
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    RunChunkHandler.execute(getCodeFenceByEvent(e)!!)
+    showConsoleAndRun(e) { RunChunkHandler.execute(getCodeFenceByEvent(e)!!) }
   }
 }
 
@@ -91,7 +97,7 @@ class DebugChunkAction : AbstractDebugChunkAction(), RPromotedAction {
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    RunChunkHandler.execute(getCodeFenceByEvent(e)!!, debug = true)
+    showConsoleAndRun(e) { RunChunkHandler.execute(getCodeFenceByEvent(e)!!, debug = true) }
   }
 }
 
@@ -138,3 +144,13 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 
 private val AnActionEvent.codeFence: PsiElement?
   get() = getData(CODE_FENCE_DATA_KEY)
+
+private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
+  val editor = e.editor ?: return
+  val project = e.project ?: return
+  RConsoleToolWindowFactory.getToolWindow(project)?.show {
+    action.invoke()
+    val instance = IdeFocusManager.getInstance(project)
+    instance.requestFocusInProject(instance.getFocusTargetFor(editor.component)!!, project)
+  }
+}
