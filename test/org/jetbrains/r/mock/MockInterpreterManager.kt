@@ -30,6 +30,7 @@ import org.jetbrains.r.packages.remote.RRepoPackage
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
+import java.util.Collections.singletonMap
 
 class MockInterpreterManager(private val project: Project) : RInterpreterManager {
   override fun initializeInterpreter(force: Boolean): Promise<Unit> {
@@ -127,7 +128,7 @@ private fun prepareTestSkeletons(project: Project) {
   val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
   rInterpreter.updateState()
   val packagesForTest = missingTestSkeletons.map { rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package " + it) }
-  RSkeletonUtil.generateSkeletons(RUsefulTestCase.SKELETON_LIBRARY_PATH, packagesForTest, rInterpreter)
+  RSkeletonUtil.generateSkeletons(singletonMap(RUsefulTestCase.SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter)
 }
 
 private fun missingTestSkeletons(): Set<String> {

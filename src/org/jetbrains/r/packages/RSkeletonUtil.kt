@@ -52,7 +52,7 @@ object RSkeletonUtil {
 
   fun updateSkeletons(rInterpreter: RInterpreter): Boolean {
     checkVersion(rInterpreter.skeletonsDirectory)
-    var result = false
+    val generationMap = HashMap<String, List<RPackage>>()
     for (skeletonPath in rInterpreter.skeletonPaths) {
       File(skeletonPath).takeIf { !it.exists() }?.let { FileUtil.createDirectory(it) }
       val libraryPath = rInterpreter.findLibraryPathBySkeletonPath(skeletonPath)
@@ -75,52 +75,58 @@ object RSkeletonUtil {
         FileUtil.asyncDelete(package2skeletonFile[it] ?: return@forEach)
       }
 
-      val update = generateSkeletons(skeletonPath, newPackages, rInterpreter)
-      result = update || result
+      generationMap[skeletonPath] = newPackages
     }
-    return result
+    return generateSkeletons(generationMap, rInterpreter)
   }
 
-  fun generateSkeletons(skeletonPath: String, newPackages: List<RPackage>, rInterpreter: RInterpreter): Boolean {
+  fun generateSkeletons(generationMap: Map<String, List<RPackage>>, rInterpreter: RInterpreter): Boolean {
     var result = false
+
     val es = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE)
 
-    val skeletonsDir = File(skeletonPath)
-    for ((processed, rPackage) in newPackages.withIndex()) {
-      val skeletonFile = File(skeletonsDir, rPackage.getLibraryBinFileName())
-      val finalProcessed = processed + 1
-      val indicator: ProgressIndicator? = ProgressIndicatorProvider.getInstance().progressIndicator
-      es.submit {
-        try {
-          LOG.info("building bin for package '$rPackage'")
-          indicator?.apply {
-            fraction = finalProcessed.toDouble() / newPackages.size
-            text = "Generating bin for '$rPackage'"
-          }
+    var processed = 0
+    val fullSize = generationMap.values.map { it.size }.sum()
+    for ((skeletonPath, newPackages) in generationMap) {
+      val skeletonsDir = File(skeletonPath)
+      for (rPackage in newPackages) {
+        val skeletonFile = File(skeletonsDir, rPackage.getLibraryBinFileName())
+        processed += 1
+        val finalProcessed = processed
+        val indicator: ProgressIndicator? = ProgressIndicatorProvider.getInstance().progressIndicator
+        es.submit {
+          try {
+            LOG.info("building bin for package '$rPackage'")
+            indicator?.apply {
+              fraction = finalProcessed.toDouble() / fullSize
+              text = "Generating bin for '$rPackage'"
+            }
 
-          val packageName = rPackage.packageName
-          val output = rInterpreter.runHelperWithArgs(RepoUtils.PACKAGE_SUMMARY, packageName)
-          if (output.exitCode != 0) {
-            LOG.error("Failed to generate skeleton for '" + rPackage + "'. The error was:\n\n" +
-                      output.stderr +
-                      "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
-            return@submit
-          }
-          val binPackage: RLibraryPackage = convertToBinFormat(packageName, output.stdout)
+            val packageName = rPackage.packageName
+            val output = rInterpreter.runHelperWithArgs(RepoUtils.PACKAGE_SUMMARY, packageName)
+            if (output.exitCode != 0) {
+              LOG.error("Failed to generate skeleton for '" + rPackage + "'. The error was:\n\n" +
+                        output.stderr +
+                        "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
+              return@submit
+            }
+            val binPackage: RLibraryPackage = convertToBinFormat(packageName, output.stdout)
 
-          FileOutputStream(skeletonFile).use {
-            binPackage.writeTo(it)
+            FileOutputStream(skeletonFile).use {
+              binPackage.writeTo(it)
+            }
+            result = true
           }
-          result = true
-        }
-        catch (e: IOException) {
-          LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e)
-        }
-        catch (e: Throwable) {
-          LOG.error("Unexpected error: ", e)
+          catch (e: IOException) {
+            LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e)
+          }
+          catch (e: Throwable) {
+            LOG.error("Unexpected error: ", e)
+          }
         }
       }
     }
+
     try {
       es.shutdown()
       es.awaitTermination(1, TimeUnit.HOURS)
