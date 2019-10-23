@@ -21,20 +21,14 @@ import java.awt.BorderLayout
 /** Page control with table and chart pages. */
 class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: DataFrame) : NotebookInlayState() {
   private val inlayTablePage: InlayTablePage = InlayTablePage()
-
-  /** In some cases there could be even text ot html output. */
-  private var inlayOutputPage: NotebookInlayOutput? = null
-
   var onChange: (() -> Unit)? = null
-
-  // private var output: NotebookInlayOutput? = null
 
   private val disposable = Disposer.newDisposable()
 
   init {
     Disposer.register(parent, disposable)
-
-    add(inlayTablePage, BorderLayout.CENTER)
+    layout = BorderLayout()
+    add(inlayTablePage, DEFAULT_LAYER)
     inlayTablePage.onChange = { onChange?.invoke() }
     MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane)
 
@@ -64,6 +58,6 @@ class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: Dat
   }
 
   override fun getCollapsedDescription(): String {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    return "no description"
   }
 }

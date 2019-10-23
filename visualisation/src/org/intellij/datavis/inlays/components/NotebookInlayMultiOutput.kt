@@ -4,8 +4,6 @@
 
 package org.intellij.datavis.inlays.components
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
@@ -75,17 +73,6 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
     if(tabToSelect != null) {
       tabs.select(tabToSelect, false)
     }
-  }
-
-  override fun getSettings():JsonElement {
-
-    val result = JsonObject()
-
-    if(tabs.selectedInfo != null) {
-      result.addProperty("currentPage", tabs.selectedInfo!!.text)
-    }
-
-    return result
   }
 
   private fun createClearAction(): DumbAwareAction {

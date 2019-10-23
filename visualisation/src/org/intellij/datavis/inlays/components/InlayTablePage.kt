@@ -58,10 +58,6 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   private var filterHeader: TableFilterHeader? = null
   private var paginator: TablePaginator? = null
 
-  // private var focusListener: FocusListener? = null
-
-  // private val disposable = Disposer.newDisposable()
-
   val preferredHeight: Int
     get() {
       return table.preferredSize.height
@@ -106,10 +102,6 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     DataManager.registerDataProvider(table) { dataId ->
       if (PlatformDataKeys.COPY_PROVIDER.`is`(dataId)) TableCopyProvider(table) else null
     }
-
-    //
-    //   setupFocusListener(table)
-
     add(scrollPane, BorderLayout.CENTER)
   }
 
@@ -127,45 +119,6 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     table.componentPopupMenu = popupMenu
   }
 
-  //  private fun removeFocusListener() {
-  //    if (focusListener != null) {
-  //      focusListener!!.focusLost(FocusEvent(this, FocusEvent.FOCUS_LOST, true))
-  //      table.removeFocusListener(focusListener)
-  //    }
-  //  }
-
-  //  private fun setupFocusListener(table: JComponent) {
-  //
-  //    removeFocusListener()
-  //
-  //    focusListener = object : FocusListener {
-  //
-  //      val eventDispatcher = InlayEventDispatcher(table)
-  //
-  //      override fun focusGained(e: FocusEvent) {
-  //        IdeEventQueue.getInstance().addDispatcher(eventDispatcher, disposable)
-  //      }
-  //
-  //      override fun focusLost(e: FocusEvent) {
-  //        IdeEventQueue.getInstance().removeDispatcher(eventDispatcher)
-  //      }
-  //    }
-  //
-  //    table.addFocusListener(focusListener)
-  //  }
-
-  /** Registering component action Ctrl+C as copy selection into clipboard */
-  //  private fun setupCopySelectedAction(table: JTable) {
-  //    val actionName = "TABLE_COPY_SELECTED"
-  //    val action = object : AbstractAction(actionName) {
-  //      override fun actionPerformed(e: ActionEvent) {
-  //        ClipboardUtils.copySelectedToClipboard(table)
-  //      }
-  //    }
-  //    table.actionMap.put(actionName, action)
-  //    table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK), actionName)
-  //  }
-
   private fun setupSelectAllAction(table: JTable) {
     val actionName = "TABLE_SELECT_ALL"
     val action = object : AbstractAction(actionName) {
@@ -177,10 +130,6 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
     table.actionMap.put(actionName, action)
     table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK), actionName)
   }
-
-  //  fun handleNewColumn(tc: TableColumn) {
-  //   // tc.cellRenderer = CenteredRenderer()
-  //  }
 
   private inner class NumberComparator<T : Comparable<*>> : Comparator<T> {
     override fun compare(o1: T, o2: T): Int {
@@ -222,13 +171,6 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   private fun addTableFilterHeader() {
     filterHeader = TableFilterHeader()
-    //    filterHeader!!.addHeaderObserver(object : IFilterHeaderObserver {
-    //      override fun tableFilterUpdated(header: TableFilterHeader, editor: IFilterEditor, tableColumn: TableColumn) {}
-    //
-    //      override fun tableFilterEditorExcluded(header: TableFilterHeader, editor: IFilterEditor, tableColumn: TableColumn) {}
-    //
-    //      override fun tableFilterEditorCreated(header: TableFilterHeader, editor: IFilterEditor, tableColumn: TableColumn) {}
-    //    })
     filterHeader!!.table = table
   }
 

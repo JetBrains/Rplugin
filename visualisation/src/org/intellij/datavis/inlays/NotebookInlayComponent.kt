@@ -17,10 +17,9 @@ import com.intellij.openapi.editor.markup.*
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import org.intellij.datavis.inlays.components.NotebookInlayMultiOutput
-import org.intellij.datavis.inlays.components.NotebookInlayOutput
-import org.intellij.datavis.inlays.components.NotebookInlayState
-import org.intellij.datavis.inlays.components.NotebookInlayToolbar
+import org.intellij.datavis.inlays.components.*
+import org.intellij.datavis.inlays.dataframe.DataFrame
+import org.intellij.datavis.inlays.dataframe.DataFrameCSVAdapter
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.Graphics
@@ -310,6 +309,29 @@ class NotebookInlayComponent(val cell: PsiElement)
     return state as NotebookInlayOutput
   }
 
+  private fun createOrSetInlayData(dataFrame: DataFrame): NotebookInlayData {
+    if (state !is NotebookInlayData) {
+      if (state != null) {
+        remove(state)
+      }
+
+      state = NotebookInlayData((inlay!!.editor as EditorImpl).project!!,
+                                (inlay!!.editor as EditorImpl).disposable,
+                                dataFrame).apply {
+        onHeightCalculated = { height ->
+          ApplicationManager.getApplication().invokeLater {
+            adjustSize(height, this)
+          }
+        }
+      }.also { addState(it) }
+    }
+    else {
+      (state as NotebookInlayData).setDataFrame(dataFrame)
+    }
+    resizable = true
+    return state as NotebookInlayData
+  }
+
   private fun addState(state: NotebookInlayState) {
     add(state, BorderLayout.CENTER)
 
@@ -381,7 +403,16 @@ class NotebookInlayComponent(val cell: PsiElement)
     }
     else {
       val (data, type) = inlayOutputs.first()
-      onOutput(data, type, cleanup)
+      if (type == "TABLE") {
+        val csv = DataFrameCSVAdapter.fromCsvString(data)
+        createOrSetInlayData(csv).clearAction = cleanup
+        if (size.height == InlayDimensions.smallHeight) {
+          deltaSize(0, InlayDimensions.previewHeight - size.height)
+        }
+      }
+      else {
+        onOutput(data, type, cleanup)
+      }
     }
   }
 }

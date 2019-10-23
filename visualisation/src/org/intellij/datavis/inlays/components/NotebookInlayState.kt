@@ -4,7 +4,6 @@
 
 package org.intellij.datavis.inlays.components
 
-import com.google.gson.JsonElement
 import javax.swing.JLayeredPane
 
 /** Base class for all NotebookInlay states. Inlay could be Data(Table/Chart) or Output(text/html) */
@@ -23,8 +22,4 @@ abstract class NotebookInlayState : JLayeredPane() {
 
   /** Short description of inlay content. */
   abstract fun getCollapsedDescription(): String
-
-  open fun getSettings(): JsonElement? {
-    return null
-  }
 }
