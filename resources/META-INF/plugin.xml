@@ -246,10 +246,10 @@ You can find the source code in the following repositories:
         <lookup.charFilter implementation="org.jetbrains.r.editor.RCharFilter" order="first"/>
         <!--<targetElementEvaluator language="R" implementationClass="org.jetbrains.r.editor.RTargetElementEvaluator"/>-->
 
-        <filetype.stubBuilder filetype="IdeaRBin" implementationClass="org.jetbrains.r.bin.RBinFileStubBuilder"/>
-        <fileType.fileViewProviderFactory filetype="IdeaRBin" implementationClass="org.jetbrains.r.bin.RBinFileViewProviderFactory"/>
+        <filetype.stubBuilder filetype="RSkeletonFileType" implementationClass="org.jetbrains.r.bin.RBinFileStubBuilder"/>
+        <fileType.fileViewProviderFactory filetype="RSkeletonFileType" implementationClass="org.jetbrains.r.bin.RBinFileViewProviderFactory"/>
         <stubElementTypeHolder class="org.jetbrains.r.bin.psi.RBinElementTypes"/>
-        <fileType extensions="IdeaRBin" name="IdeaRBin" fieldName="INSTANCE" implementationClass="org.jetbrains.r.bin.RBinFileType"/>
+        <fileType extensions="RSkeletonFileType" name="RSkeletonFileType" fieldName="INSTANCE" implementationClass="org.jetbrains.r.bin.RBinFileType"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"

@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import javax.swing.Icon
 
 object RBinFileType : FileType {
-  const val DOT_R_BIN_EXTENSION = "IdeaRBin"
+  const val DOT_R_BIN_EXTENSION = "RSkeletonFileType"
 
   override fun getDefaultExtension(): String = DOT_R_BIN_EXTENSION
 
