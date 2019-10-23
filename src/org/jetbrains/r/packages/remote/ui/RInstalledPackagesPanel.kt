@@ -49,6 +49,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   private lateinit var upgradeAllButton: DumbAwareActionButton
 
   init {
+    updateUninstallUpgrade()
     RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.LATE, object : RLibraryListener {
       override fun libraryChanged() {
         scheduleRefresh()
