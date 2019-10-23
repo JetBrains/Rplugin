@@ -75,7 +75,8 @@ object RSkeletonUtil {
         FileUtil.asyncDelete(package2skeletonFile[it] ?: return@forEach)
       }
 
-      result = result || generateSkeletons(skeletonPath, newPackages, rInterpreter)
+      val update = generateSkeletons(skeletonPath, newPackages, rInterpreter)
+      result = update || result
     }
     return result
   }
