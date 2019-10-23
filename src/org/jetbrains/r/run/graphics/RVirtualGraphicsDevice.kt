@@ -127,7 +127,7 @@ class RVirtualGraphicsDevice(
       return lastIdentities != currentIdentities
     }
 
-    fun <K: Comparable<K>>shrunkGroups(groups: Map<Int, List<RSnapshot>>, key: (RSnapshot) -> K): List<RSnapshot> {
+    fun <K: Comparable<K>>List<RSnapshot>.groupAndShrunkBy(key: (RSnapshot) -> K): List<RSnapshot> {
       fun shrunk(snapshots: List<RSnapshot>, key: (RSnapshot) -> K): RSnapshot? {
         return if (snapshots.isNotEmpty()) {
           val ordered = snapshots.sortedBy { key(it) }
@@ -140,6 +140,7 @@ class RVirtualGraphicsDevice(
         }
       }
 
+      val groups = groupBy { it.number }
       return groups.mapNotNull { entry -> shrunk(entry.value, key) }.sortedBy { it.number }
     }
 
@@ -149,13 +150,11 @@ class RVirtualGraphicsDevice(
       val normal = type2snapshots[RSnapshotType.NORMAL] ?: listOf()
       val zoomed = type2snapshots[RSnapshotType.ZOOMED] ?: listOf()
       val sketches = type2snapshots[RSnapshotType.SKETCH] ?: listOf()
-      val numbers2normal = normal.groupBy { it.number }
-      val mostRecentNormal = shrunkGroups(numbers2normal) { it.version }
-      val numbers2zoomed = zoomed.groupBy { it.number }
-      val mostOldZoomed = shrunkGroups(numbers2zoomed) { -it.version }  // Note: minus was intentional
+      val mostRecentNormal = normal.groupAndShrunkBy { it.version }
+      val orderedZoomed = zoomed.sortedBy { it.number }
       if (checkUpdated(mostRecentNormal)) {
         lastNormal = mostRecentNormal
-        lastZoomed = mostOldZoomed
+        lastZoomed = orderedZoomed
         val tracedNumber = tracedSnapshotNumber ?: mostRecentNormal.last().number
         numbers2parameters[tracedNumber] = configuration.screenParameters
         postSnapshotNumber(tracedSnapshotNumber)
