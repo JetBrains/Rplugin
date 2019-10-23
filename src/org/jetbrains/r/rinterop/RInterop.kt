@@ -228,7 +228,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setPackageName(packageName)
       .putAllArguments(arguments)
       .build()
-    executeAsync(asyncStub::repoInstallPackage, request)
+    execute(stub::repoInstallPackage, request)
   }
 
   fun repoCheckPackageInstalled(packageName: String): RIExecutionResult {
@@ -236,7 +236,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun repoRemovePackage(packageName: String) {
-    executeAsync(asyncStub::repoRemovePackage, StringValue.of(packageName))
+    execute(stub::repoRemovePackage, StringValue.of(packageName))
   }
 
   fun dataFrameGetViewer(ref: RRef): RDataFrameViewer {
