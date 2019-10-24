@@ -120,14 +120,24 @@ class RPackageManagementService(private val project: Project,
 
   override fun reloadAllPackages(): List<RepoPackage> {
     fun reload(): List<RRepoPackage>? {
-      val repoUrls = enabledRepositoryUrls.map { url ->
-        if (url == CRAN_URL_PLACEHOLDER) {
-          interpreter.cranMirrors[cranMirror].url
-        } else {
-          url
+      val cranMirrors = interpreter.withAutoUpdate { cranMirrors }
+      return if (cranMirrors.isNotEmpty()) {
+        val repoUrls = enabledRepositoryUrls.map { url ->
+          if (url == CRAN_URL_PLACEHOLDER) {
+            if (cranMirror !in cranMirrors.indices) {
+              LOGGER.warn("Cannot get CRAN mirror with previously stored index = $cranMirror. Fallback to the first mirror")
+              cranMirror = 0
+            }
+            cranMirrors[cranMirror].url
+          } else {
+            url
+          }
         }
+        interpreter.getAvailablePackages(repoUrls).blockingGet(DEFAULT_TIMEOUT)
+      } else {
+        LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. No packages can be loaded")
+        null
       }
-      return interpreter.getAvailablePackages(repoUrls).blockingGet(DEFAULT_TIMEOUT)
     }
 
     return reload()?.also {
@@ -137,15 +147,7 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getInstalledPackages(): Collection<InstalledPackage> {
-    val installed = interpreter.installedPackages.let {
-      if (it.isEmpty()) {
-        interpreter.updateState()
-        interpreter.installedPackages
-      }
-      else {
-        it
-      }
-    }
+    val installed = interpreter.withAutoUpdate { installedPackages }
     return installed.asSequence()
       .filter { it.isUser }
       .map { InstalledPackage(it.packageName, it.packageVersion) }
@@ -249,6 +251,17 @@ class RPackageManagementService(private val project: Project,
         }
         else {
           ErrorDescription(e.message ?: "Unknown error", null, null, null)
+        }
+      }
+    }
+
+    private fun <R>RInterpreter.withAutoUpdate(property: RInterpreter.() -> List<R>): List<R> {
+      return property().let { values ->
+        if (values.isEmpty()) {
+          updateState()
+          property()
+        } else {
+          values
         }
       }
     }
