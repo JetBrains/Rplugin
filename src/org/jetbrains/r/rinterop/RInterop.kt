@@ -57,6 +57,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   private val replListeners = HashSet<ReplListener>()
   @Volatile private var finished = false
   private var replProcessingStarted = false
+  private val replEventsBeforeStarted = mutableListOf<Service.ReplEvent>()
   private val cacheIndex = AtomicInteger(0)
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
 
@@ -118,6 +119,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   init {
     val info = execute(stub::getInfo, Empty.getDefaultInstance())
     rVersion = RVersion.forceParse(info.rVersion)
+    processReplEvents()
   }
 
   fun executeTask(f: () -> Unit) {
@@ -469,9 +471,13 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun replStartProcessing() {
-    if (replProcessingStarted) return
-    replProcessingStarted = true
-    processReplEvents()
+    executor.execute {
+      if (!replProcessingStarted) {
+        replProcessingStarted = true
+        replEventsBeforeStarted.forEach { processReplEvent(it) }
+        replEventsBeforeStarted.clear()
+      }
+    }
   }
 
   private fun processReplEvents() {
@@ -479,7 +485,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     future.addListener(Runnable {
       try {
         val event = future.get()
-        processReplEvent(event)
+        if (replProcessingStarted) {
+          processReplEvent(event)
+        } else {
+          replEventsBeforeStarted.add(event)
+        }
         if (event.eventCase == Service.ReplEvent.EventCase.TERMINATION) {
           return@Runnable
         }
