@@ -1,0 +1,44 @@
+RFile:Parenthesized.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('i')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('2')
+  PsiElement(nl)('\n')
+  R_OPERATOR_EXPRESSION
+    R_OPERATOR_EXPRESSION
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('1')
+      R_COLON_OPERATOR
+        PsiElement(:)(':')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('i')
+    R_PLUSMINUS_OPERATOR
+      PsiElement(-)('-')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+  PsiWhiteSpace(' ')
+  PsiComment(END_OF_LINE_COMMENT)('# this means (1:i) - 1, not 1:(i-1)')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('#[1] 0 1')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_OPERATOR_EXPRESSION
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+    R_COLON_OPERATOR
+      PsiElement(:)(':')
+    R_PARENTHESIZED_EXPRESSION
+      PsiElement(()('(')
+      R_OPERATOR_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('i')
+        R_PLUSMINUS_OPERATOR
+          PsiElement(-)('-')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('1')
+      PsiElement())(')')

@@ -1,0 +1,173 @@
+RFile:ErrorIf.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func1')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(nl)('\n')
+          PsiErrorElement:'(' expected, got '}'
+            <empty list>
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func2')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(()('(')
+          PsiElement(nl)('\n')
+          PsiErrorElement:<expression> expected, got '}'
+            <empty list>
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func3')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(()('(')
+          PsiErrorElement:<expression> expected, got ')'
+            <empty list>
+          PsiElement())(')')
+          PsiElement(nl)('\n')
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func4')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(()('(')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+          PsiElement())(')')
+          PsiElement(nl)('\n')
+          PsiErrorElement:<expression> expected, got '}'
+            <empty list>
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func5')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(()('(')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+          PsiElement())(')')
+          PsiWhiteSpace(' ')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('2')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('    ')
+          PsiElement(else)('else')
+          PsiElement(nl)('\n')
+          PsiErrorElement:<expression> or nl expected, got '}'
+            <empty list>
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func6')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('    ')
+        R_IF_STATEMENT
+          PsiElement(if)('if')
+          PsiElement(()('(')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+          PsiElement())(')')
+          PsiElement(nl)('\n')
+          PsiErrorElement:<expression> expected, got 'else'
+            <empty list>
+  PsiWhiteSpace('    ')
+  PsiElement(else)('else')
+  PsiElement(nl)('\n')
+  PsiElement(})('}')

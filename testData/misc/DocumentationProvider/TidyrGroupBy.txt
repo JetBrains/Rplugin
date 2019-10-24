@@ -1,0 +1,125 @@
+<table width="100%" summary="page for group_by {dplyr}"><tr><td>group_by {dplyr}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Group by one or more variables</h2>
+
+<h3>Description</h3>
+
+<p>Most data operations are done on groups defined by variables.
+<code>group_by()</code> takes an existing tbl and converts it into a grouped tbl
+where operations are performed &quot;by group&quot;. <code>ungroup()</code> removes grouping.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+group_by(.data, ..., add = FALSE)
+
+ungroup(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>.data</code></td>
+<td>
+<p>a tbl</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Variables to group by. All tbls accept variable names.
+Some tbls will accept functions of variables. Duplicated groups
+will be silently dropped.</p>
+</td></tr>
+<tr valign="top"><td><code>add</code></td>
+<td>
+<p>When <code>add = FALSE</code>, the default, <code>group_by()</code> will
+override existing groups. To add to the existing groups, use
+<code>add = TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A <code><a href="psi_element://library/dplyr/help/tbl">tbl()</a></code></p>
+</td></tr>
+</table>
+
+
+<h3>Tbl types</h3>
+
+<p><code>group_by()</code> is an S3 generic with methods for the three built-in
+tbls. See the help for the corresponding classes and their manip
+methods for more details:
+</p>
+
+<ul>
+<li><p> data.frame: <a href="psi_element://library/dplyr/help/grouped_df">grouped_df</a>
+</p>
+</li>
+<li><p> data.table: <a href="psi_element://library/dtplyr/html/grouped_dt.html">dtplyr::grouped_dt</a>
+</p>
+</li>
+<li><p> SQLite: <code><a href="psi_element://library/dplyr/help/src_sqlite">src_sqlite()</a></code>
+</p>
+</li>
+<li><p> PostgreSQL: <code><a href="psi_element://library/dplyr/help/src_postgres">src_postgres()</a></code>
+</p>
+</li>
+<li><p> MySQL: <code><a href="psi_element://library/dplyr/help/src_mysql">src_mysql()</a></code>
+</p>
+</li></ul>
+
+
+
+<h3>Scoped grouping</h3>
+
+<p>The three <a href="psi_element://library/dplyr/help/scoped">scoped</a> variants (<code><a href="psi_element://library/dplyr/help/group_by_all">group_by_all()</a></code>, <code><a href="psi_element://library/dplyr/help/group_by_if">group_by_if()</a></code> and
+<code><a href="psi_element://library/dplyr/help/group_by_at">group_by_at()</a></code>) make it easy to group a dataset by a selection of
+variables.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+by_cyl &lt;- mtcars %&gt;% group_by(cyl)
+
+# grouping doesn't change how the data looks (apart from listing
+# how it's grouped):
+by_cyl
+
+# It changes how it acts with the other dplyr verbs:
+by_cyl %&gt;% summarise(
+  disp = mean(disp),
+  hp = mean(hp)
+)
+by_cyl %&gt;% filter(disp == max(disp))
+
+# Each call to summarise() removes a layer of grouping
+by_vs_am &lt;- mtcars %&gt;% group_by(vs, am)
+by_vs &lt;- by_vs_am %&gt;% summarise(n = n())
+by_vs
+by_vs %&gt;% summarise(n = sum(n))
+
+# To removing grouping, use ungroup
+by_vs %&gt;%
+  ungroup() %&gt;%
+  summarise(n = sum(n))
+
+# You can group by expressions: this is just short-hand for
+# a mutate/rename followed by a simple group_by
+mtcars %&gt;% group_by(vsam = vs + am)
+
+# By default, group_by overrides existing grouping
+by_cyl %&gt;%
+  group_by(vs, am) %&gt;%
+  group_vars()
+
+# Use add = TRUE to instead append
+by_cyl %&gt;%
+  group_by(vs, am, add = TRUE) %&gt;%
+  group_vars()
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>dplyr</em> version 0.7.8 <a href="psi_element://library/dplyr/html/00Index.html">Index</a>]</div>
+</body></html>

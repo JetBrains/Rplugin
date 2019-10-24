@@ -1,0 +1,84 @@
+RFile:AssignmentInSubscription.r
+  R_ASSIGNMENT_STATEMENT
+    R_SUBSCRIPTION_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('fill')
+      PsiElement([)('[')
+      PsiWhiteSpace(' ')
+      R_EMPTY_EXPRESSION
+        <empty list>
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('i2')
+        PsiWhiteSpace(' ')
+        R_ASSIGN_OPERATOR
+          PsiElement(<-)('<-')
+        PsiWhiteSpace(' ')
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('c')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('1')
+            PsiElement(,)(',')
+            R_CALL_EXPRESSION
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('ncol')
+              R_ARGUMENT_LIST
+                PsiElement(()('(')
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('fill')
+                PsiElement())(')')
+            PsiElement())(')')
+      PsiElement(])(']')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('"gray"')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_SUBSCRIPTION_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('fill')
+      PsiElement([)('[')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('i1')
+        PsiWhiteSpace(' ')
+        R_ASSIGN_OPERATOR
+          PsiElement(<-)('<-')
+        PsiWhiteSpace(' ')
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('c')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('1')
+            PsiElement(,)(',')
+            R_CALL_EXPRESSION
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('nrow')
+              R_ARGUMENT_LIST
+                PsiElement(()('(')
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('fill')
+                PsiElement())(')')
+            PsiElement())(')')
+      PsiWhiteSpace(' ')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_EMPTY_EXPRESSION
+        <empty list>
+      PsiElement(])(']')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('"gray"')

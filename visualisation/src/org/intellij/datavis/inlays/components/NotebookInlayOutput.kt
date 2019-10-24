@@ -1,0 +1,489 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+package org.intellij.datavis.inlays.components
+
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.intellij.execution.process.ProcessOutputType
+import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.icons.AllIcons
+import com.intellij.ide.BrowserUtil
+import com.intellij.ide.CopyProvider
+import com.intellij.ide.DataManager
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.fileChooser.FileChooserFactory
+import com.intellij.openapi.fileChooser.FileSaverDescriptor
+import com.intellij.openapi.fileChooser.FileSaverDialog
+import com.intellij.openapi.ide.CopyPasteManager
+import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.ui.RelativeFont
+import com.intellij.ui.components.JBScrollBar
+import com.intellij.util.ui.TextTransferable
+import com.intellij.util.ui.UIUtil
+import javafx.application.Platform
+import javafx.concurrent.Worker
+import javafx.embed.swing.JFXPanel
+import javafx.scene.Scene
+import javafx.scene.web.WebView
+import org.intellij.datavis.inlays.MouseWheelUtils
+import org.w3c.dom.events.EventTarget
+import org.w3c.dom.html.HTMLAnchorElement
+import java.awt.Component
+import java.awt.Font
+import java.awt.Rectangle
+import java.awt.event.ActionEvent
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import java.awt.event.KeyEvent
+import java.io.File
+import javax.swing.AbstractAction
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import javax.swing.SwingUtilities.invokeLater
+import kotlin.math.min
+
+class ProcessOutput(val text: String, kind: Key<*>) {
+  private val kindValue: Int = when(kind) {
+    ProcessOutputTypes.STDOUT -> 1
+    ProcessOutputTypes.STDERR -> 2
+    else -> 3
+  }
+
+  val kind: Key<*>
+    get() = when (kindValue) {
+      1 -> ProcessOutputType.STDOUT
+      2 -> ProcessOutputType.STDERR
+      else -> ProcessOutputType.SYSTEM
+    }
+}
+
+
+/** Notebook console logs and html result view. */
+class NotebookInlayOutput(private val project: Project, private val parent: Disposable) : NotebookInlayState(), ToolBarProvider {
+
+  companion object {
+    private val monospacedFont = RelativeFont.NORMAL.family(Font.MONOSPACED)
+    private val outputFont = monospacedFont.derive(UIUtil.getLabelFont().deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL)))
+  }
+
+  abstract inner class Output(parent: Disposable) {
+
+    protected val toolbarPane = ToolbarPane()
+
+    fun getComponent(): Component {
+      return toolbarPane
+    }
+
+    /** Clears view, removes text/html. */
+    abstract fun clear()
+
+    abstract fun addData(data: String)
+    abstract fun scrollToTop()
+    abstract fun getCollapsedDescription(): String
+
+    abstract fun saveAsTxt()
+
+    /**
+     * Inlay component can can adjust itself to fit the Output.
+     * We need callback because text output can return height immediately,
+     * but Html output can return height only delayed, from it's Platform.runLater.
+     */
+    var onHeightCalculated: ((height: Int) -> Unit)? = null
+
+    private val disposable: Disposable = Disposer.newDisposable()
+
+    init {
+      Disposer.register(parent, disposable)
+    }
+
+    open fun addToolbar() {
+      toolbarPane.toolbarComponent = createToolbar()
+    }
+
+    protected fun createToolbar(): JComponent {
+
+      val action = object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+        override fun actionPerformed(e: AnActionEvent) {
+          this@NotebookInlayOutput.clearAction.invoke()
+        }
+      }
+
+      return ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.NAVBAR_MINIMUM_BUTTON_SIZE)
+    }
+  }
+
+  inner class OutputImg(parent: Disposable) : Output(parent) {
+    private val graphicsPanel = GraphicsPanel(project)
+
+    init {
+      toolbarPane.centralComponent = graphicsPanel.component
+    }
+
+    override fun addData(data: String) {
+      graphicsPanel.refresh(File(data))
+      onHeightCalculated?.invoke(graphicsPanel.getImageHeight())
+    }
+
+    override fun clear() {
+    }
+
+    override fun scrollToTop() {
+    }
+
+    override fun getCollapsedDescription(): String {
+      return "foo"
+    }
+
+    override fun saveAsTxt() {
+    }
+  }
+
+  inner class OutputText(parent: Disposable) : Output(parent) {
+
+    private val console = ColoredTextConsole(project, viewer = true)
+
+    init {
+      Disposer.register(parent, console)
+      toolbarPane.centralComponent = console.component
+      (console.editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
+      (console.editor as EditorImpl).scrollPane.border = null
+      MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane)
+
+      console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
+
+      val actionNameSelect = "TEXT_OUTPUT_SELECT_ALL"
+      val actionSelect = object : AbstractAction(actionNameSelect) {
+        override fun actionPerformed(e: ActionEvent) {
+          (console.editor as EditorImpl).selectionModel.setSelection(0, console.text.length)
+        }
+      }
+      console.editor.contentComponent.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK),
+                                                   actionNameSelect)
+      console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
+    }
+
+    override fun addToolbar() {
+      val toolbar = createToolbar()
+      (console.editor as EditorImpl).scrollPane.verticalScrollBar.add(JBScrollBar.LEADING, toolbar)
+    }
+
+    override fun clear() {
+      console.clear()
+    }
+
+    override fun addData(data: String) {
+      File(data).takeIf { it.exists() && it.extension == "json" }?.let {file ->
+        Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>(){}.type).forEach {
+          console.addData(it.text, it.kind)
+        }
+      } ?: console.addData(data, ProcessOutputType.STDOUT)
+      ApplicationManager.getApplication().invokeLater {
+        console.flushDeferredText()
+        onHeightCalculated?.invoke(console.preferredSize.height)
+      }
+    }
+
+    override fun scrollToTop() {
+      console.scrollTo(0)
+    }
+
+    override fun getCollapsedDescription(): String {
+      return console.text.substring(0, min(console.text.length, 60)) + " ....."
+    }
+
+    override fun saveAsTxt() {
+      val descriptor = FileSaverDescriptor("Export as txt",
+                                           "Export console content to text file.", "txt")
+      val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, getComponent())
+      val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath))
+      val fileWrapper = chooser.save(virtualBaseDir, "output.txt") ?: return
+
+      fileWrapper.file.bufferedWriter().use { out ->
+        out.write(console.text)
+      }
+    }
+  }
+
+  class WebViewCopyProvider(private val webView: WebView) : CopyProvider {
+
+    override fun performCopy(dataContext: DataContext) {
+      Platform.runLater {
+        val selection: String? = webView.engine.executeScript("window.getSelection().toString()") as String
+        CopyPasteManager.getInstance().setContents(TextTransferable(selection))
+      }
+    }
+
+    override fun isCopyEnabled(dataContext: DataContext): Boolean {
+      return true
+    }
+
+    override fun isCopyVisible(dataContext: DataContext): Boolean {
+      return true
+    }
+  }
+
+
+  // Running on jre 1.8 we can get an exception:
+  // Exception in thread "Thread-30" java.lang.NullPointerException
+  // at com.sun.webkit.MainThread.fwkScheduleDispatchFunctions(MainThread.java:34)
+  //
+  // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000895600-JavaFX-WebView-in-plugin-and-ClassLoader
+  // https://youtrack.jetbrains.com/issue/IDEA-199701
+  //
+  // when trying to load "<img src=\"data:image/png;base64,$img\">"
+  //
+  // The only way to display embedded images - use JRE 11.
+  inner class OutputHtml(parent: Disposable) : Output(parent) {
+
+    private val jfxPanel = JFXPanel()
+    private lateinit var webView: WebView
+
+    init {
+      MouseWheelUtils.wrapMouseWheelListeners(jfxPanel)
+
+      toolbarPane.centralComponent = jfxPanel
+      jfxPanel.putClientProperty("AuxEditorComponent", true)
+    }
+
+    override fun saveAsTxt() {
+      val descriptor = FileSaverDescriptor("Export as txt",
+                                           "Exports the selected range or whole table is nothing is selected as csv or tsv file.", "txt")
+      val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, getComponent())
+      val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath))
+      val fileWrapper = chooser.save(virtualBaseDir, "output.txt") ?: return
+
+      Platform.runLater {
+        val selection = webView.engine.executeScript("window.getSelection().toString()") as String
+
+        fileWrapper.file.bufferedWriter().use { out ->
+          out.write(selection)
+        }
+      }
+    }
+
+    override fun clear() {
+      Platform.runLater {
+        val webView = jfxPanel.scene?.root as? WebView
+        webView?.engine?.loadContent("")
+      }
+    }
+
+    /** Adds into jfxPanel actionMap new actions - CopySelected and SelectAll. */
+    private fun setupActions(jfxPanel: JFXPanel, webView: WebView) {
+
+      DataManager.registerDataProvider(jfxPanel) { dataId ->
+        if (PlatformDataKeys.COPY_PROVIDER.`is`(dataId)) WebViewCopyProvider(webView) else null
+      }
+
+      val actionNameSelect = "WEBVIEW_SELECT_ALL"
+      val actionSelect = object : AbstractAction(actionNameSelect) {
+        override fun actionPerformed(e: ActionEvent) {
+          Platform.runLater {
+
+            try {
+              webView.engine.executeScript("var range, selection;\n" +
+                                           "var doc = document.body;\n" +
+                                           "selection = window.getSelection();\n" +
+                                           "range = document.createRange();\n" +
+                                           "range.selectNodeContents(doc);\n" +
+                                           "selection.removeAllRanges();\n" +
+                                           "selection.addRange(range);")
+            }
+            catch (e: Exception) {
+              e.printStackTrace()
+            }
+          }
+        }
+      }
+      jfxPanel.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK), actionNameSelect)
+      jfxPanel.actionMap.put(actionNameSelect, actionSelect)
+    }
+
+    /**
+     * Called when document successfully loaded, calculates the real height of html and calls onHeightCalculated listener.
+     */
+    private fun notifySize(webView: WebView) {
+
+      val heightText = webView.engine.executeScript(   // Some modification, which gives moreless the same result than the original
+        "var body = document.body,"
+        + "html = document.documentElement;"
+        + "Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight , html.offsetHeight );"
+      ).toString()
+
+      invokeLater {
+        onHeightCalculated?.invoke(heightText.toInt())
+      }
+    }
+
+    /** Listener on click on hyperlinks in rendered HTML. We need it to open links in system browser.*/
+    private fun addClickListener(webView: WebView) {
+
+      val doc = webView.engine.document
+
+      val nodeList = doc.getElementsByTagName("a")
+      for (i in 0 until nodeList.length) {
+        val node = nodeList.item(i)
+        val eventTarget = node as EventTarget
+        eventTarget.addEventListener("click", { evt ->
+          val target = evt.currentTarget
+          val anchorElement = target as HTMLAnchorElement
+
+          Platform.runLater { BrowserUtil.browse(anchorElement.href) }
+
+          evt.preventDefault()
+        }, false)
+      }
+    }
+
+    override fun addData(data: String) {
+      val isUrl = data.startsWith("file://") || data.startsWith("http://") || data.startsWith("https://")
+      Platform.setImplicitExit(false)
+      Platform.runLater {
+
+        if (jfxPanel.scene == null) {
+          webView = WebView()
+          webView.isContextMenuEnabled = false
+          webView.prefHeight = -1.0
+
+          webView.engine.loadWorker.stateProperty().addListener { _, _, newState ->
+            if (newState == Worker.State.SUCCEEDED) {
+              notifySize(webView)
+              addClickListener(webView)
+            }
+          }
+
+          val scene = Scene(webView)
+          jfxPanel.scene = scene
+
+          // Fix of WebView crash on linux when we are trying to drag any content in WV (There is no crash when we are trying to select region
+          // but it is not easy to detect context of drag and therefore we will cancel all drag attempts on linux)
+          // https://youtrack.jetbrains.com/issue/JBR-1349
+          if (SystemInfo.isLinux) {
+            webView.addEventFilter(javafx.scene.input.MouseEvent.ANY) { event ->
+              if (event.eventType == javafx.scene.input.MouseEvent.MOUSE_DRAGGED) {
+                event.consume()
+              }
+            }
+          }
+
+          // Hack to make it possible to use Ctrl+A, Ctrl+C in javaFx web view.
+          // - We are adding into jfxPanel.actionMap new actions with Ctrl+A, Ctrl+C
+          // - Inside actions we are calling js to perform operations
+          // - In setupFocusListener we are setting custom eventDispatcher which catches keyboard events before editor and transfers to our component.
+          setupActions(jfxPanel, webView)
+
+          //toolbarPane.updateChildrenBounds()
+        }
+        else {
+          webView = jfxPanel.scene.root as WebView
+        }
+        if (isUrl) {
+          webView.engine.load(data)
+        }
+        else {
+          webView.engine.loadContent("<head><style>" + GithubMarkdownCss.css + " </style></head><body>" + data + "</body>")
+        }
+      }
+    }
+
+    // For HTML component no need to scroll to top, because it is not scrolling to end.
+    override fun scrollToTop() {}
+
+    override fun getCollapsedDescription(): String {
+      return "html output"
+    }
+  }
+
+  private var output: Output? = null
+
+  override fun createActions(): List<AnAction> {
+    val actionSaveAsTxt = object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
+      override fun actionPerformed(e: AnActionEvent) {
+        output?.saveAsTxt()
+
+        //        val project = e.dataContext.getData(PlatformDataKeys.PROJECT)!!
+        //        val virtualFile = e.dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)!!
+        //
+        //        val manager = FileEditorManager.getInstance(project) as FileEditorManagerImpl
+        //
+        //        if (manager.selectedTextEditor != null) {
+        //
+        //          val editors = manager.getEditors(virtualFile)
+        //          editors.forEach {
+        //            NotebookTabs.install(it)?.addTab("New panel", JPanel())
+        //          }
+        //        }
+      }
+    }
+    return listOf(actionSaveAsTxt)
+  }
+
+  private fun addTextOutput() = createOutput { OutputText(parent) }
+
+  private fun addHtmlOutput() = createOutput { OutputHtml(parent) }
+
+  private fun addImgOutput() = createOutput { OutputImg(parent) }
+
+  private inline fun createOutput(constructor: (Disposable) -> Output) = constructor(parent).apply { setupOutput(this) }
+
+  private fun setupOutput(output: Output) {
+    this.output?.let { remove(it.getComponent()) }
+    this.output = output
+    output.onHeightCalculated = { height -> onHeightCalculated?.invoke(height) }
+    add(output.getComponent(), DEFAULT_LAYER)
+
+    addComponentListener(object : ComponentAdapter() {
+      override fun componentResized(e: ComponentEvent) {
+        output.getComponent().bounds = Rectangle(0, 0, e.component.bounds.width, e.component.bounds.height)
+      }
+    })
+    if (addToolbar) {
+      output.addToolbar()
+    }
+  }
+
+  private var addToolbar = false
+
+  fun addToolbar() {
+    addToolbar = true
+    output?.addToolbar()
+  }
+
+  fun setError(data: String) {
+
+    if (output == null || output is OutputHtml) {
+      addTextOutput()
+    }
+
+    output!!.clear()
+    output!!.scrollToTop()
+  }
+
+  fun addData(type: String, data: String) {
+    when (type) {
+      "HTML", "URL" -> output?.takeIf { it is OutputHtml } ?: addHtmlOutput()
+      "IMG" -> output?.takeIf { it is OutputImg } ?: addImgOutput()
+      else -> output?.takeIf { it is OutputText } ?: addTextOutput()
+    }.addData(data)
+  }
+
+  override fun  clear() {
+    output?.clear()
+  }
+
+  override fun getCollapsedDescription(): String {
+    return if (output == null) "" else output!!.getCollapsedDescription()
+  }
+}

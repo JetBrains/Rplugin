@@ -1,0 +1,8 @@
+RFile:Slice.r
+  R_OPERATOR_EXPRESSION
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+    R_COLON_OPERATOR
+      PsiElement(:)(':')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('10')

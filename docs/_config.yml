@@ -1,0 +1,5 @@
+theme: jekyll-theme-cayman
+
+title : R Language support for Intellij IDEA
+tagline: R syntax highlighting and scripting support including auto-imports, quickfixes and refactorings
+

@@ -1,0 +1,22 @@
+RFile:DoubleDoubleBracket.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('vjj')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_SUBSCRIPTION_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('value')
+      PsiElement([[)('[[')
+      PsiWhiteSpace(' ')
+      R_SUBSCRIPTION_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('jvseq')
+        PsiElement([[)('[[')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('jjj')
+        PsiElement(]])(']]')
+      PsiWhiteSpace(' ')
+      PsiElement(]])(']]')

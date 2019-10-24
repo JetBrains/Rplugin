@@ -1,0 +1,27 @@
+RFile:ReprInFunctionDef.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('transform.data.frame')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      PsiWhiteSpace(' ')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('`_data`')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('...')
+        PsiElement())(')')
+      PsiElement(nl)('\n')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiElement(})('}')

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="RPlugin" pattern="file[rplugin.main]:*.java||file[rplugin.main]:*.kt||file[rplugin.test]:*.java||file[rplugin.test]:*.kt||file[rplugin.visualisation.main]:*.java||file[rplugin.visualisation.main]:*.kt" />
+</component>

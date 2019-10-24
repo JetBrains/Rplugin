@@ -1,0 +1,48 @@
+RFile:Formulae.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('levelplot')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_TILDE_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('z')
+        PsiWhiteSpace(' ')
+        R_TILDE_OPERATOR
+          PsiElement(~)('~')
+        PsiWhiteSpace(' ')
+        R_OPERATOR_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+          R_PLUSMINUS_OPERATOR
+            PsiElement(+)('+')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('y')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('pretty')
+        R_ASSIGN_OPERATOR
+          PsiElement(=)('=')
+        R_BOOLEAN_LITERAL
+          PsiElement(TRUE)('TRUE')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('contour')
+        R_ASSIGN_OPERATOR
+          PsiElement(=)('=')
+        R_BOOLEAN_LITERAL
+          PsiElement(TRUE)('TRUE')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('data')
+        R_ASSIGN_OPERATOR
+          PsiElement(=)('=')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('d3')
+      PsiElement())(')')

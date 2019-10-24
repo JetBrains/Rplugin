@@ -1,0 +1,74 @@
+RFile:FunctionAsCallArgument.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('wtd.means')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(=)('=')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('by')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('firms')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('size.category')
+        PsiElement(,)(',')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('  ')
+        R_FUNCTION_EXPRESSION
+          PsiElement(function)('function')
+          R_PARAMETER_LIST
+            PsiElement(()('(')
+            R_PARAMETER
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('piece')
+            PsiElement())(')')
+          PsiWhiteSpace(' ')
+          R_PARENTHESIZED_EXPRESSION
+            PsiElement(()('(')
+            R_OPERATOR_EXPRESSION
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('sum')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_OPERATOR_EXPRESSION
+                    R_MEMBER_EXPRESSION
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('piece')
+                      R_LIST_SUBSET_OPERATOR
+                        PsiElement($)('$')
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('mktcap')
+                    R_MULDIV_OPERATOR
+                      PsiElement(*)('*')
+                    R_MEMBER_EXPRESSION
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('piece')
+                      R_LIST_SUBSET_OPERATOR
+                        PsiElement($)('$')
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('spread')
+                  PsiElement())(')')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('sum')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_MEMBER_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('piece')
+                    R_LIST_SUBSET_OPERATOR
+                      PsiElement($)('$')
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('mktcap')
+                  PsiElement())(')')
+            PsiElement())(')')
+        PsiElement())(')')

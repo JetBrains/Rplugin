@@ -1,0 +1,194 @@
+RFile:WhileInsideIf.r
+  R_IF_STATEMENT
+    PsiElement(if)('if')
+    PsiWhiteSpace(' ')
+    PsiElement(()('(')
+    R_OPERATOR_EXPRESSION
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('f1')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('f2')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('f3')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_OPERATOR_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('x')
+                    PsiWhiteSpace(' ')
+                    R_MULDIV_OPERATOR
+                      PsiElement(*)('*')
+                    PsiWhiteSpace(' ')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('100')
+                  PsiElement())(')')
+              PsiWhiteSpace(' ')
+              PsiElement())(')')
+          PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_COMPARE_OPERATOR
+        PsiElement(<)('<')
+      PsiWhiteSpace(' ')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('100')
+    PsiElement())(')')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('print')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')
+    PsiWhiteSpace(' ')
+    PsiElement(else)('else')
+    PsiWhiteSpace(' ')
+    R_WHILE_STATEMENT
+      PsiElement(while)('while')
+      PsiWhiteSpace(' ')
+      PsiElement(()('(')
+      R_OPERATOR_EXPRESSION
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('f1')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_CALL_EXPRESSION
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('f2')
+              R_ARGUMENT_LIST
+                PsiElement(()('(')
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('f3')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_OPERATOR_EXPRESSION
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('f4')
+                      R_MULDIV_OPERATOR
+                        PsiElement(*)('*')
+                      PsiWhiteSpace(' ')
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('100')
+                    PsiElement())(')')
+                PsiElement())(')')
+            PsiElement())(')')
+        PsiWhiteSpace(' ')
+        R_COMPARE_OPERATOR
+          PsiElement(>)('>')
+        PsiWhiteSpace(' ')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('100')
+      PsiElement())(')')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('  ')
+        R_FOR_STATEMENT
+          PsiElement(for)('for')
+          PsiWhiteSpace(' ')
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('idx')
+          PsiWhiteSpace(' ')
+          PsiElement(in)('in')
+          PsiWhiteSpace(' ')
+          R_OPERATOR_EXPRESSION
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('1')
+            R_COLON_OPERATOR
+              PsiElement(:)(':')
+            R_PARENTHESIZED_EXPRESSION
+              PsiElement(()('(')
+              R_OPERATOR_EXPRESSION
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('length')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('x')
+                    PsiElement())(')')
+                PsiWhiteSpace(' ')
+                R_PLUSMINUS_OPERATOR
+                  PsiElement(-)('-')
+                PsiWhiteSpace(' ')
+                R_NUMERIC_LITERAL_EXPRESSION
+                  PsiElement(NUMERIC)('1')
+              PsiElement())(')')
+          PsiElement())(')')
+          R_BLOCK_EXPRESSION
+            PsiElement({)('{')
+            PsiElement(nl)('\n')
+            PsiWhiteSpace('    ')
+            R_IF_STATEMENT
+              PsiElement(if)('if')
+              PsiWhiteSpace(' ')
+              PsiElement(()('(')
+              R_OPERATOR_EXPRESSION
+                R_SUBSCRIPTION_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('x1')
+                  PsiElement([)('[')
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('idx')
+                  PsiElement(])(']')
+                PsiWhiteSpace(' ')
+                R_COMPARE_OPERATOR
+                  PsiElement(!=)('!=')
+                PsiWhiteSpace(' ')
+                R_SUBSCRIPTION_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('x1')
+                  PsiElement([)('[')
+                  R_OPERATOR_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('idx')
+                    R_PLUSMINUS_OPERATOR
+                      PsiElement(+)('+')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('1')
+                  PsiElement(])(']')
+              PsiElement())(')')
+              R_BLOCK_EXPRESSION
+                PsiElement({)('{')
+                PsiElement(nl)('\n')
+                PsiWhiteSpace('      ')
+                R_ASSIGNMENT_STATEMENT
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('diff_idx')
+                  PsiWhiteSpace(' ')
+                  R_ASSIGN_OPERATOR
+                    PsiElement(=)('=')
+                  PsiWhiteSpace(' ')
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('idx')
+                PsiElement(nl)('\n')
+                PsiWhiteSpace('      ')
+                R_BREAK_STATEMENT
+                  PsiElement(break)('break')
+                PsiElement(nl)('\n')
+                PsiWhiteSpace('    ')
+                PsiElement(})('}')
+            PsiElement(nl)('\n')
+            PsiWhiteSpace('  ')
+            PsiElement(})('}')
+        PsiElement(nl)('\n')
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiErrorElement:';', <and operator>, <expression>, <or operator> or nl expected, got '}'
+    PsiElement(})('}')

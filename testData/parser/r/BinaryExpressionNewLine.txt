@@ -1,0 +1,139 @@
+RFile:BinaryExpressionNewLine.r
+  R_IF_STATEMENT
+    PsiElement(if)('if')
+    PsiWhiteSpace(' ')
+    PsiElement(()('(')
+    R_OPERATOR_EXPRESSION
+      R_OPERATOR_EXPRESSION
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('is.character')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('help.statet')
+            PsiElement())(')')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('                ')
+        R_AND_OPERATOR
+          PsiElement(&&)('&&')
+        PsiWhiteSpace(' ')
+        R_OPERATOR_EXPRESSION
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('length')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('help.statet')
+              PsiElement())(')')
+          PsiWhiteSpace(' ')
+          R_COMPARE_OPERATOR
+            PsiElement(==)('==')
+          PsiWhiteSpace(' ')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+      PsiWhiteSpace(' ')
+      R_AND_OPERATOR
+        PsiElement(&&)('&&')
+      PsiWhiteSpace(' ')
+      R_UNARY_NOT_EXPRESSION
+        R_NOT_OPERATOR
+          PsiElement(!)('!')
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('is.na')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('help.statet')
+            PsiElement())(')')
+    PsiElement())(')')
+    PsiWhiteSpace(' ')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('        ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('.showHelp')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('help.statet')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')
+  PsiElement(nl)('\n')
+  R_IF_STATEMENT
+    PsiElement(if)('if')
+    PsiWhiteSpace(' ')
+    PsiElement(()('(')
+    R_OPERATOR_EXPRESSION
+      R_OPERATOR_EXPRESSION
+        R_CALL_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('length')
+          R_ARGUMENT_LIST
+            PsiElement(()('(')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('x')
+            PsiElement())(')')
+        PsiWhiteSpace(' ')
+        R_COMPARE_OPERATOR
+          PsiElement(==)('==')
+        PsiWhiteSpace(' ')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('0')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('              ')
+      R_OR_OPERATOR
+        PsiElement(||)('||')
+      PsiWhiteSpace(' ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('is.null')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_MEMBER_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('.rj.tmp')
+            R_LIST_SUBSET_OPERATOR
+              PsiElement($)('$')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('help')
+          PsiElement())(')')
+    PsiWhiteSpace(' ')
+    PsiElement())(')')
+    PsiWhiteSpace(' ')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('        ')
+      PsiComment(END_OF_LINE_COMMENT)('# NextMethod ?')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('        ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('return')
+        PsiWhiteSpace(' ')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_CALL_EXPRESSION
+            R_NAMESPACE_ACCESS_EXPRESSION
+              PsiElement(identifier)('utils')
+              PsiElement(:::)(':::')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('print.help_files_with_topic')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('x')
+              PsiElement(,)(',')
+              PsiWhiteSpace(' ')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('...')
+              PsiElement())(')')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')

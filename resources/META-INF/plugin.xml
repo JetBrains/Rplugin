@@ -1,0 +1,382 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
+    <name>R Language for IntelliJ</name>
+    <id>R4Intellij</id>
+    <version>2019.3-SNAPSHOT</version>
+    <vendor>JetBrains</vendor>
+
+    <idea-version since-build="193.0.0"/>
+
+    <!-- ensure compatibility with all intellij products-->
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.python</depends>
+    <depends>com.intellij.modules.xdebugger</depends>
+    <depends>org.intellij.plugins.markdown</depends>
+
+    <xi:include href="/META-INF/visualisation.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+    <description><![CDATA[
+<html>
+<body>
+<p><span></span></p>
+<p><span>With the plugin for the </span>
+<span><a href="https://www.r-project.org/">R language</a></span><span>,</span><span
+   >&nbsp;you can perform various statistical computing and enjoy your favorite features of the integrated development environment:</span>
+</p>
+<ul>
+  <li><span>Coding assistance:</span>
+    <ul>
+      <li><span>Error and syntax</span><span>&nbsp;highlighting</span><span>.</span></li>
+      <li><span>Code completion</span><span>.</span></li>
+      <li><span>Intention actions and quick fixes.</span></li>
+    </ul>
+   </li>
+</ul>
+<ul>
+  <li><span>Smart editing and auto-saving changes in your R files. Supported formats:</span>
+    <ul>
+      <li><span>R Script</span></li>
+      <li><span>R Markdown</span></li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li><span>Previewing data in the graphic and tabular forms:</span>
+    <ul>
+      <li><span>R Graphics viewer</span></li>
+      <li><span>Table View</span></li>
+      <li><span>R HTML viewer</span></li>
+      <li><span>R Markdown preview</span></li>
+    </ul>
+   </li>
+</ul>
+<ul>
+  <li><span>Running and debugging R scripts with the live variables view.</span></li>
+  <li><span>Managing R packages; ability to create your own R packages.</span></li>
+</ul>
+<p><span></span></p>
+<p><span>For more details, see </span><span><a href="https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html">PyCharm web help</a></span><span>.</span></p>
+<br>
+<p>
+This plugin comes with ABSOLUTELY NO WARRANTY.</p>
+<p>
+This is free software, and you are welcome to redistribute it under certain conditions.
+</p>
+<br>
+<p>
+Please note the plugin distribution contains Rkernel program covered by
+<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>/<a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPL-3</a> licenses.
+</p>
+<br>
+<p>
+You can find the source code in the following repositories:
+<ul>
+    <li><a href="https://github.com/JetBrains/Rplugin">Rplugin</a></li>
+    <li><a href="https://github.com/JetBrains/Rkernel-proto">Rkernel-proto</a></li>
+    <li><a href="https://github.com/JetBrains/Rkernel">Rkernel</a></li>
+</ul>
+</p>
+</body>
+
+</html>
+
+        ]]></description>
+
+    <application-components>
+        <component>
+            <implementation-class>org.jetbrains.r.settings.RUpdateComponent</implementation-class>
+        </component>
+    </application-components>
+    <!--<depends optional="true">com.intellij.modules.python</depends>-->
+    <project-components>
+        <component>
+            <implementation-class>org.jetbrains.r.settings.RSettings</implementation-class>
+        </component>
+        <component>
+            <implementation-class>org.jetbrains.r.packages.RPackageService</implementation-class>
+        </component>
+
+        <component>
+            <interface-class>org.jetbrains.r.interpreter.RInterpreterManager</interface-class>
+            <implementation-class>org.jetbrains.r.interpreter.RInterpreterManagerImpl</implementation-class>
+        </component>
+    </project-components>
+
+    <actions>
+        <action id="org.jetbrains.r.console.RConsoleAction"
+                class="org.jetbrains.r.console.RConsoleAction"
+                text="R Console..." description="Starts R interactive console">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+
+        <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction"
+                text="R Script" description="Create a new R-script">
+            <add-to-group group-id="NewGroup" relative-to-action="NewFromTemplate" anchor="before"/>
+        </action>
+
+        <action id="NewRMarkdownAction" class="org.jetbrains.r.actions.NewRMarkdownAction">
+            <add-to-group group-id="NewGroup" relative-to-action="NewFromTemplate" anchor="before"/>
+        </action>
+
+        <action id="VisualizeTableAction" class="org.jetbrains.r.run.visualize.VisualizeTableAction" text="Visualize Table"/>
+        <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"
+                text="Dump gRPC Messages" description="Dump all gRPC messages which were sent to RWrapper"/>
+    </actions>
+
+    <actions>
+        <action id="org.jetbrains.r.actions.EvaluateInConsole"
+                class="org.jetbrains.r.actions.EvaluateInConsole">
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+    </actions>
+
+<!-- chunk anctions-->
+    <actions>
+        <group id="org.jetbrains.r.rendering.chunk.RunChunkActions">
+            <action id="org.jetbrains.r.rendering.chunk.RunChunkAction"
+                    class="org.jetbrains.r.rendering.chunk.RunChunkAction"
+                    text="Run Chunk"
+                    description="Run current chunk">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt C" replace-all="true"/>
+            </action>
+            <action id="org.jetbrains.r.rendering.chunk.DebugChunkAction"
+                    class="org.jetbrains.r.rendering.chunk.DebugChunkAction"
+                    text="Debug Chunk"
+                    description="Debug current chunk">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt X"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt X" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt X" replace-all="true"/>
+            </action>
+            <action id="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
+                    class="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
+                    text="Interrupt Chunk"
+                    description="Interrupt chunk execution">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt S"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt S" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt S" replace-all="true"/>
+            </action>
+            <action id="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
+                    class="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
+                    text="Run Chunks Above"
+                    description="Run chunks above the current cursor position">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt B"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B" replace-all="true"/>
+            </action>
+            <action id="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
+                    class="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
+                    text="Run Chunks Below"
+                    description="Run chunks below the current cursor position"/>
+
+            <action id="RMarkdownNewChunk" class="org.jetbrains.r.rmarkdown.RMarkdownNewChunk"
+                    text="Add New R Chunk" icon="AllIcons.General.Add">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt I" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt I" replace-all="true"/>
+            </action>
+        </group>
+    </actions>
+
+    <extensions defaultExtensionNs="Pythonid">
+        <inspectionExtension implementation="org.jetbrains.r.rmarkdown.RMarkdownPyInspectionExtension"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
+        <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R"/>
+        <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
+                  language="RMarkdown" extensions="Rmd"/>
+
+        <lang.fileViewProviderFactory language="RMarkdown"
+                                      implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory"/>
+
+        <lang.syntaxHighlighterFactory language="R"
+                                       implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
+
+        <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
+
+        <!-- Code style and formatting -->
+        <codeStyleSettingsProvider implementation="org.jetbrains.r.editor.formatting.RCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider
+                implementation="org.jetbrains.r.editor.formatting.RLanguageCodeStyleSettingsProvider"/>
+        <colorSettingsPage implementation="org.jetbrains.r.highlighting.RColorSettingsPage"/>
+        <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
+        <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.highlighting.RBraceMatcher"/>
+        <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>
+
+        <lang.foldingBuilder language="R" implementationClass="org.jetbrains.r.editor.RFoldingBuilder"/>
+        <annotator language="R" implementationClass="org.jetbrains.r.annotator.RAnnotator"/>
+        <lang.namesValidator language="R" implementationClass="org.jetbrains.r.refactoring.RNamesValidator"/>
+
+        <!-- Codeinsight -->
+        <!--todo finalize impl for release of disable -->
+        <psi.referenceContributor
+                implementation="org.jetbrains.r.psi.references.externalres.ResourceScriptReferenceContributor"/>
+
+        <lang.parserDefinition language="R" implementationClass="org.jetbrains.r.parsing.RParserDefinition"/>
+        <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
+
+        <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
+
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
+        <fileBasedIndex implementation="org.jetbrains.r.packages.RPackageInfoIndex"/>
+        <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
+
+        <lang.commenter language="R" implementationClass="org.jetbrains.r.RCommenter"/>
+
+        <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
+                                 implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
+        <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
+
+        <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RCompletionContributor"/>
+        <completion.contributor language="Markdown" implementationClass="org.jetbrains.r.editor.RMarkdownCompletionContributor"/>
+        <typedHandler implementation="org.jetbrains.r.console.RConsoleAutopopupBlockingHandler" id="rBlockAutoPopup"
+                      order="first, before completionAutoPopup"/>
+
+        <controlFlowProvider implementation="org.jetbrains.r.psi.cfg.RControlFlowProvider"/>
+
+        <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
+
+        <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler"/>
+        <lookup.charFilter implementation="org.jetbrains.r.editor.RCharFilter" order="first"/>
+        <!--<targetElementEvaluator language="R" implementationClass="org.jetbrains.r.editor.RTargetElementEvaluator"/>-->
+
+        <filetype.stubBuilder filetype="IdeaRBin" implementationClass="org.jetbrains.r.bin.RBinFileStubBuilder"/>
+        <fileType.fileViewProviderFactory filetype="IdeaRBin" implementationClass="org.jetbrains.r.bin.RBinFileViewProviderFactory"/>
+        <stubElementTypeHolder class="org.jetbrains.r.bin.psi.RBinElementTypes"/>
+        <fileType extensions="IdeaRBin" name="IdeaRBin" fieldName="INSTANCE" implementationClass="org.jetbrains.r.bin.RBinFileType"/>
+
+        <!-- Settings -->
+        <projectConfigurable groupId="project"
+                             id="org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable"
+                             displayName="Project R Interpreter"
+                             instance="org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable"/>
+
+        <applicationService serviceImplementation="org.jetbrains.r.settings.RInterpreterSettings"/>
+
+        <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
+        
+        <projectService serviceImplementation="org.jetbrains.r.packages.remote.RAvailablePackageCache"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.run.graphics.RGraphicsRepository"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.run.viewer.RViewerRepository"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.interpreter.RLibraryWatcher"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.console.RConsoleManager"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.rendering.settings.RMarkdownSettings"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
+
+        <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
+        <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
+
+        <programRunner implementation="org.jetbrains.r.run.RRunRunner"/>
+        <programRunner implementation="org.jetbrains.r.run.debug.RDebugRunner"/>
+        <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
+
+        <!--- RMarkdown ui-->
+        <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RMarkdownFileEditorProvider"/>
+        <codeInsight.lineMarkerProvider language="RMarkdown" implementationClass="org.jetbrains.r.rendering.chunk.RunChunkLineMarkerProvider"/>
+
+        <projectService serviceInterface="org.jetbrains.r.rmarkdownconsole.RMarkdownConsoleManager"
+                        serviceImplementation="org.jetbrains.r.rmarkdownconsole.RMarkdownConsoleManagerImpl"/>
+
+
+        <!-- tool windows-->
+        <treeStructureProvider implementation="org.jetbrains.r.documentation.RTreeStructureProvider"/>
+
+        <lang.psiStructureViewFactory language="R"
+                                      implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
+
+        <toolWindow id="R Packages" anchor="right"
+                    factoryClass="org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory"/>
+
+        <toolWindow id="R Graphics" anchor="right"
+                    factoryClass="org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory"/>
+
+        <toolWindow id="R HTML Viewer" anchor="right"
+                    factoryClass="org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory"/>
+
+        <toolWindow id="R Console" anchor="bottom" canCloseContents="true"
+                    factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
+
+        <toolWindow id="Table View" anchor="right" canCloseContents="true"
+                    factoryClass="org.jetbrains.r.run.visualize.RTableViewToolWindowFactory" secondary="false"/>
+        <lang.psiStructureViewFactory language="RMarkdown"
+                                      implementationClass="org.jetbrains.r.rmarkdown.structureView.RMarkdownStructureViewFactory"/>
+
+        <!-- refactorings -->
+        <lang.refactoringSupport language="R" implementationClass="org.jetbrains.r.refactoring.RRefactoringProvider"/>
+
+        <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/plugin.xml:448-->
+        <vetoRenameCondition implementation="org.jetbrains.r.psi.references.RenamingVetoCondition"/>
+        <refactoring.inlineHandler language="R" implementationClass="org.jetbrains.r.refactoring.RInlineHandler"/>
+        <inlineActionHandler implementation="org.jetbrains.r.refactoring.RInlineActionHandler"/>
+
+        <!-- coding assistance-->
+        <liveTemplateContext implementation="org.jetbrains.r.editor.RContextType"/>
+        <defaultLiveTemplatesProvider implementation="org.jetbrains.r.editor.LiveTemplateProvider"/>
+        <internalFileTemplate name="R Script"/>
+        <internalFileTemplate name="RMarkdown"/>
+
+        <scratch.rootType implementation="org.jetbrains.r.console.RConsoleRootType"/>
+
+
+        <!-- Inspections -->
+
+        <!-- note: display names not needed if defined in impl-->
+        <!--https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000074350-Why-are-default-xml-plugin-settings-preferred-over-code-based-component-configuration- -->
+        <localInspection shortName="RUnusedParameter" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.UnusedParameterInspection"/>
+
+        <localInspection shortName="RUnusedVariable" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.UnusedVariableInspection"/>
+
+        <localInspection shortName="RUnresolvedReference" language="R" enabledByDefault="true" groupName="R"
+                         level="WARNING"
+                         implementationClass="org.jetbrains.r.inspections.UnresolvedReferenceInspection"/>
+
+        <localInspection shortName="RMissingPackage" language="R" enabledByDefault="true" groupName="R" level="ERROR"
+                         implementationClass="org.jetbrains.r.inspections.MissingPackageInspection"/>
+
+        <localInspection shortName="RBooleanExpressionSimplifier" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.BooleanExpressionSimplifier"/>
+
+        <localInspection shortName="RCompareToNaInspection" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.CompareToNaInspection"/>
+
+        <localInspection shortName="RDplyrBooleanOperatorInspection" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.dplyr.DplyrBooleanOperatorsInspection"/>
+
+        <localInspection shortName="RDplyrCallToPipeInspection" language="R" enabledByDefault="true" groupName="R"
+                         implementationClass="org.jetbrains.r.inspections.dplyr.DplyrCallToPipeInspection"/>
+
+
+        <intentionAction>
+            <category>R</category>
+            <className>org.jetbrains.r.intentions.TtoTrueIntention</className>
+        </intentionAction>
+
+        <documentationProvider implementation="org.jetbrains.r.documentation.RDocumentationProvider"/>
+
+        <editorHighlighterProvider filetype="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownEditorHighlighterProvider"/>
+
+        <!-- Project generators -->
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
+
+        <datavis.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
+
+    </extensions>
+
+</idea-plugin>

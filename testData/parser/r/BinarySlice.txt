@@ -1,0 +1,15 @@
+RFile:BinarySlice.r
+  R_OPERATOR_EXPRESSION
+    R_OPERATOR_EXPRESSION
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('1')
+      R_COLON_OPERATOR
+        PsiElement(:)(':')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('20')
+    PsiWhiteSpace(' ')
+    R_MULDIV_OPERATOR
+      PsiElement(*)('*')
+    PsiWhiteSpace(' ')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('3')

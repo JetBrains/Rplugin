@@ -1,0 +1,28 @@
+RFile:IfStatementAsArgument.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('of1')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IF_STATEMENT
+        PsiElement(if)('if')
+        PsiElement(()('(')
+        R_OPERATOR_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('inCode')
+          PsiWhiteSpace(' ')
+          R_OR_OPERATOR
+            PsiElement(||)('||')
+          PsiWhiteSpace(' ')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('inCodeBlock')
+        PsiElement())(')')
+        PsiWhiteSpace(' ')
+        R_STRING_LITERAL_EXPRESSION
+          PsiElement(STRING)('"..."')
+        PsiWhiteSpace('  ')
+        PsiElement(else)('else')
+        PsiWhiteSpace(' ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('tag')
+      PsiElement())(')')

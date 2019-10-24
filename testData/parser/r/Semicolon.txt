@@ -1,0 +1,18 @@
+RFile:Semicolon.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('a')
+      PsiElement())(')')
+  PsiElement(;)(';')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('b')
+      PsiElement())(')')

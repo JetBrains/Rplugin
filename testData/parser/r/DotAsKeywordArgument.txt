@@ -1,0 +1,68 @@
+RFile:DotAsKeywordArgument.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('missE')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('lapply')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('nf')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_FUNCTION_EXPRESSION
+          PsiElement(function)('function')
+          R_PARAMETER_LIST
+            PsiElement(()('(')
+            R_PARAMETER
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('n')
+            PsiElement())(')')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('\t')
+          PsiWhiteSpace('\t')
+          PsiWhiteSpace('\t')
+          PsiWhiteSpace('    ')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('substitute')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('missing')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('.')
+                  PsiElement())(')')
+              PsiElement(,)(',')
+              PsiWhiteSpace(' ')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('list')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_ASSIGNMENT_STATEMENT
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('.')
+                    PsiWhiteSpace(' ')
+                    R_ASSIGN_OPERATOR
+                      PsiElement(=)('=')
+                    PsiWhiteSpace(' ')
+                    R_CALL_EXPRESSION
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('as.name')
+                      R_ARGUMENT_LIST
+                        PsiElement(()('(')
+                        R_IDENTIFIER_EXPRESSION
+                          PsiElement(identifier)('n')
+                        PsiElement())(')')
+                  PsiElement())(')')
+              PsiElement())(')')
+        PsiElement())(')')

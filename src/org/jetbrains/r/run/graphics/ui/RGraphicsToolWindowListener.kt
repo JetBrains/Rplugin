@@ -1,0 +1,22 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+package org.jetbrains.r.run.graphics.ui
+
+import com.intellij.openapi.project.Project
+import org.jetbrains.r.run.graphics.RGraphicsState
+import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
+import java.io.File
+
+class RGraphicsToolWindowListener(project: Project) : RGraphicsState.Listener {
+  private val invoker = RNonStealingToolWindowInvoker(project, RGraphicsToolWindow.TOOL_WINDOW_ID)
+
+  override fun onCurrentChange(snapshots: List<File>) {
+    invoker.showWindow()
+  }
+
+  override fun onReset() {
+    // Nothing to do here
+  }
+}

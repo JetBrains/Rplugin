@@ -1,0 +1,27 @@
+RFile:DotsInSublist.r
+  R_ASSIGNMENT_STATEMENT
+    R_MEMBER_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('m')
+      R_LIST_SUBSET_OPERATOR
+        PsiElement($)('$')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('...')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_ASSIGNMENT_STATEMENT
+      R_MEMBER_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('m')
+        R_LIST_SUBSET_OPERATOR
+          PsiElement($)('$')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('FUN')
+      PsiWhiteSpace(' ')
+      R_ASSIGN_OPERATOR
+        PsiElement(<-)('<-')
+      PsiWhiteSpace(' ')
+      R_NULL_LITERAL
+        PsiElement(NULL)('NULL')

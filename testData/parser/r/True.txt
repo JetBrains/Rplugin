@@ -1,0 +1,3 @@
+RFile:True.r
+  R_BOOLEAN_LITERAL
+    PsiElement(TRUE)('TRUE')

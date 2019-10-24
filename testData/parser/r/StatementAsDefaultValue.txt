@@ -1,0 +1,72 @@
+RFile:StatementAsDefaultValue.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('`[.data.frame`')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiElement(nl)('\n')
+    PsiWhiteSpace('    ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('i')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('j')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('drop')
+          PsiWhiteSpace(' ')
+          PsiElement(=)('=')
+          PsiWhiteSpace(' ')
+          R_IF_STATEMENT
+            PsiElement(if)('if')
+            PsiElement(()('(')
+            R_CALL_EXPRESSION
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('missing')
+              R_ARGUMENT_LIST
+                PsiElement(()('(')
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('i')
+                PsiElement())(')')
+            PsiElement())(')')
+            PsiWhiteSpace(' ')
+            R_BOOLEAN_LITERAL
+              PsiElement(TRUE)('TRUE')
+            PsiWhiteSpace(' ')
+            PsiElement(else)('else')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('length')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('cols')
+                  PsiElement())(')')
+              PsiWhiteSpace(' ')
+              R_COMPARE_OPERATOR
+                PsiElement(==)('==')
+              PsiWhiteSpace(' ')
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('1')
+        PsiElement())(')')
+      PsiElement(nl)('\n')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(})('}')

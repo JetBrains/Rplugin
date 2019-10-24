@@ -1,0 +1,69 @@
+RFile:BlockAsArgument.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('system.time')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('  ')
+        R_ASSIGNMENT_STATEMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('B')
+          PsiWhiteSpace(' ')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          PsiWhiteSpace(' ')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('data.frame')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_ASSIGNMENT_STATEMENT
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('x1')
+                R_ASSIGN_OPERATOR
+                  PsiElement(=)('=')
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('runif')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('100000')
+                    PsiElement())(')')
+              PsiElement(,)(',')
+              PsiWhiteSpace(' ')
+              R_ASSIGNMENT_STATEMENT
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('x2')
+                R_ASSIGN_OPERATOR
+                  PsiElement(=)('=')
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('runif')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('100000')
+                    PsiElement())(')')
+              PsiElement(,)(',')
+              PsiWhiteSpace(' ')
+              R_ASSIGNMENT_STATEMENT
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('x3')
+                R_ASSIGN_OPERATOR
+                  PsiElement(=)('=')
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('runif')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('100000')
+                    PsiElement())(')')
+              PsiElement())(')')
+        PsiElement(nl)('\n')
+        PsiElement(})('}')
+      PsiElement())(')')

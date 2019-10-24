@@ -1,0 +1,48 @@
+RFile:StringKeywordArg.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('person')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('list')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        R_ASSIGNMENT_STATEMENT
+          R_STRING_LITERAL_EXPRESSION
+            PsiElement(STRING)('"3"')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          R_STRING_LITERAL_EXPRESSION
+            PsiElement(STRING)('"payal"')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_ASSIGNMENT_STATEMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('2')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_ASSIGNMENT_STATEMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('y')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('9')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_ASSIGNMENT_STATEMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('year')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1990')
+        PsiElement())(')')

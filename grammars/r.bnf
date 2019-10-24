@@ -1,0 +1,234 @@
+// Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+{
+  parserClass="org.jetbrains.r.parsing.RParser"
+  parserUtilClass="org.jetbrains.r.parsing.RParserUtil"
+  elementTypeFactory("assignment_statement")="org.jetbrains.r.psi.RElementTypeFactory.getElementTypeByName"
+  elementTypeFactory("parameter")="org.jetbrains.r.psi.RElementTypeFactory.getElementTypeByName"
+  implements="org.jetbrains.r.psi.api.RPsiElement"
+  extends="org.jetbrains.r.psi.RElementImpl"
+
+  elementTypeHolderClass="org.jetbrains.r.parsing.RElementTypes"
+  elementTypePrefix="R_"
+  elementTypeClass="org.jetbrains.r.psi.RElementType"
+  tokenTypeClass="org.jetbrains.r.psi.RElementType"
+
+  psiImplUtilClass="org.jetbrains.r.psi.impl.RPsiImplUtil"
+
+  psiClassPrefix="R"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.jetbrains.r.psi.api"
+  psiImplPackage="org.jetbrains.r.psi.impl"
+
+  tokens=[
+
+  SEMI=";"
+  LEFT_ASSIGN_OLD=":="
+  LEFT_ASSIGN="<-"
+  LEFT_COMPLEX_ASSIGN="<<-"
+  EQ="="
+  RIGHT_ASSIGN="->"
+  RIGHT_COMPLEX_ASSIGN="->>"
+  TILDE="~"
+  AND="&"
+  OR="|"
+  NOT="!"
+  LE="<="
+  GE=">="
+  EQEQ="=="
+  GT=">"
+  LT="<"
+  NOTEQ="!="
+  COMMA=","
+  TICK="`"
+  UNDERSCORE="_"
+  TRIPLECOLON=":::"
+  DOUBLECOLON="::"
+  AT="@"
+  ANDAND="&&"
+  OROR="||"
+  MINUS="-"
+  PLUS="+"
+  MULT="*"
+  DIV="/"
+  EXP="^"
+  LIST_SUBSET="$"
+  COLON=":"
+  LPAR="("
+  RPAR=")"
+  LBRACE="{"
+  RBRACE="}"
+  RDBRACKET="]]"
+  LDBRACKET="[["
+  RBRACKET="]"
+  LBRACKET="["
+  ]
+
+  //extends("function_expression")="org.jetbrains.r.psi.impl.RControlFlowHolderImpl"
+  extends(".*statement|.*expression|.*literal")=expression
+  extends(".*_operator")=operator
+  implements("identifier_expression")="com.intellij.psi.PsiNamedElement"
+  implements("string_literal_expression")="com.intellij.psi.PsiNamedElement"
+  implements("parameter")="com.intellij.psi.PsiNameIdentifierOwner"
+  implements("assignment_statement")="com.intellij.psi.PsiNameIdentifierOwner"
+  implements("parameter")="org.jetbrains.r.psi.api.RPsiElement"
+  implements("assignment_statement")="org.jetbrains.r.psi.api.RPsiElement"
+  mixin("string_literal_expression")="org.jetbrains.r.psi.RStringInjectHost"
+  mixin("function_expression")="org.jetbrains.r.psi.impl.RControlFlowHolderImpl"
+  implements("while_statement")="org.jetbrains.r.psi.api.RLoopStatement"
+  implements("for_statement")="org.jetbrains.r.psi.api.RLoopStatement"
+  implements("repeat_statement")="org.jetbrains.r.psi.api.RLoopStatement"
+  implements("function_expression")="org.jetbrains.r.psi.api.RControlFlowHolder"
+  implements("function_expression")="org.jetbrains.r.psi.api.RExpression"
+
+  generateTokenAccessors=false
+}
+
+root ::= expression_list
+private expression_list ::= expression? (semicolon+ expression?)*
+
+
+private constant ::=  string_literal_expression | numeric_literal_expression |
+                      boolean_literal  | na_literal | null_literal | boundary_literal
+
+numeric_literal_expression ::= INTEGER | NUMERIC | COMPLEX
+string_literal_expression ::= STRING { methods = [getName setName] }
+
+boolean_literal ::= TRUE | FALSE { methods = [isTrue isFalse]}
+
+null_literal ::= NULL
+na_literal ::= NA | NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER
+boundary_literal ::= INF | NAN
+
+
+expression ::=
+    if_statement | while_statement | for_statement | repeat_statement | break_statement | next_statement |
+    block_expression | help_expression | parenthesized_expression |
+    function_expression | left_assign_expression | eq_assign_expression | right_assign_expression |
+    unary_tilde_expression | tilde_expression | or_expression | and_expression | unary_not_expression | compare_expression | plusminus_expression |
+    muldiv_expression | infix_expression | colon_expression | unary_plusminus_expression | exp_expression | subscription_expression |
+    call_expression | member_expression | at_expression | namespace_access_expression | primitive_expression
+
+//operators
+fake assignment_statement ::= {
+  methods=[isLeft isRight isEqual getAssignedValue getAssignee getName setName getNameIdentifier isFunctionDeclaration getFunctionParameters getParameterNameList isClosureAssignment]
+  extends="org.jetbrains.r.psi.impl.RAssignmentBase"
+  stubClass="org.jetbrains.r.psi.stubs.RAssignmentStub"
+  implements="org.jetbrains.r.psi.api.RExpression"
+}
+
+fake operator ::= { methods=[getName getReference] }
+fake assign_operator ::= { extends=operator }
+
+left_assign_operator ::= '<-' | '<<-' | ':=' { elementType=assign_operator }
+right_assign_operator ::= '->' | '->>' { elementType=assign_operator }
+eq_assign_operator ::= '=' { elementType=assign_operator }
+or_operator ::= '|' | '||'
+tilde_operator ::= '~'
+and_operator ::= '&' | '&&'
+compare_operator ::= '>' | '>=' | '<' | '<=' | '==' | '!='
+plusminus_operator ::= '+' | '-'
+muldiv_operator ::= '*' | '/'
+colon_operator ::= ':' // used for sequences and interactions
+exp_operator ::= '^'
+infix_operator ::= INFIX_OP
+not_operator ::= '!'
+at_operator ::= '@'
+list_subset_operator ::= '$'
+
+
+// assignment expressions
+left_assign_expression ::= expression left_assign_operator nl* expression { rightAssociative=true; elementType=assignment_statement }
+eq_assign_expression ::= expression eq_assign_operator nl* (expression | external_empty_expression) { rightAssociative=true; elementType=assignment_statement }
+right_assign_expression ::= expression right_assign_operator nl* expression { elementType=assignment_statement }
+tilde_expression ::= expression tilde_operator nl* expression
+
+fake operator_expression ::= { methods=[ getOperator isBinary getLeftExpr getRightExpr getExpr] }
+
+// binary operator expressions
+or_expression ::= expression nl* or_operator nl* expression { elementType=operator_expression }
+and_expression ::= expression nl* and_operator nl* expression { elementType=operator_expression }
+compare_expression ::= expression compare_operator nl* expression { elementType=operator_expression }
+plusminus_expression ::= expression plusminus_operator nl* expression { elementType=operator_expression }
+muldiv_expression ::= expression muldiv_operator nl* expression { elementType=operator_expression }
+exp_expression ::= expression exp_operator nl* expression { elementType=operator_expression }
+colon_expression ::= expression colon_operator nl* expression { elementType=operator_expression }
+infix_expression ::= expression infix_operator nl* expression { elementType=operator_expression }
+
+// unary operator expressions
+unary_not_expression ::= not_operator nl* expression { extends=operator_expression }
+unary_plusminus_expression ::= plusminus_operator nl* expression { extends=operator_expression }
+unary_tilde_expression ::= tilde_operator nl* expression { extends=operator_expression }
+
+
+private member_tag ::= primitive_expression | namespace_access_expression | parenthesized_expression
+member_expression ::= expression list_subset_operator nl* member_tag { methods = [ getTag ] extends=operator_expression }
+
+// R grammar allows only symbol or string after @ operator. We check the correctness in the annotator.
+at_expression ::= expression at_operator nl* expression { elementType=operator_expression }
+
+namespace_access_expression ::= identifier ('::' | ':::') identifier_expression {
+    methods = [ Namespace="identifier" Identifier="identifier_expression" getNamespaceName]
+}
+
+private if_with_else ::= expression nl* else nl* expression { pin=3 }
+
+//statements
+if_statement ::= if nl* '(' nl* expression nl* ')' nl* (if_with_else | expression ) { pin=1
+  methods=[ condition = "expression[0]" ifBody="expression[1]" elseBody="expression[2]" ]
+}
+while_statement ::= while nl* '(' nl* expression nl* ')' nl* expression { pin=1
+  methods = [ condition = "expression[0]" body = "expression[1]"]
+}
+for_statement ::= for nl* '(' nl* identifier_expression 'in' (nl* expression) ')' nl* expression { pin=1
+  methods=[ target = "expression[0]" range = "expression[1]" body = "expression[2]"]
+}
+repeat_statement ::= repeat (nl* expression) { pin=1 methods = [ body = "expression" ] }
+break_statement ::= break { methods = [ getLoop ] }
+next_statement ::= next { methods = [ getLoop] }
+block_expression ::= '{' nl* expression_list? nl* '}' { pin=1 }
+
+private keyword ::= NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER |
+  TRIPLE_DOTS | if | else | repeat | while |
+  function | for | in | next | break
+
+help_expression ::= help (nl* help)? nl* (keyword | expression) //todo: check that here is expr
+
+//other expressions
+identifier_expression ::= identifier {
+  methods = [ getReference getName setName ]
+}
+private primitive_expression ::= constant | identifier_expression
+parenthesized_expression ::= '(' nl* expression nl* ')'
+
+fake empty_expression ::= expression //todo: required to generate PSI, how to simplify this?
+external external_empty_expression ::= parseEmptyExpression { elementType=empty_expression }
+private subscription_expr_elem ::= expression | external_empty_expression
+private subscription_expr_list ::= subscription_expr_elem nl* (',' nl* subscription_expr_elem nl*)*
+subscription_expression ::= expression ('[' nl* ']' | '[' nl* subscription_expr_list ']' |
+  '[[' nl* ']]' | '[[' nl* subscription_expr_list ']]') {
+  methods = [ isSingle ]
+}
+
+private arg ::= expression | external_empty_expression
+argument_list ::= '(' nl* ')' | '(' nl* arg nl* (',' nl* arg nl*)* ')'
+call_expression ::= expression argument_list
+
+parameter ::= (identifier_expression ('=' expression)?)  {
+  methods = [ getName setName getNameIdentifier getVariable getDefaultValue]
+  extends = "org.jetbrains.r.psi.impl.RParameterBase"
+  stubClass = "org.jetbrains.r.psi.stubs.RParameterStub"
+}
+parameter_list ::= ('(' ')') | ('(' nl* parameter nl* (',' nl* parameter nl*)* ')')
+function_expression ::= function parameter_list nl* expression {
+methods = [ getDocStringValue getControlFlow]
+}
+
+private semicolon ::= ';' | nl
+
+//todo: directives?
+//todo: user-defined operations as primitive expr, in old parser it was OPERATOR_EXPRESSION, do we really need them?
+//todo: what is underscore, was in lexer earlier?

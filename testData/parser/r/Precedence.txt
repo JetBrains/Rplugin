@@ -1,0 +1,53 @@
+RFile:Precedence.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('table')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('replicate')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1000')
+          PsiElement(,)(',')
+          PsiWhiteSpace(' ')
+          R_OPERATOR_EXPRESSION
+            R_MEMBER_EXPRESSION
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('runs.test')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_CALL_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('factor')
+                    R_ARGUMENT_LIST
+                      PsiElement(()('(')
+                      R_CALL_EXPRESSION
+                        R_IDENTIFIER_EXPRESSION
+                          PsiElement(identifier)('sign')
+                        R_ARGUMENT_LIST
+                          PsiElement(()('(')
+                          R_CALL_EXPRESSION
+                            R_IDENTIFIER_EXPRESSION
+                              PsiElement(identifier)('one.ts')
+                            R_ARGUMENT_LIST
+                              PsiElement(()('(')
+                              PsiElement())(')')
+                          PsiElement())(')')
+                      PsiElement())(')')
+                  PsiElement())(')')
+              R_LIST_SUBSET_OPERATOR
+                PsiElement($)('$')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('p.value')
+            PsiWhiteSpace(' ')
+            R_COMPARE_OPERATOR
+              PsiElement(<)('<')
+            PsiWhiteSpace(' ')
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('0.05')
+          PsiElement())(')')
+      PsiElement())(')')

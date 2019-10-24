@@ -1,0 +1,8 @@
+[0]File:
+0(1) element: null
+1(2) element: R_IDENTIFIER_EXPRESSION
+2(3,5) element: R_IDENTIFIER_EXPRESSION
+3(4) element: R_IDENTIFIER_EXPRESSION
+4(5,2) element: R_BLOCK_EXPRESSION
+5(6) element: R_FOR_STATEMENT
+6() element: null

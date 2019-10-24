@@ -1,0 +1,11 @@
+[0]File:
+0(1) element: null
+1(2) element: R_FUNCTION_EXPRESSION
+2() element: null
+[1]Function anon
+0(1) element: null
+1(2) element: R_NUMERIC_LITERAL_EXPRESSION
+2(3) element: R_BLOCK_EXPRESSION
+3(4) element: R_ARGUMENT_LIST
+4(5) element: R_CALL_EXPRESSION
+5() element: null

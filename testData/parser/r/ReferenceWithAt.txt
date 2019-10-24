@@ -1,0 +1,15 @@
+RFile:ReferenceWithAt.r
+  R_ASSIGNMENT_STATEMENT
+    R_OPERATOR_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('c')
+      R_AT_OPERATOR
+        PsiElement(@)('@')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('names')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('"B"')

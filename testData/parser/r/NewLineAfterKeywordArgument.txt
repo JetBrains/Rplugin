@@ -1,0 +1,251 @@
+RFile:NewLineAfterKeywordArgument.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('return')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('switch')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('kernel')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('gaussian')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('1')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_PARENTHESIZED_EXPRESSION
+                PsiElement(()('(')
+                R_OPERATOR_EXPRESSION
+                  R_NUMERIC_LITERAL_EXPRESSION
+                    PsiElement(NUMERIC)('2')
+                  R_MULDIV_OPERATOR
+                    PsiElement(*)('*')
+                  R_CALL_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('sqrt')
+                    R_ARGUMENT_LIST
+                      PsiElement(()('(')
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('pi')
+                      PsiElement())(')')
+                PsiElement())(')')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('rectangular')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('sqrt')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_NUMERIC_LITERAL_EXPRESSION
+                    PsiElement(NUMERIC)('3')
+                  PsiElement())(')')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('6')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('triangular')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('sqrt')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_NUMERIC_LITERAL_EXPRESSION
+                    PsiElement(NUMERIC)('6')
+                  PsiElement())(')')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('9')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('epanechnikov')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('3')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_PARENTHESIZED_EXPRESSION
+                PsiElement(()('(')
+                R_OPERATOR_EXPRESSION
+                  R_NUMERIC_LITERAL_EXPRESSION
+                    PsiElement(NUMERIC)('5')
+                  R_MULDIV_OPERATOR
+                    PsiElement(*)('*')
+                  R_CALL_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('sqrt')
+                    R_ARGUMENT_LIST
+                      PsiElement(()('(')
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('5')
+                      PsiElement())(')')
+                PsiElement())(')')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('biweight')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_OPERATOR_EXPRESSION
+                R_NUMERIC_LITERAL_EXPRESSION
+                  PsiElement(NUMERIC)('5')
+                R_MULDIV_OPERATOR
+                  PsiElement(*)('*')
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('sqrt')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_NUMERIC_LITERAL_EXPRESSION
+                      PsiElement(NUMERIC)('7')
+                    PsiElement())(')')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('49')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('cosine')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_OPERATOR_EXPRESSION
+                R_NUMERIC_LITERAL_EXPRESSION
+                  PsiElement(NUMERIC)('3')
+                R_MULDIV_OPERATOR
+                  PsiElement(/)('/')
+                R_NUMERIC_LITERAL_EXPRESSION
+                  PsiElement(NUMERIC)('4')
+              R_MULDIV_OPERATOR
+                PsiElement(*)('*')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('sqrt')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_OPERATOR_EXPRESSION
+                    R_OPERATOR_EXPRESSION
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('1')
+                      R_MULDIV_OPERATOR
+                        PsiElement(/)('/')
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('3')
+                    PsiWhiteSpace(' ')
+                    R_PLUSMINUS_OPERATOR
+                      PsiElement(-)('-')
+                    PsiWhiteSpace(' ')
+                    R_OPERATOR_EXPRESSION
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('2')
+                      R_MULDIV_OPERATOR
+                        PsiElement(/)('/')
+                      R_OPERATOR_EXPRESSION
+                        R_IDENTIFIER_EXPRESSION
+                          PsiElement(identifier)('pi')
+                        R_EXP_OPERATOR
+                          PsiElement(^)('^')
+                        R_NUMERIC_LITERAL_EXPRESSION
+                          PsiElement(NUMERIC)('2')
+                  PsiElement())(')')
+          PsiElement(,)(',')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('optcosine')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
+            R_OPERATOR_EXPRESSION
+              R_OPERATOR_EXPRESSION
+                R_CALL_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('sqrt')
+                  R_ARGUMENT_LIST
+                    PsiElement(()('(')
+                    R_OPERATOR_EXPRESSION
+                      R_NUMERIC_LITERAL_EXPRESSION
+                        PsiElement(NUMERIC)('1')
+                      R_PLUSMINUS_OPERATOR
+                        PsiElement(-)('-')
+                      R_OPERATOR_EXPRESSION
+                        R_NUMERIC_LITERAL_EXPRESSION
+                          PsiElement(NUMERIC)('8')
+                        R_MULDIV_OPERATOR
+                          PsiElement(/)('/')
+                        R_OPERATOR_EXPRESSION
+                          R_IDENTIFIER_EXPRESSION
+                            PsiElement(identifier)('pi')
+                          R_EXP_OPERATOR
+                            PsiElement(^)('^')
+                          R_NUMERIC_LITERAL_EXPRESSION
+                            PsiElement(NUMERIC)('2')
+                    PsiElement())(')')
+                R_MULDIV_OPERATOR
+                  PsiElement(*)('*')
+                R_OPERATOR_EXPRESSION
+                  R_IDENTIFIER_EXPRESSION
+                    PsiElement(identifier)('pi')
+                  R_EXP_OPERATOR
+                    PsiElement(^)('^')
+                  R_NUMERIC_LITERAL_EXPRESSION
+                    PsiElement(NUMERIC)('2')
+              R_MULDIV_OPERATOR
+                PsiElement(/)('/')
+              R_NUMERIC_LITERAL_EXPRESSION
+                PsiElement(NUMERIC)('16')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('                      ')
+          PsiElement())(')')
+      PsiElement())(')')

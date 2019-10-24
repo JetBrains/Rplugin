@@ -1,0 +1,28 @@
+RFile:ExpressionAsBinaryExpressionPart.r
+  R_OPERATOR_EXPRESSION
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+    PsiWhiteSpace(' ')
+    R_PLUSMINUS_OPERATOR
+      PsiElement(+)('+')
+    PsiWhiteSpace(' ')
+    R_FOR_STATEMENT
+      PsiElement(for)('for')
+      PsiWhiteSpace(' ')
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')
+      PsiWhiteSpace(' ')
+      PsiElement(in)('in')
+      PsiWhiteSpace(' ')
+      R_OPERATOR_EXPRESSION
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('1')
+        R_COLON_OPERATOR
+          PsiElement(:)(':')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('4')
+      PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')

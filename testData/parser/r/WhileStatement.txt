@@ -1,0 +1,55 @@
+RFile:WhileStatement.r
+  R_WHILE_STATEMENT
+    PsiElement(while)('while')
+    PsiElement(()('(')
+    R_OPERATOR_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('from')
+      R_COMPARE_OPERATOR
+        PsiElement(!=)('!=')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('0')
+    PsiElement())(')')
+    PsiElement(nl)('\n')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('Sys.sleep')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_ASSIGNMENT_STATEMENT
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('from')
+        PsiWhiteSpace(' ')
+        R_ASSIGN_OPERATOR
+          PsiElement(<-)('<-')
+        PsiWhiteSpace(' ')
+        R_OPERATOR_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('from')
+          PsiWhiteSpace(' ')
+          R_PLUSMINUS_OPERATOR
+            PsiElement(-)('-')
+          PsiWhiteSpace(' ')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('1')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('print')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('from')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')

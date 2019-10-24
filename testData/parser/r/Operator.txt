@@ -1,0 +1,71 @@
+RFile:Operator.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('`%myop%`')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('a')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('b')
+        PsiElement())(')')
+      PsiWhiteSpace(' ')
+      R_BLOCK_EXPRESSION
+        PsiElement({)('{')
+        R_OPERATOR_EXPRESSION
+          R_OPERATOR_EXPRESSION
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('2')
+            R_MULDIV_OPERATOR
+              PsiElement(*)('*')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('a')
+          PsiWhiteSpace(' ')
+          R_PLUSMINUS_OPERATOR
+            PsiElement(+)('+')
+          PsiWhiteSpace(' ')
+          R_OPERATOR_EXPRESSION
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('2')
+            R_MULDIV_OPERATOR
+              PsiElement(*)('*')
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('b')
+        PsiElement(})('}')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('# use own operator')
+  PsiElement(nl)('\n')
+  R_OPERATOR_EXPRESSION
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+    PsiWhiteSpace(' ')
+    R_INFIX_OPERATOR
+      PsiElement(INFIX_OP)('%myop%')
+    PsiWhiteSpace(' ')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('#[1] 4')
+  PsiElement(nl)('\n')
+  R_OPERATOR_EXPRESSION
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('1')
+    PsiWhiteSpace(' ')
+    R_INFIX_OPERATOR
+      PsiElement(INFIX_OP)('%myop%')
+    PsiWhiteSpace(' ')
+    R_NUMERIC_LITERAL_EXPRESSION
+      PsiElement(NUMERIC)('2')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('#[1] 6')

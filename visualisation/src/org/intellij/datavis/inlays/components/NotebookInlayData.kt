@@ -1,0 +1,69 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+package org.intellij.datavis.inlays.components
+
+import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
+import org.intellij.datavis.inlays.MouseWheelUtils
+import org.intellij.datavis.inlays.dataframe.DataFrame
+import java.awt.BorderLayout
+
+/** Page control with table and chart pages. */
+class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: DataFrame) : NotebookInlayState() {
+  private val inlayTablePage: InlayTablePage = InlayTablePage()
+
+  /** In some cases there could be even text ot html output. */
+  private var inlayOutputPage: NotebookInlayOutput? = null
+
+  var onChange: (() -> Unit)? = null
+
+  // private var output: NotebookInlayOutput? = null
+
+  private val disposable = Disposer.newDisposable()
+
+  init {
+    Disposer.register(parent, disposable)
+
+    add(inlayTablePage, BorderLayout.CENTER)
+    inlayTablePage.onChange = { onChange?.invoke() }
+    MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane)
+
+    inlayTablePage.setDataFrame(dataFrame)
+  }
+
+  private fun createClearAction(): DumbAwareAction {
+    return object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+      override fun actionPerformed(e: AnActionEvent) {
+        clearAction.invoke()
+      }
+    }
+  }
+
+  private fun createActionButton(action: AnAction) :ActionButton {
+    return ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
+  }
+
+
+  fun setDataFrame(dataFrame: DataFrame) {
+    inlayTablePage.setDataFrame(dataFrame)
+
+    onHeightCalculated?.invoke(inlayTablePage.preferredHeight)
+  }
+
+  override fun clear() {
+  }
+
+  override fun getCollapsedDescription(): String {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
+}

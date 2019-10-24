@@ -1,0 +1,42 @@
+RFile:EmptyExpressionInSubscription.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('DF2')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('rbind')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('DF')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_SUBSCRIPTION_EXPRESSION
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('DF')
+          PsiElement([)('[')
+          R_OPERATOR_EXPRESSION
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('7')
+            R_COLON_OPERATOR
+              PsiElement(:)(':')
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('8')
+          PsiElement(,)(',')
+          R_EMPTY_EXPRESSION
+            <empty list>
+          PsiElement(,)(',')
+          PsiWhiteSpace(' ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('drop')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            R_BOOLEAN_LITERAL
+              PsiElement(FALSE)('FALSE')
+          PsiElement(])(']')
+        PsiElement())(')')

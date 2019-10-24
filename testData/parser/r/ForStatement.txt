@@ -1,0 +1,21 @@
+RFile:ForStatement.r
+  R_FOR_STATEMENT
+    PsiElement(for)('for')
+    PsiElement(()('(')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('variable')
+    PsiWhiteSpace(' ')
+    PsiElement(in)('in')
+    PsiWhiteSpace(' ')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('sequence')
+    PsiElement())(')')
+    PsiWhiteSpace(' ')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('    ')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('statements')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')

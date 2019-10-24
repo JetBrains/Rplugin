@@ -1,0 +1,5 @@
+RFile:HelpStatement.r
+  R_HELP_EXPRESSION
+    PsiElement(help)('?')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')

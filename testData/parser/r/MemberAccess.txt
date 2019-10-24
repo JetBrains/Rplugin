@@ -1,0 +1,73 @@
+RFile:MemberAccess.r
+  PsiComment(END_OF_LINE_COMMENT)('## simple')
+  PsiElement(nl)('\n')
+  R_MEMBER_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('my')
+    R_LIST_SUBSET_OPERATOR
+      PsiElement($)('$')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('member')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('## cascaded access')
+  PsiElement(nl)('\n')
+  R_MEMBER_EXPRESSION
+    R_MEMBER_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('out')
+      R_LIST_SUBSET_OPERATOR
+        PsiElement($)('$')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('table')
+    R_LIST_SUBSET_OPERATOR
+      PsiElement($)('$')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('asdf')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('## member access that look like constants')
+  PsiElement(nl)('\n')
+  R_MEMBER_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('out')
+    R_LIST_SUBSET_OPERATOR
+      PsiElement($)('$')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('F')
+  PsiElement(nl)('\n')
+  R_MEMBER_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('out')
+    R_LIST_SUBSET_OPERATOR
+      PsiElement($)('$')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('T')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('# out$NA')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('# out$for')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('# out$TRUE')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('# out$NULL')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
+  PsiComment(END_OF_LINE_COMMENT)('## member assignment')
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_MEMBER_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('out')
+      R_LIST_SUBSET_OPERATOR
+        PsiElement($)('$')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('table')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('F.stat')

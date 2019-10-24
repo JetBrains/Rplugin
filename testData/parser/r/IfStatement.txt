@@ -1,0 +1,41 @@
+RFile:IfStatement.r
+  R_IF_STATEMENT
+    PsiElement(if)('if')
+    PsiElement(()('(')
+    R_OPERATOR_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('A')
+      R_COMPARE_OPERATOR
+        PsiElement(>)('>')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('a')
+    PsiElement())(')')
+    PsiWhiteSpace(' ')
+    PsiComment(END_OF_LINE_COMMENT)('# true, 84 > 42')
+    PsiElement(nl)('\n')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('cat')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('A')
+          PsiElement(,)(',')
+          PsiWhiteSpace(' ')
+          R_STRING_LITERAL_EXPRESSION
+            PsiElement(STRING)('">"')
+          PsiElement(,)(',')
+          PsiWhiteSpace(' ')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('a')
+          PsiElement(,)(',')
+          PsiWhiteSpace(' ')
+          R_STRING_LITERAL_EXPRESSION
+            PsiElement(STRING)('"\n"')
+          PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')

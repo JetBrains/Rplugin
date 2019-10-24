@@ -1,0 +1,14 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.intellij.datavis.inlays.inlayDescriptorProvider"
+                    interface="org.intellij.datavis.inlays.InlayDescriptorProvider"/>
+  </extensionPoints>
+
+  <project-components>
+    <component>
+      <implementation-class>org.intellij.datavis.inlays.InlaysManager</implementation-class>
+    </component>
+  </project-components>
+
+</idea-plugin>

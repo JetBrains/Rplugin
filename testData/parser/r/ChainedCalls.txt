@@ -1,0 +1,134 @@
+RFile:ChainedCalls.r
+  R_FUNCTION_EXPRESSION
+    PsiElement(function)('function')
+    R_PARAMETER_LIST
+      PsiElement(()('(')
+      R_PARAMETER
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('x')
+      PsiElement())(')')
+    R_BLOCK_EXPRESSION
+      PsiElement({)('{')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_IF_STATEMENT
+        PsiElement(if)('if')
+        PsiWhiteSpace(' ')
+        PsiElement(()('(')
+        R_UNARY_NOT_EXPRESSION
+          R_NOT_OPERATOR
+            PsiElement(!)('!')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('is.list')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('x')
+              PsiElement())(')')
+        PsiElement())(')')
+        R_BLOCK_EXPRESSION
+          PsiElement({)('{')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('    ')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('stop')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_STRING_LITERAL_EXPRESSION
+                PsiElement(STRING)('""')
+              PsiElement())(')')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('  ')
+          PsiElement(})('}')
+      PsiElement(nl)('\n')
+      PsiWhiteSpace('  ')
+      R_IF_STATEMENT
+        PsiElement(if)('if')
+        PsiWhiteSpace(' ')
+        PsiElement(()('(')
+        R_UNARY_NOT_EXPRESSION
+          R_NOT_OPERATOR
+            PsiElement(!)('!')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('all')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_CALL_EXPRESSION
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('unlist')
+                R_ARGUMENT_LIST
+                  PsiElement(()('(')
+                  R_CALL_EXPRESSION
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('lapply')
+                    R_ARGUMENT_LIST
+                      PsiElement(()('(')
+                      R_IDENTIFIER_EXPRESSION
+                        PsiElement(identifier)('x')
+                      PsiElement(,)(',')
+                      PsiWhiteSpace(' ')
+                      R_FUNCTION_EXPRESSION
+                        PsiElement(function)('function')
+                        R_PARAMETER_LIST
+                          PsiElement(()('(')
+                          R_PARAMETER
+                            R_IDENTIFIER_EXPRESSION
+                              PsiElement(identifier)('df')
+                          PsiElement())(')')
+                        R_BLOCK_EXPRESSION
+                          PsiElement({)('{')
+                          R_CALL_EXPRESSION
+                            R_IDENTIFIER_EXPRESSION
+                              PsiElement(identifier)('all')
+                            R_ARGUMENT_LIST
+                              PsiElement(()('(')
+                              R_OPERATOR_EXPRESSION
+                                R_MEMBER_EXPRESSION
+                                  R_IDENTIFIER_EXPRESSION
+                                    PsiElement(identifier)('df')
+                                  R_LIST_SUBSET_OPERATOR
+                                    PsiElement($)('$')
+                                  R_IDENTIFIER_EXPRESSION
+                                    PsiElement(identifier)('values')
+                                PsiWhiteSpace(' ')
+                                R_COMPARE_OPERATOR
+                                  PsiElement(==)('==')
+                                PsiWhiteSpace(' ')
+                                R_MEMBER_EXPRESSION
+                                  R_SUBSCRIPTION_EXPRESSION
+                                    R_IDENTIFIER_EXPRESSION
+                                      PsiElement(identifier)('x')
+                                    PsiElement([[)('[[')
+                                    R_NUMERIC_LITERAL_EXPRESSION
+                                      PsiElement(NUMERIC)('1')
+                                    PsiElement(]])(']]')
+                                  R_LIST_SUBSET_OPERATOR
+                                    PsiElement($)('$')
+                                  R_IDENTIFIER_EXPRESSION
+                                    PsiElement(identifier)('values')
+                              PsiElement())(')')
+                          PsiElement(})('}')
+                      PsiElement())(')')
+                  PsiElement())(')')
+              PsiElement())(')')
+        PsiElement())(')')
+        R_BLOCK_EXPRESSION
+          PsiElement({)('{')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('    ')
+          R_CALL_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('stop')
+            R_ARGUMENT_LIST
+              PsiElement(()('(')
+              R_STRING_LITERAL_EXPRESSION
+                PsiElement(STRING)('""')
+              PsiElement())(')')
+          PsiElement(nl)('\n')
+          PsiWhiteSpace('  ')
+          PsiElement(})('}')
+      PsiElement(nl)('\n')
+      PsiElement(})('}')

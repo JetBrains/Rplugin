@@ -1,0 +1,15 @@
+RFile:ReprInSublist.r
+  R_UNARY_NOT_EXPRESSION
+    R_NOT_OPERATOR
+      PsiElement(!)('!')
+    R_MEMBER_EXPRESSION
+      R_CALL_EXPRESSION
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('l10n_info')
+        R_ARGUMENT_LIST
+          PsiElement(()('(')
+          PsiElement())(')')
+      R_LIST_SUBSET_OPERATOR
+        PsiElement($)('$')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('`UTF-8`')

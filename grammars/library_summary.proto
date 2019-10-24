@@ -1,0 +1,32 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+syntax = "proto3";
+
+option java_package = "org.jetbrains.r.packages";
+
+package library_summary;
+
+message RLibrarySymbol {
+  enum Type {
+    OTHER = 0;
+    FUNCTION = 1;
+  }
+  string name = 1;
+  Type type = 2;
+  bool exported = 3;
+  string parameters = 4; // for functions
+}
+
+message RLibraryPackage {
+  enum Priority {
+    UNKNOWN = 0;
+    NA = 1;
+    RECOMMENDED = 2;
+    BASE = 3;
+  }
+  string name = 1;
+  Priority priority = 2;
+  repeated RLibrarySymbol symbols = 3;
+}

@@ -1,0 +1,6 @@
+RFile:RepeatStatement.r
+  R_REPEAT_STATEMENT
+    PsiElement(repeat)('repeat')
+    PsiWhiteSpace(' ')
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('statement')
