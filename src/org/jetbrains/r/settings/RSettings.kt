@@ -11,7 +11,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.testFramework.runInEdtAndWait
 import org.jdom.Element
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -24,7 +23,6 @@ class RSettings(private val project: Project) : PersistentStateComponent<Element
   var interpreterPath: String
     get() {
       fun getSuggestedPath(): String {
-        runInEdtAndWait {  }
         return runAsync { RInterpreterUtil.suggestHomePath() }.
           onError { Logger.getInstance(RSettings::class.java).error(it) }.
           blockingGet(RInterpreterUtil.EDT_TIMEOUT) ?: ""
