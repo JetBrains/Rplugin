@@ -23,7 +23,7 @@ interface RDataFrameViewer : Disposable {
 
   fun getValueAt(row: Int, col: Int): Any?
 
-  fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)? = null): Promise<Unit>?
+  fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)? = null): Promise<Unit>
 
   fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer
 

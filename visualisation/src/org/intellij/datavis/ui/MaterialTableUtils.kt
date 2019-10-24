@@ -7,6 +7,7 @@ package org.intellij.datavis.ui
 import com.intellij.util.ui.JBUI
 import javax.swing.JTable
 import kotlin.math.max
+import kotlin.math.min
 
 object MaterialTableUtils {
 
@@ -28,11 +29,11 @@ object MaterialTableUtils {
     return c.preferredSize.width
   }
 
-  fun getColumnWidth(table: JTable, column: Int): Int {
+  fun getColumnWidth(table: JTable, column: Int, maxRows: Int? = null): Int {
     var width = max(JBUI.scale(65), getColumnHeaderWidth(table, column)) // Min width
 
     // We should not cycle through all
-    for (row in 0 until table.rowCount) {
+    for (row in 0 until min(table.rowCount, maxRows ?: Int.MAX_VALUE)) {
       val renderer = table.getCellRenderer(row, column)
       val comp = table.prepareRenderer(renderer, row, column)
       width = max(comp.preferredSize.width + JBUI.scale(10), width)
@@ -41,8 +42,8 @@ object MaterialTableUtils {
     return width
   }
 
-  fun fitColumnWidth(column: Int, table: JTable, maxWidth: Int = 350) {
-    var width = getColumnWidth(table, column)
+  fun fitColumnWidth(column: Int, table: JTable, maxWidth: Int = 350, maxRows: Int? = null) {
+    var width = getColumnWidth(table, column, maxRows)
 
     if (maxWidth in 1 until width) {
       width = maxWidth
@@ -54,10 +55,10 @@ object MaterialTableUtils {
   /**
    * Fits the table columns widths by guideline https://jetbrains.github.io/ui/controls/table/
    */
-  fun fitColumnsWidth(table: JTable, maxWidth: Int = 350) {
+  fun fitColumnsWidth(table: JTable, maxWidth: Int = 350, maxRows: Int? = null) {
 
     for (column in 0 until table.columnCount) {
-      fitColumnWidth(column, table, maxWidth)
+      fitColumnWidth(column, table, maxWidth, maxRows)
     }
   }
 }

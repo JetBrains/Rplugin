@@ -8,6 +8,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -56,22 +57,18 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   override fun isColumnSortable(index: Int) = columns[index].sortable
 
   override fun getValueAt(row: Int, col: Int): Any? {
-    while (true) {
-      val promise = ensureLoaded(row, col) ?: break
-      promise.blockingGet(Int.MAX_VALUE)
-      if (promise.isSucceeded) break
-    }
+    ensureLoaded(row, col).blockingGet(Int.MAX_VALUE)
     val chunkIndex = row / CHUNK_SIZE
-    return chunks[chunkIndex]!![col][row % CHUNK_SIZE]
+    return chunks[chunkIndex]?.let { it[col][row % CHUNK_SIZE] }
   }
 
-  override fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)?): Promise<Unit>? {
+  override fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)?): Promise<Unit> {
     val chunkIndex = row / CHUNK_SIZE
-    if (chunks[chunkIndex] != null) return null
+    if (chunks[chunkIndex] != null) return resolvedPromise()
     promises[chunkIndex]?.let {
       when (it.state) {
         Promise.State.PENDING -> return it
-        Promise.State.SUCCEEDED -> return null
+        Promise.State.SUCCEEDED -> return resolvedPromise()
         Promise.State.REJECTED -> Unit
       }
     }

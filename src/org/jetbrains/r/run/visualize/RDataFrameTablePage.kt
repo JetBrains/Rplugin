@@ -27,6 +27,8 @@ import com.intellij.util.ui.TextTransferable
 import icons.VisualizationIcons
 import org.intellij.datavis.inlays.table.ClipboardUtils
 import org.intellij.datavis.inlays.table.filters.gui.TableFilterHeader
+import org.intellij.datavis.ui.MaterialTableUtils
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.run.visualize.RDataFrameRowSorter
 import org.jetbrains.r.run.visualize.RDataFrameTablePaginator
 import org.jetbrains.r.run.visualize.RDataFrameViewer
@@ -80,6 +82,14 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     add(scrollPane, BorderLayout.CENTER)
 
     createActionsPanel()
+
+    var loadedPromise = resolvedPromise<Unit>()
+    for (i in 0 until FIT_WIDTH_MAX_ROWS) {
+      loadedPromise = loadedPromise.thenAsync { viewer.ensureLoaded(i, 0) }
+    }
+    loadedPromise.then {
+      MaterialTableUtils.fitColumnsWidth(table, maxRows = FIT_WIDTH_MAX_ROWS)
+    }
   }
 
   private fun setupTablePopupMenu() {
@@ -252,6 +262,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   }
 
   companion object {
+    private const val FIT_WIDTH_MAX_ROWS = 1024
+
     private val FILTER_TOOLTIP_ESCAPED = RDataFrameTablePage::class.java.getResource("/visualizer/TableViewFilterTooltip.html")
                                            ?.readText()?.replace("&", "&&")
                                            ?.replace("_", "__") ?: "Filter"

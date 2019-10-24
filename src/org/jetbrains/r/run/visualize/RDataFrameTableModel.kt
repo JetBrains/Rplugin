@@ -16,8 +16,12 @@ class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() 
   override fun getColumnClass(index: Int) = viewer.getColumnType(index).java
 
   override fun getValueAt(row: Int, col: Int): Any? {
-    viewer.ensureLoaded(row, col) { fireTableDataChanged() } ?: return viewer.getValueAt(row, col)
-    return "<loading>"
+    val promise = viewer.ensureLoaded(row, col) { fireTableDataChanged() }
+    return if (promise.isSucceeded) {
+      viewer.getValueAt(row, col)
+    } else {
+      "<loading>"
+    }
   }
 
   override fun setValueAt(value: Any?, row: Int, col: Int) = throw NotImplementedError("Table is immutable")
