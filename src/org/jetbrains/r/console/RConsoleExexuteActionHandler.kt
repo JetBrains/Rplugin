@@ -21,6 +21,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
 
 class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
@@ -55,6 +56,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
       field = newState
     }
+
+  @Volatile
+  var chunkState: ChunkExecutionState? = null
 
   internal inner class ReplListener : RInterop.ReplListener {
     private var debugLines = mutableListOf<String>()

@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -19,11 +20,14 @@ import icons.org.jetbrains.r.RBundle
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*
+import org.jetbrains.r.console.RConsoleExecuteActionHandler
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.rendering.editor.RunAllState
-import org.jetbrains.r.rendering.editor.runAllState
+import org.jetbrains.r.rendering.editor.ChunkExecutionState
+import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import java.util.concurrent.atomic.AtomicReference
 
 
 fun isChunkFenceLang(element: PsiElement) =
@@ -51,7 +55,7 @@ abstract class AbstractDebugChunkAction : AnAction(RBundle.message("run.chunk.ac
 
 class RunChunksAboveAction: AbstractRunChunksAboveAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && !isRunningAllChunks(e.editor)
+    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
 
   override fun actionPerformed(e: AnActionEvent) {
@@ -64,7 +68,7 @@ class RunChunksAboveAction: AbstractRunChunksAboveAction(), RPromotedAction {
 
 class RunChunksBelowAction: AbstractRunChunksBelowAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && !isRunningAllChunks(e.editor)
+    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
 
   override fun actionPerformed(e: AnActionEvent) {
@@ -82,7 +86,7 @@ class RunChunkAction : AbstractRunChunkAction(), RPromotedAction {
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    showConsoleAndRun(e) { RunChunkHandler.execute(getCodeFenceByEvent(e)!!) }
+    showConsoleAndRun(e) { executeChunk(e) }
   }
 }
 
@@ -93,7 +97,7 @@ class DebugChunkAction : AbstractDebugChunkAction(), RPromotedAction {
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    showConsoleAndRun(e) { RunChunkHandler.execute(getCodeFenceByEvent(e)!!, debug = true) }
+    showConsoleAndRun(e) { executeChunk(e, isDebug = true) }
   }
 }
 
@@ -102,15 +106,23 @@ class InterruptChunkExecutionAction :
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType &&
-                               getCodeFenceByEvent(e)?.fenceLangChunkState?.isNotNone == true
+                               e.project?.chunkExecutionState?.let { getCodeFenceByEvent(e) == it.currentPsiElement.get() } == true
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    RunChunkHandler.interruptChunkExecution(getCodeFenceByEvent(e)!!)
+    RunChunkHandler.interruptChunkExecution(e.project!!)
   }
 }
 
-fun isRunningAllChunks(editor: Editor?): Boolean = editor?.runAllState != null
+fun isChunkRunning(psiElement: PsiElement?) = psiElement?.let { it.project.chunkExecutionState?.currentPsiElement?.get() == it } == true
+
+fun canRunChunk(editor: Editor?): Boolean =
+  editor?.project?.let { canRunChunk(it) } == true
+
+fun canRunChunk(project: Project): Boolean =
+  RConsoleManager.getInstance(project).currentConsoleOrNull?.executeActionHandler?.let {
+    it.chunkState == null && it.state == RConsoleExecuteActionHandler.State.PROMPT
+  } ?: true
 
 private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
   e.getData(CODE_FENCE_DATA_KEY)?.let { return it }
@@ -125,17 +137,22 @@ private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
 
 private fun isEnabled(e: AnActionEvent): Boolean {
   return e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType == RMarkdownFileType &&
-         !isRunningAllChunks(e.editor) &&
-         getCodeFenceByEvent(e)?.let { it.fenceLangChunkState.let { s -> s == null || s == ChunkState.NONE} } == true
+         canRunChunk(e.editor)
 }
 
 private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffset: Int) {
-  RunAllState().apply {
-    editor.runAllState = this
+  ChunkExecutionState().apply {
+    editor.chunkExecutionState = this
     RunChunkHandler.runAllChunks(file, currentPsiElement, terminationRequired, startOffset - 1, endOffset).onProcessed {
-      editor.runAllState = null
+      editor.chunkExecutionState = null
     }
   }
+}
+
+private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
+  val element = getCodeFenceByEvent(e)!!
+  element.project.chunkExecutionState = ChunkExecutionState(currentPsiElement = AtomicReference(element), isDebug = isDebug)
+  RunChunkHandler.execute(element, isDebug = isDebug).onProcessed { element.project.chunkExecutionState = null }
 }
 
 private val AnActionEvent.codeFence: PsiElement?

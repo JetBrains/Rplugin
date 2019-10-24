@@ -16,7 +16,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.util.Key
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -37,6 +37,7 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
@@ -47,24 +48,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 
-enum class ChunkState {
-  NONE, RUNNING, DEBUGGING
-}
-
-val ChunkState?.isNone
-  get() = this == null || this == ChunkState.NONE
-
-val ChunkState?.isNotNone
-  get() = !isNone
-
 private const val RUN_CHUNK_GROUP_ID = "org.jetbrains.r.rendering.chunk.RunChunkActions"
-
-private val FENCE_LANG_STATE_KEY = Key.create<ChunkState>("org.jetbrains.r.rendering.chunk.State")
-val FENCE_LANG_INTERRUPT_KEY = Key.create<() -> Unit>("org.jetbrains.r.rendering.chunk.Interrupt")
-
-var PsiElement.fenceLangChunkState : ChunkState?
-  get() = getUserData(FENCE_LANG_STATE_KEY)
-  set(value) = putUserData(FENCE_LANG_STATE_KEY, value)
 
 object RunChunkHandler {
 
@@ -101,15 +85,14 @@ object RunChunkHandler {
     return result
   }
 
-  fun execute(element: PsiElement, debug: Boolean = false, isBatchMode: Boolean = false) : Promise<Unit> {
+  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Unit> {
     val promise = AsyncPromise<Unit>()
-    element.fenceLangChunkState = if (debug) ChunkState.DEBUGGING else ChunkState.RUNNING
     if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
     val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
     val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
     RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
       runAsync {
-        runReadAction { runHandlersAndExecuteChunk(it, element, editor, debug, isBatchMode) }.processed(promise)
+        runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode) }.processed(promise)
       }
     }
     return promise
@@ -165,8 +148,6 @@ object RunChunkHandler {
         e.message?.takeIf { it.isNotEmpty() } ?: RBundle.message("run.chunk.notification.failed"),
         NotificationType.WARNING, null)
       notification.notify(project)
-      element.fenceLangChunkState = ChunkState.NONE
-      element.putCopyableUserData(FENCE_LANG_INTERRUPT_KEY, null)
       ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
       promise.setError(e.message.orEmpty())
     }
@@ -182,8 +163,6 @@ object RunChunkHandler {
                             inlayElement: PsiElement,
                             isBatchMode: Boolean,
                             isDebug: Boolean) {
-    element.fenceLangChunkState = ChunkState.NONE
-    element.putCopyableUserData(FENCE_LANG_INTERRUPT_KEY, null)
     if (!isDebug) {
       logNonEmptyError(rInterop.runAfterChunk())
     }
@@ -212,9 +191,6 @@ object RunChunkHandler {
   private fun executeCode(console: RConsoleView, codeElement: PsiElement, fenceElement: PsiElement, debug: Boolean = false):
     Promise<List<ProcessOutput>> {
     return if (debug) {
-      fenceElement.putCopyableUserData(FENCE_LANG_INTERRUPT_KEY) {
-        console.debugger.stop()
-      }
       console.debugger.executeChunk(codeElement.containingFile.virtualFile, codeElement.textRange)
     } else {
       val result = mutableListOf<ProcessOutput>()
@@ -223,10 +199,7 @@ object RunChunkHandler {
       }
       val promise = AsyncPromise<List<ProcessOutput>>()
       executePromise.onProcessed { promise.setResult(result) }
-      fenceElement.putCopyableUserData(FENCE_LANG_INTERRUPT_KEY) {
-        executePromise.cancel(true)
-        promise.setResult(result)
-      }
+      codeElement.project.chunkExecutionState?.cancellableExecutionPromise?.set(executePromise)
       promise
     }
   }
@@ -260,8 +233,14 @@ object RunChunkHandler {
     }
   }
 
-  fun interruptChunkExecution(element: PsiElement) {
-    element.getCopyableUserData(FENCE_LANG_INTERRUPT_KEY)?.invoke()
+  fun interruptChunkExecution(project: Project) {
+    val chunkExecutionState = project.chunkExecutionState ?: return
+    if (chunkExecutionState.isDebug) {
+      RConsoleManager.getInstance(project).currentConsoleOrNull?.debugger?.stop()
+    }
+    else {
+      chunkExecutionState.cancellableExecutionPromise.get()?.cancel()
+    }
   }
 
   private fun escape(text: String) = text.replace("""\""", """\\""").replace("""'""", """\'""")

@@ -19,12 +19,11 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
@@ -137,38 +136,47 @@ private fun createShowDocument(project: Project, report: VirtualFile): AnAction 
     }
   }
 
-class RunAllState(val terminationRequired: AtomicBoolean = AtomicBoolean(),
-                  val currentPsiElement: AtomicReference<PsiElement> = AtomicReference<PsiElement>())
+class ChunkExecutionState(val terminationRequired: AtomicBoolean = AtomicBoolean(),
+                          val isDebug: Boolean = false,
+                          val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
+                          val cancellableExecutionPromise: AtomicReference<CancellablePromise<Unit>> = AtomicReference())
 
-private val RunAllStateKey: Key<RunAllState> = Key.create<RunAllState>("org.jetbrains.r.rendering.editor.RunAllState")
 
-var Editor.runAllState: RunAllState?
-  get() = getUserData(RunAllStateKey)
-  set(value) = putUserData(RunAllStateKey, value)
+var Editor.chunkExecutionState: ChunkExecutionState?
+  get() = project?.chunkExecutionState
+  set(value) {
+    project?.chunkExecutionState = value
+  }
+
+var Project.chunkExecutionState: ChunkExecutionState?
+  get() = RConsoleManager.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState
+  set(value) {
+    RConsoleManager.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState = value
+  }
 
 
 private fun createRunAllAction(): AnAction =
   object : SameTextAction(RBundle.message("rmarkdown.editor.toolbar.runAllChunks")) {
 
     override fun update(e: AnActionEvent) {
-      val state = e.editor?.runAllState
+      val state = e.editor?.chunkExecutionState
       e.presentation.icon = if (state == null) AllIcons.Actions.RunAll else AllIcons.Actions.Suspend
     }
 
     override fun actionPerformed(e: AnActionEvent) {
       val editor = e.editor ?: return
-      val state = editor.runAllState
+      val state = editor.chunkExecutionState
       if (state == null) {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
-        RunAllState().apply {
-          editor.runAllState = this
-          RunChunkHandler.runAllChunks(psiFile, currentPsiElement, terminationRequired).onProcessed { editor.runAllState = null }
+        ChunkExecutionState().apply {
+          editor.chunkExecutionState = this
+          RunChunkHandler.runAllChunks(psiFile, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
         }
       }
       else {
         state.terminationRequired.set(true)
         val element = state.currentPsiElement.get() ?: return
-        RunChunkHandler.interruptChunkExecution(element)
+        RunChunkHandler.interruptChunkExecution(element.project)
       }
     }
   }

@@ -13,9 +13,7 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.r.actions.editor
-import org.jetbrains.r.rendering.editor.runAllState
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 
@@ -38,9 +36,9 @@ class RunChunkLineMarkerProvider : LineMarkerProvider{
     inner class RunChunkGutterIconRenderer : LineMarkerGutterIconRenderer<PsiElement>(this@RunChunkMarkerInfo) {
       override fun getIcon(): Icon =
         when {
-          element?.let { PsiUtilBase.findEditor(it)?.runAllState != null } == true -> IconLoader.getDisabledIcon(AllIcons.Actions.Execute)
-          (element?.fenceLangChunkState).isNone == true -> AllIcons.Actions.Execute
-          else -> AllIcons.Actions.Suspend
+          isChunkRunning(element) -> AllIcons.Actions.Suspend
+          element?.let { !canRunChunk(it.project) } == true -> IconLoader.getDisabledIcon(AllIcons.Actions.Execute)
+          else -> AllIcons.Actions.Execute
         }
     }
   }
@@ -48,16 +46,14 @@ class RunChunkLineMarkerProvider : LineMarkerProvider{
 
 object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
   override fun navigate(e: MouseEvent, element: PsiElement) {
-    if (PsiUtilBase.findEditor(element)?.runAllState != null) return
     val actionManager = ActionManager.getInstance()
-    if (element.fenceLangChunkState.isNone == true) {
+    if (isChunkRunning(element)) {
+      RunChunkHandler.interruptChunkExecution(element.project)
+    } else if (canRunChunk(element.project)) {
       val actions = createRunChunkActionGroup(element)
       actionManager.createActionPopupMenu(ActionPlaces.EDITOR_GUTTER_POPUP, actions as ActionGroup)
         .getComponent()
         .show(e.component, e.getX(), e.getY())
-    }
-    else {
-      RunChunkHandler.interruptChunkExecution(element)
     }
   }
 
@@ -80,7 +76,7 @@ internal class ChunkAction(private val element: PsiElement, private val action: 
     this(element, ActionManager.getInstance().getAction(actionId))
 
   override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = element.fenceLangChunkState.isNone && !isRunningAllChunks(e.editor)
+    e.presentation.isEnabled = canRunChunk(e.editor)
   }
 
   override fun actionPerformed(e: AnActionEvent) {
