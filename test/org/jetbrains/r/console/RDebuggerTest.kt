@@ -139,6 +139,24 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     TestCase.assertFalse(debugger.isEnabled)
   }
 
+  fun testBackslashes() {
+    val file = loadFileWithBreakpointsFromText("""
+      abc = "\\"
+      xyz = all(grepl('^(\\d*%|-)${'$'}', 'foobarbaz'))
+    """.trimIndent(), name = "a.R")
+    val debugger = console.debugger
+    debugger.executeDebugSource(file).blockingGet(5000)
+    TestCase.assertFalse(debugger.isEnabled)
+    rInterop.executeCode("cat(abc)").let {
+      TestCase.assertEquals("", it.stderr)
+      TestCase.assertEquals("\\", it.stdout)
+    }
+    rInterop.executeCode("cat(xyz)").let {
+      TestCase.assertEquals("", it.stderr)
+      TestCase.assertEquals("FALSE", it.stdout)
+    }
+  }
+
   companion object {
     private val GLOBAL = RBundle.message("debugger.global.stack.frame")
   }

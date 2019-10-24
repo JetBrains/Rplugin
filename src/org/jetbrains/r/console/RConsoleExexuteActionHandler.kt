@@ -108,7 +108,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     fun onPromptAsync(isDebug: Boolean): Promise<Unit> {
-      return consoleView.debugger.handlePrompt(isDebug, debugLines).then { isPrompt ->
+      val currentDebugLines = debugLines
+      debugLines = mutableListOf()
+      return consoleView.debugger.handlePrompt(isDebug, currentDebugLines).then { isPrompt ->
         if (!isPrompt) return@then
         if (stdoutCache.isNotEmpty()) onText("\n", ProcessOutputType.STDOUT)
         rInterop.updateSysFrames()
