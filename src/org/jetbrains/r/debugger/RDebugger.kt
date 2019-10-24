@@ -196,6 +196,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       currentCommand = Command.Resume
       rInterop.replSendDebuggerCommand(DebuggerCommand.CONTINUE)
+      leaveInteractive()
     }
   }
 
@@ -211,6 +212,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       rInterop.replInterrupt()
       rInterop.replSendDebuggerCommand(DebuggerCommand.QUIT)
+      leaveInteractive()
     }
   }
 
@@ -219,6 +221,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       currentCommand = Command.StepOver(locationsStack.size)
       rInterop.replSendDebuggerCommand(DebuggerCommand.NEXT)
+      leaveInteractive()
     }
   }
 
@@ -227,6 +230,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       currentCommand = Command.StepInto(locationsStack.size)
       rInterop.replSendDebuggerCommand(DebuggerCommand.NEXT)
+      leaveInteractive()
     }
   }
 
@@ -235,6 +239,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       currentCommand = Command.ForceStepInto
       rInterop.replSendDebuggerCommand(DebuggerCommand.STEP)
+      leaveInteractive()
     }
   }
 
@@ -243,6 +248,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return executeAction {
       currentCommand = Command.StepOut(locationsStack.size)
       rInterop.replSendDebuggerCommand(DebuggerCommand.CONTINUE)
+      leaveInteractive()
     }
   }
 
