@@ -18,6 +18,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.rinterop.RInterop
@@ -55,7 +56,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       field = newState
     }
 
-  internal val replListener = object : RInterop.ReplListener {
+  internal inner class ReplListener : RInterop.ReplListener {
     private var debugLines = mutableListOf<String>()
     private val stdoutCache = StringBuilder()
 
@@ -103,7 +104,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onPrompt(isDebug: Boolean) {
-      consoleView.debugger.handlePrompt(isDebug, debugLines).then { isPrompt ->
+      onPromptAsync(isDebug)
+    }
+
+    fun onPromptAsync(isDebug: Boolean): Promise<Unit> {
+      return consoleView.debugger.handlePrompt(isDebug, debugLines).then { isPrompt ->
         if (!isPrompt) return@then
         if (stdoutCache.isNotEmpty()) onText("\n", ProcessOutputType.STDOUT)
         rInterop.updateSysFrames()
@@ -111,15 +116,14 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         RLibraryWatcher.getInstance(consoleView.project).refresh()
         fireCommandExecuted()
       }
-      debugLines = mutableListOf<String>()
     }
 
     override fun onTermination() {
       state = State.TERMINATED
     }
-
-    private val DEBUG_LINE_REGEX = Regex("(.*)((debug( at .*)?|Called from|debugging in|exiting from): .*)", RegexOption.DOT_MATCHES_ALL)
   }
+
+  internal val replListener = ReplListener()
 
   init {
     rInterop.addReplListener(replListener)
@@ -199,6 +203,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   interface Listener {
     fun onCommandExecuted()
     fun onReset() { }
+  }
+
+  companion object {
+    private val DEBUG_LINE_REGEX = Regex("(.*)((debug( at .*)?|Called from|debugging in|exiting from): .*)", RegexOption.DOT_MATCHES_ALL)
   }
 }
 

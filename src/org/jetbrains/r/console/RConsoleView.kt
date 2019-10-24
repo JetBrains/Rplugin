@@ -20,6 +20,7 @@ import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RDebugger
@@ -68,15 +69,21 @@ class RConsoleView(val rInterop: RInterop,
       throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
     }
     val isDebug = executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT
-    val result = rInterop.executeCodeAsync(code, consumer)
+    val executePromise = rInterop.executeCodeAsync(code, consumer)
+    val result = object : AsyncPromise<Unit>() {
+      override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        executePromise.cancel(mayInterruptIfRunning)
+        return super.cancel(mayInterruptIfRunning)
+      }
+    }
     rInterop.executeTask {
-      promiseToInterrupt = result
+      promiseToInterrupt = executePromise
       executeActionHandler.replListener.onBusy()
-      result.onProcessed {
+      executePromise.onProcessed {
         rInterop.executeTask {
           promiseToInterrupt = null
           rInterop.invalidateCaches()
-          executeActionHandler.replListener.onPrompt(isDebug)
+          executeActionHandler.replListener.onPromptAsync(isDebug).processed(result)
         }
       }
     }
