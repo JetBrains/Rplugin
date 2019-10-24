@@ -62,7 +62,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   }
 
   private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult) =
-    loadedNamespaces[RPackage.create(result.element!!.containingFile)?.packageName] ?: Int.MAX_VALUE
+    loadedNamespaces[RPackage.getOrCreate(result.element!!.containingFile)?.packageName] ?: Int.MAX_VALUE
 
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
 }

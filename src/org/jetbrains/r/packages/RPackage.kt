@@ -7,6 +7,9 @@ package org.jetbrains.r.packages
 
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.CachedValueProfiler
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.IOUtil
 import org.jetbrains.r.bin.RBinFileType
@@ -35,7 +38,11 @@ data class RPackage(val packageName: String, val packageVersion: String, val pri
   companion object {
     private val SKELETON_FILE_REGEX = "([^-]*)-(.*)\\.${RBinFileType.DOT_R_BIN_EXTENSION}".toRegex()
 
-    fun create(file: PsiFile): RPackage? {
+    fun getOrCreate(file: PsiFile): RPackage? {
+      return CachedValuesManager.getCachedValue(file) { CachedValueProvider.Result<RPackage>(create(file), file) }
+    }
+
+    private fun create(file: PsiFile): RPackage? {
       val interpreter = RInterpreterManager.getInterpreter(file.project) ?: return null
       val skeletonRoots = interpreter.skeletonRoots
       val skeletonPath = skeletonRoots.firstOrNull { VfsUtil.isAncestor(it, file.virtualFile, true) } ?: return null
