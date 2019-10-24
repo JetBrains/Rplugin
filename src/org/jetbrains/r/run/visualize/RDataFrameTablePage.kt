@@ -43,6 +43,7 @@ import java.awt.event.MouseEvent
 import java.io.BufferedWriter
 import java.io.File
 import javax.swing.*
+import kotlin.math.min
 
 class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout()) {
   private val table = RVisualizeTableUtil.createMaterialTableFromViewer(viewer)
@@ -84,7 +85,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     createActionsPanel()
 
     var loadedPromise = resolvedPromise<Unit>()
-    for (i in 0 until FIT_WIDTH_MAX_ROWS) {
+    for (i in 0 until min(viewer.nRows, FIT_WIDTH_MAX_ROWS)) {
       loadedPromise = loadedPromise.thenAsync { viewer.ensureLoaded(i, 0) }
     }
     loadedPromise.then {
