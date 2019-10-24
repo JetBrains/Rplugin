@@ -315,14 +315,16 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     get() = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
 
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String?  =
-    libraryPaths.firstOrNull { libraryPathToSkeletonPath(it) == skeletonPath }?.path
+    libraryPaths.firstOrNull { Paths.get(libraryPathToSkeletonPath(it)) == Paths.get(skeletonPath) }?.path
 
   override val skeletonsDirectory: String
     get() = "${PathManager.getSystemPath()}${File.separator}${RSkeletonUtil.SKELETON_DIR_NAME}"
 
   private fun libraryPathToSkeletonPath(libraryPath: VirtualFile) =
-    skeletonsDirectory +
-    "${File.separator}${interpreterName}${File.separator}${hash(libraryPath.path)}${File.separator}"
+    Paths.get(
+      skeletonsDirectory,
+      "${File.separator}${interpreterName}${File.separator}${hash(libraryPath.path)}${File.separator}"
+    ).toString()
 
   private fun hash(libraryPath: String): String {
     return Paths.get(libraryPath).joinToString(separator = "", postfix = "-${libraryPath.hashCode()}") { it.toString().subSequence(0, 1) }
