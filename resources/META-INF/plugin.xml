@@ -130,6 +130,13 @@ You can find the source code in the following repositories:
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
+        <action id="org.jetbrains.r.actions.DebugSelection"
+                class="org.jetbrains.r.actions.DebugSelection">
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
     </actions>
 
 <!-- chunk anctions-->

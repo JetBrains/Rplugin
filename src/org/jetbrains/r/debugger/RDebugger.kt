@@ -394,10 +394,10 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     return debugCodeViewer.calculatePosition(functionName, text, match.groupValues[4])
   }
 
-  fun executeDebugSource(sourceFile: VirtualFile): Promise<Unit> {
+  fun executeDebugSource(sourceFile: VirtualFile, range: TextRange? = null): Promise<Unit> {
     if (isEnabled) throw RDebuggerException(RBundle.message("debugger.still.running"))
     return executeAction {
-      val (code, fileId) = codeGenerator.prepareDebugSource(sourceFile)
+      val (code, fileId) = codeGenerator.prepareDebugSource(sourceFile, range)
       executeImpl(sourceFile, code, fileId)
       consoleView.print(RBundle.message("debugger.debugging.message", sourceFile.canonicalPath.orEmpty()) + "\n",
                         ConsoleViewContentType.ERROR_OUTPUT)

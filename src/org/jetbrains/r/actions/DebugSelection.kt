@@ -6,28 +6,22 @@ package org.jetbrains.r.actions
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runWriteAction
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleUtil
 
 
-/**
- * Event handler for the "Run Selection" action within an Arc code editor - runs the currently selected text within the
- * current REPL.
- */
-class EvaluateInConsole : REditorActionBase(
-  RBundle.message("run.selection.action.text"),
-  RBundle.message("run.selection.action.description"),
+class DebugSelection : REditorActionBase(
+  RBundle.message("debug.selection.action.text"),
+  RBundle.message("debug.selection.action.description"),
   AllIcons.Actions.Execute) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val selection = REditorActionUtil.getSelectedCode(e) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
-      .onSuccess { runInEdt { runWriteAction { it.executeText(selection.code.trim { it <= ' ' }) } } }
+      .onSuccess { it.debugger.executeDebugSource(selection.file, selection.range) }
       .onError { ex -> RConsoleUtil.notifyError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }
