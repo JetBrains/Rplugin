@@ -21,19 +21,22 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.nio.file.Paths
+import java.util.concurrent.TimeoutException
 
 object RInteropUtil {
   val LOG = Logger.getInstance(RInteropUtil.javaClass)
   fun runRWrapperAndInterop(project: Project): Promise<RInterop> {
     val promise = AsyncPromise<RInterop>()
+    var createdProcess: OSProcessHandler? = null
     ProcessIOExecutorService.INSTANCE.execute {
       runRWrapper(project).onError {
         promise.setError(it)
       }.onSuccess { process ->
+        createdProcess = process
         createRInterop(process, project, promise)
       }
     }
-    return promise
+    return promise.onError { createdProcess?.destroyProcess() }
   }
 
   private fun createRInterop(process: ColoredProcessHandler,
@@ -59,7 +62,7 @@ object RInteropUtil {
         if (output.isNotBlank()) {
           LOG.warn(output.toString())
         }
-        if (linePromise.state == Promise.State.PENDING) linePromise.setError(RInteropException("RWrapper terminated"))
+        if (linePromise.state == Promise.State.PENDING) linePromise.setError(RuntimeException("RWrapper terminated"))
       }
 
       override fun startNotified(event: ProcessEvent) {
@@ -70,23 +73,30 @@ object RInteropUtil {
       }
     })
     process.startNotify()
-    linePromise.onSuccess { line ->
-      val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: throw RInteropException(
-        "Invalid RWrapper output")
-      val rInterop = RInterop(process, "127.0.0.1", port, project)
-      val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
-                         ?: throw RuntimeException("R Scripts not found")
-      val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
-      val init = rInterop.init(rScriptsPath, projectDir)
-      if (init.stdout.isNotBlank()) {
-        LOG.warn(init.stdout)
+    ProcessIOExecutorService.INSTANCE.execute {
+      try {
+        val line = try {
+          linePromise.blockingGet(RWRAPPER_LAUNCH_TIMEOUT) ?: ""
+        } catch (e: TimeoutException) {
+          throw RuntimeException("RWrapper does not produce output")
+        }
+        val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull()
+                   ?: throw RuntimeException("Invalid RWrapper output")
+        val rInterop = RInterop(process, "127.0.0.1", port, project)
+        val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
+                           ?: throw RuntimeException("R Scripts not found")
+        val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
+        val init = rInterop.init(rScriptsPath, projectDir)
+        if (init.stdout.isNotBlank()) {
+          LOG.warn(init.stdout)
+        }
+        if (init.stderr.isNotBlank()) {
+          LOG.warn(init.stderr)
+        }
+        promise.setResult(rInterop)
+      } catch (e: Throwable) {
+        promise.setError(e)
       }
-      if (init.stderr.isNotBlank()) {
-        LOG.warn(init.stderr)
-      }
-      promise.setResult(rInterop)
-    }.onError {
-      promise.setError(it)
     }
   }
 
@@ -118,7 +128,7 @@ object RInteropUtil {
       command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))
     }
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
-    return result.also {  result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) } ) }
+    return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) }) }
   }
 
   private fun getWrapperPath(version: Version): String {
@@ -169,6 +179,6 @@ object RInteropUtil {
       .runProcess(1000).stdout.trim().split(File.pathSeparator)
     return RPaths(paths[0], paths[1], paths[2], paths[3])
   }
-}
 
-class RInteropException(message: String) : Exception(message)
+  private const val RWRAPPER_LAUNCH_TIMEOUT = 2500
+}

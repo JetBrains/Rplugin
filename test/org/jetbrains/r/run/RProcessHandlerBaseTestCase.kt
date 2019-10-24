@@ -29,7 +29,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
 
   companion object {
     private fun getRInterop(project: Project): RInterop {
-      return RInteropUtil.runRWrapperAndInterop(project).blockingGet(30000000)!!
+      return RInteropUtil.runRWrapperAndInterop(project).blockingGet(3000)!!
     }
   }
 }
