@@ -32,10 +32,12 @@ import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
+import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.RowSorter
 import javax.swing.SortOrder
+import kotlin.collections.HashSet
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 
@@ -54,6 +56,13 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     if (isUnitTestMode) it.withDeadline(Deadline.after(DEADLINE_TEST, TimeUnit.SECONDS)) else it
   }
   private val executor = ConcurrencyUtil.newSingleThreadExecutor("RInterop")
+  private val heartbeatTimer = Timer().also {
+    it.schedule(object : TimerTask() {
+      override fun run() {
+        executeAsync(asyncStub::isBusy, Empty.getDefaultInstance())
+      }
+    }, 0L, HEARTBEAT_PERIOD.toLong())
+  }
   private val replListeners = HashSet<ReplListener>()
   @Volatile private var finished = false
   private var replProcessingStarted = false
@@ -129,6 +138,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   fun init(rScriptsPath: String, projectDir: String): RIExecutionResult {
     val request = Service.Init.newBuilder().setRScriptsPath(rScriptsPath).setProjectDir(projectDir).build()
     return executeRequest(RPIServiceGrpc.getInitMethod(), request)
+  }
+
+  fun isBusy(): Boolean {
+    return executeWithCheckCancel(asyncStub::isBusy, Empty.getDefaultInstance()).value
   }
 
   fun setWorkingDir(dir: String) {
@@ -502,6 +515,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   override fun dispose() {
     finished = true
+    heartbeatTimer.cancel()
     executor.execute {
       try {
         executeAsync(asyncStub::quit, Empty.newBuilder().build()).get(1000, TimeUnit.MILLISECONDS)
@@ -542,6 +556,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onRequestReadLn(prompt: String) {}
     fun onPrompt(isDebug: Boolean) {}
     fun onTermination() {}
+  }
+
+  companion object {
+    const val HEARTBEAT_PERIOD = 20000
   }
 }
 

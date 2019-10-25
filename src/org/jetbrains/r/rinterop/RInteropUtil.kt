@@ -117,6 +117,7 @@ object RInteropUtil {
     var command = GeneralCommandLine()
       .withExePath(wrapperPath)
       .withWorkDirectory(project.basePath!!)
+      .withParameters("--with-timeout")
       .withEnvironment("R_HOME", paths.home)
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
