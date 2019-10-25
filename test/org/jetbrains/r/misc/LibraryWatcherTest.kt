@@ -18,6 +18,11 @@ class LibraryWatcherTest : RUsefulTestCase() {
   private val packageName = "rplugin.test.package"
   private val packageFile = "$testDataPath/packages/$packageName.tar.gz"
 
+  override fun tearDown() {
+    RLibraryWatcher.getInstance(project).registerRootsToWatch(emptyList())
+    super.tearDown()
+  }
+
   fun testPackageInstallUninstall() {
     val project = myFixture.project
     val interpreterPath = RInterpreterUtil.suggestHomePath()
