@@ -43,8 +43,15 @@ object RGraphicsUtils {
   private const val BINARIES_DIR_NAME = "r-binaries"
   private const val GRAPHICS_GROUP_ID = "RGraphics"
 
-  private const val DEFAULT_GRAPHICS_RESOLUTION = 300
+  private const val FULL_HD_HEIGHT = 1080
+  private const val QUAD_HD_HEIGHT = 1440
+  private const val ULTRA_HD_HEIGHT = 2160
+
   private const val MINIMAL_GRAPHICS_RESOLUTION = 75
+  private const val FALLBACK_RESOLUTION = 150
+  private const val FULL_HD_RESOLUTION = 300
+  private const val QUAD_HD_RESOLUTION = 450
+  private const val ULTRA_HD_RESOLUTION = 600
 
   private fun getAvailableVersions(): List<Version> {
     val binariesDirectory = RHelpersUtil.findFileInRHelpers(BINARIES_DIR_NAME)
@@ -141,6 +148,14 @@ object RGraphicsUtils {
 
   fun getDefaultScreenParameters(): ScreenParameters {
     val screenSize = Toolkit.getDefaultToolkit().screenSize
-    return ScreenParameters(screenSize.width, screenSize.height, DEFAULT_GRAPHICS_RESOLUTION)
+    val width = screenSize.width
+    val height = screenSize.height
+    val resolution = when {
+      height >= ULTRA_HD_HEIGHT -> ULTRA_HD_RESOLUTION
+      height >= QUAD_HD_HEIGHT -> QUAD_HD_RESOLUTION
+      height >= FULL_HD_HEIGHT -> FULL_HD_RESOLUTION
+      else -> FALLBACK_RESOLUTION
+    }
+    return ScreenParameters(width, height, resolution)
   }
 }

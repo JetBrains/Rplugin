@@ -119,8 +119,11 @@ object RunChunkHandler {
     val rmarkdownParameters = "---${System.lineSeparator()}${paragraph?.text ?: ""}${System.lineSeparator()}---"
     val cacheDirectory = ChunkPathManager.getCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
     FileUtil.delete(File(cacheDirectory))
-    val (width, height) = if (ApplicationManager.getApplication().isHeadlessEnvironment) 800 to 600
-                          else with(RGraphicsUtils.getDefaultScreenParameters()) { width to height }
+    val screenParameters = if (ApplicationManager.getApplication().isHeadlessEnvironment) {
+      RGraphicsUtils.ScreenParameters(800, 600, null)
+    } else {
+      RGraphicsUtils.getDefaultScreenParameters()
+    }
     try {
       if (console.isRunningCommand) {
         throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
@@ -132,7 +135,7 @@ object RunChunkHandler {
         if (!isBatchMode) {
           console.debugger.isVariableRefreshEnabled = false
         }
-        logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, width, height))
+        logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
       }
       executeCode(console, codeElement, element, isDebug).onProcessed { outputs ->
         runAsync {

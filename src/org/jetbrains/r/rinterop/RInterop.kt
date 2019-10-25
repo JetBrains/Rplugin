@@ -221,12 +221,14 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeRequest(RPIServiceGrpc.getHtmlViewerResetMethod(), Empty.getDefaultInstance())
   }
 
-  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, width: Int, height: Int): RIExecutionResult {
+  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, screenParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
     val request = Service.ChunkParameters.newBuilder().setRmarkdownParameters(rmarkdownParameters)
                                                       .setChunkText(chunkText)
                                                       .setOutputDirectory(outputDirectory)
-                                                      .setWidth(width)
-                                                      .setHeight(height).build()
+                                                      .setWidth(screenParameters.width)
+                                                      .setHeight(screenParameters.height)
+                                                      .setResolution(screenParameters.resolution ?: -1)
+                                                      .build()
     return executeRequest(RPIServiceGrpc.getBeforeChunkExecutionMethod(), request)
   }
 
