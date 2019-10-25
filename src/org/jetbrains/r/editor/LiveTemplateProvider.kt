@@ -20,6 +20,6 @@ class LiveTemplateProvider : DefaultLiveTemplatesProvider {
   }
 
   companion object {
-    private val DEFAULT_TEMPLATES = arrayOf("/liveTemplates/rtemplates", "/liveTemplates/surround")
+    private val DEFAULT_TEMPLATES = arrayOf("/liveTemplates/rtemplates")
   }
 }
