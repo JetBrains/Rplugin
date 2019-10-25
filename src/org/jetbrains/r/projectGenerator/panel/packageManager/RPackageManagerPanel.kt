@@ -17,6 +17,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.projectGenerator.panel.RPanel
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
@@ -58,8 +59,9 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
     ProgressManager.getInstance().run(
       object : Task.Modal(project, initializingTitle, false) {
         override fun run(indicator: ProgressIndicator) {
+          indicator.text = RCONSOLE_WAITING_TITLE
+          RConsoleManager.getInstance(project).currentConsoleAsync.blockingGet(RCONSOLE_WAITING_TIME)
           indicator.text = initializingIndicatorText
-
           val result = ExecuteExpressionUtils.executeScript(rProjectSettings.rScriptPath!!, relativeScriptPath, args)
           if (result.exitCode != 0) {
             reportPackageInstallationFailure("${result.stdout.dropWhile { it != '\n' }.drop(1)}\n${result.stderr}")
@@ -85,5 +87,10 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
 
   fun setIsPackageInstalledAction(newAction: (Boolean) -> Unit) {
     isPackageInstalledAction = newAction
+  }
+
+  companion object {
+    const val RCONSOLE_WAITING_TIME = 5000
+    val RCONSOLE_WAITING_TITLE = RBundle.message("init.project.waiting.title")
   }
 }
