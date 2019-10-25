@@ -19,7 +19,7 @@ class RConsoleAction : AnAction(), DumbAware {
   override fun actionPerformed(event: AnActionEvent) {
     val project = CommonDataKeys.PROJECT.getData(event.dataContext)
     if (project != null) {
-      RConsoleManager.runConsole(project).onError { e ->
+      RConsoleManager.runConsole(project, requestFocus = true).onError { e ->
         RConsoleUtil.notifyError(project, e.message)
       }
     }

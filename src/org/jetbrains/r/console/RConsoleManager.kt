@@ -6,6 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
 import com.intellij.util.ui.UIUtil.findComponentOfType
@@ -62,13 +63,13 @@ class RConsoleManager(private val project: Project) {
     /**
      * Success promise means that [currentConsoleOrNull] is not null
      */
-    fun runConsole(project: Project): Promise<RConsoleView> {
+    fun runConsole(project: Project, requestFocus: Boolean = false): Promise<RConsoleView> {
       val promise = AsyncPromise<RConsoleView>()
       if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-        RInterpreterManager.getInstance(project).initializeInterpreter().onSuccess { doRunConsole(project).processed(promise) }
+        RInterpreterManager.getInstance(project).initializeInterpreter().onSuccess { doRunConsole(project, requestFocus).processed(promise) }
       }
       else {
-        doRunConsole(project).processed(promise)
+        doRunConsole(project, requestFocus).processed(promise)
       }
       return promise
     }
@@ -86,9 +87,17 @@ class RConsoleManager(private val project: Project) {
       }
     }
 
-    private fun doRunConsole(project: Project): Promise<RConsoleView> {
+    private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
       return if (RSettings.getInstance(project).interpreterPath.isNotBlank()) {
-        RConsoleRunner(project, project.basePath!!).initAndRun()
+        RConsoleRunner(project, project.basePath!!).initAndRun().onSuccess { console ->
+          if (requestFocus) {
+            RConsoleToolWindowFactory.getToolWindow(project)?.show {
+              val focusManager = IdeFocusManager.findInstanceByComponent(console)
+              focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.consoleEditor.component) ?: return@show, project)
+
+            }
+          }
+        }
       } else {
         AsyncPromise<RConsoleView>().apply {
           setError("Cannot run console until path to viable R interpreter is specified")
