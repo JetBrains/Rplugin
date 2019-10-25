@@ -5,33 +5,30 @@
 package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
-import org.jetbrains.r.interpreter.RBasicInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RVersion
-import org.jetbrains.r.interpreter.findByPath
+import org.jetbrains.r.interpreter.*
+import java.io.File
 
-// NOTE: if you're interested in what kind of tricky games are played on list of strings below
-// than you should know that PersistentStateComponent is able to save neither data class
-// (which is obviously RBasicInterpreterInfo) nor two-level list of strings:
-//    [["name", "path", "version"], ["name", ...], ...]
-// Instead a flattened string representation of RInterpreterInfo's is used:
-//    ["name", "path", "version", "name", ...]
 @State(name = "RInterpreterSettings", storages = [Storage("rInterpreterSettings.xml")])
 class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettingsState>(RInterpreterSettingsState()) {
   companion object {
-    private fun RInterpreterInfo.toTriple(): List<String> {
-      return listOf(this.interpreterName, this.interpreterPath, this.version.toString())
+    private fun RInterpreterInfo.toSerializable(timestamp: Long? = null): RSerializableInterpreter {
+      return RSerializableInterpreter().also {
+        it.name = interpreterName
+        it.path = interpreterPath
+        it.version = version.toString()
+        it.timestamp = timestamp ?: File(interpreterPath).lastModified()
+      }
     }
 
-    private fun List<String>.toInterpreter(): RInterpreterInfo {
-      return RBasicInterpreterInfo(this[0], this[1], RVersion.forceParse(this[2]))
+    private fun RSerializableInterpreter.toInterpreter(): RInterpreterInfo {
+      return RBasicInterpreterInfo(name, path, RVersion.forceParse(version))
+    }
+
+    private fun List<RSerializableInterpreter>.findByPath(path: String): RSerializableInterpreter? {
+      return find { it.path == path }
     }
 
     fun getInstance() = service<RInterpreterSettings>()
-
-    private fun getTriples(): MutableList<String> {
-      return getInstance().state.triples
-    }
 
     var disabledPaths: Set<String>
       get() {
@@ -47,46 +44,74 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
     val existingInterpreters: List<RInterpreterInfo>
       get() {
         val known = knownInterpreters
-        return known.filter { it.exists() }.also {
-          // Automatically remove non-existing interpreters
-          if (it.size < known.size) {
-            knownInterpreters = it
+        val existing = mutableListOf<RSerializableInterpreter>()
+        var isModified = false
+        for (interpreter in known) {
+          val file = File(interpreter.path)
+          if (file.exists()) {
+            val timestamp = file.lastModified()
+            if (timestamp != interpreter.timestamp) {
+              // Inflate new instance of RBasicInterpreter in order to get actual version
+              isModified = true
+              RBasicInterpreterInfo.from(interpreter.name, interpreter.path)?.let { inflated ->
+                existing.add(inflated.toSerializable(timestamp))
+              }
+            } else {
+              existing.add(interpreter)
+            }
+          } else {
+            isModified = true
           }
         }
+        if (isModified) {
+          knownInterpreters = existing
+        }
+        return existing.map { it.toInterpreter() }
       }
 
-    private var knownInterpreters: List<RInterpreterInfo>
+    private var knownInterpreters: List<RSerializableInterpreter>
       get() {
-        return getTriples().chunked(3) { it.toInterpreter() }
+        return getInstance().state.interpreters
       }
       set(interpreters) {
-        val triples = getTriples()
-        triples.clear()
-        triples.addAll(interpreters.flatMap { it.toTriple() })
+        getInstance().state.interpreters.apply {
+          clear()
+          addAll(interpreters)
+        }
       }
 
     fun addOrEnableInterpreter(interpreter: RInterpreterInfo) {
       val known = knownInterpreters
-      val path = interpreter.interpreterPath
-      if (known.findByPath(path) == null) {
-        knownInterpreters = known.plus(interpreter)
+      val current = interpreter.toSerializable()
+      val path = current.path
+      val previous = known.findByPath(path)
+      if (previous != null) {
+        if (previous.timestamp != current.timestamp) {
+          previous.apply {
+            name = current.name
+            version = current.version
+            timestamp = current.timestamp
+          }
+        }
+      } else {
+        knownInterpreters = known.plus(current)
       }
       getInstance().state.disabledPaths.remove(path)
     }
 
     fun setEnabledInterpreters(interpreters: List<RInterpreterInfo>) {
       val oldKnown = knownInterpreters
-      val newKnown = mutableListOf<RInterpreterInfo>().apply {
-        addAll(interpreters)
+      val newKnown = mutableListOf<RSerializableInterpreter>().apply {
+        addAll(interpreters.map { it.toSerializable() })
         for (interpreter in oldKnown) {
-          if (findByPath(interpreter.interpreterPath) == null) {
+          if (findByPath(interpreter.path) == null) {
             add(interpreter)
           }
         }
       }
       val newDisabledPaths = mutableSetOf<String>().apply {
         for (interpreter in oldKnown) {
-          add(interpreter.interpreterPath)
+          add(interpreter.path)
         }
         for (interpreter in interpreters) {
           remove(interpreter.interpreterPath)
@@ -99,6 +124,13 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
 }
 
 class RInterpreterSettingsState : BaseState() {
-  var triples: MutableList<String> by list<String>()
+  var interpreters: MutableList<RSerializableInterpreter> by list<RSerializableInterpreter>()
   var disabledPaths: MutableList<String> by list<String>()
+}
+
+class RSerializableInterpreter {
+  var name: String = ""
+  var path: String = ""
+  var version: String = ""
+  var timestamp: Long = 0L
 }
