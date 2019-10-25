@@ -15,6 +15,7 @@ import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.EDT_TIMEOUT
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RHelpersUtil
@@ -156,7 +157,7 @@ object RepoUtils {
     } else {
       RConsoleManager.runConsole(project)
         .onError { LOGGER.error("Cannot run new console for packaging task", it) }
-        .blockingGet(EDT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
+        .blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
     }
   }
 

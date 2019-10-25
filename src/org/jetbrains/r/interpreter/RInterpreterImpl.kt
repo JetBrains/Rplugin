@@ -231,19 +231,24 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   private fun forceRunHelper(helper: File, args: List<String>): List<String> {
     val scriptName = helper.name
-    val result = runAsync { runHelperWithArgs(helper, *args.toTypedArray()) }
-                   .onError { LOG.error(it) }
-                   .blockingGet(EDT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
-    if (result.exitCode != 0) {
-      throw RuntimeException("Helper '$scriptName' has non-zero exit code: ${result.exitCode}")
+    val time = System.currentTimeMillis()
+    try {
+      val result = runAsync { runHelperWithArgs(helper, *args.toTypedArray()) }
+                     .onError { LOG.error(it) }
+                     .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
+      if (result.exitCode != 0) {
+        throw RuntimeException("Helper '$scriptName' has non-zero exit code: ${result.exitCode}")
+      }
+      if (result.stderr.isNotBlank()) {
+        throw RuntimeException("Failed to run helper '$scriptName':\n${result.stderr}")
+      }
+      if (result.stdout.isBlank()) {
+        throw RuntimeException("Cannot get any output from helper '$scriptName'")
+      }
+      return result.stdout.lines()
+    } finally {
+      LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
-    if (result.stderr.isNotBlank()) {
-      throw RuntimeException("Failed to run helper '$scriptName':\n${result.stderr}")
-    }
-    if (result.stdout.isBlank()) {
-      throw RuntimeException("Cannot get any output from helper '$scriptName'")
-    }
-    return result.stdout.lines()
   }
 
   private fun buildVersion(versionInfo: Map<String, String>): Version {

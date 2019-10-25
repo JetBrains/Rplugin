@@ -25,7 +25,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object RInterpreterUtil {
-  const val DEFAULT_TIMEOUT = 5 * 60 * 1000 // 5 min
+  const val DEFAULT_TIMEOUT = 2 * 60 * 1000 // 2 min
   const val EDT_TIMEOUT = 5 * 1000 // 5 sec
 
   private const val INTERPRETER_GROUP_ID = "RInterpreter"

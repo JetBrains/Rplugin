@@ -47,7 +47,7 @@ class RPackageManagementService(private val project: Project,
           if (!hasInterpreter()) {
             initializeInterpreter()
               .onError { LOGGER.error("Unable to initialize interpreter", it) }
-              .blockingGet(RInterpreterUtil.EDT_TIMEOUT)
+              .blockingGet(DEFAULT_TIMEOUT)
           }
         }
       }
