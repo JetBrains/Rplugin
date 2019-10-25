@@ -6,6 +6,7 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.application.subscribe
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
@@ -14,6 +15,10 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.messages.Topic
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
+import java.util.concurrent.atomic.AtomicInteger
 
 class RLibraryWatcher(private val project: Project) {
   private val bulkFileListener: BulkFileListener
@@ -80,24 +85,55 @@ class RLibraryWatcher(private val project: Project) {
   companion object {
     // Note: ::class.java doesn't allow to use lambdas instead of full-weight interface implementations
     private val TOPIC = Topic<RLibraryListener>("R Library Changes", RLibraryListener::class.java)
+    private val LOGGER = Logger.getInstance(RLibraryWatcher::class.java)
 
     private class SlottedListenerDispatcher(project: Project) {
-      private val groups = TimeSlot.values().map { mutableListOf<RLibraryListener>() }
+      private val groups = TimeSlot.values().map { mutableListOf<() -> Promise<Unit>>() }
 
       init {
         val connection = project.messageBus.connect()
         connection.subscribe(TOPIC, object : RLibraryListener {
           override fun libraryChanged() {
-            for (group in groups) {
-              for (listener in group) {
-                listener.libraryChanged()
-              }
-            }
+            val copy = groups.map { it.toList() }  // Note: if new listeners are going to be added during refresh they won't be taken into account
+            updateAllGroups(copy)
           }
         })
       }
 
-      fun addListener(timeSlot: TimeSlot, listener: RLibraryListener) {
+      private fun updateAllGroups(groups: List<List<() -> Promise<Unit>>>) {
+        fun updateRemainingGroups(groups: List<List<() -> Promise<Unit>>>, groupIndex: Int) {
+          if (groupIndex < groups.size) {
+            updateGroup(groups[groupIndex])
+              .onSuccess { updateRemainingGroups(groups, groupIndex + 1) }
+              .onError { LOGGER.error(it) }
+          }
+        }
+
+        updateRemainingGroups(groups, 0)
+      }
+
+      private fun updateGroup(group: List<() -> Promise<Unit>>): Promise<Unit> {
+        fun decreaseCounter(counter: AtomicInteger, promise: AsyncPromise<Unit>) {
+          val current = counter.decrementAndGet()
+          if (current == 0) {
+            promise.setResult(Unit)
+          }
+        }
+
+        return AsyncPromise<Unit>().also { promise ->
+          val counter = AtomicInteger(group.size)
+          for (listener in group) {
+            listener()
+              .onSuccess { decreaseCounter(counter, promise) }
+              .onError {
+                LOGGER.error("Error occurred when triggering RLibraryWatcher listener", it)
+                decreaseCounter(counter, promise)
+              }
+          }
+        }
+      }
+
+      fun addListener(timeSlot: TimeSlot, listener: () -> Promise<Unit>) {
         groups[timeSlot.ordinal].add(listener)
       }
     }
@@ -105,9 +141,16 @@ class RLibraryWatcher(private val project: Project) {
     private val dispatchers = mutableMapOf<String, SlottedListenerDispatcher>()
 
     @Synchronized
-    fun subscribe(project: Project, timeSlot: TimeSlot, listener: RLibraryListener) {
+    fun subscribe(project: Project, timeSlot: TimeSlot, listener: () -> Promise<Unit>) {
       val dispatcher = dispatchers.getOrPut(project.name) { SlottedListenerDispatcher(project) }
       dispatcher.addListener(timeSlot, listener)
+    }
+
+    @Synchronized
+    fun subscribeAsync(project: Project, timeSlot: TimeSlot, listener: () -> Unit) {
+      subscribe(project, timeSlot) {
+        runAsync(listener)
+      }
     }
 
     fun getInstance(project: Project): RLibraryWatcher = ServiceManager.getService(project, RLibraryWatcher::class.java)

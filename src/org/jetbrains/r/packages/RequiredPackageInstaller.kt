@@ -19,7 +19,6 @@ import com.intellij.webcore.packaging.RepoPackage
 import com.jetbrains.rd.util.ConcurrentHashMap
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.interpreter.RLibraryListener
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.*
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
@@ -68,26 +67,24 @@ class RequiredPackageInstaller(private val project: Project) {
   private val installationTasks = CopyOnWriteArrayList<InstallationTask>()
 
   init {
-    RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.EARLY, object : RLibraryListener {
-      override fun libraryChanged() {
-        val installedPackages = rPackageManagementService.installedPackages
-        for (installationTask in installationTasks) {
-          val missingPackages = getMissingPackages(installationTask.requiredPackage, installedPackages)
-          if (missingPackages.isEmpty()) {
-            installationTasks.remove(installationTask)
-            notificationShown.remove(installationTask.utilityName)
-            installationTask.allRequiredPackagesInstalled()
-          }
-        }
-
-        val installedPackagesNames = installedPackages.map { it.name }
-        for ((packageName, errorDescription) in packageInstallationErrorDescriptions) {
-          if (errorDescription.isNotBlank() && installedPackagesNames.contains(packageName)) {
-            packageInstallationErrorDescriptions.remove(packageName)
-          }
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.EARLY) {
+      val installedPackages = rPackageManagementService.installedPackages
+      for (installationTask in installationTasks) {
+        val missingPackages = getMissingPackages(installationTask.requiredPackage, installedPackages)
+        if (missingPackages.isEmpty()) {
+          installationTasks.remove(installationTask)
+          notificationShown.remove(installationTask.utilityName)
+          installationTask.allRequiredPackagesInstalled()
         }
       }
-    })
+
+      val installedPackagesNames = installedPackages.map { it.name }
+      for ((packageName, errorDescription) in packageInstallationErrorDescriptions) {
+        if (errorDescription.isNotBlank() && installedPackagesNames.contains(packageName)) {
+          packageInstallationErrorDescriptions.remove(packageName)
+        }
+      }
+    }
   }
 
   /**

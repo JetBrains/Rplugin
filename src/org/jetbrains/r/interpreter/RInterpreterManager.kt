@@ -146,11 +146,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         interpreterPath = fetchInterpreterPath(interpreterPath)
       }
       if (!initialized) {
-        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.EARLY, object : RLibraryListener {
-          override fun libraryChanged() {
-            scheduleSkeletonUpdate()
-          }
-        })
+        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.EARLY) {
+          scheduleSkeletonUpdate()
+        }
       }
       initialized = true
       if (interpreterPath != "") {
@@ -185,24 +183,27 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
-  private fun scheduleSkeletonUpdate() {
-    rInterpreter?.updateState()
-    mergingUpdateQueue.queue(object: Update("updating skeletons") {
-      override fun run() {
-        val interpreter = rInterpreter ?: return
-        val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
-          override fun run(indicator: ProgressIndicator) {
-            RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
-            RLibraryWatcher.getInstance(project).refresh()
-            if (RSkeletonUtil.updateSkeletons(interpreter)) {
-              updateIndexableSet()
-              runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
+  private fun scheduleSkeletonUpdate(): Promise<Unit> {
+    return AsyncPromise<Unit>().also { promise ->
+      mergingUpdateQueue.queue(object: Update("updating skeletons") {
+        override fun run() {
+          rInterpreter?.updateState()
+          promise.setResult(Unit)
+          val interpreter = rInterpreter ?: return
+          val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
+            override fun run(indicator: ProgressIndicator) {
+              RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
+              RLibraryWatcher.getInstance(project).refresh()
+              if (RSkeletonUtil.updateSkeletons(interpreter)) {
+                updateIndexableSet()
+                runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
+              }
             }
           }
+          ProgressManager.getInstance().run(updater)
         }
-        ProgressManager.getInstance().run(updater)
-      }
-    })
+      })
+    }
   }
 
   private fun Task.Backgroundable.refreshSkeletons(interpreter: RInterpreterImpl) {

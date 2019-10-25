@@ -19,7 +19,6 @@ import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.packages.remote.ui.RPackageUpdateInfo
 import icons.org.jetbrains.r.packages.remote.ui.RUpdateAllConfirmDialog
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RLibraryListener
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.RepoUtils
@@ -50,11 +49,9 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
   init {
     updateUninstallUpgrade()
-    RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.LATE, object : RLibraryListener {
-      override fun libraryChanged() {
-        scheduleRefresh()
-      }
-    })
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LATE) {
+      scheduleRefresh()
+    }
   }
 
   override fun onTaskStart() {

@@ -10,8 +10,8 @@ import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterImpl
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.interpreter.RLibraryListener
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
 class LibraryWatcherTest : RUsefulTestCase() {
@@ -30,18 +30,18 @@ class LibraryWatcherTest : RUsefulTestCase() {
     libraryWatcher.registerRootsToWatch(interpreter.libraryPaths)
 
     val atomicInteger = AtomicInteger(0)
-    RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.LATE, object : RLibraryListener {
-      override fun libraryChanged() {
-        atomicInteger.incrementAndGet()
-      }
-    })
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LATE) {
+      atomicInteger.incrementAndGet()
+    }
     runCommand(interpreterPath, "CMD", "INSTALL", packageFile)
     assertEquals(0, atomicInteger.get())
     libraryWatcher.refresh()
+    waitForAtomic(atomicInteger, 1)
     assertEquals(1, atomicInteger.get())
     runCommand(interpreterPath, "CMD", "REMOVE", packageName)
     assertEquals(1, atomicInteger.get())
     libraryWatcher.refresh()
+    waitForAtomic(atomicInteger, 2)
     assertEquals(2, atomicInteger.get())
   }
 
@@ -52,5 +52,19 @@ class LibraryWatcherTest : RUsefulTestCase() {
     val processOutput = processHandler.runProcess(DEFAULT_TIMEOUT)
     LOG.info("STDOUT: " + processOutput.stdout)
     LOG.info("STDERR: " + processOutput.stderr)
+  }
+
+  companion object {
+    private const val TIMEOUT = 5000L
+
+    private fun waitForAtomic(atomic: AtomicInteger, expected: Int) {
+      val start = System.currentTimeMillis()
+      while (atomic.get() != expected) {
+        if (System.currentTimeMillis() - start > TIMEOUT) {
+          throw TimeoutException("Waiting for atomic counter for $TIMEOUT ms")
+        }
+        Thread.sleep(20L)
+      }
+    }
   }
 }
