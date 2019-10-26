@@ -13,10 +13,11 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
+import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.intellij.util.Consumer
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
@@ -28,6 +29,7 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
@@ -166,6 +168,7 @@ class RCompletionContributor : CompletionContributor() {
 
       val file = parameters.originalFile
       val isHelpFromRConsole = file.getUserData(RConsoleView.IS_R_CONSOLE_KEY)?.let { file.firstChild is RHelpExpression } ?: false
+      addKeywords(position, shownNames, result, isHelpFromRConsole)
       addLocalsFromControlFlow(position, shownNames, result, isHelpFromRConsole)
       addLocalsFromRuntime(originalFile, shownNames, result)
 
@@ -186,13 +189,40 @@ class RCompletionContributor : CompletionContributor() {
         variables.filterKeys { shownNames.add(it) }.forEach { (name, value) ->
           if (value is RValueFunction) {
             val code = "${name} <- ${value.code}"
-            val element = RElementFactory.createRPsiElementFromText(originFile.project, code) as? RAssignmentStatement ?:
-                          return@forEach
+            val element = RElementFactory.createRPsiElementFromText(originFile.project, code) as? RAssignmentStatement ?: return@forEach
             result.consume(createFunctionLookupElement(element, isHelpFromRConsole = false, isLocal = true))
-          } else {
+          }
+          else {
             result.consume(createLocalVariableLookupElement(name, false))
           }
         }
+      }
+    }
+
+    private fun addKeywords(position: RExpression,
+                            shownNames: HashSet<String>,
+                            result: CompletionResultSet,
+                            isHelpFromRConsole: Boolean) {
+      for (keyword in BUILTIN_CONSTANTS + KEYWORDS) {
+        val necessaryCondition = KEYWORD_NECESSARY_CONDITION[keyword]
+        val stringValue = keyword.toString()
+        if (isHelpFromRConsole || necessaryCondition == null || necessaryCondition(position)) {
+          shownNames.add(stringValue)
+          result.addElement(PrioritizedLookupElement.withGrouping(RLookupElement(stringValue, true), GLOBAL_GROUPING))
+        }
+      }
+      for (keyword in KEYWORDS_WITH_BRACKETS) {
+        val stringValue = keyword.toString()
+        shownNames.add(stringValue)
+        result.addElement(PrioritizedLookupElement.withInsertHandler(
+          PrioritizedLookupElement.withGrouping(RLookupElement(stringValue, true, tailText = " (...)"), GLOBAL_GROUPING),
+          InsertHandler<LookupElement> { context, _ ->
+            if (!isHelpFromRConsole) {
+              val document = context.document
+              document.insertString(context.tailOffset, " ()")
+              context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
+            }
+          }))
       }
     }
 
@@ -236,6 +266,46 @@ class RCompletionContributor : CompletionContributor() {
 
       for (parameter in namedArguments) {
         consumeParameter(parameter, shownNames, result)
+      }
+    }
+
+    companion object {
+      private val BUILTIN_CONSTANTS = listOf(R_TRUE, R_FALSE, R_NULL, R_NA, R_INF, R_NAN,
+                                             R_NA_INTEGER_, R_NA_REAL_, R_NA_COMPLEX_, R_NA_CHARACTER_)
+      private val KEYWORDS_WITH_BRACKETS = listOf(R_IF, R_WHILE, R_FUNCTION, R_FOR)
+      private val KEYWORDS = listOf(R_ELSE, R_REPEAT, R_IN)
+      private val KEYWORD_NECESSARY_CONDITION = mapOf<IElementType, (PsiElement) -> Boolean>(
+        R_IN to { element ->
+          if (element.parent !is RForStatement) false
+          else {
+            val newText = element.parent.text.replace(element.text, R_IN.toString())
+            val newElement = RElementFactory
+              .buildRFileFromText(element.project, newText).findElementAt(element.textOffset - element.parent.textOffset)
+            if (PsiTreeUtil.getParentOfType(newElement, PsiErrorElement::class.java, false) != null) false
+            else {
+              !isErrorElementBefore(newElement!!)
+            }
+          }
+        },
+        R_ELSE to { element ->
+          var sibling: PsiElement? = PsiTreeUtil.skipWhitespacesAndCommentsBackward(element)
+          while (sibling?.elementType == R_NL) {
+            sibling = PsiTreeUtil.skipWhitespacesAndCommentsBackward(sibling)
+          }
+          sibling is RIfStatement && !sibling.node.getChildren(null).any { it.elementType == R_ELSE }
+        }
+      )
+
+      private val PsiElement.prevLeafs: Sequence<PsiElement>
+        get() = generateSequence({ PsiTreeUtil.prevLeaf(this) }, { PsiTreeUtil.prevLeaf(it) })
+
+      private fun isErrorElementBefore(token: PsiElement): Boolean {
+        for (leaf in token.prevLeafs) {
+          if (leaf is PsiWhiteSpace || leaf is PsiComment) continue
+          if (leaf is PsiErrorElement || PsiTreeUtil.findFirstParent(leaf) { it is PsiErrorElement } != null) return true
+          if (leaf.textLength != 0) break
+        }
+        return false
       }
     }
   }

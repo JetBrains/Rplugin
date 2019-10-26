@@ -33,6 +33,65 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "foo_bar", "foo_baz", strict = true)
   }
 
+  fun testKeywords() {
+    doTest("fun<caret>", "function")
+    doTest("NA<caret>", "NA", "NA_character_", "NA_complex_", "NA_integer_", "NA_real_", "NaN")
+    doTest("In<caret>", "Inf")
+    doTest("TR<caret>", "TRUE")
+    doTest("FA<caret>", "FALSE")
+    doTest("br<caret>", "break")
+    doApplyCompletionTest("fun<caret>", "function", "function (<caret>)")
+    doApplyCompletionTest("ne<caret>", "next", "next<caret>")
+  }
+
+  fun testIn() {
+    doTest("for (a in<caret>)", "in")
+    doTest("for (i in<caret> a)", "in")
+    doWrongVariantsTest("for (in<caret>)", "in")
+    doWrongVariantsTest("in<caret>", "in")
+    doWrongVariantsTest("for (i in a) in<caret>", "in")
+    doWrongVariantsTest("for (i in a) { print 5; in<caret> }", "in")
+    doWrongVariantsTest("for (i in (j in<caret> k))", "in")
+  }
+
+  fun testElse() {
+    doTest("""
+      if (T) 5
+      el<caret>
+    """.trimIndent(), "else")
+
+    doTest("""
+      if (T) { 5 }
+      el<caret>
+    """.trimIndent(), "else")
+
+    doTest("""
+      if (T) 5
+      # Comment
+      el<caret>
+    """.trimIndent(), "else")
+
+    doTest("""
+      if (a %in% b) 5
+      el<caret>
+    """.trimIndent(), "else")
+
+    doWrongVariantsTest("el<caret>", "else")
+
+    doWrongVariantsTest("""
+      if (T) 5
+      else 6
+      # Comment
+      el<caret>
+    """.trimIndent(), "else")
+
+    doWrongVariantsTest("""
+      if (T) 5
+      print(5)
+      el<caret>
+    """.trimIndent(), "else")
+  }
+
   fun testGlobal() {
     doTest("""
       foo_bar <- 321312321
@@ -130,10 +189,10 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
 
   fun testCompletionForLocalVariableNames() {
     doTest("""
-      foo <- 31312
-      far <- 312434
-      f<caret> <- 3123124234
-    """.trimIndent(), "far", "foo", strict = true)
+      foo_oo <- 31312
+      foo_ar <- 312434
+      foo_<caret> <- 3123124234
+    """.trimIndent(), "foo_ar", "foo_oo", strict = true)
   }
 
   fun testCompletionFunction() {
