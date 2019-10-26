@@ -154,7 +154,7 @@ project(":") {
     version = "${ideaMajor()}.${ideaMinor()}.${prop("buildNumber")}"
     intellij {
         pluginName = "rplugin"
-        setPlugins("markdown", "yaml")
+        setPlugins("markdown", "yaml", "python-ce")
     }
 
     idea {
