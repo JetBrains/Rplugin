@@ -127,7 +127,9 @@ private fun prepareTestSkeletons(project: Project) {
   val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
   val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
   rInterpreter.updateState()
-  val packagesForTest = missingTestSkeletons.map { rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package " + it) }
+  val packagesForTest = missingTestSkeletons.map {
+    rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package $it found for $interpreterPath")
+  }
   RSkeletonUtil.generateSkeletons(singletonMap(RUsefulTestCase.SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter)
 }
 
