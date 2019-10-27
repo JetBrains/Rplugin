@@ -36,6 +36,18 @@ class StringCompletionTest : RProcessHandlerBaseTestCase() {
                     "a <- tibble(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), i = c(1, 3, 7))")
   }
 
+  fun testFactor() {
+    checkCompletion("a == \"X<caret>\"",
+                    listOf("Xaaa", "Xbcd", "Xxyz"),
+                    "a <- factor(ordered(c(\"Xaaa\", \"Xbcd\", \"Xxyz\")))")
+  }
+
+  fun testFactorGgplot2() {
+    rInterop.executeCode("library(ggplot2)", false)
+    checkCompletion("diamonds %>% filter(cut == \"Go<caret>\")",
+                    listOf("Good", "Very Good"))
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: String? = null) {
     rInterop.executeCode("library(dplyr)", false)
     if (initial != null) {
