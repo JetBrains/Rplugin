@@ -381,6 +381,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.compareToNa.name"
                          implementationClass="org.jetbrains.r.inspections.CompareToNaInspection"/>
 
+        <localInspection shortName="RPasteToPaste0Inspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.paste2paste0.name"
+                         implementationClass="org.jetbrains.r.inspections.PasteToPaste0Inspection"/>
+
         <localInspection shortName="RDplyrBooleanOperatorInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RBundle" key="inspection.dplyrBooleanOperator.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrBooleanOperatorsInspection"/>

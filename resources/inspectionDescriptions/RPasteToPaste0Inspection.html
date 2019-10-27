@@ -1,0 +1,21 @@
+<html>
+<body>
+This inspection replaces <code>'paste'</code> call with empty separator with <code>'paste0'</code>
+<p>
+  Before:
+</p>
+<p>
+  <code>
+    paste("a", "b", sep = '')
+  </code>
+</p>
+<p>
+  After:
+</p>
+<p>
+  <code>
+    paste0("a", "b")
+  </code>
+</p>
+</body>
+</html>

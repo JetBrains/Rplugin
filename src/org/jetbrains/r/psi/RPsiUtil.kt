@@ -7,7 +7,6 @@ package org.jetbrains.r.psi
 import com.google.common.collect.Lists
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.search.ProjectAndLibrariesScope
@@ -21,6 +20,7 @@ import org.jetbrains.r.psi.impl.RAssignmentStatementImpl
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.psi.stubs.RParameterStub
+import org.jetbrains.r.skeleton.psi.RSkeletonBase
 
 
 object RPsiUtil {
@@ -197,8 +197,7 @@ object RPsiUtil {
   }
 
   fun isLibraryElement(element: PsiElement): Boolean {
-    val virtualFile = element.containingFile?.virtualFile ?: return false
-    return ProjectFileIndex.getInstance(element.project).isInLibrary(virtualFile)
+    return element is RSkeletonBase
   }
 
   fun isImportStatement(psiElement: PsiElement): Boolean {

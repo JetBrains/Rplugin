@@ -27,13 +27,23 @@ abstract class RInspectionTest : RUsefulTestCase() {
     return super.getTestDataPath() + "/inspections/" + javaClass.simpleName.replace("Test", "")
   }
 
-  @JvmOverloads
-  protected fun doTest(filename: String = getTestName(false) + RFileType.DOT_R_EXTENSION): CodeInsightTestFixture {
+  private fun doTestBase(filename: String,
+                         checkWarnings: Boolean = false,
+                         checkInfos: Boolean = false,
+                         checkWeakWarnings: Boolean = false): CodeInsightTestFixture {
     myFixture.configureByFile(filename)
     myFixture.enableInspections(inspection)
-    myFixture.testHighlighting(true, false, false, filename)
+    myFixture.testHighlighting(checkWarnings, checkInfos, checkWeakWarnings, filename)
 
     return myFixture
+  }
+
+  protected fun doTest(filename: String = getTestName(false) + RFileType.DOT_R_EXTENSION): CodeInsightTestFixture {
+    return doTestBase(filename, checkWarnings = true)
+  }
+
+  protected fun doWeakTest(filename: String = getTestName(false) + RFileType.DOT_R_EXTENSION): CodeInsightTestFixture {
+    return doTestBase(filename, checkWeakWarnings = true)
   }
 
   override fun configureFixture(myFixture: CodeInsightTestFixture) {
