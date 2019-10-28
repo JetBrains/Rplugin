@@ -16,12 +16,11 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.RunContentDescriptor
-import com.intellij.execution.ui.actions.CloseAction
 import com.intellij.ide.CommonActionsManager
+import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.runBackgroundableTask
@@ -114,7 +113,22 @@ class RConsoleRunner(private val project: Project,
   }
 
   private fun createContentDescriptorAndActions(): Promise<Unit> {
-    val toolbarActions = DefaultActionGroup()
+    val executeAction = createConsoleExecAction()
+    val interruptAction = RConsoleView.createInterruptAction(consoleView)
+    val helpAction = CommonActionsManager.getInstance().createHelpAction("interactive_console")
+
+    val actions = listOf(executeAction, interruptAction, helpAction)
+    val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
+    val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
+    val toolbarActions = object : ActionGroup() {
+      override fun getChildren(e: AnActionEvent?): Array<AnAction> {
+        return if (consoleView.isRunningCommand) {
+          actionsWhenRunning
+        } else {
+          actionsWhenNotRunning
+        }
+      }
+    }
     val actionToolbar = ActionManager.getInstance()
       .createActionToolbar(RBundle.message("console.runner.action.toolbar.place"), toolbarActions, false)
 
@@ -129,41 +143,15 @@ class RConsoleRunner(private val project: Project,
     contentDescriptor.setFocusComputable { consoleView.consoleEditor.contentComponent }
     contentDescriptor.isAutoFocusContent = true
 
-
-    // tool bar actions
-    val actions = fillToolBarActions(toolbarActions, getExecutor(), contentDescriptor)
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
     return RConsoleToolWindowFactory.addContentWhenAvailable(project, contentDescriptor)
   }
 
-  private fun fillToolBarActions(toolbarActions: DefaultActionGroup,
-                                 executor: Executor,
-                                 contentDescriptor: RunContentDescriptor): List<AnAction> {
-    val actionList = ArrayList<AnAction>()
-
-    //stop
-    actionList.add(createStopAction())
-
-    //close
-    actionList.add(createCloseAction(executor, contentDescriptor))
-
-    // run action
-    actionList.add(createConsoleExecAction())
-
-    actionList.add(RConsoleView.createInterruptAction(consoleView))
-
-    // Help
-    actionList.add(CommonActionsManager.getInstance().createHelpAction("interactive_console"))
-
-    toolbarActions.addAll(actionList)
-
-    return actionList
-  }
-
   private fun createConsoleExecAction(): AnAction {
     val emptyAction = consoleView.executeActionHandler.emptyExecuteAction
-    return ConsoleExecuteAction(consoleView, consoleView.executeActionHandler, emptyAction, consoleView.executeActionHandler)
+    return object : ConsoleExecuteAction(consoleView, consoleView.executeActionHandler, emptyAction, consoleView.executeActionHandler) {
+    }
   }
 
 
@@ -179,14 +167,6 @@ class RConsoleRunner(private val project: Project,
     for (action in actions) {
       action.registerCustomShortcutSet(action.shortcutSet, component)
     }
-  }
-
-  private fun createCloseAction(defaultExecutor: Executor, descriptor: RunContentDescriptor): AnAction {
-    return CloseAction(defaultExecutor, descriptor, project)
-  }
-
-  private fun createStopAction(): AnAction {
-    return ActionManager.getInstance().getAction(IdeActions.ACTION_STOP_PROGRAM)
   }
 
   private fun showConsole(defaultExecutor: Executor, contentDescriptor: RunContentDescriptor) {

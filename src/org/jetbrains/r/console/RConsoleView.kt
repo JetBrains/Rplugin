@@ -7,6 +7,7 @@ package org.jetbrains.r.console
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -129,22 +130,19 @@ class RConsoleView(val rInterop: RInterop,
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
 
     fun createInterruptAction(console: RConsoleView): AnAction {
-      val anAction = object : AnAction() {
+      val anAction = object : AnAction(RBundle.message("console.interrupt.button.text"), null, AllIcons.Actions.Suspend) {
         override fun actionPerformed(e: AnActionEvent) {
-          when (console.executeActionHandler.state) {
-            RConsoleExecuteActionHandler.State.BUSY, RConsoleExecuteActionHandler.State.READ_LN -> {
-              console.promiseToInterrupt?.cancel() ?: run {
-                console.executeActionHandler.interruptTextExecution()
-              }
-              console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+          if (console.isRunningCommand) {
+            console.promiseToInterrupt?.cancel() ?: run {
+              console.executeActionHandler.interruptTextExecution()
             }
-            else -> {
-              val document = console.getConsoleEditor().getDocument()
-              if (document.getTextLength() != 0) {
-                runWriteAction {
-                  CommandProcessor.getInstance().runUndoTransparentAction {
-                    document.deleteString(0, document.getLineEndOffset(document.getLineCount() - 1))
-                  }
+            console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+          } else {
+            val document = console.getConsoleEditor().getDocument()
+            if (document.getTextLength() != 0) {
+              runWriteAction {
+                CommandProcessor.getInstance().runUndoTransparentAction {
+                  document.deleteString(0, document.getLineEndOffset(document.getLineCount() - 1))
                 }
               }
             }
@@ -159,7 +157,6 @@ class RConsoleView(val rInterop: RInterop,
       }
 
       anAction.registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK, console.getConsoleEditor().getComponent())
-      anAction.getTemplatePresentation().setVisible(false)
       return anAction
     }
   }
