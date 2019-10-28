@@ -7,12 +7,10 @@ package org.jetbrains.r.actions
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RFileType
@@ -33,11 +31,22 @@ internal object REditorActionUtil {
     }
     val psiFile = e.psiFile ?: return null
 
-    var element = getCaretElement(editor, psiFile)
-    // resolve injected chunk elements if file-type is not R
-    if (psiFile.fileType != RFileType) {
-      element = InjectedLanguageManager.getInstance(project).findInjectedElementAt(psiFile, editor.caretModel.offset)
+    val lineNumber = editor.document.getLineNumber(editor.caretModel.offset)
+    val lineStart = editor.document.getLineStartOffset(lineNumber)
+    val lineEnd = editor.document.getLineEndOffset(lineNumber)
+    var elementStart: PsiElement
+    var elementEnd: PsiElement
+    if (psiFile.fileType == RFileType) {
+      elementStart = psiFile.findElementAt(lineStart) ?: return null
+      elementEnd = psiFile.findElementAt(lineEnd - 1) ?: return null
+    } else {
+      elementStart = InjectedLanguageManager.getInstance(project).findInjectedElementAt(psiFile, lineStart) ?: return null
+      elementEnd = InjectedLanguageManager.getInstance(project).findInjectedElementAt(psiFile, lineEnd) ?: return null
     }
+    elementStart = elementStart.takeIf { !StringUtil.isEmptyOrSpaces(it.text) } ?: PsiTreeUtil.nextVisibleLeaf(elementStart) ?: return null
+    elementEnd = elementEnd.takeIf { !StringUtil.isEmptyOrSpaces(it.text) } ?: PsiTreeUtil.prevVisibleLeaf(elementEnd) ?: return null
+    if (elementStart.textOffset > elementEnd.textOffset) return null
+    val element = PsiTreeUtil.findCommonParent(elementStart, elementEnd)
 
     // grow until we reach expression barrier
     val evalElement = PsiTreeUtil.findFirstParent(element) { psiElement ->
@@ -64,39 +73,5 @@ internal object REditorActionUtil {
     }
 
     return result
-  }
-
-  private fun getCaretElement(editor: Editor, psiFile: PsiFile): PsiElement? {
-
-    // why not PsiUtilBase.getElementAtCaret(editor) ??
-    // todo rather fix and use https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000126084-Incorrect-help-when-caret-at-word-end
-
-    // is caret at line start
-    val caretModel = editor.caretModel
-    val curCaret = caretModel.currentCaret
-
-    // return nothing if caret is in empty line
-    // FIXME lines that just contain whitespace are not ignored
-    if (curCaret.visualLineEnd - curCaret.visualLineStart == 0) return null
-
-    // TODO isn't there a an existing utility method for this? IJ does for most editor actions
-    //        TargetElementUtil.findTargetElement(editor, curCaret.getOffset())
-    var element = psiFile.findElementAt(caretModel.offset)
-
-    if (element == null && caretModel.offset > 0) {
-      element = psiFile.findElementAt(caretModel.offset - 1)
-    }
-
-    if (element == null) return null
-
-
-    if (curCaret.visualLineStart == curCaret.offset) {
-      return PsiTreeUtil.nextVisibleLeaf(element)
-    }
-
-    return if (curCaret.visualLineEnd - 1 == curCaret.offset) {
-      PsiTreeUtil.prevVisibleLeaf(element)
-    }
-    else element
   }
 }
