@@ -38,11 +38,9 @@ class BooleanExpressionSimplifierTest : RInspectionTest() {
     doReplacementTest("TRUE | f()")
   }
 
-  fun testDoubleNegation() {
-    doReplacementTest("!!x", "x")
-    doReplacementTest("!!!x", "!x")
-    doReplacementTest("!!f()", "f()")
-    doReplacementTest("!((TRUE && !x))", "x")
+  fun testDontRemoveDoubleNegation() {
+    doReplacementTest("!!x")
+    doReplacementTest("!!f()")
   }
 
   fun testParenthesis() {
@@ -51,13 +49,13 @@ class BooleanExpressionSimplifierTest : RInspectionTest() {
     doReplacementTest("(x || y) && z")
     doReplacementTest("(x && y) || z")
 
-    doReplacementTest("(!!x && y) || z", "x && y || z")
-    doReplacementTest("(!!x || y) && z", "(x || y) && z")
+    doReplacementTest("((x && TRUE) && y) || z", "x && y || z")
+    doReplacementTest("((x && TRUE) || y) && z", "(x || y) && z")
 
-    doReplacementTest("!!x && (y && z)", "x && y && z")
-    doReplacementTest("(!!x && y) && z", "x && y && z")
-    doReplacementTest("(!!x & y) & z", "x & y & z")
-    doReplacementTest("!((((!!x))))", "!x")
+    doReplacementTest("(x && TRUE) && (y && z)", "x && y && z")
+    doReplacementTest("((x && TRUE) && y) && z", "x && y && z")
+    doReplacementTest("((x & TRUE) & y) & z", "x & y & z")
+    doReplacementTest("!((((x || FALSE))))", "!x")
   }
 
   override val inspection: Class<out RInspection>

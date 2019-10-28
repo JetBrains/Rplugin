@@ -192,13 +192,10 @@ private fun simplifyUnaryOperator(
 ): SimplifyResult {
   if (expr.operator?.name == "!") {
     val opResult = simplify(expr.expr ?: return NULL_RESULT, replace, genFromText)
-    val op = expr.expr ?: return NULL_RESULT
-    val opInside = skipParenthesized(op) ?: return NULL_RESULT
-    if (opInside is ROperatorExpression && opInside.operator?.name == "!") {
-      replace(expr, opInside.expr ?: return NULL_RESULT)
-    } else if (opResult.const != null) {
-      if (opResult.canBeDeleted)
+    if (opResult.const != null) {
+      if (opResult.canBeDeleted) {
         replace(expr, genFromText(opResult.const.not().toRLiteral()))
+      }
     }
     return SimplifyResult(opResult.const?.not(), opResult.canBeDeleted)
   }
