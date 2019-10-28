@@ -107,10 +107,10 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 "Inf"                       { return R_INF; }
 "NaN"                       { return R_NAN; }
 
-"NA_integer_"               { return R_NA_INTEGER; }
-"NA_real_"                  { return R_NA_REAL; }
-"NA_complex_"               { return R_NA_COMPLEX; }
-"NA_character_"             { return R_NA_CHARACTER; }
+"NA_integer_"               { return R_NA_INTEGER_; }
+"NA_real_"                  { return R_NA_REAL_; }
+"NA_complex_"               { return R_NA_COMPLEX_; }
+"NA_character_"             { return R_NA_CHARACTER_; }
 
 "if"                        { return R_IF; }
 "else"                      { return R_ELSE; }

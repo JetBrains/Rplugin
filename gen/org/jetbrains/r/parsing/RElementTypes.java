@@ -78,7 +78,7 @@ public interface RElementTypes {
   IElementType R_IDENTIFIER = new RElementType("identifier");
   IElementType R_IF = new RElementType("if");
   IElementType R_IN = new RElementType("in");
-  IElementType R_INF = new RElementType("INF");
+  IElementType R_INF = new RElementType("Inf");
   IElementType R_INFIX_OP = new RElementType("INFIX_OP");
   IElementType R_INTEGER = new RElementType("INTEGER");
   IElementType R_LBRACE = new RElementType("{");
@@ -94,11 +94,11 @@ public interface RElementTypes {
   IElementType R_MINUS = new RElementType("-");
   IElementType R_MULT = new RElementType("*");
   IElementType R_NA = new RElementType("NA");
-  IElementType R_NAN = new RElementType("NAN");
-  IElementType R_NA_CHARACTER = new RElementType("NA_CHARACTER");
-  IElementType R_NA_COMPLEX = new RElementType("NA_COMPLEX");
-  IElementType R_NA_INTEGER = new RElementType("NA_INTEGER");
-  IElementType R_NA_REAL = new RElementType("NA_REAL");
+  IElementType R_NAN = new RElementType("NaN");
+  IElementType R_NA_CHARACTER_ = new RElementType("NA_character_");
+  IElementType R_NA_COMPLEX_ = new RElementType("NA_complex_");
+  IElementType R_NA_INTEGER_ = new RElementType("NA_integer_");
+  IElementType R_NA_REAL_ = new RElementType("NA_real_");
   IElementType R_NEXT = new RElementType("next");
   IElementType R_NL = new RElementType("nl");
   IElementType R_NOT = new RElementType("!");

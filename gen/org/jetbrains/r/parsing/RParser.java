@@ -372,17 +372,17 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER |
+  // NA_integer_ | NA_real_ | NA_complex_ | NA_character_
   //   TRIPLE_DOTS | if | else | repeat | while |
   //   function | for | in | next | break
   static boolean keyword(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyword")) return false;
     boolean r;
-    r = consumeToken(b, R_NA_INTEGER);
-    if (!r) r = consumeToken(b, R_NA_REAL);
-    if (!r) r = consumeToken(b, R_NA_COMPLEX);
-    if (!r) r = consumeToken(b, R_NA_CHARACTER);
-    if (!r) r = consumeToken(b, R_TRIPLE_DOTS);
+    Marker m = enter_section_(b);
+    r = consumeToken(b, R_NA_INTEGER_);
+    if (!r) r = consumeToken(b, R_NA_REAL_);
+    if (!r) r = consumeToken(b, R_NA_COMPLEX_);
+    if (!r) r = parseTokens(b, 0, R_NA_CHARACTER_, R_TRIPLE_DOTS);
     if (!r) r = consumeToken(b, R_IF);
     if (!r) r = consumeToken(b, R_ELSE);
     if (!r) r = consumeToken(b, R_REPEAT);
@@ -392,6 +392,7 @@ public class RParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, R_IN);
     if (!r) r = consumeToken(b, R_NEXT);
     if (!r) r = consumeToken(b, R_BREAK);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -1983,16 +1984,16 @@ public class RParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NA | NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER
+  // NA | NA_integer_ | NA_real_ | NA_complex_ | NA_character_
   public static boolean na_literal(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "na_literal")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, R_NA_LITERAL, "<na literal>");
     r = consumeTokenSmart(b, R_NA);
-    if (!r) r = consumeTokenSmart(b, R_NA_INTEGER);
-    if (!r) r = consumeTokenSmart(b, R_NA_REAL);
-    if (!r) r = consumeTokenSmart(b, R_NA_COMPLEX);
-    if (!r) r = consumeTokenSmart(b, R_NA_CHARACTER);
+    if (!r) r = consumeTokenSmart(b, R_NA_INTEGER_);
+    if (!r) r = consumeTokenSmart(b, R_NA_REAL_);
+    if (!r) r = consumeTokenSmart(b, R_NA_COMPLEX_);
+    if (!r) r = consumeTokenSmart(b, R_NA_CHARACTER_);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2008,7 +2009,7 @@ public class RParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // INF | NAN
+  // Inf | NaN
   public static boolean boundary_literal(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "boundary_literal")) return false;
     if (!nextTokenIsSmart(b, R_INF, R_NAN)) return false;

@@ -1,3 +1,4 @@
+// noinspection BnfSuspiciousTokenForFile
 // Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
@@ -100,8 +101,8 @@ string_literal_expression ::= STRING { methods = [getName setName] }
 boolean_literal ::= TRUE | FALSE { methods = [isTrue isFalse]}
 
 null_literal ::= NULL
-na_literal ::= NA | NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER
-boundary_literal ::= INF | NAN
+na_literal ::= NA | NA_integer_ | NA_real_ | NA_complex_ | NA_character_
+boundary_literal ::= Inf | NaN
 
 
 expression ::=
@@ -191,7 +192,7 @@ break_statement ::= break { methods = [ getLoop ] }
 next_statement ::= next { methods = [ getLoop] }
 block_expression ::= '{' nl* expression_list? nl* '}' { pin=1 }
 
-private keyword ::= NA_INTEGER | NA_REAL | NA_COMPLEX | NA_CHARACTER |
+private keyword ::= NA_integer_ | NA_real_ | NA_complex_ | NA_character_
   TRIPLE_DOTS | if | else | repeat | while |
   function | for | in | next | break
 
