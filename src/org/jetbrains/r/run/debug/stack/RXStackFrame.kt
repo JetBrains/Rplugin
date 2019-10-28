@@ -16,6 +16,7 @@ import icons.org.jetbrains.r.run.debug.stack.RXVar
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.rinterop.RVariableLoader
 import java.util.concurrent.ExecutorService
@@ -49,7 +50,7 @@ class RXStackFrame(val functionName: String,
       try {
         val result = XValueChildrenList()
         addEnvironmentsGroup(result)
-        addEnvironmentContents(result, loader.variables, executor)
+        addEnvironmentContents(result, loader.variables, executor, true)
         node.addChildren(result, true)
       } catch (e: RDebuggerException) {
         node.setErrorMessage(e.message.orEmpty())
@@ -102,6 +103,21 @@ private class RXEnvironment internal constructor(name: String, private val loade
   }
 }
 
-internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, executor: ExecutorService) {
-  vars.forEach { result.add(RXVar(it, executor)) }
+internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, executor: ExecutorService,
+                                    hideFunctions: Boolean = false) {
+  if (hideFunctions) {
+    val functions = vars.filter { it.value is RValueFunction }
+    if (functions.isNotEmpty()) {
+      result.addTopGroup(object : XValueGroup(RBundle.message("variable.view.functions")) {
+        override fun computeChildren(node: XCompositeNode) {
+          val children = XValueChildrenList()
+          functions.forEach { children.add(RXVar(it, executor)) }
+          node.addChildren(children, true)
+        }
+      })
+    }
+    vars.filter { it.value !is RValueFunction }.forEach { result.add(RXVar(it, executor)) }
+  } else {
+    vars.forEach { result.add(RXVar(it, executor)) }
+  }
 }
