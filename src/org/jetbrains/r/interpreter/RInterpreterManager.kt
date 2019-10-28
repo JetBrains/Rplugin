@@ -4,17 +4,17 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.ProjectTopics
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbServiceImpl
-import com.intellij.openapi.project.ModuleListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
@@ -26,8 +26,6 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent
 import com.intellij.psi.impl.PsiDocumentManagerImpl
-import com.intellij.psi.search.FileTypeIndex
-import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
@@ -73,16 +71,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
           RConsoleManager.getInstance(project).runIfEmpty()
         }
-      }
-    })
-    connection.subscribe(ProjectTopics.MODULES, object: ModuleListener {
-      override fun moduleAdded(project: Project, module: Module) {
-        ReadAction.nonBlocking {
-          if (FileTypeIndex.containsFileOfType(RFileType, module.moduleContentScope) ||
-              FileTypeIndex.containsFileOfType(RMarkdownFileType, module.moduleContentScope)) {
-            initializeInterpreter()
-          }
-        }.inSmartMode(project).submit(AppExecutorUtil.getAppExecutorService())
       }
     })
     val newRFileListener = object: BulkFileListener {
