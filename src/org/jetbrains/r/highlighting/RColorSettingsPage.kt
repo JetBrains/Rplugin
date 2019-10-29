@@ -28,7 +28,7 @@ class RColorSettingsPage : ColorSettingsPage {
   }
 
   override fun getHighlighter(): SyntaxHighlighter {
-    return RSyntaxHighlighter()
+    return RHighlighter()
   }
 
   override fun getDemoText(): String {
@@ -55,26 +55,30 @@ class RColorSettingsPage : ColorSettingsPage {
     /**
      * The path to the sample .R file
      */
-    private val SAMPLE_R_SCRIPT = """
+    internal val SAMPLE_R_SCRIPT = """
+      # global variable
+      global_variable <- 1
       
+      # function declaration 
+      global_function <- function(regular, named = "Hello World!") {
+        # inner function declaration
+        inner_function <- function() {
+           closure_usage <- regular
+           closure_usage + 1
+        }
+         
+        print(named)
+        regular + inner_function()
+      }
+      
+      # function call
+      global_function(2, named = 'Hello World!')
+      
+      # namespace access
+      print(datasets::cars[1, 2])
+      
+      # bad character
+      x <- 1 + 2 + 4 5
     """.trimIndent()
-
-    /**
-     * The sample .R document shown in the colors settings dialog
-     */
-    private val DESCRIPTORS = arrayOf(AttributesDescriptor("Comment", RHighlighterColors.LINE_COMMENT),
-                                      AttributesDescriptor("Keyword", RHighlighterColors.KEYWORD),
-                                      AttributesDescriptor("Parenthesis", RHighlighterColors.PARENTHESES),
-                                      AttributesDescriptor("Braces", RHighlighterColors.BRACES),
-                                      AttributesDescriptor("Brackets", RHighlighterColors.BRACKETS),
-                                      AttributesDescriptor("Number", RHighlighterColors.NUMBER),
-                                      AttributesDescriptor("String ...", RHighlighterColors.STRING),
-                                      AttributesDescriptor("Function Call", RHighlighterColors.FUNCTION_CALL),
-                                      AttributesDescriptor("Namespace", RHighlighterColors.NAMESPACE),
-                                      AttributesDescriptor("Parameter", RHighlighterColors.PARAMETER),
-                                      AttributesDescriptor("Local variable", RHighlighterColors.LOCAL_VARIABLE),
-                                      AttributesDescriptor("Global variable", RHighlighterColors.GLOBAL_VARIABLE),
-                                      AttributesDescriptor("Closure", RHighlighterColors.CLOSURE),
-                                      AttributesDescriptor("Named argument", RHighlighterColors.NAMED_ARGUMENT))
   }
 }

@@ -9,7 +9,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.highlighting.RHighlighterColors
+import org.jetbrains.r.highlighting.*
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.isFieldLikeComponent
 import org.jetbrains.r.psi.ReferenceKind
@@ -22,15 +22,15 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
   override fun visitCallExpression(callExpression: RCallExpression) {
     val expression = callExpression.expression
     if (expression is RNamespaceAccessExpression && expression.identifier != null) {
-      highlight(expression.identifier!!, RHighlighterColors.FUNCTION_CALL)
+      highlight(expression.identifier!!, FUNCTION_CALL)
     }
     else {
-      highlight(expression, RHighlighterColors.FUNCTION_CALL)
+      highlight(expression, FUNCTION_CALL)
     }
   }
 
   override fun visitNamespaceAccessExpression(o: RNamespaceAccessExpression) {
-    highlight(o.namespace, RHighlighterColors.NAMESPACE)
+    highlight(o.namespace, NAMESPACE)
   }
 
   override fun visitIdentifierExpression(element: RIdentifierExpression) {
@@ -63,7 +63,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
   }
 
   override fun visitParameter(rParameter: RParameter) {
-    highlight(rParameter, RHighlighterColors.PARAMETER)
+    highlight(rParameter, PARAMETER)
   }
 
   override fun visitOperatorExpression(operatorExpression: ROperatorExpression) {
@@ -82,16 +82,16 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     RPsiUtil.getCallByExpression(element)?.let { return null }
     RPsiUtil.getAssignmentByAssignee(element)?.let { assignment ->
       return when {
-        assignment.isFunctionDeclaration -> RHighlighterColors.FUNCTION_DECLARATION
-        assignment.isClosureAssignment -> RHighlighterColors.CLOSURE
-        assignment.isNamedArgumentAssignment() -> RHighlighterColors.NAMED_ARGUMENT
-        else -> RHighlighterColors.LOCAL_VARIABLE
+        assignment.isFunctionDeclaration -> FUNCTION_DECLARATION
+        assignment.isClosureAssignment -> CLOSURE
+        assignment.isNamedArgumentAssignment() -> NAMED_ARGUMENT
+        else -> LOCAL_VARIABLE
       }
     }
     return when (element.getKind()) {
-      ReferenceKind.LOCAL_VARIABLE -> RHighlighterColors.LOCAL_VARIABLE
-      ReferenceKind.CLOSURE -> RHighlighterColors.CLOSURE
-      ReferenceKind.PARAMETER -> RHighlighterColors.PARAMETER
+      ReferenceKind.LOCAL_VARIABLE -> LOCAL_VARIABLE
+      ReferenceKind.CLOSURE -> CLOSURE
+      ReferenceKind.PARAMETER -> PARAMETER
       else -> null
     }
   }

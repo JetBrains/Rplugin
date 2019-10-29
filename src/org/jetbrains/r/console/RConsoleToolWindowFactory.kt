@@ -34,6 +34,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
           }
         })
       }
+
       window.toolWindowManager.project.getUserData(QUEUE_KEY)?.let { actions ->
         synchronized(actions) {
           actions.forEach { action -> action(window) }

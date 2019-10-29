@@ -92,9 +92,9 @@ class RConsoleManager(private val project: Project) {
         RConsoleRunner(project, project.basePath!!).initAndRun().onSuccess { console ->
           if (requestFocus) {
             RConsoleToolWindowFactory.getToolWindow(project)?.show {
-              val focusManager = IdeFocusManager.findInstanceByComponent(console)
-              focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.consoleEditor.component) ?: return@show, project)
 
+              val focusManager = IdeFocusManager.findInstanceByComponent(console)
+              focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.component) ?: return@show, project)
             }
           }
         }
