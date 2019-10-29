@@ -1,0 +1,1 @@
+<info descr="R_FUNCTION_DECLARATION">foo</info> <- function(<info descr="R_PARAMETER">x</info>, <info descr="R_PARAMETER">y</info> = <info descr="R_FUNCTION_CALL">getOption</info>("myOption")) <info descr="R_PARAMETER">y</info>

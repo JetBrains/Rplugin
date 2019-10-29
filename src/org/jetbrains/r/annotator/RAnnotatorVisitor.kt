@@ -63,7 +63,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
   }
 
   override fun visitParameter(rParameter: RParameter) {
-    highlight(rParameter, PARAMETER)
+    highlight(rParameter.nameIdentifier ?: return, PARAMETER)
   }
 
   override fun visitOperatorExpression(operatorExpression: ROperatorExpression) {

@@ -15,70 +15,47 @@ import org.jetbrains.r.*
 
 import javax.swing.*
 
-/**
- * RColorSettingsPage implementation
- * Created on 7/23/14.
- *
- * @author HongKee Moon
- */
 class RColorSettingsPage : ColorSettingsPage {
 
-  override fun getIcon(): Icon? {
-    return R_LOGO_16
-  }
+  override fun getIcon(): Icon? = R_LOGO_16
 
-  override fun getHighlighter(): SyntaxHighlighter {
-    return RHighlighter()
-  }
+  override fun getHighlighter(): SyntaxHighlighter = RHighlighter()
 
-  override fun getDemoText(): String {
-    return SAMPLE_R_SCRIPT
-  }
+  override fun getDemoText(): String = R_DEMO
 
-  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? {
-    return null
-  }
+  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = TAGS
 
-  override fun getAttributeDescriptors(): Array<AttributesDescriptor> {
-    return DESCRIPTORS
-  }
+  override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
 
-  override fun getColorDescriptors(): Array<ColorDescriptor> {
-    return ColorDescriptor.EMPTY_ARRAY
-  }
+  override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-  override fun getDisplayName(): String {
-    return "R"
-  }
+  override fun getDisplayName(): String = "R"
 
   companion object {
     /**
-     * The path to the sample .R file
+     * To be sure that annotator output is consistent with R highlighting demo
+     * we use the same input in the annotator test and in R highlighting demo.
      */
-    internal val SAMPLE_R_SCRIPT = """
-      # global variable
-      global_variable <- 1
-      
-      # function declaration 
-      global_function <- function(regular, named = "Hello World!") {
-        # inner function declaration
-        inner_function <- function() {
-           closure_usage <- regular
-           closure_usage + 1
-        }
-         
-        print(named)
-        regular + inner_function()
-      }
-      
-      # function call
-      global_function(2, named = 'Hello World!')
-      
-      # namespace access
-      print(datasets::cars[1, 2])
-      
-      # bad character
-      x <- 1 + 2 + 4 5
+    internal val R_DEMO_FOR_TESTS = """
+# function declaration 
+<info descr="R_FUNCTION_DECLARATION">global_function</info> <- function(<info descr="R_PARAMETER">regular</info>, <info descr="R_PARAMETER">named</info> = "Hello World!") {
+  # inner function declaration
+  <info descr="R_FUNCTION_DECLARATION">inner_function</info> <- function() {
+     <info descr="R_LOCAL_VARIABLE">closure_usage</info> <- <info descr="R_CLOSURE">regular</info>
+     <info descr="R_LOCAL_VARIABLE">closure_usage</info> + 1 
+  }
+   
+  <info descr="R_FUNCTION_CALL">print</info>(<info descr="R_PARAMETER">named</info>)
+  <info descr="R_PARAMETER">regular</info> + <info descr="R_FUNCTION_CALL">inner_function</info>()
+}
+
+# function call
+<info descr="R_FUNCTION_CALL">global_function</info>(2, <info descr="R_NAMED_ARGUMENT">named</info> = 'Hello World!')
+
+# namespace access
+<info descr="R_FUNCTION_CALL">print</info>(<info descr="R_NAMESPACE">datasets</info>::cars[1, 2])
     """.trimIndent()
   }
+  private val R_DEMO = R_DEMO_FOR_TESTS.replace("<info descr=\"([^<>\"]*)\">([^<>\"]*)</info>".toRegex(), "<$1>$2</$1>")
+  private val TAGS = DESCRIPTORS.map { it.key }.filter { R_DEMO.contains(it.externalName) }.map { it.externalName to it }.toMap()
 }

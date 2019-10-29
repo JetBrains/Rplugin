@@ -5,6 +5,7 @@
 package org.jetbrains.r.annotator
 
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.highlighting.RColorSettingsPage
 import java.nio.file.Paths
 
 class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
@@ -28,6 +29,13 @@ class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
   fun testListSubsetOperator() = doTest()
 
   fun testDots() = doTest()
+
+  fun testHighlightParameterDefaultValue() = doTest()
+
+  fun testSampleFromColorSettingsPage() {
+    myFixture.configureByText("foo.R", RColorSettingsPage.R_DEMO_FOR_TESTS)
+    myFixture.checkHighlighting(false, true, false)
+  }
 
   private fun doTest() {
     val testName = getTestName(true)

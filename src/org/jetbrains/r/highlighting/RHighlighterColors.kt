@@ -27,13 +27,12 @@ val COMMA                = create("R_COMMA", Colors.COMMA, "Braces and Operators
 val SEMICOLON            = create("R_SEMICOLON", Colors.SEMICOLON, "Braces and Operators//Semicolon")
 
 val LOCAL_VARIABLE       = create("R_LOCAL_VARIABLE", Colors.LOCAL_VARIABLE, "Variables//Local Variable")
-val GLOBAL_VARIABLE      = create("R_GLOBAL_VARIABLE", Colors.GLOBAL_VARIABLE, "Variables//Global Variable")
 val CLOSURE              = create("R_CLOSURE", Colors.CLASS_NAME, "Variables//Closure Variable")
 
 val NAMESPACE            = create("R_NAMESPACE", Colors.CLASS_NAME, "Namespace")
 
-val PARAMETER            = create("R_PARAMETER", Colors.PARAMETER, "Parameters//Parameter")
-val NAMED_ARGUMENT       = create("R_NAMED_ARGUMENT", Colors.IDENTIFIER, "Parameters//Named Parameters")
+val PARAMETER            = create("R_PARAMETER", Colors.PARAMETER, "Parameter")
+val NAMED_ARGUMENT       = create("R_NAMED_ARGUMENT", Colors.IDENTIFIER, "Named Argument")
 
 val FUNCTION_CALL        = create("R_FUNCTION_CALL", Colors.STATIC_METHOD, "Functions//Function call")
 val FUNCTION_DECLARATION = create("R_FUNCTION_DECLARATION", Colors.FUNCTION_DECLARATION, "Functions//Function declaration")
