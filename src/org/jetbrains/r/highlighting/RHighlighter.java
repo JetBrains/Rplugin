@@ -22,32 +22,32 @@ public class RHighlighter extends SyntaxHighlighterBase {
     private static final Map<IElementType, TextAttributesKey> ATTRIBUTES = new HashMap<IElementType, TextAttributesKey>();
 
     static {
-        fillMap(ATTRIBUTES, RPsiUtil.INSTANCE.getRESERVED_WORDS(), RHighlighterColors.KEYWORD);
-        fillMap(ATTRIBUTES, RPsiUtil.INSTANCE.getOPERATORS(), RHighlighterColors.OPERATION_SIGN);
+        fillMap(ATTRIBUTES, RPsiUtil.INSTANCE.getRESERVED_WORDS(), RHighlighterColors.Companion.getKEYWORD());
+        fillMap(ATTRIBUTES, RPsiUtil.INSTANCE.getOPERATORS(), RHighlighterColors.Companion.getOPERATION_SIGN());
 
-        ATTRIBUTES.put(RElementTypes.R_STRING, RHighlighterColors.STRING);
-        ATTRIBUTES.put(RElementTypes.R_NUMERIC, RHighlighterColors.NUMBER);
-        ATTRIBUTES.put(RElementTypes.R_COMPLEX, RHighlighterColors.NUMBER);
-        ATTRIBUTES.put(RElementTypes.R_INTEGER, RHighlighterColors.NUMBER);
+        ATTRIBUTES.put(RElementTypes.R_STRING, RHighlighterColors.Companion.getSTRING());
+        ATTRIBUTES.put(RElementTypes.R_NUMERIC, RHighlighterColors.Companion.getNUMBER());
+        ATTRIBUTES.put(RElementTypes.R_COMPLEX, RHighlighterColors.Companion.getNUMBER());
+        ATTRIBUTES.put(RElementTypes.R_INTEGER, RHighlighterColors.Companion.getNUMBER());
 
 
-        ATTRIBUTES.put(RElementTypes.R_LPAR, RHighlighterColors.PARENTHESES);
-        ATTRIBUTES.put(RElementTypes.R_RPAR, RHighlighterColors.PARENTHESES);
+        ATTRIBUTES.put(RElementTypes.R_LPAR, RHighlighterColors.Companion.getPARENTHESES());
+        ATTRIBUTES.put(RElementTypes.R_RPAR, RHighlighterColors.Companion.getPARENTHESES());
 
-        ATTRIBUTES.put(RElementTypes.R_LBRACE, RHighlighterColors.BRACES);
-        ATTRIBUTES.put(RElementTypes.R_RBRACE, RHighlighterColors.BRACES);
+        ATTRIBUTES.put(RElementTypes.R_LBRACE, RHighlighterColors.Companion.getBRACES());
+        ATTRIBUTES.put(RElementTypes.R_RBRACE, RHighlighterColors.Companion.getBRACES());
 
-        ATTRIBUTES.put(RElementTypes.R_LBRACKET, RHighlighterColors.BRACKETS);
-        ATTRIBUTES.put(RElementTypes.R_LDBRACKET, RHighlighterColors.BRACKETS);
-        ATTRIBUTES.put(RElementTypes.R_RBRACKET, RHighlighterColors.BRACKETS);
-        ATTRIBUTES.put(RElementTypes.R_RDBRACKET, RHighlighterColors.BRACKETS);
+        ATTRIBUTES.put(RElementTypes.R_LBRACKET, RHighlighterColors.Companion.getBRACKETS());
+        ATTRIBUTES.put(RElementTypes.R_LDBRACKET, RHighlighterColors.Companion.getBRACKETS());
+        ATTRIBUTES.put(RElementTypes.R_RBRACKET, RHighlighterColors.Companion.getBRACKETS());
+        ATTRIBUTES.put(RElementTypes.R_RDBRACKET, RHighlighterColors.Companion.getBRACKETS());
 
-        ATTRIBUTES.put(RElementTypes.R_COMMA, RHighlighterColors.COMMA);
-        ATTRIBUTES.put(RElementTypes.R_SEMI, RHighlighterColors.SEMICOLON);
+        ATTRIBUTES.put(RElementTypes.R_COMMA, RHighlighterColors.Companion.getCOMMA());
+        ATTRIBUTES.put(RElementTypes.R_SEMI, RHighlighterColors.Companion.getSEMICOLON());
 
-        ATTRIBUTES.put(RParserDefinition.END_OF_LINE_COMMENT, RHighlighterColors.LINE_COMMENT);
+        ATTRIBUTES.put(RParserDefinition.END_OF_LINE_COMMENT, RHighlighterColors.Companion.getLINE_COMMENT());
 
-        ATTRIBUTES.put(RParserDefinition.BAD_CHARACTER, RHighlighterColors.BAD_CHARACTER);
+        ATTRIBUTES.put(RParserDefinition.BAD_CHARACTER, RHighlighterColors.Companion.getBAD_CHARACTER());
     }
 
     @Override

@@ -54,13 +54,13 @@ public class RSyntaxHighlighter extends SyntaxHighlighterBase {
 
         attributes = new HashMap<>();
 
-        fillMap(attributes, lineCommentSet, RHighlighterColors.COMMA);
-        fillMap(attributes, keywords, RHighlighterColors.KEYWORD);
-        fillMap(attributes, parenthesisSet, RHighlighterColors.PARENTHESES);
-        fillMap(attributes, curlySet, RHighlighterColors.BRACES);
-        fillMap(attributes, bracketSet, RHighlighterColors.BRACKETS);
-        fillMap(attributes, string2Set, RHighlighterColors.STRING);
-        fillMap(attributes, numberSet, RHighlighterColors.NUMBER);
+        fillMap(attributes, lineCommentSet, RHighlighterColors.Companion.getCOMMA());
+        fillMap(attributes, keywords, RHighlighterColors.Companion.getKEYWORD());
+        fillMap(attributes, parenthesisSet, RHighlighterColors.Companion.getPARENTHESES());
+        fillMap(attributes, curlySet, RHighlighterColors.Companion.getBRACES());
+        fillMap(attributes, bracketSet, RHighlighterColors.Companion.getBRACKETS());
+        fillMap(attributes, string2Set, RHighlighterColors.Companion.getSTRING());
+        fillMap(attributes, numberSet, RHighlighterColors.Companion.getNUMBER());
     }
 
     @NotNull
