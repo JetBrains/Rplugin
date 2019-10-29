@@ -23,7 +23,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
-
 object RSkeletonUtil {
   const val CUR_SKELETON_VERSION = 2
   const val SKELETON_DIR_NAME = "r_skeletons"
@@ -50,7 +49,7 @@ object RSkeletonUtil {
     }
   }
 
-  fun updateSkeletons(rInterpreter: RInterpreter): Boolean {
+  fun updateSkeletons(rInterpreter: RInterpreter, progressIndicator: ProgressIndicator? = null): Boolean {
     checkVersion(rInterpreter.skeletonsDirectory)
     val generationMap = HashMap<String, List<RPackage>>()
     for (skeletonPath in rInterpreter.skeletonPaths) {
@@ -77,10 +76,12 @@ object RSkeletonUtil {
 
       generationMap[skeletonPath] = newPackages
     }
-    return generateSkeletons(generationMap, rInterpreter)
+    return generateSkeletons(generationMap, rInterpreter, progressIndicator)
   }
 
-  fun generateSkeletons(generationMap: Map<String, List<RPackage>>, rInterpreter: RInterpreter): Boolean {
+  fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
+                        rInterpreter: RInterpreter,
+                        progressIndicator: ProgressIndicator? = null): Boolean {
     var result = false
 
     val es = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE)
@@ -93,7 +94,7 @@ object RSkeletonUtil {
         val skeletonFile = File(skeletonsDir, rPackage.getLibraryBinFileName())
         processed += 1
         val finalProcessed = processed
-        val indicator: ProgressIndicator? = ProgressIndicatorProvider.getInstance().progressIndicator
+        val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
         es.submit {
           try {
             LOG.info("building bin for package '$rPackage'")

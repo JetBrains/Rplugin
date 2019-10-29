@@ -15,6 +15,8 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.project.DumbModeTask
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -177,29 +179,39 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
   private fun scheduleSkeletonUpdate(): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      mergingUpdateQueue.queue(object: Update("updating skeletons") {
-        override fun run() {
-          rInterpreter?.updateState()
-          promise.setResult(Unit)
-          val interpreter = rInterpreter ?: return
-          val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
-            override fun run(indicator: ProgressIndicator) {
-              RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
-              RLibraryWatcher.getInstance(project).refresh()
-              if (RSkeletonUtil.updateSkeletons(interpreter)) {
-                updateIndexableSet()
-                runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
-              }
-            }
+    val promise = AsyncPromise<Unit>()
+    val task = object : Update("Updating skeletons") {
+      override fun run() {
+        rInterpreter?.updateState()
+        promise.setResult(Unit)
+        val interpreter = rInterpreter ?: return
+        val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
+          override fun run(indicator: ProgressIndicator) {
+            RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
+            RLibraryWatcher.getInstance(project).refresh()
+            updateSkeletons(interpreter)
           }
-          ProgressManager.getInstance().run(updater)
         }
-      })
+        ProgressManager.getInstance().run(updater)
+      }
     }
+    mergingUpdateQueue.queue(task)
+    return promise
   }
 
-  private fun Task.Backgroundable.refreshSkeletons(interpreter: RInterpreterImpl) {
+  private fun updateSkeletons(interpreter: RInterpreterImpl) {
+    val dumbModeTask = object : DumbModeTask(interpreter) {
+      override fun performInDumbMode(indicator: ProgressIndicator) {
+        if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
+          updateIndexableSet()
+          runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
+        }
+      }
+    }
+    DumbService.getInstance(project).queueTask(dumbModeTask)
+  }
+
+  private fun refreshSkeletons(interpreter: RInterpreterImpl) {
     interpreter.skeletonPaths.forEach { skeletonPath ->
       val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return
       VfsUtil.markDirtyAndRefresh(false, true, true, libraryRoot)
