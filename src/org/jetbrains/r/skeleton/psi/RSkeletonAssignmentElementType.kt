@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.bin.psi
+package org.jetbrains.r.skeleton.psi
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -17,12 +17,12 @@ import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.psi.stubs.RStubElementType
 
-class RBinAssignmentElementType : RStubElementType<RBinAssignmentStub, RAssignmentStatement>("R bin assignment") {
-  override fun createPsi(stub: RBinAssignmentStub): RAssignmentStatement {
-    return RBinAssignmentStatement(stub)
+class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub, RAssignmentStatement>("R bin assignment") {
+  override fun createPsi(stub: RSkeletonAssignmentStub): RAssignmentStatement {
+    return RSkeletonAssignmentStatement(stub)
   }
 
-  override fun serialize(stub: RBinAssignmentStub, dataStream: StubOutputStream) {
+  override fun serialize(stub: RSkeletonAssignmentStub, dataStream: StubOutputStream) {
     dataStream.writeName(stub.name)
     dataStream.writeBoolean(stub.isFunctionDeclaration)
     if (stub.isFunctionDeclaration) {
@@ -30,14 +30,14 @@ class RBinAssignmentElementType : RStubElementType<RBinAssignmentStub, RAssignme
     }
   }
 
-  override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): RBinAssignmentStub {
+  override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): RSkeletonAssignmentStub {
     val name = StringRef.toString(dataStream.readName())
     val isFunctionDefinition = dataStream.readBoolean()
     val parameters = if (isFunctionDefinition) StringRef.toString(dataStream.readName()) else ""
-    return RBinAssignmentStub(parentStub, this, name, isFunctionDefinition, parameters)
+    return RSkeletonAssignmentStub(parentStub, this, name, isFunctionDefinition, parameters)
   }
 
-  override fun createStub(psi: RAssignmentStatement, parentStub: StubElement<*>?): RBinAssignmentStub {
+  override fun createStub(psi: RAssignmentStatement, parentStub: StubElement<*>?): RSkeletonAssignmentStub {
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
 
@@ -45,7 +45,7 @@ class RBinAssignmentElementType : RStubElementType<RBinAssignmentStub, RAssignme
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
 
-  override fun indexStub(stub: RBinAssignmentStub, sink: IndexSink) {
+  override fun indexStub(stub: RSkeletonAssignmentStub, sink: IndexSink) {
     val name = stub.name
     RAssignmentNameIndex.sink(sink, name)
     RAssignmentCompletionIndex.sink(sink, "")

@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.bin.psi
+package org.jetbrains.r.skeleton.psi
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicatorProvider
@@ -17,18 +17,18 @@ import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.bin.RBinFileDecompiler
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.stubs.RAssignmentStub
+import org.jetbrains.r.skeleton.RSkeletonFileDecompiler
 import java.lang.ref.Reference
 import java.lang.ref.SoftReference
 import java.util.concurrent.TimeoutException
 
-class RBinAssignmentStatement(private val myStub: RBinAssignmentStub) : RBinBase(), RAssignmentStatement {
+class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) : RSkeletonBase(), RAssignmentStatement {
   override fun getMirror() = null
 
   private var decompiled: Reference<ReadOnlyLightVirtualFile>? = null
@@ -88,7 +88,7 @@ class RBinAssignmentStatement(private val myStub: RBinAssignmentStub) : RBinBase
     val promise = AsyncPromise<CharSequence>()
     runBackgroundableTask("Decompile " + name, project, true) {
       try {
-        promise.setResult(RBinFileDecompiler.decompileSymbol(name, containingFile.virtualFile, rInterpreter))
+        promise.setResult(RSkeletonFileDecompiler.decompileSymbol(name, containingFile.virtualFile, rInterpreter))
       }
       catch(e: Throwable) {
         promise.setError(e)

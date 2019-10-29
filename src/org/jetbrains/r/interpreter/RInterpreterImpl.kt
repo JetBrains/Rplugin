@@ -54,7 +54,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   override var skeletonRoots: Set<VirtualFile> = emptySet()
     get() {
       if (field.isEmpty()) {
-        field = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), false) }.toSet()
+        field = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
       }
       return field
     }

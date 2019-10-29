@@ -7,13 +7,12 @@ package org.jetbrains.r.packages
 
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.CachedValueProfiler
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.IOUtil
-import org.jetbrains.r.bin.RBinFileType
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.File
@@ -33,10 +32,10 @@ data class RPackage(val packageName: String, val packageVersion: String, val pri
   val isUser: Boolean
     get() = priority == null || priority == RPackagePriority.NA
 
-  fun getLibraryBinFileName() = "$packageName-${packageVersion}.${RBinFileType.DOT_R_BIN_EXTENSION}"
+  fun getLibraryBinFileName() = "$packageName-${packageVersion}.${RSkeletonFileType.EXTENSION}"
 
   companion object {
-    private val SKELETON_FILE_REGEX = "([^-]*)-(.*)\\.${RBinFileType.DOT_R_BIN_EXTENSION}".toRegex()
+    private val SKELETON_FILE_REGEX = "([^-]*)-(.*)\\.${RSkeletonFileType.EXTENSION}".toRegex()
 
     fun getOrCreate(file: PsiFile): RPackage? {
       return CachedValuesManager.getCachedValue(file) { CachedValueProvider.Result<RPackage>(create(file), file) }

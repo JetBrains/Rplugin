@@ -19,7 +19,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.bin.RBinFileType
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.interpreter.RInterpreterUtil.EDT_TIMEOUT
 import org.jetbrains.r.packages.RPackage
@@ -27,6 +26,7 @@ import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -135,7 +135,7 @@ private fun prepareTestSkeletons(project: Project) {
 
 private fun missingTestSkeletons(): Set<String> {
   val skeletonsDirectory = File(RUsefulTestCase.SKELETON_LIBRARY_PATH)
-  val existedSkeletons = skeletonsDirectory.listFiles { _, name -> name.endsWith(".${RBinFileType.DOT_R_BIN_EXTENSION}") }
+  val existedSkeletons = skeletonsDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }
 
   if (existedSkeletons == null) {
     if (!skeletonsDirectory.mkdirs()) {

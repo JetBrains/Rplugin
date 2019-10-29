@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.bin.psi
+package org.jetbrains.r.skeleton.psi
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
@@ -13,7 +13,7 @@ import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RLanguage
 
-abstract class RBinBase : PsiElementBase(), PsiCompiledElement {
+abstract class RSkeletonBase : PsiElementBase(), PsiCompiledElement {
 
   override fun getLanguage(): Language = RLanguage.INSTANCE
 

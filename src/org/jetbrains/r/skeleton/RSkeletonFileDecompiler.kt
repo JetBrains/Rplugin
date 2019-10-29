@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.bin
+package org.jetbrains.r.skeleton
 
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.interpreter.RInterpreter
@@ -10,7 +10,7 @@ import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.packages.remote.RepoUtils
 import java.io.FileInputStream
 
-object RBinFileDecompiler {
+object RSkeletonFileDecompiler {
   fun decompileSymbol(methodName: String, file: VirtualFile, rInterpreter: RInterpreter): CharSequence {
     val binPackage: LibrarySummary.RLibraryPackage = FileInputStream(file.path).use {
       LibrarySummary.RLibraryPackage.parseFrom(it)

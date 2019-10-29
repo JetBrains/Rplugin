@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.bin.psi
+package org.jetbrains.r.skeleton.psi
 
 import com.intellij.lang.Language
 import com.intellij.openapi.application.ApplicationManager
@@ -20,14 +20,14 @@ import com.intellij.psi.stubs.StubTreeLoader
 import com.intellij.psi.util.CachedValue
 import com.intellij.reference.SoftReference
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.bin.RBinFileType
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.lang.ref.Reference
 
 
-class RBinFileImpl(viewProvider: FileViewProvider)
+class RSkeletonFileImpl(viewProvider: FileViewProvider)
   : PsiBinaryFileImpl(viewProvider.manager as PsiManagerImpl, viewProvider), PsiFileWithStubSupport {
   @Volatile
   private var stub: Reference<StubTree>? = null
@@ -49,7 +49,7 @@ class RBinFileImpl(viewProvider: FileViewProvider)
   private var myImports: CachedValue<List<RCallExpression>>? = null
 
   override fun toString(): String {
-    return "RBinFile:$name"
+    return "RSkeletonFile:$name"
   }
 
   override fun accept(visitor: PsiElementVisitor) {
@@ -63,7 +63,7 @@ class RBinFileImpl(viewProvider: FileViewProvider)
     // build newStub out of lock to avoid deadlock
     var newStubTree = StubTreeLoader.getInstance().readOrBuild(project, virtualFile, this) as StubTree?
     if (newStubTree == null) {
-      newStubTree = StubTree(RBinFileStub())
+      newStubTree = StubTree(RSkeletonFileStub())
     }
     synchronized(stubLock) {
       SoftReference.dereference(stub)?.let { return it }
@@ -75,7 +75,7 @@ class RBinFileImpl(viewProvider: FileViewProvider)
   }
 
   override fun getFileType(): FileType {
-    return RBinFileType
+    return RSkeletonFileType
   }
 
   private fun calculateTopLevelNameMap(mirror: PsiFile): Map<String, RAssignmentStatement> {

@@ -12,10 +12,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.r.bin.RBinFileType
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
+import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -143,7 +143,7 @@ object RSkeletonUtil {
     if (!skeletonDirectory.exists() || !skeletonDirectory.isDirectory) {
       return emptyMap()
     }
-    return skeletonDirectory.listFiles { _, name -> name.endsWith(".${RBinFileType.DOT_R_BIN_EXTENSION}") }?.mapNotNull {
+    return skeletonDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }?.mapNotNull {
       val nameWithoutExtension = it.nameWithoutExtension
       if (!nameWithoutExtension.contains('-')) {
         return@mapNotNull null
