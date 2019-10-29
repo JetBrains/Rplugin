@@ -10,6 +10,7 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -32,9 +33,11 @@ import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -106,9 +109,11 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       Pair(false, e)
     }
     if (!isViable) {
-      val details = if (e != null) ":\n${e.message}" else ""
-      val message = "Unable to use \"$path\" as an R interpreter$details.\nSpecify path to a viable executable"
-      RInterpreterUtil.notifyError(project, message)
+      val message = createInvalidPathErrorMessage(path, e?.message)
+      val action = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterModuleConfigurable::class.java)
+      }
+      RInterpreterUtil.notifyError(project, message, action)
     }
     return isViable
   }
@@ -204,6 +209,12 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   companion object {
     private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
+    private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
+
+    private fun createInvalidPathErrorMessage(path: String, details: String?): String {
+      val additional = details?.let { ":\n$it" }
+      return RBundle.message("interpreter.manager.invalid.path", path, additional ?: "")
+    }
   }
 }
 

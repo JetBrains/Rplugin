@@ -8,6 +8,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -33,6 +34,7 @@ object RInterpreterUtil {
   private val R_DISTRO_REGEX = "R-.*".toRegex()
 
   private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
+  private val INTERPRETER_FAILURE_TITLE = RBundle.message("interpreter.manager.failure")
 
   private val fromPathVariable: ArrayList<String>
     get() {
@@ -56,8 +58,8 @@ object RInterpreterUtil {
     return if (pathEntry.first() == '"' && pathEntry.last() == '"') pathEntry.substring(1, pathEntry.length - 1) else pathEntry
   }
 
-  fun notifyError(project: Project, message: String?) {
-    RNotificationUtil.notifyError(project, INTERPRETER_GROUP_ID, "R Interpreter Failure", message)
+  fun notifyError(project: Project, message: String?, action: AnAction? = null) {
+    RNotificationUtil.notifyError(project, INTERPRETER_GROUP_ID, INTERPRETER_FAILURE_TITLE, message, action)
   }
 
   fun tryGetVersionByPath(interpreterPath: String): Version? {
