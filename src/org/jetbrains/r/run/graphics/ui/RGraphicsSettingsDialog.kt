@@ -94,7 +94,6 @@ class RGraphicsSettingsDialog(
       addToGrid(JLabel(text, JLabel.LEFT), 0, index)
       addToGrid(inputField, 1, index)
       addToGrid(lastComponent, 2, index)
-      addToGrid(JLabel(), 3, index, xWeight = 1.0)  // Note: make other elements move to the left
     }
 
     return JPanel(GridBagLayout()).apply {
@@ -103,7 +102,6 @@ class RGraphicsSettingsDialog(
       addInput(widthInputField, PLOT_WIDTH_TEXT, widthUnitComboBox, 2)
       addInput(heightInputField, PLOT_HEIGHT_TEXT, heightUnitComboBox, 3)
       addInput(resolutionInputField, PLOT_RESOLUTION_TEXT, JLabel(DPI_TEXT, JLabel.LEFT), 4)
-      addToGrid(JLabel(),0, 5, yWeight = 1.0)  // Note: make other lines move to the top
       titleLabel.preferredSize = widthInputField.preferredSize
       autoResizeCheckBox.preferredSize = widthInputField.preferredSize
     }

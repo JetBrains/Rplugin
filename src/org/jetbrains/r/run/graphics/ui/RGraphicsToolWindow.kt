@@ -23,12 +23,14 @@ import org.jetbrains.r.run.graphics.*
 import java.awt.Desktop
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import javax.swing.JPanel
 import javax.swing.JSplitPane
 
 class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
@@ -72,7 +74,11 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
   })
 
-  private val settingsScrollable = JBScrollPane(settingsSubDialog.createComponent())
+  private val settingsSubPanel = JPanel(FlowLayout(FlowLayout.LEFT, SETTINGS_SUB_PANEL_PADDING, 0)).apply {
+    add(settingsSubDialog.createComponent())
+  }
+
+  private val settingsScrollable = JBScrollPane(settingsSubPanel)
   private val splitPane = JSplitPane(JSplitPane.VERTICAL_SPLIT, true, graphicsPanel.component, settingsScrollable).apply {
     resizeWeight = RESIZE_SPLIT_WEIGHT
   }
@@ -303,6 +309,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
     private const val RESIZE_SPLIT_WEIGHT = 0.67
+    private const val SETTINGS_SUB_PANEL_PADDING = 10
 
     private val MARGINS_TOO_LARGE_MESSAGE = RBundle.message("graphics.panel.error.margins.too.large")
 
