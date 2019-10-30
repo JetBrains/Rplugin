@@ -10,8 +10,10 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.inlays.components.GraphicsPanel
@@ -27,6 +29,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import javax.swing.JSplitPane
 
 class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
@@ -42,22 +45,57 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   private val lastFile: File?
     get() = lastSnapshot?.file
 
+  private val isAutoResizeEnabled: Boolean
+    get() = settingsSubDialog.isAutoResizeEnabled
+
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
-  private val panel = GraphicsPanel(project)
+  private val graphicsPanel = GraphicsPanel(project)
+
+  private val settingsSubDialog = RGraphicsSettingsDialog(object : RGraphicsSettingsDialog.Listener {
+    override fun onParametersChange(parameters: RGraphicsUtils.ScreenParameters) {
+      RGraphicsSettings.setScreenParameters(project, parameters)
+      repository.apply {
+        configuration?.let { oldConfiguration ->
+          configuration = oldConfiguration.copy(screenParameters = parameters)
+          if (oldConfiguration.screenParameters.resolution != parameters.resolution) {
+            Messages.showInfoMessage(RESOLUTION_CHANGED_MESSAGE, RESOLUTION_CHANGED_TITLE)
+          }
+        }
+      }
+    }
+
+    override fun onAutoResizeSwitch(isEnabled: Boolean) {
+      if (isEnabled) {
+        postScreenDimension()
+      }
+    }
+  })
+
+  private val settingsScrollable = JBScrollPane(settingsSubDialog.createComponent())
+  private val splitPane = JSplitPane(JSplitPane.VERTICAL_SPLIT, true, graphicsPanel.component, settingsScrollable).apply {
+    resizeWeight = RESIZE_SPLIT_WEIGHT
+  }
 
   init {
-    setContent(panel.component)
+    setContent(splitPane)
     val groups = createActionHolderGroups(project)
     toolbar = RGraphicsToolbar(groups).component
 
-    panel.component.addComponentListener(object : ComponentAdapter() {
+    graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent?) {
-        queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-          override fun run() {
-            postScreenDimension()
+        if (isAutoResizeEnabled) {
+          settingsSubDialog.apply {
+            currentParameters?.let { oldParameters ->
+              currentParameters = oldParameters.copy(dimension = getAdjustedScreenDimension())
+            }
           }
-        })
+          queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
+            override fun run() {
+              postScreenDimension()
+            }
+          })
+        }
       }
     })
 
@@ -89,21 +127,23 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       reset()
     }
     postSnapshotNumber()
-    postScreenDimension()
+    if (isAutoResizeEnabled) {
+      postScreenDimension()
+    }
   }
 
   private fun reset() {
     lastNormal = listOf()
     lastZoomed = listOf()
     lastIndex = -1
-    panel.reset()
+    graphicsPanel.reset()
   }
 
   private fun showCurrent() {
     lastSnapshot?.let { snapshot ->
       when (snapshot.error) {
-        RSnapshotError.MARGIN -> panel.showMessage(MARGINS_TOO_LARGE_MESSAGE)
-        else -> panel.refresh(snapshot.file)
+        RSnapshotError.MARGIN -> graphicsPanel.showMessage(MARGINS_TOO_LARGE_MESSAGE)
+        else -> graphicsPanel.refresh(snapshot.file)
       }
     }
   }
@@ -211,28 +251,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       }
     }
 
-    class TuneGraphicsDeviceActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = TUNE_GRAPHICS_DEVICE_ACTION_TITLE
-      override val description = TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION
-      override val icon = TUNE_GRAPHICS_DEVICE_ACTION_ICON
-
-      override val canClick: Boolean
-        get() = true
-
-      override fun onClick() {
-        fun getInitialParameters(): RGraphicsUtils.ScreenParameters {
-          return repository.configuration?.screenParameters ?: RGraphicsSettings.getScreenParameters(project)
-        }
-
-        RGraphicsSettingsDialog(getInitialParameters()) { parameters ->
-          RGraphicsSettings.setScreenParameters(project, parameters)
-          repository.configuration?.let { oldConfiguration ->
-            repository.configuration = oldConfiguration.copy(screenParameters = parameters)
-          }
-        }.show()
-      }
-    }
-
     return listOf(
       RGraphicsToolbar.groupOf(
         PreviousGraphicsActionHolder(),
@@ -249,23 +267,21 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
       ),
       RGraphicsToolbar.groupOf(
         ClearAllGraphicsActionHolder()
-      ),
-      RGraphicsToolbar.groupOf(
-        TuneGraphicsDeviceActionHolder()
       )
     )
   }
 
-  private fun postScreenDimension() {
-    fun getAdjustedDimension(): Dimension {
-      val panelDimension = panel.component.size
-      val toolPanelHeight = panel.getToolPanelHeight() ?: 0
-      return Dimension(panelDimension.width, panelDimension.height - toolPanelHeight)
-    }
+  private fun getAdjustedScreenDimension(): Dimension {
+    val panelDimension = graphicsPanel.component.size
+    val toolPanelHeight = graphicsPanel.getToolPanelHeight() ?: 0
+    return Dimension(panelDimension.width, panelDimension.height - toolPanelHeight)
+  }
 
+  private fun postScreenDimension() {
     repository.configuration?.let { oldConfiguration ->
       val parameters = oldConfiguration.screenParameters
-      val newParameters = parameters.copy(dimension = getAdjustedDimension())
+      val newParameters = parameters.copy(dimension = getAdjustedScreenDimension())
+      settingsSubDialog.currentParameters = newParameters
       repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
     }
   }
@@ -286,6 +302,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
+    private const val RESIZE_SPLIT_WEIGHT = 0.67
 
     private val MARGINS_TOO_LARGE_MESSAGE = RBundle.message("graphics.panel.error.margins.too.large")
 
@@ -293,7 +310,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private val ZOOM_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.zoom.title")
     private val CLEAR_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.clear.title")
     private val CLEAR_ALL_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.clear.all.title")
-    private val TUNE_GRAPHICS_DEVICE_ACTION_TITLE = RBundle.message("graphics.panel.action.tune.device.title")
 
     private val PREVIOUS_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.previous.description")
     private val NEXT_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.next.description")
@@ -301,7 +317,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private val ZOOM_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.zoom.description")
     private val CLEAR_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.clear.description")
     private val CLEAR_ALL_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.clear.all.description")
-    private val TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.tune.device.description")
 
     private val PREVIOUS_GRAPHICS_ACTION_ICON = AllIcons.Actions.Back
     private val NEXT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Forward
@@ -310,6 +325,9 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private val CLEAR_GRAPHICS_ACTION_ICON = AllIcons.Actions.Close  // TODO [mine]: adequate icons, please
     private val CLEAR_ALL_GRAPHICS_ACTION_ICON = AllIcons.Actions.Cancel
     private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
+
+    private val RESOLUTION_CHANGED_MESSAGE = RBundle.message("graphics.panel.settings.resolution.changed.message")
+    private val RESOLUTION_CHANGED_TITLE = RBundle.message("graphics.panel.settings.resolution.changed.title")
 
     private fun createDestinationFile(file: File) {
       if (!file.exists() && !file.createNewFile()) {
