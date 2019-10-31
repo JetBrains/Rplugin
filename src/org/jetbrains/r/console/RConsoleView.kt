@@ -134,7 +134,11 @@ class RConsoleView(val rInterop: RInterop,
         override fun actionPerformed(e: AnActionEvent) {
           if (console.isRunningCommand) {
             console.promiseToInterrupt?.cancel() ?: run {
-              console.executeActionHandler.interruptTextExecution()
+              if (console.debugger.isEnabled) {
+                console.debugger.stop()
+              } else {
+                console.executeActionHandler.interruptTextExecution()
+              }
             }
             console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
           } else {
