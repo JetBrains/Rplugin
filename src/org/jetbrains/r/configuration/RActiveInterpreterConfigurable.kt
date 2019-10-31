@@ -18,6 +18,7 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
+import org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import java.awt.BorderLayout
@@ -55,7 +56,7 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
   override fun apply() {
     fun restartInterpreter() {
       fun getPackagesPanel(project: Project): RInstalledPackagesPanel {
-        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RInstalledPackagesPanel.TOOL_WINDOW_ID)
+        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RPackagesToolWindowFactory.ID)
         return toolWindow.contentManager.getContent(0)!!.component as RInstalledPackagesPanel
       }
 

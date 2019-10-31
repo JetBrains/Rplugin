@@ -14,9 +14,9 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.settings.RSettings
+import java.lang.ref.WeakReference
 
 class RConsoleManager(private val project: Project) {
-
   @Volatile
   private var firstConsolePromise: Promise<RConsoleView>? = null
 
@@ -30,12 +30,17 @@ class RConsoleManager(private val project: Project) {
     }
 
   val currentConsoleOrNull: RConsoleView?
-    get() = RConsoleToolWindowFactory.getToolWindow(project)?.contentManager?.let { cm ->
+    get() {
+      val toolWindow = RConsoleToolWindowFactory.getToolWindow(project) ?: return null
+      if (findComponentOfType(toolWindow.component, RConsoleView::class.java) == null) return null
+      return toolWindow?.contentManager?.let { cm ->
         with(cm) {
-          findComponentOfType(selectedContent?.component, RConsoleView::class.java) ?:
-          contents.asSequence().map { findComponentOfType(it.component, RConsoleView::class.java) }.firstOrNull()
+          findComponentOfType(selectedContent?.component, RConsoleView::class.java) ?: contents.asSequence().map {
+            findComponentOfType(it.component, RConsoleView::class.java)
+          }.firstOrNull()
         }
       }
+    }
 
 
   private val consoles: List<RConsoleView>

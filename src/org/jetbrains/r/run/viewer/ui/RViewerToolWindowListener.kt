@@ -9,7 +9,7 @@ import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 import org.jetbrains.r.run.viewer.RViewerState
 
 class RViewerToolWindowListener(project: Project) : RViewerState.Listener {
-  private val invoker = RNonStealingToolWindowInvoker(project, RViewerToolWindow.TOOL_WINDOW_ID)
+  private val invoker = RNonStealingToolWindowInvoker(project, RViewerToolWindowFactory.ID)
 
   override fun onCurrentChange(newUrl: String) {
     invoker.showWindow()

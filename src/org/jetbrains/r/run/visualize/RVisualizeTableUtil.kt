@@ -10,6 +10,8 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import icons.org.jetbrains.r.run.visualize.RDataFrameTablePage
 import org.intellij.datavis.ui.MaterialTable
+import org.jetbrains.builtInWebServer.ConsoleManager
+import org.jetbrains.r.console.RConsoleManager
 import java.awt.EventQueue
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
@@ -20,7 +22,7 @@ object RVisualizeTableUtil {
   @JvmStatic
   fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
     EventQueue.invokeLater {
-      val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Table View")
+      val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RTableViewToolWindowFactory.ID)
       val contentManager = toolWindow.contentManager
       contentManager.contents.forEach {
         if ((it.component as? RDataFrameTablePage)?.viewer === viewer) {
@@ -54,7 +56,13 @@ object RVisualizeTableUtil {
 }
 
 class RTableViewToolWindowFactory : ToolWindowFactory {
-  override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+
+  override fun shouldBeAvailable(project: Project) = false
+
+  override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {}
+
+  companion object {
+    const val ID = "R Table View"
   }
 }
 

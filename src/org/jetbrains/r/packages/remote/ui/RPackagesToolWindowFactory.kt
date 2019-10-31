@@ -10,6 +10,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.remote.RPackageManagementService
 
 import javax.swing.*
@@ -23,5 +24,11 @@ class RPackagesToolWindowFactory : ToolWindowFactory {
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val content = contentFactory.createContent(packagesPanel, "", false)
     toolWindow.contentManager.addContent(content)
+  }
+
+  override fun shouldBeAvailable(project: Project) = false
+
+  companion object {
+    const val ID = "R Packages"
   }
 }

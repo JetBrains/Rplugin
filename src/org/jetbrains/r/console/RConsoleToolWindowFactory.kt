@@ -20,21 +20,15 @@ import com.intellij.ui.content.*
 import com.intellij.util.ui.UIUtil.findComponentOfType
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory
+import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory
+import org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory
+import org.jetbrains.r.run.visualize.RTableViewToolWindowFactory
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   override fun init(window: ToolWindow) {
     if (window is ToolWindowImpl) {
-      window.contentManager.let { cm ->
-        cm.addContentManagerListener(object : ContentManagerAdapter() {
-          override fun selectionChanged(event: ContentManagerEvent) {
-            findComponentOfType(cm.selectedContent?.component, RConsoleView::class.java)?.apply {
-              onSelect()
-            }
-          }
-        })
-      }
-
       window.toolWindowManager.project.getUserData(QUEUE_KEY)?.let { actions ->
         synchronized(actions) {
           actions.forEach { action -> action(window) }
@@ -45,6 +39,21 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
   }
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    toolWindow.contentManager.let { cm ->
+      cm.addContentManagerListener(object : ContentManagerAdapter() {
+        override fun selectionChanged(event: ContentManagerEvent) {
+          findComponentOfType(cm.selectedContent?.component, RConsoleView::class.java)?.apply {
+            onSelect()
+          }
+        }
+      })
+    }
+    ToolWindowManager.getInstance(project).apply {
+      listOf(RPackagesToolWindowFactory.ID, RGraphicsToolWindowFactory.ID, RViewerToolWindowFactory.ID,
+             RTableViewToolWindowFactory.ID).forEach {id ->
+        getToolWindow(id).setAvailable(true, null)
+      }
+    }
     RConsoleManager.getInstance(project).runIfEmpty()
   }
 

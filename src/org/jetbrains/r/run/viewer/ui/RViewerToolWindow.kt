@@ -28,8 +28,4 @@ class RViewerToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
       viewerPanel.reset()
     }
   }
-
-  companion object {
-    const val TOOL_WINDOW_ID = "R HTML Viewer"
-  }
 }

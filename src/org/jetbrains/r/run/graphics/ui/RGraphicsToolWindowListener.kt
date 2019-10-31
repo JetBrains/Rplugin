@@ -10,7 +10,7 @@ import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 import java.io.File
 
 class RGraphicsToolWindowListener(project: Project) : RGraphicsState.Listener {
-  private val invoker = RNonStealingToolWindowInvoker(project, RGraphicsToolWindow.TOOL_WINDOW_ID)
+  private val invoker = RNonStealingToolWindowInvoker(project, RGraphicsToolWindowFactory.ID)
 
   override fun onCurrentChange(snapshots: List<File>) {
     invoker.showWindow()

@@ -317,7 +317,7 @@ You can find the source code in the following repositories:
         <toolWindow id="R Console" anchor="bottom" canCloseContents="true"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
 
-        <toolWindow id="Table View" anchor="right" canCloseContents="true"
+        <toolWindow id="R Table View" anchor="right" canCloseContents="true"
                     factoryClass="org.jetbrains.r.run.visualize.RTableViewToolWindowFactory" secondary="false"/>
         <lang.psiStructureViewFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.structureView.RMarkdownStructureViewFactory"/>

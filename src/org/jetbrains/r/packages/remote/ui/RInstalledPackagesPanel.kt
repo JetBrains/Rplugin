@@ -152,7 +152,5 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     private val REFRESH_ICON = AllIcons.Actions.Refresh
     private val REFRESH_TASK_IDENTITY = RBundle.message("packages.panel.refresh.task.identity")
     private val REFRESH_TASK_NAME = RBundle.message("packages.panel.refresh.task.name")
-
-    const val TOOL_WINDOW_ID = "R Packages"
   }
 }
