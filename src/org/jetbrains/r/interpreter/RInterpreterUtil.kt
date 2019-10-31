@@ -28,13 +28,10 @@ import java.util.concurrent.TimeUnit
 object RInterpreterUtil {
   const val DEFAULT_TIMEOUT = 2 * 60 * 1000 // 2 min
   const val EDT_TIMEOUT = 5 * 1000 // 5 sec
-
-  private const val INTERPRETER_GROUP_ID = "RInterpreter"
   private const val INTERPRETER_ALIVE_TIMEOUT = 2000L
   private val R_DISTRO_REGEX = "R-.*".toRegex()
 
   private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
-  private val INTERPRETER_FAILURE_TITLE = RBundle.message("interpreter.manager.failure")
 
   private val fromPathVariable: ArrayList<String>
     get() {
@@ -56,10 +53,6 @@ object RInterpreterUtil {
 
   private fun removeQuotes(pathEntry: String): String? {
     return if (pathEntry.first() == '"' && pathEntry.last() == '"') pathEntry.substring(1, pathEntry.length - 1) else pathEntry
-  }
-
-  fun notifyError(project: Project, message: String?, action: AnAction? = null) {
-    RNotificationUtil.notifyError(project, INTERPRETER_GROUP_ID, INTERPRETER_FAILURE_TITLE, message, action)
   }
 
   fun tryGetVersionByPath(interpreterPath: String): Version? {

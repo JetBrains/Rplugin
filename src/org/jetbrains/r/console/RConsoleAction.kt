@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAware
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.RFileType
 
 class RConsoleAction : AnAction(), DumbAware {
@@ -20,7 +21,7 @@ class RConsoleAction : AnAction(), DumbAware {
     val project = CommonDataKeys.PROJECT.getData(event.dataContext)
     if (project != null) {
       RConsoleManager.runConsole(project, requestFocus = true).onError { e ->
-        RConsoleUtil.notifyError(project, e.message)
+        RNotificationUtil.notifyConsoleError(project, e.message)
       }
     }
   }

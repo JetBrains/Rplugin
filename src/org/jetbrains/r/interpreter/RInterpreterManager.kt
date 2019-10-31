@@ -115,7 +115,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       val action = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
         ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterModuleConfigurable::class.java)
       }
-      RInterpreterUtil.notifyError(project, message, action)
+      RNotificationUtil.notifyInterpreterError(project, message, action)
     }
     return isViable
   }

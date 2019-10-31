@@ -9,9 +9,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.console.RConsoleUtil
 
 
 /**
@@ -28,7 +28,7 @@ class EvaluateInConsole : REditorActionBase(
     val selection = REditorActionUtil.getSelectedCode(e) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { runInEdt { runWriteAction { it.executeText(selection.code.trim { it <= ' ' }) } } }
-      .onError { ex -> RConsoleUtil.notifyError(project, ex.message) }
+      .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }
 }

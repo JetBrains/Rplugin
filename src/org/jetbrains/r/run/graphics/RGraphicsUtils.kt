@@ -41,7 +41,6 @@ object RGraphicsUtils {
   private const val PACKAGE_NAME = "rplugingraphics"
   private const val PACKAGE_VERSION = "0.2.2"
   private const val BINARIES_DIR_NAME = "r-binaries"
-  private const val GRAPHICS_GROUP_ID = "RGraphics"
 
   private const val FULL_HD_HEIGHT = 1080
   private const val QUAD_HD_HEIGHT = 1440
@@ -133,10 +132,6 @@ object RGraphicsUtils {
     val parameters = screenParameters ?: getDefaultScreenParameters()
     val scaleFactor = getScaleFactor(parameters)
     return InitProperties(path, parameters, scaleFactor)
-  }
-
-  fun notifyError(project: Project, message: String?) {
-    RNotificationUtil.notifyError(project, GRAPHICS_GROUP_ID, "R Graphics Failure", message)
   }
 
   fun createGraphicsState(screenParameters: ScreenParameters?): RGraphicsState {

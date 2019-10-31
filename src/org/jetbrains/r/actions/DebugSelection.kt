@@ -7,9 +7,9 @@ package org.jetbrains.r.actions
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.console.RConsoleUtil
 
 
 class DebugSelection : REditorActionBase(
@@ -22,7 +22,7 @@ class DebugSelection : REditorActionBase(
     val selection = REditorActionUtil.getSelectedCode(e) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { it.debugger.executeDebugSource(selection.file, selection.range) }
-      .onError { ex -> RConsoleUtil.notifyError(project, ex.message) }
+      .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }
 }

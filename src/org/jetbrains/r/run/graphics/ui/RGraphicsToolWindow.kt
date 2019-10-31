@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
 import org.intellij.datavis.inlays.components.GraphicsPanel
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import java.awt.Desktop
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -113,7 +114,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
           } catch (e: Exception) {
             val details = e.message?.let { ".\n$it" } ?: ""
             val header = RBundle.message("graphics.panel.file.saver.failure.header")
-            RGraphicsUtils.notifyError(project, "$header: ${wrapper.file}$details")
+            RNotificationUtil.notifyGraphicsError(project, "$header: ${wrapper.file}$details")
           }
         }
       }
