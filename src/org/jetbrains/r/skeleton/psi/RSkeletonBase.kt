@@ -25,6 +25,8 @@ abstract class RSkeletonBase : PsiElementBase(), PsiCompiledElement {
     return containingFile?.manager ?: throw PsiInvalidElementAccessException(this)
   }
 
+  override fun isPhysical(): Boolean = false
+
   override fun getNode(): ASTNode {
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
@@ -59,10 +61,6 @@ abstract class RSkeletonBase : PsiElementBase(), PsiCompiledElement {
   }
 
   override fun getTextOffset(): Int {
-    throw IncorrectOperationException("Operation not supported in: $javaClass")
-  }
-
-  override fun getText(): String? {
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
 

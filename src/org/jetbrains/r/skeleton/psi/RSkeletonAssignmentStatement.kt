@@ -77,6 +77,10 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     return super.canNavigate() && RInterpreterManager.getInstance(project).interpreter != null
   }
 
+  override fun getText(): String {
+    return name + functionParameters
+  }
+
   override fun navigate(requestFocus: Boolean) {
     decompiled?.get()?.let {
       FileEditorManager.getInstance(project).openFile(it, requestFocus, true)

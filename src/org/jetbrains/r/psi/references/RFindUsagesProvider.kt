@@ -53,8 +53,7 @@ class RFindUsagesProvider : FindUsagesProvider {
 
   override fun getDescriptiveName(element: PsiElement): String {
     if (element is RAssignmentStatement) {
-      val assignee = element.assignee
-      return assignee!!.text
+      return element.assignee?.text ?: element.name
     }
 
     // this will be used e.g. when renaming function parameters

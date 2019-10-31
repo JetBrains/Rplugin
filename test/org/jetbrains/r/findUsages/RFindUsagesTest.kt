@@ -5,10 +5,17 @@
 package org.jetbrains.r.findUsages
 
 import com.intellij.testFramework.UsefulTestCase
+import com.intellij.usages.PsiElementUsageTarget
+import com.intellij.usages.UsageTargetUtil
 import org.intellij.lang.annotations.Language
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
-class RFindUsagesTest : RLightCodeInsightFixtureTestCase() {
+class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
+
+  override fun setUp() {
+    super.setUp()
+    addLibraries()
+  }
 
   fun testLocalVariable() {
     doTest("""
@@ -53,10 +60,31 @@ class RFindUsagesTest : RLightCodeInsightFixtureTestCase() {
      """)
   }
 
+  fun testLibraryFunction() {
+    doTest("""
+      base.package <- packageDescription("base")      
+      dplyr.package <- package<caret>Description("dplyr")      
+    """, """
+      Usage (2 usages)
+       Variable
+        packageDescription(pkg, lib.loc = NULL, fields = NULL, drop = TRUE, encoding = "")
+       Found usages (2 usages)
+        Unclassified usage (2 usages)
+         light_idea_test_case (2 usages)
+           (2 usages)
+           1base.package <- packageDescription("base")      
+           2dplyr.package <- packageDescription("dplyr")
+     """)
+  }
+
   private fun doTest(@Language("R") code: String, expected: String) {
     myFixture.configureByText("test.R", code.trimIndent())
     val element = myFixture.elementAtCaret
-    val actual = myFixture.getUsageViewTreeTextRepresentation(element)
+    val targets = UsageTargetUtil.findUsageTargets(element)
+    assertNotNull(targets)
+    assertTrue(targets.size > 0)
+    val target = (targets[0] as PsiElementUsageTarget).element
+    val actual = myFixture.getUsageViewTreeTextRepresentation(target)
     UsefulTestCase.assertSameLines(expected.trimIndent(), actual)
   }
 }
