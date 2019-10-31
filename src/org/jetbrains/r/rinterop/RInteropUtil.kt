@@ -48,7 +48,7 @@ object RInteropUtil {
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
         when (outputType) {
-          ProcessOutputType.STDERR -> LOG.warn("RWRAPPER " + StringUtil.escapeStringCharacters(text))
+          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> LOG.warn("RWRAPPER " + StringUtil.escapeStringCharacters(text))
           ProcessOutputType.STDOUT -> {
             if (linePromise.state != Promise.State.PENDING) return
             output.append(text)
@@ -58,7 +58,7 @@ object RInteropUtil {
       }
 
       override fun processTerminated(event: ProcessEvent) {
-        LOG.warn("RWRAPPER TERMINATED")
+        LOG.warn("RWRAPPER TERMINATED, code=${event.exitCode}")
         if (output.isNotBlank()) {
           LOG.warn(output.toString())
         }
@@ -117,7 +117,7 @@ object RInteropUtil {
     var command = GeneralCommandLine()
       .withExePath(wrapperPath)
       .withWorkDirectory(project.basePath!!)
-      .withParameters("--with-timeout")
+      //.withParameters("--with-timeout")
       .withEnvironment("R_HOME", paths.home)
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)

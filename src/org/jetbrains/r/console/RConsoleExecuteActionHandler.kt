@@ -126,6 +126,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onTermination() {
       state = State.TERMINATED
+      consoleView.print(RBundle.message("console.process.terminated") + "\n", ConsoleViewContentType.SYSTEM_OUTPUT)
     }
   }
 

@@ -13,8 +13,10 @@ import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ConsoleTitleGen
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -26,6 +28,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
@@ -68,6 +71,12 @@ class RConsoleRunner(private val project: Project,
             consoleView = RConsoleView(rInterop, interpreterPath, project, consoleTitle)
             ProcessTerminatedListener.attach(rInterop.processHandler)
             rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
+              override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+                if (outputType == ProcessOutputType.SYSTEM) {
+                  consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
+                }
+              }
+
               override fun processTerminated(event: ProcessEvent) {
                 finishConsole()
               }

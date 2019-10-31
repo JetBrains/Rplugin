@@ -509,7 +509,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
           return@Runnable
         }
       } catch (ignored: CancellationException) {
-      } catch (ignored: ExecutionException) {
+      } catch (e: ExecutionException) {
+        if ((e.cause as? StatusRuntimeException)?.status?.code == Status.Code.UNAVAILABLE) {
+          processReplEvent(Service.ReplEvent.newBuilder().setTermination(Empty.getDefaultInstance()).build())
+          return@Runnable
+        }
       }
       processReplEvents()
     }, executor)
