@@ -149,7 +149,7 @@ object RGraphicsUtils {
     val tmpDirectory = Files.createTempDirectory("rplugin-graphics").toFile()
     tmpDirectory.deleteOnExit()
     val parameters = createParameters(screenDimension, resolution)
-    return RVirtualGraphicsDevice(rInterop, tmpDirectory, parameters)
+    return RGraphicsDevice(rInterop, tmpDirectory, parameters)
   }
 
   fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {

@@ -147,9 +147,11 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   private fun showCurrent() {
     lastSnapshot?.let { snapshot ->
-      when (snapshot.error) {
-        RSnapshotError.MARGIN -> graphicsPanel.showMessage(MARGINS_TOO_LARGE_MESSAGE)
-        else -> graphicsPanel.refresh(snapshot.file)
+      val message = snapshot.error
+      if (message != null) {
+        graphicsPanel.showMessage(message)
+      } else {
+        graphicsPanel.refresh(snapshot.file)
       }
     }
   }
@@ -310,8 +312,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private const val RESIZE_TIME_SPAN = 500
     private const val RESIZE_SPLIT_WEIGHT = 0.67
     private const val SETTINGS_SUB_PANEL_PADDING = 10
-
-    private val MARGINS_TOO_LARGE_MESSAGE = RBundle.message("graphics.panel.error.margins.too.large")
 
     private val EXPORT_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.export.title")
     private val ZOOM_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.zoom.title")
