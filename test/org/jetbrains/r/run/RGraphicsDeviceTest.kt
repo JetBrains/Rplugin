@@ -9,7 +9,9 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
+import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer
@@ -23,18 +25,19 @@ import kotlin.math.max
 
 class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   private lateinit var shadowDirectory: File
+  private lateinit var graphicsDevice: RGraphicsDevice
   private lateinit var graphicsHandler: UpdateGraphicsHandler
   private val expectedSnapshotDirectoryPath = File("testData").absolutePath
 
   @Volatile
-  private var currentSnapshots: List<File>? = null
+  private var currentSnapshots: List<RSnapshot>? = null
 
   override fun setUp() {
     super.setUp()
-    val screenDimension = Dimension(640, 480)
-    val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
+    val screenDimension = DEFAULT_DIMENSION
+    graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
     graphicsDevice.addListener { update ->
-      currentSnapshots = update.normal.map { it.file }
+      currentSnapshots = update.normal
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     currentSnapshots = null
@@ -46,60 +49,93 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testPlot() {
-    initTestDataFrame()
-
-    // Plot test data frame
-    execute("plot(squares)")
-
-    // Check this out!
-    val plotSnapshot = getLastSnapshot()
-    TestCase.assertNotNull(plotSnapshot)
-    checkSimilar(plotSnapshot!!, 0, getCandidates(), "plot")
+    runAndCheckBasicSnapshot(PLOT_DRAWER)
   }
 
   fun testPoints() {
-    initTestDataFrame()
-
-    // Plot test data frame
-    execute("plot(squares)")
-    getLastSnapshot()  // flush this plot
-
-    // Add some points to make it a little bit interesting
-    execute("points(squares $ xs, squares $ ys / 2)")
-
-    // Check this out!
-    val pointsSnapshot = getLastSnapshot()
-    TestCase.assertNotNull(pointsSnapshot)
-    checkSimilar(pointsSnapshot!!, 1, getCandidates(), "points")
+    runAndCheckBasicSnapshot(POINTS_DRAWER)
   }
 
   fun testGgPlot() {
-    initTestDataFrame()
-
-    // Gg plot data frame
-    execute("require(ggplot2)")
-    execute("ggplot(squares, aes(x = xs, y = ys)) + geom_line()")
-
-    // Check this out!
-    val ggPlotSnapshot = getLastSnapshot()
-    TestCase.assertNotNull(ggPlotSnapshot)
-    checkSimilar(ggPlotSnapshot!!, 2, getCandidates(), "ggplot")
+    runAndCheckBasicSnapshot(GGPLOT_DRAWER)
   }
 
-  private fun getCandidates(): List<BufferedImage> {
+  fun testNonDistortingRescalePlot() {
+    runAndCheckRescaleSnapshot(PLOT_DRAWER, NON_DISTORTING_DIMENSIONS)
+  }
+
+  fun testNonDistortingRescalePoints() {
+    runAndCheckRescaleSnapshot(POINTS_DRAWER, NON_DISTORTING_DIMENSIONS)
+  }
+
+  fun testNonDistortingRescaleGgPlot() {
+    runAndCheckRescaleSnapshot(GGPLOT_DRAWER, NON_DISTORTING_DIMENSIONS)
+  }
+
+  fun testDistortingRescalePlot() {
+    runAndCheckRescaleSnapshot(PLOT_DRAWER, DISTORTING_DIMENSIONS)
+  }
+
+  fun testDistortingRescalePoints() {
+    runAndCheckRescaleSnapshot(POINTS_DRAWER, DISTORTING_DIMENSIONS)
+  }
+
+  fun testDistortingRescaleGgPlot() {
+    runAndCheckRescaleSnapshot(GGPLOT_DRAWER, DISTORTING_DIMENSIONS)
+  }
+
+  private fun runAndGetSnapshot(commands: List<String>): RSnapshot {
+    initTestDataFrame()
+    TestCase.assertTrue(commands.isNotEmpty())
+    var snapshot: RSnapshot? = null
+    for (command in commands) {
+      execute(command)
+      snapshot = getLastSnapshot()
+    }
+    return snapshot!!
+  }
+
+  private fun rescaleAndGetSnapshot(number: Int, dimension: Dimension): RSnapshot {
+    graphicsDevice.apply {
+      val parameters = configuration.screenParameters
+      val newParameters = parameters.copy(dimension = dimension)
+      configuration = configuration.copy(screenParameters = newParameters, snapshotNumber = number)
+    }
+    return getLastSnapshot()
+  }
+
+  private fun runAndCheckBasicSnapshot(drawerInfo: DrawerInfo) {
+    val snapshot = runAndGetSnapshot(drawerInfo.commands)
+    checkSimilar(snapshot, drawerInfo.expectedIndex, getBasicCandidates(), drawerInfo.name)
+  }
+
+  private fun runAndCheckRescaleSnapshot(drawerInfo: DrawerInfo, dimensions: List<Dimension>) {
+    val originalSnapshot = runAndGetSnapshot(drawerInfo.commands)
+    for (dimension in dimensions) {
+      val snapshot = rescaleAndGetSnapshot(originalSnapshot.number, dimension)
+      val suffix = "${drawerInfo.name}_${dimension.width}_${dimension.height}"
+      checkSimilar(snapshot, drawerInfo.expectedIndex, getRescaleCandidates(dimension), suffix)
+    }
+  }
+
+  private fun getBasicCandidates(): List<BufferedImage> {
     return listOf(
       "snapshot_plot.png",
       "snapshot_points.png",
       "snapshot_ggplot.png"
-    ).map { readImage(getExpectedSnapshot(it)) }
+    ).map { readImage(getExpectedBasicSnapshot(it)) }
   }
 
-  private fun checkSimilar(actual: File, expectedIndex: Int, candidates: List<BufferedImage>, suffix: String) {
-    val actualImage = readImage(actual)
+  private fun getRescaleCandidates(dimension: Dimension): List<BufferedImage> {
+    return listOf("plot", "points", "ggplot").map { readImage(getExpectedRescaleSnapshot(it, dimension)) }
+  }
+
+  private fun checkSimilar(actual: RSnapshot, expectedIndex: Int, candidates: List<BufferedImage>, suffix: String) {
+    val actualImage = readImage(actual.file)
     val actualIndex = actualImage.findMostSimilar(candidates)
     if (actualIndex != expectedIndex) {
       val actualShadowPath = Paths.get(shadowDirectory.absolutePath, "snapshot_${suffix}_actual.png")
-      Files.copy(actual.toPath(), actualShadowPath)
+      Files.copy(actual.file.toPath(), actualShadowPath)
       throw RuntimeException("Not similar '$suffix' plot, actual index = $actualIndex")
     }
   }
@@ -109,7 +145,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     graphicsHandler.onCommandExecuted()
   }
 
-  private fun getLastSnapshot(): File? {
+  private fun getLastSnapshot(): RSnapshot {
     val start = System.currentTimeMillis()
     while (currentSnapshots == null) {
       if (System.currentTimeMillis() - start > TIMEOUT) {
@@ -119,26 +155,54 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     }
     val snapshots = currentSnapshots!!
     currentSnapshots = null
-    return snapshots.lastOrNull()
+    return snapshots.last()
   }
 
-  private fun getExpectedSnapshot(name: String): File {
+  private fun getExpectedBasicSnapshot(name: String): File {
     val subdirectoryName = when {
       SystemInfo.isWindows -> "windows"
       SystemInfo.isMac -> "macos"
       else -> "linux"
     }
-    val path = Paths.get(expectedSnapshotDirectoryPath, "graphics", subdirectoryName, name)
-    return path.toFile()
+    return getExpectedSnapshot(subdirectoryName, name)
+  }
+
+  private fun getExpectedRescaleSnapshot(name: String, dimension: Dimension): File {
+    val fullName = "reference_${name}_${dimension.width}_${dimension.height}_NA.png"
+    return getExpectedSnapshot("rescale", fullName)
+  }
+
+  private fun getExpectedSnapshot(subdirectoryName: String, name: String): File {
+    return Paths.get(expectedSnapshotDirectoryPath, "graphics", subdirectoryName, name).toFile()
   }
 
   private fun initTestDataFrame() {
     execute("squares <- data.frame(xs = 1:5, ys = (1:5)^2)")
   }
 
+  data class DrawerInfo(
+    val name: String,
+    val expectedIndex: Int,
+    val commands: List<String>
+  )
 
   companion object {
     private const val TIMEOUT = 5000L
+
+    private val DEFAULT_DIMENSION = Dimension(640, 480)
+    private val DISTORTING_DIMENSIONS = listOf(
+      Dimension(640, 160),
+      Dimension(640, 180),
+      Dimension(640, 200)
+    )
+    private val NON_DISTORTING_DIMENSIONS = listOf(
+      Dimension(640, 960),
+      Dimension(1280, 480)
+    )
+
+    private val PLOT_DRAWER = DrawerInfo("plot", 0, listOf("plot(squares)"))
+    private val POINTS_DRAWER = DrawerInfo("points", 1, listOf("plot(squares)", "points(squares $ xs, squares $ ys / 2)"))
+    private val GGPLOT_DRAWER = DrawerInfo("ggplot", 2, listOf("require(ggplot2); ggplot(squares, aes(x = xs, y = ys)) + geom_line()"))
 
     private fun readImage(file: File): BufferedImage {
       fun BufferedImage.toGrayScale(): BufferedImage {
