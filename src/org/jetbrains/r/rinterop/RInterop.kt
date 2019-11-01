@@ -201,7 +201,6 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     val request = Service.GraphicsInitRequest.newBuilder()
       .setSnapshotDirectory(properties.snapshotDirectory)
       .setScreenParameters(screenParametersMessage)
-      .setScaleFactor(properties.scaleFactor)
       .build()
     return executeRequest(RPIServiceGrpc.getGraphicsInitMethod(), request)
   }

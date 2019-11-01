@@ -38,8 +38,7 @@ object RGraphicsUtils {
 
   data class InitProperties(
     val snapshotDirectory: String,
-    val screenParameters: ScreenParameters,
-    val scaleFactor: Double
+    val screenParameters: ScreenParameters
   )
 
   private const val LOCAL_FOLDER_NAME = "rplugin"
@@ -130,18 +129,9 @@ object RGraphicsUtils {
   }
 
   fun calculateInitProperties(snapshotDirectory: String, dimension: Dimension?, resolution: Int?): InitProperties {
-    fun getScaleFactor(parameters: ScreenParameters): Double {
-      return if (SystemInfo.isMac && parameters.resolution != null) {
-        parameters.resolution.toDouble() / MINIMAL_GRAPHICS_RESOLUTION
-      } else {
-        1.0
-      }
-    }
-
     val path = FileUtil.toSystemIndependentName(snapshotDirectory)
     val parameters = createParameters(dimension, resolution)
-    val scaleFactor = getScaleFactor(parameters)
-    return InitProperties(path, parameters, scaleFactor)
+    return InitProperties(path, parameters)
   }
 
   fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
