@@ -18,7 +18,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.settings.RSettings
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 class RConsoleManager(private val project: Project) {
@@ -26,7 +25,6 @@ class RConsoleManager(private val project: Project) {
   private var currentConsole: RConsoleView? = null
   private val consoleCounter: AtomicInteger = AtomicInteger()
   private var consolePromise: Promise<RConsoleView>? = null
-  private val isRunningConsole: AtomicBoolean = AtomicBoolean()
   @Volatile
   var initialized = false
     private set
@@ -34,7 +32,6 @@ class RConsoleManager(private val project: Project) {
   val currentConsoleAsync: Promise<RConsoleView>
     get() = AsyncPromise<RConsoleView>().apply {
       currentConsole?.let { setResult(it) } ?: runConsole().processed(this)
-
     }
 
   @Synchronized
@@ -73,7 +70,6 @@ class RConsoleManager(private val project: Project) {
       override fun contentRemoveQuery(event: ContentManagerEvent) {}
 
       override fun contentAdded(event: ContentManagerEvent) {
-        isRunningConsole.set(false)
         if (consoleCounter.incrementAndGet() == 1) {
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, true)
           currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
