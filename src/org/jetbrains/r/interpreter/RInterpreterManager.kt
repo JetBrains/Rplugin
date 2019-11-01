@@ -26,12 +26,11 @@ import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable
 import org.jetbrains.r.console.RConsoleManager
@@ -60,8 +59,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private var asyncPromise = AsyncPromise<Unit>()
   private var initialized = false
   private var rInterpreter: RInterpreterImpl? = null
-  private val mergingUpdateQueue = MergingUpdateQueue("Update Skeletons", 500,
-                                                      true, null, project)
 
   init {
     val connection = project.messageBus.connect()
@@ -165,22 +162,19 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun scheduleSkeletonUpdate(): Promise<Unit> {
     val promise = AsyncPromise<Unit>()
-    val task = object : Update("Updating skeletons") {
-      override fun run() {
-        rInterpreter?.updateState()
-        promise.setResult(Unit)
-        val interpreter = rInterpreter ?: return
-        val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
-          override fun run(indicator: ProgressIndicator) {
-            RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
-            RLibraryWatcher.getInstance(project).refresh()
-            updateSkeletons(interpreter)
-          }
+    runAsync {
+      rInterpreter?.updateState()
+      promise.setResult(Unit)
+      val interpreter = rInterpreter ?: return@runAsync
+      val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
+        override fun run(indicator: ProgressIndicator) {
+          RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
+          RLibraryWatcher.getInstance(project).refresh()
+          updateSkeletons(interpreter)
         }
-        ProgressManager.getInstance().run(updater)
       }
+      ProgressManager.getInstance().run(updater)
     }
-    mergingUpdateQueue.queue(task)
     return promise
   }
 
