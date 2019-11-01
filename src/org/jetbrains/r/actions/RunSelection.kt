@@ -18,7 +18,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
  * Event handler for the "Run Selection" action within an Arc code editor - runs the currently selected text within the
  * current REPL.
  */
-class EvaluateInConsole : REditorActionBase(
+class RunSelection : REditorActionBase(
   RBundle.message("run.selection.action.text"),
   RBundle.message("run.selection.action.description"),
   AllIcons.Actions.Execute) {

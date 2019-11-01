@@ -123,8 +123,8 @@ You can find the source code in the following repositories:
     </actions>
 
     <actions>
-        <action id="org.jetbrains.r.actions.EvaluateInConsole"
-                class="org.jetbrains.r.actions.EvaluateInConsole">
+        <action id="org.jetbrains.r.actions.RunSelection"
+                class="org.jetbrains.r.actions.RunSelection">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>

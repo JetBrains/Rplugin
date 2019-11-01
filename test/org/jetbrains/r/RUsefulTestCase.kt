@@ -5,6 +5,10 @@
 package org.jetbrains.r
 
 import com.intellij.codeInsight.lookup.Lookup
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -68,6 +72,16 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val fixture = fixtureBuilder.fixture
     return IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, LightTempDirTestFixtureImpl(true))
   }
+
+   protected fun createAnActionEvent(): AnActionEvent =
+    AnActionEvent.createFromDataContext(ActionPlaces.EDITOR_POPUP, null, DataContext {
+      when (it) {
+        CommonDataKeys.EDITOR.name -> myFixture.editor
+        CommonDataKeys.PSI_FILE.name -> myFixture.file
+        CommonDataKeys.VIRTUAL_FILE.name -> myFixture.file.virtualFile
+        else -> null
+      }
+    })
 
   companion object {
     private val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
