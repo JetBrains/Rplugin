@@ -12,8 +12,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.remote.RPackageManagementService
-
-import javax.swing.*
+import javax.swing.BorderFactory
 
 class RPackagesToolWindowFactory : ToolWindowFactory {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -26,7 +25,7 @@ class RPackagesToolWindowFactory : ToolWindowFactory {
     toolWindow.contentManager.addContent(content)
   }
 
-  override fun shouldBeAvailable(project: Project) = false
+  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
 
   companion object {
     const val ID = "R Packages"

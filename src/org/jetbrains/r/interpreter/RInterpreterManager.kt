@@ -22,12 +22,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.openapi.vfs.newvfs.BulkFileListener
-import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent
 import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
@@ -74,19 +68,10 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     connection.subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, object : FileEditorManagerListener.Before {
       override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
-          RConsoleManager.getInstance(project).runIfEmpty()
+          DumbService.getInstance(project).runWhenSmart { RConsoleManager.getInstance(project).currentConsoleAsync }
         }
       }
     })
-    val newRFileListener = object: BulkFileListener {
-      override fun after(events: MutableList<out VFileEvent>) {
-        if (events.any { event -> (event is VFileCopyEvent || event is VFileCreateEvent || event is VFileMoveEvent) &&
-                                  (event.file?.fileType == RFileType) } ) {
-          initializeInterpreter()
-        }
-      }
-    }
-    connection.subscribe(VirtualFileManager.VFS_CHANGES, newRFileListener)
   }
 
   private fun fetchInterpreterPath(oldPath: String = ""): String {

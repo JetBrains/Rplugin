@@ -10,7 +10,6 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import icons.org.jetbrains.r.run.visualize.RDataFrameTablePage
 import org.intellij.datavis.ui.MaterialTable
-import org.jetbrains.builtInWebServer.ConsoleManager
 import org.jetbrains.r.console.RConsoleManager
 import java.awt.EventQueue
 import javax.swing.table.DefaultTableColumnModel
@@ -57,9 +56,9 @@ object RVisualizeTableUtil {
 
 class RTableViewToolWindowFactory : ToolWindowFactory {
 
-  override fun shouldBeAvailable(project: Project) = false
-
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {}
+
+  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
 
   companion object {
     const val ID = "R Table View"

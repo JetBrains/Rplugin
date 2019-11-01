@@ -8,7 +8,6 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ToolWindowManager
 import org.jetbrains.r.console.RConsoleManager
 
 class RGraphicsToolWindowFactory : ToolWindowFactory {
@@ -18,7 +17,7 @@ class RGraphicsToolWindowFactory : ToolWindowFactory {
     contentManager.addContent(content)
   }
 
-  override fun shouldBeAvailable(project: Project) = false
+  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
 
   companion object {
     const val ID = "R Graphics"

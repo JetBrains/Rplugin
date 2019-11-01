@@ -161,8 +161,8 @@ private val AnActionEvent.codeFence: PsiElement?
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
   val editor = e.editor ?: return
   val project = e.project ?: return
-  RConsoleToolWindowFactory.getToolWindow(project)?.show {
-    action.invoke()
+  action.invoke()
+  RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {
     val instance = IdeFocusManager.getInstance(project)
     instance.requestFocusInProject(instance.getFocusTargetFor(editor.component)!!, project)
   }

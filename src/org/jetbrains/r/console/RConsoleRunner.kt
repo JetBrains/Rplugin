@@ -97,7 +97,8 @@ class RConsoleRunner(private val project: Project,
               RViewerRepository.getInstance(project).setActiveState(viewerState)
             }
 
-            createContentDescriptorAndActions().onSuccess { promise.setResult(consoleView) }.onError { promise.setError(it) }
+            createContentDescriptorAndActions()
+            promise.setResult(consoleView)
             consoleView.createDebuggerPanel()
 
             // Setup viewer handler
@@ -121,7 +122,7 @@ class RConsoleRunner(private val project: Project,
     return promise
   }
 
-  private fun createContentDescriptorAndActions(): Promise<Unit> {
+  private fun createContentDescriptorAndActions() {
     val executeAction = createConsoleExecAction()
     val interruptAction = RConsoleView.createInterruptAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction("interactive_console")
@@ -154,7 +155,7 @@ class RConsoleRunner(private val project: Project,
 
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
-    return RConsoleToolWindowFactory.addContentWhenAvailable(project, contentDescriptor)
+    RConsoleToolWindowFactory.addContent(project, contentDescriptor)
   }
 
   private fun createConsoleExecAction(): AnAction {

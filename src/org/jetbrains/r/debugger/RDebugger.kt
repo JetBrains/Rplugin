@@ -519,8 +519,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
 
   private fun createAction(text: String, icon: Icon, actionId: String? = null, isActive: () -> Boolean = { actionsEnabled },
                            callback: (AnActionEvent) -> Unit): AnAction {
-    var toolWindow: ToolWindow? = null
-    RConsoleToolWindowFactory.runWhenAvailable(project) { toolWindow = it }
+    val toolWindow: ToolWindow? = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
     val action = object : AnAction(text, null, icon) {
       override fun actionPerformed(e: AnActionEvent) = callback(e)
 

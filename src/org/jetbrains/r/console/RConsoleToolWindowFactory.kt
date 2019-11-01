@@ -9,17 +9,15 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.UserDataHolderEx
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.ex.ToolWindowEx
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.ToolWindowImpl
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
-import com.intellij.ui.content.*
-import com.intellij.util.ui.UIUtil.findComponentOfType
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
+import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentFactory
 import org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory
@@ -27,78 +25,50 @@ import org.jetbrains.r.run.visualize.RTableViewToolWindowFactory
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
-  override fun init(window: ToolWindow) {
-    if (window is ToolWindowImpl) {
-      window.toolWindowManager.project.getUserData(QUEUE_KEY)?.let { actions ->
-        synchronized(actions) {
-          actions.forEach { action -> action(window) }
-        }
-      }
-      window.toolWindowManager.project.putUserData(QUEUE_KEY, null)
-    }
-  }
-
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    toolWindow.contentManager.let { cm ->
-      cm.addContentManagerListener(object : ContentManagerAdapter() {
-        override fun selectionChanged(event: ContentManagerEvent) {
-          findComponentOfType(cm.selectedContent?.component, RConsoleView::class.java)?.apply {
-            onSelect()
-          }
+    val rConsoleManager = RConsoleManager.getInstance(project)
+    rConsoleManager.registerContentManager(toolWindow.contentManager)
+    setAvailableForRToolWindows(project, true)
+    (toolWindow as ToolWindowEx).isToHideOnEmptyContent = true
+    project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
+      override fun stateChanged() {
+        if (toolWindow.isVisible) {
+          rConsoleManager.currentConsoleAsync
         }
-      })
-    }
-    ToolWindowManager.getInstance(project).apply {
-      listOf(RPackagesToolWindowFactory.ID, RGraphicsToolWindowFactory.ID, RViewerToolWindowFactory.ID,
-             RTableViewToolWindowFactory.ID).forEach {id ->
-        getToolWindow(id).setAvailable(true, null)
       }
-    }
-    RConsoleManager.getInstance(project).runIfEmpty()
+    })
   }
 
   companion object {
-    private val QUEUE_KEY: Key<MutableList<(ToolWindow) -> Unit>> = Key.create("org.jetbrains.r.console.RConsoleToolWindowQueue")
     private const val ID = "R Console"
 
-    fun runWhenAvailable(project: Project, action: (ToolWindow) -> Unit): Promise<Unit> {
-      val result = AsyncPromise<Unit>()
-      getToolWindow(project)?.let { toolWindow ->
-        action(toolWindow)
-        return result.apply { setResult(Unit) }
-      }
-      val list = (project as UserDataHolderEx).putUserDataIfAbsent(QUEUE_KEY, mutableListOf())
-      synchronized(list) {
-        getToolWindow(project)?.let { toolWindow ->
-          action(toolWindow)
-          return result.apply { setResult(Unit) }
-        }
-        list.add {
-          action(it)
-          result.setResult(Unit)
-        }
-      }
-      return result
-    }
-
-    fun addContentWhenAvailable(project: Project, contentDescriptor: RunContentDescriptor): Promise<Unit> {
-      return runWhenAvailable(project) {
-        addContent(it, contentDescriptor)
-      }
-    }
-
     fun show(project: Project) {
-      getToolWindow(project)?.show { }
+      getRConsoleToolWindows(project)?.show(null)
     }
 
-    fun getToolWindow(project: Project): ToolWindow? {
+    fun getRConsoleToolWindows(project: Project): ToolWindow? {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }
 
-    private fun addContent(toolWindow: ToolWindow, contentDescriptor: RunContentDescriptor) {
+    fun addContent(project: Project, contentDescriptor: RunContentDescriptor) {
+      val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
+      (toolWindow as ToolWindowImpl).ensureContentInitialized()
       toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
       val content = createContent(contentDescriptor)
       toolWindow.contentManager.addContent(content)
+    }
+
+    fun setAvailableForRToolWindows(project: Project, isAvailable: Boolean) {
+      ToolWindowManager.getInstance(project).apply {
+        listOf(
+          RPackagesToolWindowFactory.ID,
+          RGraphicsToolWindowFactory.ID,
+          RViewerToolWindowFactory.ID,
+          RTableViewToolWindowFactory.ID
+        ).forEach { id ->
+          getToolWindow(id)?.setAvailable(isAvailable, null)
+        }
+      }
     }
 
     private fun createContent(contentDescriptor: RunContentDescriptor): Content {

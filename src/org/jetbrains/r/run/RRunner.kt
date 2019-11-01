@@ -32,10 +32,10 @@ abstract class RRunner : GenericProgramRunner<RunnerSettings>() {
     val project = environment.project
     AppUIUtil.invokeOnEdt {
       FileDocumentManager.getInstance().saveAllDocuments()
-      RConsoleToolWindowFactory.getToolWindow(project)?.show {}
+      RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
     }
     ApplicationManager.getApplication().executeOnPooledThread {
-      RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {console ->
+      RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
         if (isRunningCommand(console)) RNotificationUtil.notifyConsoleError(project, RBundle.message("notification.console.busy"))
         val configuration = environment.runProfile as RRunConfiguration
         val workingDir = configuration.workingDirectoryPath

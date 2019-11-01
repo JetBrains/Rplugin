@@ -16,7 +16,7 @@ class RViewerToolWindowFactory : ToolWindowFactory {
     contentManager.addContent(content)
   }
 
-  override fun shouldBeAvailable(project: Project) = false
+  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
 
   companion object {
     const val ID = "R HTML Viewer"
