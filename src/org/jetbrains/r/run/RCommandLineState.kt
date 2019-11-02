@@ -12,10 +12,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.actionSystem.AnAction
-import org.jetbrains.r.run.configuration.RRunConfiguration
 
-class RCommandLineState(environment: ExecutionEnvironment,
-                        private val myRunConfiguration: RRunConfiguration) : CommandLineState(environment) {
+class RCommandLineState(environment: ExecutionEnvironment) : CommandLineState(environment) {
   override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
     return object : ExecutionResult {
       override fun getExecutionConsole() = null

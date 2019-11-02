@@ -19,23 +19,17 @@ import com.intellij.openapi.util.WriteExternalException
 import org.jdom.Element
 import org.jetbrains.r.run.RCommandLineState
 
-open class RRunConfiguration internal constructor(project: Project, configurationFactory: ConfigurationFactory)
-  : LocatableConfigurationBase<Any>(project, configurationFactory, ""), RRunConfigurationParams,
+class RRunConfiguration internal constructor(project: Project, configurationFactory: ConfigurationFactory)
+  : LocatableConfigurationBase<Any>(project, configurationFactory, ""),
   RunConfigurationWithSuppressedDefaultRunAction, RunConfigurationWithSuppressedDefaultDebugAction {
-  private var myScriptPath: String
-  private var myWorkingDirectoryPath: String
-
-  init {
-    myScriptPath = ""
-    myWorkingDirectoryPath = ""
-  }
+  var scriptPath = ""
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
-    return RCommandLineState(environment, this)
+    return RCommandLineState(environment)
   }
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-    return RRunConfigurationEditor(project)
+    return RRunConfigurationEditor()
   }
 
   @Throws(RuntimeConfigurationException::class)
@@ -51,50 +45,21 @@ open class RRunConfiguration internal constructor(project: Project, configuratio
     return RRunConfigurationUtils.suggestedName(this)
   }
 
-  override fun getScriptPath(): String {
-    return myScriptPath
-  }
-
-  override fun setScriptPath(scriptPath: String) {
-    myScriptPath = scriptPath
-  }
-
-  override fun getWorkingDirectoryPath(): String {
-    return myWorkingDirectoryPath
-  }
-
-  override fun setWorkingDirectoryPath(workingDirectoryPath: String) {
-    myWorkingDirectoryPath = workingDirectoryPath
-  }
-
   @Throws(InvalidDataException::class)
   override fun readExternal(element: Element) {
     PathMacroManager.getInstance(project).expandPaths(element)
-
     super.readExternal(element)
-
-    myScriptPath = JDOMExternalizerUtil.readField(element, SCRIPT_PATH, "")
-    myWorkingDirectoryPath = JDOMExternalizerUtil.readField(element, WORKING_DIRECTORY_PATH, "")
+    scriptPath = JDOMExternalizerUtil.readField(element, SCRIPT_PATH, "")
   }
 
   @Throws(WriteExternalException::class)
   override fun writeExternal(element: Element) {
     super.writeExternal(element)
-
-    JDOMExternalizerUtil.writeField(element, SCRIPT_PATH, myScriptPath)
-    JDOMExternalizerUtil.writeField(element, WORKING_DIRECTORY_PATH, myWorkingDirectoryPath)
+    JDOMExternalizerUtil.writeField(element, SCRIPT_PATH, scriptPath)
     PathMacroManager.getInstance(project).collapsePathsRecursively(element)
   }
 
   companion object {
     private const val SCRIPT_PATH = "SCRIPT_PATH"
-    private const val SCRIPT_ARGS = "SCRIPT_ARGS"
-    private const val WORKING_DIRECTORY_PATH = "WORKING_DIRECTORY_PATH"
-    private const val PASS_PARENT_ENVS = "PASS_PARENT_ENVS"
-
-    internal fun copyParams(source: RRunConfigurationParams, target: RRunConfigurationParams) {
-      target.scriptPath = source.scriptPath
-      target.workingDirectoryPath = source.workingDirectoryPath
-    }
   }
 }

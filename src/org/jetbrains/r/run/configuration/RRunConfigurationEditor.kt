@@ -6,19 +6,17 @@
 package org.jetbrains.r.run.configuration
 
 import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
+import javax.swing.JComponent
 
-import javax.swing.*
-
-class RRunConfigurationEditor(project: Project) : SettingsEditor<RRunConfiguration>() {
-  private var myForm: RRunConfigurationForm = RRunConfigurationForm(project)
+class RRunConfigurationEditor : SettingsEditor<RRunConfiguration>() {
+  private var myForm: RRunConfigurationForm = RRunConfigurationForm()
 
   public override fun resetEditorFrom(config: RRunConfiguration) {
-    RRunConfiguration.copyParams(config, myForm)
+    myForm.scriptPath = config.scriptPath
   }
 
   public override fun applyEditorTo(config: RRunConfiguration) {
-    RRunConfiguration.copyParams(myForm, config)
+    config.scriptPath = myForm.scriptPath
   }
 
   override fun createEditor(): JComponent {

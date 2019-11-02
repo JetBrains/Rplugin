@@ -37,9 +37,6 @@ abstract class RRunner : GenericProgramRunner<RunnerSettings>() {
     ApplicationManager.getApplication().executeOnPooledThread {
       RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
         if (isRunningCommand(console)) RNotificationUtil.notifyConsoleError(project, RBundle.message("notification.console.busy"))
-        val configuration = environment.runProfile as RRunConfiguration
-        val workingDir = configuration.workingDirectoryPath
-        console.rInterop.setWorkingDir(workingDir)
         doExecute(console, environment)
       }.onError {
         RNotificationUtil.notifyConsoleError(project, it.message)
