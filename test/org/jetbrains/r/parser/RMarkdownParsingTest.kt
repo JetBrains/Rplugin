@@ -10,6 +10,9 @@ import com.intellij.psi.LanguageFileViewProviders
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
 import com.jetbrains.python.*
+import com.jetbrains.python.psi.LanguageLevel
+import com.jetbrains.python.psi.PyPsiFacade
+import com.jetbrains.python.psi.impl.PyPsiFacadeImpl
 import com.jetbrains.python.psi.impl.PythonASTFactory
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
@@ -40,6 +43,9 @@ class RMarkdownParsingTest : ParsingTestCase(
     PythonDialectsTokenSetProvider.reset()
     addExplicitExtension(LanguageFileViewProviders.INSTANCE, RMarkdownLanguage, RMarkdownFileViewProviderFactory)
     addExplicitExtension<ASTFactory>(LanguageASTFactory.INSTANCE, MarkdownLanguage.INSTANCE, MarkdownASTFactory())
+    project.registerService(PyPsiFacade::class.java, PyPsiFacadeImpl::class.java)
+    // Any version can be used for this test but the psi-tree test answer may be different
+    LanguageLevel.FORCE_LANGUAGE_LEVEL = LanguageLevel.PYTHON27
   }
 
   override fun getTestDataPath(): String {
