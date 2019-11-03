@@ -224,6 +224,8 @@ You can find the source code in the following repositories:
         <psi.referenceContributor
                 implementation="org.jetbrains.r.psi.references.externalres.ResourceScriptReferenceContributor"/>
 
+        <lang.ast.factory language="R" implementationClass="org.jetbrains.r.parsing.RAstFactory"/>
+
         <lang.parserDefinition language="R" implementationClass="org.jetbrains.r.parsing.RParserDefinition"/>
         <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
 
