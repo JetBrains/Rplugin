@@ -6,6 +6,7 @@ package org.jetbrains.r.misc
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.testFramework.PlatformTestUtil
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterImpl
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -51,12 +52,12 @@ class LibraryWatcherTest : RUsefulTestCase() {
   }
 
   private fun runCommand(vararg args: String) {
-    LOG.info("Running: " + args.joinToString())
+    LOG.warn("Running: " + args.joinToString())
     val generalCommandLine = GeneralCommandLine(*args)
     val processHandler = CapturingProcessHandler(generalCommandLine)
     val processOutput = processHandler.runProcess(DEFAULT_TIMEOUT)
-    LOG.info("STDOUT: " + processOutput.stdout)
-    LOG.info("STDERR: " + processOutput.stderr)
+    LOG.warn("STDOUT: " + processOutput.stdout)
+    LOG.warn("STDERR: " + processOutput.stderr)
   }
 
   companion object {
@@ -68,6 +69,7 @@ class LibraryWatcherTest : RUsefulTestCase() {
         if (System.currentTimeMillis() - start > TIMEOUT) {
           throw TimeoutException("Waiting for atomic counter for $TIMEOUT ms")
         }
+        PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
         Thread.sleep(20L)
       }
     }

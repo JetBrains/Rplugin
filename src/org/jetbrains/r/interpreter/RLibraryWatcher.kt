@@ -101,26 +101,23 @@ class RLibraryWatcher(private val project: Project) {
       }
 
       private fun updateAllGroups(groups: List<List<() -> Promise<Unit>>>) {
-        fun updateRemainingGroups(groups: List<List<() -> Promise<Unit>>>, groupIndex: Int) {
-          if (groupIndex < groups.size) {
-            updateGroup(groups[groupIndex])
-              .onSuccess { updateRemainingGroups(groups, groupIndex + 1) }
-              .onError { LOGGER.error(it) }
-          }
-        }
-
         updateRemainingGroups(groups, 0)
       }
 
-      private fun updateGroup(group: List<() -> Promise<Unit>>): Promise<Unit> {
-        fun decreaseCounter(counter: AtomicInteger, promise: AsyncPromise<Unit>) {
-          val current = counter.decrementAndGet()
-          if (current == 0) {
-            promise.setResult(Unit)
-          }
+      private fun updateRemainingGroups(groups: List<List<() -> Promise<Unit>>>, groupIndex: Int) {
+        if (groupIndex < groups.size) {
+          updateGroup(groups[groupIndex])
+            .onSuccess { updateRemainingGroups(groups, groupIndex + 1) }
+            .onError { LOGGER.error(it) }
         }
+      }
 
+      private fun updateGroup(group: List<() -> Promise<Unit>>): Promise<Unit> {
         return AsyncPromise<Unit>().also { promise ->
+          if (group.isEmpty()) {
+            promise.setResult(Unit)
+            return@also
+          }
           val counter = AtomicInteger(group.size)
           for (listener in group) {
             listener()
@@ -130,6 +127,13 @@ class RLibraryWatcher(private val project: Project) {
                 decreaseCounter(counter, promise)
               }
           }
+        }
+      }
+
+      private fun decreaseCounter(counter: AtomicInteger, promise: AsyncPromise<Unit>) {
+        val current = counter.decrementAndGet()
+        if (current == 0) {
+          promise.setResult(Unit)
         }
       }
 
