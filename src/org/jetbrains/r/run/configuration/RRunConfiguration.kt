@@ -19,10 +19,10 @@ import com.intellij.openapi.util.WriteExternalException
 import org.jdom.Element
 import org.jetbrains.r.run.RCommandLineState
 
-class RRunConfiguration internal constructor(project: Project, configurationFactory: ConfigurationFactory)
+open class RRunConfiguration internal constructor(project: Project, configurationFactory: ConfigurationFactory)
   : LocatableConfigurationBase<Any>(project, configurationFactory, ""),
   RunConfigurationWithSuppressedDefaultRunAction, RunConfigurationWithSuppressedDefaultDebugAction {
-  var scriptPath = ""
+  open var scriptPath = ""
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
     return RCommandLineState(environment)
