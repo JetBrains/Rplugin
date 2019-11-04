@@ -12,8 +12,8 @@ import com.intellij.testFramework.PlatformTestUtil
 import junit.framework.TestCase
 import org.intellij.datavis.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
@@ -127,23 +127,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
   }
 
   fun testDebugChunk() {
-    val promise = runAsync {
-      val debugger = console.debugger
-      var iterations = 200
-      while (!debugger.actionsEnabled) {
-        iterations--
-        TestCase.assertTrue(iterations > 0)
-        Thread.sleep(20)
-      }
-      TestCase.assertEquals(5, debugger.stack[0].sourcePosition?.line)
-      TestCase.assertEquals("10", rInterop.executeCode("cat(x)", true).stdout)
-      debugger.stepOver().blockingGet(1000)
-      TestCase.assertEquals(6, debugger.stack[0].sourcePosition?.line)
-      TestCase.assertEquals("20", rInterop.executeCode("cat(x)", true).stdout)
-      debugger.stepOver().blockingGet(1000)
-      TestCase.assertFalse(debugger.isEnabled)
-    }
-    doRunChunk("""
+    val text = """
       Text
       Text
       ```{r}
@@ -152,8 +136,29 @@ class RunChunkTest : RConsoleBaseTestCase() {
       x <- 20 # BREAKPOINT
       x
       ```
-    """.trimIndent(), true)
-    promise.blockingGet(1000)
+    """.trimIndent()
+    loadFileWithBreakpointsFromText(text, name = "foo.Rmd")
+    val fenceLang = PsiElementProcessor.FindFilteredElement<LeafPsiElement> {
+      it.node.elementType == FENCE_LANG &&
+      it.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
+    }.apply { PsiTreeUtil.processElements(myFixture.file, this) }.foundElement
+    TestCase.assertNotNull(fenceLang)
+    val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, true)
+
+    val debugger = console.debugger
+    val time = System.currentTimeMillis()
+    while (!debugger.actionsEnabled) {
+      TestCase.assertTrue(System.currentTimeMillis() - time < 3000)
+      PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    }
+    TestCase.assertEquals(5, debugger.stack[0].sourcePosition?.line)
+    TestCase.assertEquals("10", rInterop.executeCode("cat(x)", true).stdout)
+    debugger.stepOver().myBlockingGet(2000)
+    TestCase.assertEquals(6, debugger.stack[0].sourcePosition?.line)
+    TestCase.assertEquals("20", rInterop.executeCode("cat(x)", true).stdout)
+    debugger.stepOver().myBlockingGet(2000)
+    TestCase.assertFalse(debugger.isEnabled)
+    promise.myBlockingGet(2000)
   }
 
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {
@@ -164,11 +169,16 @@ class RunChunkTest : RConsoleBaseTestCase() {
     }.apply { PsiTreeUtil.processElements(myFixture.file, this) }.foundElement
     TestCase.assertNotNull(fenceLang)
     val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
-    val time = System.currentTimeMillis()
-    while (System.currentTimeMillis() - time < 10000 && promise.isPending) {
-      PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    }
-    TestCase.assertTrue(promise.isSucceeded)
+    promise.blockingGet(10000)
     return RMarkdownInlayDescriptor(myFixture.file).getInlayOutputs(fenceLang)
   }
+}
+
+private fun <T> Promise<T>.myBlockingGet(timeout: Int): T? {
+  val time = System.currentTimeMillis()
+  while (System.currentTimeMillis() - time < timeout && isPending) {
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+  }
+  TestCase.assertTrue(isSucceeded)
+  return blockingGet(1)
 }

@@ -77,6 +77,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
   private var currentEqualityId = 0
   private val globalStackFrameList = listOf(RXStackFrame("[global]", null, rInterop.globalEnvLoader, executor,
                                                          true, equalityObject = -1))
+  private val functionNameByTextCache = mutableMapOf<String, String>()
 
   private val positionHighlighter = ExecutionPointHighlighter(project)
 
@@ -128,11 +129,11 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
 
   private fun enable(): AsyncPromise<Unit> {
     if (isEnabled) return debuggerEndPromise!!
-    isEnabled = true
     isTracedStep = false
     currentCommand = null
     updateStack(emptyList())
     debuggerEndPromise = AsyncPromise()
+    isEnabled = true
     return debuggerEndPromise!!
   }
 
@@ -160,10 +161,10 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
   private fun enterInteractive() {
     if (!isEnabled) return
     currentCommand = null
-    actionsEnabled = true
     debugCodeViewer.cleanUp()
     refreshVariableView()
     resolveInteractivePromise()
+    actionsEnabled = true
   }
 
   private fun leaveInteractive() {
@@ -331,7 +332,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
             }
           }
           debugLine.startsWith("debugging in: ") -> {
-            pushStackFrame(RDebuggerUtils.getFunctionNameByText(debugLine.drop("debugging in: ".length), project))
+            pushStackFrame(getFunctionNameByText(debugLine.drop("debugging in: ".length)))
           }
         }
       }
@@ -424,6 +425,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
 
   override fun dispose() {
     positionHighlighter.hide()
+    executor.shutdown()
   }
 
   private fun executeImpl(sourceFile: VirtualFile, source: String, fileId: String): Promise<Unit> {
@@ -557,7 +559,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
       val entry = LocationEntry(previousFunctionName, position)
       if (entry != locationsStack.getOrNull(index)) keepEqualityId = false
       entry.equalityId = if (keepEqualityId) locationsStack[index].equalityId else currentEqualityId++
-      previousFunctionName = RDebuggerUtils.getFunctionNameByText(match?.groupValues?.getOrNull(3).orEmpty(), project)
+      previousFunctionName = getFunctionNameByText(match?.groupValues?.getOrNull(3).orEmpty())
       entry
     }
     val lastEntry = LocationEntry(previousFunctionName, null)
@@ -601,6 +603,10 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
                    it.position?.file?.let { RDebugCodeViewer.isViewerFile(it) } ?: true,
                    equalityObject = it.equalityId)
     }
+  }
+
+  private fun getFunctionNameByText(text: String): String {
+    return functionNameByTextCache.computeIfAbsent(text) { RDebuggerUtils.getFunctionNameByText(it, project) }
   }
 
   private inner class BreakpointListener : XBreakpointListener<XLineBreakpoint<XBreakpointProperties<*>>> {
