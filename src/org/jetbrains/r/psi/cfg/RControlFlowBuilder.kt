@@ -30,8 +30,8 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
   }
 
   override fun visitAssignmentStatement(rAssignmentStatement: RAssignmentStatement) {
-    rAssignmentStatement.assignee?.accept(this)
     rAssignmentStatement.assignedValue?.accept(this)
+    rAssignmentStatement.assignee?.accept(this)
     builder.startNode(rAssignmentStatement)
   }
 
@@ -100,7 +100,7 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     o.elseBody?.accept(this)
     val end = builder.startNode(o)
     if (ifBody != null) {
-      ifBody.addSucc(end)
+      builder.addEdge(ifBody, end)
     }
   }
 
@@ -202,18 +202,17 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     builder.processPending { pendingScope, instruction ->
       if (pendingScope == loop) {
         when (instruction.element) {
-          is RNextStatement -> instruction.addSucc(entry)
-          is RBreakStatement -> instruction.addSucc(exit)
+          is RNextStatement -> builder.addEdge(instruction, entry)
+          is RBreakStatement -> builder.addEdge(instruction, exit)
         }
       }
       else {
         builder.addPendingEdge(pendingScope, instruction)
       }
     }
-    last.addSucc(entry)
+    builder.addEdge(last, entry)
     if (exit.element !is RRepeatStatement) {
-      last.addSucc(exit)
-      entry.addSucc(exit)
+      builder.addEdge(entry, exit)
     }
   }
 }
