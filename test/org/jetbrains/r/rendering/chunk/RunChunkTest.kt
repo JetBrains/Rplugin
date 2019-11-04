@@ -150,6 +150,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     while (!debugger.actionsEnabled) {
       TestCase.assertTrue(System.currentTimeMillis() - time < 3000)
       PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+      Thread.sleep(5)
     }
     TestCase.assertEquals(5, debugger.stack[0].sourcePosition?.line)
     TestCase.assertEquals("10", rInterop.executeCode("cat(x)", true).stdout)
@@ -178,6 +179,7 @@ private fun <T> Promise<T>.myBlockingGet(timeout: Int): T? {
   val time = System.currentTimeMillis()
   while (System.currentTimeMillis() - time < timeout && isPending) {
     PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    Thread.sleep(5)
   }
   TestCase.assertTrue(isSucceeded)
   return blockingGet(1)
