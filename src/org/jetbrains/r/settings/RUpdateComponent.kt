@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 
 
 private const val KEY = "r.last.update.timestamp"
-private const val PLUGIN_ID = "RPlugin"
+private const val PLUGIN_ID = "R4Intellij"
 
 class RUpdateComponent : BaseComponent, Disposable{
 
