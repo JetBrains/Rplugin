@@ -53,7 +53,7 @@
   <li><span>Running and debugging R scripts with the live variables view.</span></li>
   <li><span>Managing R packages; ability to create your own R packages.</span></li>
 </ul>
-<p><span></span></p>
+<p><span>Find a bug? Please, file an issue <a href="https://youtrack.jetbrains.com/issues/R">here</a></span>.</p>
 <p><span>For more details, see </span><span><a href="https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html">PyCharm web help</a></span><span>.</span></p>
 <br>
 <p>
