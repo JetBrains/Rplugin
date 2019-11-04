@@ -1,3 +1,7 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
 // Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
 /*
  * Copyright 2011-present Greg Shrago
@@ -15,7 +19,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.r.refactoring
+package org.jetbrains.r.refactoring.inline
 
 import com.intellij.BundleBase
 import com.intellij.openapi.project.Project
@@ -25,9 +29,9 @@ import com.intellij.refactoring.inline.InlineOptionsDialog
 import com.intellij.usageView.UsageViewNodeTextLocation
 import org.jetbrains.r.psi.api.RAssignmentStatement
 
-class InlineAssignmentDialog internal constructor(project: Project,
-                                                  private val variable: RAssignmentStatement,
-                                                  private val reference: PsiReference?) : InlineOptionsDialog(project, true, variable) {
+class RInlineAssignmentDialog internal constructor(project: Project,
+                                                   private val variable: RAssignmentStatement,
+                                                   private val reference: PsiReference?) : InlineOptionsDialog(project, true, variable) {
 
 
   init {
@@ -57,7 +61,7 @@ class InlineAssignmentDialog internal constructor(project: Project,
   }
 
   override fun doAction() {
-    invokeRefactoring(InlineAssignmentProcessor(variable, project, reference, isInlineThisOnly))
+    invokeRefactoring(RInlineAssignmentProcessor(variable, project, reference, isInlineThisOnly))
   }
 
   override fun doHelpAction() {}

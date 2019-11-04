@@ -341,8 +341,7 @@ You can find the source code in the following repositories:
 
         <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/plugin.xml:448-->
         <vetoRenameCondition implementation="org.jetbrains.r.psi.references.RenamingVetoCondition"/>
-        <refactoring.inlineHandler language="R" implementationClass="org.jetbrains.r.refactoring.RInlineHandler"/>
-        <inlineActionHandler implementation="org.jetbrains.r.refactoring.RInlineActionHandler"/>
+        <inlineActionHandler implementation="org.jetbrains.r.refactoring.inline.RInlineAssignmentHandler"/>
 
         <!-- coding assistance-->
         <liveTemplateContext implementation="org.jetbrains.r.editor.RContextType"/>

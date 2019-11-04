@@ -3,7 +3,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.refactoring
+package org.jetbrains.r.refactoring.inline
 
 import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.lang.Language
@@ -24,7 +24,7 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
  *
  * Best too to complex  example org.intellij.grammar.refactor.BnfInlineRuleActionHandler
  */
-class RInlineActionHandler : InlineActionHandler() {
+class RInlineAssignmentHandler : InlineActionHandler() {
 
   override fun isEnabledForLanguage(language: Language): Boolean {
     return language == RLanguage.INSTANCE
@@ -58,7 +58,7 @@ class RInlineActionHandler : InlineActionHandler() {
       reference = null
     }
 
-    val dialog = InlineAssignmentDialog(project, psiElement as RAssignmentStatement, reference)
+    val dialog = RInlineAssignmentDialog(project, psiElement as RAssignmentStatement, reference)
     dialog.show()
   }
 }

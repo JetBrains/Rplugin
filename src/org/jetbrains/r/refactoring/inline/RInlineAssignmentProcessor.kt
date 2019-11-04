@@ -1,3 +1,7 @@
+/*
+ * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
 // Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
 /*
  * Copyright 2011-present Greg Shrago
@@ -37,10 +41,10 @@ import org.jetbrains.r.psi.api.RPsiElement
 /**
  * Inlining of assignment statements.
  */
-class InlineAssignmentProcessor(private var expression: RAssignmentStatement,
-                                project: Project,
-                                private val reference: PsiReference?,
-                                private val inlineThisOnly: Boolean) : BaseRefactoringProcessor(project) {
+class RInlineAssignmentProcessor(private var expression: RAssignmentStatement,
+                                 project: Project,
+                                 private val reference: PsiReference?,
+                                 private val inlineThisOnly: Boolean) : BaseRefactoringProcessor(project) {
 
   override fun createUsageViewDescriptor(usages: Array<UsageInfo>): UsageViewDescriptor {
     return object : UsageViewDescriptorAdapter() {
