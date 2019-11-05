@@ -30,6 +30,10 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
     super.setUp()
     console = RConsoleView(rInterop, "dummyPath", project, "Test R Console")
     console.createDebuggerPanel()
+    // console is not running command, it just haven't received the first prompt from rwrapper
+    var i = 0
+    while (console.isRunningCommand && i++ < 100) { Thread.sleep(20) }
+    check(!console.isRunningCommand) { "Cannot get prompt from rwrapper" }
   }
 
   override fun tearDown() {
