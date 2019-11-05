@@ -21,11 +21,12 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 class RunSelection : REditorActionBase(
   RBundle.message("run.selection.action.text"),
   RBundle.message("run.selection.action.description"),
-  AllIcons.Actions.Execute) {
+  AllIcons.Actions.Rerun) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
-    val selection = REditorActionUtil.getSelectedCode(e) ?: return
+    val editor = e.editor ?: return
+    val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { runInEdt { runWriteAction { it.executeText(selection.code.trim { it <= ' ' }) } } }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }

@@ -15,11 +15,12 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 class DebugSelection : REditorActionBase(
   RBundle.message("debug.selection.action.text"),
   RBundle.message("debug.selection.action.description"),
-  AllIcons.Actions.Execute) {
+  AllIcons.Debugger.AttachToProcess) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
-    val selection = REditorActionUtil.getSelectedCode(e) ?: return
+    val editor = e.editor ?: return
+    val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { it.debugger.executeDebugSource(selection.file, selection.range) }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }

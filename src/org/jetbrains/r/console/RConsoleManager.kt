@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -14,6 +15,7 @@ import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.UIUtil.findComponentOfType
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -92,6 +94,12 @@ class RConsoleManager(private val project: Project) {
         }
       }
     })
+  }
+
+  @TestOnly
+  internal fun setCurrentConsoleForTests(console: RConsoleView?) {
+    check(ApplicationManager.getApplication().isUnitTestMode)
+    currentConsole = console
   }
 
   companion object {

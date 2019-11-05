@@ -73,15 +73,20 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, LightTempDirTestFixtureImpl(true))
   }
 
-   protected fun createAnActionEvent(): AnActionEvent =
-    AnActionEvent.createFromDataContext(ActionPlaces.EDITOR_POPUP, null, DataContext {
+  protected fun createAnActionEvent(): AnActionEvent =
+    AnActionEvent.createFromDataContext(ActionPlaces.EDITOR_POPUP, null, createDataContext())
+
+  protected open fun createDataContext(): DataContext {
+    return DataContext {
       when (it) {
+        CommonDataKeys.PROJECT.name -> myFixture.project
         CommonDataKeys.EDITOR.name -> myFixture.editor
         CommonDataKeys.PSI_FILE.name -> myFixture.file
         CommonDataKeys.VIRTUAL_FILE.name -> myFixture.file.virtualFile
         else -> null
       }
-    })
+    }
+  }
 
   companion object {
     private val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')

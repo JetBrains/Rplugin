@@ -124,6 +124,6 @@ class RExecuteSelectionTest : RUsefulTestCase() {
 
   private fun doTest(text: String, expectedSelection: String) {
     myFixture.configureByText("Foo.R", text)
-    TestCase.assertEquals(expectedSelection, REditorActionUtil.getSelectedCode (createAnActionEvent())?.code)
+    TestCase.assertEquals(expectedSelection, REditorActionUtil.getSelectedCode(myFixture.editor)?.code)
   }
 }

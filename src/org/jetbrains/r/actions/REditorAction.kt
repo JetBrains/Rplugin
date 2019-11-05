@@ -14,9 +14,14 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.r.psi.api.RFile
 import javax.swing.Icon
 
-abstract class REditorActionBase(text: String, description: String, icon: Icon?) : AnAction(text, description, icon), RPromotedAction {
-  override fun update(event: AnActionEvent) {
-    event.presentation.isEnabledAndVisible = event.psiFile is RFile
+abstract class REditorActionBase : AnAction, RPromotedAction {
+  constructor() : super()
+
+  constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
+
+  override fun update(e: AnActionEvent) {
+    e.presentation.isVisible = e.isFromActionToolbar || e.psiFile is RFile
+    e.presentation.isEnabled = e.psiFile is RFile
   }
 }
 

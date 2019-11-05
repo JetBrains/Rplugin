@@ -17,14 +17,14 @@ class RDebuggerTest : RConsoleBaseTestCase() {
       |x <- 40""".trimMargin())
 
     TestCase.assertFalse(console.debugger.isEnabled)
-    console.debugger.executeDebugSource(file).blockingGet(5000)
+    console.debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertTrue(console.debugger.isEnabled)
     TestCase.assertEquals("10", rInterop.executeCode("cat(x)", true).stdout)
-    console.debugger.stepOver().blockingGet(5000)
+    console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("20", rInterop.executeCode("cat(x)", true).stdout)
-    console.debugger.stepOver().blockingGet(5000)
+    console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("30", rInterop.executeCode("cat(x)", true).stdout)
-    console.debugger.stepOver().blockingGet(5000)
+    console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("40", rInterop.executeCode("cat(x)", true).stdout)
     TestCase.assertFalse(console.debugger.isEnabled)
   }
@@ -33,20 +33,20 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     val file = loadFileWithBreakpointsFromText("x = 1 # BREAKPOINT")
     rInterop.executeCode("Sys.setenv(LANGUAGE = 'ru_RU.UTF-8')", true)
     TestCase.assertEquals("ru_RU.UTF-8", rInterop.executeCode("cat(Sys.getenv('LANGUAGE'))", true).stdout)
-    console.debugger.executeDebugSource(file).blockingGet(5000)
+    console.debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("en_US.UTF-8", rInterop.executeCode("cat(Sys.getenv('LANGUAGE'))", true).stdout)
-    console.debugger.resume().blockingGet(5000)
+    console.debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("ru_RU.UTF-8", rInterop.executeCode("cat(Sys.getenv('LANGUAGE'))", true).stdout)
   }
 
   fun testStackTrace() {
     val file = loadFileWithBreakpoints("debugger/stackTrace.R")
-    console.debugger.executeDebugSource(file).blockingGet(5000)
+    console.debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     var stack = console.debugger.stack
     TestCase.assertEquals(listOf("foo", "bar", "baz", GLOBAL), stack.map { it.functionName })
     TestCase.assertEquals(List(4) { file }, stack.map { it.sourcePosition?.file })
     TestCase.assertEquals(listOf(2, 9, 15, 18), stack.map { it.sourcePosition?.line })
-    console.debugger.resume().blockingGet(5000)
+    console.debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(console.debugger.isEnabled)
     stack = console.debugger.stack
     TestCase.assertEquals(listOf(GLOBAL), stack.map { it.functionName })
@@ -57,34 +57,34 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     val file = loadFileWithBreakpoints("debugger/functionSteps.R")
     val debugger = console.debugger
 
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(5), debugger.stack.map { it.sourcePosition?.line })
-    debugger.stepOver().blockingGet(5000)
+    debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(6), debugger.stack.map { it.sourcePosition?.line })
-    debugger.stepInto().blockingGet(5000)
+    debugger.stepInto().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(0, 6), debugger.stack.map { it.sourcePosition?.line })
-    debugger.stepOver().blockingGet(5000)
+    debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(1, 6), debugger.stack.map { it.sourcePosition?.line })
-    debugger.stepOut().blockingGet(5000)
+    debugger.stepOut().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(7), debugger.stack.map { it.sourcePosition?.line })
-    debugger.runToCursor(XSourcePositionImpl.create(file, 2)).blockingGet(5000)
+    debugger.runToCursor(XSourcePositionImpl.create(file, 2)).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(listOf(2, 7), debugger.stack.map { it.sourcePosition?.line })
-    debugger.resume().blockingGet(5000)
+    debugger.resume().blockingGet(DEFAULT_TIMEOUT)
   }
 
   fun testConditionalBreakpoint() {
     val file = loadFileWithBreakpoints("debugger/conditionalBreakpoint.R")
     val debugger = console.debugger
 
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("bar", debugger.stack.first().functionName)
-    debugger.stepOver().blockingGet(5000)
+    debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("bar", debugger.stack.first().functionName)
-    debugger.stepOver().blockingGet(5000)
+    debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("foo", debugger.stack.first().functionName)
-    debugger.stepOut().blockingGet(5000)
+    debugger.stepOut().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("bar", debugger.stack.first().functionName)
-    debugger.stepOver().blockingGet(5000)
+    debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(debugger.isEnabled)
   }
 
@@ -92,7 +92,7 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     val file = loadFileWithBreakpoints("debugger/evaluatingBreakpoint.R")
     val debugger = console.debugger
 
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(debugger.isEnabled)
     TestCase.assertEquals("[A]", rInterop.executeCode("cat(newVar)", true).stdout)
   }
@@ -101,17 +101,17 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     val file = loadFileWithBreakpoints("debugger/breakpointsInRuntime.R")
     val debugger = console.debugger
 
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(1, debugger.stack.first().sourcePosition?.line)
     val breakpoint = addBreakpoint(file, 3)
-    debugger.resume().blockingGet(5000)
+    debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(3, debugger.stack.first().sourcePosition?.line)
-    debugger.resume().blockingGet(5000)
+    debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(1, debugger.stack.first().sourcePosition?.line)
     removeBreakpoint(breakpoint)
-    debugger.resume().blockingGet(5000)
+    debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(1, debugger.stack.first().sourcePosition?.line)
-    debugger.resume().blockingGet(5000)
+    debugger.resume().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(debugger.isEnabled)
   }
 
@@ -123,19 +123,19 @@ class RDebuggerTest : RConsoleBaseTestCase() {
     """.trimIndent(), name = "a.R")
     val debugger = console.debugger
 
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("a.R", debugger.stack.first().sourcePosition?.file?.name)
     TestCase.assertEquals(0, debugger.stack.first().sourcePosition?.line)
-    debugger.stepInto().blockingGet(5000)
+    debugger.stepInto().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("a.R", debugger.stack.first().sourcePosition?.file?.name)
     TestCase.assertEquals(1, debugger.stack.first().sourcePosition?.line)
-    debugger.forceStepInto().blockingGet(5000)
+    debugger.forceStepInto().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("cat", debugger.stack.first().sourcePosition?.file?.name)
     TestCase.assertEquals("cat", debugger.stack.first().functionName)
-    debugger.stepOut().blockingGet(5000)
+    debugger.stepOut().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("a.R", debugger.stack.first().sourcePosition?.file?.name)
     TestCase.assertEquals(2, debugger.stack.first().sourcePosition?.line)
-    debugger.stepInto().blockingGet(5000)
+    debugger.stepInto().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(debugger.isEnabled)
   }
 
@@ -145,7 +145,7 @@ class RDebuggerTest : RConsoleBaseTestCase() {
       xyz = all(grepl('^(\\d*%|-)${'$'}', 'foobarbaz'))
     """.trimIndent(), name = "a.R")
     val debugger = console.debugger
-    debugger.executeDebugSource(file).blockingGet(5000)
+    debugger.executeDebugSource(file).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(debugger.isEnabled)
     rInterop.executeCode("cat(abc)").let {
       TestCase.assertEquals("", it.stderr)

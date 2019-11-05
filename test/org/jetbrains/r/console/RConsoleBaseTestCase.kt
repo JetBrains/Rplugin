@@ -30,6 +30,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
     super.setUp()
     console = RConsoleView(rInterop, "dummyPath", project, "Test R Console")
     console.createDebuggerPanel()
+    RConsoleManager.getInstance(project).setCurrentConsoleForTests(console)
     // console is not running command, it just haven't received the first prompt from rwrapper
     var i = 0
     while (console.isRunningCommand && i++ < 100) { Thread.sleep(20) }
@@ -38,6 +39,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
 
   override fun tearDown() {
     Disposer.dispose(console)
+    RConsoleManager.getInstance(project).setCurrentConsoleForTests(null)
     super.tearDown()
   }
 
@@ -98,5 +100,9 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
         }
       }
     }
+  }
+
+  companion object {
+    const val DEFAULT_TIMEOUT = 3000
   }
 }

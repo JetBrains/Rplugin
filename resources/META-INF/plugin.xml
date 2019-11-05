@@ -123,6 +123,16 @@ You can find the source code in the following repositories:
     </actions>
 
     <actions>
+        <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
+                description="Run file in console" icon="AllIcons.Actions.Execute">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift F10"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+        <action id="org.jetbrains.r.actions.RDebugAction" class="org.jetbrains.r.actions.RDebugAction" text="Debug"
+                description="Debug file in console" icon="AllIcons.Actions.StartDebugger">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift F9"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
         <action id="org.jetbrains.r.actions.RunSelection"
                 class="org.jetbrains.r.actions.RunSelection">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
@@ -231,6 +241,8 @@ You can find the source code in the following repositories:
 
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 
+        <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RFileEditorProvider"/>
+
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
         <fileBasedIndex implementation="org.jetbrains.r.packages.RPackageInfoIndex"/>
@@ -286,11 +298,6 @@ You can find the source code in the following repositories:
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
 
-        <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
-        <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
-
-        <programRunner implementation="org.jetbrains.r.run.RRunRunner"/>
-        <programRunner implementation="org.jetbrains.r.run.debug.RDebugRunner"/>
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
         <!--- RMarkdown ui-->

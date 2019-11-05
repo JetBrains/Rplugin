@@ -4,24 +4,26 @@
 
 package org.jetbrains.r.actions
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase
 import com.intellij.psi.util.elementType
+import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.api.*
 
 internal object REditorActionUtil {
   data class SelectedCode(val code: String, val file: VirtualFile, val range: TextRange)
 
-  fun getSelectedCode(e: AnActionEvent): SelectedCode? {
-    val editor = e.getData(PlatformDataKeys.EDITOR) ?: return null
+  fun getSelectedCode(editor: Editor): SelectedCode? {
     val code = editor.selectionModel.selectedText
-    val virtualFile = e.virtualFile ?: return null
+    val virtualFile = FileDocumentManager.getInstance().getFile(editor.document) ?: return null
     if (code != null && !StringUtil.isEmptyOrSpaces(code)) {
       return SelectedCode(code, virtualFile, TextRange(editor.selectionModel.selectionStart, editor.selectionModel.selectionEnd))
     }
@@ -51,5 +53,15 @@ internal object REditorActionUtil {
     }
 
     return result
+  }
+
+  fun isRunningCommand(console: RConsoleView?, allowDebug: Boolean = false): Boolean {
+    if (console == null) return false
+    return (!allowDebug && console.debugger.isEnabled) || console.isRunningCommand
+  }
+
+  fun isRunningCommand(project: Project?, allowDebug: Boolean = false): Boolean {
+    if (project == null) return false
+    return isRunningCommand(RConsoleManager.getInstance(project).currentConsoleOrNull, allowDebug)
   }
 }

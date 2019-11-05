@@ -22,9 +22,9 @@ class RConsoleReadlineTest : RConsoleBaseTestCase() {
       }
     })
     console.executeText("s = paste0('[', readline(), ']')\n")
-    promise1.blockingGet(1000)
+    promise1.blockingGet(DEFAULT_TIMEOUT)
     console.executeText("line\n")
-    promise2.blockingGet(1000)
+    promise2.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[line]", rInterop.executeCode("cat(s)").stdout)
   }
 }
