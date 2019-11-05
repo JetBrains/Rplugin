@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
@@ -65,7 +66,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     connection.subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, object : FileEditorManagerListener.Before {
       override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
-          DumbService.getInstance(project).runWhenSmart { RConsoleManager.getInstance(project).currentConsoleAsync }
+          ToolWindowManager.getInstance(project).invokeLater { RConsoleManager.getInstance(project).currentConsoleAsync }
         }
       }
     })
