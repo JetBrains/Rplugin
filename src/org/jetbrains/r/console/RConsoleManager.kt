@@ -4,8 +4,8 @@
 
 package org.jetbrains.r.console
 
-import com.esotericsoftware.minlog.Log
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
@@ -20,6 +20,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.settings.RSettings
 import java.util.concurrent.atomic.AtomicInteger
 
+private val LOGGER = Logger.getInstance(RConsoleManager::class.java)
 class RConsoleManager(private val project: Project) {
   @Volatile
   private var currentConsole: RConsoleView? = null
@@ -57,7 +58,7 @@ class RConsoleManager(private val project: Project) {
     if (RConsoleToolWindowFactory.getRConsoleToolWindows(project) == null) {
       return AsyncPromise<RConsoleView>().apply {
         val message = RBundle.message("notification.console.noToolWindowFound")
-        Log.error(message)
+        LOGGER.error(message)
         setError(message)
       }
     }
