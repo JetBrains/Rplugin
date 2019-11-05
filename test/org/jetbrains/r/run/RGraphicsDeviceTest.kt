@@ -159,21 +159,22 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun getExpectedBasicSnapshot(name: String): File {
-    val subdirectoryName = when {
+    val osName = when {
       SystemInfo.isWindows -> "windows"
       SystemInfo.isMac -> "macos"
       else -> "linux"
     }
-    return getExpectedSnapshot(subdirectoryName, name)
+    return getExpectedSnapshot("basic", osName, name)
   }
 
   private fun getExpectedRescaleSnapshot(name: String, dimension: Dimension): File {
+    val osName = if (SystemInfo.isWindows) "windows" else "unix"
     val fullName = "reference_${name}_${dimension.width}_${dimension.height}_NA.png"
-    return getExpectedSnapshot("rescale", fullName)
+    return getExpectedSnapshot("rescale", osName, fullName)
   }
 
-  private fun getExpectedSnapshot(subdirectoryName: String, name: String): File {
-    return Paths.get(expectedSnapshotDirectoryPath, "graphics", subdirectoryName, name).toFile()
+  private fun getExpectedSnapshot(subdirectoryName: String, osName: String, name: String): File {
+    return Paths.get(expectedSnapshotDirectoryPath, "graphics", subdirectoryName, osName, name).toFile()
   }
 
   private fun initTestDataFrame() {
