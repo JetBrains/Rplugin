@@ -10,6 +10,7 @@ import com.intellij.execution.console.BaseConsoleExecuteActionHandler
 import com.intellij.execution.console.LanguageConsoleView
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -165,12 +166,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         rInterop.replSendReadLn(text)
       }
       State.BUSY -> {
+        throwExceptionInTests()
         HintManager.getInstance().showErrorHint(consoleView.consoleEditor, RBundle.message("console.previous.command.still.running"))
       }
       State.TERMINATED -> {
+        throwExceptionInTests()
         HintManager.getInstance().showErrorHint(consoleView.consoleEditor, RBundle.message("console.process.terminated"))
       }
     }
+  }
+
+  private fun throwExceptionInTests() {
+    check(!ApplicationManager.getApplication().isUnitTestMode) { "Console is busy or terminated" }
   }
 
   override fun execute(text: String, console: LanguageConsoleView) {
