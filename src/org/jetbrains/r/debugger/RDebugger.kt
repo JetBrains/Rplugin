@@ -107,7 +107,9 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     class RunToPosition(val position: XSourcePosition) : Command()
   }
   private var currentCommand: Command? = null
+  @Volatile
   private var interactivePromise: AsyncPromise<Unit>? = null
+  @Volatile
   private var debuggerEndPromise: AsyncPromise<Unit>? = null
 
   @Volatile private var breakpointsMuted = false
