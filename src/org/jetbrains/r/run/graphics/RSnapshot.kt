@@ -17,7 +17,19 @@ data class RSnapshot(
   val file: File,
   val type: RSnapshotType,
   val error: String?,
+
+  /**
+   * Number of the snapshot.
+   * It's guaranteed that snapshots produced by different R commands
+   * will get different numbers
+   */
   val number: Int,
+
+  /**
+   * Version of the snapshot.
+   * Due to rescaling, graphics device can produce multiple rescaled versions
+   * of the snapshot with the same [number]
+   */
   val version: Int
 ) {
   companion object {
