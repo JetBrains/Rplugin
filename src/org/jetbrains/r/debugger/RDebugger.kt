@@ -165,8 +165,8 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     currentCommand = null
     debugCodeViewer.cleanUp()
     refreshVariableView()
-    resolveInteractivePromise()
     actionsEnabled = true
+    resolveInteractivePromise()
   }
 
   private fun leaveInteractive() {
