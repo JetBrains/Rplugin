@@ -77,6 +77,14 @@ class FormatterTest : RUsefulTestCase() {
     doOptTest("x<-10", "x <- 10") { common.SPACE_AROUND_ASSIGNMENT_OPERATORS = it }
   }
 
+  fun testSpaceAroundParameterAssignment() {
+    doOptTest("function(x=10) x + 1", "function(x = 10) x + 1") { common.SPACE_AROUND_ASSIGNMENT_OPERATORS = it }
+  }
+
+  fun testSpaceAroundArgumentAssignment() {
+    doOptTest("foo(x=10)", "foo(x = 10)") { common.SPACE_AROUND_ASSIGNMENT_OPERATORS = it }
+  }
+
   fun testSpaceAroundBinaryTilde() {
     doOptTest("x <- a~b", "x <- a ~ b") { custom.SPACE_AROUND_BINARY_TILDE_OPERATOR = it }
   }

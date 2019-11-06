@@ -134,6 +134,8 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
 
     // Binary operators
     .around(RElementTypes.R_ASSIGN_OPERATOR).spaceIf(common.SPACE_AROUND_ASSIGNMENT_OPERATORS)
+    .aroundInside(RElementTypes.R_EQ, RElementTypes.R_PARAMETER).spaceIf(common.SPACE_AROUND_ASSIGNMENT_OPERATORS)
+
     .around(RElementTypes.R_TILDE_OPERATOR).spaceIf(custom.SPACE_AROUND_BINARY_TILDE_OPERATOR)
     .around(RElementTypes.R_COMPARE_OPERATOR).spaceIf(common.SPACE_AROUND_RELATIONAL_OPERATORS)
     .around(RElementTypes.R_OR_OPERATOR).spaceIf(custom.SPACE_AROUND_DISJUNCTION_OPERATORS)
