@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
 import java.awt.*
 import javax.swing.JPanel
@@ -45,8 +44,9 @@ class InlineToolbar(val cell: PsiElement,
     val toolbarHeight = actionToolBar.component.preferredSize.height
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
     val editorBounds = editor.component.bounds
+    val deltaY = (toolbarHeight - editor.lineHeight) / 2
     val newToolbarX = editorBounds.x + editorBounds.width - toolbarWidth - gutterWidth
-    val newToolbarY = editor.visualLineToY(editor.document.getLineNumber(cell.textRange.endOffset))
+    val newToolbarY = editor.visualLineToY(editor.document.getLineNumber(cell.textRange.endOffset)) - deltaY
     try {
       couldUpdateBound = true
       bounds = Rectangle(newToolbarX, newToolbarY, toolbarWidth, toolbarHeight)

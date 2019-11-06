@@ -196,6 +196,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       result.forEach { (psi, action) ->
         addToolbar(psi, action)
       }
+      updateToolbarPositions()
     }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
   }
 
