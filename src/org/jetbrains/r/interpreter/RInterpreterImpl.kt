@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.interpreter.RInterpreterUtil.EDT_TIMEOUT
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackagePriority
@@ -50,15 +49,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
 
-  @Volatile
-  override var skeletonRoots: Set<VirtualFile> = emptySet()
-    get() {
-      if (field.isEmpty()) {
-        field = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
-      }
-      return field
-    }
-    private set
+  override val skeletonRoots: Set<VirtualFile>
+    get() = state.skeletonRoots
 
   override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
     return runAsync {
@@ -137,7 +129,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     val installedPackages = loadInstalledPackages()
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
     val mirrors = if (cachedMirrors.isNotEmpty()) cachedMirrors else getMirrors()
-    state = State(loadLibraryPaths(), installedPackages, name2installedPackages, getUserPath(), mirrors, getRepositories())
+    val libraryPaths = loadLibraryPaths()
+    val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
+    val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
+
+    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages, getUserPath(), mirrors, getRepositories())
+
   }
 
   private fun getUserPath(): String {
@@ -317,7 +314,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   override val skeletonPaths: List<String>
-    get() = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
+    get() = state.skeletonPaths
 
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String?  =
     libraryPaths.firstOrNull { Paths.get(libraryPathToSkeletonPath(it)) == Paths.get(skeletonPath) }?.path
@@ -336,13 +333,15 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private data class State(val libraryPaths: List<VirtualFile>,
+                           val skeletonPaths: List<String>,
+                           val skeletonRoots: Set<VirtualFile>,
                            val installedPackages: List<RPackage>,
                            val name2installedPackages: Map<String, RPackage>,
                            val userLibraryPath: String,
                            val cranMirrors: List<RMirror>,
                            val defaultRepositories: List<RDefaultRepository>) {
     companion object {
-      val EMPTY = State(listOf(), listOf(), mapOf(), "", listOf(), listOf())
+      val EMPTY = State(listOf(), listOf(), setOf(), listOf(), mapOf(), "", listOf(), listOf())
     }
   }
 }

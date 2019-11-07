@@ -183,9 +183,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     val dumbModeTask = object : DumbModeTask(interpreter) {
       override fun performInDumbMode(indicator: ProgressIndicator) {
         if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
-          updateIndexableSet()
           runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
         }
+        updateIndexableSet()
       }
     }
     DumbService.getInstance(project).queueTask(dumbModeTask)
