@@ -12,12 +12,11 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.ResolveResult
 import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.intentions.LoadAllFileLibraryFix
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.intentions.LoadLibraryFix
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.ROperator
+import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.references.RReferenceBase
 
 class UnresolvedReferenceInspection : RInspection() {
@@ -32,17 +31,6 @@ class UnresolvedReferenceInspection : RInspection() {
   }
 
   private inner class ReferenceVisitor internal constructor(private val myProblemHolder: ProblemsHolder) : RVisitor() {
-
-    override fun visitNamespaceAccessExpression(element: RNamespaceAccessExpression) {
-      val runtimeInfo = element.containingFile.runtimeInfo ?: return
-      val loadedPackages = runtimeInfo.loadedPackages
-      val interpreter = RInterpreterManager.getInterpreter(element.project) ?: return
-      if (!loadedPackages.contains(element.namespaceName) &&
-          interpreter.installedPackages.any { it.packageName == element.namespaceName }) {
-        myProblemHolder.registerProblem(element, UNRESOLVED_MSG, ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                        LoadLibraryFix(element.namespaceName, runtimeInfo), LoadAllFileLibraryFix(runtimeInfo))
-      }
-    }
 
     override fun visitOperator(element: ROperator) {
       if (!element.text.startsWith("%")) return
