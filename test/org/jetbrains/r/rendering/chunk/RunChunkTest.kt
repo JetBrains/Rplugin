@@ -15,13 +15,17 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleBaseTestCase
-import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 import java.io.File
 
 class RunChunkTest : RConsoleBaseTestCase() {
+
+  override fun setUp() {
+    super.setUp()
+    RGraphicsUtils.createGraphicsDevice(rInterop, Dimension(640, 480), null)
+  }
 
   fun testSimplePlot() {
     val runChunk = doRunChunk("""
@@ -54,8 +58,6 @@ class RunChunkTest : RConsoleBaseTestCase() {
   }
 
   fun testHtmlOutput() {
-    val screenDimension = Dimension(640, 480)
-    UpdateGraphicsHandler(RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null))
     rInterop.executeCode("library(plotly)", true)
     val result = doRunChunk("""
       ```{r}
