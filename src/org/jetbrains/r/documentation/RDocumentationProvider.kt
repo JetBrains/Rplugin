@@ -26,7 +26,6 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.references.RReferenceImpl
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.io.IOException
@@ -89,15 +88,6 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
            elementText.startsWith("#") ||
            elementText.all { it.isDigit() } ||
            elementText in brackets
-  }
-
-
-  override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, `object`: Any?, element: PsiElement?): PsiElement? {
-    return if (`object` is RReferenceImpl.RefLookupElement) {
-      `object`.getRefExpression()
-    }
-    else null
-
   }
 
   @Throws(RequiredPackageException::class)
@@ -356,7 +346,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   private fun getPath(rInterop: RInterop, psiElement: PsiElement?): String? {
 
-    val element = unwrapCompletionLookup(psiElement) ?: return null
+    val element = psiElement ?: return null
 
     // check if doc of internally rerouted doc-popup click
     restoreInterceptedLink(rInterop, element)?.let { return getHtmlPath(rInterop, it) }
@@ -395,15 +385,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   }
 
 
-  private fun unwrapCompletionLookup(element: PsiElement?): PsiElement? {
-    return if (element is RReferenceImpl.RefLookupElement) element.getRefExpression() else element
-  }
-
-
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
-    psiElement ?: return null
-
-    val reference = restoreConsoleHelpCall(unwrapCompletionLookup(psiElement)) ?: return null
+    val reference = restoreConsoleHelpCall(psiElement ?: return null) ?: return null
 
     checkPossibilityReturnDocumentation(reference) { return it }
 

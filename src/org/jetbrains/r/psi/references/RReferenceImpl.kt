@@ -48,7 +48,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     val elementName = element.name
 
     resolveFunctionCall(element, elementName, result)
-    if (!result.isEmpty()) {
+    if (result.isNotEmpty()) {
       return result.toTypedArray()
     }
 
@@ -79,7 +79,6 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   }
 
 
-  // see https://intellij-support.jetbrains.com/hc/en-us/community/posts/206124949/comments/206152455
   class RefLookupElement(manager: PsiManager, language: Language, private val refExpression: String) : LightElement(manager, language) {
 
     fun getRefExpression(): PsiElement {

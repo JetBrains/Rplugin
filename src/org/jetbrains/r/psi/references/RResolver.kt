@@ -2,119 +2,99 @@
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
+package org.jetbrains.r.psi.references
 
-package org.jetbrains.r.psi.references;
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.ResolveResult
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.interpreter.RInterpreterManager.Companion.getInstance
+import org.jetbrains.r.psi.RPsiUtil.getFunction
+import org.jetbrains.r.psi.api.RAssignmentStatement
+import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RParameterList
+import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
+import java.util.*
+import java.util.function.Predicate
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.ResolveResult;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.interpreter.RInterpreter;
-import org.jetbrains.r.interpreter.RInterpreterManager;
-import org.jetbrains.r.psi.RPsiUtil;
-import org.jetbrains.r.psi.api.*;
-import org.jetbrains.r.psi.stubs.RAssignmentNameIndex;
+object RResolver {
+  internal val LOG = Logger.getInstance(
+    "#" + RResolver::class.java.name)
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
-public class RResolver {
-
-  protected static final Logger LOG = Logger.getInstance("#" + RResolver.class.getName());
-
-  public static void resolveWithNamespace(@NotNull final Project project,
-                                          String name,
-                                          String namespace,
-                                          @NotNull final List<ResolveResult> result) {
-    RInterpreter interpreter = RInterpreterManager.Companion.getInstance(project).getInterpreter();
-    if (interpreter == null) {
-      return;
-    }
-    PsiFile psiFile = interpreter.getSkeletonFileByPackageName(namespace);
-    if (psiFile == null) {
-      return;
-    }
-    Collection<RAssignmentStatement> statements = RAssignmentNameIndex.find(name, project, GlobalSearchScope.fileScope(psiFile));
-
-    for (RAssignmentStatement statement : statements) {
-      if (Objects.equals(statement.getName(), name)) {
-        result.add(new PsiElementResolveResult(statement));
+  fun resolveWithNamespace(project: Project,
+                           name: String,
+                           namespace: String,
+                           result: MutableList<ResolveResult>) {
+    val interpreter = getInstance(project).interpreter ?: return
+    val psiFile = interpreter.getSkeletonFileByPackageName(namespace) ?: return
+    val statements = RAssignmentNameIndex.find(name, project,
+                                               GlobalSearchScope.fileScope(psiFile))
+    for (statement in statements) {
+      if (statement.name == name) {
+        result.add(PsiElementResolveResult(statement))
       }
     }
   }
 
-
-  public static <T> Predicate<T> not(Predicate<T> t) {
-    return t.negate();
+  fun <T> not(t: Predicate<T>): Predicate<T> {
+    return t.negate()
   }
 
-
-  static void resolveNameArgument(@NotNull final PsiElement element,
-                                  String elementName,
-                                  @NotNull final List<ResolveResult> result) {
-    RCallExpression callExpression = PsiTreeUtil.getParentOfType(element, RCallExpression.class);
+  fun resolveNameArgument(element: PsiElement,
+                          elementName: String,
+                          result: MutableList<ResolveResult>) {
+    val callExpression = PsiTreeUtil.getParentOfType(element, RCallExpression::class.java)
     if (callExpression != null) {
-      RFunctionExpression functionExpression = RPsiUtil.INSTANCE.getFunction(callExpression);
-      RParameterList parameterList = PsiTreeUtil.getChildOfType(functionExpression, RParameterList.class);
+      val functionExpression = getFunction(callExpression)
+      val parameterList = PsiTreeUtil.getChildOfType(functionExpression, RParameterList::class.java)
       if (parameterList != null) {
-        for (RParameter parameter : parameterList.getParameterList()) {
-          String name = parameter.getName();
-          if (name != null && name.equals(elementName)) {
-            result.add(0, new PsiElementResolveResult(parameter));
-            return;
+        for (parameter in parameterList.parameterList) {
+          if (parameter.name == elementName) {
+            result.add(0, PsiElementResolveResult(parameter))
+            return
           }
         }
       }
     }
   }
 
-
-  // TODO: massive refactoring awaits!!!
-  static void resolveFunctionCall(PsiElement myElement, String name, List<ResolveResult> result) {
-    PsiElement parent = myElement.getParent();
-
-    if (parent instanceof RCallExpression) {
-      RCallExpression call = ((RCallExpression)parent);
-      List<RExpression> arguments = call.getArgumentList().getExpressionList();
-
-      List<ResolveResult> myResult = new ArrayList<ResolveResult>();
-
-      resolveInFileOrLibrary(myElement, name, myResult);
-
-      // since the downstream analysis relies on having an argument, we stop if the call does not have any args
-      if (call.getExpression().equals(myElement) && !arguments.isEmpty()) {
-        result.addAll(myResult);
+  fun resolveFunctionCall(myElement: PsiElement,
+                          name: String,
+                          result: MutableList<ResolveResult>) {
+    val call = myElement.parent
+    if (call is RCallExpression) {
+      val arguments = call.argumentList.expressionList
+      val myResult = ArrayList<ResolveResult>()
+      resolveInFileOrLibrary(myElement, name, myResult)
+      if (call.expression == myElement && arguments.isNotEmpty()) {
+        result.addAll(myResult)
       }
     }
   }
 
-
-  public static void resolveInFileOrLibrary(PsiElement element, String name, List<ResolveResult> myResult) {
-    resolveFromStubs(element, myResult, name);
+  fun resolveInFileOrLibrary(element: PsiElement,
+                             name: String,
+                             myResult: MutableList<ResolveResult>) {
+    resolveFromStubs(element, myResult, name)
   }
 
-  private static void resolveFromStubs(@NotNull final PsiElement element,
-                                       @NotNull final List<ResolveResult> result,
-                                       @NotNull final String... names) {
-
-    for (String name : names) {
-      Collection<RAssignmentStatement> statements =
-        RAssignmentNameIndex.find(name, element.getProject(), RSearchScopeUtil.getScope(element));
-      addResolveResults(result, statements);
+  private fun resolveFromStubs(element: PsiElement,
+                               result: MutableList<ResolveResult>,
+                               vararg names: String) {
+    for (name in names) {
+      val statements = RAssignmentNameIndex.find(name, element.project,
+                                                 RSearchScopeUtil.getScope(element))
+      addResolveResults(result, statements)
     }
   }
 
-  private static void addResolveResults(@NotNull List<ResolveResult> result, Collection<RAssignmentStatement> statements) {
-    for (RAssignmentStatement statement : statements) {
-      result.add(new PsiElementResolveResult(statement));
+  private fun addResolveResults(result: MutableList<ResolveResult>?,
+                                statements: Collection<RAssignmentStatement>) {
+    for (statement in statements) {
+      result!!.add(PsiElementResolveResult(statement))
     }
   }
 }
