@@ -189,6 +189,21 @@ class FormatterTest : RUsefulTestCase() {
     """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
   }
 
+  fun testArgumentsAlignmentR344() {
+    // Note: Kotlin has same formatting rules :)
+    doOptTest("""
+      someMethod(argument1, (function(a) {
+        a
+      })("A very long line"), argument4,
+          argument5)
+    """, """
+      someMethod(argument1, (function(a) {
+        a
+      })("A very long line"), argument4,
+                 argument5)
+    """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
+  }
+
   fun testParametersAlignment() {
     doOptTest("""
       someMethod <- function(parameter1,

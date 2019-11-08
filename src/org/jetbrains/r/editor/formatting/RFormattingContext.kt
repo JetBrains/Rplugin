@@ -24,7 +24,7 @@ private val BRACES = TokenSet.create(RElementTypes.R_LBRACE, RElementTypes.R_RBR
 
 class RFormattingContext(private val settings: CodeStyleSettings) {
   private val spacingBuilder = createSpacingBuilder(settings)
-  private val childIndentAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
+  private val childIndentAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment() }
 
   fun computeAlignment(node: ASTNode): Alignment? {
     val common = settings.getCommonSettings(RLanguage.INSTANCE)
