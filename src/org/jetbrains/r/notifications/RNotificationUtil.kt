@@ -11,7 +11,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterUtil
 
 object RNotificationUtil {
   private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
@@ -22,7 +21,10 @@ object RNotificationUtil {
   private val INTERPRETER_FAILURE_TITLE = RBundle.message("notification.interpreter.failure")
 
   private const val GRAPHICS_GROUP_ID = "RGraphics"
-  private val GRAPHICS_FAILURE_TITLE =  RBundle.message("notification.graphics.failure")
+  private val GRAPHICS_FAILURE_TITLE = RBundle.message("notification.graphics.failure")
+
+  private const val EXECUTION_GROUP_ID = "Console Execution"
+  private val EXECUTION_FAILURE_TITLE = RBundle.message("notification.execution.failure")
 
   fun notifyConsoleError(project: Project, message: String?, action: AnAction? = null) {
     notifyError(project, CONSOLE_GROUP_ID, CONSOLE_FAILURE_TITLE, message, action)
@@ -34,6 +36,10 @@ object RNotificationUtil {
 
   fun notifyGraphicsError(project: Project, message: String?, action: AnAction? = null) {
     notifyError(project, GRAPHICS_GROUP_ID, GRAPHICS_FAILURE_TITLE, message, action)
+  }
+
+  fun notifyExecutionError(project: Project, message: String?, action: AnAction? = null) {
+    notifyError(project, EXECUTION_GROUP_ID, EXECUTION_FAILURE_TITLE, message, action)
   }
 
   private fun notifyError(project: Project, groupDisplayId: String, title: String, message: String?, action: AnAction? = null) {

@@ -21,6 +21,7 @@ import com.intellij.util.ui.UIUtil.getMultiClickInterval
 import com.intellij.util.ui.tree.TreeUtil
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XExpression
+import com.intellij.xdebugger.XNamedTreeNode
 import com.intellij.xdebugger.frame.XStackFrame
 import com.intellij.xdebugger.impl.actions.XDebuggerActions
 import com.intellij.xdebugger.impl.frame.XVariablesViewBase
@@ -33,6 +34,7 @@ import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import java.awt.BorderLayout
 import java.awt.event.FocusEvent
@@ -229,6 +231,14 @@ internal class RXVariablesView(project: Project, val console: RConsoleView)
 
   override fun getData(dataId: String): Any? {
     return if (XWatchesView.DATA_KEY.`is`(dataId)) this else null
+  }
+
+  fun navigate(rVar: RVar) {
+    val proto = rVar.ref.proto
+    if (proto.hasMember() && proto.member.env.hasGlobalEnv()) {
+      val target = rootNode?.children?.filterIsInstance<XNamedTreeNode>()?.firstOrNull { it.name == rVar.name } ?: return
+      TreeUtil.selectNode(tree, target)
+    }
   }
 
   companion object {

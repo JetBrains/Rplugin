@@ -197,7 +197,7 @@ object RPsiUtil {
   }
 
   fun isLibraryElement(element: PsiElement): Boolean {
-    val virtualFile = element.containingFile.virtualFile ?: return false
+    val virtualFile = element.containingFile?.virtualFile ?: return false
     return ProjectFileIndex.getInstance(element.project).isInLibrary(virtualFile)
   }
 

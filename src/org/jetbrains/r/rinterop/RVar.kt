@@ -5,7 +5,12 @@
 
 package org.jetbrains.r.rinterop
 
-data class RVar(val name: String, val ref: RRef, val value: RValue)
+import com.intellij.openapi.project.Project
+
+data class RVar(val name: String, val ref: RRef, val value: RValue) {
+  val project: Project
+    get() = ref.rInterop.project
+}
 
 sealed class RValue
 class RValueUnevaluated(val code: String): RValue()

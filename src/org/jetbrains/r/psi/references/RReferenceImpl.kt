@@ -13,13 +13,13 @@ import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.light.LightElement
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
+import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
-import org.jetbrains.r.psi.references.RResolver.resolveFunctionCall
 import java.util.*
 
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
@@ -46,14 +46,13 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
 
     val elementName = element.name
-
-    resolveFunctionCall(element, elementName, result)
-    if (result.isNotEmpty()) {
-      return result.toTypedArray()
+    val consoleRuntimeInfo = element.containingFile.runtimeInfo ?: return result.toTypedArray()
+    val variables = consoleRuntimeInfo.rInterop.globalEnvLoader.variables
+    variables.firstOrNull { it.name == elementName }?.let {
+      return arrayOf(PsiElementResolveResult(RPomTarget.createPsiElementByRValue(it)))
     }
 
     RResolver.resolveInFileOrLibrary(element, elementName, result)
-
     return result.toTypedArray()
   }
 

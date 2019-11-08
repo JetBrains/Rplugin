@@ -17,7 +17,6 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RParameterList
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
-import java.util.*
 import java.util.function.Predicate
 
 object RResolver {
@@ -30,8 +29,7 @@ object RResolver {
                            result: MutableList<ResolveResult>) {
     val interpreter = getInstance(project).interpreter ?: return
     val psiFile = interpreter.getSkeletonFileByPackageName(namespace) ?: return
-    val statements = RAssignmentNameIndex.find(name, project,
-                                               GlobalSearchScope.fileScope(psiFile))
+    val statements = RAssignmentNameIndex.find(name, project, GlobalSearchScope.fileScope(psiFile))
     for (statement in statements) {
       if (statement.name == name) {
         result.add(PsiElementResolveResult(statement))
@@ -61,20 +59,6 @@ object RResolver {
     }
   }
 
-  fun resolveFunctionCall(myElement: PsiElement,
-                          name: String,
-                          result: MutableList<ResolveResult>) {
-    val call = myElement.parent
-    if (call is RCallExpression) {
-      val arguments = call.argumentList.expressionList
-      val myResult = ArrayList<ResolveResult>()
-      resolveInFileOrLibrary(myElement, name, myResult)
-      if (call.expression == myElement && arguments.isNotEmpty()) {
-        result.addAll(myResult)
-      }
-    }
-  }
-
   fun resolveInFileOrLibrary(element: PsiElement,
                              name: String,
                              myResult: MutableList<ResolveResult>) {
@@ -83,18 +67,15 @@ object RResolver {
 
   private fun resolveFromStubs(element: PsiElement,
                                result: MutableList<ResolveResult>,
-                               vararg names: String) {
-    for (name in names) {
-      val statements = RAssignmentNameIndex.find(name, element.project,
-                                                 RSearchScopeUtil.getScope(element))
-      addResolveResults(result, statements)
-    }
+                               name: String) {
+    val statements = RAssignmentNameIndex.find(name, element.project, RSearchScopeUtil.getScope(element))
+    addResolveResults(result, statements)
   }
 
-  private fun addResolveResults(result: MutableList<ResolveResult>?,
+  private fun addResolveResults(result: MutableList<ResolveResult>,
                                 statements: Collection<RAssignmentStatement>) {
     for (statement in statements) {
-      result!!.add(PsiElementResolveResult(statement))
+      result.add(PsiElementResolveResult(statement))
     }
   }
 }

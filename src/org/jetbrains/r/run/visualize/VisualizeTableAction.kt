@@ -13,12 +13,14 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
@@ -35,18 +37,9 @@ class VisualizeTableHandler : CodeInsightActionHandler {
     if (file !is RFile) return
     val expr = getSelectedExpression(editor, file)?.text ?: return
 
-    try {
-      val rInterop = file.runtimeInfo?.rInterop ?: return
-      val viewer = rInterop.dataFrameGetViewer(RRef.expressionRef(expr, rInterop))
-      RVisualizeTableUtil.showTable(project, viewer, expr)
-    } catch (e: RDataFrameException) {
-      HintManager.getInstance()
-        .showErrorHint(editor, RBundle.message("visualize.table.action.error.hint", e.message.orEmpty()))
-    }
-    catch (e: RequiredPackageException) {
-      RequiredPackageInstaller.getInstance(project)
-        .installPackagesWithUserPermission(RBundle.message("visualize.table.action.error.utility.name"), e.missingPackages, null)
-    }
+    val rInterop = file.runtimeInfo?.rInterop ?: return
+    val ref = RRef.expressionRef(expr, rInterop)
+    visualizeTable(rInterop, ref, project, expr, editor)
   }
 
   private fun getSelectedExpression(editor: Editor, file: RFile): RExpression? {
@@ -65,5 +58,27 @@ class VisualizeTableHandler : CodeInsightActionHandler {
 
     val expr = PsiTreeUtil.findCommonParent(selectionStart, selectionEnd)
     return PsiTreeUtil.getNonStrictParentOfType(expr, RExpression::class.java)
+  }
+
+  companion object {
+    fun visualizeTable(rInterop: RInterop, ref: RRef, project: Project, expr: String, editor: Editor? = null) {
+      try {
+        val viewer = rInterop.dataFrameGetViewer(ref)
+        RVisualizeTableUtil.showTable(project, viewer, expr)
+      }
+      catch (e: RDataFrameException) {
+        if (editor != null) {
+          HintManager.getInstance()
+            .showErrorHint(editor, RBundle.message("visualize.table.action.error.hint", e.message.orEmpty()))
+        } else {
+          RNotificationUtil.notifyExecutionError(project, RBundle.message("visualize.table.action.error.hint", e.message.orEmpty()))
+        }
+      }
+      catch (e: RequiredPackageException) {
+        RequiredPackageInstaller.getInstance(project)
+          .installPackagesWithUserPermission(RBundle.message("visualize.table.action.error.utility.name"), e.missingPackages, null)
+      }
+    }
+
   }
 }

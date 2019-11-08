@@ -9,6 +9,9 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.psi.PsiElement
+import com.intellij.psi.ResolveResult
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -16,6 +19,7 @@ import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.mock.setupMockInterpreterManager
+import org.jetbrains.r.psi.references.RReferenceBase
 import java.io.File
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
@@ -86,6 +90,16 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
         else -> null
       }
     }
+  }
+
+  protected fun resolve(): Array<ResolveResult> {
+    val reference = myFixture.file.findReferenceAt(myFixture.caretOffset)
+    val rReferenceBase = reference as RReferenceBase<*>
+    return rReferenceBase.multiResolve(false)
+  }
+
+  protected fun <T : PsiElement> findElementAtCaret(aClass: Class<T>): T? {
+    return PsiTreeUtil.getParentOfType(myFixture.file.findElementAt(myFixture.caretOffset), aClass, false)
   }
 
   companion object {

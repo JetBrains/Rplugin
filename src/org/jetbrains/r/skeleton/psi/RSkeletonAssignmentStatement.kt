@@ -16,7 +16,7 @@ import com.intellij.psi.stubs.StubElement
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.RLanguage
+import org.jetbrains.r.editor.REditorUtil.createReadOnlyLightRFileAndOpen
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RAssignmentStatement
@@ -119,8 +119,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
                                                                                           "Generate source",
                                                                                           true, project)
     if (methodContent != null) {
-      val destination = ReadOnlyLightVirtualFile(name, RLanguage.INSTANCE, methodContent)
-      FileEditorManager.getInstance(project).openFile(destination, true, true)
+      val destination = createReadOnlyLightRFileAndOpen(project, name, methodContent)
       decompiled = SoftReference(destination)
     }
   }

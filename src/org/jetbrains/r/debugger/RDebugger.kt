@@ -46,6 +46,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.rinterop.Service.DebuggerCommand
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import org.jetbrains.r.run.debug.stack.RXStackFrame
@@ -192,6 +193,10 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
       f()
     }
     return promise
+  }
+
+  fun navigate(rVar: RVar) {
+    variablesView?.navigate(rVar)
   }
 
   fun resume(): Promise<Unit> {
