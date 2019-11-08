@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
+import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
@@ -45,8 +46,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   }
 
   override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-    val resolveResults = multiResolveInner(incompleteCode)
-    return psiElement.containingFile.runtimeInfo?.let { info -> resolveUsingRuntimeInfo(info, resolveResults) } ?: resolveResults
+    return ResolveCache.getInstance(psiElement.project).resolveWithCaching(this, Resolver<T>(), false, incompleteCode)
   }
 
   private fun resolveUsingRuntimeInfo(runtimeInfo: RConsoleRuntimeInfo,
@@ -65,4 +65,12 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
     loadedNamespaces[RPackage.getOrCreate(result.element!!.containingFile)?.packageName] ?: Int.MAX_VALUE
 
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
+
+  private class Resolver<T : RPsiElement> : ResolveCache.PolyVariantResolver<RReferenceBase<T>> {
+    override fun resolve(reference: RReferenceBase<T>, incompleteCode: Boolean): Array<ResolveResult> {
+      val resolveResults = reference.multiResolveInner(incompleteCode)
+      val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
+      return runtimeInfo?.let { info -> reference.resolveUsingRuntimeInfo(info, resolveResults) } ?: resolveResults
+    }
+  }
 }
