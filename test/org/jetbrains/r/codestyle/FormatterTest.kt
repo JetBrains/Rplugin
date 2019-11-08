@@ -204,6 +204,66 @@ class FormatterTest : RUsefulTestCase() {
     """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
   }
 
+  fun testAssignmentAlignmentInParameters() {
+    doOptTest("""
+      foo(a = 1,
+          bb = 10,
+          ccc = 100)
+    """, """
+      foo(a   = 1,
+          bb  = 10,
+          ccc = 100)
+    """) { custom.ALIGN_ASSIGNMENT_OPERATORS = it }
+  }
+
+  fun testAssignmentsInRowAlignment() {
+    doOptTest("""
+      a <- 10 # just some comment
+      bb <- 20
+      print(a + bb) # separator
+      ccc <- 30 +
+          a # this line is not a separator (it is continue of the assignment expression)
+      dddd <- 50 # empty line will be separator
+      
+      zzzzzzzzzzzzz = 20
+      ppp = (a <- 20)
+      
+      x <- 10
+      yy <- 200
+      f <- function() 10 # function declaration is considered as separator
+      zzz <- 10000
+      a <- 2
+      
+      func <- function() {
+        x <- 10
+        yyy <- 200
+        zz <- 1
+      }
+    """, """
+      a  <- 10 # just some comment
+      bb <- 20
+      print(a + bb) # separator
+      ccc  <- 30 +
+          a # this line is not a separator (it is continue of the assignment expression)
+      dddd <- 50 # empty line will be separator
+      
+      zzzzzzzzzzzzz = 20
+      ppp           = (a <- 20)
+      
+      x  <- 10
+      yy <- 200
+      f <- function() 10 # function declaration is considered as separator
+      zzz <- 10000
+      a   <- 2
+      
+      func <- function() {
+        x   <- 10
+        yyy <- 200
+        zz  <- 1
+      }
+    """) { custom.ALIGN_ASSIGNMENT_OPERATORS = it }
+  }
+
   fun testParametersAlignment() {
     doOptTest("""
       someMethod <- function(parameter1,

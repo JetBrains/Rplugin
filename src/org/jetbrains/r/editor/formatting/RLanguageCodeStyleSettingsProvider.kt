@@ -94,6 +94,8 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
                                      CCSS::WRAP_LONG_LINES.name,
                                      CCSS::ALIGN_MULTILINE_PARAMETERS.name,
                                      CCSS::ALIGN_MULTILINE_PARAMETERS_IN_CALLS.name)
+        consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::ALIGN_ASSIGNMENT_OPERATORS.name,
+                                  "Align assignment operators", null)
       }
       else -> {} // do nothing
     }
@@ -111,6 +113,8 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
       mean(data)
     }
     
+    normalMean(samples = 5,
+    otherParameter = 10)
     aLotOfArguments(100, 101,
     102, 103)
 
@@ -127,6 +131,10 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
     while (foo()) {
       boo(x[1])
     }
+    
+    a <- 10
+    bbb <- 20
+    cc <- 30
     
     repeat {
       foo(some@oh)

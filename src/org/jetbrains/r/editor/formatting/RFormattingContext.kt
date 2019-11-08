@@ -18,25 +18,76 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.util.containers.FactoryMap
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.psi.api.*
 
 private val BRACES = TokenSet.create(RElementTypes.R_LBRACE, RElementTypes.R_RBRACE)
 
 class RFormattingContext(private val settings: CodeStyleSettings) {
   private val spacingBuilder = createSpacingBuilder(settings)
+
   private val childIndentAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment() }
+  /** Use argument list as anchor */
+  private val assignInParametersAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
+  /** Use first assignment in row as anchor */
+  private val assignInRowAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
 
   fun computeAlignment(node: ASTNode): Alignment? {
     val common = settings.getCommonSettings(RLanguage.INSTANCE)
+    val custom = settings.getCustomSettings(RCodeStyleSettings::class.java)
+
+    val nodeParent = node.treeParent ?: return null
     if ((common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS &&
-         node.treeParent?.elementType == RElementTypes.R_ARGUMENT_LIST &&
+         nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
          node.firstChildNode != null) ||
         (common.ALIGN_MULTILINE_PARAMETERS &&
-         node.treeParent?.elementType == RElementTypes.R_PARAMETER_LIST &&
+         nodeParent.elementType == RElementTypes.R_PARAMETER_LIST &&
          (node.elementType == RElementTypes.R_PARAMETER || node.elementType == RElementTypes.R_COMMA))) {
-      return childIndentAlignments[node.treeParent]
+      return childIndentAlignments[nodeParent]
+    }
+
+    val nodeGrandParent = nodeParent.treeParent ?: return null
+    if (custom.ALIGN_ASSIGNMENT_OPERATORS &&
+        node.elementType == RElementTypes.R_ASSIGN_OPERATOR &&
+        nodeParent.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT) {
+      if (nodeGrandParent.elementType == RElementTypes.R_ARGUMENT_LIST) {
+        return assignInParametersAlignments[nodeGrandParent]
+      }
+      if (!isFunctionDeclarationNode(nodeParent) &&
+          nodeGrandParent.elementType == RElementTypes.R_BLOCK_EXPRESSION || nodeGrandParent.elementType == RParserDefinition.FILE) {
+        val anchor = findFirstAssignmentInTable(nodeParent)
+        return assignInRowAlignments[anchor]
+      }
     }
     return null
+  }
+
+  private fun isFunctionDeclarationNode(nodeParent: ASTNode) =
+    (nodeParent.psi as? RAssignmentStatement)?.isFunctionDeclaration ?: false
+
+  private fun findFirstAssignmentInTable(start: ASTNode): ASTNode {
+    var current: ASTNode? = start
+    var answer: ASTNode = start
+    var nlSeen = false
+    while(current != null) {
+      if (current.firstChildNode != null) {
+        nlSeen = false
+        if (current.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT && !isFunctionDeclarationNode(current)) {
+          answer = current
+        }
+        else {
+          return answer
+        }
+      }
+      if (current.elementType == RElementTypes.R_NL) {
+        if (nlSeen) {
+          return answer
+        }
+        nlSeen = true
+      }
+      current = current.treePrev
+    }
+    return answer
   }
 
   fun computeSpacing(parent: Block, child1: Block?, child2: Block): Spacing? = spacingBuilder.getSpacing(parent, child1, child2)

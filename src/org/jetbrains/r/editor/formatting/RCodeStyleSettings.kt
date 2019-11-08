@@ -31,4 +31,7 @@ class RCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings
   var SPACE_AROUND_SUBSET_OPERATOR: Boolean = false
   @JvmField
   var SPACE_AROUND_AT_OPERATOR: Boolean = false
+
+  @JvmField
+  var ALIGN_ASSIGNMENT_OPERATORS: Boolean = false
 }
