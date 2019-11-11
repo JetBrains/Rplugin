@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
@@ -31,7 +32,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import javax.swing.JPanel
-import javax.swing.JSplitPane
 
 class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
@@ -79,12 +79,13 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   }
 
   private val settingsScrollable = JBScrollPane(settingsSubPanel)
-  private val splitPane = JSplitPane(JSplitPane.VERTICAL_SPLIT, true, graphicsPanel.component, settingsScrollable).apply {
-    resizeWeight = RESIZE_SPLIT_WEIGHT
+  private val splitter = OnePixelSplitter(true, SPLITTER_PROPORTION_KEY, SPLITTER_DEFAULT_PROPORTION).apply {
+    firstComponent = graphicsPanel.component
+    secondComponent = settingsScrollable
   }
 
   init {
-    setContent(splitPane)
+    setContent(splitter)
     val groups = createActionHolderGroups(project)
     toolbar = RGraphicsToolbar(groups).component
 
@@ -307,10 +308,12 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   companion object {
     const val TOOL_WINDOW_ID = "R Graphics"
 
+    private const val SPLITTER_PROPORTION_KEY = "graphics.panel.splitter.proportion"
+    private const val SPLITTER_DEFAULT_PROPORTION = 0.67f
+
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
-    private const val RESIZE_SPLIT_WEIGHT = 0.67
     private const val SETTINGS_SUB_PANEL_PADDING = 10
 
     private val EXPORT_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.export.title")
