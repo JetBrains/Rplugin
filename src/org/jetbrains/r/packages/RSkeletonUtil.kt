@@ -79,7 +79,7 @@ object RSkeletonUtil {
     return generateSkeletons(generationMap, rInterpreter, progressIndicator)
   }
 
-  fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
+  internal fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
                         rInterpreter: RInterpreter,
                         progressIndicator: ProgressIndicator? = null): Boolean {
     var result = false
@@ -138,7 +138,7 @@ object RSkeletonUtil {
     return result
   }
 
-  fun getSkeletonFiles(skeletonPath: String, libraryPath: String): Map<RPackage, File> {
+  internal fun getSkeletonFiles(skeletonPath: String, libraryPath: String): Map<RPackage, File> {
     val skeletonDirectory = File(skeletonPath)
     if (!skeletonDirectory.exists() || !skeletonDirectory.isDirectory) {
       return emptyMap()
