@@ -9,6 +9,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.Dimension
@@ -57,6 +58,8 @@ object RGraphicsUtils {
   private const val FULL_HD_RESOLUTION = 300
   private const val QUAD_HD_RESOLUTION = 450
   private const val ULTRA_HD_RESOLUTION = 600
+
+  private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina()
 
   private fun getAvailableVersions(): List<Version> {
     val binariesDirectory = RHelpersUtil.findFileInRHelpers(BINARIES_DIR_NAME)
@@ -130,7 +133,7 @@ object RGraphicsUtils {
 
   fun calculateInitProperties(snapshotDirectory: String, dimension: Dimension?, resolution: Int?): InitProperties {
     val path = FileUtil.toSystemIndependentName(snapshotDirectory)
-    val parameters = createParameters(dimension, resolution)
+    val parameters = scaleForRetina(createParameters(dimension, resolution))
     return InitProperties(path, parameters)
   }
 
@@ -167,4 +170,10 @@ object RGraphicsUtils {
       }
     }
   }
+
+  internal fun scaleForRetina(dimension: Dimension): Dimension =
+    if (isRetina) Dimension(dimension.width * 2, dimension.height * 2) else dimension
+
+  private fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
+    if (isRetina) ScreenParameters(scaleForRetina(parameters.dimension), parameters.resolution?.times(2)) else parameters
 }

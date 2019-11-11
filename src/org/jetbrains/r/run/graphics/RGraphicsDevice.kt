@@ -115,7 +115,7 @@ class RGraphicsDevice(
   private fun rescale(snapshotNumber: Int?, newDimension: Dimension) {
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        val result = rInterop.graphicsRescale(snapshotNumber, newDimension)
+        val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newDimension))
         if (result.stderr.isBlank()) {
           val output = result.stdout.let { it.substring(4, it.length - 1) }
           if (output == "TRUE") {
