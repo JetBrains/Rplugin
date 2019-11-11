@@ -138,22 +138,21 @@ object RSkeletonUtil {
     return result
   }
 
+  fun parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension: String): Pair<String, String>? =
+    nameWithoutExtension.takeIf { it.contains('-') }
+                        ?.split('-', limit = 2)
+                        ?.takeIf { it.size == 2 }
+                        ?.let { Pair(it[0], it[1])}
+
   internal fun getSkeletonFiles(skeletonPath: String, libraryPath: String): Map<RPackage, File> {
     val skeletonDirectory = File(skeletonPath)
     if (!skeletonDirectory.exists() || !skeletonDirectory.isDirectory) {
       return emptyMap()
     }
     return skeletonDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }?.mapNotNull {
-      val nameWithoutExtension = it.nameWithoutExtension
-      if (!nameWithoutExtension.contains('-')) {
-        return@mapNotNull null
-      }
-      val nameAndVersion = nameWithoutExtension.split('-', limit = 2)
-      if (nameAndVersion.size != 2) {
-        return@mapNotNull null
-      }
+      val (name, version) = parsePackageAndVersionFromSkeletonFilename(it.nameWithoutExtension) ?: return@mapNotNull null
       val priority = getPriorityFromSkeletonFile(it)
-      RPackage(nameAndVersion[0], nameAndVersion[1], priority, libraryPath) to it
+      RPackage(name, version, priority, libraryPath) to it
     }?.toMap() ?: mapOf()
   }
 

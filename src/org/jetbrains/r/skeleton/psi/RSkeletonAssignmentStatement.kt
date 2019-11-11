@@ -4,34 +4,27 @@
 
 package org.jetbrains.r.skeleton.psi
 
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.progress.ProgressIndicatorProvider
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.runBackgroundableTask
-import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
-import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.editor.REditorUtil.createReadOnlyLightRFileAndOpen
+import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.stubs.RAssignmentStub
-import org.jetbrains.r.skeleton.RSkeletonFileDecompiler
-import java.lang.ref.Reference
-import java.lang.ref.SoftReference
-import java.util.concurrent.TimeoutException
+import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RVar
 
 class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) : RSkeletonBase(), RAssignmentStatement {
   override fun getMirror() = null
-
-  private var decompiled: Reference<ReadOnlyLightVirtualFile>? = null
 
   override fun getParent(): PsiElement = myStub.getParentStub().getPsi()
 
@@ -82,45 +75,19 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   }
 
   override fun navigate(requestFocus: Boolean) {
-    decompiled?.get()?.let {
-      FileEditorManager.getInstance(project).openFile(it, requestFocus, true)
-      return
+    RConsoleManager.getInstance(project).currentConsoleAsync.onError {
+      throw IllegalStateException("not console available")
+    }.onSuccess { consoleView ->
+      RPomTarget.createPsiElementByRValue(createRVar(consoleView)).navigate(requestFocus)
     }
+  }
 
-    val rInterpreter = RInterpreterManager.getInstance(project).interpreter ?: throw IllegalStateException("Fail")
-
-    val promise = AsyncPromise<CharSequence>()
-    runBackgroundableTask("Decompile " + name, project, true) {
-      try {
-        promise.setResult(RSkeletonFileDecompiler.decompileSymbol(name, containingFile.virtualFile, rInterpreter))
-      }
-      catch(e: Throwable) {
-        promise.setError(e)
-        throw e
-      }
-    }
-
-    val decompilingWaiter = ThrowableComputable<CharSequence?, RuntimeException> l@{
-      val indicator = ProgressIndicatorProvider.getInstance().progressIndicator
-      while (true) {
-        try {
-          return@l promise.blockingGet(100)
-        }
-        catch (e: TimeoutException) {
-          // do nothing
-        }
-        if (indicator.isCanceled) return@l null
-      }
-      @Suppress("UNREACHABLE_CODE") // Thank you, Kotlin Compiler!
-      return@l null
-    }
-
-    val methodContent = ProgressManager.getInstance().runProcessWithProgressSynchronously(decompilingWaiter,
-                                                                                          "Generate source",
-                                                                                          true, project)
-    if (methodContent != null) {
-      val destination = createReadOnlyLightRFileAndOpen(project, name, methodContent)
-      decompiled = SoftReference(destination)
-    }
+  @TestOnly
+  internal fun createRVar(consoleView: RConsoleView): RVar {
+    val nameWithoutExtension = containingFile.virtualFile.nameWithoutExtension
+    val (packageName, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension)
+                           ?: throw IllegalStateException("bad filename")
+    val expressionRef = RRef.expressionRef("$packageName::`${getName()}`", consoleView.rInterop)
+    return RVar(name, expressionRef, expressionRef.getValueInfo())
   }
 }
