@@ -17,12 +17,10 @@ import com.intellij.psi.impl.source.PsiFileWithStubSupport
 import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.psi.stubs.StubTree
 import com.intellij.psi.stubs.StubTreeLoader
-import com.intellij.psi.util.CachedValue
 import com.intellij.reference.SoftReference
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.lang.ref.Reference
 
@@ -45,8 +43,6 @@ class RSkeletonFileImpl(viewProvider: FileViewProvider)
   override fun getLanguage(): Language {
     return RLanguage.INSTANCE
   }
-
-  private var myImports: CachedValue<List<RCallExpression>>? = null
 
   override fun toString(): String {
     return "RSkeletonFile:$name"
