@@ -96,6 +96,8 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
                                      CCSS::ALIGN_MULTILINE_PARAMETERS_IN_CALLS.name)
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::ALIGN_ASSIGNMENT_OPERATORS.name,
                                   "Align assignment operators", null)
+        consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::ALIGN_COMMENTS.name,
+                                  "Align comments", null)
       }
       else -> {} // do nothing
     }

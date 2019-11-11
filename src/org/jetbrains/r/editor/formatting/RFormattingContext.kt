@@ -8,10 +8,7 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiErrorElement
-import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.*
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.tree.ILazyParseableElementType
 import com.intellij.psi.tree.TokenSet
@@ -21,7 +18,12 @@ import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.psi.api.*
 
-private val BRACES = TokenSet.create(RElementTypes.R_LBRACE, RElementTypes.R_RBRACE)
+private val CLOSE_BRACES = TokenSet.create(
+  RElementTypes.R_RPAR,
+  RElementTypes.R_RBRACE,
+  RElementTypes.R_RBRACKET,
+  RElementTypes.R_RDBRACKET
+)
 
 class RFormattingContext(private val settings: CodeStyleSettings) {
   private val spacingBuilder = createSpacingBuilder(settings)
@@ -29,8 +31,8 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   private val childIndentAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment() }
   /** Use argument list as anchor */
   private val assignInParametersAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
-  /** Use first assignment in row as anchor */
-  private val assignInRowAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
+  /** Use first element in row as anchor */
+  private val alignmentByAnchor: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
 
   fun computeAlignment(node: ASTNode): Alignment? {
     val common = settings.getCommonSettings(RLanguage.INSTANCE)
@@ -39,11 +41,21 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     val nodeParent = node.treeParent ?: return null
     if ((common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS &&
          nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
-         node.firstChildNode != null) ||
+         (node.firstChildNode != null || isCommentAtEmptyLine(node))) ||
         (common.ALIGN_MULTILINE_PARAMETERS &&
          nodeParent.elementType == RElementTypes.R_PARAMETER_LIST &&
-         (node.elementType == RElementTypes.R_PARAMETER || node.elementType == RElementTypes.R_COMMA))) {
+         (node.elementType == RElementTypes.R_PARAMETER || node.elementType == RElementTypes.R_COMMA || isCommentAtEmptyLine(node)))) {
       return childIndentAlignments[nodeParent]
+    }
+
+    if (custom.ALIGN_COMMENTS && node.elementType == RParserDefinition.END_OF_LINE_COMMENT) {
+      if (nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
+          (findPrevNonSpaceNode(node)?.elementType == RElementTypes.R_COMMA || findNextMeaningSibling(
+            node)?.elementType == RElementTypes.R_RPAR)) {
+        findFirstCommentAfterComma(nodeParent.firstChildNode)?.let {
+          return alignmentByAnchor[it]
+        }
+      }
     }
 
     val nodeGrandParent = nodeParent.treeParent ?: return null
@@ -56,8 +68,53 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
       if (!isFunctionDeclarationNode(nodeParent) &&
           nodeGrandParent.elementType == RElementTypes.R_BLOCK_EXPRESSION || nodeGrandParent.elementType == RParserDefinition.FILE) {
         val anchor = findFirstAssignmentInTable(nodeParent)
-        return assignInRowAlignments[anchor]
+        return alignmentByAnchor[anchor]
       }
+    }
+    return null
+  }
+
+  private fun isCommentAtEmptyLine(node: ASTNode) =
+    (node.elementType == RParserDefinition.END_OF_LINE_COMMENT && findPrevNonSpaceNode(
+      node)?.elementType == RElementTypes.R_NL)
+
+  private fun findFirstCommentAfterComma(start: ASTNode?): ASTNode? {
+    var current: ASTNode? = start
+    while (current != null) {
+      if (current.elementType == RElementTypes.R_COMMA) {
+        current = current.treeNext
+        while (current?.elementType == TokenType.WHITE_SPACE)
+          current = current?.treeNext
+        if (current?.elementType == RParserDefinition.END_OF_LINE_COMMENT) {
+          return current
+        }
+      }
+      else {
+        current = current.treeNext
+      }
+    }
+    return null
+  }
+
+  private fun findNextMeaningSibling(start: ASTNode): ASTNode? {
+    var current: ASTNode? = start
+    while (current != null) {
+      if (!TokenSet.create(TokenType.WHITE_SPACE, RElementTypes.R_NL, RParserDefinition.END_OF_LINE_COMMENT).contains(
+          current.elementType)) {
+        return current
+      }
+      current = current.treeNext
+    }
+    return null
+  }
+
+  private fun findPrevNonSpaceNode(start: ASTNode): ASTNode? {
+    var current: ASTNode? = start.treePrev
+    while (current != null) {
+      if (current.elementType != TokenType.WHITE_SPACE) {
+        return current
+      }
+      current = current.treePrev
     }
     return null
   }
@@ -69,7 +126,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     var current: ASTNode? = start
     var answer: ASTNode = start
     var nlSeen = false
-    while(current != null) {
+    while (current != null) {
       if (current.firstChildNode != null) {
         nlSeen = false
         if (current.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT && !isFunctionDeclarationNode(current)) {
@@ -124,17 +181,14 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     return when {
       psi.parent is RFile -> Indent.getNoneIndent()
       node.elementType == RElementTypes.R_COMMA -> Indent.getContinuationIndent()
+      CLOSE_BRACES.contains(node.elementType) -> Indent.getNoneIndent()
       psi is RParameter -> Indent.getContinuationIndent()
       psi is RBlockExpression -> Indent.getNoneIndent()
       psi is RExpression && psi.parent is RArgumentList -> Indent.getContinuationIndent()
-      isTopExpression(node) -> Indent.getNormalIndent()
-      psi is RExpression -> Indent.getContinuationWithoutFirstIndent()
+      psi.parent is RBlockExpression -> Indent.getNormalIndent()
+      psi.parent is RExpression -> Indent.getContinuationWithoutFirstIndent()
       else -> Indent.getNoneIndent()
     }
-  }
-
-  private fun isTopExpression(node: ASTNode): Boolean {
-    return node.psi is RExpression && (node.psi.parent !is RExpression || node.psi.parent is RBlockExpression)
   }
 
   private fun isRightExprInOpChain(blockPsi: PsiElement): Boolean {
@@ -178,6 +232,9 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
   val custom = settings.getCustomSettings(RCodeStyleSettings::class.java)
 
   return SpacingBuilder(settings, RLanguage.INSTANCE)
+    // Comments
+    .before(RParserDefinition.END_OF_LINE_COMMENT).spacing(1, Int.MAX_VALUE, 0, true, 0)
+
     // Unary operators
     .afterInside(RElementTypes.R_TILDE_OPERATOR, RElementTypes.R_UNARY_TILDE_EXPRESSION).spaceIf(common.SPACE_AROUND_UNARY_OPERATOR)
     .afterInside(RElementTypes.R_PLUSMINUS_OPERATOR, RElementTypes.R_UNARY_PLUSMINUS_EXPRESSION).spaceIf(common.SPACE_AROUND_UNARY_OPERATOR)

@@ -53,6 +53,34 @@ class FormatterTest : RUsefulTestCase() {
     """)
   }
 
+  fun testCommentFormatting() {
+    doTest("""
+      xxx <- 10# One space required
+      y <- 20   # Do not touch spaces
+        # Shift comment!
+      z <- function(param1,  # Do not touch spaces
+                    # Leave here
+                    p2       # Do not touch spaces
+      ) {
+        y <- 20   # Do not touch spaces
+          # Shift comment!
+      # Shift comment!
+      }
+    """, """
+      xxx <- 10 # One space required
+      y <- 20   # Do not touch spaces
+      # Shift comment!
+      z <- function(param1,  # Do not touch spaces
+                    # Leave here
+                    p2       # Do not touch spaces
+      ) {
+        y <- 20   # Do not touch spaces
+        # Shift comment!
+        # Shift comment!
+      }
+    """)
+  }
+
   fun testSpaceBeforeFunctionDefinitionParentheses() {
     doOptTest("function() foo()", "function () foo()") { common.SPACE_BEFORE_METHOD_PARENTHESES = it }
   }
@@ -262,6 +290,62 @@ class FormatterTest : RUsefulTestCase() {
         zz  <- 1
       }
     """) { custom.ALIGN_ASSIGNMENT_OPERATORS = it }
+  }
+
+  fun testCommentsInParametersAlignment() {
+    val withoutAlignment = """
+      foo1(a, # first comment
+           bb,
+           cccccc, # second comment
+           dd # last comment
+      )
+      
+      foo2(a,
+           bb, # first comment
+           cccccc # second comment
+      )
+      
+      foo3(a, # first comment
+           bb,
+           # do not align this comment
+           cccccc # second comment
+           # and do not align this one
+      )
+      
+      foo4(a,     # first comment with additional spaces
+           bb,    # second comment with additional spaces
+      )
+    """
+    val afterAlignment = """
+      foo1(a,      # first comment
+           bb,
+           cccccc, # second comment
+           dd      # last comment
+      )
+      
+      foo2(a,
+           bb,    # first comment
+           cccccc # second comment
+      )
+      
+      foo3(a,     # first comment
+           bb,
+           # do not align this comment
+           cccccc # second comment
+           # and do not align this one
+      )
+      
+      foo4(a,     # first comment with additional spaces
+           bb,    # second comment with additional spaces
+      )
+    """
+    myFixture.configureByText(RFileType, "")
+    doCheck(withoutAlignment, afterAlignment) { custom.ALIGN_COMMENTS = true }
+    doCheck(afterAlignment, afterAlignment) { custom.ALIGN_COMMENTS = true }
+
+    // Keep any formatting without alignment option:
+    doCheck(withoutAlignment, withoutAlignment) { custom.ALIGN_COMMENTS = false }
+    doCheck(afterAlignment, afterAlignment) { custom.ALIGN_COMMENTS = false }
   }
 
   fun testParametersAlignment() {

@@ -34,4 +34,6 @@ class RCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings
 
   @JvmField
   var ALIGN_ASSIGNMENT_OPERATORS: Boolean = false
+  @JvmField
+  var ALIGN_COMMENTS: Boolean = false
 }
