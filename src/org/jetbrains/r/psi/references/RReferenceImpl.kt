@@ -46,10 +46,11 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
 
     val elementName = element.name
-    val consoleRuntimeInfo = element.containingFile.runtimeInfo ?: return result.toTypedArray()
-    val variables = consoleRuntimeInfo.rInterop.globalEnvLoader.variables
-    variables.firstOrNull { it.name == elementName }?.let {
-      return arrayOf(PsiElementResolveResult(RPomTarget.createPsiElementByRValue(it)))
+    element.containingFile.runtimeInfo?.let { consoleRuntimeInfo ->
+      val variables = consoleRuntimeInfo.rInterop.globalEnvLoader.variables
+      variables.firstOrNull { it.name == elementName }?.let {
+        return arrayOf(PsiElementResolveResult(RPomTarget.createPsiElementByRValue(it)))
+      }
     }
 
     RResolver.resolveInFileOrLibrary(element, elementName, result)
