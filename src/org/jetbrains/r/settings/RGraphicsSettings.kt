@@ -20,7 +20,7 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       val height = state.height
       val resolution = state.resolution
       return if (width == 0 || height == 0 || resolution == 0) {
-        RGraphicsUtils.getDefaultScreenParameters().also {
+        RGraphicsUtils.getDefaultScreenParameters(false).also {
           setScreenParameters(project, it)
         }
       } else {
