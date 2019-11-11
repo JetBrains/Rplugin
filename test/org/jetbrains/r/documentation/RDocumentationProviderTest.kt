@@ -10,7 +10,6 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.mock.setupMockInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import java.io.File
 import java.io.IOException
@@ -146,7 +145,6 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testLocalFunction() {
-    myFixture.project.setupMockInterpreterManager()
     val accessingOperators = listOf("::", ":::")
     for (operator in accessingOperators) {
       doTest("""

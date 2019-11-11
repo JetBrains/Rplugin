@@ -7,7 +7,6 @@ package org.jetbrains.r.completion
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.mock.setupMockInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 @Suppress("SpellCheckingInspection")
@@ -15,7 +14,6 @@ class StringCompletionTest : RProcessHandlerBaseTestCase() {
   override fun setUp() {
     super.setUp()
     addLibraries()
-    myFixture.project.setupMockInterpreterManager()
   }
 
   fun testVector() {

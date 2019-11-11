@@ -6,12 +6,10 @@ package org.jetbrains.r.resolve
 
 import junit.framework.TestCase
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.mock.setupMockInterpreterManager
 
 class RMultiResolveTest : RLightCodeInsightFixtureTestCase() {
   override fun setUp() {
     super.setUp()
-    myFixture.project.setupMockInterpreterManager()
     addLibraries()
   }
 

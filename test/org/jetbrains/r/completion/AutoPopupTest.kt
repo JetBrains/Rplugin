@@ -11,7 +11,6 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.mock.setupMockInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.Service
@@ -24,7 +23,6 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     super.setUp()
     myTester = CompletionAutoPopupTester(myFixture)
     addLibraries()
-    myFixture.project.setupMockInterpreterManager()
   }
 
   fun testPackageAccess() {

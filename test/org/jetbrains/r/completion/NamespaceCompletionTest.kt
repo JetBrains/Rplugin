@@ -5,14 +5,12 @@
 package org.jetbrains.r.completion
 
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
-import org.jetbrains.r.mock.setupMockInterpreterManager
 
 class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
 
   override fun setUp() {
     super.setUp()
     addLibraries()
-    myFixture.project.setupMockInterpreterManager()
   }
 
   fun testDplyr() {

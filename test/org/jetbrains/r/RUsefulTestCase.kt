@@ -9,6 +9,9 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.project.DumbServiceImpl
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.impl.ProjectImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
@@ -16,11 +19,21 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl
+import com.intellij.util.indexing.FileBasedIndex
+import com.intellij.util.indexing.FileBasedIndexImpl
+import com.intellij.util.indexing.UnindexedFilesUpdater
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.mock.setupMockInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterImpl
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.mock.MockInterpreterManager
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.references.RReferenceBase
+import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
+import java.io.IOException
+import java.util.*
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
 
@@ -41,7 +54,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   fun addLibraries() {
-    myFixture.project.setupMockInterpreterManager()
+    setupMockInterpreterManager()
   }
 
   protected fun doExprTest(expressionList: String): CodeInsightTestFixture {
@@ -102,9 +115,77 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return PsiTreeUtil.getParentOfType(myFixture.file.findElementAt(myFixture.caretOffset), aClass, false)
   }
 
+  private fun setupMockInterpreterManager() {
+    project.apply {
+      prepareTestSkeletons(this)
+      (this as ProjectImpl).registerComponentImplementation(RInterpreterManager::class.java, MockInterpreterManager::class.java, true)
+      val dumbService = DumbServiceImpl.getInstance(this)
+      if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
+        dumbService.queueTask(UnindexedFilesUpdater(this))
+      }
+    }
+  }
+
+  private fun prepareTestSkeletons(project: Project) {
+    RSkeletonUtil.checkVersion(RUsefulTestCase.SKELETON_LIBRARY_PATH)
+    val missingTestSkeletons = missingTestSkeletons()
+    if (missingTestSkeletons.isEmpty()) return
+
+    System.err.println("Generate binary summary for: " + missingTestSkeletons)
+
+    val interpreterPath = RInterpreterUtil.suggestHomePath()
+    check(!(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
+    val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
+    val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
+    rInterpreter.updateState()
+    val packagesForTest = missingTestSkeletons.map {
+      rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package $it found for $interpreterPath")
+    }
+    RSkeletonUtil.generateSkeletons(Collections.singletonMap(SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter)
+  }
+
+  private fun missingTestSkeletons(): Set<String> {
+    val skeletonsDirectory = File(RUsefulTestCase.SKELETON_LIBRARY_PATH)
+    val existedSkeletons = skeletonsDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }
+
+    if (existedSkeletons == null) {
+      if (!skeletonsDirectory.mkdirs()) {
+        throw IOException("Can't create $skeletonsDirectory")
+      }
+      return packageNamesForTests
+    }
+
+    val foundSkeletons =  existedSkeletons.map { it }.map { nameOfBinSummary(it) }.toSet()
+
+    existedSkeletons.forEach {
+      if (!packageNamesForTests.contains(nameOfBinSummary(it))) {
+        it.delete()
+      }
+    }
+
+    return packageNamesForTests.minus(foundSkeletons)
+  }
+
+  private fun nameOfBinSummary(file: File): String {
+    val fileName = file.nameWithoutExtension
+    return fileName.indexOf('-').takeIf { it != -1 }?.let { fileName.substring(0, it) } ?: fileName
+  }
+
   companion object {
     private val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
     val SKELETON_LIBRARY_PATH = TEST_DATA_PATH + "/skeletons"
+    private val packageNamesForTests: Set<String> = """
+  base
+  datasets
+  data.table
+  dplyr
+  graphics
+  grDevices
+  magrittr
+  methods
+  stats
+  utils
+""".trimIndent().split("\n").toSet()
   }
 }
 

@@ -6,7 +6,6 @@
 package org.jetbrains.r.inspections
 
 import org.jetbrains.r.RFileType.DOT_R_EXTENSION
-import org.jetbrains.r.mock.setupMockInterpreterManager
 
 class MissingPackageInspectionTest : org.jetbrains.r.inspections.RInspectionTest() {
 
@@ -14,7 +13,6 @@ class MissingPackageInspectionTest : org.jetbrains.r.inspections.RInspectionTest
   override fun setUp() {
     super.setUp()
     addLibraries()
-    myFixture.project.setupMockInterpreterManager()
   }
 
   fun testMissingFoobarPackage() {
