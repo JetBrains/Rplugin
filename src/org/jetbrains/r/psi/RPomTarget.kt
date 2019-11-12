@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.pom.PomTarget
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.editor.REditorUtil
+import org.jetbrains.r.editor.RLightVirtualFileManager
 import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.VisualizeTableHandler
@@ -45,7 +45,8 @@ private fun createFunctionPomTarget(rVar: RVar): PomTarget = FunctionPomTarget(r
 
 internal class FunctionPomTarget(private val rVar: RVar): RPomTarget() {
   override fun navigate(requestFocus: Boolean) {
-    REditorUtil.createReadOnlyLightRFileAndOpen(rVar.project, rVar.name, (rVar.value as RValueFunction).code)
+    val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
+    rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name, (rVar.value as RValueFunction).code)
   }
 }
 

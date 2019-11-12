@@ -298,6 +298,8 @@ You can find the source code in the following repositories:
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
 
+        <projectService serviceImplementation="org.jetbrains.r.editor.RLightVirtualFileManager"/>
+
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
         <!--- RMarkdown ui-->
