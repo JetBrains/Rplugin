@@ -14,6 +14,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.skeleton.RSkeletonFileType
 
 abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : PsiPolyVariantReference {
 
@@ -51,16 +52,17 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   private fun resolveUsingRuntimeInfo(runtimeInfo: RConsoleRuntimeInfo,
                                       resolveResults: Array<ResolveResult>): Array<ResolveResult> {
     val loadedNamespaces = runtimeInfo.loadedPackages.mapIndexed { index, s -> s to index }.toMap()
-    val topResolveResult = resolveResults
-                             .minBy { getLoadingNumber(loadedNamespaces, it) } ?: return resolveResults
+    val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedNamespaces, it) } ?: return resolveResults
     if (getLoadingNumber(loadedNamespaces, topResolveResult) != Int.MAX_VALUE) {
       return arrayOf(topResolveResult)
     }
     return resolveResults
   }
 
-  private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult) =
-    loadedNamespaces[RPackage.getOrCreate(result.element!!.containingFile)?.packageName] ?: Int.MAX_VALUE
+  private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult): Int {
+    val psiFile = result.element?.containingFile?.takeIf { it.fileType == RSkeletonFileType } ?: return Int.MAX_VALUE
+    return loadedNamespaces[RPackage.getOrCreate(psiFile)?.packageName] ?: Int.MAX_VALUE
+  }
 
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
 
