@@ -9,7 +9,7 @@ import com.intellij.openapi.components.*
 // Note: there is no need to save this list independently for each project
 // since it's doesn't rely on interpreter version whatsoever
 @State(name = "RPackageDescription", storages = [Storage("rPackageDescription.xml")])
-class RPackageDescriptionCache : SimplePersistentStateComponent<RPackageDescriptionCacheState>(RPackageDescriptionCacheState()) {
+class RPackageDescriptionCache : SimplePersistentStateComponent<RPackageDescriptionCache.State>(State()) {
   var descriptions: Map<String, String>
     get() = state.descriptions
     set(value) {
@@ -23,12 +23,12 @@ class RPackageDescriptionCache : SimplePersistentStateComponent<RPackageDescript
   val lastUpdate: Long
     get() = state.lastUpdate
 
+  class State : BaseState() {
+    var descriptions: MutableMap<String, String> by map<String, String>()
+    var lastUpdate: Long by property(0L)
+  }
+
   companion object {
     fun getInstance() = service<RPackageDescriptionCache>()
   }
-}
-
-class RPackageDescriptionCacheState : BaseState() {
-  var descriptions: MutableMap<String, String> by map<String, String>()
-  var lastUpdate: Long by property(0L)
 }

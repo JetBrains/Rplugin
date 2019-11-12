@@ -26,9 +26,7 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.packages.remote.*
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -148,29 +146,35 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getMirrors(): List<RMirror> {
-    fun parseMirrors(lines: List<String>): List<RMirror> {
-      return lines
-        .mapNotNull { line ->
-          val items = line.split(GROUP_DELIMITER).filter { it.isNotBlank() }
-          if (items.count() >= 2) {
-            val url = items[1].trim()
-            val nameWords = items[0].split(WORD_DELIMITER).filter { it.isNotBlank() }.let { words ->
-              if (words.count() >= 2 && words.last() == HTTPS_SUFFIX) {
-                words.dropLast(1)
-              } else {
-                words
-              }
-            }
-            val name = nameWords.joinToString(" ").trim()
-            RMirror(name, url)
-          } else {
-            null
-          }
-        }
+    return RepoUtils.cachedMirrors ?: forceGetMirrors().also {
+      RepoUtils.cachedMirrors = it
     }
+  }
 
+  private fun forceGetMirrors(): List<RMirror> {
     val lines = forceRunHelper(CRAN_MIRRORS_HELPER, listOf())
     return parseMirrors(lines)
+  }
+
+  private fun parseMirrors(lines: List<String>): List<RMirror> {
+    return lines
+      .mapNotNull { line ->
+        val items = line.split(GROUP_DELIMITER).filter { it.isNotBlank() }
+        if (items.count() >= 2) {
+          val url = items[1].trim()
+          val nameWords = items[0].split(WORD_DELIMITER).filter { it.isNotBlank() }.let { words ->
+            if (words.count() >= 2 && words.last() == HTTPS_SUFFIX) {
+              words.dropLast(1)
+            } else {
+              words
+            }
+          }
+          val name = nameWords.joinToString(" ").trim()
+          RMirror(name, url)
+        } else {
+          null
+        }
+      }
   }
 
   private fun getRepositories(): List<RDefaultRepository> {

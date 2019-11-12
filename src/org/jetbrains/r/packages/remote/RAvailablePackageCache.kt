@@ -8,8 +8,8 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
 @State(name = "RAvailablePackageCache", storages = [Storage("rAvailablePackageCache.xml")])
-class RAvailablePackageCache : SimplePersistentStateComponent<RAvailablePackageCacheState>(RAvailablePackageCacheState()) {
-  var availablePackages: List<RRepoPackage>
+class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateComponent<RAvailablePackageCache.State>(State()) {
+  override var values: List<RRepoPackage>
     get() {
       val chunked = state.flattenPackages.chunked(ENTRIES_PER_PACKAGE)
       return chunked.map { it.toRepoPackage() }
@@ -22,8 +22,13 @@ class RAvailablePackageCache : SimplePersistentStateComponent<RAvailablePackageC
       state.lastUpdate = System.currentTimeMillis()
     }
 
-  val lastUpdate: Long
+  override val lastUpdate: Long
     get() = state.lastUpdate
+
+  class State : BaseState() {
+    var flattenPackages: MutableList<String> by list<String>()
+    var lastUpdate: Long by property(0L)
+  }
 
   companion object {
     private const val ENTRIES_PER_PACKAGE = 4
@@ -39,9 +44,4 @@ class RAvailablePackageCache : SimplePersistentStateComponent<RAvailablePackageC
 
     fun getInstance(project: Project) = project.service<RAvailablePackageCache>()
   }
-}
-
-class RAvailablePackageCacheState : BaseState() {
-  var flattenPackages: MutableList<String> by list<String>()
-  var lastUpdate: Long by property(0L)
 }

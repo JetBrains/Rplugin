@@ -39,14 +39,23 @@ object RepoUtils {
 
   private const val AVAILABLE_PACKAGES_REFRESH_INTERVAL = 7 * 24 * 60 * 60 * 1000L // Update every week
   private const val PACKAGE_DESCRIPTIONS_REFRESH_INTERVAL = AVAILABLE_PACKAGES_REFRESH_INTERVAL
+  private const val CRAN_MIRRORS_REFRESH_INTERVAL = AVAILABLE_PACKAGES_REFRESH_INTERVAL
 
   val PACKAGE_SUMMARY = RHelpersUtil.findFileInRHelpers("R/package_summary.R")
   val DECOMPILER_SCRIPT = RHelpersUtil.findFileInRHelpers("R/extract_symbol.R")
 
   const val CRAN_URL_PLACEHOLDER = "@CRAN@"
 
+  var cachedMirrors: List<RMirror>?
+    get() {
+      return getCachedValues(RMirrorCache.getInstance(), CRAN_MIRRORS_REFRESH_INTERVAL)
+    }
+    set(newMirrors) {
+      RMirrorCache.getInstance().values = newMirrors ?: emptyList()
+    }
+
   fun setPackageDetails(project: Project, repoPackages: List<RRepoPackage>) {
-    RAvailablePackageCache.getInstance(project).availablePackages = repoPackages
+    RAvailablePackageCache.getInstance(project).values = repoPackages
     setPackageDetailsWithoutCache(project, repoPackages)
   }
 
@@ -61,13 +70,7 @@ object RepoUtils {
     }
 
     fun getProjectCache(project: Project): List<RRepoPackage>? {
-      fun checkIsUpToDate(lastUpdate: Long): Boolean {
-        return System.currentTimeMillis() - lastUpdate < AVAILABLE_PACKAGES_REFRESH_INTERVAL
-      }
-
-      val cache = RAvailablePackageCache.getInstance(project)
-      val packages = cache.availablePackages
-      return if (checkIsUpToDate(cache.lastUpdate) && packages.isNotEmpty()) packages else null
+      return getCachedValues(RAvailablePackageCache.getInstance(project), AVAILABLE_PACKAGES_REFRESH_INTERVAL)
     }
 
     return getSessionCache(project) ?: getProjectCache(project)?.let {
@@ -77,7 +80,7 @@ object RepoUtils {
   }
 
   fun resetPackageDetails(project: Project) {
-    RAvailablePackageCache.getInstance(project).availablePackages = listOf()
+    RAvailablePackageCache.getInstance(project).values = listOf()
     project.putUserData(PACKAGE_DETAILS_KEY, null)
   }
 
@@ -143,6 +146,11 @@ object RepoUtils {
 
   fun resetPackageDescriptions() {
     RPackageDescriptionCache.getInstance().descriptions = mapOf()
+  }
+
+  private fun <E>getCachedValues(cache: RCache<E>, refreshInterval: Long): List<E>? {
+    val values = cache.values
+    return if (System.currentTimeMillis() - cache.lastUpdate < refreshInterval && values.isNotEmpty()) values else null
   }
 
   private fun getInterpreter(suggested: RInterpreter?, project: Project): RInterpreter {

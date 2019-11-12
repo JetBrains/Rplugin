@@ -282,6 +282,8 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
 
+        <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RMirrorCache"/>
+
         <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
         
         <projectService serviceImplementation="org.jetbrains.r.packages.remote.RAvailablePackageCache"/>
