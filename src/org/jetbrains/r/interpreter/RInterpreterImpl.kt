@@ -8,6 +8,7 @@ import com.google.common.collect.Lists
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -146,8 +147,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getMirrors(): List<RMirror> {
-    return RepoUtils.cachedMirrors ?: forceGetMirrors().also {
-      RepoUtils.cachedMirrors = it
+    return if (!ApplicationManager.getApplication().isUnitTestMode) {
+      RepoUtils.cachedMirrors ?: forceGetMirrors().also {
+        RepoUtils.cachedMirrors = it
+      }
+    } else {
+      emptyList()
     }
   }
 
