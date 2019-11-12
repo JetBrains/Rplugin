@@ -38,8 +38,8 @@ class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer()) {
     super.advance()
     if (delegate.tokenType === FenceLangType) {
       val fenceType = when {
-        tokenSequence.startsWith("{r", true) -> R_FENCE_ELEMENT_TYPE
-        tokenSequence.startsWith("{python") -> PYTHON_FENCE_ELEMENT_TYPE
+        tokenSequence.matches(RMarkdownPsiUtil.EXECUTABLE_R_FENCE_PATTERN) -> R_FENCE_ELEMENT_TYPE
+        tokenSequence.matches(RMarkdownPsiUtil.EXECUTABLE_PYTHON_FENCE_PATTERN) -> PYTHON_FENCE_ELEMENT_TYPE
         else -> return
       }
       queue.add(getTokenData())

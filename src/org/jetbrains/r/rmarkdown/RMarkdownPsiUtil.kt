@@ -26,7 +26,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object RMarkdownPsiUtil {
-  val EXECUTABLE_R_FENCE_PATTERN = Regex("\\{r(\\s.*)?}") //Pattern = Pattern.compile("\\{r(\\s.*)?}", Pattern.DOTALL)
+  val EXECUTABLE_R_FENCE_PATTERN = Regex("\\{[rR](\\s.*)?}") //Pattern = Pattern.compile("\\{r(\\s.*)?}", Pattern.DOTALL)
   val EXECUTABLE_PYTHON_FENCE_PATTERN = Regex("\\{python(\\s.*)?}")
 
   val PRESENTABLE_TYPES = HEADERS
