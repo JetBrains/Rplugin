@@ -4,10 +4,13 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.psi.PsiElement
 import com.intellij.testFramework.UsefulTestCase
 import junit.framework.TestCase
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleBaseTestCase
+import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.rinterop.RValue
 import org.jetbrains.r.rinterop.RValueDataFrame
 import org.jetbrains.r.rinterop.RValueFunction
@@ -31,13 +34,27 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(5, (rValue as RValueDataFrame).cols)
   }
 
+  fun testResolveFilter() {
+    val filterStats = resolve("fil<caret>ter()")
+    TestCase.assertNotNull(filterStats)
+    TestCase.assertEquals("stats", RPackage.getOrCreate(filterStats!!.containingFile)?.packageName)
+    myFixture.file.runtimeInfo?.loadPackage("dplyr")
+    val filterDplyr = resolve("fil<caret>ter()")
+    TestCase.assertNotNull(filterDplyr)
+    TestCase.assertEquals("dplyr", RPackage.getOrCreate(filterDplyr!!.containingFile)?.packageName)
+  }
+
   private fun runTest(expression: String): RValue {
+    val resolveResult = resolve(expression)
+    TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
+    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console).value
+  }
+
+  private fun resolve(expression: String): PsiElement? {
     myFixture.configureByText(RFileType, expression)
     val resolve = resolve()
     TestCase.assertEquals(1, resolve.size)
-    val resolveResult = resolve[0].element
-    TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
-    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console).value
+    return resolve[0].element
   }
 
 }

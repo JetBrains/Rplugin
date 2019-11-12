@@ -13,7 +13,6 @@ import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RPsiElement
 
 abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : PsiPolyVariantReference {
@@ -53,7 +52,6 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
                                       resolveResults: Array<ResolveResult>): Array<ResolveResult> {
     val loadedNamespaces = runtimeInfo.loadedPackages.mapIndexed { index, s -> s to index }.toMap()
     val topResolveResult = resolveResults
-                             .filter { it.element is RPsiElement && RPsiUtil.isLibraryElement(it.element as RPsiElement) }
                              .minBy { getLoadingNumber(loadedNamespaces, it) } ?: return resolveResults
     if (getLoadingNumber(loadedNamespaces, topResolveResult) != Int.MAX_VALUE) {
       return arrayOf(topResolveResult)
