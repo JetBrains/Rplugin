@@ -46,9 +46,10 @@ class RMarkdownTemplate(private val templateLanguage: Language)
     val innerRanges = mutableListOf<TextRange>()
     val root = MarkdownParser(CommonMarkFlavourDescriptor()).parse(MarkdownIElementType("ROOT"), sourceCode.toString())
 
+    var depth = 0
     root.accept(object: RecursiveVisitor() {
       override fun visitNode(node: ASTNode) {
-        if (node.type ==  MarkdownElementTypes.CODE_FENCE) {
+        if (node.type == MarkdownElementTypes.CODE_FENCE && depth == 1) {
           val children = node.children
           children.indexOfFirst { it.type == MarkdownTokenTypes.FENCE_LANG}.takeIf { it != -1 }?.let { languageIndex ->
             if (getLanguage(children[languageIndex], sourceCode) != templateLanguage.id.toLowerCase()) return@let
@@ -73,7 +74,9 @@ class RMarkdownTemplate(private val templateLanguage: Language)
             templateSourceCode.append(sourceCode.subSequence(range.startOffset, range.endOffset))
           }
         }
+        depth++
         super.visitNode(node)
+        depth--
       }
     })
     var lhs = 0

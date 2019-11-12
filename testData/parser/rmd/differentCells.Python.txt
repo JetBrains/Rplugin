@@ -9,4 +9,4 @@ PyFile:differentCells.rmd
         PsiElement(Py:SINGLE_QUOTED_STRING)('"hello world!"')
       PsiElement(Py:RPAR)(')')
   PsiWhiteSpace('\n')
-  PsiElement(OUTER)('```\n\nAnother Text\n\n```{r}\n  x + y + z\n```')
+  PsiElement(OUTER)('```\n\nAnother Text\n\n```{r}\n  x + y + z\n```\n\n> Here is a quote, followed by a code chunk:\n>\n> ```{r}\n> x = 1:10\n> rev(x^2)\n> ```\n>')

@@ -29,3 +29,10 @@ Another Text
   x + y + z
 ```
 
+> Here is a quote, followed by a code chunk:
+>
+> ```{r}
+> x = 1:10
+> rev(x^2)
+> ```
+>

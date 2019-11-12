@@ -16,10 +16,9 @@ val PYTHON_FENCE_ELEMENT_TYPE = IElementType("Python Fence", RMarkdownLanguage)
 
 val MARKDOWN_EOL: IElementType = MarkdownElementType.platformType(MarkdownTokenTypes.EOL)
 
-private val FenceIncompleteElementType = IElementType("Fence Incomplete", RMarkdownLanguage)
-
 private val FenceLangType = MarkdownElementType.platformType(MarkdownTokenTypes.FENCE_LANG)
 private val FenceEndType = MarkdownElementType.platformType(MarkdownTokenTypes.CODE_FENCE_END)
+private val WhiteSpaceType = MarkdownElementType.platformType(MarkdownTokenTypes.WHITE_SPACE)
 
 
 class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer()) {
@@ -74,7 +73,13 @@ class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer()) {
             end = cur.start
             eol = cur
           }
-          else -> end = cur.end
+          else -> {
+            if (cur.type == WhiteSpaceType && bufferSequence.subSequence(cur.start, cur.end).contains('>')) {
+              queue.addAll(restore)
+              return
+            }
+            end = cur.end
+          }
         }
         restore.add(cur)
       }
