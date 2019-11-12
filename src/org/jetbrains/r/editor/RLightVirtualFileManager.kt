@@ -7,6 +7,7 @@ package org.jetbrains.r.editor
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RLanguage
@@ -14,12 +15,13 @@ import org.jetbrains.r.RLanguage
 class RLightVirtualFileManager(private val project: Project) {
   private val cache = ContainerUtil.createConcurrentSoftValueMap<String, LightVirtualFile>()
 
-  fun openLightFileWithContent(fqn: String, name: String, methodContent: CharSequence) {
+  fun openLightFileWithContent(fqn: String, name: String, methodContent: CharSequence): VirtualFile {
     val virtualFile = getOrCreateLightFile(fqn, name, methodContent)
     FileEditorManager.getInstance(project).openFile(virtualFile, true, true)
+    return virtualFile
   }
 
-  fun getOrCreateLightFile(fqn: String, name: String, methodContent: CharSequence): LightVirtualFile {
+  private fun getOrCreateLightFile(fqn: String, name: String, methodContent: CharSequence): LightVirtualFile {
     val virtualFile = cache.computeIfAbsent(fqn) { LightVirtualFile(name, RLanguage.INSTANCE, "") }
     virtualFile.isWritable = true
     virtualFile.setContent(this, methodContent, false)

@@ -4,7 +4,9 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.pom.PomTargetPsiElement
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.psi.RSkeletonParameterPomTarget
 
 class RNamedArgumentResolveTest : RLightCodeInsightFixtureTestCase() {
   override fun setUp() {
@@ -31,9 +33,8 @@ class RNamedArgumentResolveTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent())
   }
 
-  //TODO Ticket R-257
   fun testResolvePNG() {
-    doTest("width = 480", """
+    doTestSkeletonResolve("width", """
       png(file='wordcloud.png', bg='transparent', wi<caret>dth = 1200, height = 1600)
     """.trimIndent())
   }
@@ -45,5 +46,16 @@ class RNamedArgumentResolveTest : RLightCodeInsightFixtureTestCase() {
     val element = results[0].element!!
     assertTrue(element.isValid)
     assertEquals(resolveTargetParentText, element.text)
+  }
+
+  private fun doTestSkeletonResolve(parameterName: String, text: String) {
+    myFixture.configureByText("test.R", text)
+    val results = resolve()
+    assertEquals(results.size, 1)
+    val element = results[0].element!!
+    assertTrue(element.isValid)
+    assertTrue(element is PomTargetPsiElement)
+    val target = (element as PomTargetPsiElement).target
+    assertTrue(target is RSkeletonParameterPomTarget)
   }
 }

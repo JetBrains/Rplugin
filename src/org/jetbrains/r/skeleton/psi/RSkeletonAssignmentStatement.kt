@@ -9,7 +9,6 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -82,7 +81,6 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     }
   }
 
-  @TestOnly
   internal fun createRVar(consoleView: RConsoleView): RVar {
     val nameWithoutExtension = containingFile.virtualFile.nameWithoutExtension
     val (packageName, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension)

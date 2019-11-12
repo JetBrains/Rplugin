@@ -20,6 +20,7 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import java.util.*
 
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
@@ -60,8 +61,11 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   private fun resolveNamedArgument(assignment: RAssignmentStatement,
                                    isIncomplete: Boolean): Array<ResolveResult> {
     val call = assignment.parent?.parent as? RCallExpression ?: return emptyArray()
-    return RPsiUtil.resolveCall(call, isIncomplete).mapNotNull {
-      it.getParameters().firstOrNull { parameter -> parameter.name == element.name}?.let { PsiElementResolveResult(it) }
+    return RPsiUtil.resolveCall(call, isIncomplete).mapNotNull { assignment ->
+      if (assignment is RSkeletonAssignmentStatement && assignment.parameterNameList.contains(element.name)) {
+        return arrayOf(PsiElementResolveResult(RPomTarget.createSkeletonParameterTarget(assignment, element.name)))
+      }
+      assignment.getParameters().firstOrNull { parameter -> parameter.name == element.name}?.let { PsiElementResolveResult(it) }
     }.toTypedArray()
   }
 
