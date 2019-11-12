@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rinterop
 
+import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
@@ -83,5 +84,29 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
     rInterop.executeCode("a = 555")
     rInterop.invalidateCaches()
     TestCase.assertEquals("[1] 555", (rInterop.globalEnvLoader.variables[0].value as RValueSimple).text.trim())
+  }
+
+  fun testFunctionCode() {
+    val code = """
+      function(x, y = 0, z = x + y) {
+        if (x > y) {
+          return(z)
+        }
+        a <- 0
+        for (i in 1:z)
+          a <- a + i
+        a
+      }
+    """.trimIndent()
+    rInterop.executeCode("ff = $code")
+    val loadedCode = (RRef.expressionRef("ff", rInterop).getValueInfo() as RValueFunction).code
+    TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(code, loadedCode))
+  }
+
+  fun testFunctionCodeShow() {
+    TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(
+      "function (object) standardGeneric(\"show\")",
+      (RRef.expressionRef("show", rInterop).getValueInfo() as RValueFunction).code
+    ))
   }
 }
