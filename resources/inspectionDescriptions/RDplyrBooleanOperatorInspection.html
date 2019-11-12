@@ -1,0 +1,21 @@
+<html>
+<body>
+This inspection detects using `&&` and `||` operations in dplyr expressions.
+<p>
+Incorrect:
+</p>
+<p>
+<code>
+filter(diamonds, carat > 0.7 && depth > 62.0)
+</code>
+</p>
+<p>
+Correct:
+</p>
+<p>
+<code>
+  filter(diamonds, carat > 0.7 & depth > 62.0)
+</code>
+</p>
+</body>
+</html>

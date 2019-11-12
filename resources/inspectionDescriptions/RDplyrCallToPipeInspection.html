@@ -1,0 +1,23 @@
+<html>
+<body>
+This inspection replaces nested dplyr calls by pipe.
+<p>
+Before:
+</p>
+<p>
+<code>
+  summarise(filter(diamonds, depth > 62.0), mean = mean(carat))
+</code>
+</p>
+<p>
+After:
+</p>
+<p>
+<code>
+diamonds %>%
+filter(depth > 62.0) %>%
+summarise(mean = mean(carat))
+</code>
+</p>
+</body>
+</html>
