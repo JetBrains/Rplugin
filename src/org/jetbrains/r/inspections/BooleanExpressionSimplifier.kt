@@ -11,6 +11,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 
@@ -18,7 +19,7 @@ import org.jetbrains.r.psi.api.*
  * Find boolean expressions that can be simplified (e.g. (x && TRUE), (!!y))
  */
 class BooleanExpressionSimplifier : RInspection() {
-  override fun getDisplayName() = "Boolean expression can be simplified"
+  override fun getDisplayName() = RBundle.message("inspection.simplifyBooleanExpression.name")
 
   override fun buildVisitor(
     holder: ProblemsHolder,

@@ -12,6 +12,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
@@ -22,7 +23,7 @@ import org.jetbrains.r.psi.api.*
 class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
 
   override fun getDisplayName(): String {
-    return "Unused Variable or Function"
+    return RBundle.message("inspection.unusedVariable.name")
   }
 
   override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): PsiElementVisitor {

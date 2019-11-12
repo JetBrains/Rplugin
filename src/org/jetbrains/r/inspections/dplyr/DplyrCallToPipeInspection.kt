@@ -7,6 +7,7 @@ package org.jetbrains.r.inspections.dplyr
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.RDplyrUtil
@@ -19,7 +20,7 @@ import org.jetbrains.r.psi.api.*
  * E.g. summarise(group_by(table, year), s = sum(x)) -> table %>% group_by(year) %>% summarise(s = sum(x))
  */
 class DplyrCallToPipeInspection : RInspection() {
-  override fun getDisplayName() = "Replace dplyr calls with pipe"
+  override fun getDisplayName() = RBundle.message("inspection.dplyrCallToPipe.name")
 
   override fun buildVisitor(
     holder: ProblemsHolder,

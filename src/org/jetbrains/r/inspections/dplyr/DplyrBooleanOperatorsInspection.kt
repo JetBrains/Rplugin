@@ -7,6 +7,7 @@ package org.jetbrains.r.inspections.dplyr
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.RDplyrUtil
 import org.jetbrains.r.psi.RElementFactory
@@ -19,7 +20,7 @@ import org.jetbrains.r.psi.api.RVisitor
  * &, | should be used instead.
  */
 class DplyrBooleanOperatorsInspection : RInspection() {
-  override fun getDisplayName() = "Non-vector logical operators in dplyr expressions"
+  override fun getDisplayName() = RBundle.message("inspection.dplyrBooleanOperator.name")
 
   override fun buildVisitor(
     holder: ProblemsHolder,

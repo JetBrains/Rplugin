@@ -23,7 +23,7 @@ class MissingPackageInspection : RInspection() {
 
   @Nls
   override fun getDisplayName(): String {
-    return RBundle.message("missing.package.inspection.name")
+    return RBundle.message("inspection.missingPackage.name")
   }
 
   override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
@@ -78,7 +78,7 @@ class MissingPackageInspection : RInspection() {
     val byName = rInterpreter.getPackageByName(packageName)
 
     if (byName == null) {
-      val descriptionTemplate = RBundle.message("missing.package.inspection.description", packageName)
+      val descriptionTemplate = RBundle.message("inspection.missingPackage.description", packageName)
       problemsHolder.registerProblem(elementForReporting, descriptionTemplate,
                                      InstallLibraryFix(packageName), InstallAllFileLibraryFix())
     }

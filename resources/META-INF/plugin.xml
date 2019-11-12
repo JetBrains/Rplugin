@@ -355,28 +355,36 @@ You can find the source code in the following repositories:
         <!-- note: display names not needed if defined in impl-->
         <!--https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000074350-Why-are-default-xml-plugin-settings-preferred-over-code-based-component-configuration- -->
         <localInspection shortName="RUnusedParameter" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.unusedParameter.name"
                          implementationClass="org.jetbrains.r.inspections.UnusedParameterInspection"/>
 
         <localInspection shortName="RUnusedVariable" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.unusedVariable.name"
                          implementationClass="org.jetbrains.r.inspections.UnusedVariableInspection"/>
 
         <localInspection shortName="RUnresolvedReference" language="R" enabledByDefault="true" groupName="R"
                          level="WARNING"
+                         bundle="messages.RBundle" key="inspection.unresolvedReference.name"
                          implementationClass="org.jetbrains.r.inspections.UnresolvedReferenceInspection"/>
 
         <localInspection shortName="RMissingPackage" language="R" enabledByDefault="true" groupName="R" level="ERROR"
+                         bundle="messages.RBundle" key="inspection.missingPackage.name"
                          implementationClass="org.jetbrains.r.inspections.MissingPackageInspection"/>
 
         <localInspection shortName="RBooleanExpressionSimplifier" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.simplifyBooleanExpression.name"
                          implementationClass="org.jetbrains.r.inspections.BooleanExpressionSimplifier"/>
 
         <localInspection shortName="RCompareToNaInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.compareToNa.name"
                          implementationClass="org.jetbrains.r.inspections.CompareToNaInspection"/>
 
         <localInspection shortName="RDplyrBooleanOperatorInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.dplyrBooleanOperator.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrBooleanOperatorsInspection"/>
 
         <localInspection shortName="RDplyrCallToPipeInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.dplyrCallToPipe.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrCallToPipeInspection"/>
 
 

@@ -7,6 +7,7 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 
@@ -15,7 +16,7 @@ import org.jetbrains.r.psi.api.*
  * Replace to (is.na(x)), (!is.na(x))
  */
 class CompareToNaInspection : RInspection() {
-  override fun getDisplayName() = "Comparing to NA instead of is.na"
+  override fun getDisplayName() = RBundle.message("inspection.compareToNa.name")
 
   override fun buildVisitor(
     holder: ProblemsHolder,

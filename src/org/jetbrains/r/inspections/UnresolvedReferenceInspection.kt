@@ -23,7 +23,7 @@ class UnresolvedReferenceInspection : RInspection() {
 
   @Nls
   override fun getDisplayName(): String {
-    return RBundle.message("unresolved.reference.inspection.name")
+    return RBundle.message("inspection.unresolvedReference.name")
   }
 
   override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): PsiElementVisitor {
@@ -58,10 +58,10 @@ class UnresolvedReferenceInspection : RInspection() {
 
   companion object {
 
-    var UNRESOLVED_MSG = RBundle.message("unresolved.reference.inspection.description")
+    var UNRESOLVED_MSG = RBundle.message("inspection.unresolvedReference.description")
 
     fun missingImportMsg(symbol: String, foundIn: List<String>): String {
-      return RBundle.message("unresolved.reference.inspection.missing.msg", symbol, Joiner.on(", ").join(foundIn))
+      return RBundle.message("inspection.unresolvedReference.missing.message", symbol, Joiner.on(", ").join(foundIn))
     }
   }
 }

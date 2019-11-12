@@ -10,13 +10,14 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.api.RControlFlowHolder
 import org.jetbrains.r.psi.api.RParameter
 
 class UnusedParameterInspection : org.jetbrains.r.inspections.RInspection() {
 
   override fun getDisplayName(): String {
-    return "Unused Function Parameter"
+    return RBundle.message("inspection.unusedParameter.name")
   }
 
   override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean, session: LocalInspectionToolSession): PsiElementVisitor {
