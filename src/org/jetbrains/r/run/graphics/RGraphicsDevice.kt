@@ -116,17 +116,17 @@ class RGraphicsDevice(
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
         val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newDimension))
-        if (result.stderr.isBlank()) {
-          if (result.stdout.isNotBlank()) {
-            val output = result.stdout.let { it.substring(4, it.length - 1) }
-            if (output == "TRUE") {
-              lookForNewSnapshots(snapshotNumber)
-            }
-          } else {
-            LOGGER.error("Cannot get any output from graphics device")
+        if (result.stderr.isNotBlank()) {
+          // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
+          LOGGER.warn("Rescale for snapshot <$snapshotNumber> has failed:\n${result.stderr}")
+        }
+        if (result.stdout.isNotBlank()) {
+          val output = result.stdout.let { it.substring(4, it.length - 1) }
+          if (output == "TRUE") {
+            lookForNewSnapshots(snapshotNumber)
           }
-        } else {
-          LOGGER.error(result.stderr)
+        } else if (result.stderr.isBlank()) {
+          LOGGER.error("Cannot get any output from graphics device")
         }
       }
     }
