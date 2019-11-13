@@ -20,6 +20,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.components.JBScrollPane
@@ -196,7 +197,13 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
   }
 
   fun navigate(rVar: RVar) {
-    variablesView?.navigate(rVar)
+    variablesView?.let {
+      it.navigate(rVar)
+      RConsoleToolWindowFactory.show(project)
+      val ideFocusManager = IdeFocusManager.getInstance(project)
+      val focusTarget = ideFocusManager.getFocusTargetFor(it.defaultFocusedComponent) ?: return@let
+      ideFocusManager.requestFocusInProject(focusTarget, project)
+    }
   }
 
   fun resume(): Promise<Unit> {
