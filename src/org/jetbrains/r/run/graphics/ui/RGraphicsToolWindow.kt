@@ -287,11 +287,14 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   }
 
   private fun postScreenDimension() {
-    repository.configuration?.let { oldConfiguration ->
-      val parameters = oldConfiguration.screenParameters
-      val newParameters = parameters.copy(dimension = getAdjustedScreenDimension())
-      settingsSubDialog.currentParameters = newParameters
-      repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+    val newDimension = getAdjustedScreenDimension()
+    if (newDimension.width > 0 && newDimension.height > 0) {
+      repository.configuration?.let { oldConfiguration ->
+        val parameters = oldConfiguration.screenParameters
+        val newParameters = parameters.copy(dimension = newDimension)
+        settingsSubDialog.currentParameters = newParameters
+        repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+      }
     }
   }
 

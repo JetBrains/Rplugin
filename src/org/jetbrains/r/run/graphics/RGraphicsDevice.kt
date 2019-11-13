@@ -117,9 +117,13 @@ class RGraphicsDevice(
       ApplicationManager.getApplication().executeOnPooledThread {
         val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newDimension))
         if (result.stderr.isBlank()) {
-          val output = result.stdout.let { it.substring(4, it.length - 1) }
-          if (output == "TRUE") {
-            lookForNewSnapshots(snapshotNumber)
+          if (result.stdout.isNotBlank()) {
+            val output = result.stdout.let { it.substring(4, it.length - 1) }
+            if (output == "TRUE") {
+              lookForNewSnapshots(snapshotNumber)
+            }
+          } else {
+            LOGGER.error("Cannot get any output from graphics device")
           }
         } else {
           LOGGER.error(result.stderr)

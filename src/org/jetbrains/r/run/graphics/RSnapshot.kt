@@ -52,6 +52,8 @@ data class RSnapshot(
           Pair(it[0].toInt(), it[1].toInt())
         }
         RSnapshot(file, type, error, number, version)
+      } else if (numParts == 3) {
+        RSnapshot(file, RSnapshotType.NORMAL, null, parts[1].toInt(), parts[2].toInt())
       } else {
         null
       }
