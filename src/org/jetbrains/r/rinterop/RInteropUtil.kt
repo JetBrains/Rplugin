@@ -48,7 +48,7 @@ object RInteropUtil {
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
         when (outputType) {
-          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> LOG.warn("RWRAPPER " + StringUtil.escapeStringCharacters(text))
+          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> LOG.debug("RWRAPPER " + StringUtil.escapeStringCharacters(text))
           ProcessOutputType.STDOUT -> {
             if (linePromise.state != Promise.State.PENDING) return
             output.append(text)
@@ -58,15 +58,15 @@ object RInteropUtil {
       }
 
       override fun processTerminated(event: ProcessEvent) {
-        LOG.warn("RWRAPPER TERMINATED, code=${event.exitCode}")
+        LOG.info("RWRAPPER TERMINATED, code=${event.exitCode}")
         if (output.isNotBlank()) {
-          LOG.warn(output.toString())
+          LOG.info(output.toString())
         }
         if (linePromise.state == Promise.State.PENDING) linePromise.setError(RuntimeException("RWrapper terminated"))
       }
 
       override fun startNotified(event: ProcessEvent) {
-        LOG.warn("RWRAPPER STARTED")
+        LOG.info("RWRAPPER STARTED")
       }
 
       override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
