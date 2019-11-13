@@ -76,18 +76,16 @@ internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssi
                                            private val name: String) : RPomTarget() {
 
   override fun navigate(requestFocus: Boolean) {
-    RConsoleManager.getInstance(assignment.project).currentConsoleAsync.onError {
-      throw IllegalStateException("Cannot get console")
-    }.onSuccess { console ->
+    RConsoleManager.getInstance(assignment.project).runAsync { console ->
       val rVar = assignment.createRVar(console)
       val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
       val virtualFile = rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name,
                                                                           (rVar.value as RValueFunction).code)
       val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
-      if (psiFile !is RFile) return@onSuccess
-      val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@onSuccess
+      if (psiFile !is RFile) return@runAsync
+      val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runAsync
       val parameter = rFunctionExpression.parameterList.parameterList.first { it.name == name }
-      val editor = PsiUtilBase.findEditor(parameter) ?: return@onSuccess
+      val editor = PsiUtilBase.findEditor(parameter) ?: return@runAsync
       editor.caretModel.moveToOffset(parameter.textRange.startOffset)
     }
   }

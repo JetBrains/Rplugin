@@ -37,6 +37,12 @@ class RConsoleManager(private val project: Project) {
       currentConsole?.let { setResult(it) } ?: runConsole().processed(this)
     }
 
+  fun runAsync(lambda: (RConsoleView) -> Unit) {
+    currentConsoleAsync.onError {
+      throw IllegalStateException("Cannot run console", it)
+    }.onSuccess(lambda)
+  }
+
   @Synchronized
   private fun runConsole(): Promise<RConsoleView> {
     consolePromise?.let { return it }

@@ -74,10 +74,8 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   }
 
   override fun navigate(requestFocus: Boolean) {
-    RConsoleManager.getInstance(project).currentConsoleAsync.onError {
-      throw IllegalStateException("not console available")
-    }.onSuccess { consoleView ->
-      RPomTarget.createPsiElementByRValue(createRVar(consoleView)).navigate(requestFocus)
+    RConsoleManager.getInstance(project).runAsync { console ->
+      RPomTarget.createPsiElementByRValue(createRVar(console)).navigate(requestFocus)
     }
   }
 
