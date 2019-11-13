@@ -10,6 +10,7 @@ import com.intellij.execution.ExecutionManager
 import com.intellij.execution.Executor
 import com.intellij.execution.console.ConsoleExecuteAction
 import com.intellij.execution.console.ConsoleHistoryController
+import com.intellij.execution.console.ConsoleHistoryModel
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
@@ -19,16 +20,19 @@ import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.ide.CommonActionsManager
+import com.intellij.ide.IdeEventQueue
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.keymap.impl.KeyProcessorContext
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
@@ -50,6 +54,8 @@ import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.jvm.isAccessible
 
 class RConsoleRunner(private val project: Project,
                      private val workingDir: String,
@@ -79,8 +85,26 @@ class RConsoleRunner(private val project: Project,
                 finishConsole()
               }
             })
-            ConsoleHistoryController(RConsoleRootType.instance, "", consoleView).install()
+            // TODO rework in 2020.1
+            object : ConsoleHistoryController(RConsoleRootType.instance, "", consoleView) {
+              val getActions = KeyProcessorContext::class.memberFunctions.find { it.name == "getActions" }!!.also { it.isAccessible = true }
 
+              override fun setConsoleText(command: ConsoleHistoryModel.Entry, storeUserText: Boolean, regularMode: Boolean) {
+                val actions = getActions.call(IdeEventQueue.getInstance().getKeyEventDispatcher().getContext()) as List<AnAction>
+                val isNext = actions.any { it.toString().contains("Next Entry in Console History") }
+                super.setConsoleText(command, storeUserText, regularMode)
+                if (isNext) {
+                  val editor = consoleView.currentEditor
+                  val text = command.text
+                  if (StringUtil.containsLineBreak(text)) {
+                    val index = StringUtil.indexOf(text, '\n')
+                    if (index > 0) {
+                      editor.caretModel.moveToOffset(index)
+                    }
+                  }
+                }
+              }
+            }.install()
             // Setup console listener for graphics device
             val resolution = RGraphicsSettings.getScreenParameters(project).resolution
             val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
