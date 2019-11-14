@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -20,6 +21,7 @@ import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
+import com.intellij.util.ui.FontInfo
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
@@ -28,6 +30,7 @@ import org.jetbrains.r.debugger.RDebugger
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
+import java.awt.Font
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import javax.swing.JComponent
@@ -53,6 +56,24 @@ class RConsoleView(val rInterop: RInterop,
     Disposer.register(this, rInterop)
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
+    executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
+      var previousWidth = 0
+
+      override fun beforeExecution() {
+        val width = (editor as? EditorImpl)?.let {
+          val fontMetrics = it.getFontMetrics(Font.PLAIN)
+          if (FontInfo.isMonospaced(fontMetrics.font)) {
+            (it.component.width - it.scrollPane.verticalScrollBar.width) / fontMetrics.charWidth(' ')
+          } else {
+            null
+          }
+        } ?: DEFAULT_WIDTH
+        if (previousWidth != width) {
+          previousWidth = width
+          rInterop.setOutputWidth(width)
+        }
+      }
+    })
   }
 
   fun executeText(text: String) {
@@ -126,7 +147,7 @@ class RConsoleView(val rInterop: RInterop,
 
   companion object {
     private val EXECUTION_SERVICE = ConcurrencyUtil.newSingleThreadExecutor("RConsole variable view")
-
+    private const val DEFAULT_WIDTH = 160
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
 
     fun createInterruptAction(console: RConsoleView): AnAction {

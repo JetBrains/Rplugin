@@ -158,6 +158,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
+  fun setOutputWidth(width: Int) {
+    executeAsync(asyncStub::setOutputWidth, Int32Value.of(width))
+  }
+
   fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getExecuteCodeMethod(), buildCodeRequest(code), withCheckCancelled)
   }
