@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.run.graphics
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
@@ -59,7 +60,7 @@ object RGraphicsUtils {
   private const val QUAD_HD_RESOLUTION = 450
   private const val ULTRA_HD_RESOLUTION = 600
 
-  private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina()
+  private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
 
   private fun getAvailableVersions(): List<Version> {
     val binariesDirectory = RHelpersUtil.findFileInRHelpers(BINARIES_DIR_NAME)
