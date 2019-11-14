@@ -27,7 +27,10 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.packages.remote.*
+import org.jetbrains.r.packages.remote.RDefaultRepository
+import org.jetbrains.r.packages.remote.RMirror
+import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.packages.remote.RepoUtils
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -191,7 +194,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private fun loadLibraryPaths(): List<VirtualFile> {
     val lines = forceRunHelper(LIBRARY_PATHS_HELPER, listOf())
     val paths = lines.filter { it.isNotBlank() }
-    return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList()
+    return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList().also {
+      if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
+    }
   }
 
   private fun loadInstalledPackages(): List<RPackage> {
