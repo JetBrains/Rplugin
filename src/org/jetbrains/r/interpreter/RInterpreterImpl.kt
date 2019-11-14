@@ -184,12 +184,13 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   private fun getRepositories(): List<RDefaultRepository> {
     val lines = forceRunHelper(DEFAULT_REPOSITORIES_HELPER, listOf())
-    return parseStrings(lines).map { RDefaultRepository(it) }
+    val urls = lines.filter { it.isNotBlank() }
+    return urls.map { RDefaultRepository(it) }
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
     val lines = forceRunHelper(LIBRARY_PATHS_HELPER, listOf())
-    val paths = parseStrings(lines)
+    val paths = lines.filter { it.isNotBlank() }
     return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList()
   }
 
@@ -307,17 +308,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
         System.getProperty("user.home") + substring(1)
       } else {
         this
-      }
-    }
-
-    private fun parseStrings(lines: List<String>): List<String> {
-      return lines.mapNotNull { line ->
-        val items = line.split(WORD_DELIMITER).filter { it.isNotBlank() }
-        if (items.count() >= 2 && items[1].length > 2) {
-          items[1].let { it.substring(1, it.length - 1) }
-        } else {
-          null
-        }
       }
     }
   }
