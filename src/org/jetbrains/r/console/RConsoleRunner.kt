@@ -138,7 +138,7 @@ class RConsoleRunner(private val project: Project,
         super.setConsoleText(command, storeUserText, regularMode)
         if (isNext) {
           val editor = consoleView.currentEditor
-          val text = command.text
+          val text = command.text ?: return
           if (StringUtil.containsLineBreak(text)) {
             val index = StringUtil.indexOf(text, '\n')
             if (index > 0) {
