@@ -39,6 +39,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
@@ -150,7 +151,7 @@ class RConsoleRunner(private val project: Project,
     historyController.install()
     val executeAction = createConsoleExecAction()
     val interruptAction = RConsoleView.createInterruptAction(consoleView)
-    val helpAction = CommonActionsManager.getInstance().createHelpAction("interactive_console")
+    val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
 
     val actions = listOf(executeAction, interruptAction, helpAction, historyAction)

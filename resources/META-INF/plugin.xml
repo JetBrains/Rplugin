@@ -409,6 +409,9 @@ You can find the source code in the following repositories:
 
         <datavis.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
 
+        <!-- R help providers -->
+        <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
+
     </extensions>
 
 </idea-plugin>
