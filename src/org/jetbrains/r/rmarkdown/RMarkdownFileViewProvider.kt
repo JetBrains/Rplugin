@@ -11,6 +11,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiFileImpl
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import com.jetbrains.python.PythonLanguage
+import org.intellij.plugins.markdown.lang.parser.MarkdownParserManager
 import org.jetbrains.r.RLanguage
 
 object RMarkdownFileViewProviderFactory : FileViewProviderFactory {
@@ -48,7 +49,9 @@ class RMarkdownFileViewProvider(
     val elementType = when(lang) {
       RLanguage.INSTANCE -> R_TEMPLATE
       PythonLanguage.INSTANCE -> PYTHON_TEMPLATE
-      else -> return super.createFile(lang)
+      else -> return super.createFile(lang)?.apply {
+        putUserData(MarkdownParserManager.FLAVOUR_DESCRIPTION, RMarkdownFlavourDescriptor)
+      }
     }
     val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(lang)!!
     return (parserDefinition.createFile(this) as PsiFileImpl).apply { contentElementType = elementType }

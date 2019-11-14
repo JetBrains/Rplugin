@@ -17,7 +17,6 @@ import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.ast.accept
 import org.intellij.markdown.ast.visitors.RecursiveVisitor
-import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.r.RLanguage
 import org.intellij.markdown.IElementType as MarkdownIElementType
@@ -44,7 +43,7 @@ class RMarkdownTemplate(private val templateLanguage: Language)
                                   rangeCollector: RangeCollector): PsiFile {
     val templateSourceCode = StringBuilder()
     val innerRanges = mutableListOf<TextRange>()
-    val root = MarkdownParser(CommonMarkFlavourDescriptor()).parse(MarkdownIElementType("ROOT"), sourceCode.toString())
+    val root = MarkdownParser(RMarkdownFlavourDescriptor).parse(MarkdownIElementType("ROOT"), sourceCode.toString())
 
     var depth = 0
     root.accept(object: RecursiveVisitor() {

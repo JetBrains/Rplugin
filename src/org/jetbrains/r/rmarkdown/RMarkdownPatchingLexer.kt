@@ -21,7 +21,7 @@ private val FenceEndType = MarkdownElementType.platformType(MarkdownTokenTypes.C
 private val WhiteSpaceType = MarkdownElementType.platformType(MarkdownTokenTypes.WHITE_SPACE)
 
 
-class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer()) {
+class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer(RMarkdownFlavourDescriptor)) {
   private val queue: Queue<TokenData> = ArrayDeque<TokenData>()
 
   override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {

@@ -1,0 +1,48 @@
+RFile:backticksInFenceHeader.rmd
+  PsiElement(OUTER)('# R-293 Backticks in code chunk metadata breaks parsing\n\n```{r graphics, message=FALSE, fig.cap='A scatterplot of `cars`', fig.width=11, fig.height=5}')
+  PsiElement(nl)('\n')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('library')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('ggplot2')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  R_OPERATOR_EXPRESSION
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('qplot')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('speed')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('dist')
+        PsiElement(,)(',')
+        PsiWhiteSpace(' ')
+        R_NAMED_ARGUMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('data')
+          PsiWhiteSpace(' ')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          PsiWhiteSpace(' ')
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('cars')
+        PsiElement())(')')
+    PsiWhiteSpace(' ')
+    R_PLUSMINUS_OPERATOR
+      PsiElement(+)('+')
+    PsiWhiteSpace(' ')
+    R_CALL_EXPRESSION
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('geom_smooth')
+      R_ARGUMENT_LIST
+        PsiElement(()('(')
+        PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(OUTER)('```\n')

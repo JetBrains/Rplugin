@@ -40,6 +40,10 @@ class RMarkdownParsingTest : RUsefulTestCase() {
     doTest()
   }
 
+  fun testBackticksInFenceHeader() {
+    doTest()
+  }
+
   private fun doTest() {
     val testName = getTestName(true)
     myFixture.configureByFile(testName + ".rmd")
