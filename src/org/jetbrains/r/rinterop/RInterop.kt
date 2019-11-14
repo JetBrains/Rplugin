@@ -34,8 +34,8 @@ import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
-import java.util.*
 import java.awt.Dimension
+import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.RowSorter
@@ -46,7 +46,7 @@ import kotlin.reflect.KProperty
 
 data class RIExecutionResult(val stdout: String, val stderr: String)
 
-private const val DEADLINE_TEST = 20L
+private const val DEADLINE_TEST = 40L
 
 class RInterop(val processHandler: ProcessHandler, address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
