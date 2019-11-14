@@ -7,6 +7,7 @@ package org.jetbrains.r.run.visualize
 import com.intellij.codeInsight.CodeInsightActionHandler
 import com.intellij.codeInsight.actions.BaseCodeInsightAction
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
@@ -62,21 +63,26 @@ class VisualizeTableHandler : CodeInsightActionHandler {
 
   companion object {
     fun visualizeTable(rInterop: RInterop, ref: RRef, project: Project, expr: String, editor: Editor? = null) {
-      try {
-        val viewer = rInterop.dataFrameGetViewer(ref)
-        RVisualizeTableUtil.showTable(project, viewer, expr)
-      }
-      catch (e: RDataFrameException) {
-        if (editor != null) {
-          HintManager.getInstance()
-            .showErrorHint(editor, RBundle.message("visualize.table.action.error.hint", e.message.orEmpty()))
-        } else {
-          RNotificationUtil.notifyExecutionError(project, RBundle.message("visualize.table.action.error.hint", e.message.orEmpty()))
+      rInterop.dataFrameGetViewer(ref).onSuccess {
+        RVisualizeTableUtil.showTable(project, it, expr)
+      }.onError {
+        ApplicationManager.getApplication().invokeLater {
+          when (it) {
+            is RDataFrameException -> {
+              if (editor != null) {
+                HintManager.getInstance()
+                  .showErrorHint(editor, RBundle.message("visualize.table.action.error.hint", it.message.orEmpty()))
+              } else {
+                RNotificationUtil.notifyExecutionError(
+                  project, RBundle.message("visualize.table.action.error.hint", it.message.orEmpty()))
+              }
+            }
+            is RequiredPackageException -> {
+              RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(
+                RBundle.message("visualize.table.action.error.utility.name"), it.missingPackages, null)
+            }
+          }
         }
-      }
-      catch (e: RequiredPackageException) {
-        RequiredPackageInstaller.getInstance(project)
-          .installPackagesWithUserPermission(RBundle.message("visualize.table.action.error.utility.name"), e.missingPackages, null)
       }
     }
 

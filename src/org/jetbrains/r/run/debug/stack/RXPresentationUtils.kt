@@ -23,7 +23,7 @@ internal object RXPresentationUtils {
     when (val value = rVar.value) {
       is RValueUnevaluated -> setPromisePresentation(value, rVar.ref, node, executor)
       is RValueSimple -> setVarPresentation(value, rVar.ref, node, executor)
-      is RValueDataFrame -> setDataFramePresentation(value, rVar.name, rVar.ref, node, executor)
+      is RValueDataFrame -> setDataFramePresentation(value, rVar.name, rVar.ref, node)
       is RValueList -> setListPresentation(value, node)
       is RValueFunction -> setFunctionPresentation(value, node)
       is RValueEnvironment -> setEnvironmentPresentation(node, rValue = value)
@@ -73,23 +73,23 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setDataFramePresentation(rValue: RValueDataFrame, name: String, ref: RRef, node: XValueNode, executor: ExecutorService) {
+  private fun setDataFramePresentation(rValue: RValueDataFrame, name: String, ref: RRef, node: XValueNode) {
     node.setPresentation(AllIcons.Nodes.DataTables, null,
                          RBundle.message("rx.presentation.utils.data.frame.text", rValue.rows, rValue.cols), true)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.table.link.text")) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
-        executor.execute {
-          try {
-            val viewer = ref.rInterop.dataFrameGetViewer(ref)
-            RVisualizeTableUtil.showTable(ref.rInterop.project, viewer, name)
-          } catch (e: RDataFrameException) {
-            callback.errorOccurred(e.message.orEmpty())
-          } catch (e: RequiredPackageException) {
-            RequiredPackageInstaller.getInstance(ref.rInterop.project)
-              .installPackagesWithUserPermission(RBundle.message("rx.presentation.utils.view.table.utility.name"), e.missingPackages, null)
-          } finally {
-            callback.evaluated("")
+        ref.rInterop.dataFrameGetViewer(ref).onSuccess {
+          RVisualizeTableUtil.showTable(ref.rInterop.project, it, name)
+        }.onError {
+          when (it) {
+            is RDataFrameException -> callback.errorOccurred(it.message.orEmpty())
+            is RequiredPackageException -> {
+              RequiredPackageInstaller.getInstance(ref.rInterop.project).installPackagesWithUserPermission(
+                RBundle.message("rx.presentation.utils.view.table.utility.name"), it.missingPackages, null)
+            }
           }
+        }.onProcessed {
+          callback.evaluated("")
         }
       }
 

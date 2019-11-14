@@ -21,6 +21,8 @@ interface RDataFrameViewer : Disposable {
 
   fun isColumnSortable(index: Int): Boolean
 
+  fun isRowNames(index: Int): Boolean
+
   fun getValueAt(row: Int, col: Int): Any?
 
   fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)? = null): Promise<Unit>

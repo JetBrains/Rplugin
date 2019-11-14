@@ -32,6 +32,7 @@ import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
 import java.awt.Dimension
@@ -267,17 +268,22 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(stub::repoRemovePackage, StringValue.of(packageName))
   }
 
-  fun dataFrameGetViewer(ref: RRef): RDataFrameViewer {
+  fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {
     RDataFrameViewerImpl.ensureDplyrInstalled(project)
-    val index = executeWithCheckCancel(asyncStub::dataFrameRegister, ref.proto).value
-    return dataFrameViewerCache.getOrCreate(index) {
-      val persistentRef = RPersistentRef(index, this)
-      Disposer.register(persistentRef, Disposable {
-        dataFrameViewerCache.remove(index)
-        executeWithCheckCancel(asyncStub::dataFrameDispose, Int32Value.of(index))
-      })
-      val viewer = RDataFrameViewerImpl(persistentRef)
-      viewer
+    return executeAsync(asyncStub::dataFrameRegister, ref.proto).toPromise(executor).then {
+      val index = it.value
+      if (index == -1) {
+        throw RDataFrameException("Invalid data frame")
+      }
+      dataFrameViewerCache.getOrCreate(index) {
+        val persistentRef = RPersistentRef(index, this)
+        Disposer.register(persistentRef, Disposable {
+          dataFrameViewerCache.remove(index)
+          execute(stub::dataFrameDispose, Int32Value.of(index))
+        })
+        val viewer = RDataFrameViewerImpl(persistentRef)
+        viewer
+      }
     }
   }
 

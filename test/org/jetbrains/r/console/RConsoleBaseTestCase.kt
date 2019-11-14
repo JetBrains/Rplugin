@@ -101,8 +101,4 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
       }
     }
   }
-
-  companion object {
-    const val DEFAULT_TIMEOUT = 3000
-  }
 }

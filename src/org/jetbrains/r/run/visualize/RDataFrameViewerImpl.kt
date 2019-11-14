@@ -30,6 +30,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   private var disposableParent: Disposable? = null
 
   private data class ColumnInfo(val name: String, val type: KClass<*>, val sortable: Boolean = true,
+                                val isRowNames: Boolean = false,
                                 val parseValue: (Service.DataFrameGetDataResponse.Value) -> Any?)
 
   init {
@@ -38,12 +39,12 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
     ensureDplyrInstalled(project)
     val dataFrameInfo = rInterop.dataFrameGetInfo(ref)
     nRows = dataFrameInfo.nRows
-    columns = dataFrameInfo.columnsList.map { column ->
-      when (column.type) {
-        INTEGER -> ColumnInfo(column.name, Int::class, column.sortable) { if (it.hasNa()) null else it.intValue }
-        DOUBLE -> ColumnInfo(column.name, Double::class, column.sortable) { if (it.hasNa()) null else it.doubleValue }
-        BOOLEAN -> ColumnInfo(column.name, Boolean::class, column.sortable) { if (it.hasNa()) null else it.booleanValue }
-        else -> ColumnInfo(column.name, String::class, column.sortable) { if (it.hasNa()) null else it.stringValue }
+    columns = dataFrameInfo.columnsList.map {
+      when (it.type) {
+        INTEGER -> ColumnInfo(it.name, Int::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.intValue }
+        DOUBLE -> ColumnInfo(it.name, Double::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.doubleValue }
+        BOOLEAN -> ColumnInfo(it.name, Boolean::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.booleanValue }
+        else -> ColumnInfo(it.name, String::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.stringValue }
       }
     }.toTypedArray()
     chunks = Array((nRows + CHUNK_SIZE - 1) / CHUNK_SIZE) { null }
@@ -55,6 +56,8 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   override fun getColumnType(index: Int) = columns[index].type
 
   override fun isColumnSortable(index: Int) = columns[index].sortable
+
+  override fun isRowNames(index: Int) = columns[index].isRowNames
 
   override fun getValueAt(row: Int, col: Int): Any? {
     ensureLoaded(row, col).blockingGet(Int.MAX_VALUE)
