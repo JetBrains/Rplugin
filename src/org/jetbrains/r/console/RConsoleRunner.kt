@@ -85,26 +85,7 @@ class RConsoleRunner(private val project: Project,
                 finishConsole()
               }
             })
-            // TODO rework in 2020.1
-            object : ConsoleHistoryController(RConsoleRootType.instance, "", consoleView) {
-              val getActions = KeyProcessorContext::class.memberFunctions.find { it.name == "getActions" }!!.also { it.isAccessible = true }
 
-              override fun setConsoleText(command: ConsoleHistoryModel.Entry, storeUserText: Boolean, regularMode: Boolean) {
-                val actions = getActions.call(IdeEventQueue.getInstance().getKeyEventDispatcher().getContext()) as List<AnAction>
-                val isNext = actions.any { it.toString().contains("Next Entry in Console History") }
-                super.setConsoleText(command, storeUserText, regularMode)
-                if (isNext) {
-                  val editor = consoleView.currentEditor
-                  val text = command.text
-                  if (StringUtil.containsLineBreak(text)) {
-                    val index = StringUtil.indexOf(text, '\n')
-                    if (index > 0) {
-                      editor.caretModel.moveToOffset(index)
-                    }
-                  }
-                }
-              }
-            }.install()
             // Setup console listener for graphics device
             val resolution = RGraphicsSettings.getScreenParameters(project).resolution
             val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
@@ -146,11 +127,33 @@ class RConsoleRunner(private val project: Project,
   }
 
   private fun createContentDescriptorAndActions() {
+    // TODO rework in 2020.1
+    val historyController = object : ConsoleHistoryController(RConsoleRootType.instance, "", consoleView) {
+      val getActions = KeyProcessorContext::class.memberFunctions.find { it.name == "getActions" }!!.also { it.isAccessible = true }
+
+      override fun setConsoleText(command: ConsoleHistoryModel.Entry, storeUserText: Boolean, regularMode: Boolean) {
+        val actions = getActions.call(IdeEventQueue.getInstance().getKeyEventDispatcher().getContext()) as List<AnAction>
+        val isNext = actions.any { it.toString().contains("Next Entry in Console History") }
+        super.setConsoleText(command, storeUserText, regularMode)
+        if (isNext) {
+          val editor = consoleView.currentEditor
+          val text = command.text
+          if (StringUtil.containsLineBreak(text)) {
+            val index = StringUtil.indexOf(text, '\n')
+            if (index > 0) {
+              editor.caretModel.moveToOffset(index)
+            }
+          }
+        }
+      }
+    }
+    historyController.install()
     val executeAction = createConsoleExecAction()
     val interruptAction = RConsoleView.createInterruptAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction("interactive_console")
+    val historyAction = historyController.browseHistory
 
-    val actions = listOf(executeAction, interruptAction, helpAction)
+    val actions = listOf(executeAction, interruptAction, helpAction, historyAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
