@@ -241,6 +241,8 @@ You can find the source code in the following repositories:
 
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 
+       <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
+
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RFileEditorProvider"/>
 
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>

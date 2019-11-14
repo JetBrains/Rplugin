@@ -14,6 +14,7 @@ import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.Predicate
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RAssignmentStatementImpl
@@ -141,7 +142,7 @@ object RPsiUtil {
 
 
   fun isReturn(expression: PsiElement): Boolean {
-    return expression is RCallExpression && expression.expression.text == "return"
+    return expression is RCallExpression && expression.expression.text in listOf("return", "base::return", "base:::return")
   }
 
 
@@ -281,4 +282,25 @@ fun PsiElement.findBlockParent(): RPsiElement {
   if (parent is RWhileStatement && this == parent.body) return parent
   if (parent is RRepeatStatement && this == parent.body) return parent
   return parent.findBlockParent()
+}
+
+fun RCallExpression.isFunctionFromLibrary(functionName: String, packageName: String): Boolean {
+  val expr = expression
+  val (name, namespaceName, reference) = when (expr) {
+    is RIdentifierExpression -> Triple(expr.name, "", expr.reference)
+    is RNamespaceAccessExpression -> Triple(expr.identifier?.name, expr.namespaceName, expr.identifier?.reference)
+    else -> return false
+  }
+
+  if (namespaceName.isNotEmpty() && namespaceName != packageName) return false
+  if (name != functionName) return false
+  val targets = reference?.multiResolve(false)?.mapNotNull { it.element }
+  if (targets != null &&
+      targets.any {
+        RPsiUtil.isLibraryElement(it) &&
+        RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(it.containingFile.name)?.first == packageName
+      }) {
+    return true
+  }
+  return false
 }

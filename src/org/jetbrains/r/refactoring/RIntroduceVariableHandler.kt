@@ -68,7 +68,6 @@ class RIntroduceVariableHandler : RIntroduceLocalHandler() {
       operation.editor.selectionModel.removeSelection()
       if (!declarationAdded) {
         declaration = anchorParent.addBefore(declaration, anchor) as RAssignmentStatement
-        anchorParent.addBefore(RElementFactory.createLeafFromText(operation.project, "\n"), anchor)
         CodeEditUtil.setNodeGeneratedRecursively(declaration.node, true)
       }
       if (declarationAddedToFirst) {

@@ -86,13 +86,11 @@ object RExtractMethodUtil {
         }
         else {
           previous = block.addAfter(expr, previous) as RExpression
-          block.addBefore(RElementFactory.createLeafFromText(project, "\n"), previous)
         }
       }
     }
 
     val insertedFunctionDeclaration = file.addBefore(functionDeclaration, anchor) as RAssignmentStatement
-    file.addBefore(RElementFactory.createLeafFromText(project, "\n"), anchor)
     file.addBefore(RElementFactory.createLeafFromText(project, "\n"), anchor)
     CodeEditUtil.setNodeGeneratedRecursively(insertedFunctionDeclaration.node, true)
     return insertedFunctionDeclaration
@@ -104,11 +102,7 @@ object RExtractMethodUtil {
   ): RExpression {
     val callText = "$functionName(${parameters.joinToString(", ") { it }})"
     if (fragmentStart != fragmentEnd) {
-      while (true) {
-        val stop = fragmentEnd.prevSibling == fragmentStart
-        fragmentEnd.prevSibling.delete()
-        if (stop) break
-      }
+      fragmentStart.parent.deleteChildRange(fragmentStart, fragmentEnd.prevSibling)
     }
     val call = when {
       isReturn -> RElementFactory.createRPsiElementFromText(project, "return($callText)")

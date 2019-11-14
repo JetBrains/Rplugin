@@ -2,66 +2,47 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-// Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
-/*
- * Copyright 2011-present Greg Shrago
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.jetbrains.r.refactoring.inline
 
-import com.intellij.BundleBase
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.ElementDescriptionUtil
-import com.intellij.psi.PsiReference
 import com.intellij.refactoring.inline.InlineOptionsDialog
 import com.intellij.usageView.UsageViewNodeTextLocation
+import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.api.RAssignmentStatement
+import org.jetbrains.r.psi.api.RIdentifierExpression
 
-class RInlineAssignmentDialog internal constructor(project: Project,
-                                                   private val variable: RAssignmentStatement,
-                                                   private val reference: PsiReference?) : InlineOptionsDialog(project, true, variable) {
-
-
+class RInlineAssignmentDialog(project: Project,
+                              private val editor: Editor?,
+                              private val isFunction: Boolean,
+                              private val assignment: RAssignmentStatement,
+                              private val refElement: RIdentifierExpression?) : InlineOptionsDialog(project, true, assignment) {
   init {
-    myInvokedOnReference = reference != null
-    title = "Inline Expression"
+    myInvokedOnReference = refElement != null
+    title =
+      if (isFunction) RBundle.message("inline.assignment.dialog.function.title")
+      else RBundle.message("inline.assignment.dialog.variable.title")
     init()
   }
 
   override fun getNameLabelText(): String {
-    return ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE)
+    return RBundle.message("inline.assignment.dialog.name.label",
+                           if (isFunction) {
+                             assignment.text.takeWhile { it != '{' }.trim()
+                           }
+                           else ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE))
   }
 
-  override fun getBorderTitle(): String {
-    return "Inline"
-  }
-
-  override fun getInlineThisText(): String {
-    return BundleBase.replaceMnemonicAmpersand("&This reference only and keep the expression")
-  }
-
-  override fun getInlineAllText(): String {
-    return BundleBase.replaceMnemonicAmpersand("&All references and remove the expression")
-  }
-
-  override fun isInlineThis(): Boolean {
-    return false
-  }
+  override fun getBorderTitle(): String = "Inline"
+  override fun getKeepTheDeclarationText(): String? = if (isFunction) RBundle.message("inline.assignment.dialog.keep.text") else null
+  override fun getInlineThisText(): String? = RBundle.message("inline.assignment.dialog.only.this.text")
+  override fun getInlineAllText(): String? = RBundle.message("inline.assignment.dialog.all.text")
+  override fun isInlineThis(): Boolean = isFunction
 
   override fun doAction() {
-    invokeRefactoring(RInlineAssignmentProcessor(variable, project, reference, isInlineThisOnly))
+    invokeRefactoring(
+      RInlineAssignmentProcessor(project, editor, assignment, refElement, isInlineThisOnly, isFunction, !isKeepTheDeclaration))
   }
 
   override fun doHelpAction() {}
