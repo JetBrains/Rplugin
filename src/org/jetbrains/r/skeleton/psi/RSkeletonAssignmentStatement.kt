@@ -18,6 +18,7 @@ import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
+import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.psi.stubs.RAssignmentStub
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RVar
@@ -71,6 +72,10 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
 
   override fun getText(): String {
     return name + functionParameters
+  }
+
+  override fun getReference(): RReferenceBase<*>? {
+    return null
   }
 
   override fun navigate(requestFocus: Boolean) {

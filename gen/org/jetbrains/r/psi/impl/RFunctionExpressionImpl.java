@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.r.parsing.RElementTypes.*;
 import org.jetbrains.r.psi.api.*;
 import org.jetbrains.r.psi.cfg.RControlFlow;
+import org.jetbrains.r.psi.references.RReferenceBase;
 
 public class RFunctionExpressionImpl extends RControlFlowHolderImpl implements RFunctionExpression {
 
@@ -50,4 +51,8 @@ public class RFunctionExpressionImpl extends RControlFlowHolderImpl implements R
     return RPsiImplUtil.getControlFlow(this);
   }
 
+  @Override
+  public RReferenceBase<?> getReference() {
+    return null;
+  }
 }

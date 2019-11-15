@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.RLanguage;
 import org.jetbrains.r.parsing.RElementTypes;
 import org.jetbrains.r.psi.api.RStringLiteralExpression;
+import org.jetbrains.r.psi.references.RReferenceBase;
 
 
 /**
@@ -39,18 +40,21 @@ public abstract class RStringInjectHost extends ASTWrapperPsiElement implements 
     @Override
     public RStringInjectHost updateText(@NotNull final String text) {
         final RStringLiteralExpression expression = createExpressionFromText(getProject(), text);
-        assert expression instanceof RStringLiteralExpression : text + "-->" + expression;
+        assert expression != null : text + "-->" + expression;
         return (RStringInjectHost) this.replace(expression);
     }
 
+
+    @Override
+    public RReferenceBase<?> getReference() {
+        return null;
+    }
 
     // just needed to for compatibility with exsting test-results. Should be removed and results should be updated
     @Override
     public String toString() {
         return RElementTypes.R_STRING_LITERAL_EXPRESSION.toString();
     }
-
-
     @NotNull
     @Override
     // provide path completion. see ResourceFileRefernceProvider

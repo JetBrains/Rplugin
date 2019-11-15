@@ -111,7 +111,7 @@ expression ::=
     function_expression | left_assign_expression | eq_assign_expression | right_assign_expression |
     unary_tilde_expression | tilde_expression | or_expression | and_expression | unary_not_expression | compare_expression | plusminus_expression |
     muldiv_expression | infix_expression | colon_expression | unary_plusminus_expression | exp_expression | subscription_expression |
-    call_expression | member_expression | at_expression | namespace_access_expression | primitive_expression
+    call_expression | member_expression | at_expression | namespace_access_expression | primitive_expression { methods= [ getReference ] }
 
 //operators
 fake assignment_statement ::= {

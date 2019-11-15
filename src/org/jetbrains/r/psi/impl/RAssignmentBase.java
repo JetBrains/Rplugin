@@ -10,6 +10,7 @@ import com.intellij.psi.stubs.IStubElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.psi.RBaseElementImpl;
 import org.jetbrains.r.psi.api.RExpression;
+import org.jetbrains.r.psi.references.RReferenceBase;
 import org.jetbrains.r.psi.stubs.RAssignmentStub;
 
 public abstract class RAssignmentBase extends RBaseElementImpl<RAssignmentStub>
@@ -21,5 +22,10 @@ public abstract class RAssignmentBase extends RBaseElementImpl<RAssignmentStub>
 
     RAssignmentBase(@NotNull RAssignmentStub stub, @NotNull IStubElementType nodeType) {
         super(stub, nodeType);
+    }
+
+    @Override
+    public RReferenceBase<?> getReference() {
+        return null;
     }
 }

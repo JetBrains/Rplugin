@@ -184,6 +184,9 @@ internal object RPsiImplUtil {
   }
 
   @JvmStatic
+  fun getReference(expression: RExpression): RReferenceBase<*>? = null
+
+  @JvmStatic
   fun getReference(binaryOperator: ROperator): ROperatorReference {
     return ROperatorReference(binaryOperator)
   }
