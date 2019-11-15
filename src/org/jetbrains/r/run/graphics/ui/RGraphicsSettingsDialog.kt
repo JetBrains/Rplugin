@@ -12,9 +12,6 @@ import com.intellij.util.ui.JBUI
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.*
-import java.awt.event.ActionEvent
-import java.awt.event.FocusAdapter
-import java.awt.event.FocusEvent
 import java.awt.event.ItemEvent
 import java.text.DecimalFormat
 import javax.swing.*
@@ -22,18 +19,21 @@ import javax.swing.event.DocumentEvent
 import kotlin.math.round
 
 class RGraphicsSettingsDialog(
-  private val listener: Listener
+  private val panelDimension: Dimension,
+  private val initialParameters: RGraphicsUtils.ScreenParameters,
+  private val initialAutoResizeEnabled: Boolean,
+  private val onSettingsChange: (RGraphicsUtils.ScreenParameters, Boolean) -> Unit
 ) : DialogWrapper(null, true) {
 
-  private val titleLabel = JLabel(TITLE, JLabel.LEFT).apply {
-    font = font.deriveFont(font.getStyle() or Font.BOLD)
-  }
-
-  private val autoResizeCheckBox = JBCheckBox(AUTO_RESIZE_TEXT, true).apply {
+  // Note: selection is inverted here in order to ensure listener is always fired on dialog startup
+  private val autoResizeCheckBox = JBCheckBox(AUTO_RESIZE_TEXT, !initialAutoResizeEnabled).apply {
     addItemListener { e ->
       val isSelected = e.stateChange == ItemEvent.SELECTED
+      if (isSelected) {
+        currentDimension = panelDimension
+      }
       updateControlsEditable(!isSelected)
-      listener.onAutoResizeSwitch(isSelected)
+      updateOkAction()
     }
   }
 
@@ -48,30 +48,59 @@ class RGraphicsSettingsDialog(
   private val centimeterUnitModel = CentimeterUnitModel(inchUnitModel)
   private var currentUnitModel: UnitModel = pixelUnitModel
 
-  var currentParameters: RGraphicsUtils.ScreenParameters?
-    get() {
-      val width = currentUnitModel.convertInputToPixels(widthInputField.text)
-      val height = currentUnitModel.convertInputToPixels(heightInputField.text)
-      val resolution = resolutionInputField.text.toIntOrNull()
-      return if (width != null && height != null && resolution != null) {
-        RGraphicsUtils.ScreenParameters(Dimension(width, height), resolution)
-      } else {
-        null
+  private var currentWidth: Int?
+    get() = currentUnitModel.convertInputToPixels(widthInputField.text)
+    set(width) {
+      widthInputField.text = currentUnitModel.convertPixelsToInput(width)
+    }
+
+  private var currentHeight: Int?
+    get() = currentUnitModel.convertInputToPixels(heightInputField.text)
+    set(height) {
+      heightInputField.text = currentUnitModel.convertPixelsToInput(height)
+    }
+
+  private var currentResolution: Int?
+    get() = resolutionInputField.text.toIntOrNull()
+    set(resolution) {
+      resolutionInputField.text = resolution?.toString() ?: ""
+    }
+
+  private var currentDimension: Dimension?
+    get() = currentWidth?.let { width ->
+      currentHeight?.let { height ->
+        Dimension(width, height)
+      }
+    }
+    set(dimension) {
+      currentWidth = dimension?.width
+      currentHeight = dimension?.height
+    }
+
+  private var currentParameters: RGraphicsUtils.ScreenParameters?
+    get() = currentDimension?.let { dimension ->
+      currentResolution?.let { resolution ->
+        RGraphicsUtils.ScreenParameters(dimension, resolution)
       }
     }
     set(parameters) {
-      resolutionInputField.text = parameters?.resolution?.toString() ?: ""  // Note: resolution must be set first
-      widthInputField.text = currentUnitModel.convertPixelsToInput(parameters?.width)
-      heightInputField.text = currentUnitModel.convertPixelsToInput(parameters?.height)
+      currentResolution = parameters?.resolution  // Note: resolution should be assigned at first
+      currentDimension = parameters?.dimension
     }
 
-  val isAutoResizeEnabled: Boolean
+  private var isAutoResizeEnabled: Boolean
     get() = autoResizeCheckBox.isSelected
+    set(value) {
+      autoResizeCheckBox.isSelected = value
+    }
 
   init {
     title = TITLE
     init()
-    updateControlsEditable(false)
+    currentParameters = initialParameters
+    isAutoResizeEnabled = initialAutoResizeEnabled
+    // Note: there is no need to call `updateOkAction()` here
+    // since it's already been called by switching auto resize flag above
   }
 
   override fun createCenterPanel(): JComponent {
@@ -97,43 +126,33 @@ class RGraphicsSettingsDialog(
     }
 
     return JPanel(GridBagLayout()).apply {
-      addToGrid(titleLabel, 0, 0, 3)
-      addToGrid(autoResizeCheckBox, 0, 1, 3)
-      addInput(widthInputField, PLOT_WIDTH_TEXT, widthUnitComboBox, 2)
-      addInput(heightInputField, PLOT_HEIGHT_TEXT, heightUnitComboBox, 3)
-      addInput(resolutionInputField, PLOT_RESOLUTION_TEXT, JLabel(DPI_TEXT, JLabel.LEFT), 4)
-      titleLabel.preferredSize = widthInputField.preferredSize
+      addToGrid(autoResizeCheckBox, 0, 0, 3)
+      addInput(widthInputField, PLOT_WIDTH_TEXT, widthUnitComboBox, 1)
+      addInput(heightInputField, PLOT_HEIGHT_TEXT, heightUnitComboBox, 2)
+      addInput(resolutionInputField, PLOT_RESOLUTION_TEXT, JLabel(DPI_TEXT, JLabel.LEFT), 3)
       autoResizeCheckBox.preferredSize = widthInputField.preferredSize
     }
   }
 
-  fun createComponent(): JComponent {
-    return createCenterPanel()
+  override fun doOKAction() {
+    super.doOKAction()
+
+    // Note: `currentParameters` are always not null here (see `updateOkAction()` method below)
+    currentParameters?.let { parameters ->
+      onSettingsChange(parameters, isAutoResizeEnabled)
+    }
   }
 
   private fun createNumberInputField(getUnitModel: () -> UnitModel): JTextField {
-    return JTextField(INPUT_FIELD_NUM_COLUMNS).also { field ->
+    return JTextField().also { field ->
       field.document.addDocumentListener(object : DocumentAdapter() {
         override fun textChanged(e: DocumentEvent) {
           val errorText = getUnitModel().validateInput(field.text)
           setErrorText(errorText, field)
-        }
-      })
-      field.addFocusListener(object : FocusAdapter() {
-        override fun focusLost(e: FocusEvent?) {
-          onInputFieldValueChange()
-        }
-      })
-      field.addActionListener(object : AbstractAction() {
-        override fun actionPerformed(e: ActionEvent?) {
-          onInputFieldValueChange()
+          updateOkAction()
         }
       })
     }
-  }
-
-  private fun onInputFieldValueChange() {
-    currentParameters?.let(listener::onParametersChange)
   }
 
   private fun createUnitComboBox(): ComboBox<String> {
@@ -171,8 +190,19 @@ class RGraphicsSettingsDialog(
   private fun updateControlsEditable(areEditable: Boolean) {
     widthInputField.isEditable = areEditable
     heightInputField.isEditable = areEditable
-    widthUnitComboBox.isEditable = areEditable
-    heightUnitComboBox.isEditable = areEditable
+  }
+
+  private fun updateOkAction() {
+    val parameters = currentParameters
+    isOKActionEnabled = if (parameters != null) {
+      if (isAutoResizeEnabled) {
+        isAutoResizeEnabled != initialAutoResizeEnabled || currentResolution != initialParameters.resolution
+      } else {
+        isAutoResizeEnabled != initialAutoResizeEnabled || parameters != initialParameters
+      }
+    } else {
+      false
+    }
   }
 
   interface UnitModel {
@@ -259,14 +289,8 @@ class RGraphicsSettingsDialog(
     }
   }
 
-  interface Listener {
-    fun onParametersChange(parameters: RGraphicsUtils.ScreenParameters)
-    fun onAutoResizeSwitch(isEnabled: Boolean)
-  }
-
   companion object {
     private const val CMS_PER_INCH = 2.54
-    private const val INPUT_FIELD_NUM_COLUMNS = 8
 
     private val TITLE = RBundle.message("graphics.panel.settings.dialog.title")
     private val AUTO_RESIZE_TEXT = RBundle.message("graphics.panel.settings.dialog.auto.resize")
