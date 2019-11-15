@@ -57,10 +57,10 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     setupMockInterpreterManager()
   }
 
-  protected fun doExprTest(expressionList: String): CodeInsightTestFixture {
+  protected fun doExprTest(expressionList: String, checkWeakWarnings: Boolean = false): CodeInsightTestFixture {
     myFixture.configureByText("a.R", expressionList)
     configureFixture(myFixture)
-    myFixture.testHighlighting(true, false, false)
+    myFixture.testHighlighting(true, false, checkWeakWarnings)
 
     return myFixture
   }
@@ -127,7 +127,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   private fun prepareTestSkeletons(project: Project) {
-    RSkeletonUtil.checkVersion(RUsefulTestCase.SKELETON_LIBRARY_PATH)
+    RSkeletonUtil.checkVersion(SKELETON_LIBRARY_PATH)
     val missingTestSkeletons = missingTestSkeletons()
     if (missingTestSkeletons.isEmpty()) return
 
@@ -145,7 +145,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   private fun missingTestSkeletons(): Set<String> {
-    val skeletonsDirectory = File(RUsefulTestCase.SKELETON_LIBRARY_PATH)
+    val skeletonsDirectory = File(SKELETON_LIBRARY_PATH)
     val existedSkeletons = skeletonsDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }
 
     if (existedSkeletons == null) {

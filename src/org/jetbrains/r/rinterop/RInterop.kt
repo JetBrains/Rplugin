@@ -121,8 +121,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeWithCheckCancel(asyncStub::getWorkingDir, Empty.getDefaultInstance()).value
   }
 
-  val loadedPackages: List<String> by Cached {
-    executeWithCheckCancel(asyncStub::loaderGetLoadedNamespaces, Empty.getDefaultInstance()).listList
+  val loadedPackages: Map<String, Int> by Cached {
+    executeWithCheckCancel(asyncStub::loaderGetLoadedNamespaces,
+                           Empty.getDefaultInstance()).listList.mapIndexed { index, s -> s to index }.toMap()
   }
 
   val rMarkdownChunkOptions: List<String> by Cached {

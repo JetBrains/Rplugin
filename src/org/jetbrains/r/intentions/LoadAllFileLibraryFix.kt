@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.inspections.UnresolvedReferenceInspection
-import org.jetbrains.r.intentions.LoadLibraryFix
+import org.jetbrains.r.intentions.LoadPackageFix
 
 class LoadAllFileLibraryFix(private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix() {
 
@@ -22,7 +22,7 @@ class LoadAllFileLibraryFix(private val runtimeInfo: RConsoleRuntimeInfo) : Depe
     val file = descriptor.psiElement.containingFile
 
     runBackgroundableTask(RBundle.message("load.all.library.fix.background"), project, true) {
-      val packageNames = getAllPackagesWithSameQuickFix<LoadLibraryFix>(file, project, UnresolvedReferenceInspection())
+      val packageNames = getAllPackagesWithSameQuickFix<LoadPackageFix>(file, project, UnresolvedReferenceInspection())
 
       packageNames.forEach {
         runtimeInfo.loadPackage(it)

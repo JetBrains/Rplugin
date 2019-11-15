@@ -10,13 +10,11 @@ import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.ResolveResult
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.Nls
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.ROperator
-import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.api.RVisitor
+import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.intentions.LoadPackageFix
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RReferenceBase
 
 class UnresolvedReferenceInspection : RInspection() {
@@ -35,24 +33,33 @@ class UnresolvedReferenceInspection : RInspection() {
     override fun visitOperator(element: ROperator) {
       if (!element.text.startsWith("%")) return
 
-      val targets = element.reference.multiResolve(false)
-      handleResolveResult(element, targets)
+      handleResolveResult(element, element.reference)
     }
 
     override fun visitCallExpression(element: RCallExpression) {
-      // resolve normally
-      val reference = element.expression.reference
+      handleResolveResult(element.expression, element.expression.reference ?: return)
+    }
 
-      if (reference is RReferenceBase<*>) {
-        val targets = reference.multiResolve(false)
-        handleResolveResult(element.expression, targets)
+    override fun visitIdentifierExpression(identifier: RIdentifierExpression) {
+      if (identifier.parent?.let { it is RCallExpression && it.expression == identifier } == true ) return
+      if (identifier.parent?.let { it is RNamespaceAccessExpression } == true) return
+      val results = identifier.reference.multiResolve(false)
+      if (results.isNotEmpty()) {
+        handleResolveResult(identifier, identifier.reference)
       }
     }
 
-    private fun handleResolveResult(element: RPsiElement, targets: Array<in ResolveResult>) {
+    private fun handleResolveResult(element: RPsiElement, reference: RReferenceBase<*>) {
+      val targets = reference.multiResolve(false)
       if (targets.isEmpty()) {
         myProblemHolder.registerProblem(element, UNRESOLVED_MSG, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
       }
+      val runtimeInfo = element.containingFile?.runtimeInfo ?: return
+      if (reference.areTargetsLoaded(false)) return
+      val packageNames = targets.mapNotNull { RReferenceBase.createPackageByResultResult(it)?.packageName }
+      val quickFixes = packageNames.map { LoadPackageFix(it, runtimeInfo) }.toTypedArray()
+      val message = missingPackageMessage(element.text, packageNames)
+      myProblemHolder.registerProblem(element, message, ProblemHighlightType.WEAK_WARNING, *quickFixes)
     }
   }
 
@@ -60,7 +67,7 @@ class UnresolvedReferenceInspection : RInspection() {
 
     var UNRESOLVED_MSG = RBundle.message("inspection.unresolvedReference.description")
 
-    fun missingImportMsg(symbol: String, foundIn: List<String>): String {
+    fun missingPackageMessage(symbol: String, foundIn: List<String>): String {
       return RBundle.message("inspection.unresolvedReference.missing.message", symbol, Joiner.on(", ").join(foundIn))
     }
   }

@@ -17,7 +17,7 @@ import org.jetbrains.r.rinterop.Service.TableColumnsInfoRequest.TableType
 
 interface RConsoleRuntimeInfo {
   val variables: Map<String, RValue>
-  val loadedPackages: List<String>
+  val loadedPackages: Map<String, Int>
   val rMarkdownChunkOptions: List<String>
   val workingDir: String
   fun loadPackage(name: String)

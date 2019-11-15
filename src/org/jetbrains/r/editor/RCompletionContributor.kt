@@ -550,7 +550,7 @@ class RCompletionContributor : CompletionContributor() {
     private fun computeRuntimeScope(originFile: PsiFile): GlobalSearchScope? {
       return originFile.runtimeInfo?.let { runtimeInfo ->
         val interpreter = RInterpreterManager.getInterpreter(originFile.project) ?: return null
-        val loadedPackages = runtimeInfo.loadedPackages.mapNotNull { interpreter.getSkeletonFileByPackageName(it)?.virtualFile }
+        val loadedPackages = runtimeInfo.loadedPackages.keys.mapNotNull { interpreter.getSkeletonFileByPackageName(it)?.virtualFile }
         GlobalSearchScope.filesScope(originFile.project, loadedPackages)
       }
     }

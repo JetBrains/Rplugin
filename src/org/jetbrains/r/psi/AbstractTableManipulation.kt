@@ -239,7 +239,7 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
       }
       is RIdentifierExpression, is ROperator -> {
         val name = expr.name
-        return runtimeInfo.loadedPackages.any { name in safeFunctions[it].orEmpty() }
+        return runtimeInfo.loadedPackages.keys.any { name in safeFunctions[it].orEmpty() }
       }
       else -> return false
     }

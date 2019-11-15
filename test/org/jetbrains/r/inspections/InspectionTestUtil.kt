@@ -17,7 +17,7 @@ fun noImportWarning(symbol: String, foundIn: String): String = noImportWarning(s
 
 
 fun noImportWarning(symbol: String, foundIn: List<String> = emptyList()): String {
-    return """<warning descr="${UnresolvedReferenceInspection.missingImportMsg(symbol, foundIn)}">$symbol</warning>"""
+    return """<warning descr="${UnresolvedReferenceInspection.missingPackageMessage(symbol, foundIn)}">$symbol</warning>"""
 }
 
 fun unresolvedError(symbol: String) = """<error descr="${UnresolvedReferenceInspection.UNRESOLVED_MSG}">${symbol}</error>"""

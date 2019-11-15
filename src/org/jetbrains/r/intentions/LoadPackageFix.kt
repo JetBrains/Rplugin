@@ -10,7 +10,7 @@ import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.intentions.DependencyManagementFix
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 
-class LoadLibraryFix(override val packageName: String,
+class LoadPackageFix(override val packageName: String,
                      private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix() {
 
   override fun getName(): String {

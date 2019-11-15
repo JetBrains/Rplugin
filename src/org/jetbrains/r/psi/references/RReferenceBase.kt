@@ -49,19 +49,30 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
     return ResolveCache.getInstance(psiElement.project).resolveWithCaching(this, Resolver<T>(), false, incompleteCode)
   }
 
+  /**
+   * @return false if all resolve targets are package members and these packages are not loaded
+   */
+  fun areTargetsLoaded(incompleteCode: Boolean) : Boolean {
+    val runtimeInfo = psiElement.containingFile?.runtimeInfo ?: return true
+    return multiResolve(incompleteCode).all { result ->
+      val rPackage = createPackageByResultResult(result) ?: return@all true
+      runtimeInfo.loadedPackages.keys.contains(rPackage.packageName)
+    }
+  }
+
   private fun resolveUsingRuntimeInfo(runtimeInfo: RConsoleRuntimeInfo,
                                       resolveResults: Array<ResolveResult>): Array<ResolveResult> {
-    val loadedNamespaces = runtimeInfo.loadedPackages.mapIndexed { index, s -> s to index }.toMap()
-    val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedNamespaces, it) } ?: return resolveResults
-    if (getLoadingNumber(loadedNamespaces, topResolveResult) != Int.MAX_VALUE) {
+    val loadedPackages = runtimeInfo.loadedPackages
+    val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
+    if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
       return arrayOf(topResolveResult)
     }
     return resolveResults
   }
 
   private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult): Int {
-    val psiFile = result.element?.containingFile?.takeIf { it.fileType == RSkeletonFileType } ?: return Int.MAX_VALUE
-    return loadedNamespaces[RPackage.getOrCreate(psiFile)?.packageName] ?: Int.MAX_VALUE
+    val rPackage = createPackageByResultResult(result) ?: return Int.MAX_VALUE
+    return loadedNamespaces[rPackage.packageName] ?: Int.MAX_VALUE
   }
 
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
@@ -72,5 +83,10 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
       val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
       return runtimeInfo?.let { info -> reference.resolveUsingRuntimeInfo(info, resolveResults) } ?: resolveResults
     }
+  }
+
+  companion object {
+    fun createPackageByResultResult(result: ResolveResult): RPackage? =
+      result.element?.containingFile?.takeIf { it.fileType == RSkeletonFileType }?.let { RPackage.getOrCreate(it) }
   }
 }
