@@ -99,6 +99,48 @@ class TypingTest : RUsefulTestCase() {
     """)
   }
 
+  fun testAddParenthesis() {
+    doTest("""
+      foo<caret>
+    """, """
+      foo(<caret>)
+    """, "(")
+  }
+
+  fun testAddParenthesisBeforeBinaryOperator() {
+    doTest("""
+      foo<caret>*2
+    """, """
+      foo(<caret>)*2
+    """, "(")
+  }
+
+
+  fun testAddBracket() {
+    doTest("""
+      foo<caret>
+    """, """
+      foo[<caret>]
+    """, "[")
+  }
+
+  fun testAddSecondBracket() {
+    doTest("""
+      foo[<caret>]
+    """, """
+      foo[[<caret>]]
+    """, "[")
+  }
+
+  fun testDoNotAddParenthesis() {
+    doTest("""
+      foo<caret>10
+    """, """
+      foo(<caret>10
+    """, "(")
+  }
+
+
   private fun doTest(@Language("R") fileText: String,
                      @Language("R") expected: String,
                      insert: String = "\n") {
