@@ -19,7 +19,7 @@ import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.editor.formatting.RCodeStyleSettings
 
 class FormatterTest : RUsefulTestCase() {
-  fun testDefaultSpacing() {
+  fun testDefaultFormatting() {
     doTest("""
       tab.prior <- table(df[num<0, "campaign.id"])
       tab.prior <- table(df[num < 0,"campaign.id"])
@@ -35,6 +35,9 @@ class FormatterTest : RUsefulTestCase() {
       if( debug ){
         hello()
       }
+        else {
+        world()
+      }
     """, """
       tab.prior <- table(df[num < 0, "campaign.id"])
       tab.prior <- table(df[num < 0, "campaign.id"])
@@ -49,6 +52,9 @@ class FormatterTest : RUsefulTestCase() {
       ~xxx
       if (debug) {
         hello()
+      }
+      else {
+        world()
       }
     """)
   }

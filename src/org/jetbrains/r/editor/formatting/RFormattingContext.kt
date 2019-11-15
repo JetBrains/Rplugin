@@ -18,11 +18,12 @@ import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.psi.api.*
 
-private val CLOSE_BRACES = TokenSet.create(
+private val NON_INDENT_PARTS = TokenSet.create(
   RElementTypes.R_RPAR,
   RElementTypes.R_RBRACE,
   RElementTypes.R_RBRACKET,
-  RElementTypes.R_RDBRACKET
+  RElementTypes.R_RDBRACKET,
+  RElementTypes.R_ELSE
 )
 
 class RFormattingContext(private val settings: CodeStyleSettings) {
@@ -181,7 +182,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     return when {
       psi.parent is RFile -> Indent.getNoneIndent()
       node.elementType == RElementTypes.R_COMMA -> Indent.getContinuationIndent()
-      CLOSE_BRACES.contains(node.elementType) -> Indent.getNoneIndent()
+      NON_INDENT_PARTS.contains(node.elementType) -> Indent.getNoneIndent()
       psi is RParameter -> Indent.getContinuationIndent()
       psi is RBlockExpression -> Indent.getNoneIndent()
       psi is RExpression && psi.parent is RArgumentList -> Indent.getContinuationIndent()
