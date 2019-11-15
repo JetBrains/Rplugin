@@ -1,93 +1,41 @@
-// Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r;
+// Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
+package org.jetbrains.r.editor
 
-import com.intellij.codeInsight.generation.IndentedCommenter;
-import com.intellij.lang.CodeDocumentationAwareCommenter;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.r.parsing.RParserDefinition;
+import com.intellij.codeInsight.generation.IndentedCommenter
+import com.intellij.lang.CodeDocumentationAwareCommenter
+import com.intellij.psi.PsiComment
+import com.intellij.psi.tree.IElementType
+import org.jetbrains.annotations.Nullable
+import org.jetbrains.r.parsing.RParserDefinition
 
-public class RCommenter implements CodeDocumentationAwareCommenter, IndentedCommenter {
-    @Override
-    public String getLineCommentPrefix() {
-        return "# ";
-    }
+class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
+  override fun getLineCommentPrefix(): String? = "# "
 
+  override fun getBlockCommentPrefix(): String? = null
 
-    @Override
-    public String getBlockCommentPrefix() {
-        return null;
-    }
+  override fun getBlockCommentSuffix(): String? = null
 
+  override fun getCommentedBlockCommentPrefix(): String? = null
 
-    @Override
-    public String getBlockCommentSuffix() {
-        return null;
-    }
+  override fun getCommentedBlockCommentSuffix(): String? = null
 
+  override fun getLineCommentTokenType(): IElementType? = RParserDefinition.END_OF_LINE_COMMENT
 
-    @Override
-    public String getCommentedBlockCommentPrefix() {
-        return null;
-    }
+  override fun getBlockCommentTokenType(): IElementType? = null
 
+  override fun getDocumentationCommentTokenType(): IElementType? = null
 
-    @Override
-    public String getCommentedBlockCommentSuffix() {
-        return null;
-    }
+  override fun getDocumentationCommentPrefix(): String? = null
 
+  override fun getDocumentationCommentLinePrefix(): String? = null
 
-    @Override
-    public IElementType getLineCommentTokenType() {
-        return RParserDefinition.END_OF_LINE_COMMENT;
-    }
+  override fun getDocumentationCommentSuffix(): String? = null
 
+  override fun isDocumentationComment(element: PsiComment): Boolean = false
 
-    @Override
-    public IElementType getBlockCommentTokenType() {
-        return null;
-    }
-
-
-    @Override
-    public IElementType getDocumentationCommentTokenType() {
-        return null;
-    }
-
-
-    @Override
-    public String getDocumentationCommentPrefix() {
-        return null;
-    }
-
-
-    @Override
-    public String getDocumentationCommentLinePrefix() {
-        return null;
-    }
-
-
-    @Override
-    public String getDocumentationCommentSuffix() {
-        return null;
-    }
-
-
-    @Override
-    public boolean isDocumentationComment(PsiComment element) {
-        return false;
-    }
-
-
-    @Nullable
-    @Override
-    public Boolean forceIndentedLineComment() {
-        return true;
-    }
+  override fun forceIndentedLineComment(): @Nullable Boolean? = true
 }

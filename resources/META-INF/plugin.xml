@@ -248,7 +248,7 @@ You can find the source code in the following repositories:
         <fileBasedIndex implementation="org.jetbrains.r.packages.RPackageInfoIndex"/>
         <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
 
-        <lang.commenter language="R" implementationClass="org.jetbrains.r.RCommenter"/>
+        <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
 
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
