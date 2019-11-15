@@ -115,8 +115,12 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
       mean(data)
     }
     
-    normalMean(samples = 5,
-    otherParameter = 10)
+    someMethod(
+    samples = 5, # First parameter
+    otherParameter = 10000, # Second parameter
+    last = 7 # Last parameter
+    )
+    
     aLotOfArguments(100, 101,
     102, 103)
 
