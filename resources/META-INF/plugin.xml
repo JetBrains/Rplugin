@@ -222,7 +222,7 @@ You can find the source code in the following repositories:
                 implementation="org.jetbrains.r.editor.formatting.RLanguageCodeStyleSettingsProvider"/>
         <colorSettingsPage implementation="org.jetbrains.r.highlighting.RColorSettingsPage"/>
         <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
-        <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.highlighting.RBraceMatcher"/>
+        <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>
         <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>
 
         <lang.foldingBuilder language="R" implementationClass="org.jetbrains.r.editor.RFoldingBuilder"/>
