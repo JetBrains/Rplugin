@@ -71,6 +71,34 @@ class TypingTest : RUsefulTestCase() {
     """)
   }
 
+  // just to be sure
+  fun testEnterBeforeComment() {
+    doTest("""
+      <caret>#' hello world
+    """, """
+      
+      <caret>#' hello world
+    """)
+  }
+
+  fun testEnterInsideComment() {
+    doTest("""
+      # hello<caret> world
+    """, """
+      # hello
+      # <caret>world
+    """)
+  }
+
+  fun testEnterInsideDocumentationComment() {
+    doTest("""
+      #' hello<caret> world
+    """, """
+      #' hello
+      #' <caret>world
+    """)
+  }
+
   private fun doTest(@Language("R") fileText: String,
                      @Language("R") expected: String,
                      insert: String = "\n") {
