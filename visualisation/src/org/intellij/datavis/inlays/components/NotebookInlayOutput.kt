@@ -132,8 +132,8 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     override fun addData(data: String) {
-      graphicsPanel.refresh(File(data))
-      onHeightCalculated?.invoke(graphicsPanel.getImageHeight())
+      graphicsPanel.showImage(File(data))
+      onHeightCalculated?.invoke(graphicsPanel.imageSize?.height ?: 0)
     }
 
     override fun clear() {
