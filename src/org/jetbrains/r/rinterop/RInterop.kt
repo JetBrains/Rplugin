@@ -13,7 +13,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
@@ -561,7 +561,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun invalidateCaches() {
-    invokeAndWaitIfNeeded { PsiManager.getInstance(project).dropPsiCaches() }
+    invokeLater { PsiManager.getInstance(project).dropPsiCaches() }
     cacheIndex.incrementAndGet()
   }
 
