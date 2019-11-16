@@ -13,6 +13,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
@@ -21,6 +22,7 @@ import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
 import com.jetbrains.rd.util.getOrCreate
 import icons.org.jetbrains.r.psi.TableManipulationColumn
@@ -559,6 +561,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun invalidateCaches() {
+    invokeAndWaitIfNeeded { PsiManager.getInstance(project).dropPsiCaches() }
     cacheIndex.incrementAndGet()
   }
 
