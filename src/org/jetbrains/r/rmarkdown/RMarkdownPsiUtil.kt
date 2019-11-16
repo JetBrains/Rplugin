@@ -26,9 +26,8 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object RMarkdownPsiUtil {
-  val EXECUTABLE_R_FENCE_PATTERN = Regex("\\{[rR](\\s.*)?}") //Pattern = Pattern.compile("\\{r(\\s.*)?}", Pattern.DOTALL)
+  val EXECUTABLE_R_FENCE_PATTERN = Regex("\\{[rR]([\\s,].*)?}") //Pattern = Pattern.compile("\\{r(\\s.*)?}", Pattern.DOTALL)
   val EXECUTABLE_PYTHON_FENCE_PATTERN = Regex("\\{python(\\s.*)?}")
-
   val PRESENTABLE_TYPES = HEADERS
   val TRANSPARENT_CONTAINERS = TokenSet.create(MARKDOWN_FILE, UNORDERED_LIST, ORDERED_LIST, LIST_ITEM, BLOCK_QUOTE)
 

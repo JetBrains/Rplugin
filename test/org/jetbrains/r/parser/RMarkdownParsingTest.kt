@@ -63,4 +63,8 @@ class RMarkdownParsingTest : ParsingTestCase(
   fun testDifferentCells() {
     doTest(true)
   }
+
+  fun testDifferentCellsWithParameters() {
+    doTest(true)
+  }
 }

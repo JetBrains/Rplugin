@@ -1,0 +1,2 @@
+PyFile:differentCellsWithParameters.rmd
+  PsiElement(OUTER)('---\ntitle: "Untitled"\nauthor: vkkoshelev\ndate: 11/16/19\noutput: rmarkdown::html_vignette\n---\n```{r}\n    print(3)\n```\n```{r chunkname, message = TRUE}\n    print(2)\n```\n```{r, message = FALSE}\n    print(1)\n```')

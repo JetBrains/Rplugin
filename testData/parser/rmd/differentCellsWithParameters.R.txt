@@ -1,0 +1,38 @@
+RFile:differentCellsWithParameters.rmd
+  PsiElement(OUTER)('---\ntitle: "Untitled"\nauthor: vkkoshelev\ndate: 11/16/19\noutput: rmarkdown::html_vignette\n---\n```{r}')
+  PsiElement(nl)('\n')
+  PsiWhiteSpace('    ')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('3')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(OUTER)('```\n```{r chunkname, message = TRUE}')
+  PsiElement(nl)('\n')
+  PsiWhiteSpace('    ')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('2')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(OUTER)('```\n```{r, message = FALSE}')
+  PsiElement(nl)('\n')
+  PsiWhiteSpace('    ')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('print')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('1')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(OUTER)('```')
