@@ -32,10 +32,14 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
 
   override fun validateInterpreter(): List<ValidationInfo> {
     val path = interpreterPath ?: return listOf(ValidationInfo(MISSING_INTERPRETER_TEXT))
-    if (!isCorrectInterpreterPath(path)) {
-      return listOf(ValidationInfo(INVALID_INTERPRETER_TEXT))
+    if (path == LastValidatedInterpreter.path) return LastValidatedInterpreter.validationInfo
+    LastValidatedInterpreter.path = path
+    LastValidatedInterpreter.validationInfo = if (!isCorrectInterpreterPath(path)) {
+      listOf(ValidationInfo(INVALID_INTERPRETER_TEXT))
+    } else {
+      emptyList()
     }
-    return emptyList()
+    return LastValidatedInterpreter.validationInfo
   }
 
   private fun isCorrectInterpreterPath(interpreterPath: String): Boolean {
@@ -47,6 +51,11 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     } catch (_: Exception) {
       false
     }
+  }
+
+  private object LastValidatedInterpreter {
+    var path: String? = null
+    var validationInfo: List<ValidationInfo> = emptyList()
   }
 
   companion object {
