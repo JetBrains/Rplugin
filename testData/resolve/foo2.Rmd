@@ -1,0 +1,8 @@
+
+```{r}
+foo.bar <- function() { print(3) }
+bar.baz <- function() {
+  foo.bar() # here
+}
+
+```

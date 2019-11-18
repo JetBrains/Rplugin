@@ -8,9 +8,11 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.DelegatingGlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.r.interpreter.RInterpreter;
 import org.jetbrains.r.interpreter.RInterpreterManager;
+import org.jetbrains.r.rmarkdown.RMarkdownFileType;
 
 final public class RSearchScopeUtil {
   private RSearchScopeUtil() {}
@@ -20,6 +22,12 @@ final public class RSearchScopeUtil {
     return new DelegatingGlobalSearchScope(GlobalSearchScope.allScope(element.getProject())) {
       @Override
       public boolean contains(@NotNull VirtualFile file) {
+        if (file.equals(PsiUtilBase.getVirtualFile(element))) {
+          return true;
+        }
+        if (file.getFileType() == RMarkdownFileType.INSTANCE) {
+          return false;
+        }
         if (myBaseScope.contains(file)) {
           return true;
         }

@@ -60,13 +60,16 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
     }
   }
 
-  private fun resolveUsingRuntimeInfo(runtimeInfo: RConsoleRuntimeInfo,
-                                      resolveResults: Array<ResolveResult>): Array<ResolveResult> {
-    val loadedPackages = runtimeInfo.loadedPackages
-    val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
-    if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
-      return arrayOf(topResolveResult)
+  private fun sortResolveResults(runtimeInfo: RConsoleRuntimeInfo?,
+                                 resolveResults: Array<ResolveResult>): Array<ResolveResult> {
+    if (runtimeInfo != null) {
+      val loadedPackages = runtimeInfo.loadedPackages
+      val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
+      if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
+        return arrayOf(topResolveResult)
+      }
     }
+    resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
     return resolveResults
   }
 
@@ -81,7 +84,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
     override fun resolve(reference: RReferenceBase<T>, incompleteCode: Boolean): Array<ResolveResult> {
       val resolveResults = reference.multiResolveInner(incompleteCode)
       val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
-      return runtimeInfo?.let { info -> reference.resolveUsingRuntimeInfo(info, resolveResults) } ?: resolveResults
+      return reference.sortResolveResults(runtimeInfo, resolveResults)
     }
   }
 

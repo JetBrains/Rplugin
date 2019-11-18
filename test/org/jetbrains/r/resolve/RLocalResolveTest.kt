@@ -4,8 +4,11 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.openapi.fileTypes.LanguageFileType
 import junit.framework.TestCase
+import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RLocalResolveTest: RLightCodeInsightFixtureTestCase() {
 
@@ -151,8 +154,17 @@ function(x){
     """.trimIndent())
   }
 
-  private fun doTest(resolveTargetParentText: String, text: String) {
-    myFixture.configureByText("test.R", text)
+  fun testResolveRMarkdown() {
+    doTest("xxx <- function() 123", """
+      ```{r}
+        xxx <- function() 123
+        print(x<caret>xx)
+      ```
+    """.trimIndent(), RMarkdownFileType)
+  }
+
+  private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
+    fileType?.let { myFixture.configureByText(it, text) }
     val results = resolve()
     if (resolveTargetParentText.isBlank()) {
       TestCase.assertEquals(results.size, 0)

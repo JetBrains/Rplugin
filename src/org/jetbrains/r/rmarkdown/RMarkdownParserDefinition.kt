@@ -6,7 +6,10 @@ package org.jetbrains.r.rmarkdown
 
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiFile
+import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.tree.IFileElementType
+import com.intellij.psi.tree.IStubFileElementType
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
 
 class RMarkdownParserDefinition : MarkdownParserDefinition() {
@@ -19,4 +22,4 @@ class RMarkdownParserDefinition : MarkdownParserDefinition() {
   }
 }
 
-private val RMarkdownFileElementType = IFileElementType("R Markdown", RMarkdownLanguage)
+private val RMarkdownFileElementType: IStubFileElementType<*> = IStubFileElementType<PsiFileStub<PsiFile>>("R Markdown", RMarkdownLanguage)
