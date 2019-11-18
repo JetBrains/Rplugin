@@ -29,7 +29,7 @@ class RMultiResolveTest : RLightCodeInsightFixtureTestCase() {
   }
 
   fun testMultiResolveFunction() {
-    doTest( 3,
+    doTest( 1,
             """
             filter <- function(x)x
             function() { filt<caret>er() }
