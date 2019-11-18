@@ -5,8 +5,11 @@
 
 package org.jetbrains.r.parser;
 
+import com.intellij.lang.LanguageBraceMatching;
 import com.intellij.testFramework.ParsingTestCase;
 import com.intellij.testFramework.TestDataPath;
+import org.jetbrains.r.RLanguage;
+import org.jetbrains.r.editor.RBraceMatcher;
 import org.jetbrains.r.parsing.RParserDefinition;
 
 @TestDataPath("/testData/parser/r")
@@ -15,6 +18,12 @@ public class RParsingTest extends ParsingTestCase {
 
   public RParsingTest() {
     super("", "r", new RParserDefinition());
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, new RBraceMatcher());
   }
 
   @Override

@@ -6,6 +6,7 @@ package org.jetbrains.r.parser
 
 import com.intellij.lang.ASTFactory
 import com.intellij.lang.LanguageASTFactory
+import com.intellij.lang.LanguageBraceMatching
 import com.intellij.psi.LanguageFileViewProviders
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
@@ -17,6 +18,8 @@ import com.jetbrains.python.psi.impl.PythonASTFactory
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
 import org.intellij.plugins.markdown.lang.psi.MarkdownASTFactory
+import org.jetbrains.r.RLanguage
+import org.jetbrains.r.editor.RBraceMatcher
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -37,6 +40,7 @@ class RMarkdownParsingTest : ParsingTestCase(
 
   override fun setUp() {
     super.setUp()
+    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, RBraceMatcher())
     registerExtensionPoint(PythonDialectsTokenSetContributor.EP_NAME, PythonDialectsTokenSetContributor::class.java)
     registerExtension(PythonDialectsTokenSetContributor.EP_NAME, PythonTokenSetContributor())
     addExplicitExtension(LanguageASTFactory.INSTANCE, PythonLanguage.getInstance(), PythonASTFactory())
