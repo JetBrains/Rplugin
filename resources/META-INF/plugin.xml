@@ -262,6 +262,9 @@ You can find the source code in the following repositories:
         <typedHandler implementation="org.jetbrains.r.console.RConsoleAutopopupBlockingHandler" id="rBlockAutoPopup"
                       order="first, before completionAutoPopup"/>
 
+        <extendWordSelectionHandler implementation="org.jetbrains.r.editor.RExtendWordSelectionHandler"/>
+        <basicWordSelectionFilter implementation="org.jetbrains.r.editor.RExtendWordSelectionHandler$RBasicFilter"/>
+
         <controlFlowProvider implementation="org.jetbrains.r.psi.cfg.RControlFlowProvider"/>
 
         <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
