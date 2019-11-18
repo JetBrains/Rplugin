@@ -5,6 +5,7 @@
 package org.jetbrains.r.codestyle
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.lang.LanguageBraceMatching
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import org.intellij.lang.annotations.Language
@@ -13,6 +14,13 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RUsefulTestCase
 
 class TypingTest : RUsefulTestCase() {
+
+  override fun setUp() {
+    super.setUp()
+    // Parsing tests with mocking extension points will set brace matcher to no one for R and that answer will be cached :(
+    LanguageBraceMatching.INSTANCE.clearCache()
+  }
+
   fun testAfterBraceInFunction() {
     doTest("""
       x <- function(a, b) {<caret>
