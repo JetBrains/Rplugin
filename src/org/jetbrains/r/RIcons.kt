@@ -8,3 +8,9 @@ import com.intellij.openapi.util.IconLoader
 
 @JvmField
 val R_LOGO_16 = IconLoader.findIcon("/icons/r_logo_16.svg")
+
+object RIcons {
+  val CLEAR_GRAPHICS = IconLoader.findIcon("/icons/graphics/clear.svg")
+  val CLEAR_ALL_GRAPHICS = IconLoader.findIcon("/icons/graphics/clearAll.svg")
+  val EXPORT_GRAPHICS = IconLoader.findIcon("/icons/graphics/export.svg")
+}

@@ -18,6 +18,7 @@ import com.intellij.util.ui.update.Update
 import org.intellij.datavis.inlays.components.GraphicsPanel
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.RIcons
 import org.jetbrains.r.run.graphics.*
 import java.awt.Desktop
 import org.jetbrains.r.settings.RGraphicsSettings
@@ -334,10 +335,10 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
     private val PREVIOUS_GRAPHICS_ACTION_ICON = AllIcons.Actions.Back
     private val NEXT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Forward
-    private val EXPORT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Menu_saveall
+    private val EXPORT_GRAPHICS_ACTION_ICON = RIcons.EXPORT_GRAPHICS
     private val ZOOM_GRAPHICS_ACTION_ICON = AllIcons.Actions.Search
-    private val CLEAR_GRAPHICS_ACTION_ICON = AllIcons.Actions.Close  // TODO [mine]: adequate icons, please
-    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = AllIcons.Actions.Cancel
+    private val CLEAR_GRAPHICS_ACTION_ICON = RIcons.CLEAR_GRAPHICS
+    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = RIcons.CLEAR_ALL_GRAPHICS
     private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
 
     private val RESOLUTION_CHANGED_MESSAGE = RBundle.message("graphics.panel.settings.resolution.changed.message")
