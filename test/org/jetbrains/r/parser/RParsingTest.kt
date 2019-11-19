@@ -4,22 +4,14 @@
  */
 package org.jetbrains.r.parser
 
-import com.intellij.lang.LanguageBraceMatching
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.editor.RBraceMatcher
-import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.RUsefulTestCase
 
 private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/r/"
 
 @TestDataPath("/testData/parser/r")
-class RParsingTest : ParsingTestCase("", "r", RParserDefinition()) {
-
-  override fun setUp() {
-    super.setUp()
-    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, RBraceMatcher())
-  }
+class RParsingTest : RUsefulTestCase() {
 
   override fun getTestDataPath(): String {
     return DATA_PATH
@@ -263,6 +255,16 @@ class RParsingTest : ParsingTestCase("", "r", RParserDefinition()) {
 
   //---------------------------------------
   private fun doTest() {
-    doTest(true)
+    val testName = getTestName(false)
+    myFixture.configureByFile(testName + ".r")
+
+    ParsingTestCase.doCheckResult(
+      testDataPath,
+      myFixture.file,
+      true,
+      testName,
+      false,
+      false,
+      false)
   }
 }

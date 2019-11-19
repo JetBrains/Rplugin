@@ -1,4 +1,5 @@
 RFile:Parenthesized.r
+  PsiElement(nl)('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('i')

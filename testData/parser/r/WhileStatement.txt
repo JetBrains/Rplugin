@@ -1,4 +1,5 @@
 RFile:WhileStatement.r
+  PsiElement(nl)('\n')
   R_WHILE_STATEMENT
     PsiElement(while)('while')
     PsiElement(()('(')
@@ -53,3 +54,4 @@ RFile:WhileStatement.r
           PsiElement())(')')
       PsiElement(nl)('\n')
       PsiElement(})('}')
+  PsiElement(nl)('\n')

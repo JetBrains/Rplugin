@@ -1,4 +1,5 @@
 RFile:ErrorWhile.r
+  PsiElement(nl)('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func1')
@@ -104,3 +105,4 @@ RFile:ErrorWhile.r
           PsiErrorElement:<expression> expected, got '}'
             <empty list>
         PsiElement(})('}')
+  PsiElement(nl)('\n')

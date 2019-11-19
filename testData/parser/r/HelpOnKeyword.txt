@@ -84,3 +84,5 @@ RFile:HelpOnKeyword.r
     PsiElement(help)('?')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('files')
+  PsiElement(nl)('\n')
+  PsiElement(nl)('\n')
