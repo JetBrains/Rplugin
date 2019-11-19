@@ -128,6 +128,14 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
                     expected = listOf("\"yyyy_aa\"", "\"yyyy_ab\"", "\"yyyy_ac\""))
   }
 
+  fun testDataFrame() {
+    rInterop.executeCode("t <- data.frame(yyyy_aaa = NA, yyyy_aab = NA)", true)
+    checkCompletion("t %>% filter(yyyy_<caret>)",
+                    expected = listOf("yyyy_aaa", "yyyy_aab"))
+    checkCompletion("t[yyyy_<caret>]",
+                    expected = emptyList())
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: List<String>? = null, initialGroups: List<String>? = null) {
     rInterop.executeCode("library(dplyr)", true)
     if (initial != null) {

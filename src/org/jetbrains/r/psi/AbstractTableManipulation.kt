@@ -136,7 +136,7 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
   fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): List<TableManipulationColumn> {
     val expression = StringBuilder()
     transformExpression(table, expression, runtimeInfo)
-    return runtimeInfo.loadTableColumns(expression.toString(), tableType)
+    return runtimeInfo.loadTableColumns(expression.toString(), if (table.parent is RSubscriptionExpression) tableType else DATA_FRAME_TYPE)
   }
 
   protected abstract fun transformNotCall(expr: RExpression,
@@ -253,4 +253,8 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
       "sqrt", "tan", "tanpi", "trunc"
     )
   )
+
+  companion object {
+    private val DATA_FRAME_TYPE = Service.TableColumnsInfoRequest.TableType.DATA_FRAME
+  }
 }

@@ -176,6 +176,14 @@ class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
 
   }
 
+  fun testDataFrame() {
+    rInterop.executeCode("t <- data.frame(yyyy_aaa = NA, yyyy_aab = NA)", true)
+    checkCompletion("as.data.table(t, key = foo(yyyy_<caret>))",
+                    expected = listOf("\"yyyy_aaa\"", "\"yyyy_aab\""))
+    checkCompletion("t[yyyy_<caret>]",
+                    expected = emptyList())
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,
