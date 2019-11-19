@@ -142,14 +142,21 @@ class RGraphicsDevice(
       val mostRecentNormal = normal.groupAndShrinkBy { it.version }
       val orderedZoomed = zoomed.sortedBy { it.number }
       if (checkUpdated(mostRecentNormal)) {
+        traceUpdatedSnapshots(mostRecentNormal)
         lastNormal = mostRecentNormal
         lastZoomed = orderedZoomed
-        val tracedNumber = tracedSnapshotNumber ?: mostRecentNormal.last().number
-        numbers2parameters[tracedNumber] = configuration.screenParameters
         postSnapshotNumber(tracedSnapshotNumber)
         notifyListenersOnUpdate()
       }
       deleteSnapshots(sketches)
+    }
+  }
+
+  private fun traceUpdatedSnapshots(mostRecentNormal: List<RSnapshot>) {
+    val latestIdentities = mostRecentNormal.toIdentities().toSet()
+    val notTracedIdentities = latestIdentities.minus(lastNormal.toIdentities())
+    for (identity in notTracedIdentities) {
+      numbers2parameters[identity.first] = configuration.screenParameters
     }
   }
 
@@ -193,6 +200,10 @@ class RGraphicsDevice(
 
   companion object {
     private val LOGGER = Logger.getInstance(RGraphicsDevice::class.java)
+
+    private fun List<RSnapshot>.toIdentities(): Sequence<Pair<Int, Int>> {
+      return asSequence().map { Pair(it.number, it.version) }
+    }
 
     private fun deleteSnapshots(snapshots: List<RSnapshot>) {
       for (snapshot in snapshots) {
