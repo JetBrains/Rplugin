@@ -56,4 +56,4 @@ RFile:multicell.rmd
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('z')
   PsiElement(nl)('\n')
-  PsiElement(OUTER)('```')
+  PsiElement(OUTER)('```\n\n')

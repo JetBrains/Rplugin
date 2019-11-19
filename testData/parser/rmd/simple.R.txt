@@ -23,4 +23,4 @@ RFile:simple.rmd
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('432432432')
   PsiElement(nl)('\n')
-  PsiElement(OUTER)('```')
+  PsiElement(OUTER)('```\n')

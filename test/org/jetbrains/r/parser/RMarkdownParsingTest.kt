@@ -4,50 +4,18 @@
 
 package org.jetbrains.r.parser
 
-import com.intellij.lang.ASTFactory
-import com.intellij.lang.LanguageASTFactory
-import com.intellij.lang.LanguageBraceMatching
-import com.intellij.psi.LanguageFileViewProviders
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
-import com.jetbrains.python.*
 import com.jetbrains.python.psi.LanguageLevel
-import com.jetbrains.python.psi.PyPsiFacade
-import com.jetbrains.python.psi.impl.PyPsiFacadeImpl
-import com.jetbrains.python.psi.impl.PythonASTFactory
-import org.intellij.plugins.markdown.lang.MarkdownLanguage
-import org.intellij.plugins.markdown.lang.parser.MarkdownParserDefinition
-import org.intellij.plugins.markdown.lang.psi.MarkdownASTFactory
-import org.jetbrains.r.RLanguage
-import org.jetbrains.r.editor.RBraceMatcher
-import org.jetbrains.r.parsing.RParserDefinition
-import org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory
-import org.jetbrains.r.rmarkdown.RMarkdownLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownParserDefinition
+import org.jetbrains.r.RUsefulTestCase
 
 private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/rmd/"
 
 @TestDataPath("/testData/parser/rmd")
-class RMarkdownParsingTest : ParsingTestCase(
-  "",
-  "rmd",
-  true,
-  RMarkdownParserDefinition(),
-  MarkdownParserDefinition(),
-  PythonParserDefinition(),
-  RParserDefinition()
-) {
+class RMarkdownParsingTest : RUsefulTestCase() {
 
   override fun setUp() {
     super.setUp()
-    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, RBraceMatcher())
-    registerExtensionPoint(PythonDialectsTokenSetContributor.EP_NAME, PythonDialectsTokenSetContributor::class.java)
-    registerExtension(PythonDialectsTokenSetContributor.EP_NAME, PythonTokenSetContributor())
-    addExplicitExtension(LanguageASTFactory.INSTANCE, PythonLanguage.getInstance(), PythonASTFactory())
-    PythonDialectsTokenSetProvider.reset()
-    addExplicitExtension(LanguageFileViewProviders.INSTANCE, RMarkdownLanguage, RMarkdownFileViewProviderFactory)
-    addExplicitExtension<ASTFactory>(LanguageASTFactory.INSTANCE, MarkdownLanguage.INSTANCE, MarkdownASTFactory())
-    project.registerService(PyPsiFacade::class.java, PyPsiFacadeImpl::class.java)
     // Any version can be used for this test but the psi-tree test answer may be different
     LanguageLevel.FORCE_LANGUAGE_LEVEL = LanguageLevel.PYTHON27
   }
@@ -57,18 +25,32 @@ class RMarkdownParsingTest : ParsingTestCase(
   }
 
   fun testSimple() {
-    doTest(true)
+    doTest()
   }
 
   fun testMulticell() {
-    doTest(true)
+    doTest()
   }
 
   fun testDifferentCells() {
-    doTest(true)
+    doTest()
   }
 
   fun testDifferentCellsWithParameters() {
-    doTest(true)
+    doTest()
+  }
+
+  private fun doTest() {
+    val testName = getTestName(true)
+    myFixture.configureByFile(testName + ".rmd")
+
+    ParsingTestCase.doCheckResult(
+      testDataPath,
+      myFixture.file,
+      true,
+      testName,
+      false,
+      false,
+      false)
   }
 }

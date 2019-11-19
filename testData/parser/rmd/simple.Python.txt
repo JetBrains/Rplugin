@@ -1,2 +1,2 @@
 PyFile:simple.rmd
-  PsiElement(OUTER)('It's a header\n---\n\n```{r}\n  x <- 312312\n  y <- 432432432\n```')
+  PsiElement(OUTER)('It's a header\n---\n\n```{r}\n  x <- 312312\n  y <- 432432432\n```\n')

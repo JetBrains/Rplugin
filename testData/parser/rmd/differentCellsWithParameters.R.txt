@@ -35,4 +35,4 @@ RFile:differentCellsWithParameters.rmd
         PsiElement(NUMERIC)('1')
       PsiElement())(')')
   PsiElement(nl)('\n')
-  PsiElement(OUTER)('```')
+  PsiElement(OUTER)('```\n')

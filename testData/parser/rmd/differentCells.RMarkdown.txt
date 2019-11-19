@@ -89,3 +89,4 @@ R Markdown
         PsiElement(Markdown:Markdown:CODE_FENCE_END)('> ```')
       PsiElement(Markdown:Markdown:EOL)('\n')
       PsiElement(Markdown:WHITE_SPACE)('>')
+    PsiElement(Markdown:Markdown:EOL)('\n')

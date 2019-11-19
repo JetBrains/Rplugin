@@ -53,3 +53,4 @@ R Markdown
       PsiElement(R Fence)('    print(1)')
       PsiElement(Markdown:Markdown:EOL)('\n')
       PsiElement(Markdown:Markdown:CODE_FENCE_END)('```')
+    PsiElement(Markdown:Markdown:EOL)('\n')

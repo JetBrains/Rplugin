@@ -1,2 +1,2 @@
 PyFile:multicell.rmd
-  PsiElement(OUTER)('It's a header\n---\n\n```{r}\n  x <- 312312\n  y <- 432432432\n```\n\nSome Text\n\n\n```{r}\n  z <- 432432432\n```\n\nAnother Text\n\n```{r}\n  x + y + z\n```')
+  PsiElement(OUTER)('It's a header\n---\n\n```{r}\n  x <- 312312\n  y <- 432432432\n```\n\nSome Text\n\n\n```{r}\n  z <- 432432432\n```\n\nAnother Text\n\n```{r}\n  x + y + z\n```\n\n')

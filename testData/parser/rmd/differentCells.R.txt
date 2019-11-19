@@ -56,4 +56,4 @@ RFile:differentCells.rmd
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('z')
   PsiElement(nl)('\n')
-  PsiElement(OUTER)('```\n\n> Here is a quote, followed by a code chunk:\n>\n> ```{r}\n> x = 1:10\n> rev(x^2)\n> ```\n>')
+  PsiElement(OUTER)('```\n\n> Here is a quote, followed by a code chunk:\n>\n> ```{r}\n> x = 1:10\n> rev(x^2)\n> ```\n>\n')
