@@ -84,15 +84,30 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     runAndCheckRescaleSnapshot(GGPLOT_DRAWER, DISTORTING_DIMENSIONS)
   }
 
+  fun testCaptureTwoPlots() {
+    val command = "require(ggplot2); plot(squares); ggplot(squares, aes(x = xs, y = ys)) + geom_line()"
+    val expectedIndices = listOf(0, 2)
+    val snapshots = runAndGetAllSnapshots(listOf(command))
+    val candidates = getBasicCandidates()
+    TestCase.assertEquals(snapshots.size, expectedIndices.size)
+    for ((snapshot, expectedIndex) in snapshots.zip(expectedIndices)) {
+      checkSimilar(snapshot, expectedIndex, candidates, "two")
+    }
+  }
+
   private fun runAndGetSnapshot(commands: List<String>): RSnapshot {
+    return runAndGetAllSnapshots(commands).last()
+  }
+
+  private fun runAndGetAllSnapshots(commands: List<String>): List<RSnapshot> {
     initTestDataFrame()
     TestCase.assertTrue(commands.isNotEmpty())
-    var snapshot: RSnapshot? = null
-    for (command in commands) {
-      execute(command)
-      snapshot = getLastSnapshot()
+    return mutableListOf<RSnapshot>().also {
+      for (command in commands) {
+        execute(command)
+        it.addAll(getAllSnapshots())
+      }
     }
-    return snapshot!!
   }
 
   private fun rescaleAndGetSnapshot(number: Int, dimension: Dimension): RSnapshot {
@@ -146,6 +161,10 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun getLastSnapshot(): RSnapshot {
+    return getAllSnapshots().last()
+  }
+
+  private fun getAllSnapshots(): List<RSnapshot> {
     val start = System.currentTimeMillis()
     while (currentSnapshots == null) {
       if (System.currentTimeMillis() - start > TIMEOUT) {
@@ -155,7 +174,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     }
     val snapshots = currentSnapshots!!
     currentSnapshots = null
-    return snapshots.last()
+    return snapshots
   }
 
   private fun getExpectedBasicSnapshot(name: String): File {
