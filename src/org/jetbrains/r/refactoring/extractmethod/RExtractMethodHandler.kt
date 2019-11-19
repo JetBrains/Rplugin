@@ -23,7 +23,6 @@ import com.intellij.refactoring.util.CommonRefactoringUtil.RefactoringErrorHintE
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isAssignee
-import org.jetbrains.r.psi.isNamedArgumentAssignment
 import org.jetbrains.r.refactoring.RNamesValidator
 
 class RExtractMethodHandler : RefactoringActionHandler {
@@ -123,7 +122,7 @@ class RExtractMethodHandler : RefactoringActionHandler {
       val validator = object : ExtractMethodValidator {
         override fun check(name: String?): String? {
           if (name in codeFragment.controlFlowHolder.getLocalVariableInfo(codeFragment.entryPoint)!!.variables ||
-              file.children.filterIsInstance<RAssignmentStatement>().any { (it.assignee as? RIdentifierExpression)?.name == name }) {
+              file.children.filterIsInstance<RNamedArgument>().any { it.name == name }) {
             return "Name clashes with already existing name"
           }
           return null
@@ -154,7 +153,7 @@ class RExtractMethodHandler : RefactoringActionHandler {
         is RParameterList -> return false
       }
       if (expr.isAssignee()) return false
-      if (expr is RAssignmentStatement && expr.isNamedArgumentAssignment()) return false
+      if (expr is RNamedArgument) return false
       return true
     }
   }

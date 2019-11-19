@@ -351,7 +351,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     // check if doc of internally rerouted doc-popup click
     restoreInterceptedLink(rInterop, element)?.let { return getHtmlPath(rInterop, it) }
 
-    if (element is RStringLiteralExpression) {
+    if (element is RStringLiteralExpression || element is RNamedArgument) {
       return null
     }
 

@@ -113,6 +113,11 @@ public class RVisitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitNamedArgument(@NotNull RNamedArgument o) {
+    visitPsiNameIdentifierOwner(o);
+    // visitExpression(o);
+  }
+
   public void visitNamespaceAccessExpression(@NotNull RNamespaceAccessExpression o) {
     visitExpression(o);
   }

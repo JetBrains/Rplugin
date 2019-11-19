@@ -68,15 +68,14 @@
   LBRACKET="["
   ]
 
-  //extends("function_expression")="org.jetbrains.r.psi.impl.RControlFlowHolderImpl"
   extends(".*statement|.*expression|.*literal")=expression
   extends(".*_operator")=operator
   implements("identifier_expression")="com.intellij.psi.PsiNamedElement"
   implements("string_literal_expression")="com.intellij.psi.PsiNamedElement"
   implements("parameter")="com.intellij.psi.PsiNameIdentifierOwner"
   implements("assignment_statement")="com.intellij.psi.PsiNameIdentifierOwner"
+  implements("named_argument")="com.intellij.psi.PsiNameIdentifierOwner"
   implements("parameter")="org.jetbrains.r.psi.api.RPsiElement"
-  implements("assignment_statement")="org.jetbrains.r.psi.api.RPsiElement"
   mixin("string_literal_expression")="org.jetbrains.r.psi.RStringInjectHost"
   mixin("function_expression")="org.jetbrains.r.psi.impl.RControlFlowHolderImpl"
   implements("while_statement")="org.jetbrains.r.psi.api.RLoopStatement"
@@ -84,6 +83,7 @@
   implements("repeat_statement")="org.jetbrains.r.psi.api.RLoopStatement"
   implements("function_expression")="org.jetbrains.r.psi.api.RControlFlowHolder"
   implements("function_expression")="org.jetbrains.r.psi.api.RExpression"
+  implements("named_argument")="org.jetbrains.r.psi.api.RExpression"
 
   generateTokenAccessors=false
 }
@@ -205,16 +205,18 @@ identifier_expression ::= identifier {
 private primitive_expression ::= constant | identifier_expression
 parenthesized_expression ::= '(' nl* expression nl* ')'
 
+named_argument ::= (identifier_expression | string_literal_expression) eq_assign_operator nl* expression {
+  methods = [ getName setName getNameIdentifier getAssignedValue getReference ]
+}
 fake empty_expression ::= expression //todo: required to generate PSI, how to simplify this?
 external external_empty_expression ::= parseEmptyExpression { elementType=empty_expression }
-private subscription_expr_elem ::= expression | external_empty_expression
+private subscription_expr_elem ::= named_argument | expression | external_empty_expression
 private subscription_expr_list ::= subscription_expr_elem nl* (',' nl* subscription_expr_elem nl*)*
 subscription_expression ::= expression ('[' nl* ']' | '[' nl* subscription_expr_list ']' |
   '[[' nl* ']]' | '[[' nl* subscription_expr_list ']]') {
   methods = [ isSingle ]
 }
-
-private arg ::= expression | external_empty_expression
+private arg ::= named_argument | expression | external_empty_expression
 argument_list ::= '(' nl* ')' | '(' nl* arg nl* (',' nl* arg nl*)* ')'
 call_expression ::= expression argument_list
 

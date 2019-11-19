@@ -97,6 +97,16 @@ internal object RPsiImplUtil {
   }
 
   @JvmStatic
+  fun getName(namedArgument: RNamedArgument): String {
+    return getNameIdentifier(namedArgument)?.name ?: UNNAMED
+  }
+
+  @JvmStatic
+  fun getNameIdentifier(namedArgument: RNamedArgument): PsiNamedElement? {
+    return PsiTreeUtil.getChildOfAnyType(namedArgument, RIdentifierExpression::class.java, RStringLiteralExpression::class.java)
+  }
+
+  @JvmStatic
   fun isFunctionDeclaration(assignment: RAssignmentStatementImpl): Boolean {
     return assignment.greenStub?.isFunctionDeclaration ?: (assignment.assignedValue is RFunctionExpression)
   }
@@ -160,6 +170,13 @@ internal object RPsiImplUtil {
     val nameIdentifier = parameter.nameIdentifier ?: throw IncorrectOperationException("Empty name: " + this)
     nameIdentifier.name = name
     return parameter
+  }
+
+  @JvmStatic
+  fun setName(namedArgument: RNamedArgument, name: String): PsiElement {
+    val nameIdentifier = namedArgument.nameIdentifier ?: throw IncorrectOperationException("Empty name: " + this)
+    nameIdentifier.setName(name)
+    return namedArgument
   }
 
   @JvmStatic
@@ -318,6 +335,12 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getControlFlow(function: RFunctionExpression): RControlFlow =
     CachedValuesManager.getCachedValue(function) { CachedValueProvider.Result.create(buildControlFlow(function), function) }
+
+  @JvmStatic
+  fun getAssignedValue(namedArgument: RNamedArgument): RExpression? {
+    val expressionList = PsiTreeUtil.getChildrenOfTypeAsList(namedArgument, RExpression::class.java)
+    return if (expressionList.size > 1) expressionList[1] else null
+  }
 
   private fun getLoopImpl(element: RPsiElement): RLoopStatement? {
     val loop = PsiTreeUtil.getParentOfType(element, RLoopStatement::class.java, RFunctionExpression::class.java)

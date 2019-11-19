@@ -64,12 +64,13 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression | external_empty_expression
+  // named_argument | expression | external_empty_expression
   static boolean arg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arg")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = expression(b, l + 1, -1);
+    r = named_argument(b, l + 1);
+    if (!r) r = expression(b, l + 1, -1);
     if (!r) r = parseEmptyExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -446,6 +447,41 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // (identifier_expression | string_literal_expression) eq_assign_operator nl* expression
+  public static boolean named_argument(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "named_argument")) return false;
+    if (!nextTokenIsSmart(b, R_IDENTIFIER, R_STRING)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, R_NAMED_ARGUMENT, "<named argument>");
+    r = named_argument_0(b, l + 1);
+    r = r && eq_assign_operator(b, l + 1);
+    r = r && named_argument_2(b, l + 1);
+    r = r && expression(b, l + 1, -1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // identifier_expression | string_literal_expression
+  private static boolean named_argument_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "named_argument_0")) return false;
+    boolean r;
+    r = identifier_expression(b, l + 1);
+    if (!r) r = string_literal_expression(b, l + 1);
+    return r;
+  }
+
+  // nl*
+  private static boolean named_argument_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "named_argument_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "named_argument_2", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
   // '!'
   public static boolean not_operator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "not_operator")) return false;
@@ -653,12 +689,13 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression | external_empty_expression
+  // named_argument | expression | external_empty_expression
   static boolean subscription_expr_elem(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "subscription_expr_elem")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = expression(b, l + 1, -1);
+    r = named_argument(b, l + 1);
+    if (!r) r = expression(b, l + 1, -1);
     if (!r) r = parseEmptyExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;

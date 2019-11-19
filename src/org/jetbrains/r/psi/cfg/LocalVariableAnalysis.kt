@@ -7,7 +7,6 @@ package org.jetbrains.r.psi.cfg
 import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isNamedArgumentAssignment
 
 class VariableDescription(val firstDefinition: RPsiElement) {
   val name = firstDefinition.name!!
@@ -56,9 +55,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
       is RAssignmentStatement -> {
         val assignee = element.assignee
         if (assignee is RIdentifierExpression) {
-          if (!element.isNamedArgumentAssignment()) {
-            result = addWrite(info, assignee, element.isClosureAssignment)
-          }
+          result = addWrite(info, assignee, element.isClosureAssignment)
         }
       }
       is RParameter -> element.variable?.let {

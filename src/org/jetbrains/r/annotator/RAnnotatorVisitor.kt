@@ -15,7 +15,6 @@ import org.jetbrains.r.psi.RPsiUtil.isFieldLikeComponent
 import org.jetbrains.r.psi.ReferenceKind
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getKind
-import org.jetbrains.r.psi.isNamedArgumentAssignment
 
 class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
 
@@ -80,11 +79,11 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
 
   private fun analyzeIdentifierExpression(element: RIdentifierExpression): TextAttributesKey? {
     RPsiUtil.getCallByExpression(element)?.let { return null }
+    RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let { return NAMED_ARGUMENT }
     RPsiUtil.getAssignmentByAssignee(element)?.let { assignment ->
       return when {
         assignment.isFunctionDeclaration -> FUNCTION_DECLARATION
         assignment.isClosureAssignment -> CLOSURE
-        assignment.isNamedArgumentAssignment() -> NAMED_ARGUMENT
         else -> LOCAL_VARIABLE
       }
     }

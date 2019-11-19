@@ -62,7 +62,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     val nodeGrandParent = nodeParent.treeParent ?: return null
     if (custom.ALIGN_ASSIGNMENT_OPERATORS &&
         node.elementType == RElementTypes.R_ASSIGN_OPERATOR &&
-        nodeParent.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT) {
+        (nodeParent.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT || nodeParent.elementType == RElementTypes.R_NAMED_ARGUMENT)) {
       if (nodeGrandParent.elementType == RElementTypes.R_ARGUMENT_LIST) {
         return assignInParametersAlignments[nodeGrandParent]
       }

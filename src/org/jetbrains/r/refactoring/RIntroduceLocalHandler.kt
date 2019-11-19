@@ -224,6 +224,7 @@ abstract class RIntroduceLocalHandler : RefactoringActionHandler {
     if (element !is RExpression) return false
     when (element) {
       is RAssignmentStatement -> return false
+      is RNamedArgument -> return false
       is RBlockExpression -> return false
       is RBreakStatement -> return false
       is REmptyExpression -> return false
@@ -238,6 +239,7 @@ abstract class RIntroduceLocalHandler : RefactoringActionHandler {
     }
     if (RPsiUtil.isReturn(element)) return false
     if (RPsiUtil.getAssignmentByAssignee(element) != null) return false
+    if (RPsiUtil.getNamedArgumentByNameIdentifier(element) != null) return false
     return true
   }
 

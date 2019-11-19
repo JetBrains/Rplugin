@@ -35,6 +35,12 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     builder.startNode(rAssignmentStatement)
   }
 
+  override fun visitNamedArgument(namedArgument: RNamedArgument) {
+    namedArgument.assignedValue?.accept(this)
+    namedArgument.identifyingElement?.accept(this)
+    builder.startNode(namedArgument)
+  }
+
   override fun visitBlockExpression(block: RBlockExpression) {
     super.visitBlockExpression(block)
     builder.startNode(block)

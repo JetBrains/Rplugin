@@ -31,7 +31,7 @@ RFile:EmptyExpressionInSubscription.r
             <empty list>
           PsiElement(,)(',')
           PsiWhiteSpace(' ')
-          R_ASSIGNMENT_STATEMENT
+          R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('drop')
             R_ASSIGN_OPERATOR

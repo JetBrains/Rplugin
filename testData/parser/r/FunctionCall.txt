@@ -12,7 +12,7 @@ RFile:FunctionCall.r
         PsiElement(NUMERIC)('2')
       PsiElement(,)(',')
       PsiWhiteSpace(' ')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('b')
         PsiWhiteSpace(' ')

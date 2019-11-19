@@ -9,9 +9,9 @@ import icons.org.jetbrains.r.psi.TableManipulationArgument
 import icons.org.jetbrains.r.psi.TableManipulationContextType
 import icons.org.jetbrains.r.psi.TableManipulationFunction
 import org.jetbrains.r.console.RConsoleRuntimeInfo
-import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression
+import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.rinterop.Service
 
 object RDataTableUtil : AbstractTableManipulation<DataTableFunction>() {
@@ -139,15 +139,15 @@ enum class DataTableFunction(
   fun getTableArguments(psiCall: RExpression, argumentList: List<RExpression>, runtimeInfo: RConsoleRuntimeInfo?): List<RExpression> {
 
     val resultList = mutableListOf<RExpression>()
-    val argumentsNames = argumentList.mapNotNull { RPsiUtil.getArgumentName(it) }
+    val argumentsNames = argumentList.mapNotNull { (it as? RNamedArgument)?.name }
     val parameters = getMissingParameters(psiCall, argumentsNames, runtimeInfo)
 
     var realIndex = 0
     for (argument in argumentList) {
-      val argumentName = RPsiUtil.getArgumentName(argument)
+      val argumentName = (argument as? RNamedArgument)?.name
       if (argumentName != null) {
         if (tablesArguments.contains(argumentName)) {
-          (argument as RAssignmentStatement).assignedValue?.let {
+          argument.assignedValue?.let {
             resultList.add(it)
           }
         }
@@ -178,7 +178,7 @@ enum class DataTableFunction(
                               runtimeInfo: RConsoleRuntimeInfo?): String? {
     currentArgument.name?.let { return it }
 
-    val argumentsNames = argumentList.mapNotNull { RPsiUtil.getArgumentName(it) }
+    val argumentsNames = argumentList.mapNotNull { (it as? RNamedArgument)?.name }
     val parameters = getMissingParameters(call, argumentsNames, runtimeInfo) ?: return null
 
     var realIndex = 0
@@ -190,7 +190,7 @@ enum class DataTableFunction(
       if (parameters[realIndex] == "...") {
         return "..."
       }
-      if (RPsiUtil.getArgumentName(argument) == null) {
+      if (argument !is RNamedArgument) {
         if (currentIndex == currentArgument.index) {
           return parameters[realIndex]
         }
@@ -206,9 +206,9 @@ enum class DataTableFunction(
                         argumentList: List<RExpression>,
                         argumentName: String,
                         runtimeInfo: RConsoleRuntimeInfo?): RExpression? {
-    val argumentsNames = argumentList.map { RPsiUtil.getArgumentName(it) }.apply {
+    val argumentsNames = argumentList.map { (it as? RNamedArgument)?.name }.apply {
       indexOf(argumentName).let {
-        if (it != -1) return (argumentList[it] as? RAssignmentStatement)?.assignedValue
+        if (it != -1) return (argumentList[it] as RNamedArgument).assignedValue
       }
     }.filterNotNull()
 
@@ -220,7 +220,7 @@ enum class DataTableFunction(
         return null
       }
 
-      if (RPsiUtil.getArgumentName(argument) != null) continue
+      if (argument is RNamedArgument) continue
 
       if (parameters[realIndex] == argumentName) {
         return argument

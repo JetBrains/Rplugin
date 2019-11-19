@@ -29,7 +29,7 @@ RFile:FunctionDefinition.r
               PsiElement(identifier)('readline')
             R_ARGUMENT_LIST
               PsiElement(()('(')
-              R_ASSIGNMENT_STATEMENT
+              R_NAMED_ARGUMENT
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('prompt')
                 R_ASSIGN_OPERATOR

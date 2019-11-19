@@ -40,8 +40,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
 
   override fun canInlineElement(psiElement: PsiElement): Boolean {
     if (psiElement is RSkeletonBase) return false
-    return (psiElement is RAssignmentStatement && !RPsiUtil.isNamedArgumentAssignment(psiElement))
-           || (psiElement is RIdentifierExpression && !RPsiUtil.isNamedArgument(psiElement))
+    return psiElement is RAssignmentStatement || (psiElement is RIdentifierExpression && !RPsiUtil.isNamedArgument(psiElement))
   }
 
   override fun inlineElement(project: Project, editor: Editor?, psiElement: PsiElement) {

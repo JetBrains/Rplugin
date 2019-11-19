@@ -20,7 +20,7 @@ RFile:Formulae.r
             PsiElement(identifier)('y')
       PsiElement(,)(',')
       PsiWhiteSpace(' ')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('pretty')
         R_ASSIGN_OPERATOR
@@ -29,7 +29,7 @@ RFile:Formulae.r
           PsiElement(TRUE)('TRUE')
       PsiElement(,)(',')
       PsiWhiteSpace(' ')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('contour')
         R_ASSIGN_OPERATOR
@@ -38,7 +38,7 @@ RFile:Formulae.r
           PsiElement(TRUE)('TRUE')
       PsiElement(,)(',')
       PsiWhiteSpace(' ')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('data')
         R_ASSIGN_OPERATOR

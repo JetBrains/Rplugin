@@ -16,9 +16,9 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import junit.framework.TestCase
 import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RBooleanLiteral
 import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.debug.RLineBreakpointType
 
@@ -78,8 +78,8 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
         runReadAction {
           val psi = RElementFactory.createRPsiElementFromText(project, "BREAKPOINT" + line.substringAfter("BREAKPOINT"))
           if (psi is RCallExpression) {
-            psi.argumentList.expressionList.filterIsInstance<RAssignmentStatement>().forEach {
-              when (it.assignee?.name) {
+            psi.argumentList.expressionList.filterIsInstance<RNamedArgument>().forEach {
+              when (it.name) {
                 "enabled" -> enabled = (it.assignedValue as RBooleanLiteral).isTrue
                 "suspend" -> suspend = (it.assignedValue as RBooleanLiteral).isTrue
                 "condition" -> condition = it.assignedValue?.text

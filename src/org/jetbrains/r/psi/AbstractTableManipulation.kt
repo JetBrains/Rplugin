@@ -105,8 +105,7 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
     val function = getTableManipulationFunctionByExpressionName(call.expression) ?: return getContextInfo(call)
     if (function.contextType == null) return null
 
-    val name = RPsiUtil.getArgumentName(argument)
-    val tableArgument = TableManipulationArgument(index, name)
+    val tableArgument = TableManipulationArgument(index, (argument as? RNamedArgument)?.name)
 
     return if (!function.isNeedCompletionInsideArgument(argumentList, tableArgument)) null
     else TableManipulationContextInfo(TableManipulationCallInfo(call, function, argumentList), tableArgument)
@@ -118,7 +117,7 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
     val index = argumentList.indexOf(argument)
     if (index == -1) return null
     val function = if (expression.isSingle) subscriptionOperator else doubleSubscriptionOperator
-    val tableArgument = TableManipulationArgument(index, RPsiUtil.getArgumentName(argument))
+    val tableArgument = TableManipulationArgument(index, (argument as? RNamedArgument)?.name)
 
     return if (!function.isNeedCompletionInsideArgument(argumentList, tableArgument)) null
     else TableManipulationContextInfo(TableManipulationCallInfo(expression, function, argumentList), tableArgument)
@@ -161,16 +160,15 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
         arguments.forEachIndexed { index, argument ->
           if (index != 0) command.append(",")
           if (function.isTableArgument(callInfo.psiCall, callInfo.arguments,
-                                       TableManipulationArgument(index + offset, RPsiUtil.getArgumentName(argument)), runtimeInfo)) {
+                                       TableManipulationArgument(index + offset, (argument as? RNamedArgument)?.name), runtimeInfo)) {
             transformExpression(argument, command, runtimeInfo, preserveRows)
           }
           else {
-            val isNamedArgument = RPsiUtil.isNamedArgumentAssignment(argument)
-            val argumentValue = if (isNamedArgument) (argument as RAssignmentStatement).assignedValue else argument
+            val argumentValue = if (argument is RNamedArgument) argument.assignedValue else argument
 
             val appendArgument = { it: String ->
-              if (it.isNotEmpty() && isNamedArgument) {
-                command.append((argument as RAssignmentStatement).assignee?.text)
+              if (it.isNotEmpty() && argument is RNamedArgument) {
+                command.append(argument.identifyingElement?.text)
                 command.append("=")
               }
               command.append(it)
@@ -217,8 +215,8 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
       is RCallExpression -> {
         if (!isSafeFunction(expr.expression, runtimeInfo)) return false
         expr.argumentList.expressionList.all {
-          if (RPsiUtil.isNamedArgumentAssignment(it)) {
-            isSafe((it as RAssignmentStatement).assignedValue, runtimeInfo)
+          if (it is RNamedArgument) {
+            isSafe(it.assignedValue, runtimeInfo)
           }
           else {
             isSafe(it, runtimeInfo)

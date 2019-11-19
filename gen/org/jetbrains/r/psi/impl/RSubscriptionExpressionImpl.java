@@ -32,6 +32,12 @@ public class RSubscriptionExpressionImpl extends RExpressionImpl implements RSub
   }
 
   @Override
+  @NotNull
+  public List<RNamedArgument> getNamedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RNamedArgument.class);
+  }
+
+  @Override
   public boolean isSingle() {
     return RPsiImplUtil.isSingle(this);
   }

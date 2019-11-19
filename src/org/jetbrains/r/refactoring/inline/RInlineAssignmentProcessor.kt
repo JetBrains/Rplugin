@@ -19,6 +19,7 @@ import com.intellij.usageView.UsageViewDescriptor
 import com.intellij.util.IncorrectOperationException
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getParameters
 
@@ -150,27 +151,24 @@ class RInlineAssignmentProcessor(private val project: Project,
       val realValues = mutableMapOf<String, PsiElement>()
       var cur = 0
       // Named args
-      for (arg in call.argumentList.expressionList) {
-        if (arg is RAssignmentStatement) {
-          realValues[arg.name] = arg.assignedValue ?: error("${arg.text} doesn't have assigned value")
-        }
+      for (arg in call.argumentList.namedArgumentList) {
+        realValues[arg.name] = arg.assignedValue ?: error("${arg.text} doesn't have assigned value")
       }
 
       // Other args
       for (arg in call.argumentList.expressionList) {
-        if (arg !is RAssignmentStatement) {
-          while (cur < argNames.size && realValues.containsKey(argNames[cur])) {
-            ++cur
-          }
+        if (arg is RNamedArgument) continue
 
-          if (cur == argNames.size) continue
-          val argName = argNames[cur]
-          if (argName == "...") {
-            dotsArgs.add(arg)
-          }
-          else {
-            realValues[argName] = arg
-          }
+        while (cur < argNames.size && realValues.containsKey(argNames[cur])) {
+          ++cur
+        }
+
+        if (cur == argNames.size) continue
+        val argName = argNames[cur]
+        if (argName == "...") {
+          dotsArgs.add(arg)
+        } else {
+          realValues[argName] = arg
         }
       }
       // Not overlapped default values
@@ -213,7 +211,7 @@ class RInlineAssignmentProcessor(private val project: Project,
           var newValue = realValues[name]
           if (newValue == null && name != "...") {
             val parent = o.parent
-            if (parent is RAssignmentStatement && parent.assignee == o || parent is RForStatement && parent.target == o) {
+            if (RPsiUtil.getAssignmentByAssignee(o) != null || parent is RForStatement && parent.target == o) {
               val uniqueName = getUniqueName(name, usedNames)
               newValue = RElementFactory.createRPsiElementFromText(project, uniqueName)
               realValues[name] = newValue
@@ -313,7 +311,7 @@ class RInlineAssignmentProcessor(private val project: Project,
 
       if (PsiTreeUtil.instanceOf(parent, RFile::class.java, RBlockExpression::class.java, RParenthesizedExpression::class.java,
                                  RLoopStatement::class.java, RIfStatement::class.java, RAssignmentStatement::class.java,
-                                 RArgumentList::class.java)) {
+                                 RNamedArgument::class.java, RArgumentList::class.java)) {
         return false
       }
 

@@ -4,7 +4,7 @@ RFile:IfInKeywordArgument.r
       PsiElement(identifier)('a')
     R_ARGUMENT_LIST
       PsiElement(()('(')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_STRING_LITERAL_EXPRESSION
           PsiElement(STRING)('"\\cite"')
         PsiWhiteSpace(' ')

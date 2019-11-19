@@ -29,11 +29,10 @@ object RInlineUtil {
   }
 
   fun getLatestDefs(controlFlow: RControlFlow, varName: String, anchor: PsiElement?): List<PsiElement> {
-    if (anchor is RAssignmentStatement && !RPsiUtil.isNamedArgumentAssignment(anchor)) return listOf(anchor)
+    if (anchor is RAssignmentStatement) return listOf(anchor)
 
     val par = anchor?.parent
-    if (anchor is RIdentifierExpression && !RPsiUtil.isNamedArgument(anchor) && par is RAssignmentStatement && par.assignee == anchor)
-      return listOf(anchor.parent)
+    if (anchor is RIdentifierExpression && par != null && RPsiUtil.getAssignmentByAssignee(anchor) == par) return listOf(par)
 
     val instructions = controlFlow.instructions
     var anchorInstr = ControlFlowUtil.findInstructionNumberByElement(instructions, anchor)
@@ -52,7 +51,7 @@ object RInlineUtil {
     val result = LinkedHashSet<Instruction>()
     ControlFlowUtil.iteratePrev(anchor, instructions) { instruction ->
       val element = instruction.element
-      if (element is RAssignmentStatement && !RPsiUtil.isNamedArgumentAssignment(element)) {
+      if (element is RAssignmentStatement) {
         if (element.name == varName) {
           result.add(instruction)
           return@iteratePrev ControlFlowUtil.Operation.CONTINUE
@@ -80,7 +79,7 @@ object RInlineUtil {
         return@iterate ControlFlowUtil.Operation.CONTINUE
       }
 
-      if (parent is RAssignmentStatement && parent.assignee == element) {
+      if (RPsiUtil.getAssignmentByAssignee(element) != null) {
         return@iterate ControlFlowUtil.Operation.CONTINUE
       }
       result.add(element)

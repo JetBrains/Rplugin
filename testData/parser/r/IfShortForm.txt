@@ -39,7 +39,7 @@ RFile:IfShortForm.r
                 PsiElement(STRING)('"list"')
               PsiElement(,)(',')
               PsiWhiteSpace(' ')
-              R_ASSIGNMENT_STATEMENT
+              R_NAMED_ARGUMENT
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('length')
                 R_ASSIGN_OPERATOR
@@ -56,7 +56,7 @@ RFile:IfShortForm.r
               PsiElement())(')')
           PsiElement(,)(',')
           PsiWhiteSpace(' ')
-          R_ASSIGNMENT_STATEMENT
+          R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('names')
             R_ASSIGN_OPERATOR

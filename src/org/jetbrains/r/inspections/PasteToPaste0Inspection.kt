@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 
@@ -24,8 +23,8 @@ class PasteToPaste0Inspection : RInspection() {
   }
 
   private fun isEmptySepArgument(arg: RExpression): Boolean {
-    val name = RPsiUtil.getArgumentName(arg) ?: return false
-    val value = (arg as RAssignmentStatement).assignedValue?.text ?: return false
+    val name = (arg as? RNamedArgument)?.name ?: return false
+    val value = arg.assignedValue?.text ?: return false
     return name == "sep" && (value == "''" || value == "\"\"")
   }
 

@@ -20,7 +20,7 @@ RFile:BlockAsArgument.r
               PsiElement(identifier)('data.frame')
             R_ARGUMENT_LIST
               PsiElement(()('(')
-              R_ASSIGNMENT_STATEMENT
+              R_NAMED_ARGUMENT
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('x1')
                 R_ASSIGN_OPERATOR
@@ -35,7 +35,7 @@ RFile:BlockAsArgument.r
                     PsiElement())(')')
               PsiElement(,)(',')
               PsiWhiteSpace(' ')
-              R_ASSIGNMENT_STATEMENT
+              R_NAMED_ARGUMENT
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('x2')
                 R_ASSIGN_OPERATOR
@@ -50,7 +50,7 @@ RFile:BlockAsArgument.r
                     PsiElement())(')')
               PsiElement(,)(',')
               PsiWhiteSpace(' ')
-              R_ASSIGNMENT_STATEMENT
+              R_NAMED_ARGUMENT
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('x3')
                 R_ASSIGN_OPERATOR

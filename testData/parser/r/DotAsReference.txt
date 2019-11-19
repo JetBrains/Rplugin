@@ -36,7 +36,7 @@ RFile:DotAsReference.r
                 PsiElement(NUMERIC)('4')
           PsiElement(,)(',')
           PsiWhiteSpace(' ')
-          R_ASSIGNMENT_STATEMENT
+          R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('data')
             R_ASSIGN_OPERATOR

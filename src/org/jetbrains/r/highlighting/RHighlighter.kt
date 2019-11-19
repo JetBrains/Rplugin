@@ -13,8 +13,7 @@ import org.jetbrains.r.lexer.RLexer
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.psi.RPsiUtil
-
-import java.util.HashMap
+import java.util.*
 
 class RHighlighter : SyntaxHighlighterBase() {
 

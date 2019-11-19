@@ -10,4 +10,7 @@ public interface RArgumentList extends RPsiElement {
   @NotNull
   List<RExpression> getExpressionList();
 
+  @NotNull
+  List<RNamedArgument> getNamedArgumentList();
+
 }

@@ -48,7 +48,7 @@ RFile:DotAsKeywordArgument.r
                   PsiElement(identifier)('list')
                 R_ARGUMENT_LIST
                   PsiElement(()('(')
-                  R_ASSIGNMENT_STATEMENT
+                  R_NAMED_ARGUMENT
                     R_IDENTIFIER_EXPRESSION
                       PsiElement(identifier)('.')
                     PsiWhiteSpace(' ')

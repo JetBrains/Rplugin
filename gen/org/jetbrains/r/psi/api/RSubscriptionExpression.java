@@ -10,6 +10,9 @@ public interface RSubscriptionExpression extends RExpression {
   @NotNull
   List<RExpression> getExpressionList();
 
+  @NotNull
+  List<RNamedArgument> getNamedArgumentList();
+
   boolean isSingle();
 
 }

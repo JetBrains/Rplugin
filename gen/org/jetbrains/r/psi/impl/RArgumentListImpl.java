@@ -32,4 +32,10 @@ public class RArgumentListImpl extends RElementImpl implements RArgumentList {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RExpression.class);
   }
 
+  @Override
+  @NotNull
+  public List<RNamedArgument> getNamedArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RNamedArgument.class);
+  }
+
 }

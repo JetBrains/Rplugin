@@ -334,7 +334,7 @@ class RCompletionContributor : CompletionContributor() {
         }
         TableManipulationContextType.JOIN -> {
           val currentArg = dplyrCallInfo.arguments[currentArgument.index]
-          if (!(RPsiUtil.isNamedArgumentAssignment(currentArg) && (currentArg as RAssignmentStatement).assignee?.name == "by")) return
+          if (currentArg !is RNamedArgument || currentArg.name != "by") return
           val firstColumns = columns.map { it.name }.toSet()
           val columns2 = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo)
             .filter { it.name !in firstColumns }

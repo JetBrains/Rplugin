@@ -11,7 +11,7 @@ RFile:StringKeywordArg.r
         PsiElement(identifier)('list')
       R_ARGUMENT_LIST
         PsiElement(()('(')
-        R_ASSIGNMENT_STATEMENT
+        R_NAMED_ARGUMENT
           R_STRING_LITERAL_EXPRESSION
             PsiElement(STRING)('"3"')
           R_ASSIGN_OPERATOR
@@ -20,7 +20,7 @@ RFile:StringKeywordArg.r
             PsiElement(STRING)('"payal"')
         PsiElement(,)(',')
         PsiWhiteSpace(' ')
-        R_ASSIGNMENT_STATEMENT
+        R_NAMED_ARGUMENT
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('x')
           R_ASSIGN_OPERATOR
@@ -29,7 +29,7 @@ RFile:StringKeywordArg.r
             PsiElement(NUMERIC)('2')
         PsiElement(,)(',')
         PsiWhiteSpace(' ')
-        R_ASSIGNMENT_STATEMENT
+        R_NAMED_ARGUMENT
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('y')
           R_ASSIGN_OPERATOR
@@ -38,7 +38,7 @@ RFile:StringKeywordArg.r
             PsiElement(NUMERIC)('9')
         PsiElement(,)(',')
         PsiWhiteSpace(' ')
-        R_ASSIGNMENT_STATEMENT
+        R_NAMED_ARGUMENT
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('year')
           R_ASSIGN_OPERATOR

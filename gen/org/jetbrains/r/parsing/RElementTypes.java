@@ -34,6 +34,7 @@ public interface RElementTypes {
   IElementType R_LIST_SUBSET_OPERATOR = new RElementType("R_LIST_SUBSET_OPERATOR");
   IElementType R_MEMBER_EXPRESSION = new RElementType("R_MEMBER_EXPRESSION");
   IElementType R_MULDIV_OPERATOR = new RElementType("R_MULDIV_OPERATOR");
+  IElementType R_NAMED_ARGUMENT = new RElementType("R_NAMED_ARGUMENT");
   IElementType R_NAMESPACE_ACCESS_EXPRESSION = new RElementType("R_NAMESPACE_ACCESS_EXPRESSION");
   IElementType R_NA_LITERAL = new RElementType("R_NA_LITERAL");
   IElementType R_NEXT_STATEMENT = new RElementType("R_NEXT_STATEMENT");
@@ -196,6 +197,9 @@ public interface RElementTypes {
       }
       else if (type == R_MULDIV_OPERATOR) {
         return new RMuldivOperatorImpl(node);
+      }
+      else if (type == R_NAMED_ARGUMENT) {
+        return new RNamedArgumentImpl(node);
       }
       else if (type == R_NAMESPACE_ACCESS_EXPRESSION) {
         return new RNamespaceAccessExpressionImpl(node);

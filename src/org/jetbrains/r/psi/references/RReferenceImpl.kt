@@ -16,10 +16,7 @@ import org.jetbrains.r.RElementGenerator
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.*
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import java.util.*
 
@@ -27,10 +24,8 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
 
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
     val result = ArrayList<ResolveResult>()
-    RPsiUtil.getAssignmentByAssignee(element)?.let {
-      if (it.isNamedArgumentAssignment()) {
-        return resolveNamedArgument(it, incompleteCode)
-      }
+    RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
+      return resolveNamedArgument(it, incompleteCode)
     }
 
     if (element.getKind() == ReferenceKind.LOCAL_VARIABLE ||
@@ -58,7 +53,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     return result.toTypedArray()
   }
 
-  private fun resolveNamedArgument(assignment: RAssignmentStatement,
+  private fun resolveNamedArgument(assignment: RNamedArgument,
                                    isIncomplete: Boolean): Array<ResolveResult> {
     val call = assignment.parent?.parent as? RCallExpression ?: return emptyArray()
     return RPsiUtil.resolveCall(call, isIncomplete).mapNotNull { assignment ->

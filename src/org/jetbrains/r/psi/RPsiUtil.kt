@@ -73,18 +73,8 @@ object RPsiUtil {
    * Returns true if `element` is the LHS of named argument in a function call.
    */
   fun isNamedArgument(element: RIdentifierExpression): Boolean {
-    val parent = element.parent as? RAssignmentStatement ?: return false
-    val argumentList = parent.parent
-    return argumentList is RArgumentList && parent.assignee === element
-  }
-
-  fun isNamedArgumentAssignment(element: PsiElement): Boolean {
-    return element is RAssignmentStatement && element.isEqual && element.assignee is RIdentifierExpression &&
-           (element.parent is RArgumentList || element.parent is RSubscriptionExpression)
-  }
-
-  fun getArgumentName(argument: RPsiElement): String? {
-    return if (isNamedArgumentAssignment(argument)) argument.name else null
+    val parent = element.parent
+    return parent is RNamedArgument && parent.identifyingElement == element
   }
 
   /**
@@ -215,6 +205,11 @@ object RPsiUtil {
     return if (assignment is RAssignmentStatement && assignment.assignee == assignee) assignment else null
   }
 
+  fun getNamedArgumentByNameIdentifier(assignee: RExpression) : RNamedArgument? {
+    val assignment = assignee.parent
+    return if (assignment is RNamedArgument && assignment.nameIdentifier == assignee) assignment else null
+  }
+
   fun resolveCall(call: RCallExpression, isIncomplete: Boolean = true): List<RAssignmentStatement> {
     call.expression.reference?.let { reference ->
       if (reference !is RReferenceBase<*>) {
@@ -247,8 +242,6 @@ fun RIdentifierExpression.isNamespaceAccess() : Boolean {
 }
 
 fun RStringLiteralExpression.isComplete() = text.length > 1 && text.first() == text.last()
-
-fun RAssignmentStatement.isNamedArgumentAssignment() = isEqual && parent is RArgumentList
 
 fun RExpression.isAssignee(): Boolean {
   val parent = parent

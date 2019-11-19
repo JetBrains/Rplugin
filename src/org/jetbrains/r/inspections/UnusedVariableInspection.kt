@@ -35,9 +35,6 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
     override fun visitAssignmentStatement(element: RAssignmentStatement) {
       val assignee = element.assignee ?: return
 
-      if (assignee is RIdentifierExpression && RPsiUtil.isNamedArgument((assignee as RIdentifierExpression?)!!)) {
-        return
-      }
       if (RPsiUtil.isReturnValue(element)) {
         return
       }

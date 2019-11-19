@@ -91,15 +91,10 @@ object RDplyrUtil : AbstractTableManipulation<DplyrFunction>() {
     return columns + dplyrCall.arguments.subList(function.tableArguments, currentArgIndex).mapNotNull {
       when (it) {
         is RIdentifierExpression -> TableManipulationColumn(it.name)
-        is RAssignmentStatement -> {
-          if (RPsiUtil.isNamedArgumentAssignment(it)) {
-            val name = it.assignee?.name
-            if (name == null || name.startsWith(".")) return@mapNotNull null
+        is RNamedArgument -> {
+            val name = it.name
+            if (name.startsWith(".")) return@mapNotNull null
             TableManipulationColumn(name)
-          }
-          else {
-            null
-          }
         }
         else -> null
       }
