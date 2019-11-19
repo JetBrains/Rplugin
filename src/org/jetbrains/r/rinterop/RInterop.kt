@@ -32,6 +32,7 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
@@ -504,6 +505,19 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       Service.ReplEvent.EventCase.TERMINATION -> {
         replListeners.forEach { it.onTermination() }
       }
+      Service.ReplEvent.EventCase.VIEWREQUEST -> {
+        val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
+        val remaining = AtomicInteger(replListeners.size)
+        replListeners.forEach { listener ->
+          listener.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
+            .onProcessed {
+              if (remaining.decrementAndGet() == 0) {
+                Disposer.dispose(ref)
+                executeAsync(asyncStub::viewRequestFinished, Empty.getDefaultInstance())
+              }
+            }
+        }
+      }
       else -> {
       }
     }
@@ -587,6 +601,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onRequestReadLn(prompt: String) {}
     fun onPrompt(isDebug: Boolean) {}
     fun onTermination() {}
+    fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
+      return resolvedPromise()
+    }
   }
 
   companion object {

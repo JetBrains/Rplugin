@@ -4,12 +4,16 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.pom.PomTarget
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.editor.RLightVirtualFileManager
 import org.jetbrains.r.psi.api.RFile
@@ -28,55 +32,67 @@ abstract class RPomTarget: PomTarget {
 
   override fun isValid(): Boolean = true
 
+  abstract fun navigateAsync(requestFocus: Boolean): Promise<Unit>
+
+  override fun navigate(requestFocus: Boolean) {
+    navigateAsync(requestFocus)
+  }
+
   companion object {
     fun createPsiElementByRValue(rVar: RVar): RPsiElement = RPomTargetPsiElementImpl(
       createPomTarget(rVar), rVar.project)
 
     fun createSkeletonParameterTarget(assignment: RSkeletonAssignmentStatement, name: String): RPsiElement =
       RPomTargetPsiElementImpl(RSkeletonParameterPomTarget(assignment, name), assignment.project)
+
+    fun createPomTarget(rVar: RVar): RPomTarget = when (rVar.value) {
+      is RValueFunction -> createFunctionPomTarget(rVar)
+      is RValueSimple -> createVariablePomTarget(rVar)
+      is RValueList -> createVariablePomTarget(rVar)
+      is RValueEnvironment -> createVariablePomTarget(rVar)
+      is RValueDataFrame -> createDataFramePomTarget(rVar)
+      else -> throw IllegalArgumentException("${rVar.javaClass} is not supported")
+    }
+
   }
 }
 
-private fun createPomTarget(rVar: RVar): PomTarget = when (rVar.value) {
-  is RValueFunction -> createFunctionPomTarget(rVar)
-  is RValueSimple -> createVariablePomTarget(rVar)
-  is RValueList -> createVariablePomTarget(rVar)
-  is RValueEnvironment -> createVariablePomTarget(rVar)
-  is RValueDataFrame -> createDataFramePomTarget(rVar)
-  else -> throw IllegalArgumentException("${rVar.javaClass} is not supported")
-}
+private fun createDataFramePomTarget(rVar: RVar): RPomTarget = DataFramePomTarget(rVar)
 
-private fun createDataFramePomTarget(rVar: RVar): PomTarget = DataFramePomTarget(rVar)
+private fun createVariablePomTarget(rVar: RVar): RPomTarget = VariablePomTarget(rVar)
 
-private fun createVariablePomTarget(rVar: RVar): PomTarget = VariablePomTarget(rVar)
-
-private fun createFunctionPomTarget(rVar: RVar): PomTarget = FunctionPomTarget(rVar)
+private fun createFunctionPomTarget(rVar: RVar): RPomTarget = FunctionPomTarget(rVar)
 
 internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigate(requestFocus: Boolean) {
+  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
     rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name, (rVar.value as RValueFunction).code)
+    return resolvedPromise()
   }
 }
 
 internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigate(requestFocus: Boolean) {
-    val console = RConsoleManager.getInstance(rVar.project).currentConsoleOrNull ?: return
-    console.debugger.navigate(rVar)
+  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    ApplicationManager.getApplication().invokeLater {
+      RConsoleManager.getInstance(rVar.project).currentConsoleOrNull?.debugger?.navigate(rVar)
+      promise.setResult(Unit)
+    }
+    return promise
   }
 }
 
 internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
-  override fun navigate(requestFocus: Boolean) {
-    VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
+  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
+    return VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
   }
 }
 
 internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssignmentStatement,
                                            private val name: String) : RPomTarget() {
 
-  override fun navigate(requestFocus: Boolean) {
-    RConsoleManager.getInstance(assignment.project).runAsync { console ->
+  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
+    return RConsoleManager.getInstance(assignment.project).runAsync { console ->
       val rVar = assignment.createRVar(console)
       val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
       val virtualFile = rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name,

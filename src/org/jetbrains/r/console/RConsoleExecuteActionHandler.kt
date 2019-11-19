@@ -22,8 +22,12 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RValue
+import org.jetbrains.r.rinterop.RVar
 
 class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
@@ -128,6 +132,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     override fun onTermination() {
       state = State.TERMINATED
       consoleView.print(RBundle.message("console.process.terminated") + "\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+    }
+
+    override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
+      return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
   }
 

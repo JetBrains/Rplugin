@@ -15,6 +15,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RequiredPackageException
@@ -62,8 +63,8 @@ class VisualizeTableHandler : CodeInsightActionHandler {
   }
 
   companion object {
-    fun visualizeTable(rInterop: RInterop, ref: RRef, project: Project, expr: String, editor: Editor? = null) {
-      rInterop.dataFrameGetViewer(ref).onSuccess {
+    fun visualizeTable(rInterop: RInterop, ref: RRef, project: Project, expr: String, editor: Editor? = null): Promise<Unit> {
+      return rInterop.dataFrameGetViewer(ref).then {
         RVisualizeTableUtil.showTable(project, it, expr)
       }.onError {
         ApplicationManager.getApplication().invokeLater {

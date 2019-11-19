@@ -7,6 +7,7 @@ package org.jetbrains.r.run
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 
@@ -18,6 +19,10 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     rInterop = getRInterop(project)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")
+    val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
+                       ?: throw RuntimeException("R Scripts not found")
+    val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
+    rInterop.init(rScriptsPath, projectDir)
   }
 
   override fun tearDown() {

@@ -5,6 +5,9 @@
 package org.jetbrains.r.rinterop
 
 import junit.framework.TestCase
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RInteropTest : RProcessHandlerBaseTestCase() {
@@ -100,5 +103,22 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     rInterop.replSendReadLn("200")
     rInterop.replSendReadLn("300")
     TestCase.assertEquals("[1] 600\n", rInterop.executeCode("x").stdout)
+  }
+
+  fun testViewRequest() {
+    val promise = AsyncPromise<Pair<RValue, String>>()
+    rInterop.addReplListener(object : RInterop.ReplListener {
+      override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
+        promise.setResult(value to title)
+        return resolvedPromise()
+      }
+    })
+    rInterop.replStartProcessing()
+    rInterop.replExecute("tt = data.frame(x = 1:9, y = 2:10)")
+    rInterop.replExecute("View(tt, 'abcdd')")
+    val (value, title) = promise.blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals("abcdd", title)
+    TestCase.assertTrue(value is RValueDataFrame)
+    TestCase.assertEquals(9, (value as RValueDataFrame).rows)
   }
 }
