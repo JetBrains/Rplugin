@@ -62,6 +62,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
 
   private fun sortResolveResults(runtimeInfo: RConsoleRuntimeInfo?,
                                  resolveResults: Array<ResolveResult>): Array<ResolveResult> {
+    resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
     if (runtimeInfo != null) {
       val loadedPackages = runtimeInfo.loadedPackages
       val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
@@ -69,7 +70,6 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
         return arrayOf(topResolveResult)
       }
     }
-    resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
     return resolveResults
   }
 

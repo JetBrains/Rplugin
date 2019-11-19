@@ -44,6 +44,15 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals("dplyr", RPackage.getOrCreate(filterDplyr!!.containingFile)?.packageName)
   }
 
+  fun testDoNotResolveToSkeletons() {
+    val resolveResult = resolve("""
+      conflicts <- function(pkg) 1
+      make.conflicts <- function()
+          conf<caret>licts('pkg')
+    """.trimIndent())
+    TestCase.assertEquals(myFixture.file, resolveResult?.containingFile)
+  }
+
   private fun runTest(expression: String): RValue {
     val resolveResult = resolve(expression)
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
