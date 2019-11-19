@@ -11,9 +11,7 @@ import javax.xml.bind.ValidationException
 
 private const val SCRIPT_PATH = "projectGenerator/getPackratOptions.R"
 
-fun getAllPackratSettings(rScriptPath: String): Array<PackratSettings<*>> {
-  if (LastRequest.scriptPath == rScriptPath) return LastRequest.result
-  LastRequest.scriptPath = rScriptPath
+fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
   val packratOptionsResult = ExecuteExpressionUtils
     .executeScriptInBackground(rScriptPath, SCRIPT_PATH, emptyList(), RBundle.message("project.settings.get.all.packrat.settings.title"))
@@ -44,8 +42,7 @@ fun getAllPackratSettings(rScriptPath: String): Array<PackratSettings<*>> {
     allPackratSettings.add(PackratSettings(optionName, value.toString()))
   }
 
-  LastRequest.result = allPackratSettings.toTypedArray()
-  return LastRequest.result
+  return allPackratSettings
 }
 
 enum class PackartLogicalConstants {
@@ -60,9 +57,4 @@ enum class PackratExpandedLogicalConstants {
 }
 
 class PackratSettings<T>(val name: String, val value: T)
-
-private object LastRequest {
-  var scriptPath: String? = null
-  var result: Array<PackratSettings<*>> = emptyArray()
-}
 

@@ -57,6 +57,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
   override val initProjectScriptName: String
     get() = "createPackrat"
 
+  private val lastSettingsRequest = LastSettingsRequest()
   private val errorBackgroundColor = JBColor.GRAY
   private val tableModel = PackratSettingsTableModel()
   private val tableCellEditor = PackratTableCellEditor()
@@ -164,7 +165,11 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
   }
 
   fun updatePackratSettings(rScriptPath: String) {
-    tableModel.updateDataRows(getAllPackratSettings(rScriptPath))
+    if (rScriptPath != lastSettingsRequest.scriptPath) {
+      lastSettingsRequest.scriptPath = rScriptPath
+      lastSettingsRequest.settings = getAllPackratSettings(rScriptPath)
+    }
+    tableModel.updateDataRows(lastSettingsRequest.settings.toTypedArray())
     val bordersSize = (tablePanel.border as SideBorder).getBorderInsets(tablePanel)
     tablePanel.setPreferredSize(JBDimension(-1,
                                             table.rowHeight * table.rowCount +
@@ -292,4 +297,6 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
       return component
     }
   }
+
+  private data class LastSettingsRequest(var scriptPath: String? = null, var settings: List<PackratSettings<*>> = emptyList())
 }

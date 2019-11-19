@@ -18,6 +18,7 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
   private val manageInterpreterPanel = RManageInterpreterPanel(PANEL_HINT, true) {
     runListeners()
   }
+  private val lastValidatedInterpreter = LastValidatedInterpreter()
 
   override val interpreterPath: String?
     get() = manageInterpreterPanel.currentSelection?.interpreterPath
@@ -32,14 +33,14 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
 
   override fun validateInterpreter(): List<ValidationInfo> {
     val path = interpreterPath ?: return listOf(ValidationInfo(MISSING_INTERPRETER_TEXT))
-    if (path == LastValidatedInterpreter.path) return LastValidatedInterpreter.validationInfo
-    LastValidatedInterpreter.path = path
-    LastValidatedInterpreter.validationInfo = if (!isCorrectInterpreterPath(path)) {
+    if (path == lastValidatedInterpreter.path) return lastValidatedInterpreter.validationInfo
+    lastValidatedInterpreter.path = path
+    lastValidatedInterpreter.validationInfo = if (!isCorrectInterpreterPath(path)) {
       listOf(ValidationInfo(INVALID_INTERPRETER_TEXT))
     } else {
       emptyList()
     }
-    return LastValidatedInterpreter.validationInfo
+    return lastValidatedInterpreter.validationInfo
   }
 
   private fun isCorrectInterpreterPath(interpreterPath: String): Boolean {
@@ -53,10 +54,7 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     }
   }
 
-  private object LastValidatedInterpreter {
-    var path: String? = null
-    var validationInfo: List<ValidationInfo> = emptyList()
-  }
+  private data class LastValidatedInterpreter(var path: String? = null, var validationInfo: List<ValidationInfo> = emptyList())
 
   companion object {
     private val PANEL_NAME = RBundle.message("project.settings.new.interpreter")
