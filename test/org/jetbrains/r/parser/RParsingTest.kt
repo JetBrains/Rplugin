@@ -2,269 +2,267 @@
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
+package org.jetbrains.r.parser
 
-package org.jetbrains.r.parser;
+import com.intellij.lang.LanguageBraceMatching
+import com.intellij.testFramework.ParsingTestCase
+import com.intellij.testFramework.TestDataPath
+import org.jetbrains.r.RLanguage
+import org.jetbrains.r.editor.RBraceMatcher
+import org.jetbrains.r.parsing.RParserDefinition
 
-import com.intellij.lang.LanguageBraceMatching;
-import com.intellij.testFramework.ParsingTestCase;
-import com.intellij.testFramework.TestDataPath;
-import org.jetbrains.r.RLanguage;
-import org.jetbrains.r.editor.RBraceMatcher;
-import org.jetbrains.r.parsing.RParserDefinition;
+private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/r/"
 
 @TestDataPath("/testData/parser/r")
-public class RParsingTest extends ParsingTestCase {
-  private static final String DATA_PATH = System.getProperty("user.dir") + "/testData/parser/r/";
+class RParsingTest : ParsingTestCase("", "r", RParserDefinition()) {
 
-  public RParsingTest() {
-    super("", "r", new RParserDefinition());
+  override fun setUp() {
+    super.setUp()
+    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, RBraceMatcher())
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    addExplicitExtension(LanguageBraceMatching.INSTANCE, RLanguage.INSTANCE, new RBraceMatcher());
+  override fun getTestDataPath(): String {
+    return DATA_PATH
   }
 
-  @Override
-  protected String getTestDataPath() {
-    return DATA_PATH;
+  fun testTrue() {
+    doTest()
   }
 
-  public void testTrue() { doTest(); }
-
-  public void testSlice() {
-    doTest();
+  fun testSlice() {
+    doTest()
   }
 
-  public void testAssignment() {
-    doTest();
+  fun testAssignment() {
+    doTest()
   }
 
-  public void testBinary() {
-    doTest();
+  fun testBinary() {
+    doTest()
   }
 
-  public void testBinarySlice() {
-    doTest();
+  fun testBinarySlice() {
+    doTest()
   }
 
-  public void testBooleanExpressions() {
-    doTest();
+  fun testBooleanExpressions() {
+    doTest()
   }
 
-  public void testFunctionCall() {
-    doTest();
+  fun testFunctionCall() {
+    doTest()
   }
 
-  public void testFunctionDefinition() {
-    doTest();
+  fun testFunctionDefinition() {
+    doTest()
   }
 
   /**
    * note: it may look wrong to parse the tailing () into a call on the block, but R does so as well.
    * Actually even if this defines syntactically correct R code, R can not evaluate it, and errors with an
-   * <code>Error in foo() : attempt to apply non-function</code>
+   * `Error in foo() : attempt to apply non-function`
    * To call an anonymously defined function in place additional brackets are requires:
-   * <code>(function(){1})()</code>
+   * `(function(){1})()`
    */
-  public void testInPlaceFunctionDefCall() {
-    doTest();
+  fun testInPlaceFunctionDefCall() {
+    doTest()
   }
 
-  public void testIfStatement() {
-    doTest();
+  fun testIfStatement() {
+    doTest()
   }
 
-  public void testForStatement() {
-    doTest();
+  fun testForStatement() {
+    doTest()
   }
 
-  public void testRepeatStatement() {
-    doTest();
+  fun testRepeatStatement() {
+    doTest()
   }
 
-  public void testRepeatBlockStatement() {
-    doTest();
+  fun testRepeatBlockStatement() {
+    doTest()
   }
 
-  public void testWhileStatement() {
-    doTest();
+  fun testWhileStatement() {
+    doTest()
   }
 
-  public void testHelpStatement() {
-    doTest();
+  fun testHelpStatement() {
+    doTest()
   }
 
-  public void testSubscription() {
-    doTest();
+  fun testSubscription() {
+    doTest()
   }
 
-  public void testStatementBreak() {
-    doTest();
+  fun testStatementBreak() {
+    doTest()
   }
 
-  public void testStatementBreakAssignment() {
-    doTest();
+  fun testStatementBreakAssignment() {
+    doTest()
   }
 
-  public void testHelpOnKeyword() {
-    doTest();
+  fun testHelpOnKeyword() {
+    doTest()
   }
 
-  public void testBreak() {
-    doTest();
+  fun testBreak() {
+    doTest()
   }
 
-  public void testOperator() {
-    doTest();
+  fun testOperator() {
+    doTest()
   }
 
-  public void testOperatorsPriority() {
-    doTest();
+  fun testOperatorsPriority() {
+    doTest()
   }
 
-  public void testParenthesized() {
-    doTest();
+  fun testParenthesized() {
+    doTest()
   }
 
-  public void testSemicolon() {
-    doTest();
+  fun testSemicolon() {
+    doTest()
   }
 
-  public void testPrecedence() {
-    doTest();
+  fun testPrecedence() {
+    doTest()
   }
 
-  public void testStringKeywordArg() {
-    doTest();
+  fun testStringKeywordArg() {
+    doTest()
   }
 
-  public void testKeywordArg() {
-    doTest();
+  fun testKeywordArg() {
+    doTest()
   }
 
-  public void testBlockAsArgument() {
-    doTest();
+  fun testBlockAsArgument() {
+    doTest()
   }
 
-  public void testFormulae() {
-    doTest();
+  fun testFormulae() {
+    doTest()
   }
 
-  public void testFunctionBodyAsExpression() {
-    doTest();
+  fun testFunctionBodyAsExpression() {
+    doTest()
   }
 
-  public void testFunctionAsCallArgument() {
-    doTest();
+  fun testFunctionAsCallArgument() {
+    doTest()
   }
 
-  public void testIfShortForm() {
-    doTest();
+  fun testIfShortForm() {
+    doTest()
   }
 
-  public void testAssignmentInSubscription() {
-    doTest();
+  fun testAssignmentInSubscription() {
+    doTest()
   }
 
-  public void testEmptyKeywordArgument() {
-    doTest();
+  fun testEmptyKeywordArgument() {
+    doTest()
   }
 
-  public void testIfInKeywordArgument() {
-    doTest();
+  fun testIfInKeywordArgument() {
+    doTest()
   }
 
-  public void testIfStatementAsArgument() {
-    doTest();
+  fun testIfStatementAsArgument() {
+    doTest()
   }
 
-  public void testReferenceWithAt() {
-    doTest();
+  fun testReferenceWithAt() {
+    doTest()
   }
 
-  public void testDotAsReference() {
-    doTest();
+  fun testDotAsReference() {
+    doTest()
   }
 
-  public void testReprAsKeywordArgument() {
-    doTest();
+  fun testReprAsKeywordArgument() {
+    doTest()
   }
 
-  public void testEmptyExpressionInSubscription() {
-    doTest();
+  fun testEmptyExpressionInSubscription() {
+    doTest()
   }
 
-  public void testReprInFunctionDef() {
-    doTest();
+  fun testReprInFunctionDef() {
+    doTest()
   }
 
-  public void testStatementAsDefaultValue() {
-    doTest();
+  fun testStatementAsDefaultValue() {
+    doTest()
   }
 
-  public void testDoubleDoubleBracket() {
-    doTest();
+  fun testDoubleDoubleBracket() {
+    doTest()
   }
 
-  public void testDotAsFunctionParameter() {
-    doTest();
+  fun testDotAsFunctionParameter() {
+    doTest()
   }
 
-  public void testExpressionAsBinaryExpressionPart() {
-    doTest();
+  fun testExpressionAsBinaryExpressionPart() {
+    doTest()
   }
 
-  public void testDotsInSublist() {
-    doTest();
+  fun testDotsInSublist() {
+    doTest()
   }
 
-  public void testNewLineAfterKeywordArgument() {
-    doTest();
+  fun testNewLineAfterKeywordArgument() {
+    doTest()
   }
 
-  public void testDotAsKeywordArgument() {
-    doTest();
+  fun testDotAsKeywordArgument() {
+    doTest()
   }
 
-  public void testReprInSublist() {
-    doTest();
+  fun testReprInSublist() {
+    doTest()
   }
 
-  public void testBinaryExpressionNewLine() {
-    doTest();
+  fun testBinaryExpressionNewLine() {
+    doTest()
   }
 
-  public void testMemberAccess() {
-    doTest();
+  fun testMemberAccess() {
+    doTest()
   }
 
-  public void testChainedCalls() { doTest(); }
+  fun testChainedCalls() {
+    doTest()
+  }
 
-  public void testWhileInsideIf() { doTest(); }
+  fun testWhileInsideIf() {
+    doTest()
+  }
 
   //----------Syntax error tests-----------
-
-  public void testErrorFor() {
-    doTest();
+  fun testErrorFor() {
+    doTest()
   }
 
-  public void testErrorWhile() {
-    doTest();
+  fun testErrorWhile() {
+    doTest()
   }
 
-  public void testErrorRepeat() {
-    doTest();
+  fun testErrorRepeat() {
+    doTest()
   }
 
-  public void testErrorIf() {
-    doTest();
+  fun testErrorIf() {
+    doTest()
   }
 
   //---------------------------------------
-
-  public void doTest() {
-    doTest(true);
+  private fun doTest() {
+    doTest(true)
   }
 }
