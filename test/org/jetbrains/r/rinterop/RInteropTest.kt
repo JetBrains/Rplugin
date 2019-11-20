@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rinterop
 
+import com.intellij.openapi.util.SystemInfo
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -120,5 +121,22 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("abcdd", title)
     TestCase.assertTrue(value is RValueDataFrame)
     TestCase.assertEquals(9, (value as RValueDataFrame).rows)
+  }
+
+  fun testParallelPrint() {
+    if (!SystemInfo.isUnix) {
+      // As stated in parallel::mclapply documentation, it does not work on Windows
+      return
+    }
+    val result = rInterop.executeCode("""
+      a <- parallel::mclapply(1:9, mc.cores = 2, function(x) {
+        cat(x)
+        for (i in 1:x) cat("!", file=stderr())
+        return(x*x)
+      })
+    """.trimIndent())
+    TestCase.assertEquals("123456789", result.stdout.asSequence().sorted().joinToString(""))
+    TestCase.assertEquals("!".repeat(9 * 10 / 2), result.stderr)
+    TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).evaluateAsStringList())
   }
 }
