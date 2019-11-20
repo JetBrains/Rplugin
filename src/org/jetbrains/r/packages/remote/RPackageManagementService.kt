@@ -68,7 +68,7 @@ class RPackageManagementService(private val project: Project,
 
   val enabledRepositoryUrls: List<String>
     get() {
-      enableMandatoryRepositories()
+      actualizeEnabledRepositories()
       return service.enabledRepositoryUrls.let { if (it.isNotEmpty()) it else listOf(CRAN_URL_PLACEHOLDER) }
     }
 
@@ -118,35 +118,45 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getAllPackagesCached(): List<RepoPackage> {
-    return RepoUtils.getPackageDetails(project)?.values?.toList() ?: listOf()
+    return RepoUtils.getFreshPackageDetails(project, enabledRepositoryUrls)?.values?.toList() ?: listOf()
   }
 
   override fun reloadAllPackages(): List<RepoPackage> {
-    fun reload(): List<RRepoPackage>? {
-      val cranMirrors = interpreter.withAutoUpdate { cranMirrors }
-      return if (cranMirrors.isNotEmpty()) {
-        val repoUrls = enabledRepositoryUrls.map { url ->
-          if (url == CRAN_URL_PLACEHOLDER) {
-            if (cranMirror !in cranMirrors.indices) {
-              LOGGER.warn("Cannot get CRAN mirror with previously stored index = $cranMirror. Fallback to the first mirror")
-              cranMirror = 0
-            }
-            cranMirrors[cranMirror].url
-          } else {
-            url
-          }
+    return loadAllPackages()?.let {
+      RepoUtils.getPackageDescriptions()  // Force loading of package descriptions
+      RepoUtils.setPackageDetails(project, it.first, it.second)
+      it.first
+    } ?: listOf()
+  }
+
+  private fun loadAllPackages(): Pair<List<RRepoPackage>, List<String>>? {
+    val cranMirrors = interpreter.withAutoUpdate { cranMirrors }
+    return if (cranMirrors.isNotEmpty()) {
+      // Note: copy of repos URLs list is intentional.
+      // Downloading of packages will take a long time so we must ensure that the list will stay unchanged
+      val repoUrls = enabledRepositoryUrls.toList()
+      val mappedUrls = mapRepositoryUrls(repoUrls, cranMirrors)
+      interpreter.getAvailablePackages(mappedUrls).blockingGet(DEFAULT_TIMEOUT)?.let { packages ->
+        Pair(packages, repoUrls)
+      }
+    } else {
+      LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. No packages can be loaded")
+      null
+    }
+  }
+
+  private fun mapRepositoryUrls(repoUrls: List<String>, cranMirrors: List<RMirror>): List<String> {
+    return repoUrls.map { url ->
+      if (url == CRAN_URL_PLACEHOLDER) {
+        if (cranMirror !in cranMirrors.indices) {
+          LOGGER.warn("Cannot get CRAN mirror with previously stored index = $cranMirror. Fallback to the first mirror")
+          cranMirror = 0
         }
-        interpreter.getAvailablePackages(repoUrls).blockingGet(DEFAULT_TIMEOUT)
+        cranMirrors[cranMirror].url
       } else {
-        LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. No packages can be loaded")
-        null
+        url
       }
     }
-
-    return reload()?.also {
-      RepoUtils.getPackageDescriptions()  // Force loading of package descriptions
-      RepoUtils.setPackageDetails(project, it)
-    } ?: listOf()
   }
 
   override fun getInstalledPackages(): Collection<InstalledPackage> {
@@ -234,6 +244,24 @@ class RPackageManagementService(private val project: Project,
       override fun finished(exceptions: List<ExecutionException>) {
         onOperationStop()
         listener.operationFinished(packageName, toErrorDescription(exceptions))
+      }
+    }
+  }
+
+  private fun actualizeEnabledRepositories() {
+    removeOutdatedEnabledRepositories()
+    enableMandatoryRepositories()
+  }
+
+  private fun removeOutdatedEnabledRepositories() {
+    val enabled = service.enabledRepositoryUrls
+    val filtered = enabled.filter { url ->
+      defaultRepositories.find { it.url == url } != null || service.userRepositoryUrls.contains(url)
+    }
+    if (filtered.size != enabled.size) {
+      service.enabledRepositoryUrls.apply {
+        clear()
+        addAll(filtered)
       }
     }
   }

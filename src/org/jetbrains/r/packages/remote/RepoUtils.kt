@@ -16,7 +16,6 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil.EDT_TIMEOUT
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rinterop.RInterop
@@ -31,7 +30,7 @@ import javax.swing.text.html.parser.ParserDelegator
 
 object RepoUtils {
   private val LOGGER = Logger.getInstance(RepoUtils::class.java)
-  private val PACKAGE_DETAILS_KEY = Key.create<Map<String, RRepoPackage>>("org.jetbrains.r.packages.remote.packageDetails")
+  private val PACKAGE_DETAILS_KEY = Key.create<Pair<Map<String, RRepoPackage>, List<String>>>("org.jetbrains.r.packages.remote.packageDetails")
 
   private const val CRAN_URL = "https://cran.r-project.org/web/packages/available_packages_by_name.html"
   private const val REPO_URL_SUFFIX_SOURCE = "/src"
@@ -54,28 +53,45 @@ object RepoUtils {
       RMirrorCache.getInstance().values = newMirrors ?: emptyList()
     }
 
-  fun setPackageDetails(project: Project, repoPackages: List<RRepoPackage>) {
-    RAvailablePackageCache.getInstance(project).values = repoPackages
-    setPackageDetailsWithoutCache(project, repoPackages)
+  fun setPackageDetails(project: Project, repoPackages: List<RRepoPackage>, repoUrls: List<String>) {
+    RAvailablePackageCache.getInstance(project).apply {
+      values = repoPackages
+      urls = repoUrls
+    }
+    setPackageDetailsWithoutCache(project, repoPackages, repoUrls)
   }
 
-  private fun setPackageDetailsWithoutCache(project: Project, repoPackages: List<RRepoPackage>) {
+  private fun setPackageDetailsWithoutCache(project: Project, repoPackages: List<RRepoPackage>, repoUrls: List<String>) {
     val names2packages = repoPackages.asSequence().map { Pair(it.name, it) }.toMap()  // List is big enough
-    project.putUserData(PACKAGE_DETAILS_KEY, names2packages)
+    project.putUserData(PACKAGE_DETAILS_KEY, Pair(names2packages, repoUrls))
   }
 
   fun getPackageDetails(project: Project): Map<String, RRepoPackage>? {
-    fun getSessionCache(project: Project): Map<String, RRepoPackage>? {
-      return project.getUserData(PACKAGE_DETAILS_KEY)
-    }
+    return getCachedPackageDetails(project)?.first
+  }
 
-    fun getProjectCache(project: Project): List<RRepoPackage>? {
-      return getCachedValues(RAvailablePackageCache.getInstance(project), AVAILABLE_PACKAGES_REFRESH_INTERVAL)
+  fun getFreshPackageDetails(project: Project, expectedRepoUrls: List<String>): Map<String, RRepoPackage>? {
+    return getCachedPackageDetails(project)?.let { details ->
+      val actualRepoUrls = details.second
+      if (actualRepoUrls == expectedRepoUrls) details.first else null
     }
+  }
 
-    return getSessionCache(project) ?: getProjectCache(project)?.let {
-      setPackageDetailsWithoutCache(project, it)
-      getSessionCache(project)
+  private fun getCachedPackageDetails(project: Project): Pair<Map<String, RRepoPackage>, List<String>>? {
+    return getSessionPackagesCache(project) ?: getProjectPackagesCache(project)?.let {
+      setPackageDetailsWithoutCache(project, it.first, it.second)
+      getSessionPackagesCache(project)
+    }
+  }
+
+  private fun getSessionPackagesCache(project: Project): Pair<Map<String, RRepoPackage>, List<String>>? {
+    return project.getUserData(PACKAGE_DETAILS_KEY)
+  }
+
+  private fun getProjectPackagesCache(project: Project): Pair<List<RRepoPackage>, List<String>>? {
+    val cache = RAvailablePackageCache.getInstance(project)
+    return getCachedValues(cache, AVAILABLE_PACKAGES_REFRESH_INTERVAL)?.let { packages ->
+      Pair(packages, cache.urls)
     }
   }
 

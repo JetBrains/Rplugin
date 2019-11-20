@@ -14,20 +14,30 @@ class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateCompon
       val chunked = state.flattenPackages.chunked(ENTRIES_PER_PACKAGE)
       return chunked.map { it.toRepoPackage() }
     }
-    set(packages) {
+    set(newPackages) {
       state.flattenPackages.apply {
         clear()
-        addAll(packages.flatMap { it.toFlattenPackage() })
+        addAll(newPackages.flatMap { it.toFlattenPackage() })
       }
       state.lastUpdate = System.currentTimeMillis()
+    }
+
+  var urls: List<String>
+    get() = state.repoUrls
+    set(newUrls) {
+      state.repoUrls.apply {
+        clear()
+        addAll(newUrls)
+      }
     }
 
   override val lastUpdate: Long
     get() = state.lastUpdate
 
   class State : BaseState() {
-    var flattenPackages: MutableList<String> by list<String>()
-    var lastUpdate: Long by property(0L)
+    var repoUrls by list<String>()
+    var flattenPackages by list<String>()
+    var lastUpdate by property(0L)
   }
 
   companion object {
