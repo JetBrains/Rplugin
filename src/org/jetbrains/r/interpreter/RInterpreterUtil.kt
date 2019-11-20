@@ -8,16 +8,18 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.EnvironmentUtil
+import com.intellij.util.indexing.FileBasedIndex
+import com.intellij.util.indexing.FileBasedIndexImpl
+import com.intellij.util.indexing.UnindexedFilesUpdater
 import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
@@ -166,4 +168,11 @@ object RInterpreterUtil {
           }
         ?: emptyList()
       }
+
+  fun updateIndexableSet(project: Project) {
+    val dumbService = DumbServiceImpl.getInstance(project)
+    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
+      dumbService.queueTask(UnindexedFilesUpdater(project))
+    }
+  }
 }

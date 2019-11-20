@@ -53,7 +53,18 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
 
   override val skeletonRoots: Set<VirtualFile>
-    get() = state.skeletonRoots
+    get() {
+      val current = state
+      val currentSkeletonRoots = current.skeletonRoots
+      if (current.skeletonPaths.size != currentSkeletonRoots.size || !currentSkeletonRoots.all { it.isValid }) {
+        runAsync {
+          updateState()
+          RInterpreterUtil.updateIndexableSet(project)
+        }
+        return currentSkeletonRoots.filter { it.isValid }.toSet()
+      }
+      return currentSkeletonRoots
+    }
 
   override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
     return runAsync {

@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  const val CUR_SKELETON_VERSION = 2
+  private const val CUR_SKELETON_VERSION = 2
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -41,7 +41,8 @@ object RSkeletonUtil {
     }
     skeletonsDirectory.deleteRecursively()
     if (!skeletonsDirectory.mkdirs()) {
-      throw IOException("Can't create skeletons directory")
+      if (!skeletonsDirectory.exists())
+        throw IOException("Can't create skeletons directory")
     }
 
     versionFile.printWriter().use {

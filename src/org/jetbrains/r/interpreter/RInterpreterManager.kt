@@ -17,16 +17,12 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbModeTask
 import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileBasedIndexImpl
-import com.intellij.util.indexing.UnindexedFilesUpdater
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
@@ -150,14 +146,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         scheduleSkeletonUpdate()
         promise.setResult(Unit)
       }
-      updateIndexableSet()
-    }
-  }
-
-  private fun updateIndexableSet() {
-    val dumbService = DumbServiceImpl.getInstance(project)
-    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      dumbService.queueTask(UnindexedFilesUpdater(project))
     }
   }
 
@@ -185,7 +173,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
           runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
         }
-        updateIndexableSet()
+        RInterpreterUtil.updateIndexableSet(project)
       }
     }
     DumbService.getInstance(project).queueTask(dumbModeTask)
@@ -193,7 +181,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun refreshSkeletons(interpreter: RInterpreterImpl) {
     interpreter.skeletonPaths.forEach { skeletonPath ->
-      val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return
+      val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return@forEach
       VfsUtil.markDirtyAndRefresh(false, true, true, libraryRoot)
       WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
     }
@@ -209,5 +197,4 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 }
-
 
