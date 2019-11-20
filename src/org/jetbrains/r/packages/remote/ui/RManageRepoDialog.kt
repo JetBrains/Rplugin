@@ -26,7 +26,7 @@ class RManageRepoDialog(
 ) : DialogWrapper(project, false) {
 
   private val mainPanel: JPanel
-  private val list = CheckBoxList<RRepository>()
+  private val list = RepositoryCheckBoxList()
   private val refreshCheckBox = JBCheckBox(REFRESH_CHECKBOX_TEXT, true)
   private var currentCranMirror: Int = 0
 
@@ -87,6 +87,10 @@ class RManageRepoDialog(
     val enabledUrls = controller.enabledRepositoryUrls
     for (repository in allRepositories) {
       list.addItem(repository, repository.url, enabledUrls.contains(repository.url))
+      list.model.getElementAt(list.itemsCount - 1).apply {
+        isEnabled = repository.isOptional
+        toolTipText = if (!repository.isOptional) DISABLED_CHECKBOX_HINT else null
+      }
     }
     checkActiveExists()
   }
@@ -176,6 +180,16 @@ class RManageRepoDialog(
     return mainPanel
   }
 
+  // Note: you may expect that checkbox will be rendered as disabled
+  // after you find it in the list model and manually disable via `isEnabled = false`.
+  // But wait... For some strange reasons actually it won't.
+  // That's why the `CheckBoxList` subclass below was introduced
+  private class RepositoryCheckBoxList : CheckBoxList<RRepository>() {
+    override fun isEnabled(index: Int): Boolean {
+      return model.getElementAt(index).isEnabled
+    }
+  }
+
   companion object {
     private val TITLE = RBundle.message("repo.dialog.title")
     private val ADD_REPOSITORY_TITLE = RBundle.message("repo.dialog.add.repository.title")
@@ -185,5 +199,6 @@ class RManageRepoDialog(
     private val REFRESH_CHECKBOX_TEXT = RBundle.message("repo.dialog.refresh.checkbox.text")
     private val GETTING_AVAILABLE_REPOSITORIES = RBundle.message("repo.dialog.getting.available.repositories")
     private val GETTING_AVAILABLE_MIRRORS = RBundle.message("repo.dialog.getting.available.mirrors")
+    private val DISABLED_CHECKBOX_HINT = RBundle.message("repo.dialog.disabled.checkbox.hint")
   }
 }

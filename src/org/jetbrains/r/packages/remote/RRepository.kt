@@ -7,12 +7,15 @@ package org.jetbrains.r.packages.remote
 
 sealed class RRepository {
   abstract val url: String
+  abstract val isOptional: Boolean
 
   override fun toString(): String {
     return url
   }
 }
 
-data class RDefaultRepository(override val url: String) : RRepository()
+data class RDefaultRepository(override val url: String, override val isOptional: Boolean) : RRepository()
 
-data class RUserRepository(override val url: String) : RRepository()
+data class RUserRepository(override val url: String) : RRepository() {
+  override val isOptional = true
+}

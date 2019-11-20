@@ -67,7 +67,10 @@ class RPackageManagementService(private val project: Project,
     get() = service.userRepositoryUrls.map { RUserRepository(it) }
 
   val enabledRepositoryUrls: List<String>
-    get() = service.enabledRepositoryUrls.let { if (it.isNotEmpty()) it else listOf(CRAN_URL_PLACEHOLDER) }
+    get() {
+      enableMandatoryRepositories()
+      return service.enabledRepositoryUrls.let { if (it.isNotEmpty()) it else listOf(CRAN_URL_PLACEHOLDER) }
+    }
 
   val mirrors: List<RMirror>
     get() = interpreter.cranMirrors
@@ -231,6 +234,15 @@ class RPackageManagementService(private val project: Project,
       override fun finished(exceptions: List<ExecutionException>) {
         onOperationStop()
         listener.operationFinished(packageName, toErrorDescription(exceptions))
+      }
+    }
+  }
+
+  private fun enableMandatoryRepositories() {
+    val mandatory = defaultRepositories.filter { !it.isOptional }
+    for (repository in mandatory) {
+      if (!service.enabledRepositoryUrls.contains(repository.url)) {
+        service.enabledRepositoryUrls.add(repository.url)
       }
     }
   }

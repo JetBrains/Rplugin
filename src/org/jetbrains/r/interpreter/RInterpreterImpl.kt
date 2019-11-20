@@ -31,6 +31,7 @@ import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.packages.remote.RepoUtils
+import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -134,9 +135,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     val libraryPaths = loadLibraryPaths()
     val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
-
-    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages, getUserPath(), mirrors, getRepositories())
-
+    val repositories = getRepositories(mirrors)
+    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages, getUserPath(), mirrors, repositories)
   }
 
   private fun getUserPath(): String {
@@ -185,10 +185,38 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       }
   }
 
-  private fun getRepositories(): List<RDefaultRepository> {
+  private fun getRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
     val lines = forceRunHelper(DEFAULT_REPOSITORIES_HELPER, listOf())
-    val urls = lines.filter { it.isNotBlank() }
-    return urls.map { RDefaultRepository(it) }
+    val blankIndex = lines.indexOfFirst { it.isBlank() }
+    if (blankIndex < 0) {
+      LOG.error("Cannot find separator in helper's output:\n${lines.joinToString("\n")}")
+      return emptyList()
+    }
+    val optional = lines.subList(0, blankIndex).filter { it.isNotBlank() }
+    val mandatory = lines.subList(blankIndex + 1, lines.size).filter { it.isNotBlank() }
+    return mergeRepositories(mandatory, optional, mirrors)
+  }
+
+  private fun mergeRepositories(mandatory: List<String>, optional: List<String>, mirrors: List<RMirror>): List<RDefaultRepository> {
+    return mutableListOf<RDefaultRepository>().apply {
+      // Note: obtained repositories can be mentioned among CRAN mirrors.
+      // In this case they should be replaced with "@CRAN@"
+      val mirrorUrls = mirrors.asSequence().map { it.url.trimSlash() }.toSet()
+      val seen = mutableSetOf<String>()
+      addAllNotSeen(mandatory, false, seen, mirrorUrls)
+      addAllNotSeen(optional, true, seen, mirrorUrls)
+    }
+  }
+
+  private fun MutableList<RDefaultRepository>.addAllNotSeen(urls: List<String>, isOptional: Boolean, seen: MutableSet<String>, mirrorUrls: Set<String>) {
+    for (url in urls) {
+      val trimmedUrl = url.trimSlash()
+      val mappedUrl = if (trimmedUrl in mirrorUrls) CRAN_URL_PLACEHOLDER else trimmedUrl
+      if (mappedUrl !in seen) {
+        add(RDefaultRepository(mappedUrl, isOptional))
+        seen.add(mappedUrl)
+      }
+    }
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
@@ -314,6 +342,10 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       } else {
         this
       }
+    }
+
+    private fun String.trimSlash(): String {
+      return if (endsWith("/")) dropLast(1) else this
     }
   }
 
