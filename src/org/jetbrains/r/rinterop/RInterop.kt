@@ -268,6 +268,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(stub::repoInstallPackage, request)
   }
 
+  fun repoAddLibraryPath(path: String): RIExecutionResult {
+    return executeRequest(RPIServiceGrpc.getRepoAddLibraryPathMethod(), StringValue.of(path))
+  }
+
   fun repoCheckPackageInstalled(packageName: String): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getRepoCheckPackageInstalledMethod(), StringValue.of(packageName))
   }

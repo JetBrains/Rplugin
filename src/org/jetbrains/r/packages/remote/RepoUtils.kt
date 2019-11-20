@@ -9,6 +9,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.console.RConsoleManager
@@ -201,58 +202,19 @@ object RepoUtils {
   }
 
   fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage) {
-    fun trimUrl(repoUrl: String): String {
-      fun findIndex(repoUrl: String, suffices: List<String>): Int? {
-        for (suffix in suffices) {
-          val index = repoUrl.indexOf(suffix)
-          if (index != -1) {
-            return index
-          }
-        }
-        return null
-      }
-
-      val index = findIndex(repoUrl, listOf(REPO_URL_SUFFIX_SOURCE, REPO_URL_SUFFIX_BINARY))
-      return if (index != null) {
-        repoUrl.substring(0, index)
-      } else {
-        repoUrl
-      }
-    }
-
-    fun createUserDirectoryIfNecessary(interpreter: RInterpreter): Pair<Boolean, Boolean> {
-      for (libraryPath in interpreter.libraryPaths) {
-        if (libraryPath.isWritable) {
-          return Pair(first = false, second = false)  // Note: explicit argument names remove awkward "Boolean literal argument without parameter name" inspection
-        }
-      }
-      return Pair(true, File(interpreter.userLibraryPath).mkdirs())
-    }
-
-    fun getArguments(url: String, needsUserDirectory: Boolean, userLibraryPath: String): Map<String, String> {
-      return mutableMapOf<String, String>().also {
-        it["repos"] = "'$url'"
-        it["dependencies"] = "TRUE"
-        //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: this flag dramatically increases probability of spurious packaging error but I'm not sure if it's safe to remove it
-        it["verbose"] = "FALSE"
-        if (needsUserDirectory) {
-          it["lib"] = userLibraryPath
-        }
-      }
-    }
-
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
     val repoUrl = repoPackage.repoUrl ?: throw ExecutionException("Unknown repo URL for package ${repoPackage.name}")
-    val url = trimUrl(repoUrl)
+    val url = trimRepoUrlSuffix(repoUrl)
 
-    // Ensure user directory is created => interpreter won't ask during package installation
-    val (needsUserDirectory, isUserDirectoryCreated) = createUserDirectoryIfNecessary(interpreter)
+    // Ensure writable library path exists => interpreter won't ask during package installation
+    val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter)
 
-    val arguments = getArguments(url, needsUserDirectory, interpreter.userLibraryPath)
+    val arguments = getInstallArguments(url, libraryPath)
     rInterop.repoInstallPackage(repoPackage.name, arguments)
 
     if (isUserDirectoryCreated) {
+      rInterop.repoAddLibraryPath(libraryPath)
       interpreter.updateState()
       RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
     }
@@ -274,6 +236,52 @@ object RepoUtils {
       }
     }
     throw ExecutionException("Can't install package. Check console for process output")
+  }
+
+  private fun trimRepoUrlSuffix(repoUrl: String): String {
+    val index = findRepoUrlSuffixIndex(repoUrl, listOf(REPO_URL_SUFFIX_SOURCE, REPO_URL_SUFFIX_BINARY))
+    return if (index != null) repoUrl.substring(0, index) else repoUrl
+  }
+
+  private fun findRepoUrlSuffixIndex(repoUrl: String, suffices: List<String>): Int? {
+    for (suffix in suffices) {
+      val index = repoUrl.indexOf(suffix)
+      if (index != -1) {
+        return index
+      }
+    }
+    return null
+  }
+
+  // Note: returns pair of writable path and indicator whether new library path was created
+  private fun getGuaranteedWritableLibraryPath(interpreter: RInterpreter): Pair<String, Boolean> {
+    val writable = findWritableLibraryPath(interpreter)
+    return if (writable != null) {
+      Pair(writable, false)
+    } else {
+      tryCreateUserLibraryPath(interpreter)
+    }
+  }
+
+  private fun findWritableLibraryPath(interpreter: RInterpreter): String? {
+    return interpreter.libraryPaths.find { it.isWritable }?.path?.let { path ->
+      FileUtil.toSystemIndependentName(path)
+    }
+  }
+
+  private fun tryCreateUserLibraryPath(interpreter: RInterpreter): Pair<String, Boolean> {
+    val path = FileUtil.toSystemIndependentName(interpreter.userLibraryPath)
+    return Pair(path, File(path).mkdirs())
+  }
+
+  private fun getInstallArguments(url: String, libraryPath: String): Map<String, String> {
+    return mutableMapOf<String, String>().also {
+      it["repos"] = "'$url'"
+      it["dependencies"] = "TRUE"
+      //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
+      it["verbose"] = "FALSE"
+      it["lib"] = "'$libraryPath'"
+    }
   }
 
   @Throws(ExecutionException::class)
