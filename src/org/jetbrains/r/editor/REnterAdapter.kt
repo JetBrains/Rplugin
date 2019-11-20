@@ -11,10 +11,17 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.TokenType
+import com.intellij.psi.impl.source.tree.TreeUtil
+import com.intellij.psi.util.elementType
+import org.jetbrains.r.RLanguage
+import org.jetbrains.r.parsing.RElementTypes
 
 class REnterAdapter : EnterHandlerDelegateAdapter() {
   override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result {
-    adjustDocumentComment(editor, file)
+    if (file.language == RLanguage.INSTANCE) {
+      adjustDocumentComment(editor, file)
+    }
     return Result.Continue
   }
 
@@ -24,11 +31,26 @@ class REnterAdapter : EnterHandlerDelegateAdapter() {
    */
   private fun adjustDocumentComment(editor: Editor, file: PsiFile) {
     val offset = editor.caretModel.offset
-    if (offset < 2 || editor.document.charsSequence.subSequence(offset - 2, offset).toString() != "# ") return
-    val comment = file.findElementAt(offset) as? PsiComment ?: return
-    val prevSpace = comment.prevSibling as? PsiWhiteSpace ?: return
-    val prevCommentText = (prevSpace.prevSibling as? PsiComment)?.text ?: return
+    val elementAt = file.findElementAt(offset)
+
+    var prevSibling = if (elementAt == null && offset == editor.document.textLength) {
+      TreeUtil.findLastLeaf(file.node)?.psi
+    }
+    else {
+      elementAt?.prevSibling
+    } as? PsiWhiteSpace ?: return
+
+    if (prevSibling.elementType == TokenType.WHITE_SPACE)
+      prevSibling = prevSibling.prevSibling as? PsiWhiteSpace ?: return
+    if (prevSibling.elementType != RElementTypes.R_NL) return
+    val prevCommentText = (prevSibling.prevSibling as? PsiComment)?.text ?: return
     if (!prevCommentText.startsWith("#'")) return
-    editor.document.insertString(offset - 1, "'")
+    if (elementAt is PsiComment) {
+      editor.document.insertString(offset - 1, "'")
+    }
+    else {
+      editor.document.insertString(offset, "#' ")
+      editor.caretModel.moveCaretRelatively(3, 0, false, true, true)
+    }
   }
 }

@@ -5,6 +5,7 @@
 package org.jetbrains.r.codestyle
 
 import com.intellij.application.options.CodeStyle
+import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import org.intellij.lang.annotations.Language
@@ -99,6 +100,110 @@ class TypingTest : RUsefulTestCase() {
     """)
   }
 
+  fun testEnterInsideDocumentationCommentInFunction() {
+    // it is strange situation but anyway...
+    doTest("""
+      func <- function() {
+        #' hello<caret> world
+      }
+    """, """
+      func <- function() {
+        #' hello
+        #' <caret>world
+      }
+    """)
+  }
+
+  fun testEnterAtTheEndOfDocumentationComment() {
+    doTest("""
+      #' hello world<caret>
+      x <- 10
+    """, """
+      #' hello world
+      #' <caret>
+      x <- 10
+    """)
+  }
+
+  fun testEnterAtTheEndOfFileAfterDocumentationComment() {
+    doTest("""
+      #' hello world<caret>
+    """, """
+      #' hello world
+      #' <caret>
+    """)
+  }
+
+  fun testBackspaceDocumentationCommentInTheEnd() {
+    doBackspaceTest("""
+      #' hello world
+      #' <caret>
+    """, """
+      #' hello world
+      <caret>
+    """)
+  }
+
+  fun testBackspaceDocumentationCommentAndSpace() {
+    doBackspaceTest("""
+      #' hello world
+      #' <caret>
+      x <- 10
+    """, """
+      #' hello world
+      <caret>
+      x <- 10
+    """)
+  }
+
+  fun testBackspaceDocumentationCommentWithoutSpace() {
+    doBackspaceTest("""
+      #' hello world
+      #'<caret>
+      x <- 10
+    """, """
+      #' hello world
+      <caret>
+      x <- 10
+    """)
+  }
+
+  fun testBackspaceDocumentationCommentWithIndent() {
+    doBackspaceTest("""
+      y <- 1
+        #' hello world
+        #'<caret>
+        x <- 10
+    """, """
+      y <- 1
+        #' hello world
+        <caret>
+        x <- 10
+    """)
+  }
+
+  fun testNormalBackspaceAfterCode() {
+    doBackspaceTest("""
+      y <- 1 #' <caret>
+      x <- 10
+    """, """
+      y <- 1 #'<caret>
+      x <- 10
+    """)
+  }
+
+  fun testNormalBackspaceInsideComment() {
+    doBackspaceTest("""
+      #' hello world
+      #' hello #'<caret>
+      x <- 10
+    """, """
+      #' hello world
+      #' hello #<caret>
+      x <- 10
+    """)
+  }
+
   fun testAddParenthesis() {
     doTest("""
       foo<caret>
@@ -140,7 +245,6 @@ class TypingTest : RUsefulTestCase() {
     """, "(")
   }
 
-
   private fun doTest(@Language("R") fileText: String,
                      @Language("R") expected: String,
                      insert: String = "\n") {
@@ -155,6 +259,13 @@ class TypingTest : RUsefulTestCase() {
     finally {
       CodeStyleSettingsManager.getInstance(project).dropTemporarySettings()
     }
+    myFixture.checkResult(expected.trimIndent())
+  }
+
+  private fun doBackspaceTest(@Language("R") fileText: String,
+                              @Language("R") expected: String) {
+    myFixture.configureByText(RFileType, fileText.trimIndent())
+    myFixture.performEditorAction(IdeActions.ACTION_EDITOR_BACKSPACE)
     myFixture.checkResult(expected.trimIndent())
   }
 }

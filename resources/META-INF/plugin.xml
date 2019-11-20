@@ -252,6 +252,7 @@ You can find the source code in the following repositories:
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
         <enterHandlerDelegate implementation="org.jetbrains.r.editor.REnterAdapter"/>
+        <backspaceHandlerDelegate implementation="org.jetbrains.r.editor.RBackspaceHandler"/>
 
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
