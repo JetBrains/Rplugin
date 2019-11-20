@@ -38,7 +38,6 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
-import java.awt.Dimension
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -203,12 +202,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun graphicsInit(properties: RGraphicsUtils.InitProperties): RIExecutionResult {
-    val parameters = properties.screenParameters
-    val screenParametersMessage = Service.GraphicsInitRequest.ScreenParameters.newBuilder()
-      .setWidth(parameters.width)
-      .setHeight(parameters.height)
-      .setResolution(parameters.resolution ?: -1)
-      .build()
+    val screenParametersMessage = buildScreenParametersMessage(properties.screenParameters)
     val request = Service.GraphicsInitRequest.newBuilder()
       .setSnapshotDirectory(properties.snapshotDirectory)
       .setScreenParameters(screenParametersMessage)
@@ -220,13 +214,21 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getGraphicsDumpMethod(), Empty.getDefaultInstance())
   }
 
-  fun graphicsRescale(snapshotNumber: Int?, newDimension: Dimension): RIExecutionResult {
+  fun graphicsRescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
+    val newParametersMessage = buildScreenParametersMessage(newParameters)
     val request = Service.GraphicsRescaleRequest.newBuilder()
       .setSnapshotNumber(snapshotNumber ?: -1)
-      .setNewWidth(newDimension.width.toDouble())
-      .setNewHeight(newDimension.height.toDouble())
+      .setNewParameters(newParametersMessage)
       .build()
     return executeRequest(RPIServiceGrpc.getGraphicsRescaleMethod(), request)
+  }
+
+  private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): Service.ScreenParameters {
+    return Service.ScreenParameters.newBuilder()
+      .setWidth(parameters.width)
+      .setHeight(parameters.height)
+      .setResolution(parameters.resolution ?: -1)
+      .build()
   }
 
   fun graphicsReset(): RIExecutionResult {

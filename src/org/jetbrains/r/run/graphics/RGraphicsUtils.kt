@@ -172,9 +172,9 @@ object RGraphicsUtils {
     }
   }
 
-  internal fun scaleForRetina(dimension: Dimension): Dimension =
+  private fun scaleForRetina(dimension: Dimension): Dimension =
     if (isRetina) Dimension(dimension.width * 2, dimension.height * 2) else dimension
 
-  private fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
+  internal fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
     if (isRetina) ScreenParameters(scaleForRetina(parameters.dimension), parameters.resolution?.times(2)) else parameters
 }

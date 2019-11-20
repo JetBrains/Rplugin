@@ -10,7 +10,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
@@ -244,9 +243,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
           repository.apply {
             configuration?.let { oldConfiguration ->
               configuration = oldConfiguration.copy(screenParameters = parameters)
-              if (oldConfiguration.screenParameters.resolution != parameters.resolution) {
-                Messages.showInfoMessage(RESOLUTION_CHANGED_MESSAGE, RESOLUTION_CHANGED_TITLE)
-              }
             }
           }
         }.show()
@@ -340,9 +336,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private val CLEAR_GRAPHICS_ACTION_ICON = RIcons.CLEAR_GRAPHICS
     private val CLEAR_ALL_GRAPHICS_ACTION_ICON = RIcons.CLEAR_ALL_GRAPHICS
     private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
-
-    private val RESOLUTION_CHANGED_MESSAGE = RBundle.message("graphics.panel.settings.resolution.changed.message")
-    private val RESOLUTION_CHANGED_TITLE = RBundle.message("graphics.panel.settings.resolution.changed.title")
 
     private fun createDestinationFile(file: File) {
       if (!file.exists() && !file.createNewFile()) {

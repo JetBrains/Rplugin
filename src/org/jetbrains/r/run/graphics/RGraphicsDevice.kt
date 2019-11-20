@@ -7,7 +7,6 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.r.rinterop.RInterop
-import java.awt.Dimension
 import java.io.File
 
 data class RSnapshotsUpdate(
@@ -33,19 +32,13 @@ class RGraphicsDevice(
 
   var configuration: Configuration = Configuration(initialParameters, null)
     set(value) {
-      val oldConfiguration = field
-      val number = value.snapshotNumber
       field = value
-
-      if (oldConfiguration.screenParameters.resolution != value.screenParameters.resolution) {
-        reset()
-      }
-
-      if (number != null) {
-        val newDimension = value.screenParameters.dimension
-        val previousDimension = numbers2parameters[number]?.dimension
-        if (previousDimension != null && previousDimension != newDimension) {
-          rescale(number, newDimension)
+      value.snapshotNumber?.let { number ->
+        numbers2parameters[number]?.let { previousParameters ->
+          val newParameters = value.screenParameters
+          if (previousParameters != newParameters) {
+            rescale(number, newParameters)
+          }
         }
       }
     }
@@ -55,7 +48,7 @@ class RGraphicsDevice(
   }
 
   fun update() {
-    rescale(null, configuration.screenParameters.dimension)
+    rescale(null, configuration.screenParameters)
   }
 
   fun reset() {
@@ -112,10 +105,10 @@ class RGraphicsDevice(
     listeners.remove(listener)
   }
 
-  private fun rescale(snapshotNumber: Int?, newDimension: Dimension) {
+  private fun rescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters) {
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newDimension))
+        val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newParameters))
         if (result.stderr.isNotBlank()) {
           // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
           LOGGER.warn("Rescale for snapshot <$snapshotNumber> has failed:\n${result.stderr}")
@@ -140,11 +133,11 @@ class RGraphicsDevice(
       val zoomed = type2snapshots[RSnapshotType.ZOOMED] ?: listOf()
       val sketches = type2snapshots[RSnapshotType.SKETCH] ?: listOf()
       val mostRecentNormal = normal.groupAndShrinkBy { it.version }
-      val orderedZoomed = zoomed.sortedBy { it.number }
+      val mostRecentZoomed = zoomed.groupAndShrinkBy { it.version }
       if (checkUpdated(mostRecentNormal)) {
         traceUpdatedSnapshots(mostRecentNormal)
         lastNormal = mostRecentNormal
-        lastZoomed = orderedZoomed
+        lastZoomed = mostRecentZoomed
         postSnapshotNumber(tracedSnapshotNumber)
         notifyListenersOnUpdate()
       }
