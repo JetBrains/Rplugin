@@ -18,6 +18,7 @@ import com.intellij.webcore.packaging.*
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.packages.remote.ui.RPackageUpdateInfo
 import icons.org.jetbrains.r.packages.remote.ui.RUpdateAllConfirmDialog
+import org.jetbrains.r.RIcons
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.RPackageManagementService
@@ -147,7 +148,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   companion object {
     private const val REFRESH_TIME_SPAN = 500
     private val UPGRADE_ALL_TEXT = RBundle.message("packages.panel.upgrade.all.text")
-    private val UPGRADE_ALL_ICON = IconLoader.findIcon("/icons/upgrade-all.svg")
+    private val UPGRADE_ALL_ICON = RIcons.Packages.UPGRADE_ALL
     private val REFRESH_TEXT = RBundle.message("packages.panel.refresh.text")
     private val REFRESH_ICON = AllIcons.Actions.Refresh
     private val REFRESH_TASK_IDENTITY = RBundle.message("packages.panel.refresh.task.identity")

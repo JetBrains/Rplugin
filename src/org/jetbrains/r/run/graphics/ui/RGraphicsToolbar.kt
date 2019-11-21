@@ -42,7 +42,7 @@ class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
         }
 
         override fun displayTextInToolbar(): Boolean {
-          return holder.title != null
+          return true
         }
       }
 

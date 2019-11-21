@@ -24,7 +24,6 @@ class InlineToolbar(val cell: PsiElement,
   init {
     val component = actionToolBar.component
     component.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-    component.background = editor.contentComponent.background
     add(component)
   }
 
@@ -33,6 +32,7 @@ class InlineToolbar(val cell: PsiElement,
     //ToDo: - We need to make some tests on mac and linux for this, maybe this is applicable only to windows platform.
     //      - And also we need to check this on different Windows versions (definitely we have problems on Windows) .
     //      - Definitely we have problems on new macBook
+    actionToolBar.component.background = editor.contentComponent.background
     val oldComposite = (g as Graphics2D).composite
     g.composite = AlphaComposite.SrcOver
     super<JPanel>.paint(g)

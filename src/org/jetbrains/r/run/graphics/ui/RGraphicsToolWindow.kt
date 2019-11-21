@@ -331,10 +331,10 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
     private val PREVIOUS_GRAPHICS_ACTION_ICON = AllIcons.Actions.Back
     private val NEXT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Forward
-    private val EXPORT_GRAPHICS_ACTION_ICON = RIcons.EXPORT_GRAPHICS
+    private val EXPORT_GRAPHICS_ACTION_ICON = RIcons.Graphics.EXPORT
     private val ZOOM_GRAPHICS_ACTION_ICON = AllIcons.Actions.Search
-    private val CLEAR_GRAPHICS_ACTION_ICON = RIcons.CLEAR_GRAPHICS
-    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = RIcons.CLEAR_ALL_GRAPHICS
+    private val CLEAR_GRAPHICS_ACTION_ICON = RIcons.Graphics.CLEAR
+    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = RIcons.Graphics.CLEAR_ALL
     private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
 
     private fun createDestinationFile(file: File) {
