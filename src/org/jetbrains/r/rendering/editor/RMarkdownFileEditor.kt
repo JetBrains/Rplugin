@@ -80,61 +80,95 @@ private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile):
   ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(project, report), true)
 
 
-private fun createActionGroup(project: Project, report: VirtualFile): ActionGroup = DefaultActionGroup(
-  createOutputDirectoryAction(project, report),
-  createRunAction(project, report),
-  createShowDocument(project, report),
-  createRunAllAction(),
-  ActionManager.getInstance().getAction("RMarkdownNewChunk"))
+private fun createActionGroup(project: Project, report: VirtualFile): ActionGroup {
+  return BuildManager(project, report).let { manager ->
+    DefaultActionGroup(
+      createOutputDirectoryAction(project, report),
+      createBuildAction(manager),
+      createBuildAndShowAction(project, report, manager),
+      createRunAllAction(),
+      ActionManager.getInstance().getAction("RMarkdownNewChunk")
+    )
+  }
+}
 
-private fun createRunAction(project: Project, report: VirtualFile): AnAction =
-  object : SameTextAction(RBundle.message("rmarkdown.editor.toolbar.renderDocument"), AllIcons.Actions.Compile) {
-    private var isRunning: Boolean = false
+private class BuildManager(private val project: Project, private val report: VirtualFile) {
+  var isRunning: Boolean = false
+    private set
 
-    override fun update(e: AnActionEvent) {
-      if (isRunning) {
-        e.presentation.icon = AllIcons.Actions.Suspend
+  fun toggleBuild(e: AnActionEvent, onRenderFinished: (() -> Unit)? = null) {
+    runAsync {
+      if (!isRunning) {
+        isRunning = true
+        if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
+          RInterpreterManager.getInstance(project).initializeInterpreter()
+        }
+        val document = e.getData(CommonDataKeys.EDITOR)?.document ?: return@runAsync
+        ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
+        RMarkdownProcessor.render(project, report) {
+          if (isRunning) {
+            onRenderFinished?.invoke()  // Don't invoke this if rendering was interrupted
+          }
+          isRunning = false
+        }
       }
       else {
-        e.presentation.icon = AllIcons.Actions.Compile
-      }
-    }
-
-    override fun actionPerformed(e: AnActionEvent) {
-      runAsync {
-        if (!isRunning) {
-          isRunning = true
-          if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-            RInterpreterManager.getInstance(project).initializeInterpreter()
-          }
-          val document = e.getData(CommonDataKeys.EDITOR)?.document ?: return@runAsync
-          ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
-          RMarkdownProcessor.render(project, report) {
-            isRunning = false
-          }
-        }
-        else {
-          isRunning = false
-          RMarkdownConsoleManager.getInstance(project).consoleRunner.interruptRendering()
-        }
+        isRunning = false
+        RMarkdownConsoleManager.getInstance(project).consoleRunner.interruptRendering()
       }
     }
   }
+}
 
-private fun createShowDocument(project: Project, report: VirtualFile): AnAction =
-  object : SameTextAction(RBundle.message("rmarkdown.editor.toolbar.openDocument"),
-                          WebBrowserManager.getInstance().firstActiveBrowser?.icon ?: AllIcons.Nodes.PpWeb) {
+private fun createBuildAction(manager: BuildManager): AnAction {
+  val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
+  val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
+  val idleIcon = AllIcons.Actions.Compile
+  val runningIcon = AllIcons.Actions.Suspend
+  return object : SameTextAction(idleText, idleIcon) {
+    override fun update(e: AnActionEvent) {
+      val text = if (manager.isRunning) runningText else idleText
+      val icon = if (manager.isRunning) runningIcon else idleIcon
+      e.presentation.description = text
+      e.presentation.text = text
+      e.presentation.icon = icon
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
-      val rMarkdownConsoleManager = ServiceManager.getService(project, RMarkdownConsoleManager::class.java)
+      manager.toggleBuild(e)
+    }
+  }
+}
+
+private fun createBuildAndShowAction(project: Project, report: VirtualFile, manager: BuildManager): AnAction {
+  val idleText = RBundle.message("rmarkdown.editor.toolbar.renderAndOpenDocument")
+  val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
+  val icon = WebBrowserManager.getInstance().firstActiveBrowser?.icon ?: AllIcons.Nodes.PpWeb
+  return object : SameTextAction(idleText, icon) {
+    override fun update(e: AnActionEvent) {
+      val text = if (manager.isRunning) runningText else idleText
+      e.presentation.description = text
+      e.presentation.text = text
+    }
+
+    override fun actionPerformed(e: AnActionEvent) {
+      manager.toggleBuild(e) {
+        openDocument()
+      }
+    }
+
+    private fun openDocument() {
       val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report.path)
       val file = File(profileLastOutput)
       if (profileLastOutput.isNotEmpty() && file.exists()) {
         RMarkdownProcessor.openResult(file)
       } else {
+        val rMarkdownConsoleManager = ServiceManager.getService(project, RMarkdownConsoleManager::class.java)
         rMarkdownConsoleManager.consoleRunner.reportResultNotFound()
       }
     }
   }
+}
 
 class ChunkExecutionState(val terminationRequired: AtomicBoolean = AtomicBoolean(),
                           val isDebug: Boolean = false,
