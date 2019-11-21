@@ -17,6 +17,7 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RParameterList
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
+import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import java.util.function.Predicate
 
 object RResolver {
@@ -61,15 +62,10 @@ object RResolver {
 
   fun resolveInFileOrLibrary(element: PsiElement,
                              name: String,
-                             myResult: MutableList<ResolveResult>) {
-    resolveFromStubs(element, myResult, name)
-  }
-
-  private fun resolveFromStubs(element: PsiElement,
-                               result: MutableList<ResolveResult>,
-                               name: String) {
+                             result: MutableList<ResolveResult>) {
     val statements = RAssignmentNameIndex.find(name, element.project, RSearchScopeUtil.getScope(element))
-    addResolveResults(result, statements)
+    val exported = statements.filter { it !is RSkeletonAssignmentStatement || it.stub.exported }
+    addResolveResults(result, exported)
   }
 
   private fun addResolveResults(result: MutableList<ResolveResult>,

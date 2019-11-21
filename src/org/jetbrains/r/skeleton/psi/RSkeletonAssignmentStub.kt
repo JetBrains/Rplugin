@@ -6,14 +6,18 @@ package org.jetbrains.r.skeleton.psi
 
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
+import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.stubs.RAssignmentStub
+
+typealias RSkeletonSymbolType = LibrarySummary.RLibrarySymbol.Type
 
 class RSkeletonAssignmentStub(parent: StubElement<*>,
                               elementType: RSkeletonAssignmentElementType,
                               private val myName: String,
-                              private val isFunc: Boolean,
-                              val parameters: String
+                              val type: RSkeletonSymbolType,
+                              val parameters: String,
+                              val exported: Boolean
 ) : StubBase<RAssignmentStatement>(parent, elementType), RAssignmentStub {
   override fun isRight(): Boolean = true
 
@@ -21,5 +25,5 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
 
   override fun getName(): String = myName
 
-  override fun isFunctionDeclaration(): Boolean = isFunc
+  override fun isFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.FUNCTION
 }

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 2
+  private const val CUR_SKELETON_VERSION = 3
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -262,7 +262,9 @@ object RSkeletonUtil {
         val parameters = signature.substring(prefix.length, signature.length - 2)
         builder.setParameters(parameters)
       }
-
+      else if (types.contains("data.frame")) {
+        builder.setType(LibrarySummary.RLibrarySymbol.Type.DATASET)
+      }
       packageBuilder.addSymbols(builder.build())
     }
     return packageBuilder.build()

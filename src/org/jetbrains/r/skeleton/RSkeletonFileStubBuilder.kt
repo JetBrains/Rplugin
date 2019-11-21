@@ -25,15 +25,12 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
       LibrarySummary.RLibraryPackage.parseFrom(it)
     }
     for (symbol in binPackage.symbolsList) {
-      if (!symbol.exported) {
-        continue
-      }
-
       RSkeletonAssignmentStub(skeletonFileStub,
                               R_SKELETON_ASSIGNMENT_STATEMENT,
                               symbol.name,
-                              symbol.type == LibrarySummary.RLibrarySymbol.Type.FUNCTION,
-                              symbol.parameters)
+                              symbol.type,
+                              symbol.parameters,
+                              symbol.exported)
 
     }
     return skeletonFileStub

@@ -19,7 +19,6 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.references.RReferenceBase
-import org.jetbrains.r.psi.stubs.RAssignmentStub
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RVar
 
@@ -32,7 +31,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
 
-  override fun getStub(): RAssignmentStub = myStub
+  override fun getStub(): RSkeletonAssignmentStub = myStub
 
   override fun getElementType(): IStubElementType<out StubElement<*>, *> = stub.stubType
 
@@ -80,7 +79,8 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
 
   override fun navigate(requestFocus: Boolean) {
     RConsoleManager.getInstance(project).runAsync { console ->
-      RPomTarget.createPsiElementByRValue(createRVar(console)).navigate(requestFocus)
+      val createPsiElementByRValue = RPomTarget.createPsiElementByRValue(createRVar(console))
+      createPsiElementByRValue.navigate(requestFocus)
     }
   }
 
@@ -88,7 +88,9 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
     val nameWithoutExtension = containingFile.virtualFile.nameWithoutExtension
     val (packageName, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension)
                            ?: throw IllegalStateException("bad filename")
-    val expressionRef = RRef.expressionRef("$packageName::`${getName()}`", consoleView.rInterop)
+
+    val accessOperator = if (stub.exported) "::" else ":::"
+    val expressionRef = RRef.expressionRef("$packageName$accessOperator`${getName()}`", consoleView.rInterop)
     return RVar(name, expressionRef, expressionRef.getValueInfo())
   }
 }

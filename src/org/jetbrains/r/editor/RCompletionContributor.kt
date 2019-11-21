@@ -34,6 +34,7 @@ import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
+import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import javax.swing.Icon
@@ -148,7 +149,9 @@ class RCompletionContributor : CompletionContributor() {
       val interpreter = RInterpreterManager.getInterpreter(project) ?: return
       val packageFile = interpreter.getSkeletonFileByPackageName(namespaceName) ?: return
       val scope = GlobalSearchScope.fileScope(packageFile)
-      addCompletionFromIndices(project, scope, parameters.originalFile, "", HashSet(), result)
+      val isInternalAccess = namespaceAccess.node.findChildByType(R_TRIPLECOLON) != null
+      addCompletionFromIndices(project, scope, parameters.originalFile, "", HashSet(), result,
+                               isInternalAccess = isInternalAccess)
     }
   }
 
@@ -516,7 +519,7 @@ class RCompletionContributor : CompletionContributor() {
                                          prefix: String,
                                          shownNames: HashSet<String>,
                                          result: CompletionResultSet,
-                                         isHelpFromRConsole: Boolean = false) {
+                                         isHelpFromRConsole: Boolean = false, isInternalAccess: Boolean = false) {
       val runtimeScope = computeRuntimeScope(originFile)
       var hasElementsWithPrefix = false
 
@@ -526,10 +529,10 @@ class RCompletionContributor : CompletionContributor() {
             hasElementsWithPrefix = true
           }
           result.consume(it)
-        }, isHelpFromRConsole)
+        }, isHelpFromRConsole, isInternalAccess)
       }
       if (!hasElementsWithPrefix) {
-        processElementsFromIndex(project, scope, shownNames, result, isHelpFromRConsole)
+        processElementsFromIndex(project, scope, shownNames, result, isHelpFromRConsole, isInternalAccess)
       }
     }
 
@@ -537,8 +540,12 @@ class RCompletionContributor : CompletionContributor() {
                                          scope: GlobalSearchScope,
                                          shownNames: HashSet<String>,
                                          result: Consumer<LookupElement>,
-                                         isHelpFromRConsole: Boolean) {
-      RAssignmentCompletionIndex.process("", project, scope, Processor { assignment ->
+                                         isHelpFromRConsole: Boolean,
+                                         isInternalAccess: Boolean) {
+
+      val indexAccessor = if (isInternalAccess) RInternalAssignmentCompletionIndex else RAssignmentCompletionIndex
+
+      indexAccessor.process("", project, scope, Processor { assignment ->
         if (!shownNames.add(assignment.name)) {
           return@Processor true
         }

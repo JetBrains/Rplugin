@@ -9,16 +9,16 @@ import com.intellij.psi.stubs.StubIndexKey
 import org.jetbrains.r.psi.api.RAssignmentStatement
 
 /**
- * This index is used to complete simple symbol names and with a package prefix by **::** operator
- * (`package_name::symbol_name<caret>` symbols).
+ * This index is used to complete symbols with a package prefix by **:::** operator
+ * (`package_name:::symbol_name<caret>` symbols).
  *
- * Completion for **:::** operator is defined in [RInternalAssignmentCompletionIndex] index
+ * Completion for **::** operator is defined in [RAssignmentCompletionIndex] index
  */
-class RAssignmentCompletionIndex : StringStubIndexExtension<RAssignmentStatement>() {
+class RInternalAssignmentCompletionIndex : StringStubIndexExtension<RAssignmentStatement>() {
 
   override fun getKey(): StubIndexKey<String, RAssignmentStatement> {
     return KEY
   }
 
-  companion object : CompletionIndexAccessBase("R.function.completion")
+  companion object : CompletionIndexAccessBase("R.internal.package.completion")
 }

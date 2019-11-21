@@ -45,13 +45,14 @@ abstract class RPomTarget: PomTarget {
     fun createSkeletonParameterTarget(assignment: RSkeletonAssignmentStatement, name: String): RPsiElement =
       RPomTargetPsiElementImpl(RSkeletonParameterPomTarget(assignment, name), assignment.project)
 
-    fun createPomTarget(rVar: RVar): RPomTarget = when (rVar.value) {
+    fun createPomTarget(rVar: RVar): RPomTarget = when (val value = rVar.value) {
       is RValueFunction -> createFunctionPomTarget(rVar)
       is RValueSimple -> createVariablePomTarget(rVar)
       is RValueList -> createVariablePomTarget(rVar)
       is RValueEnvironment -> createVariablePomTarget(rVar)
       is RValueDataFrame -> createDataFramePomTarget(rVar)
-      else -> throw IllegalArgumentException("${rVar.javaClass} is not supported")
+      is RValueError -> throw IllegalStateException("Error: ${value.text}")
+      else -> throw IllegalArgumentException("${rVar.value.javaClass} is not supported")
     }
 
   }

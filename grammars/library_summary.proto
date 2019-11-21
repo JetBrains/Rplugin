@@ -12,6 +12,7 @@ message RLibrarySymbol {
   enum Type {
     OTHER = 0;
     FUNCTION = 1;
+    DATASET = 2;
   }
   string name = 1;
   Type type = 2;

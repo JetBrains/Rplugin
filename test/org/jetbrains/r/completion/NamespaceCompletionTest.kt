@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.completion
 
+import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
@@ -19,10 +20,25 @@ class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), "filter", "filter_", "filter_all", "filter_at", "filter_if", "first", "db_query_fields")
   }
 
+  fun testDplyrDataset() {
+    completeSingle("dplyr::sto<caret>", "dplyr::storms")
+  }
+
+  fun testDplyrInternal() {
+    completeSingle("dplyr:::sto<caret>", "dplyr:::stop_defunct(<caret>)")
+  }
+
   private fun doTest(text: String, vararg variants: String) {
     myFixture.configureByText("foo.R", text)
     val result = myFixture.completeBasic()
     assertNotNull(result)
     assertOrderedEquals(result.map { it.lookupString }, *variants)
+  }
+
+  private fun completeSingle(@Language("R") text: String, @Language("R") expected: String) {
+    myFixture.configureByText("foo.R", text)
+    val completion = myFixture.completeBasic()
+    assertNull(completion) // means a single variant completed
+    myFixture.checkResult(expected)
   }
 }

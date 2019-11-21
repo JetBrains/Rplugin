@@ -34,6 +34,16 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(5, (rValue as RValueDataFrame).cols)
   }
 
+  fun testResolveDplyrInternal() {
+    val resolveResult = resolve("dplyr::any_<caret>exprs")
+    TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
+    val assignment = resolveResult as RSkeletonAssignmentStatement
+    TestCase.assertFalse(assignment.stub.exported)
+    val rValue = assignment.createRVar(console).value
+    UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
+    TestCase.assertTrue((rValue as RValueFunction).code.contains("quote(`||`)"))
+  }
+
   fun testResolveFilter() {
     val filterStats = resolve("fil<caret>ter()")
     TestCase.assertNotNull(filterStats)
