@@ -133,18 +133,23 @@ object RInteropUtil {
   }
 
   private fun getWrapperPath(version: Version): String {
-    val relativePath = when {
-      SystemInfo.isLinux -> "rwrapper-x64-linux"
-      SystemInfo.isMac -> "rwrapper-x64-osx"
-      SystemInfo.isWindows -> "rwrapper-x64-windows.exe"
-      else -> throw IllegalStateException("Unsupported OS")
-    }
+    val filename = "rwrapper-" + getSystemSuffix()
     return if (ApplicationManager.getApplication().isInternal || ApplicationManager.getApplication().isUnitTestMode) {
-      RHelpersUtil.findFileInRHelpers(relativePath).absolutePath
+      RHelpersUtil.findFileInRHelpers(filename).takeIf { it.exists() }?.absolutePath ?: getRWrapperByRVersion(version, filename)
     } else {
-      Paths.get(RHelpersUtil.findFileInRHelpers("R-" + version.major + "." + version.minor).absolutePath, relativePath).toString()
+      getRWrapperByRVersion(version, filename)
     }
   }
+
+  private fun getRWrapperByRVersion(version: Version, relativePath: String): String =
+    Paths.get(RHelpersUtil.findFileInRHelpers("R-${version.major}.${version.minor}").absolutePath, relativePath).toString()
+
+  private fun getSystemSuffix(): String = when {
+      SystemInfo.isLinux -> "x64-linux"
+      SystemInfo.isMac -> "x64-osx"
+      SystemInfo.isWindows -> "x64-windows.exe"
+      else -> throw IllegalStateException("Unsupported OS")
+    }
 
   private fun getInterpreterPath(project: Project): String {
 
