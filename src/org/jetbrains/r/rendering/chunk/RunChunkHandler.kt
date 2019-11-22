@@ -156,9 +156,13 @@ object RunChunkHandler {
           console.debugger.isVariableRefreshEnabled = false
         }
         logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
+        val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement) ?: throw RuntimeException("Cannot find images directory for this chunk")
+        val initProperties = RGraphicsUtils.calculateInitProperties(imagesDirectory, screenParameters)
+        rInterop.graphicsInit(initProperties)
       }
       executeCode(console, codeElement, element, isDebug).onProcessed { outputs ->
         runAsync {
+          rInterop.graphicsShutdown()
           afterRunChunk(element, rInterop, outputs, promise, console, editor, inlayElement, isBatchMode, isDebug)
         }
       }

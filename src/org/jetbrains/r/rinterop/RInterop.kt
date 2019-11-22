@@ -231,8 +231,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .build()
   }
 
-  fun graphicsReset(): RIExecutionResult {
-    return executeRequest(RPIServiceGrpc.getGraphicsResetMethod(), Empty.getDefaultInstance())
+  fun graphicsShutdown(): RIExecutionResult {
+    return executeRequest(RPIServiceGrpc.getGraphicsShutdownMethod(), Empty.getDefaultInstance())
   }
 
   fun htmlViewerInit(tracedFilePath: String) {

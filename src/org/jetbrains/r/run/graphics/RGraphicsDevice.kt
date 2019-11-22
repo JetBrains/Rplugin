@@ -17,7 +17,7 @@ data class RSnapshotsUpdate(
 class RGraphicsDevice(
   private val rInterop: RInterop,
   private val tracedDirectory: File,
-  private val initialParameters: RGraphicsUtils.ScreenParameters
+  initialParameters: RGraphicsUtils.ScreenParameters
 ) {
 
   private var isLoaded = false
@@ -44,14 +44,6 @@ class RGraphicsDevice(
     }
 
   init {
-    reset()
-  }
-
-  fun update() {
-    rescale(null, configuration.screenParameters)
-  }
-
-  fun reset() {
     val path = tracedDirectory.absolutePath
     val initialDimension = initialParameters.dimension
     val resolution = configuration.screenParameters.resolution
@@ -63,6 +55,14 @@ class RGraphicsDevice(
     } else {
       true
     }
+  }
+
+  fun update() {
+    rescale(null, configuration.screenParameters)
+  }
+
+  fun reset() {
+    // Nothing to do here
   }
 
   fun clearSnapshot(number: Int) {
