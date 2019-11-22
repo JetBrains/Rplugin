@@ -250,6 +250,11 @@ fun doCopyRWrapperTask(prepareSandboxTask: PrepareSandboxTask, project: Project)
         }
         project.copy {
             from("rwrapper")
+            include("crashpad_handler*")
+            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
+        }
+        project.copy {
+            from("rwrapper")
             include("R-*/*")
             into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
         }

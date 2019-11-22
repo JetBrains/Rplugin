@@ -7,12 +7,16 @@ package org.jetbrains.r.rinterop
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.util.PathUtilRt
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -20,6 +24,9 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.settings.RSettings
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.file.Paths
 import java.util.concurrent.TimeoutException
 
@@ -62,6 +69,10 @@ object RInteropUtil {
         if (output.isNotBlank()) {
           LOG.info(output.toString())
         }
+        val updateCrashes = updateCrashes()
+        if (updateCrashes.isNotEmpty()) {
+          reportMinidumps(updateCrashes)
+        }
         if (linePromise.state == Promise.State.PENDING) linePromise.setError(RuntimeException("RWrapper terminated"))
       }
 
@@ -100,6 +111,24 @@ object RInteropUtil {
     }
   }
 
+  private fun reportMinidumps(updateCrashes: List<File>) {
+    val attachments = updateCrashes.map { file ->
+      try {
+        val path = file.getPath()
+        FileInputStream(file).use { content ->
+          val tempFile = FileUtil.createTempFile("ij-attachment-" + PathUtilRt.getFileName(path) + ".", ".bin", true)
+          FileOutputStream(tempFile).use { outputStream -> FileUtil.copy(content, file.length(), outputStream) }
+          return@map Attachment(path, tempFile, MINIDUMP_DESCRIPTION).apply { isIncluded = true }
+        }
+      }
+      catch (e: IOException) {
+        LOG.warn("Cannot create attachment", e)
+        return@map Attachment(file.path, e)
+      }
+    }.toTypedArray()
+    LOG.error("RWrapper terminated with Runtime Error, the crash minidump found: ${updateCrashes[0].name} ", *attachments)
+  }
+
   private fun runRWrapper(project: Project): Promise<ColoredProcessHandler> {
     val result = AsyncPromise<ColoredProcessHandler>()
     val interpreterPath = getInterpreterPath(project)
@@ -114,6 +143,8 @@ object RInteropUtil {
     if (!rwrapper.canExecute()) {
       rwrapper.setExecutable(true)
     }
+    val crashpadHandler = getCrashpadHandler()
+
     var command = GeneralCommandLine()
       .withExePath(wrapperPath)
       .withWorkDirectory(project.basePath!!)
@@ -122,6 +153,18 @@ object RInteropUtil {
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
+
+    if (crashpadHandler.exists()) {
+      if (!crashpadHandler.canExecute()) {
+        crashpadHandler.setExecutable(true)
+      }
+      val crashes = getRWrapperCrashesDirectory()
+      FileUtil.createDirectory(crashes)
+      updateCrashes()
+      command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
+                       .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
+    }
+
     command = if (SystemInfo.isUnix) {
       command.withEnvironment("LD_LIBRARY_PATH", Paths.get(paths.home, "lib").toString())
     }
@@ -131,6 +174,10 @@ object RInteropUtil {
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
     return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) }) }
   }
+
+  private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
+
+  private fun getCrashpadHandler(): File = RHelpersUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix())
 
   private fun getWrapperPath(version: Version): String {
     val filename = "rwrapper-" + getSystemSuffix()
@@ -186,5 +233,53 @@ object RInteropUtil {
     return RPaths(paths[0], paths[1], paths[2], paths[3])
   }
 
+  @Synchronized
+  private fun updateCrashes(): List<File> {
+    val crashes = Paths.get(getRWrapperCrashesDirectory().absolutePath, "pending")
+                       .toFile().takeIf { it.exists() }
+                       ?.listFiles { _, name -> name.endsWith(".dmp") } ?: return emptyList()
+    val newCrashes = crashes.filter { !oldCrashes.contains(it.name) }
+    oldCrashes.clear()
+
+    crashes.sortBy { -it.lastModified() }
+    val names = crashes.filterIndexed { index, file ->
+      if (index >= MAX_MINIDUMP_COUNT || System.currentTimeMillis() - file.lastModified() > MINIDUMP_LIFETIME) {
+        FileUtil.asyncDelete(file)
+        return@filterIndexed false
+      }
+      return@filterIndexed true
+    }.map { it.name }
+
+    oldCrashes.addAll(names)
+
+    return newCrashes
+  }
+
+  private val oldCrashes: MutableSet<String> = HashSet()
+
+  private const val MAX_MINIDUMP_COUNT = 20
+  private const val MINIDUMP_LIFETIME = 1000 * 60 * 60 * 24 * 7 // one week
+
   private const val RWRAPPER_LAUNCH_TIMEOUT = 2500
+
+  private const val MINIDUMP_DESCRIPTION: String = """The minidump contains OS and R process state.
+They are grabbed from the crashed process into
+an in-memory snapshot structure. Since the full
+application state is typically too large for capturing
+to disk and transmitting to an upstream server, the snapshot
+contains a heuristically selected subset of the full state
+    
+The precise details of what’s captured varies between
+operating systems, but generally includes the following:
+
+ - The set of modules (executable, shared libraries) that are
+   loaded into the crashing process.
+ - An enumeration of the threads running in the crashing process,
+   including the register contents and the contents of stack memory
+   of each thread.
+ - A selection of the OS-related state of the process,
+   such as e.g. the command line, environment and so on.
+ - A selection of memory potentially referenced from registers and
+   from stack.
+  """
 }
