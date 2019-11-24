@@ -442,6 +442,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.dplyrCallToPipe.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrCallToPipeInspection"/>
 
+        <localInspection shortName="RAssignmentInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.assignment.name"
+                         implementationClass="org.jetbrains.r.inspections.AssignmentInspection"/>
+
 
         <intentionAction>
             <category>R</category>
