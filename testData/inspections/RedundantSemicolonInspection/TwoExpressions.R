@@ -1,0 +1,1 @@
+42 + 42; 42 * 42<warning descr="';' is redundant">;</warning>

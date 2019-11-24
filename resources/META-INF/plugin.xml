@@ -450,6 +450,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.redundant.concatenation.name"
                          implementationClass="org.jetbrains.r.inspections.RedundantConcatenationInspection"/>
 
+        <localInspection shortName="RRedundantSemicolonInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.redundant.semicolon.name"
+                         implementationClass="org.jetbrains.r.inspections.RedundantSemicolonInspection"/>
+
 
         <intentionAction>
             <category>R</category>
