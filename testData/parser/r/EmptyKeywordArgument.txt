@@ -9,7 +9,7 @@ RFile:EmptyKeywordArgument.r
       PsiElement(,)(',')
       PsiElement(nl)('\n')
       PsiWhiteSpace('               ')
-      R_ASSIGNMENT_STATEMENT
+      R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('UNKNOWN')
         PsiWhiteSpace(' ')

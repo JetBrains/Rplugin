@@ -21,70 +21,70 @@ RFile:OperatorsPriority.r
           PsiElement(:=)(':=')
         PsiWhiteSpace(' ')
         R_ASSIGNMENT_STATEMENT
-          R_IDENTIFIER_EXPRESSION
-            PsiElement(identifier)('x3')
-          PsiWhiteSpace(' ')
-          R_ASSIGN_OPERATOR
-            PsiElement(=)('=')
-          PsiWhiteSpace(' ')
           R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('x3')
+            PsiWhiteSpace(' ')
+            R_ASSIGN_OPERATOR
+              PsiElement(=)('=')
+            PsiWhiteSpace(' ')
             R_ASSIGNMENT_STATEMENT
               R_ASSIGNMENT_STATEMENT
                 R_ASSIGNMENT_STATEMENT
-                  R_IDENTIFIER_EXPRESSION
-                    PsiElement(identifier)('x4')
+                  R_ASSIGNMENT_STATEMENT
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('x4')
+                    PsiWhiteSpace(' ')
+                    R_ASSIGN_OPERATOR
+                      PsiElement(->)('->')
+                    PsiWhiteSpace(' ')
+                    R_IDENTIFIER_EXPRESSION
+                      PsiElement(identifier)('x5')
                   PsiWhiteSpace(' ')
                   R_ASSIGN_OPERATOR
-                    PsiElement(->)('->')
+                    PsiElement(->>)('->>')
                   PsiWhiteSpace(' ')
-                  R_IDENTIFIER_EXPRESSION
-                    PsiElement(identifier)('x5')
-                PsiWhiteSpace(' ')
-                R_ASSIGN_OPERATOR
-                  PsiElement(->>)('->>')
-                PsiWhiteSpace(' ')
-                R_UNARY_TILDE_EXPRESSION
-                  R_TILDE_OPERATOR
-                    PsiElement(~)('~')
-                  PsiWhiteSpace(' ')
-                  R_OPERATOR_EXPRESSION
+                  R_UNARY_TILDE_EXPRESSION
+                    R_TILDE_OPERATOR
+                      PsiElement(~)('~')
+                    PsiWhiteSpace(' ')
                     R_OPERATOR_EXPRESSION
                       R_OPERATOR_EXPRESSION
                         R_OPERATOR_EXPRESSION
-                          R_IDENTIFIER_EXPRESSION
-                            PsiElement(identifier)('x6')
+                          R_OPERATOR_EXPRESSION
+                            R_IDENTIFIER_EXPRESSION
+                              PsiElement(identifier)('x6')
+                            PsiWhiteSpace(' ')
+                            R_OR_OPERATOR
+                              PsiElement(|)('|')
+                            PsiWhiteSpace(' ')
+                            R_IDENTIFIER_EXPRESSION
+                              PsiElement(identifier)('x7')
                           PsiWhiteSpace(' ')
                           R_OR_OPERATOR
-                            PsiElement(|)('|')
+                            PsiElement(||)('||')
                           PsiWhiteSpace(' ')
-                          R_IDENTIFIER_EXPRESSION
-                            PsiElement(identifier)('x7')
-                        PsiWhiteSpace(' ')
-                        R_OR_OPERATOR
-                          PsiElement(||)('||')
-                        PsiWhiteSpace(' ')
-                        R_OPERATOR_EXPRESSION
                           R_OPERATOR_EXPRESSION
                             R_OPERATOR_EXPRESSION
                               R_OPERATOR_EXPRESSION
                                 R_OPERATOR_EXPRESSION
-                                  R_IDENTIFIER_EXPRESSION
-                                    PsiElement(identifier)('x8')
+                                  R_OPERATOR_EXPRESSION
+                                    R_IDENTIFIER_EXPRESSION
+                                      PsiElement(identifier)('x8')
+                                    PsiWhiteSpace(' ')
+                                    R_AND_OPERATOR
+                                      PsiElement(&)('&')
+                                    PsiWhiteSpace(' ')
+                                    R_IDENTIFIER_EXPRESSION
+                                      PsiElement(identifier)('x9')
                                   PsiWhiteSpace(' ')
                                   R_AND_OPERATOR
-                                    PsiElement(&)('&')
+                                    PsiElement(&&)('&&')
                                   PsiWhiteSpace(' ')
-                                  R_IDENTIFIER_EXPRESSION
-                                    PsiElement(identifier)('x9')
-                                PsiWhiteSpace(' ')
-                                R_AND_OPERATOR
-                                  PsiElement(&&)('&&')
-                                PsiWhiteSpace(' ')
-                                R_UNARY_NOT_EXPRESSION
-                                  R_NOT_OPERATOR
-                                    PsiElement(!)('!')
-                                  PsiWhiteSpace(' ')
-                                  R_OPERATOR_EXPRESSION
+                                  R_UNARY_NOT_EXPRESSION
+                                    R_NOT_OPERATOR
+                                      PsiElement(!)('!')
+                                    PsiWhiteSpace(' ')
                                     R_OPERATOR_EXPRESSION
                                       R_OPERATOR_EXPRESSION
                                         R_OPERATOR_EXPRESSION
@@ -96,300 +96,300 @@ RFile:OperatorsPriority.r
                                                     R_OPERATOR_EXPRESSION
                                                       R_OPERATOR_EXPRESSION
                                                         R_OPERATOR_EXPRESSION
-                                                          R_IDENTIFIER_EXPRESSION
-                                                            PsiElement(identifier)('x10')
+                                                          R_OPERATOR_EXPRESSION
+                                                            R_IDENTIFIER_EXPRESSION
+                                                              PsiElement(identifier)('x10')
+                                                            PsiWhiteSpace(' ')
+                                                            R_COMPARE_OPERATOR
+                                                              PsiElement(>)('>')
+                                                            PsiWhiteSpace(' ')
+                                                            R_IDENTIFIER_EXPRESSION
+                                                              PsiElement(identifier)('x11')
                                                           PsiWhiteSpace(' ')
                                                           R_COMPARE_OPERATOR
-                                                            PsiElement(>)('>')
+                                                            PsiElement(>=)('>=')
                                                           PsiWhiteSpace(' ')
                                                           R_IDENTIFIER_EXPRESSION
-                                                            PsiElement(identifier)('x11')
+                                                            PsiElement(identifier)('x12')
                                                         PsiWhiteSpace(' ')
                                                         R_COMPARE_OPERATOR
-                                                          PsiElement(>=)('>=')
+                                                          PsiElement(<)('<')
                                                         PsiWhiteSpace(' ')
                                                         R_IDENTIFIER_EXPRESSION
-                                                          PsiElement(identifier)('x12')
+                                                          PsiElement(identifier)('x13')
                                                       PsiWhiteSpace(' ')
                                                       R_COMPARE_OPERATOR
-                                                        PsiElement(<)('<')
+                                                        PsiElement(<=)('<=')
                                                       PsiWhiteSpace(' ')
                                                       R_IDENTIFIER_EXPRESSION
-                                                        PsiElement(identifier)('x13')
+                                                        PsiElement(identifier)('x14')
                                                     PsiWhiteSpace(' ')
                                                     R_COMPARE_OPERATOR
-                                                      PsiElement(<=)('<=')
+                                                      PsiElement(==)('==')
                                                     PsiWhiteSpace(' ')
                                                     R_IDENTIFIER_EXPRESSION
-                                                      PsiElement(identifier)('x14')
+                                                      PsiElement(identifier)('x15')
                                                   PsiWhiteSpace(' ')
                                                   R_COMPARE_OPERATOR
-                                                    PsiElement(==)('==')
+                                                    PsiElement(!=)('!=')
                                                   PsiWhiteSpace(' ')
-                                                  R_IDENTIFIER_EXPRESSION
-                                                    PsiElement(identifier)('x15')
-                                                PsiWhiteSpace(' ')
-                                                R_COMPARE_OPERATOR
-                                                  PsiElement(!=)('!=')
-                                                PsiWhiteSpace(' ')
-                                                R_OPERATOR_EXPRESSION
                                                   R_OPERATOR_EXPRESSION
                                                     R_OPERATOR_EXPRESSION
                                                       R_OPERATOR_EXPRESSION
-                                                        R_IDENTIFIER_EXPRESSION
-                                                          PsiElement(identifier)('x16')
+                                                        R_OPERATOR_EXPRESSION
+                                                          R_IDENTIFIER_EXPRESSION
+                                                            PsiElement(identifier)('x16')
+                                                          PsiWhiteSpace(' ')
+                                                          R_PLUSMINUS_OPERATOR
+                                                            PsiElement(+)('+')
+                                                          PsiWhiteSpace(' ')
+                                                          R_IDENTIFIER_EXPRESSION
+                                                            PsiElement(identifier)('x17')
                                                         PsiWhiteSpace(' ')
                                                         R_PLUSMINUS_OPERATOR
-                                                          PsiElement(+)('+')
+                                                          PsiElement(-)('-')
                                                         PsiWhiteSpace(' ')
-                                                        R_IDENTIFIER_EXPRESSION
-                                                          PsiElement(identifier)('x17')
-                                                      PsiWhiteSpace(' ')
-                                                      R_PLUSMINUS_OPERATOR
-                                                        PsiElement(-)('-')
-                                                      PsiWhiteSpace(' ')
-                                                      R_OPERATOR_EXPRESSION
                                                         R_OPERATOR_EXPRESSION
                                                           R_OPERATOR_EXPRESSION
                                                             R_OPERATOR_EXPRESSION
-                                                              R_IDENTIFIER_EXPRESSION
-                                                                PsiElement(identifier)('x18')
-                                                              PsiWhiteSpace(' ')
-                                                              R_MULDIV_OPERATOR
-                                                                PsiElement(*)('*')
-                                                              PsiWhiteSpace(' ')
-                                                              R_IDENTIFIER_EXPRESSION
-                                                                PsiElement(identifier)('x19')
-                                                            PsiWhiteSpace(' ')
-                                                            R_MULDIV_OPERATOR
-                                                              PsiElement(/)('/')
-                                                            PsiWhiteSpace(' ')
-                                                            R_OPERATOR_EXPRESSION
                                                               R_OPERATOR_EXPRESSION
                                                                 R_IDENTIFIER_EXPRESSION
-                                                                  PsiElement(identifier)('x20')
+                                                                  PsiElement(identifier)('x18')
                                                                 PsiWhiteSpace(' ')
-                                                                R_INFIX_OPERATOR
-                                                                  PsiElement(INFIX_OP)('%%')
+                                                                R_MULDIV_OPERATOR
+                                                                  PsiElement(*)('*')
                                                                 PsiWhiteSpace(' ')
+                                                                R_IDENTIFIER_EXPRESSION
+                                                                  PsiElement(identifier)('x19')
+                                                              PsiWhiteSpace(' ')
+                                                              R_MULDIV_OPERATOR
+                                                                PsiElement(/)('/')
+                                                              PsiWhiteSpace(' ')
+                                                              R_OPERATOR_EXPRESSION
                                                                 R_OPERATOR_EXPRESSION
+                                                                  R_IDENTIFIER_EXPRESSION
+                                                                    PsiElement(identifier)('x20')
+                                                                  PsiWhiteSpace(' ')
+                                                                  R_INFIX_OPERATOR
+                                                                    PsiElement(INFIX_OP)('%%')
+                                                                  PsiWhiteSpace(' ')
                                                                   R_OPERATOR_EXPRESSION
-                                                                    R_IDENTIFIER_EXPRESSION
-                                                                      PsiElement(identifier)('x21')
-                                                                    PsiWhiteSpace(' ')
-                                                                    R_COLON_OPERATOR
-                                                                      PsiElement(:)(':')
-                                                                    PsiWhiteSpace(' ')
-                                                                    R_UNARY_PLUSMINUS_EXPRESSION
-                                                                      R_PLUSMINUS_OPERATOR
-                                                                        PsiElement(-)('-')
+                                                                    R_OPERATOR_EXPRESSION
+                                                                      R_IDENTIFIER_EXPRESSION
+                                                                        PsiElement(identifier)('x21')
+                                                                      PsiWhiteSpace(' ')
+                                                                      R_COLON_OPERATOR
+                                                                        PsiElement(:)(':')
                                                                       PsiWhiteSpace(' ')
                                                                       R_UNARY_PLUSMINUS_EXPRESSION
                                                                         R_PLUSMINUS_OPERATOR
-                                                                          PsiElement(+)('+')
+                                                                          PsiElement(-)('-')
                                                                         PsiWhiteSpace(' ')
-                                                                        R_OPERATOR_EXPRESSION
+                                                                        R_UNARY_PLUSMINUS_EXPRESSION
+                                                                          R_PLUSMINUS_OPERATOR
+                                                                            PsiElement(+)('+')
+                                                                          PsiWhiteSpace(' ')
                                                                           R_OPERATOR_EXPRESSION
-                                                                            R_IDENTIFIER_EXPRESSION
-                                                                              PsiElement(identifier)('x22')
-                                                                            PsiWhiteSpace(' ')
-                                                                            R_EXP_OPERATOR
-                                                                              PsiElement(^)('^')
-                                                                            PsiWhiteSpace(' ')
-                                                                            R_MEMBER_EXPRESSION
-                                                                              R_OPERATOR_EXPRESSION
+                                                                            R_OPERATOR_EXPRESSION
+                                                                              R_IDENTIFIER_EXPRESSION
+                                                                                PsiElement(identifier)('x22')
+                                                                              PsiWhiteSpace(' ')
+                                                                              R_EXP_OPERATOR
+                                                                                PsiElement(^)('^')
+                                                                              PsiWhiteSpace(' ')
+                                                                              R_MEMBER_EXPRESSION
                                                                                 R_OPERATOR_EXPRESSION
-                                                                                  R_MEMBER_EXPRESSION
-                                                                                    R_IDENTIFIER_EXPRESSION
-                                                                                      PsiElement(identifier)('x23')
+                                                                                  R_OPERATOR_EXPRESSION
+                                                                                    R_MEMBER_EXPRESSION
+                                                                                      R_IDENTIFIER_EXPRESSION
+                                                                                        PsiElement(identifier)('x23')
+                                                                                      PsiWhiteSpace(' ')
+                                                                                      R_LIST_SUBSET_OPERATOR
+                                                                                        PsiElement($)('$')
+                                                                                      PsiWhiteSpace(' ')
+                                                                                      R_IDENTIFIER_EXPRESSION
+                                                                                        PsiElement(identifier)('x24')
                                                                                     PsiWhiteSpace(' ')
-                                                                                    R_LIST_SUBSET_OPERATOR
-                                                                                      PsiElement($)('$')
+                                                                                    R_AT_OPERATOR
+                                                                                      PsiElement(@)('@')
                                                                                     PsiWhiteSpace(' ')
-                                                                                    R_IDENTIFIER_EXPRESSION
-                                                                                      PsiElement(identifier)('x24')
+                                                                                    R_NAMESPACE_ACCESS_EXPRESSION
+                                                                                      PsiElement(identifier)('x25')
+                                                                                      PsiWhiteSpace(' ')
+                                                                                      PsiElement(::)('::')
+                                                                                      PsiWhiteSpace(' ')
+                                                                                      R_NAMESPACE_ACCESS_EXPRESSION
+                                                                                        PsiElement(identifier)('x26')
+                                                                                        PsiWhiteSpace(' ')
+                                                                                        PsiElement(::)('::')
+                                                                                        PsiWhiteSpace(' ')
+                                                                                        R_IDENTIFIER_EXPRESSION
+                                                                                          PsiElement(identifier)('x25')
                                                                                   PsiWhiteSpace(' ')
                                                                                   R_AT_OPERATOR
                                                                                     PsiElement(@)('@')
                                                                                   PsiWhiteSpace(' ')
-                                                                                  R_NAMESPACE_ACCESS_EXPRESSION
-                                                                                    PsiElement(identifier)('x25')
-                                                                                    PsiWhiteSpace(' ')
-                                                                                    PsiElement(::)('::')
-                                                                                    PsiWhiteSpace(' ')
-                                                                                    R_NAMESPACE_ACCESS_EXPRESSION
-                                                                                      PsiElement(identifier)('x26')
-                                                                                      PsiWhiteSpace(' ')
-                                                                                      PsiElement(::)('::')
-                                                                                      PsiWhiteSpace(' ')
-                                                                                      R_IDENTIFIER_EXPRESSION
-                                                                                        PsiElement(identifier)('x25')
+                                                                                  R_IDENTIFIER_EXPRESSION
+                                                                                    PsiElement(identifier)('x24')
                                                                                 PsiWhiteSpace(' ')
-                                                                                R_AT_OPERATOR
-                                                                                  PsiElement(@)('@')
+                                                                                R_LIST_SUBSET_OPERATOR
+                                                                                  PsiElement($)('$')
                                                                                 PsiWhiteSpace(' ')
                                                                                 R_IDENTIFIER_EXPRESSION
-                                                                                  PsiElement(identifier)('x24')
-                                                                              PsiWhiteSpace(' ')
-                                                                              R_LIST_SUBSET_OPERATOR
-                                                                                PsiElement($)('$')
-                                                                              PsiWhiteSpace(' ')
-                                                                              R_IDENTIFIER_EXPRESSION
-                                                                                PsiElement(identifier)('x23')
-                                                                          PsiWhiteSpace(' ')
-                                                                          R_EXP_OPERATOR
-                                                                            PsiElement(^)('^')
-                                                                          PsiWhiteSpace(' ')
-                                                                          R_UNARY_PLUSMINUS_EXPRESSION
-                                                                            R_PLUSMINUS_OPERATOR
-                                                                              PsiElement(-)('-')
+                                                                                  PsiElement(identifier)('x23')
+                                                                            PsiWhiteSpace(' ')
+                                                                            R_EXP_OPERATOR
+                                                                              PsiElement(^)('^')
                                                                             PsiWhiteSpace(' ')
                                                                             R_UNARY_PLUSMINUS_EXPRESSION
                                                                               R_PLUSMINUS_OPERATOR
-                                                                                PsiElement(+)('+')
+                                                                                PsiElement(-)('-')
                                                                               PsiWhiteSpace(' ')
-                                                                              R_IDENTIFIER_EXPRESSION
-                                                                                PsiElement(identifier)('x22')
-                                                                  PsiWhiteSpace(' ')
-                                                                  R_COLON_OPERATOR
-                                                                    PsiElement(:)(':')
-                                                                  PsiWhiteSpace(' ')
-                                                                  R_IDENTIFIER_EXPRESSION
-                                                                    PsiElement(identifier)('x21')
-                                                              PsiWhiteSpace(' ')
-                                                              R_INFIX_OPERATOR
-                                                                PsiElement(INFIX_OP)('%%')
-                                                              PsiWhiteSpace(' ')
-                                                              R_IDENTIFIER_EXPRESSION
-                                                                PsiElement(identifier)('x20')
+                                                                              R_UNARY_PLUSMINUS_EXPRESSION
+                                                                                R_PLUSMINUS_OPERATOR
+                                                                                  PsiElement(+)('+')
+                                                                                PsiWhiteSpace(' ')
+                                                                                R_IDENTIFIER_EXPRESSION
+                                                                                  PsiElement(identifier)('x22')
+                                                                    PsiWhiteSpace(' ')
+                                                                    R_COLON_OPERATOR
+                                                                      PsiElement(:)(':')
+                                                                    PsiWhiteSpace(' ')
+                                                                    R_IDENTIFIER_EXPRESSION
+                                                                      PsiElement(identifier)('x21')
+                                                                PsiWhiteSpace(' ')
+                                                                R_INFIX_OPERATOR
+                                                                  PsiElement(INFIX_OP)('%%')
+                                                                PsiWhiteSpace(' ')
+                                                                R_IDENTIFIER_EXPRESSION
+                                                                  PsiElement(identifier)('x20')
+                                                            PsiWhiteSpace(' ')
+                                                            R_MULDIV_OPERATOR
+                                                              PsiElement(/)('/')
+                                                            PsiWhiteSpace(' ')
+                                                            R_IDENTIFIER_EXPRESSION
+                                                              PsiElement(identifier)('x19')
                                                           PsiWhiteSpace(' ')
                                                           R_MULDIV_OPERATOR
-                                                            PsiElement(/)('/')
+                                                            PsiElement(*)('*')
                                                           PsiWhiteSpace(' ')
                                                           R_IDENTIFIER_EXPRESSION
-                                                            PsiElement(identifier)('x19')
-                                                        PsiWhiteSpace(' ')
-                                                        R_MULDIV_OPERATOR
-                                                          PsiElement(*)('*')
-                                                        PsiWhiteSpace(' ')
-                                                        R_IDENTIFIER_EXPRESSION
-                                                          PsiElement(identifier)('x18')
+                                                            PsiElement(identifier)('x18')
+                                                      PsiWhiteSpace(' ')
+                                                      R_PLUSMINUS_OPERATOR
+                                                        PsiElement(-)('-')
+                                                      PsiWhiteSpace(' ')
+                                                      R_IDENTIFIER_EXPRESSION
+                                                        PsiElement(identifier)('x17')
                                                     PsiWhiteSpace(' ')
                                                     R_PLUSMINUS_OPERATOR
-                                                      PsiElement(-)('-')
+                                                      PsiElement(+)('+')
                                                     PsiWhiteSpace(' ')
                                                     R_IDENTIFIER_EXPRESSION
-                                                      PsiElement(identifier)('x17')
-                                                  PsiWhiteSpace(' ')
-                                                  R_PLUSMINUS_OPERATOR
-                                                    PsiElement(+)('+')
-                                                  PsiWhiteSpace(' ')
-                                                  R_IDENTIFIER_EXPRESSION
-                                                    PsiElement(identifier)('x16')
+                                                      PsiElement(identifier)('x16')
+                                                PsiWhiteSpace(' ')
+                                                R_COMPARE_OPERATOR
+                                                  PsiElement(!=)('!=')
+                                                PsiWhiteSpace(' ')
+                                                R_IDENTIFIER_EXPRESSION
+                                                  PsiElement(identifier)('x15')
                                               PsiWhiteSpace(' ')
                                               R_COMPARE_OPERATOR
-                                                PsiElement(!=)('!=')
+                                                PsiElement(==)('==')
                                               PsiWhiteSpace(' ')
                                               R_IDENTIFIER_EXPRESSION
-                                                PsiElement(identifier)('x15')
+                                                PsiElement(identifier)('x14')
                                             PsiWhiteSpace(' ')
                                             R_COMPARE_OPERATOR
-                                              PsiElement(==)('==')
+                                              PsiElement(<=)('<=')
                                             PsiWhiteSpace(' ')
                                             R_IDENTIFIER_EXPRESSION
-                                              PsiElement(identifier)('x14')
+                                              PsiElement(identifier)('x13')
                                           PsiWhiteSpace(' ')
                                           R_COMPARE_OPERATOR
-                                            PsiElement(<=)('<=')
+                                            PsiElement(>=)('>=')
                                           PsiWhiteSpace(' ')
                                           R_IDENTIFIER_EXPRESSION
-                                            PsiElement(identifier)('x13')
+                                            PsiElement(identifier)('x12')
                                         PsiWhiteSpace(' ')
                                         R_COMPARE_OPERATOR
-                                          PsiElement(>=)('>=')
+                                          PsiElement(<)('<')
                                         PsiWhiteSpace(' ')
                                         R_IDENTIFIER_EXPRESSION
-                                          PsiElement(identifier)('x12')
+                                          PsiElement(identifier)('x11')
                                       PsiWhiteSpace(' ')
                                       R_COMPARE_OPERATOR
-                                        PsiElement(<)('<')
+                                        PsiElement(>=)('>=')
                                       PsiWhiteSpace(' ')
-                                      R_IDENTIFIER_EXPRESSION
-                                        PsiElement(identifier)('x11')
-                                    PsiWhiteSpace(' ')
-                                    R_COMPARE_OPERATOR
-                                      PsiElement(>=)('>=')
-                                    PsiWhiteSpace(' ')
-                                    R_UNARY_NOT_EXPRESSION
-                                      R_NOT_OPERATOR
-                                        PsiElement(!)('!')
-                                      PsiWhiteSpace(' ')
-                                      R_IDENTIFIER_EXPRESSION
-                                        PsiElement(identifier)('x10')
+                                      R_UNARY_NOT_EXPRESSION
+                                        R_NOT_OPERATOR
+                                          PsiElement(!)('!')
+                                        PsiWhiteSpace(' ')
+                                        R_IDENTIFIER_EXPRESSION
+                                          PsiElement(identifier)('x10')
+                                PsiWhiteSpace(' ')
+                                R_AND_OPERATOR
+                                  PsiElement(&&)('&&')
+                                PsiWhiteSpace(' ')
+                                R_IDENTIFIER_EXPRESSION
+                                  PsiElement(identifier)('x9')
                               PsiWhiteSpace(' ')
                               R_AND_OPERATOR
-                                PsiElement(&&)('&&')
+                                PsiElement(&)('&')
                               PsiWhiteSpace(' ')
                               R_IDENTIFIER_EXPRESSION
-                                PsiElement(identifier)('x9')
+                                PsiElement(identifier)('x8')
                             PsiWhiteSpace(' ')
                             R_AND_OPERATOR
                               PsiElement(&)('&')
                             PsiWhiteSpace(' ')
                             R_IDENTIFIER_EXPRESSION
-                              PsiElement(identifier)('x8')
-                          PsiWhiteSpace(' ')
-                          R_AND_OPERATOR
-                            PsiElement(&)('&')
-                          PsiWhiteSpace(' ')
-                          R_IDENTIFIER_EXPRESSION
-                            PsiElement(identifier)('x7')
+                              PsiElement(identifier)('x7')
+                        PsiWhiteSpace(' ')
+                        R_OR_OPERATOR
+                          PsiElement(||)('||')
+                        PsiWhiteSpace(' ')
+                        R_IDENTIFIER_EXPRESSION
+                          PsiElement(identifier)('x6')
                       PsiWhiteSpace(' ')
                       R_OR_OPERATOR
-                        PsiElement(||)('||')
+                        PsiElement(|)('|')
                       PsiWhiteSpace(' ')
-                      R_IDENTIFIER_EXPRESSION
-                        PsiElement(identifier)('x6')
-                    PsiWhiteSpace(' ')
-                    R_OR_OPERATOR
-                      PsiElement(|)('|')
-                    PsiWhiteSpace(' ')
-                    R_UNARY_TILDE_EXPRESSION
-                      R_TILDE_OPERATOR
-                        PsiElement(~)('~')
-                      PsiWhiteSpace(' ')
-                      R_IDENTIFIER_EXPRESSION
-                        PsiElement(identifier)('x5')
+                      R_UNARY_TILDE_EXPRESSION
+                        R_TILDE_OPERATOR
+                          PsiElement(~)('~')
+                        PsiWhiteSpace(' ')
+                        R_IDENTIFIER_EXPRESSION
+                          PsiElement(identifier)('x5')
+                PsiWhiteSpace(' ')
+                R_ASSIGN_OPERATOR
+                  PsiElement(->>)('->>')
+                PsiWhiteSpace(' ')
+                R_IDENTIFIER_EXPRESSION
+                  PsiElement(identifier)('x4')
               PsiWhiteSpace(' ')
               R_ASSIGN_OPERATOR
-                PsiElement(->>)('->>')
+                PsiElement(=)('=')
               PsiWhiteSpace(' ')
               R_IDENTIFIER_EXPRESSION
-                PsiElement(identifier)('x4')
+                PsiElement(identifier)('x3')
+          PsiWhiteSpace(' ')
+          R_ASSIGN_OPERATOR
+            PsiElement(:=)(':=')
+          PsiWhiteSpace(' ')
+          R_ASSIGNMENT_STATEMENT
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('x22')
             PsiWhiteSpace(' ')
             R_ASSIGN_OPERATOR
-              PsiElement(=)('=')
+              PsiElement(<<-)('<<-')
             PsiWhiteSpace(' ')
             R_ASSIGNMENT_STATEMENT
               R_IDENTIFIER_EXPRESSION
-                PsiElement(identifier)('x3')
+                PsiElement(identifier)('x2')
               PsiWhiteSpace(' ')
               R_ASSIGN_OPERATOR
-                PsiElement(:=)(':=')
+                PsiElement(<-)('<-')
               PsiWhiteSpace(' ')
-              R_ASSIGNMENT_STATEMENT
-                R_IDENTIFIER_EXPRESSION
-                  PsiElement(identifier)('x22')
-                PsiWhiteSpace(' ')
-                R_ASSIGN_OPERATOR
-                  PsiElement(<<-)('<<-')
-                PsiWhiteSpace(' ')
-                R_ASSIGNMENT_STATEMENT
-                  R_IDENTIFIER_EXPRESSION
-                    PsiElement(identifier)('x2')
-                  PsiWhiteSpace(' ')
-                  R_ASSIGN_OPERATOR
-                    PsiElement(<-)('<-')
-                  PsiWhiteSpace(' ')
-                  R_IDENTIFIER_EXPRESSION
-                    PsiElement(identifier)('x1')
+              R_IDENTIFIER_EXPRESSION
+                PsiElement(identifier)('x1')

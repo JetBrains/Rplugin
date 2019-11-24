@@ -447,7 +447,7 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (identifier_expression | string_literal_expression) eq_assign_operator nl* expression
+  // (identifier_expression | string_literal_expression) eq_assign_operator nl* (expression | external_empty_expression)
   public static boolean named_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "named_argument")) return false;
     if (!nextTokenIsSmart(b, R_IDENTIFIER, R_STRING)) return false;
@@ -456,7 +456,7 @@ public class RParser implements PsiParser, LightPsiParser {
     r = named_argument_0(b, l + 1);
     r = r && eq_assign_operator(b, l + 1);
     r = r && named_argument_2(b, l + 1);
-    r = r && expression(b, l + 1, -1);
+    r = r && named_argument_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -479,6 +479,17 @@ public class RParser implements PsiParser, LightPsiParser {
       if (!empty_element_parsed_guard_(b, "named_argument_2", c)) break;
     }
     return true;
+  }
+
+  // expression | external_empty_expression
+  private static boolean named_argument_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "named_argument_3")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = expression(b, l + 1, -1);
+    if (!r) r = parseEmptyExpression(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -797,7 +808,7 @@ public class RParser implements PsiParser, LightPsiParser {
   // 8: PREFIX(parenthesized_expression)
   // 9: PREFIX(function_expression)
   // 10: BINARY(left_assign_expression)
-  // 11: POSTFIX(eq_assign_expression)
+  // 11: BINARY(eq_assign_expression)
   // 12: BINARY(right_assign_expression)
   // 13: PREFIX(unary_tilde_expression)
   // 14: BINARY(tilde_expression)
@@ -860,7 +871,7 @@ public class RParser implements PsiParser, LightPsiParser {
         exit_section_(b, l, m, R_ASSIGNMENT_STATEMENT, r, true, null);
       }
       else if (g < 11 && eq_assign_expression_0(b, l + 1)) {
-        r = true;
+        r = expression(b, l, 10);
         exit_section_(b, l, m, R_ASSIGNMENT_STATEMENT, r, true, null);
       }
       else if (g < 12 && right_assign_expression_0(b, l + 1)) {
@@ -1419,14 +1430,13 @@ public class RParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // eq_assign_operator nl* (expression | external_empty_expression)
+  // eq_assign_operator nl*
   private static boolean eq_assign_expression_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "eq_assign_expression_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = eq_assign_operator(b, l + 1);
     r = r && eq_assign_expression_0_1(b, l + 1);
-    r = r && eq_assign_expression_0_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1440,17 +1450,6 @@ public class RParser implements PsiParser, LightPsiParser {
       if (!empty_element_parsed_guard_(b, "eq_assign_expression_0_1", c)) break;
     }
     return true;
-  }
-
-  // expression | external_empty_expression
-  private static boolean eq_assign_expression_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "eq_assign_expression_0_2")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = expression(b, l + 1, -1);
-    if (!r) r = parseEmptyExpression(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // right_assign_operator nl*

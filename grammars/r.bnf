@@ -143,7 +143,7 @@ list_subset_operator ::= '$'
 
 // assignment expressions
 left_assign_expression ::= expression left_assign_operator nl* expression { rightAssociative=true; elementType=assignment_statement }
-eq_assign_expression ::= expression eq_assign_operator nl* (expression | external_empty_expression) { rightAssociative=true; elementType=assignment_statement }
+eq_assign_expression ::= expression eq_assign_operator nl* expression { rightAssociative=true; elementType=assignment_statement }
 right_assign_expression ::= expression right_assign_operator nl* expression { elementType=assignment_statement }
 tilde_expression ::= expression tilde_operator nl* expression
 
@@ -205,7 +205,7 @@ identifier_expression ::= identifier {
 private primitive_expression ::= constant | identifier_expression
 parenthesized_expression ::= '(' nl* expression nl* ')'
 
-named_argument ::= (identifier_expression | string_literal_expression) eq_assign_operator nl* expression {
+named_argument ::= (identifier_expression | string_literal_expression) eq_assign_operator nl* (expression | external_empty_expression) {
   methods = [ getName setName getNameIdentifier getAssignedValue getReference ]
 }
 fake empty_expression ::= expression //todo: required to generate PSI, how to simplify this?
