@@ -446,6 +446,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.assignment.name"
                          implementationClass="org.jetbrains.r.inspections.AssignmentInspection"/>
 
+        <localInspection shortName="RRedundantConcatenationInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.redundant.concatenation.name"
+                         implementationClass="org.jetbrains.r.inspections.RedundantConcatenationInspection"/>
+
 
         <intentionAction>
             <category>R</category>

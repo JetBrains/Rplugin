@@ -1,0 +1,25 @@
+<html>
+<body>
+This inspection detects the <code>'c'</code> call with zero or one arguments and suggest remove redundant call
+<p>
+  Before:
+</p>
+<p>
+  <code>
+    a &lt;- c()
+    <br>
+    c(10) + 10
+  </code>
+</p>
+<p>
+  After:
+</p>
+<p>
+  <code>
+    a &lt;- NULL
+    <br>
+    10 + 10
+  </code>
+</p>
+</body>
+</html>
