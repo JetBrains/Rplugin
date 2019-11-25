@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rinterop
 
+import com.google.common.annotations.VisibleForTesting
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
 import com.intellij.openapi.application.ApplicationManager
@@ -233,9 +234,11 @@ object RInteropUtil {
     return RPaths(paths[0], paths[1], paths[2], paths[3])
   }
 
+  @VisibleForTesting
   @Synchronized
-  private fun updateCrashes(): List<File> {
-    val crashes = Paths.get(getRWrapperCrashesDirectory().absolutePath, "pending")
+  internal fun updateCrashes(): List<File> {
+    val directoryWithDumps = if (SystemInfo.isWindows) "reports" else "pending"
+    val crashes = Paths.get(getRWrapperCrashesDirectory().absolutePath, directoryWithDumps)
                        .toFile().takeIf { it.exists() }
                        ?.listFiles { _, name -> name.endsWith(".dmp") } ?: return emptyList()
     val newCrashes = crashes.filter { !oldCrashes.contains(it.name) }
