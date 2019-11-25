@@ -454,6 +454,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.redundant.semicolon.name"
                          implementationClass="org.jetbrains.r.inspections.RedundantSemicolonInspection"/>
 
+        <localInspection shortName="RUnsafeSequenceInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.unsafe.sequence.name"
+                         implementationClass="org.jetbrains.r.inspections.UnsafeSequenceInspection"/>
+
 
         <intentionAction>
             <category>R</category>
