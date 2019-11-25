@@ -418,6 +418,9 @@ You can find the source code in the following repositories:
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
 
+        <!-- Diagnostics -->
+        <errorHandler implementation="org.jetbrains.r.diagnostic.RExceptionAnalyzerReporter"/>
+
     </extensions>
 
 </idea-plugin>
