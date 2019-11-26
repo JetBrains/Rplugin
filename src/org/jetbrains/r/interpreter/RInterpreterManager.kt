@@ -29,7 +29,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable
+import org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -92,7 +92,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     if (!isViable) {
       val message = createInvalidPathErrorMessage(path, e?.message)
       val action = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterModuleConfigurable::class.java)
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterProjectConfigurable::class.java)
       }
       RNotificationUtil.notifyInterpreterError(project, message, action)
     }

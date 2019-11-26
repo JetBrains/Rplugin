@@ -326,9 +326,9 @@ You can find the source code in the following repositories:
 
         <!-- Settings -->
         <projectConfigurable groupId="project"
-                             id="org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable"
+                             id="org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable"
                              displayName="Project R Interpreter"
-                             instance="org.jetbrains.r.configuration.RActiveInterpreterModuleConfigurable"/>
+                             instance="org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.settings.RInterpreterSettings"/>
 

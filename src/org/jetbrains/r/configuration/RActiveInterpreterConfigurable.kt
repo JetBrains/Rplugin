@@ -87,7 +87,7 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
     reset()
   }
 
-  override fun createComponent(): JComponent? {
+  override fun createComponent(): JComponent {
     return wrapper
   }
 
