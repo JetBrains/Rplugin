@@ -7,6 +7,7 @@
 
 package org.jetbrains.r.packages
 
+import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
@@ -98,7 +99,7 @@ object RSkeletonUtil {
         val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
         es.submit {
           try {
-            LOG.info("building bin for package '$rPackage'")
+            LOG.info("building skeleton for package '$rPackage'")
             indicator?.apply {
               fraction = finalProcessed.toDouble() / fullSize
               text = "Generating bin for '$rPackage'"
@@ -107,9 +108,7 @@ object RSkeletonUtil {
             val packageName = rPackage.packageName
             val output = rInterpreter.runHelperWithArgs(RepoUtils.PACKAGE_SUMMARY, packageName)
             if (output.exitCode != 0) {
-              LOG.error("Failed to generate skeleton for '" + rPackage + "'. The error was:\n\n" +
-                        output.stderr +
-                        "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
+              reportError(rPackage, output)
               return@submit
             }
             val binPackage: RLibraryPackage = convertToBinFormat(packageName, output.stdout)
@@ -137,6 +136,17 @@ object RSkeletonUtil {
       e.printStackTrace()
     }
     return result
+  }
+
+  private fun reportError(rPackage: RPackage, output: ProcessOutput) {
+    if (output.stdout.startsWith("cannot-load-package")) {
+      LOG.warn("Cannot load package $rPackage in R interpreter: ${output.stderr}")
+    }
+    else {
+      LOG.error("Failed to generate skeleton for '" + rPackage + "'. The error was:\n\n" +
+                output.stderr +
+                "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
+    }
   }
 
   fun parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension: String): Pair<String, String>? =
