@@ -330,8 +330,6 @@ You can find the source code in the following repositories:
 
 
         <!-- tool windows-->
-        <treeStructureProvider implementation="org.jetbrains.r.documentation.RTreeStructureProvider"/>
-
         <lang.psiStructureViewFactory language="R"
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
 
