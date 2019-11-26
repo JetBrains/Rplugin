@@ -6,11 +6,14 @@ package org.jetbrains.r
 
 import com.intellij.openapi.util.IconLoader
 
-@JvmField
-val R_LOGO_16 = IconLoader.findIcon("/icons/r_logo_16.svg")
+val R_LOGO_16 = load("r.svg")
+
+val R_MARKDOWN = load("rMarkdown.svg")
 
 object RIcons {
   object Packages {
-    val UPGRADE_ALL = IconLoader.findIcon("/icons/packages/upgradeAll.svg")
+    val UPGRADE_ALL = load("packages/upgradeAll.svg")
   }
 }
+
+private fun load(path: String) = IconLoader.findIcon("/icons/" + path)

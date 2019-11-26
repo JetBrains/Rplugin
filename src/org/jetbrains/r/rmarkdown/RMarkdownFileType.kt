@@ -7,14 +7,14 @@ package org.jetbrains.r.rmarkdown
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.r.R_LOGO_16
+import org.jetbrains.r.R_MARKDOWN
 import javax.swing.Icon
 
 object RMarkdownFileType : LanguageFileType(RMarkdownLanguage) {
   override fun getName() = "RMarkdown"
   override fun getDescription() = "R Markdown"
   override fun getDefaultExtension() = "rmd"
-  override fun getIcon(): Icon? = R_LOGO_16
+  override fun getIcon(): Icon? = R_MARKDOWN
   override fun isReadOnly() = false
   override fun getCharset(file: VirtualFile, content: ByteArray): String? = CharsetToolkit.UTF8
 }
