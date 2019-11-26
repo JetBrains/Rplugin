@@ -4,11 +4,9 @@
 
 package org.jetbrains.r.actions
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
-import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
@@ -18,11 +16,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
  * Event handler for the "Run Selection" action within an Arc code editor - runs the currently selected text within the
  * current REPL.
  */
-class RunSelection : REditorActionBase(
-  RBundle.message("run.selection.action.text"),
-  RBundle.message("run.selection.action.description"),
-  AllIcons.Actions.Rerun) {
-
+class RunSelection : REditorActionBase() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val editor = e.editor ?: return

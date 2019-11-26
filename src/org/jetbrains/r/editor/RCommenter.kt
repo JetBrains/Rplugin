@@ -9,7 +9,6 @@ import com.intellij.codeInsight.generation.IndentedCommenter
 import com.intellij.lang.CodeDocumentationAwareCommenter
 import com.intellij.psi.PsiComment
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.annotations.Nullable
 import org.jetbrains.r.parsing.RParserDefinition
 
 class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
@@ -37,5 +36,5 @@ class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
 
   override fun isDocumentationComment(element: PsiComment): Boolean = false
 
-  override fun forceIndentedLineComment(): @Nullable Boolean? = true
+  override fun forceIndentedLineComment(): Boolean? = true
 }

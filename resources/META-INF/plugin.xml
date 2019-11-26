@@ -124,27 +124,37 @@ You can find the source code in the following repositories:
 
     <actions>
         <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
-                description="Run file in console" icon="AllIcons.Actions.Execute">
-            <keyboard-shortcut keymap="$default" first-keystroke="shift F10"/>
+                description="Run file in console" icon="AllIcons.Actions.RunAll" >
+          <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
         <action id="org.jetbrains.r.actions.RDebugAction" class="org.jetbrains.r.actions.RDebugAction" text="Debug"
                 description="Debug file in console" icon="AllIcons.Actions.StartDebugger">
-            <keyboard-shortcut keymap="$default" first-keystroke="shift F9"/>
+          <keyboard-shortcut keymap="$default" first-keystroke="control alt shift ENTER"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt shift ENTER" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
         <action id="org.jetbrains.r.actions.RunSelection"
-                class="org.jetbrains.r.actions.RunSelection">
+                class="org.jetbrains.r.actions.RunSelection"
+                text="Run Selection"
+                description="Run line/selection in Console"
+                icon="AllIcons.Actions.Execute">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
         <action id="org.jetbrains.r.actions.DebugSelection"
-                class="org.jetbrains.r.actions.DebugSelection">
-            <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
+                class="org.jetbrains.r.actions.DebugSelection"
+                text="Debug Selection"
+                description="Debug line/selection in Console"
+                icon="AllIcons.Debugger.AttachToProcess">
+          <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt ENTER" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
     </actions>
