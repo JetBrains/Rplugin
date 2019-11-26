@@ -7,6 +7,7 @@ package org.jetbrains.r.console
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
@@ -40,7 +41,14 @@ class RConsoleManager(private val project: Project) {
   fun runAsync(lambda: (RConsoleView) -> Unit): Promise<Unit> {
     return currentConsoleAsync.onError {
       throw IllegalStateException("Cannot run console", it)
-    }.then(lambda)
+    }.then {
+      lambda(it)
+    }.onError { e ->
+      if (e is ProcessCanceledException || e is InterruptedException) {
+        return@onError
+      }
+      LOGGER.error(e)
+    }
   }
 
   @Synchronized
