@@ -25,6 +25,7 @@ import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RENDER
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -123,7 +124,7 @@ private class BuildManager(private val project: Project, private val report: Vir
 private fun createBuildAction(manager: BuildManager): AnAction {
   val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
   val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
-  val idleIcon = AllIcons.Actions.Compile
+  val idleIcon = RENDER
   val runningIcon = AllIcons.Actions.Suspend
   return object : SameTextAction(idleText, idleIcon) {
     override fun update(e: AnActionEvent) {

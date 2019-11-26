@@ -10,6 +10,8 @@ val R_LOGO_16 = load("r.svg")
 
 val R_MARKDOWN = load("rMarkdown.svg")
 
+val RENDER = load("render.svg")
+
 object RIcons {
   object Packages {
     val UPGRADE_ALL = load("packages/upgradeAll.svg")
