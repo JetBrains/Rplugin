@@ -325,19 +325,19 @@ You can find the source code in the following repositories:
         <lang.psiStructureViewFactory language="R"
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
 
-        <toolWindow id="R Packages" anchor="right"
+        <toolWindow id="R Packages" anchor="right" icon="/icons/toolWindow/RPackages.svg"
                     factoryClass="org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory"/>
 
-        <toolWindow id="R Graphics" anchor="right"
+        <toolWindow id="R Graphics" anchor="right" icon="/icons/toolWindow/RGraph.svg"
                     factoryClass="org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory"/>
 
-        <toolWindow id="R HTML Viewer" anchor="right"
+        <toolWindow id="R HTML Viewer" anchor="right" icon="/icons/toolWindow/RHtml.svg"
                     factoryClass="org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory"/>
 
-        <toolWindow id="R Console" anchor="bottom" canCloseContents="true"
+        <toolWindow id="R Console" anchor="bottom" canCloseContents="true" icon="/icons/toolWindow/RConsole.svg"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
 
-        <toolWindow id="R Table View" anchor="right" canCloseContents="true"
+        <toolWindow id="R Table View" anchor="right" canCloseContents="true" icon="/icons/toolWindow/RTable.svg"
                     factoryClass="org.jetbrains.r.run.visualize.RTableViewToolWindowFactory" secondary="false"/>
         <lang.psiStructureViewFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.structureView.RMarkdownStructureViewFactory"/>
