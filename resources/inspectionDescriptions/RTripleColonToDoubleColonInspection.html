@@ -1,0 +1,21 @@
+<html>
+<body>
+This inspection detects using the <code>':::'</code> as namespace access operator and suggest using the <code>'::'</code> if it possible
+<p>
+  Before:
+</p>
+<p>
+  <code>
+    base:::print("Hello world!")
+  </code>
+</p>
+<p>
+  After:
+</p>
+<p>
+  <code>
+    base::print("Hello world!")
+  </code>
+</p>
+</body>
+</html>
