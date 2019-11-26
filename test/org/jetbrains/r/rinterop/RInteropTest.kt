@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.rinterop
 
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.SystemInfo
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -138,5 +139,36 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("123456789", result.stdout.asSequence().sorted().joinToString(""))
     TestCase.assertEquals("!".repeat(9 * 10 / 2), result.stderr)
     TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).evaluateAsStringList())
+  }
+
+  fun testDataTablePrint() {
+    rInterop.replStartProcessing()
+
+    fun doTest(command: String, expectOutput: Boolean) {
+      var wasOutput = false
+      val promise = AsyncPromise<Unit>()
+      val listener = object : RInterop.ReplListener {
+        override fun onText(text: String, type: ProcessOutputType) {
+          if (type == ProcessOutputType.STDOUT && text.isNotBlank()) {
+            wasOutput = true
+          }
+        }
+        override fun onPrompt(isDebug: Boolean) {
+          promise.setResult(Unit)
+        }
+      }
+      rInterop.addReplListener(listener)
+      rInterop.replExecute(command)
+      promise.blockingGet(DEFAULT_TIMEOUT* 20)
+      TestCase.assertEquals(expectOutput, wasOutput)
+      rInterop.removeReplListener(listener)
+    }
+
+    rInterop.executeCode("library(data.table)")
+    rInterop.executeCode("tt <- data.table(a = 1:5)")
+    doTest("tt", true)
+    doTest("print(tt)", true)
+    doTest("tt[, b := a * 2]", false)
+    doTest("print(tt[, c := a * 2])", true)
   }
 }
