@@ -254,12 +254,8 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
         NextGraphicsActionHolder()
       ),
       RGraphicsToolbar.groupOf(
-        ExportGraphicsActionHolder()
-      ),
-      RGraphicsToolbar.groupOf(
-        ZoomGraphicsActionHolder()
-      ),
-      RGraphicsToolbar.groupOf(
+        ExportGraphicsActionHolder(),
+        ZoomGraphicsActionHolder(),
         ClearGraphicsActionHolder()
       ),
       RGraphicsToolbar.groupOf(
