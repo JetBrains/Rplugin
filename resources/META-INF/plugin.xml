@@ -208,6 +208,40 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
+    <!-- Graphics panel actions -->
+    <actions>
+        <group id="org.jetbrains.r.run.graphics.ui.RGraphicsToolbarActions">
+            <action id="org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
+                    description="Previous graphics"
+                    icon="AllIcons.Actions.Back"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
+                    description="Next graphics"
+                    icon="AllIcons.Actions.Forward"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
+                    description="Export graphics"
+                    icon="AllIcons.ToolbarDecorator.Export"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
+                    description="Zoom graphics"
+                    icon="AllIcons.Actions.Preview"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
+                    description="Clear current graphics"
+                    icon="AllIcons.Actions.GC"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
+                    description="Clear all graphics"
+                    icon="AllIcons.Actions.Cancel"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
+                    class="org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
+                    description="Tune graphics size and resolution"
+                    icon="AllIcons.General.GearPlain"/>
+        </group>
+    </actions>
+
     <extensions defaultExtensionNs="Pythonid">
         <inspectionExtension implementation="org.jetbrains.r.rmarkdown.RMarkdownPyInspectionExtension"/>
     </extensions>

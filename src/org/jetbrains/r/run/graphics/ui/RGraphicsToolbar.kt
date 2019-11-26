@@ -10,17 +10,12 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.util.ui.JBUI
-import javax.swing.Icon
 import javax.swing.JPanel
 
 class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
   interface ActionHolder {
-    val title: String?
-      get() = null
-    val description: String
-    val icon: Icon?
+    val id: String
     val canClick: Boolean
-
     fun onClick()
   }
 
@@ -36,12 +31,16 @@ class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
     private const val TOOLBAR_PLACE = "Graphics"
 
     private fun createToolbar(groups: List<ActionHolderGroup>): JPanel {
-      class ToolbarAction(private val holder: ActionHolder) : AnAction(holder.title, holder.description, holder.icon) {
+      class ToolbarAction(private val holder: ActionHolder) : AnAction() {
+        private val action = ActionManager.getInstance().getAction(holder.id).also { copyFrom(it) }
+
         override fun actionPerformed(e: AnActionEvent) {
+          action.actionPerformed(e)
           holder.onClick()
         }
 
         override fun update(e: AnActionEvent) {
+          action.update(e)
           e.presentation.isEnabled = holder.canClick
         }
 

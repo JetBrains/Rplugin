@@ -5,7 +5,6 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
@@ -123,8 +122,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
     class PreviousGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = PREVIOUS_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = PREVIOUS_GRAPHICS_ACTION_ICON
+      override val id = PREVIOUS_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastIndex > 0
@@ -137,8 +135,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class NextGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = NEXT_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = NEXT_GRAPHICS_ACTION_ICON
+      override val id = NEXT_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastIndex < lastNormal.lastIndex
@@ -151,8 +148,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ExportGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = EXPORT_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = EXPORT_GRAPHICS_ACTION_ICON
+      override val id = EXPORT_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastNormal.isNotEmpty() && lastSnapshot?.error == null
@@ -180,8 +176,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = ZOOM_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = ZOOM_GRAPHICS_ACTION_ICON
+      override val id = ZOOM_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastNormal.isNotEmpty()
@@ -193,8 +188,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ClearGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = CLEAR_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = CLEAR_GRAPHICS_ACTION_ICON
+      override val id = CLEAR_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastNormal.isNotEmpty()
@@ -207,8 +201,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ClearAllGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = CLEAR_ALL_GRAPHICS_ACTION_DESCRIPTION
-      override val icon = CLEAR_ALL_GRAPHICS_ACTION_ICON
+      override val id = CLEAR_ALL_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
         get() = lastNormal.isNotEmpty()
@@ -219,8 +212,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class TuneGraphicsDeviceActionHolder : RGraphicsToolbar.ActionHolder {
-      override val description = TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION
-      override val icon = TUNE_GRAPHICS_DEVICE_ACTION_ICON
+      override val id = TUNE_GRAPHICS_DEVICE_ACTION_ID
 
       override val canClick: Boolean
         get() = true
@@ -298,29 +290,17 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   companion object {
     const val TOOL_WINDOW_ID = "R Graphics"
 
-    private const val SPLITTER_PROPORTION_KEY = "graphics.panel.splitter.proportion"
-    private const val SPLITTER_DEFAULT_PROPORTION = 0.67f
-
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
-    private const val SETTINGS_SUB_PANEL_PADDING = 10
 
-    private val PREVIOUS_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.previous.description")
-    private val NEXT_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.next.description")
-    private val EXPORT_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.export.description")
-    private val ZOOM_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.zoom.description")
-    private val CLEAR_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.clear.description")
-    private val CLEAR_ALL_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.clear.all.description")
-    private val TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.tune.device.description")
-
-    private val PREVIOUS_GRAPHICS_ACTION_ICON = AllIcons.Actions.Back
-    private val NEXT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Forward
-    private val EXPORT_GRAPHICS_ACTION_ICON = AllIcons.ToolbarDecorator.Export
-    private val ZOOM_GRAPHICS_ACTION_ICON = AllIcons.Actions.Preview
-    private val CLEAR_GRAPHICS_ACTION_ICON = AllIcons.Actions.GC
-    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = AllIcons.Actions.Cancel
-    private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
+    private const val PREVIOUS_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
+    private const val NEXT_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
+    private const val EXPORT_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
+    private const val ZOOM_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
+    private const val CLEAR_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
+    private const val CLEAR_ALL_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
+    private const val TUNE_GRAPHICS_DEVICE_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
 
     private fun createDestinationFile(file: File) {
       if (!file.exists() && !file.createNewFile()) {
