@@ -108,6 +108,16 @@ You can find the source code in the following repositories:
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
 
+        <action id="org.jetbrains.r.console.RConsoleView.RInterruptAction"
+                class="org.jetbrains.r.console.RConsoleView$RInterruptAction"
+                text="Interrupt Execution"
+                description="Interrupt execution in the R Console"
+                icon="AllIcons.Actions.Suspend">
+          <keyboard-shortcut keymap="$default" first-keystroke="control C"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="control C" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control C" replace-all="true"/>
+        </action>
+
         <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction"
                 text="R Script" description="Create a new R-script">
             <add-to-group group-id="NewGroup" relative-to-action="NewFromTemplate" anchor="before"/>

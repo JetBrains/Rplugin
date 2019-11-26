@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.keymap.impl.KeyProcessorContext
 import com.intellij.openapi.progress.runBackgroundableTask
@@ -39,6 +40,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
@@ -150,7 +152,7 @@ class RConsoleRunner(private val project: Project,
     }
     historyController.install()
     val executeAction = createConsoleExecAction()
-    val interruptAction = RConsoleView.createInterruptAction(consoleView)
+    val interruptAction = createInterruptAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
 
@@ -185,10 +187,28 @@ class RConsoleRunner(private val project: Project,
     RConsoleToolWindowFactory.addContent(project, contentDescriptor)
   }
 
+  private fun createInterruptAction(console: RConsoleView): AnAction =
+    object : AnAction(), RPromotedAction {
+      private val action = ActionManager.getInstance().getAction(RConsoleView.INTERRUPT_ACTION_ID).also { copyFrom(it) }
+
+      override fun actionPerformed(e: AnActionEvent) {
+        action.actionPerformed(createEvent(e))
+      }
+
+      override fun update(e: AnActionEvent) {
+        action.update(createEvent(e))
+      }
+
+      private fun createEvent(e: AnActionEvent): AnActionEvent =
+        AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
+                                            SimpleDataContext.getSimpleContext(
+                                              mapOf(RConsoleView.R_CONSOLE_DATA_KEY.name to console), e.dataContext))
+    }
+
+
   private fun createConsoleExecAction(): AnAction {
     val emptyAction = consoleView.executeActionHandler.emptyExecuteAction
-    return object : ConsoleExecuteAction(consoleView, consoleView.executeActionHandler, emptyAction, consoleView.executeActionHandler) {
-    }
+    return ConsoleExecuteAction(consoleView, consoleView.executeActionHandler, emptyAction, consoleView.executeActionHandler)
   }
 
 

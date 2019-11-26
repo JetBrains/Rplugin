@@ -21,7 +21,6 @@ class RActionPromoter : ActionPromoter {
     if (context.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType.let { it != RFileType && it != RMarkdownFileType }) {
       return emptyList<AnAction>()
     }
-    @Suppress("SimplifiableCall")
     return actions.filter { it is RPromotedAction }
   }
 }

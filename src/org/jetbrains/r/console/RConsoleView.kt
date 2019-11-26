@@ -7,9 +7,9 @@ package org.jetbrains.r.console
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
@@ -31,8 +31,6 @@ import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
 import java.awt.Font
-import java.awt.event.InputEvent
-import java.awt.event.KeyEvent
 import javax.swing.JComponent
 
 class RConsoleView(val rInterop: RInterop,
@@ -149,41 +147,44 @@ class RConsoleView(val rInterop: RInterop,
     private val EXECUTION_SERVICE = ConcurrencyUtil.newSingleThreadExecutor("RConsole variable view")
     private const val DEFAULT_WIDTH = 160
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
+    val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleView>("R_CONSOLE")
+    const val INTERRUPT_ACTION_ID = "org.jetbrains.r.console.RConsoleView.RInterruptAction"
+  }
 
-    fun createInterruptAction(console: RConsoleView): AnAction {
-      val anAction = object : AnAction(RBundle.message("console.interrupt.button.text"), null, AllIcons.Actions.Suspend) {
-        override fun actionPerformed(e: AnActionEvent) {
-          if (console.isRunningCommand) {
-            console.promiseToInterrupt?.cancel() ?: run {
-              if (console.debugger.isEnabled) {
-                console.debugger.stop()
-              } else {
-                console.executeActionHandler.interruptTextExecution()
-              }
-            }
-            console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+  class RInterruptAction : AnAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+      val console = getConsole(e) ?: return
+      if (console.isRunningCommand) {
+        console.promiseToInterrupt?.cancel() ?: run {
+          if (console.debugger.isEnabled) {
+            console.debugger.stop()
           } else {
-            val document = console.getConsoleEditor().getDocument()
-            if (document.getTextLength() != 0) {
-              runWriteAction {
-                CommandProcessor.getInstance().runUndoTransparentAction {
-                  document.deleteString(0, document.getLineEndOffset(document.getLineCount() - 1))
-                }
-              }
+            console.executeActionHandler.interruptTextExecution()
+          }
+        }
+        console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+      } else {
+        val document = console.getConsoleEditor().getDocument()
+        if (document.getTextLength() != 0) {
+          runWriteAction {
+            CommandProcessor.getInstance().runUndoTransparentAction {
+              document.deleteString(0, document.getLineEndOffset(document.getLineCount() - 1))
             }
           }
         }
-
-        override fun update(e: AnActionEvent) {
-          val consoleEditor = console.getConsoleEditor()
-          val enabled = IJSwingUtilities.hasFocus(consoleEditor.getComponent()) && !consoleEditor.getSelectionModel().hasSelection()
-          e.presentation.isEnabled = enabled
-        }
       }
-
-      anAction.registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK, console.getConsoleEditor().getComponent())
-      return anAction
     }
+
+    override fun update(e: AnActionEvent) {
+      val consoleEditor = getConsole(e)?.getConsoleEditor()
+      val enabled = consoleEditor != null &&
+                    IJSwingUtilities.hasFocus(consoleEditor.getComponent()) &&
+                    !consoleEditor.getSelectionModel().hasSelection()
+      e.presentation.isEnabled = enabled
+    }
+
+    private fun getConsole(e: AnActionEvent) =
+      e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
   }
 }
 
