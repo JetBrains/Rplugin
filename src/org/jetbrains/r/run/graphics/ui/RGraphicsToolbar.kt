@@ -5,7 +5,10 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.util.ui.JBUI
 import javax.swing.Icon
 import javax.swing.JPanel
@@ -13,6 +16,7 @@ import javax.swing.JPanel
 class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
   interface ActionHolder {
     val title: String?
+      get() = null
     val description: String
     val icon: Icon?
     val canClick: Boolean

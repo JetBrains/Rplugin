@@ -14,13 +14,15 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.intellij.datavis.inlays.components.GraphicsPanel
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
-import org.jetbrains.r.RIcons
-import org.jetbrains.r.run.graphics.*
-import java.awt.Desktop
+import org.intellij.datavis.inlays.components.GraphicsPanel
+import org.jetbrains.r.run.graphics.RGraphicsRepository
+import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import org.jetbrains.r.settings.RGraphicsSettings
+import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -121,7 +123,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
     class PreviousGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title: String? = null
       override val description = PREVIOUS_GRAPHICS_ACTION_DESCRIPTION
       override val icon = PREVIOUS_GRAPHICS_ACTION_ICON
 
@@ -136,7 +137,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class NextGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title: String? = null
       override val description = NEXT_GRAPHICS_ACTION_DESCRIPTION
       override val icon = NEXT_GRAPHICS_ACTION_ICON
 
@@ -151,7 +151,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ExportGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = EXPORT_GRAPHICS_ACTION_TITLE
       override val description = EXPORT_GRAPHICS_ACTION_DESCRIPTION
       override val icon = EXPORT_GRAPHICS_ACTION_ICON
 
@@ -181,7 +180,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = ZOOM_GRAPHICS_ACTION_TITLE
       override val description = ZOOM_GRAPHICS_ACTION_DESCRIPTION
       override val icon = ZOOM_GRAPHICS_ACTION_ICON
 
@@ -195,7 +193,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ClearGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = CLEAR_GRAPHICS_ACTION_TITLE
       override val description = CLEAR_GRAPHICS_ACTION_DESCRIPTION
       override val icon = CLEAR_GRAPHICS_ACTION_ICON
 
@@ -210,7 +207,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class ClearAllGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = CLEAR_ALL_GRAPHICS_ACTION_TITLE
       override val description = CLEAR_ALL_GRAPHICS_ACTION_DESCRIPTION
       override val icon = CLEAR_ALL_GRAPHICS_ACTION_ICON
 
@@ -223,7 +219,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     }
 
     class TuneGraphicsDeviceActionHolder : RGraphicsToolbar.ActionHolder {
-      override val title = TUNE_GRAPHICS_DEVICE_ACTION_TITLE
       override val description = TUNE_GRAPHICS_DEVICE_ACTION_DESCRIPTION
       override val icon = TUNE_GRAPHICS_DEVICE_ACTION_ICON
 
@@ -315,12 +310,6 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
     private const val RESIZE_TIME_SPAN = 500
     private const val SETTINGS_SUB_PANEL_PADDING = 10
 
-    private val EXPORT_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.export.title")
-    private val ZOOM_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.zoom.title")
-    private val CLEAR_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.clear.title")
-    private val CLEAR_ALL_GRAPHICS_ACTION_TITLE = RBundle.message("graphics.panel.action.clear.all.title")
-    private val TUNE_GRAPHICS_DEVICE_ACTION_TITLE = RBundle.message("graphics.panel.action.tune.device.title")
-
     private val PREVIOUS_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.previous.description")
     private val NEXT_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.next.description")
     private val EXPORT_GRAPHICS_ACTION_DESCRIPTION = RBundle.message("graphics.panel.action.export.description")
@@ -331,10 +320,10 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
     private val PREVIOUS_GRAPHICS_ACTION_ICON = AllIcons.Actions.Back
     private val NEXT_GRAPHICS_ACTION_ICON = AllIcons.Actions.Forward
-    private val EXPORT_GRAPHICS_ACTION_ICON = RIcons.Graphics.EXPORT
-    private val ZOOM_GRAPHICS_ACTION_ICON = AllIcons.Actions.Search
-    private val CLEAR_GRAPHICS_ACTION_ICON = RIcons.Graphics.CLEAR
-    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = RIcons.Graphics.CLEAR_ALL
+    private val EXPORT_GRAPHICS_ACTION_ICON = AllIcons.ToolbarDecorator.Export
+    private val ZOOM_GRAPHICS_ACTION_ICON = AllIcons.Actions.Preview
+    private val CLEAR_GRAPHICS_ACTION_ICON = AllIcons.Actions.GC
+    private val CLEAR_ALL_GRAPHICS_ACTION_ICON = AllIcons.Actions.Cancel
     private val TUNE_GRAPHICS_DEVICE_ACTION_ICON = AllIcons.General.GearPlain
 
     private fun createDestinationFile(file: File) {

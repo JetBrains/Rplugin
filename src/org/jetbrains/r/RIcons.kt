@@ -13,10 +13,4 @@ object RIcons {
   object Packages {
     val UPGRADE_ALL = IconLoader.findIcon("/icons/packages/upgradeAll.svg")
   }
-
-  object Graphics {
-    val CLEAR = IconLoader.findIcon("/icons/graphics/clear.svg")
-    val CLEAR_ALL = IconLoader.findIcon("/icons/graphics/clearAll.svg")
-    val EXPORT = IconLoader.findIcon("/icons/graphics/export.svg")
-  }
 }
