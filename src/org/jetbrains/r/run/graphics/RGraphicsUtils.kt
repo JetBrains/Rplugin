@@ -143,11 +143,20 @@ object RGraphicsUtils {
     val tmpDirectory = Files.createTempDirectory("rplugin-graphics").toFile()
     tmpDirectory.deleteOnExit()
     val parameters = createParameters(screenDimension, resolution)
-    return RGraphicsDevice(rInterop, tmpDirectory, parameters)
+    return RGraphicsDevice(rInterop, tmpDirectory, parameters, true)
   }
 
   fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {
-    val screenSize = Toolkit.getDefaultToolkit().screenSize
+    val screenSize = getScreenSize()
+    val resolution = getDefaultResolution(screenSize, isFullScreenMode)
+    return ScreenParameters(screenSize, resolution)
+  }
+
+  fun getDefaultResolution(isFullScreenMode: Boolean): Int {
+    return getDefaultResolution(getScreenSize(), isFullScreenMode)
+  }
+
+  fun getDefaultResolution(screenSize: Dimension, isFullScreenMode: Boolean): Int {
     val height = screenSize.height
     val resolution = when {
       height >= ULTRA_HD_HEIGHT -> ULTRA_HD_RESOLUTION
@@ -155,8 +164,7 @@ object RGraphicsUtils {
       height >= FULL_HD_HEIGHT -> FULL_HD_RESOLUTION
       else -> FALLBACK_RESOLUTION
     }
-    val adjustedResolution = if (isFullScreenMode) resolution else max(resolution / RESOLUTION_MULTIPLIER, MINIMAL_GRAPHICS_RESOLUTION)
-    return ScreenParameters(screenSize, adjustedResolution)
+    return if (isFullScreenMode) resolution else max(resolution / RESOLUTION_MULTIPLIER, MINIMAL_GRAPHICS_RESOLUTION)
   }
 
   private fun createParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
@@ -170,6 +178,10 @@ object RGraphicsUtils {
         parameters
       }
     }
+  }
+
+  private fun getScreenSize(): Dimension {
+    return Toolkit.getDefaultToolkit().screenSize
   }
 
   private fun scaleForRetina(dimension: Dimension): Dimension =

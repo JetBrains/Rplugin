@@ -201,11 +201,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeWithCheckCancel(asyncStub::replInterrupt, Empty.getDefaultInstance())
   }
 
-  fun graphicsInit(properties: RGraphicsUtils.InitProperties): RIExecutionResult {
+  fun graphicsInit(properties: RGraphicsUtils.InitProperties, inMemory: Boolean): RIExecutionResult {
     val screenParametersMessage = buildScreenParametersMessage(properties.screenParameters)
     val request = Service.GraphicsInitRequest.newBuilder()
       .setSnapshotDirectory(properties.snapshotDirectory)
       .setScreenParameters(screenParametersMessage)
+      .setInMemory(inMemory)
       .build()
     return executeRequest(RPIServiceGrpc.getGraphicsInitMethod(), request)
   }
@@ -221,6 +222,22 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setNewParameters(newParametersMessage)
       .build()
     return executeRequest(RPIServiceGrpc.getGraphicsRescaleMethod(), request)
+  }
+
+  fun graphicsRescaleStored(
+    parentDirectory: String,
+    snapshotNumber: Int,
+    snapshotVersion: Int,
+    newParameters: RGraphicsUtils.ScreenParameters
+  ): RIExecutionResult {
+    val newParametersMessage = buildScreenParametersMessage(newParameters)
+    val request = Service.GraphicsRescaleStoredRequest.newBuilder()
+      .setParentDirectory(parentDirectory)
+      .setSnapshotNumber(snapshotNumber)
+      .setSnapshotVersion(snapshotVersion)
+      .setNewParameters(newParametersMessage)
+      .build()
+    return executeRequest(RPIServiceGrpc.getGraphicsRescaleStoredMethod(), request)
   }
 
   private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): Service.ScreenParameters {

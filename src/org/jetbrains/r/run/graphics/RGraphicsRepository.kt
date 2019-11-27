@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import java.io.File
 
 class RGraphicsRepository(private val project: Project) {
   private val devices = mutableSetOf<RGraphicsDevice>()
@@ -57,6 +58,11 @@ class RGraphicsRepository(private val project: Project) {
   @Synchronized
   fun clearAllSnapshots() {
     currentDevice?.clearAllSnapshots()
+  }
+
+  @Synchronized
+  fun rescale(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
+    currentDevice?.rescale(snapshot, newParameters, onRescale)
   }
 
   private fun notifyUpdate(update: RSnapshotsUpdate) {

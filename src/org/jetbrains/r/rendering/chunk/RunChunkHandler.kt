@@ -43,6 +43,7 @@ import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 import java.io.File
@@ -151,18 +152,19 @@ object RunChunkHandler {
       if (console.debugger.isEnabled) {
         throw RDebuggerException(RBundle.message("debugger.still.running"))
       }
+      var graphicsDevice: RGraphicsDevice? = null
       if (!isDebug) {
         if (!isBatchMode) {
           console.debugger.isVariableRefreshEnabled = false
         }
         logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
-        val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement) ?: throw RuntimeException("Cannot find images directory for this chunk")
-        val initProperties = RGraphicsUtils.calculateInitProperties(imagesDirectory, screenParameters)
-        rInterop.graphicsInit(initProperties)
+        ChunkPathManager.getImagesDirectory(inlayElement)?.let { imagesDirectory ->
+          graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
+        }
       }
       executeCode(console, codeElement, element, isDebug).onProcessed { outputs ->
         runAsync {
-          rInterop.graphicsShutdown()
+          graphicsDevice?.shutdown()
           afterRunChunk(element, rInterop, outputs, promise, console, editor, inlayElement, isBatchMode, isDebug)
         }
       }

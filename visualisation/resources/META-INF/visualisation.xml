@@ -3,6 +3,8 @@
   <extensionPoints>
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.inlayDescriptorProvider"
                     interface="org.intellij.datavis.inlays.InlayDescriptorProvider"/>
+    <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.graphicsManager"
+                    interface="org.intellij.datavis.inlays.components.GraphicsManager"/>
   </extensionPoints>
 
   <project-components>

@@ -22,6 +22,7 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator.createRunChunkActionGroup
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
+import org.jetbrains.r.run.graphics.RGraphicsDevice
 import java.io.File
 import java.util.concurrent.Future
 import javax.swing.ImageIcon
@@ -56,15 +57,16 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
 
   companion object {
     fun getImages(psi: PsiElement): List<InlayOutput> {
-
-      val imagesDirectory = ChunkPathManager.getImagesDirectory(psi) ?: return emptyList()
-      return getFilesByExtension(imagesDirectory, ".png")?.map { png ->
-        val bytes = FileUtil.loadFileBytes(png)
-        val imageIcon = ImageIcon(bytes, "preview")
-        val preview = IconUtil.scale(imageIcon, null, InlayDimensions.lineHeight * 4.0f / imageIcon.iconHeight)
-        val text = png.absolutePath
-        InlayOutput(text, "IMG", preview = preview)
-      } ?: emptyList()
+      val inlays = ChunkPathManager.getImagesDirectory(psi)?.let { imagesDirectory ->
+        RGraphicsDevice.fetchLatestNormalSnapshots(File(imagesDirectory))?.map { snapshot ->
+          val bytes = FileUtil.loadFileBytes(snapshot.file)
+          val imageIcon = ImageIcon(bytes, "preview")
+          val preview = IconUtil.scale(imageIcon, null, InlayDimensions.lineHeight * 4.0f / imageIcon.iconHeight)
+          val text = snapshot.file.absolutePath
+          InlayOutput(text, "IMG", preview = preview)
+        }
+      }
+      return inlays ?: emptyList()
     }
 
     private val preferredWidth

@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 
@@ -17,7 +18,8 @@ data class RSnapshotsUpdate(
 class RGraphicsDevice(
   private val rInterop: RInterop,
   private val tracedDirectory: File,
-  initialParameters: RGraphicsUtils.ScreenParameters
+  initialParameters: RGraphicsUtils.ScreenParameters,
+  inMemory: Boolean
 ) {
 
   private var isLoaded = false
@@ -45,10 +47,8 @@ class RGraphicsDevice(
 
   init {
     val path = tracedDirectory.absolutePath
-    val initialDimension = initialParameters.dimension
-    val resolution = configuration.screenParameters.resolution
-    val initProperties = RGraphicsUtils.calculateInitProperties(path, initialDimension, resolution)
-    val result = rInterop.graphicsInit(initProperties)
+    val initProperties = RGraphicsUtils.calculateInitProperties(path, initialParameters)
+    val result = rInterop.graphicsInit(initProperties, inMemory)
     isLoaded = if (result.stderr.isNotBlank()) {
       LOGGER.error(result.stderr)
       false
@@ -72,19 +72,6 @@ class RGraphicsDevice(
     notifyListenersOnUpdate()
   }
 
-  private fun removeSnapshotByNumber(snapshots: List<RSnapshot>, number: Int): List<RSnapshot> {
-    val snapshot = snapshots.find { it.number == number }
-    return if (snapshot != null) {
-      if (snapshot.file.delete()) {
-        snapshots.minus(snapshot)
-      } else {
-        snapshots
-      }
-    } else {
-      snapshots
-    }
-  }
-
   fun clearAllSnapshots() {
     deleteSnapshots(lastNormal)
     deleteSnapshots(lastZoomed)
@@ -96,6 +83,10 @@ class RGraphicsDevice(
     }
   }
 
+  fun shutdown() {
+    rInterop.graphicsShutdown()
+  }
+
   fun addListener(listener: (RSnapshotsUpdate) -> Unit) {
     listeners.add(listener)
     listener(lastUpdate)
@@ -105,18 +96,49 @@ class RGraphicsDevice(
     listeners.remove(listener)
   }
 
+  fun rescale(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
+    val parentDirectory = snapshot.file.parentFile
+    rescale(newParameters, object : RescaleStrategy {
+      override val hint = "Recorded snapshot at '${snapshot.file}'"
+
+      override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
+        return interop.graphicsRescaleStored(parentDirectory.absolutePath, snapshot.number, snapshot.version, parameters)
+      }
+
+      override fun onSuccessfulRescale() {
+        fetchLatestNormalSnapshots(parentDirectory)?.find { it.number == snapshot.number && it.version > snapshot.version }?.let { snapshot ->
+          onRescale(snapshot.file)
+        }
+      }
+    })
+  }
+
   private fun rescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters) {
+    rescale(newParameters, object : RescaleStrategy {
+      override val hint = if (snapshotNumber != null) "In-Memory snapshot #${snapshotNumber}" else "Last in-memory snapshots"
+
+      override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
+        return interop.graphicsRescale(snapshotNumber, parameters)
+      }
+
+      override fun onSuccessfulRescale() {
+        lookForNewSnapshots(snapshotNumber)
+      }
+    })
+  }
+
+  private fun rescale(newParameters: RGraphicsUtils.ScreenParameters, strategy: RescaleStrategy) {
     if (isLoaded) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        val result = rInterop.graphicsRescale(snapshotNumber, RGraphicsUtils.scaleForRetina(newParameters))
+        val result = strategy.rescale(rInterop, RGraphicsUtils.scaleForRetina(newParameters))
         if (result.stderr.isNotBlank()) {
           // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
-          LOGGER.warn("Rescale for snapshot <$snapshotNumber> has failed:\n${result.stderr}")
+          LOGGER.warn("Rescale for <${strategy.hint}> has failed:\n${result.stderr}")
         }
         if (result.stdout.isNotBlank()) {
           val output = result.stdout.let { it.substring(4, it.length - 1) }
           if (output == "TRUE") {
-            lookForNewSnapshots(snapshotNumber)
+            strategy.onSuccessfulRescale()
           }
         } else if (result.stderr.isBlank()) {
           LOGGER.error("Cannot get any output from graphics device")
@@ -126,22 +148,16 @@ class RGraphicsDevice(
   }
 
   private fun lookForNewSnapshots(tracedSnapshotNumber: Int?) {
-    tracedDirectory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
-      val allSnapshots = files.mapNotNull { RSnapshot.from(it) }
-      val type2snapshots = allSnapshots.groupBy { it.type }
+    fetchLatestSnapshots(tracedDirectory)?.let { type2snapshots ->
       val normal = type2snapshots[RSnapshotType.NORMAL] ?: listOf()
       val zoomed = type2snapshots[RSnapshotType.ZOOMED] ?: listOf()
-      val sketches = type2snapshots[RSnapshotType.SKETCH] ?: listOf()
-      val mostRecentNormal = normal.groupAndShrinkBy { it.version }
-      val mostRecentZoomed = zoomed.groupAndShrinkBy { it.version }
-      if (checkUpdated(mostRecentNormal)) {
-        traceUpdatedSnapshots(mostRecentNormal)
-        lastNormal = mostRecentNormal
-        lastZoomed = mostRecentZoomed
+      if (checkUpdated(normal)) {
+        traceUpdatedSnapshots(normal)
+        lastNormal = normal
+        lastZoomed = zoomed
         postSnapshotNumber(tracedSnapshotNumber)
         notifyListenersOnUpdate()
       }
-      deleteSnapshots(sketches)
     }
   }
 
@@ -159,23 +175,6 @@ class RGraphicsDevice(
     return lastIdentities != currentIdentities
   }
 
-  private fun <K: Comparable<K>>List<RSnapshot>.groupAndShrinkBy(key: (RSnapshot) -> K): List<RSnapshot> {
-    val groups = groupBy { it.number }
-    return groups.mapNotNull { entry -> entry.value.shrinkBy(key) }.sortedBy { it.number }
-  }
-
-  private fun <K: Comparable<K>>List<RSnapshot>.shrinkBy(key: (RSnapshot) -> K): RSnapshot? {
-    return if (isNotEmpty()) {
-      val ordered = sortedBy { key(it) }
-      for (i in 0 until ordered.size - 1) {
-        ordered[i].file.delete()
-      }
-      ordered.last()
-    } else {
-      null
-    }
-  }
-
   private fun postSnapshotNumber(number: Int?) {
     configuration = configuration.copy(snapshotNumber = number)
   }
@@ -191,11 +190,70 @@ class RGraphicsDevice(
     val snapshotNumber: Int?
   )
 
+  private interface RescaleStrategy {
+    val hint: String
+    fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult
+    fun onSuccessfulRescale()
+  }
+
   companion object {
     private val LOGGER = Logger.getInstance(RGraphicsDevice::class.java)
 
+    fun fetchLatestNormalSnapshots(directory: File): List<RSnapshot>? {
+      return fetchLatestSnapshots(directory)?.get(RSnapshotType.NORMAL)
+    }
+
+    private fun fetchLatestSnapshots(directory: File): Map<RSnapshotType, List<RSnapshot>>? {
+      return directory.listFiles { _, name -> name.endsWith("png") }?.let { files ->
+        val type2snapshots = files.mapNotNull { RSnapshot.from(it) }.groupBy { it.type }
+        val latest = type2snapshots.asSequence().mapNotNull { entry ->
+          shrinkOrDeleteSnapshots(entry.key, entry.value)
+        }
+        latest.toMap()
+      }
+    }
+
+    private fun shrinkOrDeleteSnapshots(type: RSnapshotType, snapshots: List<RSnapshot>): Pair<RSnapshotType, List<RSnapshot>>? {
+      return if (type != RSnapshotType.SKETCH) {
+        Pair(type, snapshots.groupAndShrinkBy { it.version })
+      } else {
+        deleteSnapshots(snapshots)
+        null
+      }
+    }
+
+    private fun <K: Comparable<K>>List<RSnapshot>.groupAndShrinkBy(key: (RSnapshot) -> K): List<RSnapshot> {
+      val groups = groupBy { it.number }
+      return groups.mapNotNull { entry -> entry.value.shrinkBy(key) }.sortedBy { it.number }
+    }
+
+    private fun <K: Comparable<K>>List<RSnapshot>.shrinkBy(key: (RSnapshot) -> K): RSnapshot? {
+      return if (isNotEmpty()) {
+        val ordered = sortedBy { key(it) }
+        for (i in 0 until ordered.size - 1) {
+          ordered[i].file.delete()
+        }
+        ordered.last()
+      } else {
+        null
+      }
+    }
+
     private fun List<RSnapshot>.toIdentities(): Sequence<Pair<Int, Int>> {
       return asSequence().map { Pair(it.number, it.version) }
+    }
+
+    private fun removeSnapshotByNumber(snapshots: List<RSnapshot>, number: Int): List<RSnapshot> {
+      val snapshot = snapshots.find { it.number == number }
+      return if (snapshot != null) {
+        if (snapshot.file.delete()) {
+          snapshots.minus(snapshot)
+        } else {
+          snapshots
+        }
+      } else {
+        snapshots
+      }
     }
 
     private fun deleteSnapshots(snapshots: List<RSnapshot>) {
