@@ -11,8 +11,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiUtilBase
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
@@ -28,13 +31,66 @@ internal object REditorActionUtil {
     if (code != null && !StringUtil.isEmptyOrSpaces(code)) {
       return SelectedCode(code, virtualFile, TextRange(editor.selectionModel.selectionStart, editor.selectionModel.selectionEnd))
     }
-    val elementAtCaret = PsiUtilBase.getElementAtCaret(editor) ?: return null
-    val skipFirstNL = if (elementAtCaret.elementType == RElementTypes.R_NL) elementAtCaret.prevSibling ?: return null else elementAtCaret
-    val element = PsiTreeUtil.findFirstParent(skipFirstNL) { it is RExpression }
-    val evalElement = PsiTreeUtil.findFirstParent(element) { psiElement ->
-      if (element is RBlockExpression) {
-        psiElement.parent?.let { it is RFile || it is RBlockExpression } == true
-      } else when (val parent = psiElement.parent) {
+    val startElememt = findFirstElementToEvaluate(editor) ?: return null
+    val lastElementToExecute = lastElementToExecute(startElememt)
+    val range = TextRange(startElememt.textRange.startOffset, lastElementToExecute.textRange.endOffset)
+
+    val text = range.subSequence(editor.document.charsSequence).toString()
+    if (StringUtil.isEmptyOrSpaces(text)) return null
+    val result = SelectedCode(text, virtualFile, range)
+
+    val nextSibling = nextElement(lastElementToExecute)
+    if (nextSibling != null) {
+      val siblingEndPos = nextSibling.textOffset
+      editor.caretModel.currentCaret.moveToOffset(siblingEndPos)
+      editor.scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE)
+    }
+    return result
+  }
+
+  private fun findFirstElementToEvaluate(editor: Editor): RExpression? {
+    val project = editor.project ?: return null
+    val document = editor.document
+    val file = PsiDocumentManager.getInstance(project).getPsiFile(document) ?: return null
+    val charsSequence = document.charsSequence
+
+    var offset: Int = findLineStart(editor.caretModel.offset, charsSequence)
+
+    while (true) {
+      var element: PsiElement = file.findElementAt(offset) ?: return null
+      //find first meaningful element
+      while (element is PsiWhiteSpace || element is PsiComment) {
+        val nextSibling: PsiElement = element.nextSibling ?: return null
+        element = nextSibling
+      }
+
+      val candidate = findExecuteUnit(element) ?: return null
+
+      val candidateOffset = findLineStart(candidate.textOffset, charsSequence)
+      if (offset == candidateOffset) {
+        // candidate is the first expression in the line. Return it!
+        return candidate
+      }
+      // There is some previous expression peak it also
+      offset = candidateOffset
+    }
+  }
+
+  private fun findLineStart(offset: Int, charsSequence: CharSequence): Int {
+    var i = offset - 1
+    while (i >= 0) {
+      if (charsSequence[i] == '\n')
+        return i + 1
+      i--
+    }
+    return 0
+  }
+
+  // Extend element to executable range. It should be maximal expression except it is a body of if/else/for/while/repeat
+  // and that body is on separate line (findLineStart is checked the last condition by the fact)
+  private fun findExecuteUnit(element: PsiElement): RExpression? {
+    return PsiTreeUtil.findFirstParent(element) l@{ psiElement ->
+      psiElement is RExpression && when (val parent = psiElement.parent) {
         is RFunctionExpression -> parent.expression == psiElement
         is RWhileStatement -> parent.body == psiElement
         is RIfStatement -> parent.ifBody == psiElement || parent.elseBody == psiElement
@@ -42,19 +98,43 @@ internal object REditorActionUtil {
         is RForStatement -> parent.body == psiElement
         else -> parent is RBlockExpression || parent is RFile
       }
-    } ?: return null
+    } as RExpression?
+  }
 
-    if (StringUtil.isEmptyOrSpaces(evalElement.text)) return null
-    val result = SelectedCode(evalElement.text, virtualFile, evalElement.textRange)
-
-    val nextSibling = PsiTreeUtil.getNextSiblingOfType(evalElement, RExpression::class.java)
-    if (nextSibling != null) {
-      val siblingEndPos = nextSibling.textOffset
-      editor.caretModel.currentCaret.moveToOffset(siblingEndPos)
-      editor.scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE)
+  // Find a last expression in expressions chain separated by `;`
+  private fun lastElementToExecute(start: RExpression): RExpression {
+    var current: PsiElement = start
+    var result: RExpression = start
+    while (true) {
+      var next = current.nextSibling
+      var parent = current.parent
+      while (next == null) {
+        next = parent ?: return result
+        parent = next.parent
+        next = next.nextSibling
+      }
+      if (next.elementType == RElementTypes.R_NL) {
+        return result
+      }
+      val executeUnit = findExecuteUnit(next)
+      if (executeUnit == null) {
+        current = next
+      }
+      else {
+        result = executeUnit
+        current = executeUnit
+      }
     }
+  }
 
-    return result
+  private fun nextElement(evalElement: PsiElement): RExpression? {
+    var current = evalElement
+    while (true) {
+      val result = PsiTreeUtil.getNextSiblingOfType(current, RExpression::class.java)
+      if(result != null)
+        return result
+      current = current.parent ?: return null
+    }
   }
 
   fun isRunningCommand(console: RConsoleView?, allowDebug: Boolean = false): Boolean {

@@ -38,16 +38,28 @@ class RExecuteSelectionTest : RUsefulTestCase() {
     doTest("x <- 1 <caret>+\n 2 +\n 3 +\n4 + 5", "x <- 1 +\n 2 +\n 3 +\n4 + 5")
   }
 
-  fun testDontSelectPrevExpression() {
-    doTest("print(123); 1 <caret>+\n 2 +\n 3 +\n4 + 5", "1 +\n 2 +\n 3 +\n4 + 5")
+  fun testSelectPrevExpressionSameLine() {
+    doTest("print(123); 1 <caret>+\n 2 +\n 3 +\n4 + 5", "print(123); 1 +\n 2 +\n 3 +\n4 + 5")
+  }
+
+  fun testSelectPrevExpressionNextLine() {
+    doTest("print(123); 1 +\n <caret>2 +\n 3 +\n4 + 5", "print(123); 1 +\n 2 +\n 3 +\n4 + 5")
+  }
+
+  fun testComment() {
+    doTest("print(1); print(2) # <caret>comment", "print(1); print(2)")
   }
 
   fun testDontSelectPrevExpressionNewLine() {
     doTest("print(123)\n 1 <caret>+\n 2 +\n 3 +\n4 + 5", "1 +\n 2 +\n 3 +\n4 + 5")
   }
 
-  fun testExecuteInIf() {
-    doTest("if (f) 1 +<caret> 2", "1 + 2")
+  fun testExecuteInIfSameLine() {
+    doTest("if (f) 1 +<caret> 2", "if (f) 1 + 2")
+  }
+
+  fun testExecuteInIfNewLine() {
+    doTest("if (f)\n 1 +<caret> 2", "1 + 2")
   }
 
   fun testExecuteIf() {
@@ -58,48 +70,67 @@ class RExecuteSelectionTest : RUsefulTestCase() {
     doTest("i<caret>f (f) 1 + 2", "if (f) 1 + 2")
   }
 
-  fun testExecuteElse() {
-    doTest("if (f) 1 + 2 else 3 <caret>+ 4", "3 + 4")
+  fun testExecuteElseSameLine() {
+    doTest("if (f) 1 + 2 else 3 <caret>+ 4", "if (f) 1 + 2 else 3 + 4")
+  }
+
+  fun testExecuteElseNewLine() {
+    doTest("if (f)\n 1 + 2\nelse\n 3 <caret>+ 4", "3 + 4")
   }
 
   fun testExecuteIfKeywordElse() {
-    doTest("if (f) 1 + 2 el<caret>se 3 + 4", "if (f) 1 + 2 else 3 + 4")
+    doTest("if (f) 1 + 2\nel<caret>se 3 + 4", "if (f) 1 + 2\nelse 3 + 4")
   }
 
   fun testExecuteInBlock() {
     doTest("{ print(123)\nprint(32<caret>1)\n print(3424) }", "print(321)")
   }
 
+  fun testExecuteEmptyLineInBlock() {
+    doTest("{ print(123)\n<caret>\n print(321)\n print(3424) }", "print(321)")
+  }
+
   fun textExecuteTopLevel() {
     doTest("print(123)\nprint(32<caret>1)\n print(3424)", "print(321)")
   }
 
-  fun testExecuteRepeat() {
-    doTest("repeat pri<caret>nt(1)", "print(1)")
+  fun testExecuteRepeatSameLine() {
+    doTest("repeat pri<caret>nt(1)", "repeat print(1)")
+  }
+  fun testExecuteRepeatNewLine() {
+    doTest("repeat\n  pri<caret>nt(1)", "print(1)")
   }
 
-  fun testExecuteRepeatKeyword() {
-    doTest("repe<caret>at print(1)", "repeat print(1)")
+  fun testWhileSameLine() {
+    doTest("while (x < 10) x <-<caret> x + 1", "while (x < 10) x <- x + 1")
   }
 
-  fun testWhile() {
-    doTest("while (x < 10) x <-<caret> x + 1", "x <- x + 1")
+  fun testWhileNewLine() {
+    doTest("while (x < 10)\n  x <-<caret> x + 1", "x <- x + 1")
   }
 
   fun testWhileKeyword() {
     doTest("while (x<caret> < 10) x <- x + 1", "while (x < 10) x <- x + 1")
   }
 
-  fun testFor() {
-    doTest("for (i in 1:10) prin<caret>t(i)", "print(i)")
+  fun testForSameLine() {
+    doTest("for (i in 1:10) prin<caret>t(i)", "for (i in 1:10) print(i)")
+  }
+
+  fun testForNewLine() {
+    doTest("for (i in 1:10)\n  prin<caret>t(i)", "print(i)")
   }
 
   fun testForKeyword() {
     doTest("f<caret>or (i in 1:10) print(i)", "for (i in 1:10) print(i)")
   }
 
-  fun testFunction() {
-    doTest("function(x) pri<caret>nt(1)", "print(1)")
+  fun testFunctionSameLine() {
+    doTest("function(x) pri<caret>nt(1)", "function(x) print(1)")
+  }
+
+  fun testFunctionNewLine() {
+    doTest("function(x)\n pri<caret>nt(1)", "print(1)")
   }
 
   fun testFuctionKeyword() {
@@ -110,17 +141,45 @@ class RExecuteSelectionTest : RUsefulTestCase() {
     doTest("1 + 2 + 3<caret>\n", "1 + 2 + 3")
   }
 
-  fun testBlock() {
-    doTest("{ print(1)\n<caret> print(2)\n print(3)\n}","{ print(1)\n print(2)\n print(3)\n}")
+  fun testBlockStart() {
+    doTest("{<caret>\n print(1)\n print(2)\n print(3)\n}","{\n print(1)\n print(2)\n print(3)\n}")
+  }
+
+  fun testBlockEnd() {
+    doTest("{\n print(1)\n print(2)\n print(3)\n<caret>}","{\n print(1)\n print(2)\n print(3)\n}")
+  }
+
+  fun testBlockStartWithExpression() {
+    doTest("{ print(1)<caret>\n print(2)\n print(3)\n}","{ print(1)\n print(2)\n print(3)\n}")
   }
 
   fun testNestedBlock() {
-    doTest("{ { print(1)\n<caret> print(2)\n print(3)\n}\n print(123) }","{ print(1)\n print(2)\n print(3)\n}")
+    doTest("{\n { print(1)<caret>\n print(2)\n print(3)\n}\n print(123) }","{ print(1)\n print(2)\n print(3)\n}")
   }
 
   fun testIf() {
-    doTest("if { print(1)\n<caret> print(2)\n print(3)\n}","if { print(1)\n print(2)\n print(3)\n}")
+    doTest("if { print(1)<caret>\n print(2)\n print(3)\n}","if { print(1)\n print(2)\n print(3)\n}")
   }
+
+  fun testInsideIf() {
+    doTest("if { print(1)\n print(2)<caret>\n print(3)\n}","print(2)")
+  }
+
+  // Discussable behaviour
+
+  fun testSelectNextExpression() {
+    doTest("1 +\n <caret>2 +\n 3 +\n4 + 5; print(123)", "1 +\n 2 +\n 3 +\n4 + 5; print(123)")
+  }
+
+  fun testSelectNextExpressionAfterBody() {
+    doTest("if (f)\n <caret>10; print(123)", "10; print(123)")
+  }
+
+  fun testSelectNextExpressionInTheEndOfBlock() {
+    // Note: will be syntax error during execution!
+    doTest("{\n 10\n 20<caret> }; print(123)", "20 }; print(123)")
+  }
+
 
   private fun doTest(text: String, expectedSelection: String) {
     myFixture.configureByText("Foo.R", text)
