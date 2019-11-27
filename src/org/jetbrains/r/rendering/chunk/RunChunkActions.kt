@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -16,7 +15,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.util.PsiTreeUtil
-import icons.org.jetbrains.r.RBundle
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*
@@ -41,19 +39,7 @@ const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveA
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
 const val INTERRUPT_CHUNK_EXECUTION_ID = "org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
 
-abstract class AbstractRunChunksAboveAction : AnAction(RBundle.message("run.chunk.action.runAbove.text"), null,
-                                                       AllIcons.Actions.RunToCursor)
-
-abstract class AbstractRunChunksBelowAction: AnAction(RBundle.message("run.chunk.action.runBelow.text"), null,
-                                                      AllIcons.Actions.Rerun)
-
-abstract class AbstractRunChunkAction : AnAction(RBundle.message("run.chunk.action.run.text"), null,
-                                                 AllIcons.Actions.Execute)
-
-abstract class AbstractDebugChunkAction : AnAction(RBundle.message("run.chunk.action.debug.text"), null,
-                                                   AllIcons.Actions.StartDebugger)
-
-class RunChunksAboveAction: AbstractRunChunksAboveAction(), RPromotedAction {
+class RunChunksAboveAction: AnAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
@@ -66,7 +52,7 @@ class RunChunksAboveAction: AbstractRunChunksAboveAction(), RPromotedAction {
   }
 }
 
-class RunChunksBelowAction: AbstractRunChunksBelowAction(), RPromotedAction {
+class RunChunksBelowAction: AnAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
@@ -79,7 +65,7 @@ class RunChunksBelowAction: AbstractRunChunksBelowAction(), RPromotedAction {
   }
 }
 
-class RunChunkAction : AbstractRunChunkAction(), RPromotedAction {
+class RunChunkAction : AnAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
@@ -90,7 +76,7 @@ class RunChunkAction : AbstractRunChunkAction(), RPromotedAction {
   }
 }
 
-class DebugChunkAction : AbstractDebugChunkAction(), RPromotedAction {
+class DebugChunkAction : AnAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
@@ -101,8 +87,7 @@ class DebugChunkAction : AbstractDebugChunkAction(), RPromotedAction {
   }
 }
 
-class InterruptChunkExecutionAction :
-  AnAction(RBundle.message("run.chunk.action.interrupt.text"), null, AllIcons.Actions.Suspend), RPromotedAction {
+class InterruptChunkExecutionAction : AnAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType &&

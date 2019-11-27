@@ -12,10 +12,6 @@ val R_MARKDOWN = load("rMarkdown.svg")
 
 val RENDER = load("render.svg")
 
-object RIcons {
-  object Packages {
-    val UPGRADE_ALL = load("packages/upgradeAll.svg")
-  }
-}
+val UPGRADE_ALL = load("packages/upgradeAll.svg")
 
 private fun load(path: String) = IconLoader.findIcon("/icons/" + path)

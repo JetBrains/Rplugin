@@ -124,7 +124,7 @@ You can find the source code in the following repositories:
 
     <actions>
         <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
-                description="Run file in console" icon="AllIcons.Actions.RunAll" >
+                description="Run file in console" icon="AllIcons.Actions.Execute" >
           <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
@@ -141,7 +141,7 @@ You can find the source code in the following repositories:
                 class="org.jetbrains.r.actions.RunSelection"
                 text="Run Selection"
                 description="Run line/selection in Console"
-                icon="AllIcons.Actions.Execute">
+                icon="/icons/run/runCurrent.svg">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
@@ -151,7 +151,7 @@ You can find the source code in the following repositories:
                 class="org.jetbrains.r.actions.DebugSelection"
                 text="Debug Selection"
                 description="Debug line/selection in Console"
-                icon="AllIcons.Debugger.AttachToProcess">
+                icon="/icons/run/debugCurrent.svg">
           <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
@@ -165,7 +165,8 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.RunChunkAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunkAction"
                     text="Run Chunk"
-                    description="Run current chunk">
+                    description="Run current chunk"
+                    icon="AllIcons.Actions.Execute">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt C" replace-all="true"/>
@@ -173,7 +174,8 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.DebugChunkAction"
                     class="org.jetbrains.r.rendering.chunk.DebugChunkAction"
                     text="Debug Chunk"
-                    description="Debug current chunk">
+                    description="Debug current chunk"
+                    icon="AllIcons.Actions.StartDebugger">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt X"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt X" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt X" replace-all="true"/>
@@ -181,7 +183,8 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
                     class="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
                     text="Interrupt Chunk"
-                    description="Interrupt chunk execution">
+                    description="Interrupt chunk execution"
+                    icon="AllIcons.Actions.Suspend">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt S"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt S" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt S" replace-all="true"/>
@@ -189,7 +192,8 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
                     text="Run Chunks Above"
-                    description="Run chunks above the current cursor position">
+                    description="Run chunks above the current cursor position"
+                    icon="/icons/run/runAbove.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt B"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B" replace-all="true"/>
@@ -197,8 +201,8 @@ You can find the source code in the following repositories:
             <action id="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
                     text="Run Chunks Below"
-                    description="Run chunks below the current cursor position"/>
-
+                    description="Run chunks below the current cursor position"
+                    icon="/icons/run/runBelow.svg"/>
             <action id="RMarkdownNewChunk" class="org.jetbrains.r.rmarkdown.RMarkdownNewChunk"
                     text="Add New R Chunk" icon="AllIcons.General.Add">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
