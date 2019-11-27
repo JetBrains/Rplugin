@@ -104,7 +104,7 @@ You can find the source code in the following repositories:
     <actions>
         <action id="org.jetbrains.r.console.RConsoleAction"
                 class="org.jetbrains.r.console.RConsoleAction"
-                text="R Console..." description="Starts R interactive console">
+                text="Start R Console" description="Starts R interactive console">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
 

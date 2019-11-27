@@ -19,6 +19,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.icons.AllIcons
 import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.IdeEventQueue
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -155,8 +156,9 @@ class RConsoleRunner(private val project: Project,
     val interruptAction = createInterruptAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
+    val addConsoleAction = createAddConsoleAction()
 
-    val actions = listOf(executeAction, interruptAction, helpAction, historyAction)
+    val actions = listOf(executeAction, interruptAction, helpAction, historyAction, addConsoleAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
@@ -186,6 +188,25 @@ class RConsoleRunner(private val project: Project,
     registerActionShortcuts(actions, panel)
     RConsoleToolWindowFactory.addContent(project, contentDescriptor)
   }
+
+  private fun createAddConsoleAction(): AnAction =
+    object : AnAction() {
+      private val addConsoleAction = ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleAction")
+
+      init {
+        copyFrom(addConsoleAction)
+        templatePresentation.icon = AllIcons.General.Add
+      }
+
+      override fun update(e: AnActionEvent) {
+        addConsoleAction.update(e)
+      }
+
+      override fun actionPerformed(e: AnActionEvent) {
+        addConsoleAction.actionPerformed(e)
+      }
+    }
+
 
   private fun createInterruptAction(console: RConsoleView): AnAction =
     object : AnAction(), RPromotedAction {
