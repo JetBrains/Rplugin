@@ -129,16 +129,47 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       // As stated in parallel::mclapply documentation, it does not work on Windows
       return
     }
-    val result = rInterop.executeCode("""
+    rInterop.replStartProcessing()
+    val promptPromise = AsyncPromise<Unit>()
+    val stdoutPromise = AsyncPromise<String>()
+    val stderrPromise = AsyncPromise<String>()
+    val expectedStdoutLength = 9
+    val expectedStderrLength = 9 * 10 / 2
+    val listener = object : RInterop.ReplListener {
+      val stdout = StringBuilder()
+      val stderr = StringBuilder()
+
+      override fun onPrompt(isDebug: Boolean) {
+        promptPromise.setResult(Unit)
+      }
+
+      override fun onText(text: String, type: ProcessOutputType) {
+        when (type) {
+          ProcessOutputType.STDOUT -> {
+            stdout.append(text)
+            if (stdout.length >= expectedStdoutLength) stdoutPromise.setResult(stdout.toString())
+          }
+          ProcessOutputType.STDERR -> {
+            stderr.append(text)
+            if (stderr.length >= expectedStderrLength) stderrPromise.setResult(stderr.toString())
+          }
+        }
+      }
+    }
+    rInterop.addReplListener(listener)
+
+    rInterop.replExecute("""
       a <- parallel::mclapply(1:9, mc.cores = 2, function(x) {
         cat(x)
         for (i in 1:x) cat("!", file=stderr())
         return(x*x)
       })
     """.trimIndent())
-    TestCase.assertEquals("123456789", result.stdout.asSequence().sorted().joinToString(""))
-    TestCase.assertEquals("!".repeat(9 * 10 / 2), result.stderr)
+    promptPromise.blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("123456789", stdoutPromise.blockingGet(DEFAULT_TIMEOUT)!!.asSequence().sorted().joinToString(""))
+    TestCase.assertEquals("!".repeat(expectedStderrLength), stderrPromise.blockingGet(DEFAULT_TIMEOUT))
     TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).evaluateAsStringList())
+    rInterop.removeReplListener(listener)
   }
 
   fun testDataTablePrint() {
@@ -159,7 +190,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       }
       rInterop.addReplListener(listener)
       rInterop.replExecute(command)
-      promise.blockingGet(DEFAULT_TIMEOUT* 20)
+      promise.blockingGet(DEFAULT_TIMEOUT)
       TestCase.assertEquals(expectOutput, wasOutput)
       rInterop.removeReplListener(listener)
     }
