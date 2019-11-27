@@ -1,4 +1,8 @@
 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M8 4L14 8L8 12V4Z" fill="#499C54"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M1.01953 4.02081H3.01953V5.02081H1.01953V4.02081ZM4.01953 5.02081H3.01953V11.0208H1.01953V12.0208H3.01953V11.0208H4.01953V12.0208H6.01953V11.0208H4.01953V5.02081ZM4.01953 5.02081V4.02081H6.01953V5.02081H4.01953Z" fill="#AFB1B3"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7 3L15 8L7 13V3Z" fill="#499C54"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 3H4V13H3V3Z" fill="#AFB1B3"/>
+<rect x="1" y="2" width="2" height="1" fill="#AFB1B3"/>
+<rect x="4" y="2" width="2" height="1" fill="#AFB1B3"/>
+<rect x="1" y="13" width="2" height="1" fill="#AFB1B3"/>
+<rect x="4" y="13" width="2" height="1" fill="#AFB1B3"/>
 </svg>
