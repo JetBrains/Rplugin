@@ -32,6 +32,14 @@ class SelectionTest : RUsefulTestCase() {
     """)
   }
 
+  fun testSelectFunctionKeyword() {
+    doTest("""
+      func<caret>tion(x) x + 1
+    """, """
+      <selection>function</selection>(x) x + 1
+    """)
+  }
+
   private fun doTest(@Language("R") text: String, @Language("R") expected: String) {
     myFixture.configureByText("a.R", text.trimIndent())
     myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SELECT_WORD_AT_CARET)

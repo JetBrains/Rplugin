@@ -7,6 +7,7 @@ package org.jetbrains.r.editor
 import com.intellij.codeInsight.editorActions.ExtendWordSelectionHandlerBase
 import com.intellij.openapi.util.Condition
 import com.intellij.psi.PsiElement
+import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RPsiElement
 
 class RExtendWordSelectionHandler : ExtendWordSelectionHandlerBase() {
@@ -17,7 +18,7 @@ class RExtendWordSelectionHandler : ExtendWordSelectionHandlerBase() {
   /** Disable basic selection handler for R psi elements */
   class RBasicFilter : Condition<PsiElement> {
     override fun value(element: PsiElement): Boolean {
-      if (element is RPsiElement || element.parent is RPsiElement) {
+      if (element is RIdentifierExpression || element.parent is RIdentifierExpression) {
         return false
       }
       return true
