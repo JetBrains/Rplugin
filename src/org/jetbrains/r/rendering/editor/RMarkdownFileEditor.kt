@@ -46,7 +46,7 @@ class RMarkdownFileEditor(project: Project, private val editor: TextEditor, repo
   private val leftToolbar = JPanel(BorderLayout())
   private val rightToolBar = JPanel(BorderLayout())
 
-  private val toolbarComponent = createRMarkdownEditorToolbar(project, report).component
+  private val toolbarComponent = createRMarkdownEditorToolbar(project, report, editor.editor.contentComponent).component
   private val editorComponent = editor.component
 
   private val mainComponent = JPanel(BorderLayout())
@@ -76,8 +76,10 @@ class RMarkdownFileEditor(project: Project, private val editor: TextEditor, repo
   override fun canNavigateTo(navigatable: Navigatable): Boolean = editor.canNavigateTo(navigatable)
 }
 
-private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile): ActionToolbar =
-  ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(project, report), true)
+private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile, targetComponent: JComponent): ActionToolbar =
+  ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(project, report), true).also {
+    it.setTargetComponent(targetComponent)
+  }
 
 
 private fun createActionGroup(project: Project, report: VirtualFile): ActionGroup {

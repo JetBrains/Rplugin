@@ -44,7 +44,9 @@ class RFileEditor(val project: Project, private val editor: TextEditor, val virt
   override fun canNavigateTo(navigatable: Navigatable): Boolean = editor.canNavigateTo(navigatable)
 
   private fun createREditorToolbar(): ActionToolbar =
-    ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(), true)
+    ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(), true).also {
+      it.setTargetComponent(editor.editor.contentComponent)
+    }
 
   private fun createActionGroup(): ActionGroup = DefaultActionGroup(
     ToolbarAction("org.jetbrains.r.actions.RRunAction"),

@@ -172,6 +172,7 @@ class RConsoleRunner(private val project: Project,
     }
     val actionToolbar = ActionManager.getInstance()
       .createActionToolbar(RBundle.message("console.runner.action.toolbar.place"), toolbarActions, false)
+    actionToolbar.setTargetComponent(consoleView.consoleEditor.contentComponent)
 
     val panel = JPanel(BorderLayout())
     panel.add(actionToolbar.component, BorderLayout.WEST)
