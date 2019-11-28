@@ -1,0 +1,3 @@
+There was assertion error during parsing of this markdown file!
+
+Some link [`name`](https://where.org/is/it=magrittr)-some text

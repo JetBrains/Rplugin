@@ -1,0 +1,2 @@
+PyFile:regression1.rmd
+  PsiElement(OUTER)('There was assertion error during parsing of this markdown file!\n\nSome link [`name`](https://where.org/is/it=magrittr)-some text')
