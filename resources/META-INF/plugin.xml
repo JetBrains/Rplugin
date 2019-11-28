@@ -374,10 +374,6 @@ You can find the source code in the following repositories:
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RMarkdownFileEditorProvider"/>
         <codeInsight.lineMarkerProvider language="RMarkdown" implementationClass="org.jetbrains.r.rendering.chunk.RunChunkLineMarkerProvider"/>
 
-        <projectService serviceInterface="org.jetbrains.r.rmarkdownconsole.RMarkdownConsoleManager"
-                        serviceImplementation="org.jetbrains.r.rmarkdownconsole.RMarkdownConsoleManagerImpl"/>
-
-
         <!-- tool windows-->
         <lang.psiStructureViewFactory language="R"
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>

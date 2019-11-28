@@ -24,14 +24,14 @@ class RMarkdownSettingsState: BaseState() {
   var renderProfiles by map<String, RMarkdownRenderProfile>()
 
   @Synchronized
-  fun getProfileRenderDirectory(path: String): String = getOrCreateProfile(path).renderDirectory
+  fun getKnitRootDirectory(path: String): String = getOrCreateProfile(path).knitRootDirectory
 
   @Synchronized
   fun getProfileLastOutput(path: String): String = getOrCreateProfile(path).lastOutput
 
   @Synchronized
-  fun setProfileRenderDirectory(path: String, value: String) {
-    getOrCreateProfile(path).renderDirectory = value
+  fun setKnitRootDirectory(path: String, value: String) {
+    getOrCreateProfile(path).knitRootDirectory = value
     incrementModificationCount()
   }
 
@@ -48,8 +48,8 @@ class RMarkdownSettingsState: BaseState() {
 
   private fun RMarkdownRenderProfile.ensureNotBlankDirectory(path: String): RMarkdownRenderProfile {
     return this.also {
-      if (it.renderDirectory.isBlank()) {
-        it.renderDirectory = Paths.getParentOf(path)
+      if (it.knitRootDirectory.isBlank()) {
+        it.knitRootDirectory = Paths.getParentOf(path)
         incrementModificationCount()
       }
     }

@@ -6,12 +6,12 @@ package org.jetbrains.r.rendering.editor
 
 import com.intellij.diff.util.FileEditorBase
 import com.intellij.icons.AllIcons
+import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -29,10 +29,9 @@ import org.jetbrains.r.RENDER
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.rendering.RMarkdownProcessor
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
-import org.jetbrains.r.rmarkdownconsole.RMarkdownConsoleManager
+import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
 import java.awt.BorderLayout
 import java.io.File
 import java.nio.file.Paths
@@ -96,6 +95,7 @@ private fun createActionGroup(project: Project, report: VirtualFile): ActionGrou
 private class BuildManager(private val project: Project, private val report: VirtualFile) {
   var isRunning: Boolean = false
     private set
+  private var renderingRunner: RMarkdownRenderingConsoleRunner? = null
 
   fun toggleBuild(e: AnActionEvent, onRenderFinished: (() -> Unit)? = null) {
     runAsync {
@@ -106,16 +106,19 @@ private class BuildManager(private val project: Project, private val report: Vir
         }
         val document = e.getData(CommonDataKeys.EDITOR)?.document ?: return@runAsync
         ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
-        RMarkdownProcessor.render(project, report) {
-          if (isRunning) {
-            onRenderFinished?.invoke()  // Don't invoke this if rendering was interrupted
+        RMarkdownRenderingConsoleRunner(project).apply {
+          renderingRunner = this
+          render(project, report) {
+            if (isRunning) {
+              onRenderFinished?.invoke()  // Don't invoke this if rendering was interrupted
+            }
+            isRunning = false
           }
-          isRunning = false
         }
       }
       else {
         isRunning = false
-        RMarkdownConsoleManager.getInstance(project).consoleRunner.interruptRendering()
+        renderingRunner?.interruptRendering()
       }
     }
   }
@@ -162,10 +165,9 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
       val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report.path)
       val file = File(profileLastOutput)
       if (profileLastOutput.isNotEmpty() && file.exists()) {
-        RMarkdownProcessor.openResult(file)
+        BrowserLauncher.instance.browse(file)
       } else {
-        val rMarkdownConsoleManager = ServiceManager.getService(project, RMarkdownConsoleManager::class.java)
-        rMarkdownConsoleManager.consoleRunner.reportResultNotFound()
+
       }
     }
   }
@@ -225,19 +227,19 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
     }
 
     override fun update(e: AnActionEvent) {
-      e.presentation.text = renderDirectoryName
+      e.presentation.text = knitRootDirectoryName
     }
 
     override fun createPopupActionGroup(button: JComponent?): DefaultActionGroup =
       DefaultActionGroup(
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.documentDirectory")) {
           override fun actionPerformed(e: AnActionEvent) {
-            setOutputPath(report.parent?.path)
+            knitRootDirectory(report.parent?.path)
           }
         },
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.projectDirectory")) {
           override fun actionPerformed(e: AnActionEvent) {
-            setOutputPath(project.basePath)
+            knitRootDirectory(project.basePath)
           }
         },
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.customDirectory")) {
@@ -245,18 +247,18 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
             val fileDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
             val dir = FileChooser.chooseFile(fileDescriptor, project, null)
             if (dir != null && dir.isValid) {
-              setOutputPath(dir.path)
+              knitRootDirectory(dir.path)
             }
           }
         })
 
 
-    private fun setOutputPath(path: String?) {
-      RMarkdownSettings.getInstance(project).state.setProfileRenderDirectory(report.path, path ?: return)
+    private fun knitRootDirectory(path: String?) {
+      RMarkdownSettings.getInstance(project).state.setKnitRootDirectory(report.path, path ?: return)
     }
 
-    private val renderDirectoryName
-      get() = Paths.get(RMarkdownSettings.getInstance(project).state.getProfileRenderDirectory(report.path)).fileName.toString()
+    private val knitRootDirectoryName
+      get() = Paths.get(RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(report.path)).fileName.toString()
   }
 
 private abstract class SameTextAction(text: String, icon: Icon? = null) : AnAction(text, text, icon)
