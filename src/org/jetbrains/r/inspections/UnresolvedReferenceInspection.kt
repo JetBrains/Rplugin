@@ -14,7 +14,10 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.intentions.LoadPackageFix
-import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.ROperator
+import org.jetbrains.r.psi.api.RPsiElement
+import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.references.RReferenceBase
 
 class UnresolvedReferenceInspection : RInspection() {
@@ -38,15 +41,6 @@ class UnresolvedReferenceInspection : RInspection() {
 
     override fun visitCallExpression(element: RCallExpression) {
       handleResolveResult(element.expression, element.expression.reference ?: return)
-    }
-
-    override fun visitIdentifierExpression(identifier: RIdentifierExpression) {
-      if (identifier.parent?.let { it is RCallExpression && it.expression == identifier } == true ) return
-      if (identifier.parent?.let { it is RNamespaceAccessExpression } == true) return
-      val results = identifier.reference.multiResolve(false)
-      if (results.isNotEmpty()) {
-        handleResolveResult(identifier, identifier.reference)
-      }
     }
 
     private fun handleResolveResult(element: RPsiElement, reference: RReferenceBase<*>) {

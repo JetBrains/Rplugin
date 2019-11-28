@@ -19,9 +19,12 @@ class UnresolvedReferenceInspectionConsoleTest : RConsoleBaseTestCase() {
     doTest("filter()")
   }
 
+  fun testAccess() {
+    doTest("foo${'$'}id")
+  }
+
   fun testNasa() {
-    val message = UnresolvedReferenceInspection.missingPackageMessage("nasa", listOf("dplyr"))
-    doTest("View(<weak_warning descr=\"$message\">nasa</weak_warning>)")
+    doTest("View(nasa)")
   }
 
   fun testNamespaceNasa() {
