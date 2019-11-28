@@ -31,6 +31,8 @@ import com.intellij.ui.RelativeFont
 import com.intellij.ui.components.JBScrollBar
 import com.intellij.util.ui.TextTransferable
 import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
@@ -40,6 +42,7 @@ import org.intellij.datavis.inlays.MouseWheelUtils
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLAnchorElement
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.Rectangle
 import java.awt.event.ActionEvent
@@ -76,6 +79,10 @@ class ProcessOutput(val text: String, kind: Key<*>) {
 class NotebookInlayOutput(private val project: Project, private val parent: Disposable) : NotebookInlayState(), ToolBarProvider {
 
   companion object {
+    private const val RESIZE_TASK_NAME = "Resize graphics"
+    private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
+    private const val RESIZE_TIME_SPAN = 500
+
     private val monospacedFont = RelativeFont.NORMAL.family(Font.MONOSPACED)
     private val outputFont = monospacedFont.derive(UIUtil.getLabelFont().deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL)))
   }
@@ -123,17 +130,26 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
   inner class OutputImg(parent: Disposable) : Output(parent) {
     private val graphicsPanel = GraphicsPanel(project)
+    private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
+
+    private var imagePath: String? = null
 
     private var imagePath: String? = null
 
     init {
       toolbarPane.centralComponent = graphicsPanel.component
+      graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
+        override fun componentResized(e: ComponentEvent?) {
+          scheduleResizing()
+        }
+      })
     }
 
     override fun addData(data: String) {
       imagePath = data
       graphicsPanel.showImage(File(data))
-      onHeightCalculated?.invoke(graphicsPanel.imageSize?.height ?: 0)
+      onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
+      scheduleResizing()
     }
 
     override fun clear() {
@@ -152,6 +168,29 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
         val description = "Save image to disk"
         saveWithFileChooser(title, description, "png", "snapshot.png") { destination ->
           Files.copy(Paths.get(path), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+      }
+    }
+
+    private fun scheduleResizing() {
+      queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
+        override fun run() {
+          val oldSize = graphicsPanel.imageSize
+          val newSize = graphicsPanel.imageComponentSize
+          if (oldSize != newSize) {
+            resize(newSize)
+          }
+        }
+      })
+    }
+
+    private fun resize(newSize: Dimension) {
+      imagePath?.let { path ->
+        GraphicsManager.getInstance()?.resizeImage(project, path, newSize) { imageFile ->
+          imagePath = imageFile.absolutePath
+          ApplicationManager.getApplication().invokeLater {
+            graphicsPanel.showImage(imageFile)
+          }
         }
       }
     }

@@ -9,7 +9,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.UIUtil
 import org.intellij.images.editor.ImageEditor
@@ -35,6 +35,9 @@ class GraphicsPanel(private val project: Project) {
   private val internalComponent: JComponent?
     get() = if (isAdvancedMode) advancedModeComponent else basicModeComponent
 
+  private val toolPanelHeight: Int
+    get() = if (isAdvancedMode) getAdvancedModeToolPanelHeight() else 0
+
   private var currentImageFile: VirtualFile? = null
   private var currentEditor: ImageEditor? = null
   private var lastToolPanelHeight: Int = 0
@@ -48,15 +51,25 @@ class GraphicsPanel(private val project: Project) {
       Dimension(image.width, image.height)
     }
 
-  val toolPanelHeight: Int
-    get() = if (isAdvancedMode) getAdvancedModeToolPanelHeight() else 0
+  val imageComponentSize: Dimension
+    get() {
+      val insets = imageInsets
+      val panelDimension = component.size
+      return Dimension(panelDimension.width - insets * 2, panelDimension.height - toolPanelHeight - insets * 2)
+    }
+
+  val maximumSize: Dimension?
+    get() = imageSize?.let { size ->
+      val insets = imageInsets
+      return Dimension(size.width + insets * 2, size.height + toolPanelHeight + insets * 2)
+    }
 
   /**
    * Enables or disables toolbar at the top of graphics panel.
    * Also in advanced mode panel keeps aspect ratio of image.
    * Use it when displaying images which don't fit panel's size
    */
-  var isAdvancedMode: Boolean = true
+  var isAdvancedMode: Boolean = false
     set(mode) {
       if (field != mode) {
         field = mode
@@ -84,8 +97,9 @@ class GraphicsPanel(private val project: Project) {
   }
 
   private fun openEditor(imageFile: File) {
-    val virtualFile = LocalFileSystem.getInstance().findFileByIoFile(imageFile)
+    val virtualFile = VfsUtil.findFileByIoFile(imageFile, true)
     if (virtualFile != null) {
+      VfsUtil.markDirtyAndRefresh(false, false, false, virtualFile)
       openEditor(virtualFile)
     } else {
       LOGGER.warn("Cannot get virtual file for '$imageFile'")

@@ -48,9 +48,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
-  private val graphicsPanel = GraphicsPanel(project).apply {
-    isAdvancedMode = false
-  }
+  private val graphicsPanel = GraphicsPanel(project)
 
   init {
     setContent(graphicsPanel.component)
@@ -260,10 +258,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
-    val insets = graphicsPanel.imageInsets
-    val panelDimension = graphicsPanel.component.size
-    val toolPanelHeight = graphicsPanel.toolPanelHeight
-    return Dimension(panelDimension.width - insets * 2, panelDimension.height - toolPanelHeight - insets * 2)
+    return graphicsPanel.imageComponentSize
   }
 
   private fun postScreenDimension() {
