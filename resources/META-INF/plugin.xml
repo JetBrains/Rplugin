@@ -262,7 +262,7 @@ You can find the source code in the following repositories:
 
     <extensions defaultExtensionNs="com.intellij">
         <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
-        <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R"/>
+        <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
 
