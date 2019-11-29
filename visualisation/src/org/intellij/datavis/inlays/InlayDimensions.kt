@@ -23,6 +23,7 @@ object InlayDimensions {
   const val topBorderUnscaled = topOffsetUnscaled + 3
   const val bottomBorderUnscaled = bottomOffsetUnscaled + 5
   const val leftBorderUnscaled = 5
+  const val rightBorderUnscaled = 5
 
 
   /** Real borders for inner inlay component */
@@ -84,6 +85,6 @@ object InlayDimensions {
     minWidth = spaceWidth * 10
     minHeight = smallHeight
 
-    rightBorder = spaceWidth
+    rightBorder = spaceWidth * 3
   }
 }

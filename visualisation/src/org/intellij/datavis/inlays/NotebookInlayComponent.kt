@@ -90,7 +90,7 @@ class NotebookInlayComponent(val cell: PsiElement)
     border = JBUI.Borders.empty(InlayDimensions.topBorderUnscaled,
                                 InlayDimensions.leftBorderUnscaled,
                                 InlayDimensions.bottomBorderUnscaled,
-                                InlayDimensions.rightBorder)
+                                InlayDimensions.rightBorderUnscaled)
 
     isOpaque = false
 
