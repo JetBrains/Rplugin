@@ -22,10 +22,7 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.IdeEventQueue
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.keymap.impl.KeyProcessorContext
@@ -42,6 +39,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.actions.RPromotedAction
+import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
@@ -54,6 +52,7 @@ import org.jetbrains.r.run.viewer.RViewerRepository
 import org.jetbrains.r.run.viewer.RViewerState
 import org.jetbrains.r.run.viewer.RViewerUtils
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindowListener
+import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -151,14 +150,17 @@ class RConsoleRunner(private val project: Project,
         }
       }
     }
+    // lets trigger getComponent to create the Editor
+    consoleView.getComponent()
     historyController.install()
     val executeAction = createConsoleExecAction()
     val interruptAction = createInterruptAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
     val addConsoleAction = createAddConsoleAction()
+    val toggleSoftWrap = createToggleSoftWrapAction(consoleView)
 
-    val actions = listOf(executeAction, interruptAction, helpAction, historyAction, addConsoleAction)
+    val actions = listOf(executeAction, interruptAction, helpAction, historyAction, addConsoleAction, Separator(), toggleSoftWrap)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
@@ -205,6 +207,26 @@ class RConsoleRunner(private val project: Project,
 
       override fun actionPerformed(e: AnActionEvent) {
         addConsoleAction.actionPerformed(e)
+      }
+    }
+
+  private fun createToggleSoftWrapAction(console: RConsoleView): ToggleSoftWrapAction =
+    object : ToggleSoftWrapAction() {
+      private var isSelected: Boolean = REditorSettings.useSoftWrapsInConsole
+
+      init { updateEditors() }
+
+      override fun isSelected(e: AnActionEvent): Boolean = isSelected
+
+      private fun updateEditors() {
+        console.editor.getSettings().setUseSoftWraps(isSelected)
+        console.consoleEditor.getSettings().setUseSoftWraps(isSelected)
+      }
+
+      override fun setSelected(e: AnActionEvent, state: Boolean) {
+        isSelected = state
+        updateEditors()
+        REditorSettings.useSoftWrapsInConsole = isSelected
       }
     }
 

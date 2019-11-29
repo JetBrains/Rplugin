@@ -23,15 +23,18 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RENDER
+import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
+import org.jetbrains.r.settings.REditorSettings
 import java.awt.BorderLayout
 import java.io.File
 import java.nio.file.Paths
@@ -46,7 +49,7 @@ class RMarkdownFileEditor(project: Project, private val editor: TextEditor, repo
   private val leftToolbar = JPanel(BorderLayout())
   private val rightToolBar = JPanel(BorderLayout())
 
-  private val toolbarComponent = createRMarkdownEditorToolbar(project, report, editor.editor.contentComponent).component
+  private val toolbarComponent = createRMarkdownEditorToolbar(project, report, editor.editor).component
   private val editorComponent = editor.component
 
   private val mainComponent = JPanel(BorderLayout())
@@ -76,23 +79,47 @@ class RMarkdownFileEditor(project: Project, private val editor: TextEditor, repo
   override fun canNavigateTo(navigatable: Navigatable): Boolean = editor.canNavigateTo(navigatable)
 }
 
-private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile, targetComponent: JComponent): ActionToolbar =
-  ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(project, report), true).also {
-    it.setTargetComponent(targetComponent)
+private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile, editor: Editor): ActionToolbar =
+  ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(project, report, editor), true).also {
+    it.setTargetComponent(editor.contentComponent)
   }
 
 
-private fun createActionGroup(project: Project, report: VirtualFile): ActionGroup {
+private fun createActionGroup(project: Project, report: VirtualFile, editor: Editor): ActionGroup {
   return BuildManager(project, report).let { manager ->
     DefaultActionGroup(
       createOutputDirectoryAction(project, report),
+      Separator(),
       createBuildAction(manager),
       createBuildAndShowAction(project, report, manager),
       createRunAllAction(),
-      ActionManager.getInstance().getAction("RMarkdownNewChunk")
+      ActionManager.getInstance().getAction("RMarkdownNewChunk"),
+      Separator(),
+      createToggleSoftWrapAction(editor)
     )
   }
 }
+
+private fun createToggleSoftWrapAction(editor: Editor): @NotNull AnAction =
+  object : ToggleSoftWrapAction() {
+    private var isSelected: Boolean = REditorSettings.useSoftWRapsInRMarkdown
+
+    init { updateEditors() }
+
+    override fun isSelected(e: AnActionEvent): Boolean {
+      return isSelected
+    }
+
+    private fun updateEditors() {
+      editor.getSettings().setUseSoftWraps(isSelected)
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+      isSelected = state
+      updateEditors()
+      REditorSettings.useSoftWRapsInRMarkdown = isSelected
+    }
+  }
 
 private class BuildManager(private val project: Project, private val report: VirtualFile) {
   var isRunning: Boolean = false
