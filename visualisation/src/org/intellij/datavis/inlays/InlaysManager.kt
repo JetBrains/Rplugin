@@ -30,7 +30,7 @@ import icons.org.intellij.datavis.inlays.EditorInlaysManager
  * ToDo should be split into InlaysManager with all basics and NotebookInlaysManager with all specific.
  */
 
-val SELECTED_CELL = TextAttributesKey.createTextAttributesKey("JUPYTER_SELECTED_CELL")
+val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
 
 private val logger = Logger.getInstance(InlaysManager::class.java)
 

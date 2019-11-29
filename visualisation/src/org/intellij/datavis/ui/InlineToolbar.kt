@@ -12,17 +12,22 @@ import com.intellij.psi.PsiElement
 import java.awt.*
 import javax.swing.JPanel
 
+
 class InlineToolbar(val cell: PsiElement,
                     private val editor: Editor,
                     toolbarActions: ActionGroup) : JPanel(BorderLayout()) {
 
   private var couldUpdateBound = false
-  private val actionToolBar = ActionManager.getInstance().createActionToolbar("Editor", toolbarActions, true).apply {
+  private val actionToolBar = ActionManager.getInstance().createActionToolbar("InlineToolbar", toolbarActions, true).apply {
     setTargetComponent(editor.contentComponent)
   }
 
   init {
+    setOpaque(false)
+    setBackground(Color(0, 0, 0, 0))
     val component = actionToolBar.component
+    component.isOpaque = false
+    component.background = Color(0, 0, 0, 0)
     component.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
     add(component)
   }
@@ -32,7 +37,6 @@ class InlineToolbar(val cell: PsiElement,
     //ToDo: - We need to make some tests on mac and linux for this, maybe this is applicable only to windows platform.
     //      - And also we need to check this on different Windows versions (definitely we have problems on Windows) .
     //      - Definitely we have problems on new macBook
-    actionToolBar.component.background = editor.contentComponent.background
     val oldComposite = (g as Graphics2D).composite
     g.composite = AlphaComposite.SrcOver
     super<JPanel>.paint(g)

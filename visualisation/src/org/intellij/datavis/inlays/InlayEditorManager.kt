@@ -12,19 +12,28 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.InlayModel
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.markup.EffectType
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.NonUrgentExecutor
 import icons.org.intellij.datavis.ui.InlineToolbar
 import org.intellij.datavis.inlays.*
+import java.awt.Color
+import java.awt.Font
 import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -58,8 +67,15 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     MouseWheelUtils.wrapEditorMouseWheelListeners(editor)
     restoreOutputs()
     restoreToolbars()
-    ApplicationManager.getApplication().invokeLater { updateInlayComponentsWidth() }
     onCaretPositionChanged()
+    onColorSchemeChanged()
+    ApplicationManager.getApplication().invokeLater {
+      updateInlayComponentsWidth()
+    }
+  }
+
+  private fun onColorSchemeChanged() {
+    project.messageBus.connect(editor.disposable).subscribe(EditorColorsManager.TOPIC, EditorColorsListener { updateHighlighting() })
   }
 
   fun dispose() {
@@ -116,9 +132,23 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
           updateInlays()
           updateToolbarPositions()
+          updateHighlighting()
         }
       }
     })
+  }
+
+  private fun updateHighlighting() {
+    editor.markupModel.removeAllHighlighters()
+    editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor?.let {backgroundColor ->
+      toolbars.keys.forEach { fillChunkArea(it.parent.textRange, backgroundColor) }
+    }
+  }
+
+  private fun fillChunkArea(textRange: TextRange, backgroundColor: Color?) {
+    editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
+                                           TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
+                                           HighlighterTargetArea.LINES_IN_RANGE)
   }
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {
@@ -137,6 +167,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       }
       node = node.nextSibling
     }
+    updateHighlighting()
     if (isAdded) {
       updateToolbarPositions()
     }
@@ -196,6 +227,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       result.forEach { (psi, action) ->
         addToolbar(psi, action)
       }
+      updateHighlighting()
       updateToolbarPositions()
     }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
   }

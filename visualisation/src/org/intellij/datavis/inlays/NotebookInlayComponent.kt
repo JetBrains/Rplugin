@@ -159,7 +159,7 @@ class NotebookInlayComponent(val cell: PsiElement)
     val g2d = g.create()
 
     g2d.color = if (selected) {
-      inlay!!.editor.colorsScheme.getAttributes(SELECTED_CELL).backgroundColor
+      inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
     }
     else {
       (inlay!!.editor as EditorImpl).backgroundColor
@@ -218,7 +218,7 @@ class NotebookInlayComponent(val cell: PsiElement)
           g.drawLine(0, y, gutterWidth + 10, y)
 
           if (selected) {
-            g.color = editor.colorsScheme.getAttributes(SELECTED_CELL).backgroundColor
+            g.color = editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
             g.fillRect(gutterWidth - 10, r.y + 1, 10, r.height - 1 - editor.lineHeight)
           }
         }
