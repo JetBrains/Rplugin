@@ -356,7 +356,8 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     val inlayComponent = NotebookInlayComponent(cell)
 
     // On editor creation it has 0 width
-    var editorWideWidth = editor.component.width - inlayComponent.width - (editor.gutter as EditorGutterComponentEx).width
+    var editorWideWidth = editor.component.width - inlayComponent.width
+      - (editor.gutter as EditorGutterComponentEx).width - InlayDimensions.rightBorder
     if (editorWideWidth <= 0) {
       editorWideWidth = InlayDimensions.width
     }
