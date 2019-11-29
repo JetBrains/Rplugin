@@ -87,7 +87,7 @@ allprojects {
     }
 
     intellij {
-        version = "PC-${ideaMajor()}.${ideaMinor()}-EAP-CANDIDATE-SNAPSHOT"
+        version = if (runWithIC()) "IC-2019.3" else "PC-${ideaMajor()}.${ideaMinor()}-EAP-CANDIDATE-SNAPSHOT"
         downloadSources = !CI
         updateSinceUntilBuild = true
         instrumentCode = false
@@ -154,7 +154,7 @@ project(":") {
     version = "${ideaMajor()}.${ideaMinor()}.${prop("buildNumber")}"
     intellij {
         pluginName = "rplugin"
-        setPlugins("markdown", "yaml", "python-ce")
+        setPlugins("markdown", "yaml", if (runWithIC()) "PythonCore:193.5233.102" else "python-ce")
     }
 
     idea {
@@ -279,3 +279,5 @@ val Project.dependencyCachePath get(): String {
 fun Build_gradle.ideaMinor() = prop("ideaMinor")
 
 fun Build_gradle.ideaMajor() = prop("ideaMajor")
+
+fun Build_gradle.runWithIC() = prop("runWithIC") == "true"
