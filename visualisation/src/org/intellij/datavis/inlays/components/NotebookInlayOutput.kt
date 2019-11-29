@@ -12,22 +12,22 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
-import com.intellij.openapi.fileChooser.FileSaverDialog
+import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.ui.RelativeFont
 import com.intellij.ui.components.JBScrollBar
 import com.intellij.util.ui.TextTransferable
@@ -48,6 +48,9 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.KeyEvent
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
@@ -93,7 +96,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     abstract fun scrollToTop()
     abstract fun getCollapsedDescription(): String
 
-    abstract fun saveAsTxt()
+    abstract fun saveAs()
 
     /**
      * Inlay component can can adjust itself to fit the Output.
@@ -127,11 +130,14 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   inner class OutputImg(parent: Disposable) : Output(parent) {
     private val graphicsPanel = GraphicsPanel(project)
 
+    private var imagePath: String? = null
+
     init {
       toolbarPane.centralComponent = graphicsPanel.component
     }
 
     override fun addData(data: String) {
+      imagePath = data
       graphicsPanel.showImage(File(data))
       onHeightCalculated?.invoke(graphicsPanel.imageSize?.height ?: 0)
     }
@@ -146,7 +152,14 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       return "foo"
     }
 
-    override fun saveAsTxt() {
+    override fun saveAs() {
+      imagePath?.let { path ->
+        val title = "Export image"
+        val description = "Save image to disk"
+        saveWithFileChooser(title, description, "png", "snapshot.png") { destination ->
+          Files.copy(Paths.get(path), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+      }
     }
   }
 
@@ -203,15 +216,13 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       return console.text.substring(0, min(console.text.length, 60)) + " ....."
     }
 
-    override fun saveAsTxt() {
-      val descriptor = FileSaverDescriptor("Export as txt",
-                                           "Export console content to text file.", "txt")
-      val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, getComponent())
-      val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath))
-      val fileWrapper = chooser.save(virtualBaseDir, "output.txt") ?: return
-
-      fileWrapper.file.bufferedWriter().use { out ->
-        out.write(console.text)
+    override fun saveAs() {
+      val title = "Export as txt"
+      val description = "Export console content to text file"
+      saveWithFileChooser(title, description, "txt", "output.txt") { destination ->
+        destination.bufferedWriter().use { out ->
+          out.write(console.text)
+        }
       }
     }
   }
@@ -257,18 +268,15 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       jfxPanel.putClientProperty("AuxEditorComponent", true)
     }
 
-    override fun saveAsTxt() {
-      val descriptor = FileSaverDescriptor("Export as txt",
-                                           "Exports the selected range or whole table is nothing is selected as csv or tsv file.", "txt")
-      val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, getComponent())
-      val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath))
-      val fileWrapper = chooser.save(virtualBaseDir, "output.txt") ?: return
-
-      Platform.runLater {
-        val selection = webView.engine.executeScript("window.getSelection().toString()") as String
-
-        fileWrapper.file.bufferedWriter().use { out ->
-          out.write(selection)
+    override fun saveAs() {
+      val title = "Export as txt"
+      val description = "Exports the selected range or whole table if nothing is selected as csv or tsv file"
+      saveWithFileChooser(title, description, "txt", "output.txt") { destination ->
+        Platform.runLater {
+          val selection = webView.engine.executeScript("window.getSelection().toString()") as String
+          destination.bufferedWriter().use { out ->
+            out.write(selection)
+          }
         }
       }
     }
@@ -409,25 +417,12 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   private var output: Output? = null
 
   override fun createActions(): List<AnAction> {
-    val actionSaveAsTxt = object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
+    val actionSaveAs = object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
       override fun actionPerformed(e: AnActionEvent) {
-        output?.saveAsTxt()
-
-        //        val project = e.dataContext.getData(PlatformDataKeys.PROJECT)!!
-        //        val virtualFile = e.dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)!!
-        //
-        //        val manager = FileEditorManager.getInstance(project) as FileEditorManagerImpl
-        //
-        //        if (manager.selectedTextEditor != null) {
-        //
-        //          val editors = manager.getEditors(virtualFile)
-        //          editors.forEach {
-        //            NotebookTabs.install(it)?.addTab("New panel", JPanel())
-        //          }
-        //        }
+        output?.saveAs()
       }
     }
-    return listOf(actionSaveAsTxt)
+    return listOf(actionSaveAs)
   }
 
   private fun addTextOutput() = createOutput { OutputText(parent) }
@@ -452,6 +447,33 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     if (addToolbar) {
       output.addToolbar()
     }
+  }
+
+  private fun saveWithFileChooser(title: String, description: String, extension: String, defaultName: String, onChoose: (File) -> Unit) {
+    val descriptor = FileSaverDescriptor(title, description, extension)
+    val chooser = FileSaverDialogImpl(descriptor, project)
+    val virtualBaseDir = VfsUtil.findFile(Paths.get(project.basePath!!), true)
+    chooser.save(virtualBaseDir, defaultName)?.let { fileWrapper ->
+      val destination = fileWrapper.file
+      try {
+        createDestinationFile(destination)
+        onChoose(destination)
+      } catch (e: Exception) {
+        val details = e.message?.let { ":\n$it" }
+        notifyExportError("Cannot save to selected destination$details")
+      }
+    }
+  }
+
+  private fun createDestinationFile(file: File) {
+    if (!file.exists() && !file.createNewFile()) {
+      throw RuntimeException("Cannot create requested file")
+    }
+  }
+
+  private fun notifyExportError(content: String) {
+    val notification = Notification("NotebookInlayOutput", "Export failure", content, NotificationType.ERROR)
+    notification.notify(project)
   }
 
   private var addToolbar = false
