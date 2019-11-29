@@ -23,7 +23,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RENDER
@@ -100,7 +99,7 @@ private fun createActionGroup(project: Project, report: VirtualFile, editor: Edi
   }
 }
 
-private fun createToggleSoftWrapAction(editor: Editor): @NotNull AnAction =
+private fun createToggleSoftWrapAction(editor: Editor): AnAction =
   object : ToggleSoftWrapAction() {
     private var isSelected: Boolean = REditorSettings.useSoftWRapsInRMarkdown
 
