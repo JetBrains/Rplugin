@@ -23,7 +23,7 @@ object InlayDimensions {
   const val topBorderUnscaled = topOffsetUnscaled + 3
   const val bottomBorderUnscaled = bottomOffsetUnscaled + 5
   const val leftBorderUnscaled = 5
-  const val rightBorderUnscaled = 5
+
 
   /** Real borders for inner inlay component */
   val topBorder = JBUI.scale(topBorderUnscaled)
@@ -35,6 +35,9 @@ object InlayDimensions {
 
   /** editor.lineHeight */
   var lineHeight: Int = JBUI.scale(10)
+    private set
+
+  var rightBorder: Int = 5
     private set
 
   /** Width of space character ib current editor (editor.getFontMetrics(Font.PLAIN).charWidth(' ')) */
@@ -80,5 +83,7 @@ object InlayDimensions {
     width = spaceWidth * 120
     minWidth = spaceWidth * 10
     minHeight = smallHeight
+
+    rightBorder = spaceWidth
   }
 }
