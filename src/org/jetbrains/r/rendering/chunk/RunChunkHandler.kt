@@ -11,6 +11,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.ex.EditorEx
@@ -37,6 +38,10 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.packages.InstallationPackageException
+import org.jetbrains.r.packages.RequiredPackage
+import org.jetbrains.r.packages.RequiredPackageInstaller
+import org.jetbrains.r.packages.RequiredPackageListener
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
@@ -48,6 +53,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
+
+private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
+private val CHUNK_EXECUTOR_NAME = RBundle.message("run.chunk.executor.name")
 
 private const val RUN_CHUNK_GROUP_ID = "org.jetbrains.r.rendering.chunk.RunChunkActions"
 
@@ -87,16 +95,36 @@ object RunChunkHandler {
   }
 
   fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
-    val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
-    val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
-    RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
-      runAsync {
-        runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode) }.processed(promise)
+    return AsyncPromise<Unit>().also { promise ->
+      val listener = object : RequiredPackageListener {
+        override fun onPackagesInstalled() {
+          runInEdt {
+            executeWithKnitr(element, isDebug, isBatchMode).processed(promise)
+          }
+        }
+
+        override fun onErrorOccurred(e: InstallationPackageException) {
+          promise.setError(e.message ?: UNKNOWN_ERROR_MESSAGE)
+        }
+      }
+
+      val required = RequiredPackage("knitr")
+      val installer = RequiredPackageInstaller.getInstance(element.project)
+      installer.installPackagesWithUserPermission(CHUNK_EXECUTOR_NAME, listOf(required), listener, true)
+    }
+  }
+
+  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean): Promise<Unit> {
+    return AsyncPromise<Unit>().also { promise ->
+      if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
+      val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
+      val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
+      RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
+        runAsync {
+          runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode) }.processed(promise)
+        }
       }
     }
-    return promise
   }
 
   @VisibleForTesting
