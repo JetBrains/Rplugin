@@ -10,9 +10,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.annotator.textAttribute
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RControlFlowHolder
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RParameter
 import org.jetbrains.r.psi.findVariableDefinition
 
 class RRainbowVisitor : RainbowVisitor() {
@@ -22,10 +24,19 @@ class RRainbowVisitor : RainbowVisitor() {
 
   override fun visit(element: PsiElement) {
     if (element is RIdentifierExpression) {
-      val variableDefinition = element.findVariableDefinition() ?: return
-      val firstDefinition = variableDefinition.variableDescription.firstDefinition
-      val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(firstDefinition, RControlFlowHolder::class.java) ?: return
-      addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
+      val variableDefinition = element.findVariableDefinition()
+      if (variableDefinition == null)  {
+        if (RPsiUtil.getAssignmentByAssignee(element) != null ||
+            element.parent?.let { it is RParameter && it.nameIdentifier == element } == true) {
+          val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java) ?: return
+          addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
+        }
+      }
+      else {
+        val firstDefinition = variableDefinition.variableDescription.firstDefinition
+        val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(firstDefinition, RControlFlowHolder::class.java) ?: return
+        addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
+      }
     }
   }
 }
