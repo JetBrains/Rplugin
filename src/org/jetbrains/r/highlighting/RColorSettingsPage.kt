@@ -6,21 +6,27 @@
 
 package org.jetbrains.r.highlighting
 
+import com.intellij.lang.Language
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
-import com.intellij.openapi.options.colors.ColorSettingsPage
+import com.intellij.openapi.options.colors.RainbowColorSettingsPage
+import org.jetbrains.r.RLanguage
 import org.jetbrains.r.R_LOGO_16
 import javax.swing.Icon
 
-class RColorSettingsPage : ColorSettingsPage {
+class RColorSettingsPage : RainbowColorSettingsPage {
 
   override fun getIcon(): Icon? = R_LOGO_16
+
+  override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 
   override fun getHighlighter(): SyntaxHighlighter = RHighlighter()
 
   override fun getDemoText(): String = R_DEMO
+
+  override fun getLanguage(): Language = RLanguage.INSTANCE
 
   override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = TAGS
 

@@ -276,6 +276,7 @@ You can find the source code in the following repositories:
 
         <lang.syntaxHighlighterFactory language="R"
                                        implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
+        <highlightVisitor implementation="org.jetbrains.r.highlighting.RRainbowVisitor"/>
 
         <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
 

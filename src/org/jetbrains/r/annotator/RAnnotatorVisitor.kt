@@ -90,11 +90,14 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
         else -> LOCAL_VARIABLE
       }
     }
-    return when (element.getKind()) {
-      ReferenceKind.LOCAL_VARIABLE -> LOCAL_VARIABLE
-      ReferenceKind.CLOSURE -> CLOSURE
-      ReferenceKind.PARAMETER -> PARAMETER
-      else -> null
-    }
+    return element.textAttribute
   }
 }
+
+internal val RIdentifierExpression.textAttribute: TextAttributesKey?
+  get() = when (getKind()) {
+    ReferenceKind.LOCAL_VARIABLE -> LOCAL_VARIABLE
+    ReferenceKind.CLOSURE -> CLOSURE
+    ReferenceKind.PARAMETER -> PARAMETER
+    else -> null
+  }
