@@ -36,7 +36,7 @@ class RRainbowVisitor : RainbowVisitor() {
           // global resole to the same file workaround
           if (containingFile is RFile) {
             val last = containingFile.controlFlow.instructions.last()
-            containingFile.localAnalysisResult.localVariableInfos[last]?.variables?.containsKey(element.name)?.let {
+            containingFile.localAnalysisResult.localVariableInfos[last]?.variables?.getOrDefault(element.name, null)?.let {
               addInfo(getInfo(containingFile, element, element.name, element.textAttribute))
             }
           }
