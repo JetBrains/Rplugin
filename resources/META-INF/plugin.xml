@@ -285,6 +285,7 @@ You can find the source code in the following repositories:
         <langCodeStyleSettingsProvider
                 implementation="org.jetbrains.r.editor.formatting.RLanguageCodeStyleSettingsProvider"/>
         <colorSettingsPage implementation="org.jetbrains.r.highlighting.RColorSettingsPage"/>
+        <colorSettingsPage implementation="org.jetbrains.r.highlighting.RMarkdownColorSettingsPage"/>
         <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
         <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>
         <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>

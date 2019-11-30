@@ -16,9 +16,10 @@ import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
 import org.jetbrains.r.psi.findVariableDefinition
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RRainbowVisitor : RainbowVisitor() {
-  override fun suitableForFile(file: PsiFile): Boolean = file is RFile
+  override fun suitableForFile(file: PsiFile): Boolean = file is RFile || file.virtualFile?.fileType == RMarkdownFileType
 
   override fun clone(): HighlightVisitor = RRainbowVisitor()
 

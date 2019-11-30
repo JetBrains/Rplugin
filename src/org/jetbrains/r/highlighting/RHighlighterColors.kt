@@ -40,5 +40,7 @@ val FUNCTION_DECLARATION = create("R_FUNCTION_DECLARATION", Colors.FUNCTION_DECL
 
 val BAD_CHARACTER        = create("R_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER, "Bad character")
 
+val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK", HighlighterColors.TEXT)
+
 private fun create(externalName: String, fallback: TextAttributesKey, displayName: String): TextAttributesKey =
   TextAttributesKey.createTextAttributesKey(externalName, fallback).also { descriptors.add(AttributesDescriptor(displayName, it)) }
