@@ -41,8 +41,7 @@ class RMarkdownColorSettingsPage : RainbowColorSettingsPage {
     private val R_MARKDOWN_DEMO = """
       Hello world
       
-      <chunk>
-      ```{r}
+      <chunk>```{r}
        
       ```
       </chunk>
