@@ -67,8 +67,11 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
 
   override fun visitOperatorExpression(operatorExpression: ROperatorExpression) {
     val right = operatorExpression.rightExpr ?: return
-    if (isFieldLikeComponent(right) && (!(right is RStringLiteralExpression || right is RIdentifierExpression))) {
-      holder.createErrorAnnotation(right, "R grammar doesn't allow expression of this kind here")
+    if (!isFieldLikeComponent(right)) return
+    if (right is RStringLiteralExpression || right is RIdentifierExpression) {
+      highlight(right, FIELD)
+    } else {
+      holder.createErrorAnnotation(right, "R grammar doesn't allow `${right.text}` here")
     }
   }
 

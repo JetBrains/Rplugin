@@ -11,9 +11,8 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
-import org.jetbrains.r.*
-
-import javax.swing.*
+import org.jetbrains.r.R_LOGO_16
+import javax.swing.Icon
 
 class RColorSettingsPage : ColorSettingsPage {
 
@@ -51,6 +50,10 @@ class RColorSettingsPage : ColorSettingsPage {
 
 # function call
 <info descr="R_FUNCTION_CALL">global_function</info>(2, <info descr="R_NAMED_ARGUMENT">named</info> = 'Hello World!')
+
+<info descr="R_LOCAL_VARIABLE">cat</info> = <info descr="R_FUNCTION_CALL">list</info>(<info descr="R_NAMED_ARGUMENT">name</info> = "Smudge", <info descr="R_NAMED_ARGUMENT">breed</info> = "Maine Coon")
+#variable acсess
+<info descr="R_FUNCTION_CALL">print</info>(<info descr="R_LOCAL_VARIABLE">cat</info>${'$'}<info descr="R_FIELD">breed</info>)
 
 # namespace access
 <info descr="R_FUNCTION_CALL">print</info>(<info descr="R_NAMESPACE">datasets</info>::cars[1, 2])

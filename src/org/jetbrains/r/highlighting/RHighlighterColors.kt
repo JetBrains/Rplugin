@@ -27,6 +27,7 @@ val COMMA                = create("R_COMMA", Colors.COMMA, "Braces and Operators
 val SEMICOLON            = create("R_SEMICOLON", Colors.SEMICOLON, "Braces and Operators//Semicolon")
 
 val LOCAL_VARIABLE       = create("R_LOCAL_VARIABLE", Colors.LOCAL_VARIABLE, "Variables//Local Variable")
+val FIELD                = create("R_FIELD", Colors.INSTANCE_FIELD, "Variables//Variable Access")
 val CLOSURE              = create("R_CLOSURE", Colors.CLASS_NAME, "Variables//Closure Variable")
 
 val NAMESPACE            = create("R_NAMESPACE", Colors.CLASS_NAME, "Namespace")
