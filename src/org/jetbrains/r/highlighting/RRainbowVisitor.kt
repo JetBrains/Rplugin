@@ -30,9 +30,17 @@ class RRainbowVisitor : RainbowVisitor() {
             element.parent?.let { it is RParameter && it.nameIdentifier == element } == true) {
           val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java) ?: return
           addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
+        } else {
+          val containingFile = element.containingFile
+          // global resole to the same file workaround
+          if (containingFile is RFile) {
+            val last = containingFile.controlFlow.instructions.last()
+            containingFile.localAnalysisResult.localVariableInfos[last]?.variables?.containsKey(element.name)?.let {
+              addInfo(getInfo(containingFile, element, element.name, element.textAttribute))
+            }
+          }
         }
-      }
-      else {
+      } else {
         val firstDefinition = variableDefinition.variableDescription.firstDefinition
         val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(firstDefinition, RControlFlowHolder::class.java) ?: return
         addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
