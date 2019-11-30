@@ -143,7 +143,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
       maaa = 12312
       foo <- function(mapping = 123) { mapping + 1 } 
       foo(m<caret>)
-    """.trimIndent(), "mapping", "maaa", "magrittr", "methods")
+    """.trimIndent(), "mapping", "maaa", "mad", "mahalanobis")
   }
 
   fun testCompletionForDeepPredefinedParameters() {

@@ -42,7 +42,7 @@ import javax.swing.Icon
 const val TABLE_MANIPULATION_COLUMNS_GROUPING = 110
 const val NAMED_ARGUMENT_GROUPING = 100
 const val VARIABLE_GROUPING = 90
-const val PACKAGE_GROUPING = 80
+const val PACKAGE_GROUPING = -1
 const val GLOBAL_GROUPING = 0
 const val NAMESPACE_NAME_GROUPING = -1
 
