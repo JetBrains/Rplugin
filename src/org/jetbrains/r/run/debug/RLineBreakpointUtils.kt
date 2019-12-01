@@ -8,35 +8,40 @@ package org.jetbrains.r.run.debug
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import com.intellij.psi.tree.IElementType
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.rmarkdown.OUTER_ELEMENT
+import org.jetbrains.r.psi.api.RBlockExpression
+import org.jetbrains.r.psi.api.RExpression
+import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 internal object RLineBreakpointUtils {
   fun canPutAt(project: Project, file: VirtualFile, line: Int): Boolean {
-    return (file.fileType == RFileType || file.fileType == RMarkdownFileType) && isStoppable(project, file, line)
+    return (file.fileType == RFileType || file.fileType == RMarkdownFileType) &&
+           isStoppable(project, file, line, !RSourceFileManager.isTemporary(file))
   }
 
-  private fun isStoppable(project: Project, file: VirtualFile, line: Int): Boolean {
+  private fun isStoppable(project: Project, file: VirtualFile, line: Int, allowTopLevel: Boolean = true): Boolean {
     val psiFile = PsiManager.getInstance(project).findViewProvider(file)?.getPsi(RLanguage.INSTANCE) ?: return false
+    val document = PsiDocumentManager.getInstance(project).getDocument(psiFile) ?: return false
+    val lineStart = document.getLineStartOffset(line)
     var result = false
     iterateLine(project, psiFile, line) {
-      if (isNotStoppable(it) || isNotStoppable(it.node.elementType)) return@iterateLine true
-      result = true
-      false
+      if (it is PsiWhiteSpace || it is PsiComment) return@iterateLine true
+      var element: PsiElement? = it
+      while (element != null) {
+        if (element.textRange.startOffset < lineStart || element is PsiFile) break
+        val parent = element.parent
+        if (element is RBlockExpression || element is RExpression && ((parent is RFile && allowTopLevel) || parent is RBlockExpression)) {
+          result = true
+          return@iterateLine false
+        }
+        element = parent
+      }
+      true
     }
     return result
-  }
-
-  private fun isNotStoppable(element: PsiElement): Boolean {
-    return element is PsiWhiteSpace || element is PsiComment
-  }
-
-  private fun isNotStoppable(type: IElementType): Boolean {
-    return type === RElementTypes.R_LBRACE || type === RElementTypes.R_RBRACE || type === OUTER_ELEMENT
   }
 
   private inline fun iterateLine(project: Project, file: PsiFile, line: Int, processor: (PsiElement) -> Boolean) {

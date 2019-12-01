@@ -28,15 +28,15 @@ class RInteropJsonTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testStartSession() {
-    runMessages(listOf("loaderGetVariables"))
+    runMessages(listOf("loaderGetVariables", "executeCode"))
   }
 
   fun testDebugSession() {
-    runMessages(listOf("loaderGetVariables", "updateSysFrame"))
+    runMessages(listOf("loaderGetVariables", "getSourceFileText", "getSourceFileName", "loaderGetValueInfo"))
   }
 
   fun testRmarkdown() {
-    runMessages(listOf("loaderGetVariables", "updateSysFrame"))
+    runMessages(listOf("loaderGetVariables", "executeCode"))
   }
 
   private fun runMessages(checkMethods: List<String>) {

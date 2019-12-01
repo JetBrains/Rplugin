@@ -8,6 +8,7 @@ import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.execution.console.BaseConsoleExecuteActionHandler
 import com.intellij.execution.console.LanguageConsoleView
+import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.ApplicationManager
@@ -19,6 +20,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
@@ -35,6 +37,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   private val listeners = HashSet<Listener>()
   private val consolePromptDecorator
     get() = consoleView.consolePromptDecorator
+  private var showStackTraceHandler: HyperlinkInfo? = null
 
   enum class State {
     PROMPT, DEBUG_PROMPT, READ_LN, BUSY, TERMINATED
@@ -66,44 +69,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   var chunkState: ChunkExecutionState? = null
 
   internal inner class AsyncEventsListener : RInterop.AsyncEventsListener {
-    private var debugLines = mutableListOf<String>()
-    private val stdoutCache = StringBuilder()
-
-    private fun processStdoutLine(s: String) {
-      val match = DEBUG_LINE_REGEX.matchEntire(s)
-      when {
-        match != null -> {
-          if (debugLines.isEmpty()) {
-            consoleView.print(match.groupValues[1], ConsoleViewContentType.NORMAL_OUTPUT)
-          }
-          debugLines.add(match.groupValues[2])
-        }
-        debugLines.isNotEmpty() -> debugLines[debugLines.size - 1] = debugLines.last() + s
-        else -> consoleView.print(s, ConsoleViewContentType.NORMAL_OUTPUT)
-      }
-    }
-
     override fun onText(text: String, type: ProcessOutputType) {
       when (type) {
-        ProcessOutputType.STDOUT -> {
-          for (c in text) {
-            stdoutCache.append(c)
-            if (c == '\n') {
-              processStdoutLine(stdoutCache.toString())
-              stdoutCache.clear()
-            }
-          }
-        }
+        ProcessOutputType.STDOUT -> consoleView.print(text, ConsoleViewContentType.NORMAL_OUTPUT)
         ProcessOutputType.STDERR -> consoleView.print(text, ConsoleViewContentType.ERROR_OUTPUT)
       }
     }
 
     override fun onBusy() {
-      state = State.BUSY
+      fireBusy()
     }
 
     override fun onRequestReadLn(prompt: String) {
-      if (stdoutCache.isNotEmpty()) onText("\n", ProcessOutputType.STDOUT)
       state = State.READ_LN
       if (prompt.isNotBlank()) {
         val lines = prompt.lines()
@@ -113,20 +90,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onPrompt(isDebug: Boolean) {
-      onPromptAsync(isDebug)
-    }
-
-    private fun onPromptAsync(isDebug: Boolean): Promise<Unit> {
-      val currentDebugLines = debugLines
-      debugLines = mutableListOf()
-      return consoleView.debugger.handlePrompt(isDebug, currentDebugLines).then { isPrompt ->
-        if (!isPrompt) return@then
-        if (stdoutCache.isNotEmpty()) onText("\n", ProcessOutputType.STDOUT)
-        rInterop.updateSysFrames()
-        state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
-        RLibraryWatcher.getInstance(consoleView.project).refresh()
-        fireCommandExecuted()
-      }
+      state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
+      RLibraryWatcher.getInstance(consoleView.project).refresh()
+      fireCommandExecuted()
     }
 
     override fun onTermination() {
@@ -137,11 +103,31 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
       return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
+
+    override fun onException(text: String) {
+      consoleView.print("\n" + RBundle.message("console.exception.message", text) + "\n", ConsoleViewContentType.ERROR_OUTPUT)
+      val handler = object : HyperlinkInfo {
+        override fun navigate(project: Project?) {
+          if (this != showStackTraceHandler) {
+            RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
+            return
+          }
+          consoleView.debuggerPanel?.showLastErrorStack()
+        }
+
+        override fun includeInOccurenceNavigation() = false
+      }
+      showStackTraceHandler = handler
+      consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
+      consoleView.print("\n", ConsoleViewContentType.ERROR_OUTPUT)
+    }
   }
 
   private val asyncEventsListener = AsyncEventsListener()
 
   init {
+    consolePromptDecorator.mainPrompt = ""
+    consolePromptDecorator.indentPrompt = ""
     rInterop.addAsyncEventsListener(asyncEventsListener)
     rInterop.asyncEventsStartProcessing()
   }
@@ -227,14 +213,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     listeners.forEach { it.beforeExecution() }
   }
 
+  fun fireBusy() {
+    if (state != State.BUSY) {
+      state = State.BUSY
+      listeners.forEach { it.onBusy() }
+    }
+  }
+
   interface Listener {
     fun beforeExecution() { }
     fun onCommandExecuted() { }
+    fun onBusy() { }
     fun onReset() { }
-  }
-
-  companion object {
-    private val DEBUG_LINE_REGEX = Regex("(.*)((debug( at .*)?|Called from|debugging in|exiting from): .*)", RegexOption.DOT_MATCHES_ALL)
   }
 }
 

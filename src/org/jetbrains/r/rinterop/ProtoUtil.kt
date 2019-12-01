@@ -11,7 +11,7 @@ object ProtoUtil {
       proto.hasList() -> RValueList(proto.list.length)
       proto.hasDataFrame() -> RValueDataFrame(proto.dataFrame.rows, proto.dataFrame.cols)
       proto.hasUnevaluated() -> RValueUnevaluated(proto.unevaluated.code.trimEnd())
-      proto.hasFunction() -> RValueFunction(proto.function.code.trimEnd())
+      proto.hasFunction() -> RValueFunction(proto.function.header.trimEnd())
       proto.hasEnvironment() -> RValueEnvironment(proto.environment.name)
       proto.hasGraph() -> RValueGraph
       proto.hasError() -> RValueError(proto.error.text.trimEnd())
@@ -37,6 +37,10 @@ object ProtoUtil {
 
   fun sysFrameRefProto(index: Int): Service.RRef {
     return Service.RRef.newBuilder().setSysFrameIndex(index).build()
+  }
+
+  fun errorStackSysFrameRefProto(index: Int): Service.RRef {
+    return Service.RRef.newBuilder().setErrorStackSysFrameIndex(index).build()
   }
 
   fun getVariablesRequestProto(obj: Service.RRef, start: Int, end: Int): Service.GetVariablesRequest {

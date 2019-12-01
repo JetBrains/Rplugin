@@ -18,7 +18,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       eee = new.env()
       delayedAssign("fff", 1 + 2)
     """.trimIndent())
-    val vars = rInterop.globalEnvLoader.variables
+    val vars = rInterop.globalEnvLoader.variables.filter { !it.name.startsWith('.') }
     TestCase.assertEquals(listOf("aaa", "bbb", "ccc", "ddd", "eee", "fff"), vars.map { it.name })
     TestCase.assertEquals(listOf(
       RValueSimple::class.java,
@@ -80,15 +80,16 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
 
   fun testInvalidateCaches() {
     rInterop.executeCode("a = 1")
-    TestCase.assertEquals("[1] 1", (rInterop.globalEnvLoader.variables[0].value as RValueSimple).text.trim())
+    TestCase.assertEquals("[1] 1", (rInterop.globalEnvLoader.variables.first { it.name == "a" }.value as RValueSimple).text.trim())
     rInterop.executeCode("a = 555")
     rInterop.invalidateCaches()
-    TestCase.assertEquals("[1] 555", (rInterop.globalEnvLoader.variables[0].value as RValueSimple).text.trim())
+    TestCase.assertEquals("[1] 555", (rInterop.globalEnvLoader.variables.first { it.name == "a" }.value as RValueSimple).text.trim())
   }
 
-  fun testFunctionCode() {
+  fun testFunctionHeader() {
+    val header = "function(x, y = 0, z = x + y)"
     val code = """
-      function(x, y = 0, z = x + y) {
+      $header {
         if (x > y) {
           return(z)
         }
@@ -99,14 +100,14 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       }
     """.trimIndent()
     rInterop.executeCode("ff = $code")
-    val loadedCode = (RRef.expressionRef("ff", rInterop).getValueInfo() as RValueFunction).code
-    TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(code, loadedCode))
+    val loadedHeader = (RRef.expressionRef("ff", rInterop).getValueInfo() as RValueFunction).header
+    TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(header, loadedHeader))
   }
 
-  fun testFunctionCodeShow() {
+  fun testFunctionHeaderShow() {
     TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(
-      "function (object) standardGeneric(\"show\")",
-      (RRef.expressionRef("show", rInterop).getValueInfo() as RValueFunction).code
+      "function (object)",
+      (RRef.expressionRef("show", rInterop).getValueInfo() as RValueFunction).header
     ))
   }
 }

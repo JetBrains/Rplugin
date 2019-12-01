@@ -26,7 +26,7 @@ class RRunActionsTest : RConsoleBaseTestCase() {
     TestCase.assertEquals((123 * 456).toString(), rInterop.executeCode("cat(z)").stdout)
   }
 
-  fun testDebugAction() {
+  /*fun testDebugAction() {
     loadFileWithBreakpointsFromText(name = "dd.R", text = """
       abc = 123
       abc = 456 # BREAKPOINT
@@ -48,5 +48,5 @@ class RRunActionsTest : RConsoleBaseTestCase() {
     console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertFalse(console.debugger.isEnabled)
     TestCase.assertEquals("789", rInterop.executeCode("cat(abc)").stdout)
-  }
+  }*/
 }

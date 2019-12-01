@@ -5,36 +5,27 @@
 package org.jetbrains.r.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.runInEdt
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.debugger.exception.RDebuggerException
 
 
-class DebugSelection : REditorActionBase() {
+class DebugSelection : REditorRunActionBase() {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val editor = e.editor ?: return
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
-      .onSuccess {
-        it.executeActionHandler.fireBeforeExecution()
-        try {
-          it.debugger.executeDebugSource(selection.file, selection.range)
-        } catch (e: RDebuggerException) {
-          RNotificationUtil.notifyConsoleError(project, e.message)
+      .onSuccess { console ->
+        console.executeActionHandler.fireBeforeExecution()
+        runInEdt {
+          console.appendCommandText(selection.code.trim { it <= ' ' })
+          console.rInterop.replSourceFile(selection.file, debug = true, textRange = selection.range)
         }
       }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
-  }
-
-  override fun update(e: AnActionEvent) {
-    super.update(e)
-    val project = e.project ?: return
-    val console = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
-    e.presentation.isEnabled = e.presentation.isEnabled && console.isRunningCommand != true && !console.debugger.isEnabled
-
   }
 }

@@ -13,6 +13,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.rinterop.RSourceFileManager
 
 class RFileEditorProvider : FileEditorProvider, DumbAware {
 
@@ -22,6 +23,9 @@ class RFileEditorProvider : FileEditorProvider, DumbAware {
 
   override fun createEditor(project: Project, file: VirtualFile): FileEditor {
     val editor = TextEditorProvider.getInstance().createEditor(project, file) as TextEditorImpl
+    if (RSourceFileManager.isTemporary(file)) {
+      return editor
+    }
     return RFileEditor(project, editor, file)
   }
 

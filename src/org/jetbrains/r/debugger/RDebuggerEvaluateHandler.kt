@@ -10,15 +10,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.evaluation.EvaluationMode
-import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import com.intellij.xdebugger.impl.evaluate.XDebuggerEvaluationDialog
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 
 internal object RDebuggerEvaluateHandler {
-  fun perform(debugger: RDebugger, evaluator: XDebuggerEvaluator, dataContext: DataContext) {
-    RXDebuggerEvaluationDialog(debugger, evaluator, getSelectedExpression(debugger.project, dataContext)).show()
+  fun perform(project: Project, evaluator: RXDebuggerEvaluator, dataContext: DataContext) {
+    RXDebuggerEvaluationDialog(project, evaluator, getSelectedExpression(project, dataContext)).show()
   }
 
   private fun getSelectedExpression(project: Project, dataContext: DataContext): XExpression {
@@ -30,10 +30,10 @@ internal object RDebuggerEvaluateHandler {
   }
 }
 
-private class RXDebuggerEvaluationDialog(private val debugger: RDebugger, evaluator: XDebuggerEvaluator, expression: XExpression) :
-  XDebuggerEvaluationDialog(evaluator, debugger.project, RDebuggerEditorsProvider, expression, null,
+private class RXDebuggerEvaluationDialog(project: Project, evaluator: RXDebuggerEvaluator, expression: XExpression) :
+  XDebuggerEvaluationDialog(evaluator, project, RDebuggerEditorsProvider, expression, null,
                             expression.mode == EvaluationMode.CODE_FRAGMENT) {
-  override fun evaluationDone() {
-    debugger.refreshVariableView()
+  init {
+    evaluator.registerParentDisposable(disposable)
   }
 }

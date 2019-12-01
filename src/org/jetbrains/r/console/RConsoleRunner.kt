@@ -75,7 +75,7 @@ class RConsoleRunner(private val project: Project,
         val interpreterPath = RInterpreterManager.getInterpreter(project)?.interpreterPath ?: throw IllegalStateException(
           "Interpreter must be initlialized here")
         UIUtil.invokeLaterIfNeeded {
-          consoleView = RConsoleView(rInterop, interpreterPath, project, consoleTitle)
+          consoleView = RConsoleView(rInterop, interpreterPath, consoleTitle)
           ProcessTerminatedListener.attach(rInterop.processHandler)
           rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {

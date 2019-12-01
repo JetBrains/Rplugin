@@ -21,6 +21,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.parsing.RElementTypes
@@ -156,14 +157,13 @@ internal object REditorActionUtil {
     }
   }
 
-  fun isRunningCommand(console: RConsoleView?, allowDebug: Boolean = false): Boolean {
-    if (console == null) return false
-    return (!allowDebug && console.debugger.isEnabled) || console.isRunningCommand
+  fun isRunningCommand(console: RConsoleView?): Boolean {
+    return console != null && console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT
   }
 
-  fun isRunningCommand(project: Project?, allowDebug: Boolean = false): Boolean {
+  fun isRunningCommand(project: Project?): Boolean {
     if (project == null) return false
-    return isRunningCommand(RConsoleManager.getInstance(project).currentConsoleOrNull, allowDebug)
+    return isRunningCommand(RConsoleManager.getInstance(project).currentConsoleOrNull)
   }
 
 

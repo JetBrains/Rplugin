@@ -5,38 +5,57 @@
 
 package org.jetbrains.r.run.debug
 
-import com.intellij.testFramework.HeavyPlatformTestCase
-import com.intellij.testFramework.PlatformTestCase
 import junit.framework.TestCase
+import org.jetbrains.r.RUsefulTestCase
 
-class RLineBreakpointUtilsTest : PlatformTestCase() {
+class RLineBreakpointUtilsTest : RUsefulTestCase() {
   fun testNotRFile() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.s", "print(\"ok\")"))!!
+    val file = myFixture.configureByText("script.s", "print(\"ok\")").virtualFile
     TestCase.assertFalse(RLineBreakpointUtils.canPutAt(project, file, 0))
   }
 
   fun testWhitespaces() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.r", "   "))!!
+    val file = myFixture.configureByText("script.r", "   ").virtualFile
     TestCase.assertFalse(RLineBreakpointUtils.canPutAt(project, file, 0))
   }
 
   fun testComment() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.r", "# comment"))!!
+    val file = myFixture.configureByText("script.r", "# comment").virtualFile
     TestCase.assertFalse(RLineBreakpointUtils.canPutAt(project, file, 0))
   }
 
   fun testLeftBrace() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.r", "{"))!!
-    TestCase.assertFalse(RLineBreakpointUtils.canPutAt(project, file, 0))
+    val file = myFixture.configureByText("script.r", "{").virtualFile
+    TestCase.assertTrue(RLineBreakpointUtils.canPutAt(project, file, 0))
   }
 
   fun testRightBrace() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.r", "}"))!!
+    val file = myFixture.configureByText("script.r", "}").virtualFile
     TestCase.assertFalse(RLineBreakpointUtils.canPutAt(project, file, 0))
   }
 
   fun testOk() {
-    val file = HeavyPlatformTestCase.getVirtualFile(createTempFile("script.r", "print(\"ok\")"))!!
+    val file = myFixture.configureByText("script.r", "print('ok')").virtualFile
     TestCase.assertTrue(RLineBreakpointUtils.canPutAt(project, file, 0))
+  }
+
+  fun testBlock() {
+    val file = myFixture.configureByText("script.r", """
+      f = function()
+      {
+        # abc
+        return(5)
+      }
+      
+      a <- f()
+      if (a > 5) {
+        print("YES")
+      } else
+      {
+        print("NO")
+      }
+    """.trimIndent()).virtualFile
+    TestCase.assertEquals(listOf(true, true, false, true, false, false, true, true, true, false, true, true, false),
+                          (0 until 13).map { RLineBreakpointUtils.canPutAt(project, file, it) })
   }
 }

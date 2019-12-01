@@ -35,6 +35,7 @@ import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
@@ -68,7 +69,6 @@ object RunChunkHandler {
     val result = AsyncPromise<Unit>()
     RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
       runAsync {
-        console.debugger.isVariableRefreshEnabled = false
         try {
           val document = editor.document
           val ranges = ArrayList<IntRange>()
@@ -97,7 +97,6 @@ object RunChunkHandler {
         } finally {
           result.setResult(Unit)
           console.resetHandler()
-          console.debugger.isVariableRefreshEnabled = true
         }
       }
     }
@@ -160,21 +159,13 @@ object RunChunkHandler {
       RGraphicsUtils.ScreenParameters(imageSize, resolution)
     }
     try {
-      if (console.isRunningCommand) {
+      if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
         throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
       }
-      if (console.debugger.isEnabled) {
-        throw RDebuggerException(RBundle.message("debugger.still.running"))
-      }
       var graphicsDevice: RGraphicsDevice? = null
-      if (!isDebug) {
-        if (!isBatchMode) {
-          console.debugger.isVariableRefreshEnabled = false
-        }
-        logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
-        ChunkPathManager.getImagesDirectory(inlayElement)?.let { imagesDirectory ->
-          graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
-        }
+      logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
+      ChunkPathManager.getImagesDirectory(inlayElement)?.let { imagesDirectory ->
+        graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
       }
       executeCode(console, codeElement, isDebug).onProcessed { outputs ->
         runAsync {
@@ -183,9 +174,6 @@ object RunChunkHandler {
         }
       }
     } catch (e: RDebuggerException) {
-      if (!isBatchMode && !isDebug) {
-        console.debugger.isVariableRefreshEnabled = true
-      }
       val notification = Notification(
         "RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"),
         e.message?.takeIf { it.isNotEmpty() } ?: RBundle.message("run.chunk.notification.failed"),
@@ -206,14 +194,9 @@ object RunChunkHandler {
                             inlayElement: PsiElement,
                             isBatchMode: Boolean,
                             isDebug: Boolean) {
-    if (!isDebug) {
-      logNonEmptyError(rInterop.runAfterChunk())
-    }
-    if (!isBatchMode && !isDebug) { console.debugger.isVariableRefreshEnabled = true }
+    logNonEmptyError(rInterop.runAfterChunk())
     if (outputs != null) {
-      if (!isDebug) {
-        saveOutputs(outputs, element)
-      }
+      saveOutputs(outputs, element)
     }
     else {
       val notification = Notification(
@@ -225,7 +208,7 @@ object RunChunkHandler {
     if (!isBatchMode) {
       console.resetHandler()
     }
-    if (ApplicationManager.getApplication().isUnitTestMode || isDebug) return
+    if (ApplicationManager.getApplication().isUnitTestMode) return
     InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
     cleanupOutdatedOutputs(element)
 
@@ -235,28 +218,27 @@ object RunChunkHandler {
   private fun executeCode(console: RConsoleView,
                           codeElement: PsiElement,
                           debug: Boolean = false): Promise<List<ProcessOutput>> {
-    return if (debug) {
-      console.debugger.executeChunk(codeElement.containingFile.virtualFile, codeElement.textRange)
-    } else {
-      val result = mutableListOf<ProcessOutput>()
-      val chunkState = console.executeActionHandler.chunkState
-      if (chunkState != null) {
-        val first = chunkState.pendingLineRanges.first()
-        chunkState.pendingLineRanges.remove(first)
-        chunkState.currentLineRange = first
-        chunkState.revalidateGutter()
-      }
-      val promise = AsyncPromise<List<ProcessOutput>>()
-      val executePromise = console.rInterop.executeCodeAsync(codeElement.text, isRepl = true) { s, type ->
-        result.add(ProcessOutput(s, type))
-      }.onProcessed {
-        promise.setResult(result)
-        chunkState?.currentLineRange = null
-        chunkState?.revalidateGutter()
-      }
-      codeElement.project.chunkExecutionState?.cancellableExecutionPromise?.set(executePromise)
-      promise
+    val result = mutableListOf<ProcessOutput>()
+    val chunkState = console.executeActionHandler.chunkState
+    if (chunkState != null) {
+      val first = chunkState.pendingLineRanges.first()
+      chunkState.pendingLineRanges.remove(first)
+      chunkState.currentLineRange = first
+      chunkState.revalidateGutter()
     }
+    val executePromise = console.rInterop.replSourceFile(
+      codeElement.containingFile.virtualFile, debug, codeElement.textRange
+    ) { s, type ->
+      result.add(ProcessOutput(s, type))
+    }
+    val promise = AsyncPromise<List<ProcessOutput>>()
+    executePromise.onProcessed {
+      promise.setResult(result)
+      chunkState?.currentLineRange = null
+      chunkState?.revalidateGutter()
+    }
+    codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
+    return promise
   }
 
   private fun logNonEmptyError(result: RIExecutionResult) {
@@ -292,12 +274,7 @@ object RunChunkHandler {
 
   fun interruptChunkExecution(project: Project) {
     val chunkExecutionState = project.chunkExecutionState ?: return
-    if (chunkExecutionState.isDebug) {
-      RConsoleManager.getInstance(project).currentConsoleOrNull?.debugger?.stop()
-    }
-    else {
-      chunkExecutionState.cancellableExecutionPromise.get()?.cancel()
-    }
+    chunkExecutionState.interrupt.get()?.invoke()
   }
 
   private fun escape(text: String) = text.replace("""\""", """\\""").replace("""'""", """\'""")

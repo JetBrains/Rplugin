@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.actions
 
-import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -15,9 +14,8 @@ import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.debugger.exception.RDebuggerException
 
-abstract class RRunActionBase : REditorActionBase() {
+abstract class RRunActionBase : REditorRunActionBase() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val file = e.virtualFile ?: return
@@ -37,17 +35,11 @@ abstract class RRunActionBase : REditorActionBase() {
   }
 
   abstract fun doExecute(console: RConsoleView, file: VirtualFile)
-
-  override fun update(e: AnActionEvent) {
-    super.update(e)
-    e.presentation.isEnabled = e.presentation.isEnabled && !REditorActionUtil.isRunningCommand(e.project)
-  }
 }
 
 class RRunAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-      val code = runReadAction { FileDocumentManager.getInstance().getDocument(file)?.text } ?: return
-      console.rInterop.executeCodeAsync(code, isRepl = true)
+    console.rInterop.replSourceFile(file)
   }
 
   override fun update(e: AnActionEvent) {
@@ -58,11 +50,7 @@ class RRunAction : RRunActionBase() {
 
 class RDebugAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    try {
-      console.debugger.executeDebugSource(file)
-    } catch (e: RDebuggerException) {
-      if (e.message != null) console.print(e.message + "\n", ConsoleViewContentType.ERROR_OUTPUT)
-    }
+    console.rInterop.replSourceFile(file, debug = true)
   }
 
   override fun update(e: AnActionEvent) {

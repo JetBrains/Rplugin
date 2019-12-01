@@ -406,8 +406,6 @@ You can find the source code in the following repositories:
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
 
-        <projectService serviceImplementation="org.jetbrains.r.editor.RLightVirtualFileManager"/>
-
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
         <!--- RMarkdown ui-->
@@ -547,6 +545,8 @@ You can find the source code in the following repositories:
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
 
+        <virtualFileSystem implementationClass="org.jetbrains.r.rinterop.RSourceFileManager$MyVirtualFileSystem"
+                           key="rwrapper" physical="false"/>
         <!-- Diagnostics -->
         <errorHandler implementation="org.jetbrains.r.diagnostic.RExceptionAnalyzerReporter"/>
 

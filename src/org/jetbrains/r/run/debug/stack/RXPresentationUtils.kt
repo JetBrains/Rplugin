@@ -6,6 +6,7 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
@@ -25,7 +26,7 @@ internal object RXPresentationUtils {
       is RValueSimple -> setVarPresentation(value, rVar.ref, node, executor)
       is RValueDataFrame -> setDataFramePresentation(value, rVar.name, rVar.ref, node)
       is RValueList -> setListPresentation(value, node)
-      is RValueFunction -> setFunctionPresentation(value, node)
+      is RValueFunction -> setFunctionPresentation(value, rVar.ref, node, executor)
       is RValueEnvironment -> setEnvironmentPresentation(node, rValue = value)
       is RValueGraph -> setGraphPresentation(rVar.ref, node, executor)
       is RValueError -> setErrorPresentation(value.text, node)
@@ -55,7 +56,7 @@ internal object RXPresentationUtils {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
         ref.getValueInfo()
         ref.rInterop.invalidateCaches()
-        RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.debugger?.refreshVariableView()
+        RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
         callback.evaluated("")
       }
 
@@ -63,13 +64,19 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setFunctionPresentation(rValue: RValueFunction, node: XValueNode) {
-    // TODO: Separate args in rwrapper
-    node.setPresentation(AllIcons.Nodes.Function, null, rValue.code.firstLine(), false)
+  private fun setFunctionPresentation(rValue: RValueFunction, rRef: RRef, node: XValueNode, executor: ExecutorService) {
+    node.setPresentation(AllIcons.Nodes.Function, null, rValue.header.firstLine(), false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.code.link.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) {
-        callback.evaluated(rValue.code)
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
+        rRef.functionSourcePosition()?.xSourcePosition.let {
+          ApplicationManager.getApplication().invokeLater {
+            it?.createNavigatable(rRef.rInterop.project)?.navigate(true)
+            callback.evaluated("")
+          }
+        }
       }
+
+      override fun isShowValuePopup() = false
     })
   }
 

@@ -13,9 +13,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.editor.RLightVirtualFileManager
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.api.RPsiElement
@@ -66,9 +64,14 @@ private fun createFunctionPomTarget(rVar: RVar): RPomTarget = FunctionPomTarget(
 
 internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
-    rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name, (rVar.value as RValueFunction).code)
-    return resolvedPromise()
+    return rVar.ref.rInterop.executeTask {
+      rVar.ref.functionSourcePosition()?.xSourcePosition?.let {
+        ApplicationManager.getApplication().invokeLater {
+          it.createNavigatable(rVar.project).navigate(true)
+        }
+      }
+      Unit
+    }
   }
 }
 
@@ -76,7 +79,7 @@ internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     val promise = AsyncPromise<Unit>()
     ApplicationManager.getApplication().invokeLater {
-      RConsoleManager.getInstance(rVar.project).currentConsoleOrNull?.debugger?.navigate(rVar)
+      RConsoleManager.getInstance(rVar.project).currentConsoleOrNull?.debuggerPanel?.navigate(rVar)
       promise.setResult(Unit)
     }
     return promise
@@ -95,9 +98,7 @@ internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssi
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return RConsoleManager.getInstance(assignment.project).runAsync { console ->
       val rVar = assignment.createRVar(console)
-      val rLightVirtualFileManager = RLightVirtualFileManager.getInstance(rVar.project)
-      val virtualFile = rLightVirtualFileManager.openLightFileWithContent(rVar.ref.proto.toString(), rVar.name,
-                                                                          (rVar.value as RValueFunction).code)
+      val virtualFile = rVar.ref.functionSourcePosition()?.file ?: return@runAsync
       val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
       if (psiFile !is RFile) return@runAsync
       val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runAsync

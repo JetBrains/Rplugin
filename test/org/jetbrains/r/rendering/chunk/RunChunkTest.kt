@@ -15,6 +15,8 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleBaseTestCase
+import org.jetbrains.r.debugger.RDebuggerUtil
+import org.jetbrains.r.rinterop.RDebuggerTestHelper
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
@@ -130,6 +132,9 @@ class RunChunkTest : RConsoleBaseTestCase() {
   }
 
   fun testDebugChunk() {
+    val helper = RDebuggerTestHelper(rInterop)
+    RDebuggerUtil.createBreakpointListener(rInterop)
+
     val text = """
       Text
       Text
@@ -146,23 +151,20 @@ class RunChunkTest : RConsoleBaseTestCase() {
       it.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
     }.apply { PsiTreeUtil.processElements(myFixture.file, this) }.foundElement
     TestCase.assertNotNull(fenceLang)
-    val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, true)
 
-    val debugger = console.debugger
-    val time = System.currentTimeMillis()
-    while (!debugger.actionsEnabled) {
-      TestCase.assertTrue(System.currentTimeMillis() - time < 3000)
-      PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-      Thread.sleep(5)
+    val promise = helper.invokeAndWait(true) {
+      RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, true)
     }
-    TestCase.assertEquals(5, debugger.stack[0].sourcePosition?.line)
-    TestCase.assertEquals("10", rInterop.executeCode("cat(x)", true).stdout)
-    debugger.stepOver().myBlockingGet(2000)
-    TestCase.assertEquals(6, debugger.stack[0].sourcePosition?.line)
-    TestCase.assertEquals("20", rInterop.executeCode("cat(x)", true).stdout)
-    debugger.stepOver().myBlockingGet(2000)
-    TestCase.assertFalse(debugger.isEnabled)
-    promise.myBlockingGet(2000)
+    TestCase.assertTrue(rInterop.isDebug)
+    TestCase.assertEquals(listOf(5), rInterop.debugStack.map { it.position?.line })
+    TestCase.assertEquals("10", rInterop.executeCode("cat(x)").stdout)
+
+    helper.invokeAndWait(true) { rInterop.debugCommandStepOver() }
+    TestCase.assertEquals(listOf(6), rInterop.debugStack.map { it.position?.line })
+    TestCase.assertEquals("20", rInterop.executeCode("cat(x)").stdout)
+
+    helper.invokeAndWait(false) { rInterop.debugCommandStepOver() }
+    promise.myBlockingGet(DEFAULT_TIMEOUT)
   }
 
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {

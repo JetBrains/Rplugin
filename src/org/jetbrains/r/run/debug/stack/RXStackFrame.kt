@@ -6,6 +6,7 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
@@ -23,11 +24,13 @@ import java.util.concurrent.ExecutorService
 
 class RXStackFrame(val functionName: String,
                    private val position: XSourcePosition?,
-                   private val loader: RVariableLoader,
+                   val loader: RVariableLoader,
                    private val executor: ExecutorService,
-                   private val grayAttributes: Boolean,
-                   private val equalityObject: Any? = null) : XStackFrame() {
-  private val evaluator = RXDebuggerEvaluator(loader, executor)
+                   val grayAttributes: Boolean,
+                   private val showHiddenVariables: Boolean = false,
+                   private val equalityObject: Any? = null) : XStackFrame(), Disposable {
+  private val evaluator = RXDebuggerEvaluator(loader.obj, executor, this)
+  val environment get() = loader.obj
 
   override fun getEqualityObject() = equalityObject
 
@@ -50,7 +53,7 @@ class RXStackFrame(val functionName: String,
       try {
         val result = XValueChildrenList()
         addEnvironmentsGroup(result)
-        addEnvironmentContents(result, loader.variables, executor, true)
+        addEnvironmentContents(result, loader.variables, executor, true, showHiddenVariables)
         node.addChildren(result, true)
       } catch (e: RDebuggerException) {
         node.setErrorMessage(e.message.orEmpty())
@@ -65,7 +68,7 @@ class RXStackFrame(val functionName: String,
           try {
             val children = XValueChildrenList()
             for (env in loader.parentEnvironments) {
-              val environment = RXEnvironment(env.name, env.ref.createVariableLoader(), executor)
+              val environment = RXEnvironment(env.name, env.ref.createVariableLoader(), executor, showHiddenVariables)
               children.add(environment)
             }
             node.addChildren(children, true)
@@ -77,9 +80,13 @@ class RXStackFrame(val functionName: String,
     }
     result.addTopGroup(environments)
   }
+
+  override fun dispose() {
+  }
 }
 
-private class RXEnvironment internal constructor(name: String, private val loader: RVariableLoader, private val executor: ExecutorService)
+private class RXEnvironment internal constructor(name: String, private val loader: RVariableLoader, private val executor: ExecutorService,
+                                                 private val showHiddenVariables: Boolean)
   : XNamedValue(name.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")) {
 
   override fun computePresentation(node: XValueNode, place: XValuePlace) {
@@ -90,7 +97,7 @@ private class RXEnvironment internal constructor(name: String, private val loade
     executor.execute {
       try {
         val result = XValueChildrenList()
-        addEnvironmentContents(result, loader.variables, executor)
+        addEnvironmentContents(result, loader.variables, executor, showHiddenVariables = showHiddenVariables)
         node.addChildren(result, true)
       } catch (e: RDebuggerException) {
         node.setErrorMessage(e.message.orEmpty())
@@ -104,20 +111,21 @@ private class RXEnvironment internal constructor(name: String, private val loade
 }
 
 internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, executor: ExecutorService,
-                                    hideFunctions: Boolean = false) {
+                                    hideFunctions: Boolean = false, showHiddenVariables: Boolean = false) {
+  val filteredVars = if (showHiddenVariables) vars else vars.filter { !it.name.startsWith('.') }
   if (hideFunctions) {
-    val functions = vars.filter { it.value is RValueFunction }
+    val functions = filteredVars.filter { it.value is RValueFunction }
     if (functions.isNotEmpty()) {
       result.addTopGroup(object : XValueGroup(RBundle.message("variable.view.functions")) {
         override fun computeChildren(node: XCompositeNode) {
           val children = XValueChildrenList()
-          functions.forEach { children.add(RXVar(it, executor)) }
+          functions.forEach { children.add(RXVar(it, executor, showHiddenVariables)) }
           node.addChildren(children, true)
         }
       })
     }
-    vars.filter { it.value !is RValueFunction }.forEach { result.add(RXVar(it, executor)) }
+    filteredVars.filter { it.value !is RValueFunction }.forEach { result.add(RXVar(it, executor, showHiddenVariables)) }
   } else {
-    vars.forEach { result.add(RXVar(it, executor)) }
+    filteredVars.forEach { result.add(RXVar(it, executor, showHiddenVariables)) }
   }
 }

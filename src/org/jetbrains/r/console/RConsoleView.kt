@@ -18,6 +18,9 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.command.impl.UndoManagerImpl
+import com.intellij.openapi.command.undo.DocumentReferenceManager
+import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
@@ -32,9 +35,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
@@ -43,8 +49,7 @@ import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.annotator.RAnnotatorVisitor
-import org.jetbrains.r.debugger.RDebugger
-import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
@@ -52,28 +57,25 @@ import java.awt.BorderLayout
 import java.awt.Font
 import javax.swing.JComponent
 
-class RConsoleView(val rInterop: RInterop,
-                   val interpreterPath: String,
-                   project: Project,
-                   title: String) : LanguageConsoleImpl(project, title, RLanguage.INSTANCE) {
+class RConsoleView(val rInterop: RInterop, val interpreterPath: String,
+                   title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+  val executeActionHandler = RConsoleExecuteActionHandler(this)
   val consoleRuntimeInfo = RConsoleRuntimeInfoImpl(rInterop)
   val isRunningCommand: Boolean
     get() = executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT &&
             executeActionHandler.state != RConsoleExecuteActionHandler.State.DEBUG_PROMPT
 
-  internal val debugger = RDebugger(this).also { Disposer.register(this, it) }
-  val executeActionHandler = RConsoleExecuteActionHandler(this)
-
   private val onSelectListeners = mutableListOf<() -> Unit>()
+  var debuggerPanel: RDebuggerPanel? = null
+    private set
 
   private val postFlushActions = ArrayList<() -> Unit>()
 
   init {
-    consolePromptDecorator.mainPrompt = ""
-    consolePromptDecorator.indentPrompt = ""
     Disposer.register(this, rInterop)
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
+    RDebuggerUtil.createBreakpointListener(rInterop, this)
     executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
       var previousWidth = 0
 
@@ -92,6 +94,11 @@ class RConsoleView(val rInterop: RInterop,
         }
       }
     })
+    executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
+      override fun onCommandExecuted() {
+        workingDirectory = FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(rInterop.workingDir))
+      }
+    })
   }
 
   var workingDirectory: String = ""
@@ -106,6 +113,17 @@ class RConsoleView(val rInterop: RInterop,
         }
       }
     }
+
+  fun appendCommandText(text: String) {
+    AppUIUtil.invokeOnEdt {
+      runWriteAction {
+        consoleEditor.document.setText(text)
+      }
+      prepareExecuteAction(true, false, true)
+      (UndoManager.getInstance(project) as UndoManagerImpl).invalidateActionsFor(
+        DocumentReferenceManager.getInstance().create(currentEditor.document))
+    }
+  }
 
   fun executeText(text: String) {
     invokeLater {
@@ -122,7 +140,11 @@ class RConsoleView(val rInterop: RInterop,
 
   fun createDebuggerPanel() {
     if (ApplicationManager.getApplication().isUnitTestMode) return
-    splitWindow(debugger.createDebugWindow())
+    debuggerPanel = RDebuggerPanel(this).also {
+      Disposer.register(this, it)
+      executeActionHandler.addListener(it)
+      splitWindow(it)
+    }
   }
 
   fun resetHandler() {
@@ -312,7 +334,7 @@ class RConsoleView(val rInterop: RInterop,
       val path = getVirtualFile(project)?.parent?.path ?: return
       runAsync {
         console.rInterop.setWorkingDir(path)
-        console.debugger.refreshVariableView()
+        console.executeActionHandler.fireCommandExecuted()
       }
     }
 

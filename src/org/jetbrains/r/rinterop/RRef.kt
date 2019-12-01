@@ -6,6 +6,9 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
+import org.jetbrains.concurrency.CancellablePromise
+import org.jetbrains.r.debugger.RSourcePosition
+import org.jetbrains.r.debugger.exception.RDebuggerException
 
 open class RRef internal constructor(internal val proto: Service.RRef, internal val rInterop: RInterop) {
   fun createVariableLoader(): RVariableLoader {
@@ -20,8 +23,13 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return RRef(ProtoUtil.listElementRefProto(proto, index), rInterop)
   }
 
-  fun copyToPersistentRef(disposableParent: Disposable? = null): RPersistentRef {
-    return RPersistentRef(rInterop.execute(rInterop.stub::copyToPersistentRef, proto).value, rInterop, disposableParent)
+  fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
+    return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto).then(rInterop.executor) {
+      if (it.responseCase == Service.CopyToPersistentRefResponse.ResponseCase.PERSISTENTINDEX) {
+        return@then RPersistentRef(it.persistentIndex, rInterop, disposableParent)
+      }
+      throw RDebuggerException(it.error)
+    }
   }
 
   fun getValueInfo(): RValue {
@@ -44,11 +52,20 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::loadObjectNames, proto).listList
   }
 
+  fun functionSourcePosition(): RSourcePosition? {
+    return rInterop.sourceFileManager.getFunctionPosition(this)
+  }
+
+  fun getEqualityObject(): Long {
+    return rInterop.executeWithCheckCancel(rInterop.asyncStub::getEqualityObject, proto).value
+  }
+
   companion object {
     fun expressionRef(code: String, env: RRef) = RRef(ProtoUtil.expressionRefProto(code, env.proto), env.rInterop)
     fun expressionRef(code: String, rInterop: RInterop) = expressionRef(code, rInterop.currentEnvRef)
 
-    fun sysFrameRef(index: Int, rInterop: RInterop) = RRef(ProtoUtil.sysFrameRefProto(index), rInterop)
+    internal fun sysFrameRef(index: Int, rInterop: RInterop) = RRef(ProtoUtil.sysFrameRefProto(index), rInterop)
+    internal fun errorStackSysFrameRef(index: Int, rInterop: RInterop) = RRef(ProtoUtil.errorStackSysFrameRefProto(index), rInterop)
   }
 }
 

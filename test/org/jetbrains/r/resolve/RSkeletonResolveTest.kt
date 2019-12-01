@@ -13,7 +13,6 @@ import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.rinterop.RValue
 import org.jetbrains.r.rinterop.RValueDataFrame
-import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
 class RSkeletonResolveTest : RConsoleBaseTestCase() {
@@ -22,11 +21,11 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     addLibraries()
   }
 
-  fun testResolveDplyrFilter() {
-    val rValue = runTest("dplyr::fil<caret>ter()")
-    UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
-    TestCase.assertTrue((rValue as RValueFunction).code.contains("UseMethod(\"filter\")"))
-  }
+  //fun testResolveDplyrFilter() {
+    //val rValue = runTest("dplyr::fil<caret>ter()")
+    //UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
+    //TestCase.assertTrue((rValue as RValueFunction).code.contains("UseMethod(\"filter\")"))
+  //}
 
   fun testResolveDataset() {
     val rValue = runTest("iri<caret>s")
@@ -34,7 +33,8 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(5, (rValue as RValueDataFrame).cols)
   }
 
-  fun testResolveDplyrInternal() {
+  // TODO: Rewrite test using new mechanisms for getting function code
+  /*fun testResolveDplyrInternal() {
     val resolveResult = resolve("dplyr::any_<caret>exprs")
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
     val assignment = resolveResult as RSkeletonAssignmentStatement
@@ -42,7 +42,7 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     val rValue = assignment.createRVar(console).value
     UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
     TestCase.assertTrue((rValue as RValueFunction).code.contains("quote(`||`)"))
-  }
+  }*/
 
   fun testResolveFilter() {
     val filterStats = resolve("fil<caret>ter()")

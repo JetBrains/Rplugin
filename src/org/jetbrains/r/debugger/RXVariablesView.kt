@@ -10,7 +10,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.ui.*
@@ -34,22 +34,21 @@ import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import java.awt.BorderLayout
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
-import java.awt.event.MouseEvent
+import java.awt.event.*
 import javax.swing.SwingUtilities
 import javax.swing.event.TreeSelectionListener
 
 
-internal class RXVariablesView(project: Project, val console: RConsoleView)
-  : XVariablesViewBase(project, RDebuggerEditorsProvider, null), XWatchesView, DataProvider {
+class RXVariablesView(private val console: RConsoleView, private val debuggerPanel: RDebuggerPanel)
+  : XVariablesViewBase(console.rInterop.project, RDebuggerEditorsProvider, null), XWatchesView, DataProvider {
   var stackFrame: RXStackFrame? = null
     set(frame) {
       field = frame
-      AppUIUtil.invokeLaterIfProjectAlive(getTree().getProject()) {
+      AppUIUtil.invokeLaterIfProjectAlive(console.project) {
         if (frame == null) {
           clear()
         } else {
@@ -59,11 +58,19 @@ internal class RXVariablesView(project: Project, val console: RConsoleView)
     }
 
   private var rootNode: WatchesRootNode? = null
+  var showHiddenVariables = false
+    private set(value) {
+      if (field != value) {
+        field = value
+        debuggerPanel.refreshStackFrames()
+      }
+    }
 
   init {
     DataManager.registerDataProvider(panel, this)
     installActions()
     installEditListeners()
+    installShowListener()
     installToolbar()
   }
 
@@ -189,6 +196,18 @@ internal class RXVariablesView(project: Project, val console: RConsoleView)
     })
   }
 
+  private fun installShowListener() {
+    panel.addComponentListener(object : ComponentListener {
+      override fun componentMoved(p0: ComponentEvent?) { }
+      override fun componentResized(p0: ComponentEvent?) { }
+      override fun componentHidden(p0: ComponentEvent?) { }
+
+      override fun componentShown(p0: ComponentEvent?) {
+        rootNode?.computeWatches()
+      }
+    })
+  }
+
   private fun installToolbar() {
     val actions = DefaultActionGroup(
       ActionManager.getInstance().getAction("XDebugger.NewWatch"),
@@ -208,15 +227,24 @@ internal class RXVariablesView(project: Project, val console: RConsoleView)
       ActionManager.getInstance().getAction("XDebugger.CopyWatch")
     )
     actions.addSeparator()
-    actions.addAction(object : AnAction("Clear global environment", null, AllIcons.Actions.GC) {
-      override fun actionPerformed(e: AnActionEvent) = console.rInterop.executeTask {
-        console.rInterop.clearEnvironment(console.rInterop.globalEnvRef)
-        console.executeActionHandler.fireCommandExecuted()
-        console.debugger.refreshVariableView()
+    actions.addAction(object : AnAction(RBundle.message("variable.view.clear.global.action.text"), null, AllIcons.Actions.GC) {
+      override fun actionPerformed(e: AnActionEvent) {
+        console.rInterop.executeTask {
+          console.rInterop.clearEnvironment(console.rInterop.globalEnvRef)
+          console.executeActionHandler.fireCommandExecuted()
+        }
       }
 
       override fun update(e: AnActionEvent) {
         e.presentation.isEnabled = !console.isRunningCommand
+      }
+    })
+    actions.addAction(object : DumbAwareToggleAction(RBundle.message("variable.view.show.hidden.variables.action.text"), null,
+                                                     AllIcons.Actions.ShowHiddens) {
+      override fun isSelected(e: AnActionEvent) = showHiddenVariables
+
+      override fun setSelected(e: AnActionEvent, state: Boolean) {
+        showHiddenVariables = state
       }
     })
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
