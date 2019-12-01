@@ -26,6 +26,10 @@ class REmptyProjectGenerator : RProjectGenerator() {
     return RBundle.message("project.generator.empty.description")
   }
 
+  override fun getId(): String {
+    return "R_PROJECT"
+  }
+
   override fun generateProject(project: Project, baseDir: VirtualFile, rProjectSettings: RProjectSettings, module: Module) {
     super.generateProject(project, baseDir, rProjectSettings, module)
     StartupManager.getInstance(project).runWhenProjectIsInitialized {

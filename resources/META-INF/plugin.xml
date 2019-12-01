@@ -506,6 +506,8 @@ You can find the source code in the following repositories:
         <editorHighlighterProvider filetype="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownEditorHighlighterProvider"/>
 
         <!-- Project generators -->
+        <moduleType id="R_MODULE" implementationClass="org.jetbrains.r.projectGenerator.builder.RModuleType"/>
+        <projectTemplatesFactory implementation="org.jetbrains.r.projectGenerator.template.RTemplatesFactory" />
         <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
         <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
 

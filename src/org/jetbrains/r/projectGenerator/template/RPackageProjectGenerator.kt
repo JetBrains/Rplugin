@@ -23,6 +23,10 @@ class RPackageProjectGenerator : RProjectGenerator() {
     return RBundle.message("project.generator.package.description")
   }
 
+  override fun getId():String  {
+    return "R_PACKAGE"
+  }
+
   override val requiredPackageList = true
   private var settingsPanel: RPackageManagerGroupPanel? = null
 
@@ -41,7 +45,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
     settingsPanel!!.generateProject(project, baseDir, module)
   }
 
-  override fun validateSettings(): List<ValidationInfo> {
+  override fun validateGeneratorSettings(): List<ValidationInfo> {
     return settingsPanel?.validateSettings() ?: emptyList()
   }
 

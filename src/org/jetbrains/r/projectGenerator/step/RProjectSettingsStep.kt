@@ -4,14 +4,21 @@
 
 package org.jetbrains.r.projectGenerator.step
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo.isWindows
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.wm.impl.welcomeScreen.FlatWelcomeFrame
 import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.ui.HideableDecorator
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
@@ -26,14 +33,44 @@ import java.awt.BorderLayout
 import java.io.File
 import java.util.function.Consumer
 import javax.swing.JPanel
+import javax.swing.ScrollPaneConstants
 
 class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
                            projectGenerator: DirectoryProjectGenerator<RProjectSettings>,
-                           callback: AbstractNewProjectStep.AbstractCallback<RProjectSettings>)
+                           callback: AbstractNewProjectStep.AbstractCallback<RProjectSettings>,
+                           private val moduleStepButtonUpdater: ((Boolean) -> Unit)? = null)
   : ProjectSettingsStepBase<RProjectSettings>(projectGenerator, callback) {
 
   private lateinit var interpreterPanel: RChooseInterpreterGroupPanel
   private val rProjectGenerator = myProjectGenerator as RProjectGenerator
+  private val isModuleBuilderStep = moduleStepButtonUpdater != null
+
+  override fun createPanel(): JPanel {
+    myLazyGeneratorPeer = createLazyPeer()
+    val mainPanel = JPanel(BorderLayout())
+
+    val label = createErrorLabel()
+    val scrollPanel = createAndFillContentPanel()
+    initGeneratorListeners()
+    val scrollPane = JBScrollPane(scrollPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)
+    scrollPane.border = null
+    mainPanel.add(scrollPane, BorderLayout.CENTER)
+
+    val bottomPanel = JPanel(BorderLayout())
+    bottomPanel.name = FlatWelcomeFrame.BOTTOM_PANEL
+
+    bottomPanel.add(label, BorderLayout.NORTH)
+    if (!isModuleBuilderStep) {
+      val button = createActionButton()
+      button.addActionListener(createCloseActionListener())
+      Disposer.register(this, Disposable { UIUtil.dispose(button) })
+      registerValidators()
+      bottomPanel.add(button, BorderLayout.EAST)
+    }
+    mainPanel.add(bottomPanel, BorderLayout.SOUTH)
+    return mainPanel
+  }
 
   override fun onPanelSelected() {
     setErrorText(null)
@@ -74,28 +111,39 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
       if (!isRScriptExists()) {
         checkForError(listOf(ValidationInfo(MISSING_RSCRIPT))) {
           rProjectSettings.installedPackages = emptySet()
-          rProjectGenerator.validateSettings()
+          rProjectGenerator.validateGeneratorSettings()
           return false
         }
       }
       rProjectSettings.installedPackages = findAllInstallPackages(rProjectSettings.rScriptPath)
       rProjectSettings.isInstalledPackagesSetUpToDate = true
     }
-    checkForError(rProjectGenerator.validateSettings()) { return false }
+    checkForError(rProjectGenerator.validateGeneratorSettings()) { return false }
     setErrorText(null)
     return true
   }
 
-  override fun createBasePanel(): JPanel {
+  override fun setErrorText(text: String?) {
+    myErrorLabel.text = text
+    myErrorLabel.foreground = MessageType.ERROR.titleForeground
+    myErrorLabel.icon = if (StringUtil.isEmpty(text)) null else AllIcons.Actions.Lightning
+
+    val isEnabled = text == null
+    // one of them is null
+    myCreateButton?.isEnabled = isEnabled
+    moduleStepButtonUpdater?.invoke(isEnabled)
+  }
+
+  public override fun createBasePanel(): JPanel {
     val layout = BorderLayout()
 
-    val locationPanel = JPanel(layout)
-
     val panel = JPanel(VerticalFlowLayout(0, 2))
-    val location = createLocationComponent()
-
-    locationPanel.add(location, BorderLayout.CENTER)
-    panel.add(locationPanel)
+    if (!isModuleBuilderStep) {
+      val location = createLocationComponent()
+      val locationPanel = JPanel(layout)
+      locationPanel.add(location, BorderLayout.CENTER)
+      panel.add(locationPanel)
+    }
     panel.add(createInterpretersPanel())
 
     interpreterPanel.runListeners()
@@ -108,7 +156,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
 
     val jPanel = JPanel(VerticalFlowLayout())
     val decorator = HideableDecorator(jPanel, RBundle.message("project.settings.more.settings"), false)
-    val result = interpreterPanel.interpreterPath?.let { rProjectGenerator.validateSettings() }
+    val result = interpreterPanel.interpreterPath?.let { rProjectGenerator.validateGeneratorSettings() }
     decorator.setOn(result == null || result.isNotEmpty())
     decorator.setContentComponent(advancedSettings)
     return jPanel
