@@ -163,6 +163,48 @@ function(x){
     """.trimIndent(), RMarkdownFileType)
   }
 
+  fun testUnresolvedNamedAccess() {
+    doTest("", """
+        xxx <- 232312
+        foo${'$'}xx<caret>x
+    """.trimIndent())
+  }
+
+  fun testNamespaceAccessFirst() {
+    doTest("", """
+       xxx <- 232312
+       x<caret>xx::foo      
+    """.trimIndent())
+  }
+
+  fun testNamespaceAccessSecond() {
+    doTest("", """
+       xxx <- 232312
+       foo::xx<caret>x      
+    """.trimIndent())
+  }
+
+  fun testIndexAccess() {
+    doTest("", """
+      xxx <- 321321
+      yyy[[, x<caret>xx == 42 ]]
+    """.trimIndent())
+  }
+
+  fun testCallInsideSubscription() {
+    doTest("xxx <- function() 42", """
+          xxx <- function() 42
+          yyy[[, x<caret>xx() == zzz ]]
+    """.trimIndent())
+  }
+
+  fun testMemberAccessInsideSubscription() {
+    doTest("xxx <- list(foo = 42, bar = 43)", """
+      xxx <- list(foo = 42, bar = 43)
+      yyy[[, x<caret>xx${'$'}foo == zzz ]]
+    """.trimIndent())
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     val results = resolve()

@@ -37,6 +37,7 @@ fun RIdentifierExpression.getKind(): ReferenceKind {
 }
 
 fun RIdentifierExpression.findVariableDefinition(): VariableDefinition? {
+  if (isDependantIdentifier) return null
   val controlFlowHolder = PsiTreeUtil.getParentOfType(this, RControlFlowHolder::class.java) ?: return null
   val localVariableInfo = controlFlowHolder.getLocalVariableInfo(this)
   return localVariableInfo?.variables?.get(name)

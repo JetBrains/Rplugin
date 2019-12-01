@@ -27,6 +27,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
       return resolveNamedArgument(it, incompleteCode)
     }
+    if (element.isDependantIdentifier) return emptyArray()
 
     if (element.getKind() == ReferenceKind.LOCAL_VARIABLE ||
         element.getKind() == ReferenceKind.PARAMETER ||

@@ -16,6 +16,7 @@ import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
 import org.jetbrains.r.psi.findVariableDefinition
+import org.jetbrains.r.psi.isDependantIdentifier
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RRainbowVisitor : RainbowVisitor() {
@@ -32,6 +33,7 @@ class RRainbowVisitor : RainbowVisitor() {
           val definitionControlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java) ?: return
           addInfo(getInfo(definitionControlFlowHolder, element, element.name, element.textAttribute))
         } else {
+          if (element.isDependantIdentifier) return
           val containingFile = element.containingFile
           // global resole to the same file workaround
           if (containingFile is RFile) {

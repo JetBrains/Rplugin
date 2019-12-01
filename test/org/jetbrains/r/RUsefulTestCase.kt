@@ -106,7 +106,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   protected fun resolve(): Array<ResolveResult> {
-    val reference = myFixture.file.findReferenceAt(myFixture.caretOffset)
+    val reference = myFixture.file.findReferenceAt(myFixture.caretOffset) ?: return emptyArray()
     val rReferenceBase = reference as RReferenceBase<*>
     return rReferenceBase.multiResolve(false)
   }

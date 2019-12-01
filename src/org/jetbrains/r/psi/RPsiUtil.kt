@@ -117,6 +117,30 @@ object RPsiUtil {
   }
 }
 
+val RIdentifierExpression.isInsideSubscription: Boolean
+  get() {
+    var current: PsiElement = this
+    var parent = current.parent
+    if (parent is RCallExpression && parent.expression == current) return false
+    while (parent != null) {
+      if (parent is RSubscriptionExpression && current is RExpression && parent.expressionList.indexOf(current) > 0) return true
+      if (parent is RFile || parent is RFunctionExpression || parent is RBlockExpression) return false
+      current = parent
+      parent = parent.parent
+    }
+    return false
+  }
+
+val RIdentifierExpression.isDependantIdentifier: Boolean
+  get() = parent.let { parent ->
+    !(parent is RMemberExpression && parent.expressionList.firstOrNull() == this) &&
+    (parent is RNamespaceAccessExpression ||
+     (parent is RNamedArgument && parent.nameIdentifier == this) ||
+     (parent is RMemberExpression && parent.expressionList.first() != this) ||
+     RPsiUtil.getNamedArgumentByNameIdentifier(this) != null ||
+     isInsideSubscription)
+  }
+
 fun RIdentifierExpression.isNamespaceAccess() : Boolean {
   return parent?.let { it is RNamespaceAccessExpression && it.identifier == this } == true
 }
