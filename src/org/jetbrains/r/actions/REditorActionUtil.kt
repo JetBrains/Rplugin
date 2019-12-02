@@ -4,6 +4,13 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.TransactionGuard
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -145,5 +152,18 @@ internal object REditorActionUtil {
   fun isRunningCommand(project: Project?, allowDebug: Boolean = false): Boolean {
     if (project == null) return false
     return isRunningCommand(RConsoleManager.getInstance(project).currentConsoleOrNull, allowDebug)
+  }
+
+
+  fun executeActionById(actionId: String, project: Project) {
+    val action = ActionManager.getInstance().getAction(actionId) ?: throw IllegalStateException("No action ")
+    invokeLater {
+      DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
+        TransactionGuard.submitTransaction(project, Runnable {
+          val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
+          ActionUtil.performActionDumbAwareWithCallbacks(action, event, dataContext)
+        })
+      }
+    }
   }
 }

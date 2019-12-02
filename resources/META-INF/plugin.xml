@@ -332,6 +332,10 @@ You can find the source code in the following repositories:
         <extendWordSelectionHandler implementation="org.jetbrains.r.editor.RExtendWordSelectionHandler"/>
         <basicWordSelectionFilter implementation="org.jetbrains.r.editor.RExtendWordSelectionHandler$RBasicFilter"/>
 
+        <breadcrumbsInfoProvider implementation="org.jetbrains.r.breadcrumbs.RBreadcrumbsProvider"/>
+
+        <fileBreadcrumbsCollector implementation="org.jetbrains.r.breadcrumbs.RFileBreadcrumbsCollector" order="first"/>
+
         <controlFlowProvider implementation="org.jetbrains.r.psi.cfg.RControlFlowProvider"/>
 
         <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
