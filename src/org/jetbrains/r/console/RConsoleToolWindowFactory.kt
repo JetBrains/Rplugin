@@ -40,7 +40,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
   }
 
   companion object {
-    private const val ID = "R Console"
+    internal const val ID = "R Console"
 
     fun show(project: Project) {
       getRConsoleToolWindows(project)?.show(null)
