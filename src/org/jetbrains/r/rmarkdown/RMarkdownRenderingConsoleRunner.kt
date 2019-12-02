@@ -13,6 +13,7 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessOutputTypes.STDOUT
 import com.intellij.execution.runners.ConsoleTitleGen
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -38,42 +39,18 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   private val knitOutputListener = KnitrOutputListener()
   private var currentRenderFilePath: String = ""
   private var isInterrupted = false
+  @Volatile
+  private lateinit var processHandler: OSProcessHandler
+  @Volatile
+  private lateinit var consoleView: ConsoleViewImpl
 
   fun getResultPath() = knitOutputListener.getResultFileName()
 
-  private fun createConsoleView(processHandler: OSProcessHandler): ConsoleViewImpl {
-    val consoleView = ConsoleViewImpl(project, false)
-    val rMarkdownConsolePanel = JPanel(BorderLayout())
-    rMarkdownConsolePanel.add(consoleView.component, BorderLayout.CENTER)
-    title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
-    val contentDescriptor = RunContentDescriptor(consoleView, processHandler, rMarkdownConsolePanel, title)
-    contentDescriptor.setFocusComputable { consoleView.preferredFocusableComponent }
-    contentDescriptor.isAutoFocusContent = true
-    val contentManager = ExecutionManager.getInstance(project).contentManager
-    val executor = DefaultRunExecutor.getRunExecutorInstance()
-    contentManager.allDescriptors.filter { it.displayName == title }.forEach { contentManager.removeRunContent(executor, it) }
-    contentManager.showRunContent(executor, contentDescriptor)
-    return consoleView
-  }
-
-  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, onFinished: (() -> Unit)?) {
-    knitOutputListener.onKnitrEnds = onFinished
-    currentRenderFilePath = path
-    val commandLine = GeneralCommandLine(commands)
-    commandLine.setWorkDirectory(renderDirectory)
-    val processHandler = OSProcessHandler(commandLine)
-    processHandler.addProcessListener(knitOutputListener)
-    runInEdt {
-      val consoleView = createConsoleView(processHandler)
-      consoleView.attachToProcess(processHandler)
-      consoleView.scrollToEnd()
-      processHandler.startNotify()
-    }
-  }
 
   fun interruptRendering(){
     isInterrupted = true
-   // processHandler.process.destroy()
+    consoleView.print("\nInterrupted\n", ConsoleViewContentType.ERROR_OUTPUT)
+    processHandler.process.destroy()
   }
 
   fun render(project: Project, file: VirtualFile, onFinished: (() -> Unit)? = null) {
@@ -100,6 +77,36 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     }
     else {
       doRender(project, file, onFinished)
+    }
+  }
+
+  private fun createConsoleView(processHandler: OSProcessHandler): ConsoleViewImpl {
+    consoleView = ConsoleViewImpl(project, false)
+    val rMarkdownConsolePanel = JPanel(BorderLayout())
+    rMarkdownConsolePanel.add(consoleView.component, BorderLayout.CENTER)
+    title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
+    val contentDescriptor = RunContentDescriptor(consoleView, processHandler, rMarkdownConsolePanel, title)
+    contentDescriptor.setFocusComputable { consoleView.preferredFocusableComponent }
+    contentDescriptor.isAutoFocusContent = true
+    val contentManager = ExecutionManager.getInstance(project).contentManager
+    val executor = DefaultRunExecutor.getRunExecutorInstance()
+    contentManager.allDescriptors.filter { it.displayName == title }.forEach { contentManager.removeRunContent(executor, it) }
+    contentManager.showRunContent(executor, contentDescriptor)
+    return consoleView
+  }
+
+  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, onFinished: (() -> Unit)?) {
+    knitOutputListener.onKnitrEnds = onFinished
+    currentRenderFilePath = path
+    val commandLine = GeneralCommandLine(commands)
+    commandLine.setWorkDirectory(renderDirectory)
+    processHandler = OSProcessHandler(commandLine)
+    processHandler.addProcessListener(knitOutputListener)
+    runInEdt {
+      val consoleView = createConsoleView(processHandler)
+      consoleView.attachToProcess(processHandler)
+      consoleView.scrollToEnd()
+      processHandler.startNotify()
     }
   }
 
@@ -132,27 +139,9 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     runRender(script, knitRootDirectory, rMarkdownFile.path, onFinished)
   }
 
-  fun reportCandidateNotFound() {
-    renderingErrorNotification("RMarkdown file was not found")
-  }
-
-  fun reportResultNotFound() {
-    renderingErrorNotification("Result file was not found")
-  }
-
-  fun reportRenderingInterrupted() {
-    renderingInfoNotification("Rendering was interrupted")
-  }
-
   private fun renderingErrorNotification(errorMessage : String) {
     val notification = Notification("RMarkdownRenderError", "Rendering status",
                                     errorMessage, NotificationType.ERROR, null)
-    notification.notify(project)
-  }
-
-  private fun renderingInfoNotification(infoMessage: String) {
-    val notification = Notification("RMarkdownRenderInfo", "Rendering status",
-                                    infoMessage, NotificationType.INFORMATION, null)
     notification.notify(project)
   }
 
@@ -173,11 +162,10 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       super.processTerminated(event)
       exitCode = event.exitCode
       if (exitCode != 0 && !isInterrupted) {
-        renderingErrorNotification("Unexpected error occurred during render")
+        renderingErrorNotification("Error occurred during rendering")
       } else if (!isInterrupted){
         RMarkdownSettings.getInstance(project).state.setProfileLastOutput(currentRenderFilePath,  outputFile.orEmpty())
       } else {
-        reportRenderingInterrupted()
         isInterrupted = false
       }
       onKnitrEnds?.invoke()

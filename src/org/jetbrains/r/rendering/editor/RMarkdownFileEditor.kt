@@ -140,6 +140,7 @@ private class BuildManager(private val project: Project, private val report: Vir
             if (isRunning) {
               onRenderFinished?.invoke()  // Don't invoke this if rendering was interrupted
             }
+            renderingRunner = null
             isRunning = false
           }
         }
