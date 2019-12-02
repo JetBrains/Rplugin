@@ -289,4 +289,6 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
     // Other
     .after(RElementTypes.R_COMMA).spaceIf(common.SPACE_AFTER_COMMA)
     .before(RElementTypes.R_COMMA).spaceIf(common.SPACE_BEFORE_COMMA)
+
+    .after(RElementTypes.R_SEMI).spaces(1)
 }

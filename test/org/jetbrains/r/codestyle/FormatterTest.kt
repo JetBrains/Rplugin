@@ -30,7 +30,7 @@ class FormatterTest : RUsefulTestCase() {
       total <- sum (x[1])
       total <- sum(x [1])
       if ( ! TRUE ) print( - 1 )
-      hello -> function() {print("Hello!"); 42}
+      hello -> function() {print("Hello!");42}
       ~ xxx
       if( debug ){
         hello()
