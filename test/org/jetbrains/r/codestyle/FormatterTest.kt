@@ -390,6 +390,75 @@ class FormatterTest : RUsefulTestCase() {
     """) { common.ALIGN_MULTILINE_PARAMETERS = false }
   }
 
+  fun testMaximumBlankLinesInExpression() {
+    doTest("""
+      x <- 10 +
+      
+      
+          20
+    """, """
+      x <- 10 +
+      
+          20
+    """) { common.KEEP_BLANK_LINES_IN_CODE = 1 } // just reduce test size
+  }
+
+  fun testMaximumBlankLinesBetweenGlobals() {
+    doTest("""
+      x <- 10
+      
+      
+      # Comment
+      
+      
+      y <- function() { 10 }
+      
+      
+      z <- 10
+    """, """
+      x <- 10
+      
+      # Comment
+      
+      y <- function() { 10 }
+      
+      z <- 10
+    """) { common.KEEP_BLANK_LINES_IN_CODE = 1 } // just reduce test size
+  }
+
+  fun testMaximumBlankLinesInsideBlock() {
+    doTest("""
+      func <- function() {
+
+
+        x <- 10
+
+
+        # Comment
+
+
+        y <- function() { 10 }
+
+
+        z <- 10
+
+
+      }
+    """, """
+      func <- function() {
+
+        x <- 10
+
+        # Comment
+
+        y <- function() { 10 }
+
+        z <- 10
+
+      }
+    """) { common.KEEP_BLANK_LINES_IN_CODE = 1 } // just reduce test size
+  }
+
   fun testLongPipeWrap() {
     doTest("""
       someVariable = bar %>% mutate() %>% group_by() %>% filter() %>% head

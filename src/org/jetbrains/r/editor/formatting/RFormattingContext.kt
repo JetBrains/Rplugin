@@ -234,7 +234,7 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
 
   return SpacingBuilder(settings, RLanguage.INSTANCE)
     // Comments
-    .before(RParserDefinition.END_OF_LINE_COMMENT).spacing(1, Int.MAX_VALUE, 0, true, 0)
+    .before(RParserDefinition.END_OF_LINE_COMMENT).spacing(1, Int.MAX_VALUE, 0, true, common.KEEP_BLANK_LINES_IN_CODE)
 
     // Unary operators
     .afterInside(RElementTypes.R_TILDE_OPERATOR, RElementTypes.R_UNARY_TILDE_EXPRESSION).spaceIf(common.SPACE_AROUND_UNARY_OPERATOR)
@@ -291,4 +291,7 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
     .before(RElementTypes.R_COMMA).spaceIf(common.SPACE_BEFORE_COMMA)
 
     .after(RElementTypes.R_SEMI).spaces(1)
+
+    .aroundInside(TokenSet.ANY, TokenSet.create(RParserDefinition.FILE, RElementTypes.R_BLOCK_EXPRESSION))
+    .spacing(0, 0, 0, true, common.KEEP_BLANK_LINES_IN_CODE)
 }

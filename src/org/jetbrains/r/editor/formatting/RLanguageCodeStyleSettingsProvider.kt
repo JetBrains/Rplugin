@@ -145,6 +145,8 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
     repeat {
       foo(some@oh)
     }
+    
+    
 
     #' some roxygen style function documentaiton
     #' @param a arggument one
@@ -162,7 +164,6 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
   override fun customizeDefaults(commonSettings: CommonCodeStyleSettings, indentOptions: CommonCodeStyleSettings.IndentOptions) {
     commonSettings.SPACE_WITHIN_BRACES = true
-    commonSettings.KEEP_BLANK_LINES_IN_CODE = 0
     commonSettings.ALIGN_MULTILINE_PARAMETERS = true
     commonSettings.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = true
     indentOptions.INDENT_SIZE = 2
