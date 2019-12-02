@@ -95,8 +95,14 @@ object RPsiUtil {
   }
 
   fun resolveCall(call: RCallExpression, isIncomplete: Boolean = true): List<RAssignmentStatement> {
-    call.expression.reference?.let { reference ->
-      val multiResolve = reference.multiResolve(isIncomplete)
+    val reference = when (val expression = call.expression) {
+      is RNamespaceAccessExpression -> expression.identifier?.reference
+      is RIdentifierExpression -> expression.reference
+      else -> return emptyList()
+    }
+
+    reference?.let { ref ->
+      val multiResolve = ref.multiResolve(isIncomplete)
       return multiResolve.map { it.element }.filterIsInstance<RAssignmentStatement>()
     }
     return emptyList()

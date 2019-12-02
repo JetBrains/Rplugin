@@ -187,6 +187,14 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "rownames", "rownames.value")
   }
 
+  fun testNotImportedNamedArguments() {
+    myFixture.configureByText("foo.R", "")
+    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+
+    doTest("data.table::frollmean(table, al<caret>)", "algo", "align")
+    doTest("frollmean(table, al<caret>)", "algo", "align")
+  }
+
   fun testCompletionForLocalVariableNames() {
     doTest("""
       foo_oo <- 31312

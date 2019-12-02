@@ -264,8 +264,12 @@ class RCompletionContributor : CompletionContributor() {
       }
 
       val info = originalFile.runtimeInfo ?: return
-      val mainFunctionName = mainCall.firstChild.text
-      val namedArguments = info.loadAllNamedArguments(mainFunctionName)
+      val mainFunctionName = when (val expression = mainCall.expression) {
+        is RNamespaceAccessExpression -> expression.identifier?.name ?: return
+        is RIdentifierExpression -> expression.name
+        else -> return
+      }
+      val namedArguments = info.loadAllNamedArguments("'$mainFunctionName'")
 
       for (parameter in namedArguments) {
         consumeParameter(parameter, shownNames, result)
