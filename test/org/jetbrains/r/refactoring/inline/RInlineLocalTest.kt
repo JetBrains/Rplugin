@@ -129,6 +129,7 @@ class RInlineLocalTest : RUsefulTestCase() {
       <caret>a + 3
     """.trimIndent(), """
       if (T) {
+      
       }
       5 + 3
     """.trimIndent())
@@ -143,6 +144,7 @@ class RInlineLocalTest : RUsefulTestCase() {
       <caret>a + 3
     """.trimIndent(), """
       if (T) {
+      
       }
       else {
         b <- 4
@@ -163,6 +165,7 @@ class RInlineLocalTest : RUsefulTestCase() {
         b <- 4
       }
       else {
+      
       }
       5 + 3
     """.trimIndent())
