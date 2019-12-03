@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.AttributesDescriptor
 
-typealias Colors = DefaultLanguageHighlighterColors
+private typealias Colors = DefaultLanguageHighlighterColors
 
 private val descriptors = ArrayList<AttributesDescriptor>()
 val DESCRIPTORS: Array<AttributesDescriptor> by lazy { descriptors.toTypedArray().also { descriptors.clear() } }

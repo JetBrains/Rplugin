@@ -64,7 +64,7 @@ class RColorSettingsPage : RainbowColorSettingsPage {
 # namespace access
 <info descr="R_FUNCTION_CALL">print</info>(<info descr="R_NAMESPACE">datasets</info>::cars[1, 2])
     """.trimIndent()
+  internal val R_DEMO = R_DEMO_FOR_TESTS.replace("<info descr=\"([^<>\"]*)\">([^<>\"]*)</info>".toRegex(), "<$1>$2</$1>")
+  internal val TAGS = DESCRIPTORS.map { it.key }.filter { R_DEMO.contains(it.externalName) }.map { it.externalName to it }.toMap()
   }
-  private val R_DEMO = R_DEMO_FOR_TESTS.replace("<info descr=\"([^<>\"]*)\">([^<>\"]*)</info>".toRegex(), "<$1>$2</$1>")
-  private val TAGS = DESCRIPTORS.map { it.key }.filter { R_DEMO.contains(it.externalName) }.map { it.externalName to it }.toMap()
 }

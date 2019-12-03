@@ -13,7 +13,6 @@ import org.jetbrains.r.parsing.RParserDefinition;
 public class RLexer extends MergingLexerAdapter {
     private static final TokenSet TOKENS_TO_MERGE = TokenSet.create(RParserDefinition.SPACE);
 
-
     public RLexer() {
         super(new FlexAdapter(new _RLexer((java.io.Reader) null)), TOKENS_TO_MERGE);
     }
