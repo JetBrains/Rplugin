@@ -16,7 +16,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -116,14 +115,9 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     protected fun createToolbar(): JComponent {
-
-      val action = object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
-        override fun actionPerformed(e: AnActionEvent) {
-          this@NotebookInlayOutput.clearAction.invoke()
-        }
-      }
-
-      return ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.NAVBAR_MINIMUM_BUTTON_SIZE)
+      val actionGroup = DefaultActionGroup(createSaveAsAction(), createClearAction())
+      val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true)
+      return toolbar.component
     }
   }
 
@@ -417,12 +411,23 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   private var output: Output? = null
 
   override fun createActions(): List<AnAction> {
-    val actionSaveAs = object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
+    return listOf(createSaveAsAction())
+  }
+
+  private fun createSaveAsAction(): AnAction {
+    return object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
       override fun actionPerformed(e: AnActionEvent) {
         output?.saveAs()
       }
     }
-    return listOf(actionSaveAs)
+  }
+
+  private fun createClearAction(): AnAction {
+    return object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+      override fun actionPerformed(e: AnActionEvent) {
+        clearAction.invoke()
+      }
+    }
   }
 
   private fun addTextOutput() = createOutput { OutputText(parent) }
