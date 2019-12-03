@@ -19,12 +19,14 @@ import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
+import com.intellij.openapi.editor.ex.FoldingListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.EffectType
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -60,6 +62,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   init {
     addResizeListener()
     addCaretListener()
+    addFoldingListener()
     addDocumentListener()
     addInlayModelListener()
     editor.settings.isRightMarginShown = false
@@ -111,6 +114,18 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       inlayComponent.parent?.remove(inlayComponent)
       inlayComponent.disposeInlay()
       inlays.remove(inlayComponent.cell)
+    }
+  }
+
+  private fun addFoldingListener() {
+    Disposer.get("ui")?.let { uiParent ->
+      val listener = object : FoldingListener {
+        override fun onFoldProcessingEnd() {
+          updateToolbarPositions()
+          updateInlays()
+        }
+      }
+      editor.foldingModel.addListener(listener, uiParent)
     }
   }
 
@@ -321,18 +336,21 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       inlays.remove(inlayComponent.cell)
       return
     }
-
-    // editedCell here contains old text. This event will be processed by PSI later.
-    val offset = getInlayOffset(inlayComponent.cell)
-
-    if (inlayComponent.inlay!!.offset == offset) {
-      return
+    val isFolded = isInlayFolded(inlayComponent)
+    inlayComponent.isVisible = !isFolded
+    if (!isFolded) {
+      // editedCell here contains old text. This event will be processed by PSI later.
+      val offset = getInlayOffset(inlayComponent.cell)
+      if (inlayComponent.inlay!!.offset != offset) {
+        inlayComponent.disposeInlay()
+        val inlay = addBlockElement(offset, inlayComponent)
+        inlayComponent.assignInlay(inlay)
+      }
     }
+  }
 
-    inlayComponent.disposeInlay()
-    val inlay = addBlockElement(offset, inlayComponent)
-
-    inlayComponent.assignInlay(inlay)
+  private fun isInlayFolded(inlayComponent: NotebookInlayComponent): Boolean {
+    return editor.foldingModel.getCollapsedRegionAtOffset(inlayComponent.cell.textOffset) != null
   }
 
   private fun updateToolbarPositions() {
