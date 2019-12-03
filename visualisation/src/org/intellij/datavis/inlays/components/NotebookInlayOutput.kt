@@ -134,8 +134,6 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
     private var imagePath: String? = null
 
-    private var imagePath: String? = null
-
     init {
       toolbarPane.centralComponent = graphicsPanel.component
       graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
