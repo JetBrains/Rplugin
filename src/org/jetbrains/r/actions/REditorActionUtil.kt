@@ -18,10 +18,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.console.RConsoleManager
@@ -116,6 +113,7 @@ internal object REditorActionUtil {
       var next = current.nextSibling
       var parent = current.parent
       while (next == null) {
+        if (parent is PsiFile) return result
         next = parent ?: return result
         parent = next.parent
         next = next.nextSibling
@@ -137,6 +135,7 @@ internal object REditorActionUtil {
   private fun nextElement(evalElement: PsiElement): RExpression? {
     var current = evalElement
     while (true) {
+      if (current is PsiFile) return null
       val result = PsiTreeUtil.getNextSiblingOfType(current, RExpression::class.java)
       if(result != null)
         return result
