@@ -38,13 +38,10 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.packages.InstallationPackageException
-import org.jetbrains.r.packages.RequiredPackage
-import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.packages.RequiredPackageListener
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
@@ -96,21 +93,15 @@ object RunChunkHandler {
 
   fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      val listener = object : RequiredPackageListener {
-        override fun onPackagesInstalled() {
+      RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
+        .onSuccess {
           runInEdt {
             executeWithKnitr(element, isDebug, isBatchMode).processed(promise)
           }
         }
-
-        override fun onErrorOccurred(e: InstallationPackageException) {
-          promise.setError(e.message ?: UNKNOWN_ERROR_MESSAGE)
+        .onError {
+          promise.setError(it.message ?: UNKNOWN_ERROR_MESSAGE)
         }
-      }
-
-      val required = RequiredPackage("knitr")
-      val installer = RequiredPackageInstaller.getInstance(element.project)
-      installer.installPackagesWithUserPermission(CHUNK_EXECUTOR_NAME, listOf(required), listener, true)
     }
   }
 

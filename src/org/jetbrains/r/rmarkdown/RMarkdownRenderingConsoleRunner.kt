@@ -54,30 +54,9 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   fun render(project: Project, file: VirtualFile, onFinished: (() -> Unit)? = null) {
-    val requiredPackageInstaller = RequiredPackageInstaller.getInstance(project)
-    val requiredPackages = listOf(RequiredPackage("rmarkdown"))
-    if (requiredPackageInstaller.getMissingPackages(requiredPackages).isNotEmpty()) {
-      val listener = object : RequiredPackageListener {
-        override fun onPackagesInstalled() {
-          doRender(project, file, onFinished)
-        }
-
-        override fun onErrorOccurred(e: InstallationPackageException) {
-          onFinished?.invoke()
-          Notification(
-            RBundle.message("rmarkdown.processor.notification.group.display"),
-            RBundle.message("rmarkdown.processor.notification.title"),
-            RBundle.message("rmarkdown.processor.notification.content"),
-            NotificationType.ERROR
-          ).notify(project)
-        }
-      }
-      RequiredPackageInstaller.getInstance(project)
-        .installPackagesWithUserPermission(RBundle.message("rmarkdown.processor.notification.utility.name"), requiredPackages, listener)
-    }
-    else {
-      doRender(project, file, onFinished)
-    }
+    RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
+      .onSuccess { doRender(project, file, onFinished) }
+      .onError { onFinished?.invoke() }
   }
 
   private fun createConsoleView(processHandler: OSProcessHandler): ConsoleViewImpl {
