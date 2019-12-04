@@ -6,6 +6,7 @@ package org.jetbrains.r.psi
 
 import com.google.common.collect.Lists
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiReference
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
@@ -130,7 +131,7 @@ val RIdentifierExpression.isInsideSubscription: Boolean
     if (parent is RCallExpression && parent.expression == current) return false
     while (parent != null) {
       if (parent is RSubscriptionExpression && current is RExpression && parent.expressionList.indexOf(current) > 0) return true
-      if (parent is RFile || parent is RFunctionExpression || parent is RBlockExpression) return false
+      if (parent is PsiFile || parent is RFunctionExpression || parent is RBlockExpression) return false
       current = parent
       parent = parent.parent
     }
@@ -141,7 +142,6 @@ val RIdentifierExpression.isDependantIdentifier: Boolean
   get() = parent.let { parent ->
     !(parent is RMemberExpression && parent.expressionList.firstOrNull() == this) &&
     (parent is RNamespaceAccessExpression ||
-     (parent is RNamedArgument && parent.nameIdentifier == this) ||
      (parent is RMemberExpression && parent.expressionList.first() != this) ||
      RPsiUtil.getNamedArgumentByNameIdentifier(this) != null ||
      isInsideSubscription)
