@@ -19,7 +19,10 @@ object RMarkdownUtil {
   private val NOTIFICATION_GROUP = RBundle.message("rmarkdown.processor.notification.group.display")
   private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
 
-  private val requiredPackages = listOf("rmarkdown", "knitr").map { RequiredPackage(it) }
+  private val requiredPackages = listOf(
+    RequiredPackage("rmarkdown", "1.16"),  // Note: minimal version of "1.16" fixes "Extension ascii_identifiers is not supported for markdown" error
+    RequiredPackage("knitr")
+  )
 
   fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
