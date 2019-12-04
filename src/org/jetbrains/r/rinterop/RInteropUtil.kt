@@ -166,12 +166,14 @@ object RInteropUtil {
                        .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
     }
 
+    command = command.withEnvironment("PATH", paths.path)
     command = if (SystemInfo.isUnix) {
-      command.withEnvironment("LD_LIBRARY_PATH", Paths.get(paths.home, "lib").toString())
-    }
-    else {
-      command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))
-    }
+      if (SystemInfo.isMac) {
+        command.withEnvironment("DYLD_FALLBACK_LIBRARY_PATH", paths.ldPath)
+      } else {
+        command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath)
+      }
+    } else command
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
     return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) }) }
   }
@@ -224,14 +226,19 @@ object RInteropUtil {
     return interpreterPath
   }
 
-  private data class RPaths(val home: String, val share: String, val include: String, val doc: String)
+  private data class RPaths(val home: String,
+                            val share: String,
+                            val include: String,
+                            val doc: String,
+                            val path: String,
+                            val ldPath: String)
 
   private fun getRPaths(interpreter: String): RPaths {
     val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }?.absolutePath
                        ?: throw RuntimeException("GetEnvVars.R not found")
     val paths = CapturingProcessHandler(GeneralCommandLine(interpreter, "--slave", "-f", script))
-      .runProcess(1000).stdout.trim().split(File.pathSeparator)
-    return RPaths(paths[0], paths[1], paths[2], paths[3])
+      .runProcess(1000).stdout.trim().split('\n').map { it.trim() }
+    return RPaths(paths[0], paths[1], paths[2], paths[3], paths[4], paths[5])
   }
 
   @VisibleForTesting
