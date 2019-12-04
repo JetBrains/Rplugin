@@ -41,10 +41,7 @@ import javafx.scene.web.WebView
 import org.intellij.datavis.inlays.MouseWheelUtils
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLAnchorElement
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.Font
-import java.awt.Rectangle
+import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -124,7 +121,10 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     protected fun createToolbar(): JComponent {
       val actionGroup = DefaultActionGroup(createSaveAsAction(), createClearAction())
       val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true)
-      return toolbar.component
+      return toolbar.component.apply {
+        isOpaque = false
+        background = Color(0, 0, 0, 0)
+      }
     }
   }
 
