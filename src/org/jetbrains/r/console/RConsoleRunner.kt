@@ -105,8 +105,8 @@ class RConsoleRunner(private val project: Project,
             }
 
             createContentDescriptorAndActions()
-            promise.setResult(consoleView)
             consoleView.createDebuggerPanel()
+            promise.setResult(consoleView)
 
             // Setup viewer handler
             runBackgroundableTask(RBundle.message("console.runner.initializing.viewer.title"), project, false) {

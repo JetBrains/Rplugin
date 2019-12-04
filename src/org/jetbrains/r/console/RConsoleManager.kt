@@ -158,12 +158,14 @@ class RConsoleManager(private val project: Project) {
     private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
       return if (RSettings.getInstance(project).interpreterPath.isNotBlank()) {
         RConsoleRunner(project, project.basePath!!).initAndRun().onSuccess { console ->
+          val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
           if (requestFocus) {
-            RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {
+            toolWindow?.show {
               val focusManager = IdeFocusManager.findInstanceByComponent(console)
               focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.component) ?: return@show, project)
             }
           }
+          toolWindow?.component?.validate()
         }
       } else {
         AsyncPromise<RConsoleView>().apply {

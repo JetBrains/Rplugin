@@ -194,7 +194,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       val expression = getExpressionForHelp(console.project, text.drop(1).trim())
       DocumentationManager.getInstance(console.project).showJavaDocInfoAtToolWindow(expression, expression.originalElement)
     } else {
-      listeners.forEach { it.beforeExecution() }
+      fireBeforeExecution()
       state = State.BUSY
       rInterop.replExecute(text)
     }
@@ -221,6 +221,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   fun fireCommandExecuted() {
     listeners.forEach { it.onCommandExecuted() }
+  }
+
+  fun fireBeforeExecution() {
+    listeners.forEach { it.beforeExecution() }
   }
 
   interface Listener {

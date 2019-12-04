@@ -17,7 +17,10 @@ class DebugSelection : REditorActionBase() {
     val editor = e.editor ?: return
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
-      .onSuccess { it.debugger.executeDebugSource(selection.file, selection.range) }
+      .onSuccess {
+        it.executeActionHandler.fireBeforeExecution()
+        it.debugger.executeDebugSource(selection.file, selection.range)
+      }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }

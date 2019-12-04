@@ -22,7 +22,10 @@ class RunSelection : REditorActionBase() {
     val editor = e.editor ?: return
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
-      .onSuccess { runInEdt { runWriteAction { it.executeText(selection.code.trim { it <= ' ' }) } } }
+      .onSuccess { console ->
+        console.executeActionHandler.fireBeforeExecution()
+        runInEdt { runWriteAction { console.executeText(selection.code.trim { it <= ' ' }) } }
+      }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }

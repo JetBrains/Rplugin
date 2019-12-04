@@ -28,6 +28,7 @@ abstract class RRunActionBase : REditorActionBase() {
       if (REditorActionUtil.isRunningCommand(console)) {
         RNotificationUtil.notifyConsoleError(project, RBundle.message("notification.console.busy"))
       }
+      console.executeActionHandler.fireBeforeExecution()
       doExecute(console, file)
     }.onError {
       RNotificationUtil.notifyConsoleError(project, it.message)
