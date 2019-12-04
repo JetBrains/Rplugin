@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.r.psi.cfg.RControlFlow;
+import org.jetbrains.r.psi.references.RReferenceBase;
 
 public interface RFunctionExpression extends RExpression, RControlFlowHolder {
 
@@ -19,5 +20,8 @@ public interface RFunctionExpression extends RExpression, RControlFlowHolder {
 
   @NotNull
   RControlFlow getControlFlow();
+
+  @Nullable
+  RReferenceBase<?> getReference();
 
 }

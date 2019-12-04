@@ -227,7 +227,7 @@ parameter ::= (identifier_expression ('=' expression)?)  {
 }
 parameter_list ::= ('(' ')') | ('(' nl* parameter nl* (',' nl* parameter nl*)* ')')
 function_expression ::= function parameter_list nl* expression {
-methods = [ getDocStringValue getControlFlow]
+methods = [ getDocStringValue getControlFlow getReference ]
 }
 
 private semicolon ::= ';' | nl

@@ -52,7 +52,9 @@ public class RFunctionExpressionImpl extends RControlFlowHolderImpl implements R
   }
 
   @Override
+  @Nullable
   public RReferenceBase<?> getReference() {
-    return null;
+    return RPsiImplUtil.getReference(this);
   }
+
 }
