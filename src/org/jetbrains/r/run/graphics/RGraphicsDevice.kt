@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
@@ -22,12 +23,12 @@ class RGraphicsDevice(
   inMemory: Boolean
 ) {
 
-  private var isLoaded = false
   private var lastNormal = emptyList<RSnapshot>()
   private var lastZoomed = emptyList<RSnapshot>()
 
   private val numbers2parameters = mutableMapOf<Int, RGraphicsUtils.ScreenParameters>()
   private val listeners = mutableListOf<(RSnapshotsUpdate) -> Unit>()
+  private val devicePromise = AsyncPromise<Unit>()
 
   val lastUpdate: RSnapshotsUpdate
     get() = RSnapshotsUpdate(lastNormal, lastZoomed)
@@ -49,11 +50,12 @@ class RGraphicsDevice(
     val path = tracedDirectory.absolutePath
     val initProperties = RGraphicsUtils.calculateInitProperties(path, initialParameters)
     val result = rInterop.graphicsInit(initProperties, inMemory)
-    isLoaded = if (result.stderr.isNotBlank()) {
-      LOGGER.error(result.stderr)
-      false
+    val stderr = result.stderr
+    if (stderr.isNotBlank()) {
+      devicePromise.setError(stderr)
+      LOGGER.error(stderr)
     } else {
-      true
+      devicePromise.setResult(Unit)
     }
   }
 
@@ -128,7 +130,7 @@ class RGraphicsDevice(
   }
 
   private fun rescale(newParameters: RGraphicsUtils.ScreenParameters, strategy: RescaleStrategy) {
-    if (isLoaded) {
+    devicePromise.onSuccess {
       ApplicationManager.getApplication().executeOnPooledThread {
         val result = strategy.rescale(rInterop, RGraphicsUtils.scaleForRetina(newParameters))
         if (result.stderr.isNotBlank()) {

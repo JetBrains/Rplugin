@@ -6,10 +6,12 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import org.jetbrains.concurrency.AsyncPromise
 import java.io.File
 
 class RGraphicsRepository(private val project: Project) {
   private val devices = mutableSetOf<RGraphicsDevice>()
+  private val notNullDevicePromise = AsyncPromise<Unit>()
   private val snapshotListeners = mutableListOf<(RSnapshotsUpdate) -> Unit>()
 
   private var currentDevice: RGraphicsDevice? = null
@@ -39,6 +41,9 @@ class RGraphicsRepository(private val project: Project) {
       }
     }
     currentDevice = device
+    if (!notNullDevicePromise.isSucceeded) {
+      notNullDevicePromise.setResult(Unit)
+    }
     notifyUpdate(device.lastUpdate)
   }
 
@@ -62,7 +67,9 @@ class RGraphicsRepository(private val project: Project) {
 
   @Synchronized
   fun rescale(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
-    currentDevice?.rescale(snapshot, newParameters, onRescale)
+    notNullDevicePromise.onSuccess {
+      currentDevice?.rescale(snapshot, newParameters, onRescale)
+    }
   }
 
   private fun notifyUpdate(update: RSnapshotsUpdate) {
