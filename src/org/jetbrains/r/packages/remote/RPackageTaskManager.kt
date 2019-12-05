@@ -91,12 +91,12 @@ class RPackageTaskManager(
 
     private fun taskNotify(action: PackagingTaskAction, exception: ExecutionException?) {
       val notification = if (exception != null) {
-        RPackageManagementService.toErrorDescription(exception)?.let {
+        RPackageManagementService.toErrorDescription(exception)?.let { description ->
           val listener = NotificationListener { _, _ ->
             val title = StringUtil.capitalizeWords(action.failureTitle, true)
-            PackagesNotificationPanel.showError(title, it)
+            PackagesNotificationPanel.showError(title, description)
           }
-          val content = "${action.failureDescription}.\nCheck console output for details"
+          val content = exception.message ?: "${action.failureDescription}.\nCheck console output for details"
           Notification(PACKAGING_GROUP_ID, action.failureTitle, content, NotificationType.ERROR, listener)
         }
       }

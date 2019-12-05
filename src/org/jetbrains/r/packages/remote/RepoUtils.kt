@@ -10,6 +10,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.console.RConsoleManager
@@ -204,7 +205,7 @@ object RepoUtils {
   fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage) {
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
-    val repoUrl = repoPackage.repoUrl ?: throw ExecutionException("Unknown repo URL for package ${repoPackage.name}")
+    val repoUrl = repoPackage.repoUrl ?: throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
     val url = trimRepoUrlSuffix(repoUrl)
 
     // Ensure writable library path exists => interpreter won't ask during package installation
@@ -235,7 +236,7 @@ object RepoUtils {
         LOGGER.warn("updatePackage(): Expected version = ${repoPackage.latestVersion}, got = $version")
       }
     }
-    throw ExecutionException("Can't install package. Check console for process output")
+    throw ExecutionException("Cannot install package '${repoPackage.name}'. Check console for process output")
   }
 
   private fun trimRepoUrlSuffix(repoUrl: String): String {
@@ -286,15 +287,20 @@ object RepoUtils {
 
   @Throws(ExecutionException::class)
   fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: InstalledPackage) {
+    val packageName = repoPackage.name
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
-    if (checkPackageInstalled(repoPackage.name, rInterop)) {
-      val libraryPath = getPackageLibraryPath(repoPackage.name, interpreter)
-      rInterop.repoRemovePackage(repoPackage.name, libraryPath)
-      val version = getPackageVersion(repoPackage.name, rInterop)
-      if (version != null && version == repoPackage.version) {
-        throw ExecutionException("Can't remove package. Check console for process output")
-      }
+    if (!checkPackageInstalled(packageName, rInterop)) {
+      throw ExecutionException("Cannot remove package '$packageName'. It is not installed")
+    }
+    val libraryPath = getPackageLibraryPath(packageName, interpreter)
+    if (!libraryPath.isWritable) {
+      throw ExecutionException("Cannot remove package '$packageName'. Library path is not writable")
+    }
+    rInterop.repoRemovePackage(packageName, FileUtil.toSystemIndependentName(libraryPath.path))
+    val version = getPackageVersion(packageName, rInterop)
+    if (version != null && version == repoPackage.version) {
+      throw ExecutionException("Cannot remove package '$packageName'. Check console for process output")
     }
   }
 
@@ -303,9 +309,8 @@ object RepoUtils {
     return checkOutput.stdout == "TRUE"
   }
 
-  private fun getPackageLibraryPath(packageName: String, interpreter: RInterpreter): String {
-    val vf = interpreter.getLibraryPathByName(packageName) ?: throw RuntimeException("Can't get library path for package '$packageName'")
-    return FileUtil.toSystemIndependentName(vf.path)
+  private fun getPackageLibraryPath(packageName: String, interpreter: RInterpreter): VirtualFile {
+    return interpreter.getLibraryPathByName(packageName) ?: throw ExecutionException("Cannot get library path for package '$packageName'")
   }
 
   fun formatDetails(project: Project, packageName: String): String {

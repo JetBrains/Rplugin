@@ -14,7 +14,6 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
@@ -218,6 +217,10 @@ class RPackageManagementService(private val project: Project,
 
   override fun canInstallToUser(): Boolean {
     return false
+  }
+
+  fun canUninstallPackage(installedPackage: InstalledPackage): Boolean {
+    return interpreter.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
   }
 
   override fun uninstallPackages(installedPackages: List<InstalledPackage>, listener: Listener) {
