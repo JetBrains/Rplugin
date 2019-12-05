@@ -130,20 +130,22 @@ class RGraphicsDevice(
   }
 
   private fun rescale(newParameters: RGraphicsUtils.ScreenParameters, strategy: RescaleStrategy) {
-    devicePromise.onSuccess {
-      ApplicationManager.getApplication().executeOnPooledThread {
-        val result = strategy.rescale(rInterop, RGraphicsUtils.scaleForRetina(newParameters))
-        if (result.stderr.isNotBlank()) {
-          // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
-          LOGGER.warn("Rescale for <${strategy.hint}> has failed:\n${result.stderr}")
-        }
-        if (result.stdout.isNotBlank()) {
-          val output = result.stdout.let { it.substring(4, it.length - 1) }
-          if (output == "TRUE") {
-            strategy.onSuccessfulRescale()
+    if (rInterop.isAlive) {
+      devicePromise.onSuccess {
+        ApplicationManager.getApplication().executeOnPooledThread {
+          val result = strategy.rescale(rInterop, RGraphicsUtils.scaleForRetina(newParameters))
+          if (result.stderr.isNotBlank()) {
+            // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
+            LOGGER.warn("Rescale for <${strategy.hint}> has failed:\n${result.stderr}")
           }
-        } else if (result.stderr.isBlank()) {
-          LOGGER.error("Cannot get any output from graphics device")
+          if (result.stdout.isNotBlank()) {
+            val output = result.stdout.let { it.substring(4, it.length - 1) }
+            if (output == "TRUE") {
+              strategy.onSuccessfulRescale()
+            }
+          } else if (result.stderr.isBlank()) {
+            LOGGER.error("Cannot get any output from graphics device")
+          }
         }
       }
     }

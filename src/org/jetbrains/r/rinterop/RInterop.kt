@@ -84,6 +84,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   val currentEnvRef = RRef(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
   val currentEnvLoader = currentEnvRef.createVariableLoader()
 
+  val isAlive: Boolean
+    get() = !finished
+
   fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> execute(
     f: KFunction1<Request, Response>,
     request: Request
