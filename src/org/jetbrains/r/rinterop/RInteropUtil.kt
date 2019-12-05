@@ -238,7 +238,7 @@ object RInteropUtil {
                        ?: throw RuntimeException("GetEnvVars.R not found")
     val paths = CapturingProcessHandler(GeneralCommandLine(interpreter, "--slave", "-f", script))
       .runProcess(1000).stdout.trim().split('\n').map { it.trim() }
-    return RPaths(paths[0], paths[1], paths[2], paths[3], paths[4], paths[5])
+    return RPaths(paths[0], paths[1], paths[2], paths[3], paths[4], if (paths.size == 6) paths[5] else "")
   }
 
   @VisibleForTesting
