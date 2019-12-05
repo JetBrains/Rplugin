@@ -35,22 +35,21 @@ import javax.swing.JPanel
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
                                       private val consoleTitle: String = "RMarkdown Console") {
-  private lateinit var title : String
   private val knitOutputListener = KnitrOutputListener()
   private var currentRenderFilePath: String = ""
   private var isInterrupted = false
   @Volatile
-  private lateinit var processHandler: OSProcessHandler
+  private var currentProcessHandler: OSProcessHandler? = null
   @Volatile
-  private lateinit var consoleView: ConsoleViewImpl
+  private var currentConsoleView: ConsoleViewImpl? = null
 
   fun getResultPath() = knitOutputListener.getResultFileName()
 
 
   fun interruptRendering(){
     isInterrupted = true
-    consoleView.print("\nInterrupted\n", ConsoleViewContentType.ERROR_OUTPUT)
-    processHandler.process.destroy()
+    currentConsoleView?.print("\nInterrupted\n", ConsoleViewContentType.ERROR_OUTPUT)
+    currentProcessHandler?.process?.destroy()
   }
 
   fun render(project: Project, file: VirtualFile, onFinished: (() -> Unit)? = null) {
@@ -60,10 +59,11 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun createConsoleView(processHandler: OSProcessHandler): ConsoleViewImpl {
-    consoleView = ConsoleViewImpl(project, false)
+    val consoleView = ConsoleViewImpl(project, false)
+    currentConsoleView = consoleView
     val rMarkdownConsolePanel = JPanel(BorderLayout())
     rMarkdownConsolePanel.add(consoleView.component, BorderLayout.CENTER)
-    title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
+    val title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
     val contentDescriptor = RunContentDescriptor(consoleView, processHandler, rMarkdownConsolePanel, title)
     contentDescriptor.setFocusComputable { consoleView.preferredFocusableComponent }
     contentDescriptor.isAutoFocusContent = true
@@ -79,7 +79,8 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     currentRenderFilePath = path
     val commandLine = GeneralCommandLine(commands)
     commandLine.setWorkDirectory(renderDirectory)
-    processHandler = OSProcessHandler(commandLine)
+    val processHandler = OSProcessHandler(commandLine)
+    currentProcessHandler = processHandler
     processHandler.addProcessListener(knitOutputListener)
     runInEdt {
       val consoleView = createConsoleView(processHandler)
@@ -89,24 +90,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     }
   }
 
-  private fun doRender(project: Project,
-                       rMarkdownFile: VirtualFile,
-                       onFinished: (() -> Unit)?) {
-    fun getRScriptPath(interpreterPath: String): String {
-      return if (SystemInfo.isWindows) {
-        val withoutExe = interpreterPath.substring(0, interpreterPath.length - 4)
-        withoutExe + "script.exe"
-      } else {
-        interpreterPath + "script"
-      }
-    }
-
-    fun getPandocLibraryPath(): String {
-      return Paths.get(PathManager.getPluginsPath(), "rplugin", "pandoc").toString().also {
-        File(it).mkdir()
-      }
-    }
-
+  private fun doRender(project: Project, rMarkdownFile: VirtualFile, onFinished: (() -> Unit)?) {
     val interpreter = RInterpreterManager.getInterpreter(project) ?: return
     val pathToRscript = getRScriptPath(interpreter.interpreterPath)
     val scriptPath = StringUtil.escapeBackSlashes(R_MARKDOWN_HELPER.absolutePath)
@@ -118,9 +102,24 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     runRender(script, knitRootDirectory, rMarkdownFile.path, onFinished)
   }
 
-  private fun renderingErrorNotification(errorMessage : String) {
+  private fun getRScriptPath(interpreterPath: String): String {
+    return if (SystemInfo.isWindows) {
+      val withoutExe = interpreterPath.substring(0, interpreterPath.length - 4)
+      withoutExe + "script.exe"
+    } else {
+      interpreterPath + "script"
+    }
+  }
+
+  private fun getPandocLibraryPath(): String {
+    return Paths.get(PathManager.getPluginsPath(), "rplugin", "pandoc").toString().also {
+      File(it).mkdir()
+    }
+  }
+
+  private fun renderingErrorNotification() {
     val notification = Notification("RMarkdownRenderError", "Rendering status",
-                                    errorMessage, NotificationType.ERROR, null)
+                                    "Error occurred during rendering", NotificationType.ERROR, null)
     notification.notify(project)
   }
 
@@ -141,7 +140,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       super.processTerminated(event)
       exitCode = event.exitCode
       if (exitCode != 0 && !isInterrupted) {
-        renderingErrorNotification("Error occurred during rendering")
+        renderingErrorNotification()
       } else if (!isInterrupted){
         RMarkdownSettings.getInstance(project).state.setProfileLastOutput(currentRenderFilePath,  outputFile.orEmpty())
       } else {
