@@ -286,20 +286,26 @@ object RepoUtils {
 
   @Throws(ExecutionException::class)
   fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: InstalledPackage) {
-    fun checkInstalled(packageName: String, rInterop: RInterop): Boolean {
-      val checkOutput = rInterop.repoCheckPackageInstalled(packageName)
-      return checkOutput.stdout == "TRUE"
-    }
-
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
-    if (checkInstalled(repoPackage.name, rInterop)) {
-      rInterop.repoRemovePackage(repoPackage.name)
+    if (checkPackageInstalled(repoPackage.name, rInterop)) {
+      val libraryPath = getPackageLibraryPath(repoPackage.name, interpreter)
+      rInterop.repoRemovePackage(repoPackage.name, libraryPath)
       val version = getPackageVersion(repoPackage.name, rInterop)
       if (version != null && version == repoPackage.version) {
         throw ExecutionException("Can't remove package. Check console for process output")
       }
     }
+  }
+
+  private fun checkPackageInstalled(packageName: String, rInterop: RInterop): Boolean {
+    val checkOutput = rInterop.repoCheckPackageInstalled(packageName)
+    return checkOutput.stdout == "TRUE"
+  }
+
+  private fun getPackageLibraryPath(packageName: String, interpreter: RInterpreter): String {
+    val vf = interpreter.getLibraryPathByName(packageName) ?: throw RuntimeException("Can't get library path for package '$packageName'")
+    return FileUtil.toSystemIndependentName(vf.path)
   }
 
   fun formatDetails(project: Project, packageName: String): String {

@@ -29,6 +29,8 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getPackageByName(name: String): RPackage?
 
+  fun getLibraryPathByName(name: String): VirtualFile?
+
   fun getProcessOutput(scriptText: String): ProcessOutput?
 
   fun runHelperWithArgs(helper: File, vararg args: String): ProcessOutput

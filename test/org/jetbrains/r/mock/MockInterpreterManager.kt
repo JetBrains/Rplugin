@@ -8,6 +8,7 @@ import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.concurrency.AsyncPromise
@@ -61,6 +62,10 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
     }
 
     override fun getPackageByName(name: String): RPackage? = installedPackages.firstOrNull { it.packageName == name }
+
+    override fun getLibraryPathByName(name: String): VirtualFile? {
+      throw NotImplementedError()
+    }
 
     override fun getProcessOutput(scriptText: String): ProcessOutput? = throw NotImplementedError()
 

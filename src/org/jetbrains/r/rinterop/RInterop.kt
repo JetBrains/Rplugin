@@ -295,8 +295,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getRepoCheckPackageInstalledMethod(), StringValue.of(packageName))
   }
 
-  fun repoRemovePackage(packageName: String) {
-    execute(stub::repoRemovePackage, StringValue.of(packageName))
+  fun repoRemovePackage(packageName: String, libraryPath: String) {
+    val request = Service.RepoRemovePackageRequest.newBuilder()
+      .setPackageName(packageName)
+      .setLibraryPath(libraryPath)
+      .build()
+    execute(stub::repoRemovePackage, request)
   }
 
   fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {

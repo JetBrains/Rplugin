@@ -86,6 +86,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   override fun getPackageByName(name: String) = state.name2installedPackages[name]
 
+  override fun getLibraryPathByName(name: String) = state.name2libraryPaths[name]
+
   override fun getProcessOutput(scriptText: String) = runScript(scriptText, interpreterPath, project.basePath!!)
 
   override fun runHelperWithArgs(helper: File, vararg args: String): ProcessOutput {
@@ -141,13 +143,15 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     state = State.EMPTY
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
-    val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
+    val name2installedPackages = installedPackages.asSequence().map { it.packageName to it }.toMap()
     val mirrors = if (cachedMirrors.isNotEmpty()) cachedMirrors else getMirrors()
     val libraryPaths = loadLibraryPaths()
+    val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
     val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
     val repositories = getRepositories(mirrors)
-    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages, getUserPath(), mirrors, repositories)
+    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages,
+                  name2libraryPaths, getUserPath(), mirrors, repositories)
   }
 
   private fun getUserPath(): String {
@@ -228,6 +232,14 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
         seen.add(mappedUrl)
       }
     }
+  }
+
+  private fun mapNamesToLibraryPaths(packages: List<RPackage>, libraryPaths: List<VirtualFile>): Map<String, VirtualFile> {
+    return packages.asSequence()
+      .mapNotNull { rPackage ->
+        libraryPaths.find { it.path == rPackage.libraryPath }?.let { vf -> Pair(rPackage.packageName, vf) }
+      }
+      .toMap()
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
@@ -384,11 +396,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                            val skeletonRoots: Set<VirtualFile>,
                            val installedPackages: List<RPackage>,
                            val name2installedPackages: Map<String, RPackage>,
+                           val name2libraryPaths: Map<String, VirtualFile>,
                            val userLibraryPath: String,
                            val cranMirrors: List<RMirror>,
                            val defaultRepositories: List<RDefaultRepository>) {
     companion object {
-      val EMPTY = State(listOf(), listOf(), setOf(), listOf(), mapOf(), "", listOf(), listOf())
+      val EMPTY = State(listOf(), listOf(), setOf(), listOf(), mapOf(), mapOf(), "", listOf(), listOf())
     }
   }
 }
