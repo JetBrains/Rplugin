@@ -253,6 +253,10 @@ class RParsingTest : RUsefulTestCase() {
     doTest()
   }
 
+  fun testArgumentsWithoutComma() {
+    doTest()
+  }
+
   //---------------------------------------
   private fun doTest() {
     val testName = getTestName(false)

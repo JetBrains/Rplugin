@@ -126,6 +126,10 @@ public class RVisitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitNoCommaTail(@NotNull RNoCommaTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitNotOperator(@NotNull RNotOperator o) {
     visitOperator(o);
   }

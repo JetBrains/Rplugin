@@ -5,15 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RArgumentList extends RPsiElement {
+public interface RNoCommaTail extends RPsiElement {
 
   @NotNull
   List<RExpression> getExpressionList();
 
   @NotNull
   List<RNamedArgument> getNamedArgumentList();
-
-  @NotNull
-  List<RNoCommaTail> getNoCommaTailList();
 
 }

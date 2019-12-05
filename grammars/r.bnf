@@ -216,7 +216,11 @@ subscription_expression ::= expression ('[' nl* ']' | '[' nl* subscription_expr_
   '[[' nl* ']]' | '[[' nl* subscription_expr_list ']]') {
   methods = [ isSingle ]
 }
-private arg ::= named_argument | expression | external_empty_expression
+
+// This expression is needed to better error handling and better completion
+no_comma_tail ::= nl* ((named_argument | expression) nl* )+
+
+private arg ::= ( (named_argument | expression ) (no_comma_tail?) ) | external_empty_expression
 argument_list ::= '(' nl* ')' | '(' nl* arg nl* (',' nl* arg nl*)* ')'
 call_expression ::= expression argument_list
 

@@ -238,6 +238,21 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), true)
   }
 
+  fun testCompletionInArgumentsWithoutComma() {
+    fun doArgTest(text: String) {
+      doTest("""
+        my_var1 <- 1
+        my_var2 <- 2
+        $text
+        """.trimIndent(), "my_var1", "my_var2", strict = true)
+    }
+    doArgTest("foo(10, my_<caret> 20)")
+    doArgTest("foo(10, my_<caret> 20 30)")
+    doArgTest("foo(10, my_<caret> 20, 30)")
+    doArgTest("foo(10, my_<caret> param=20)")
+    doArgTest("foo(10, my_<caret> \n  param=20)")
+  }
+
   fun testLookupPackageName() {
     myFixture.configureByText("foo.R", """gau<caret>""")
     val result = myFixture.completeBasic()!!.first { it.lookupString == "gaussian" }

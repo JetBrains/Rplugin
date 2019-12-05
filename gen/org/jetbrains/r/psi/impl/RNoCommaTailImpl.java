@@ -11,14 +11,14 @@ import static org.jetbrains.r.parsing.RElementTypes.*;
 import org.jetbrains.r.psi.RElementImpl;
 import org.jetbrains.r.psi.api.*;
 
-public class RArgumentListImpl extends RElementImpl implements RArgumentList {
+public class RNoCommaTailImpl extends RElementImpl implements RNoCommaTail {
 
-  public RArgumentListImpl(@NotNull ASTNode node) {
+  public RNoCommaTailImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull RVisitor visitor) {
-    visitor.visitArgumentList(this);
+    visitor.visitNoCommaTail(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -36,12 +36,6 @@ public class RArgumentListImpl extends RElementImpl implements RArgumentList {
   @NotNull
   public List<RNamedArgument> getNamedArgumentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RNamedArgument.class);
-  }
-
-  @Override
-  @NotNull
-  public List<RNoCommaTail> getNoCommaTailList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RNoCommaTail.class);
   }
 
 }

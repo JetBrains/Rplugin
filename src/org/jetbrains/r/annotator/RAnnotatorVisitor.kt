@@ -7,6 +7,7 @@ package org.jetbrains.r.annotator
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.highlighting.*
@@ -22,8 +23,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     val expression = callExpression.expression
     if (expression is RNamespaceAccessExpression && expression.identifier != null) {
       highlight(expression.identifier!!, FUNCTION_CALL)
-    }
-    else {
+    } else {
       highlight(expression, FUNCTION_CALL)
     }
   }
@@ -73,6 +73,12 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     } else {
       holder.createErrorAnnotation(right, "R grammar doesn't allow `${right.text}` here")
     }
+  }
+
+  override fun visitNoCommaTail(noComma: RNoCommaTail) {
+    val reportElement = PsiTreeUtil.findChildOfAnyType(noComma, RExpression::class.java, RNamedArgument::class.java) ?: return
+    val offset = reportElement.textRange.startOffset
+    holder.createErrorAnnotation(TextRange(offset, offset + 1), "missing comma")
   }
 
   private fun highlight(element: PsiElement, colorKey: TextAttributesKey) {

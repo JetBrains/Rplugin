@@ -1,0 +1,118 @@
+RFile:ArgumentsWithoutComma.r
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('foo1')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('10')
+      PsiWhiteSpace(' ')
+      R_NO_COMMA_TAIL
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('y')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('foo2')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_OPERATOR_EXPRESSION
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('10')
+        PsiWhiteSpace(' ')
+        R_PLUSMINUS_OPERATOR
+          PsiElement(+)('+')
+        PsiWhiteSpace(' ')
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('1')
+      PsiWhiteSpace(' ')
+      R_NO_COMMA_TAIL
+        R_NAMED_ARGUMENT
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('name')
+          PsiWhiteSpace(' ')
+          R_ASSIGN_OPERATOR
+            PsiElement(=)('=')
+          PsiWhiteSpace(' ')
+          R_OPERATOR_EXPRESSION
+            R_IDENTIFIER_EXPRESSION
+              PsiElement(identifier)('y')
+            PsiWhiteSpace(' ')
+            R_PLUSMINUS_OPERATOR
+              PsiElement(+)('+')
+            PsiWhiteSpace(' ')
+            R_NUMERIC_LITERAL_EXPRESSION
+              PsiElement(NUMERIC)('2')
+        PsiWhiteSpace(' ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('z')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('3')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('ok')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_OPERATOR_EXPRESSION
+        R_NUMERIC_LITERAL_EXPRESSION
+          PsiElement(NUMERIC)('10')
+        PsiWhiteSpace(' ')
+        R_PLUSMINUS_OPERATOR
+          PsiElement(-)('-')
+        PsiWhiteSpace(' ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('y')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('foo3')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_NUMERIC_LITERAL_EXPRESSION
+        PsiElement(NUMERIC)('1')
+      PsiWhiteSpace(' ')
+      R_NO_COMMA_TAIL
+        R_UNARY_NOT_EXPRESSION
+          R_NOT_OPERATOR
+            PsiElement(!)('!')
+          PsiWhiteSpace(' ')
+          R_NUMERIC_LITERAL_EXPRESSION
+            PsiElement(NUMERIC)('2')
+      PsiElement())(')')
+  PsiElement(nl)('\n')
+  R_CALL_EXPRESSION
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('foo4')
+    R_ARGUMENT_LIST
+      PsiElement(()('(')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('x')
+      PsiElement(,)(',')
+      PsiWhiteSpace(' ')
+      R_IDENTIFIER_EXPRESSION
+        PsiElement(identifier)('y')
+      R_NO_COMMA_TAIL
+        PsiElement(nl)('\n')
+        PsiWhiteSpace('  ')
+        R_IDENTIFIER_EXPRESSION
+          PsiElement(identifier)('z')
+      PsiElement())(')')
+  PsiElement(nl)('\n')

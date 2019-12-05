@@ -64,16 +64,42 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // named_argument | expression | external_empty_expression
+  // ( (named_argument | expression ) (no_comma_tail?) ) | external_empty_expression
   static boolean arg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arg")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = named_argument(b, l + 1);
-    if (!r) r = expression(b, l + 1, -1);
+    r = arg_0(b, l + 1);
     if (!r) r = parseEmptyExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // (named_argument | expression ) (no_comma_tail?)
+  private static boolean arg_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "arg_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = arg_0_0(b, l + 1);
+    r = r && arg_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // named_argument | expression
+  private static boolean arg_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "arg_0_0")) return false;
+    boolean r;
+    r = named_argument(b, l + 1);
+    if (!r) r = expression(b, l + 1, -1);
+    return r;
+  }
+
+  // no_comma_tail?
+  private static boolean arg_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "arg_0_1")) return false;
+    no_comma_tail(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -490,6 +516,75 @@ public class RParser implements PsiParser, LightPsiParser {
     if (!r) r = parseEmptyExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  /* ********************************************************** */
+  // nl* ((named_argument | expression) nl* )+
+  public static boolean no_comma_tail(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, R_NO_COMMA_TAIL, "<no comma tail>");
+    r = no_comma_tail_0(b, l + 1);
+    r = r && no_comma_tail_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // nl*
+  private static boolean no_comma_tail_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "no_comma_tail_0", c)) break;
+    }
+    return true;
+  }
+
+  // ((named_argument | expression) nl* )+
+  private static boolean no_comma_tail_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = no_comma_tail_1_0(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!no_comma_tail_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "no_comma_tail_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (named_argument | expression) nl*
+  private static boolean no_comma_tail_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = no_comma_tail_1_0_0(b, l + 1);
+    r = r && no_comma_tail_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // named_argument | expression
+  private static boolean no_comma_tail_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail_1_0_0")) return false;
+    boolean r;
+    r = named_argument(b, l + 1);
+    if (!r) r = expression(b, l + 1, -1);
+    return r;
+  }
+
+  // nl*
+  private static boolean no_comma_tail_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "no_comma_tail_1_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "no_comma_tail_1_0_1", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */

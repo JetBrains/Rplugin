@@ -39,6 +39,7 @@ public interface RElementTypes {
   IElementType R_NA_LITERAL = new RElementType("R_NA_LITERAL");
   IElementType R_NEXT_STATEMENT = new RElementType("R_NEXT_STATEMENT");
   IElementType R_NOT_OPERATOR = new RElementType("R_NOT_OPERATOR");
+  IElementType R_NO_COMMA_TAIL = new RElementType("R_NO_COMMA_TAIL");
   IElementType R_NULL_LITERAL = new RElementType("R_NULL_LITERAL");
   IElementType R_NUMERIC_LITERAL_EXPRESSION = new RElementType("R_NUMERIC_LITERAL_EXPRESSION");
   IElementType R_OPERATOR_EXPRESSION = new RElementType("R_OPERATOR_EXPRESSION");
@@ -212,6 +213,9 @@ public interface RElementTypes {
       }
       else if (type == R_NOT_OPERATOR) {
         return new RNotOperatorImpl(node);
+      }
+      else if (type == R_NO_COMMA_TAIL) {
+        return new RNoCommaTailImpl(node);
       }
       else if (type == R_NULL_LITERAL) {
         return new RNullLiteralImpl(node);
