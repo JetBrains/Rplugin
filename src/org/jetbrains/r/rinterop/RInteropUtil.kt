@@ -236,8 +236,13 @@ object RInteropUtil {
   private fun getRPaths(interpreter: String): RPaths {
     val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }?.absolutePath
                        ?: throw RuntimeException("GetEnvVars.R not found")
-    val paths = CapturingProcessHandler(GeneralCommandLine(interpreter, "--slave", "-f", script))
-      .runProcess(1000).stdout.trim().split('\n').map { it.trim() }
+    val output = CapturingProcessHandler(GeneralCommandLine(interpreter, "--slave", "-f", script))
+      .runProcess(10000).stdout.trim()
+    val paths = output.split('\n').map { it.trim() }
+    if (paths.size < 5) {
+      LOG.error("cannot get rwrapper parameters, output: `$output`")
+      throw RuntimeException("Cannot get environment variables for running rwrapper")
+    }
     return RPaths(paths[0], paths[1], paths[2], paths[3], paths[4], if (paths.size == 6) paths[5] else "")
   }
 
