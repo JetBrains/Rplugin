@@ -4,23 +4,18 @@
 
 package org.jetbrains.r.rendering.editor
 
-import com.intellij.diff.util.FileEditorBase
 import com.intellij.icons.AllIcons
 import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.browsers.WebBrowserManager
-import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
+import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.CancellablePromise
@@ -41,41 +36,16 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import javax.swing.Icon
 import javax.swing.JComponent
-import javax.swing.JPanel
 
 
-class RMarkdownFileEditor(project: Project, private val editor: TextEditor, report: VirtualFile) : FileEditorBase(), TextEditor {
-  private val leftToolbar = JPanel(BorderLayout())
-  private val rightToolBar = JPanel(BorderLayout())
-
-  private val toolbarComponent = createRMarkdownEditorToolbar(project, report, editor.editor).component
-  private val editorComponent = editor.component
-
-  private val mainComponent = JPanel(BorderLayout())
-
-  private val renderSettings = RMarkdownSettings.getInstance(project)
-  private val path = report.path
-
+class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
+  : AdvancedTextEditor(project, textEditor, virtualFile) {
   init {
+    val toolbarComponent = createRMarkdownEditorToolbar(project, virtualFile, textEditor.editor).component
     mainComponent.add(toolbarComponent, BorderLayout.NORTH)
-    mainComponent.add(editorComponent, BorderLayout.CENTER)
   }
-
-  override fun getComponent() = mainComponent
 
   override fun getName() = "RMarkdown Editor"
-
-  override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
-
-  override fun dispose() {
-    TextEditorProvider.getInstance().disposeEditor(editor)
-    super.dispose()
-  }
-
-  override fun getStructureViewBuilder(): StructureViewBuilder? = editor.structureViewBuilder
-  override fun getEditor(): Editor = editor.editor
-  override fun navigateTo(navigatable: Navigatable) = editor.navigateTo(navigatable)
-  override fun canNavigateTo(navigatable: Navigatable): Boolean = editor.canNavigateTo(navigatable)
 }
 
 private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile, editor: Editor): ActionToolbar =
@@ -103,7 +73,9 @@ private fun createToggleSoftWrapAction(editor: Editor): AnAction =
   object : ToggleSoftWrapAction() {
     private var isSelected: Boolean = REditorSettings.useSoftWRapsInRMarkdown
 
-    init { updateEditors() }
+    init {
+      updateEditors()
+    }
 
     override fun isSelected(e: AnActionEvent): Boolean {
       return isSelected
@@ -144,8 +116,7 @@ private class BuildManager(private val project: Project, private val report: Vir
             isRunning = false
           }
         }
-      }
-      else {
+      } else {
         isRunning = false
         renderingRunner?.interruptRendering()
       }
@@ -195,8 +166,6 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
       val file = File(profileLastOutput)
       if (profileLastOutput.isNotEmpty() && file.exists()) {
         BrowserLauncher.instance.browse(file)
-      } else {
-
       }
     }
   }
@@ -238,8 +207,7 @@ private fun createRunAllAction(): AnAction =
           editor.chunkExecutionState = this
           RunChunkHandler.runAllChunks(psiFile, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
         }
-      }
-      else {
+      } else {
         state.terminationRequired.set(true)
         val element = state.currentPsiElement.get() ?: return
         RunChunkHandler.interruptChunkExecution(element.project)

@@ -4,48 +4,26 @@
 
 package org.jetbrains.r.rendering.editor
 
-import com.intellij.diff.util.FileEditorBase
-import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiManager
 import java.awt.BorderLayout
-import javax.swing.JPanel
 
-class RFileEditor(val project: Project, private val editor: TextEditor, val virtualFile: VirtualFile) : FileEditorBase(), TextEditor {
-  private val toolbarComponent = createREditorToolbar().component
-  private val editorComponent = editor.component
-  private val mainComponent = JPanel(BorderLayout())
-
+class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
+  : AdvancedTextEditor(project, textEditor, virtualFile) {
   init {
-    mainComponent.add(toolbarComponent, BorderLayout.NORTH)
-    mainComponent.add(editorComponent, BorderLayout.CENTER)
+    mainComponent.add(createREditorToolbar().component, BorderLayout.NORTH)
   }
 
-  override fun getComponent() = mainComponent
   override fun getName() = "R Editor"
-  override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
-
-  override fun dispose() {
-    TextEditorProvider.getInstance().disposeEditor(editor)
-    super.dispose()
-  }
-
-  override fun getStructureViewBuilder(): StructureViewBuilder? = editor.structureViewBuilder
-  override fun getEditor(): Editor = editor.editor
-  override fun navigateTo(navigatable: Navigatable) = editor.navigateTo(navigatable)
-  override fun canNavigateTo(navigatable: Navigatable): Boolean = editor.canNavigateTo(navigatable)
 
   private fun createREditorToolbar(): ActionToolbar =
     ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(), true).also {
-      it.setTargetComponent(editor.editor.contentComponent)
+      it.setTargetComponent(textEditor.editor.contentComponent)
     }
 
   private fun createActionGroup(): ActionGroup = DefaultActionGroup(
@@ -67,11 +45,11 @@ class RFileEditor(val project: Project, private val editor: TextEditor, val virt
     }
 
     private fun createEvent(e: AnActionEvent): AnActionEvent {
-      val file = FileDocumentManager.getInstance().getFile(editor.editor.document)
+      val file = FileDocumentManager.getInstance().getFile(textEditor.editor.document)
       return AnActionEvent.createFromInputEvent(
         e.inputEvent, "", e.presentation,
         SimpleDataContext.getSimpleContext(
-          mapOf(CommonDataKeys.EDITOR.name to editor.editor,
+          mapOf(CommonDataKeys.EDITOR.name to textEditor.editor,
                 CommonDataKeys.VIRTUAL_FILE.name to file,
                 CommonDataKeys.PSI_FILE.name to file?.let { PsiManager.getInstance(project).findFile(it) }),
           e.dataContext))
