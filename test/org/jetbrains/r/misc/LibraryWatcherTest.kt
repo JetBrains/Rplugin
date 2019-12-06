@@ -36,7 +36,7 @@ class LibraryWatcherTest : RUsefulTestCase() {
     libraryWatcher.registerRootsToWatch(interpreter.libraryPaths)
 
     val atomicInteger = AtomicInteger(0)
-    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LATE) {
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {
       atomicInteger.incrementAndGet()
     }
     runCommand(interpreterPath, "CMD", "INSTALL", packageFile)

@@ -47,7 +47,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
   init {
     updateUninstallUpgrade()
-    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LATE) {
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {
       scheduleRefresh()
     }
   }

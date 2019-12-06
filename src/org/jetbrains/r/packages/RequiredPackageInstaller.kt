@@ -67,7 +67,7 @@ class RequiredPackageInstaller(private val project: Project) {
   private val installationTasks = CopyOnWriteArrayList<InstallationTask>()
 
   init {
-    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.EARLY) {
+    RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.SECOND) {
       val installedPackages = rPackageManagementService.installedPackages
       for (installationTask in installationTasks) {
         val missingPackages = getMissingPackages(installationTask.requiredPackage, installedPackages)

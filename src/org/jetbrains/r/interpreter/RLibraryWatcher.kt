@@ -76,10 +76,13 @@ class RLibraryWatcher(private val project: Project) {
 
   enum class TimeSlot {
     /** Time slot for services that should be updated at first */
-    EARLY,
+    FIRST,
 
-    /** Time slot for elements that rely on services updated in early slot (UI panels, for instance) */
-    LATE
+    /** Time slot for services that should be updated early but depend on services from previous slot */
+    SECOND,
+
+    /** Time slot for elements that rely on services updated in previous slots (UI panels, for instance) */
+    LAST
   }
 
   companion object {

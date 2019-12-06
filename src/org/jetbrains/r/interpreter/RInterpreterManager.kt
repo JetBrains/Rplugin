@@ -120,7 +120,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         interpreterPath = fetchInterpreterPath(interpreterPath)
       }
       if (!initialized) {
-        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.EARLY) {
+        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
           scheduleSkeletonUpdate()
         }
       }
