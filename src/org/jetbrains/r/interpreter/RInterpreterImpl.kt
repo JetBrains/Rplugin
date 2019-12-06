@@ -58,6 +58,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       val currentSkeletonRoots = current.skeletonRoots
       if (current.skeletonPaths.size != currentSkeletonRoots.size || !currentSkeletonRoots.all { it.isValid }) {
         runAsync {
+          if (!project.isOpen || project.isDisposed) return@runAsync
           updateState()
           RInterpreterUtil.updateIndexableSet(project)
         }

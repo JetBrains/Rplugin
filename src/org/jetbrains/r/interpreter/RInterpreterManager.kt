@@ -170,6 +170,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private fun updateSkeletons(interpreter: RInterpreterImpl) {
     val dumbModeTask = object : DumbModeTask(interpreter) {
       override fun performInDumbMode(indicator: ProgressIndicator) {
+        if (!project.isOpen || project.isDisposed) return
         if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
           runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
         }
