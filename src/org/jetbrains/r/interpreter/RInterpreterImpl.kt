@@ -300,10 +300,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                      .onError { LOG.error(it) }
                      .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
       if (result.exitCode != 0) {
-        throw RuntimeException("Helper '$scriptName' has non-zero exit code: ${result.exitCode}")
+        val message = "Helper '$scriptName' has non-zero exit code: ${result.exitCode}"
+        throw RuntimeException("$message\nStdout: ${result.stdout}\nStderr: ${result.stderr}")
       }
       if (result.stderr.isNotBlank()) {
-        throw RuntimeException("Failed to run helper '$scriptName':\n${result.stderr}")
+        // Note: this could be a warning message therefore there is no need to throw
+        LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
       }
       if (result.stdout.isBlank()) {
         throw RuntimeException("Cannot get any output from helper '$scriptName'")
