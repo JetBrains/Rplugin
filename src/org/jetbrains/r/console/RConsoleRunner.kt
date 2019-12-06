@@ -162,7 +162,7 @@ class RConsoleRunner(private val project: Project,
 
     val actions = listOf(executeAction, interruptAction, historyAction, createSetCurrentDirectory(),
                          Separator(),
-                         toggleSoftWrap, helpAction, addConsoleAction)
+                         toggleSoftWrap, addConsoleAction, helpAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
