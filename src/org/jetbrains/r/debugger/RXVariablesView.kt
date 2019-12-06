@@ -67,10 +67,6 @@ internal class RXVariablesView(project: Project, val console: RConsoleView)
     installToolbar()
   }
 
-  fun refresh() {
-    stackFrame = stackFrame
-  }
-
   override fun clear() {
     tree.sourcePosition = null
     val root = createNewRootNode(null)
