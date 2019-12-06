@@ -14,6 +14,7 @@ import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -60,6 +61,7 @@ private const val RUN_CHUNK_GROUP_ID = "org.jetbrains.r.rendering.chunk.RunChunk
 object RunChunkHandler {
 
   fun runAllChunks(psiFile: PsiFile,
+                   editor: Editor,
                    currentElement: AtomicReference<PsiElement>,
                    terminationRequired: AtomicBoolean,
                    start: Int = 0,
@@ -72,15 +74,27 @@ object RunChunkHandler {
           val chunks = runReadAction { PsiTreeUtil.collectElements(psiFile) {
             isChunkFenceLang(it) && (it.textRange.endOffset - 1) in start..end
           } }
-          for (element in chunks) {
-            if (terminationRequired.get()) {
-              continue
+          try {
+            for (element in chunks) {
+              if (terminationRequired.get()) {
+                continue
+              }
+              currentElement.set(element)
+              invokeAndWaitIfNeeded { execute(element, false, true) }
+                .onError { LOGGER.error("Cannot execute chunk: " + it) }
+                .blockingGet(Int.MAX_VALUE)
+              currentElement.set(null)
             }
-            currentElement.set(element)
-            invokeAndWaitIfNeeded { execute(element, false, true) }
-              .onError { LOGGER.error("Cannot execute chunk: " + it) }
-              .blockingGet(Int.MAX_VALUE)
-            currentElement.set(null)
+          } finally {
+            val inlayElements = runReadAction {
+              chunks.mapNotNull {
+                TreeUtil.findChildBackward(it.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
+              }
+            }
+
+            inlayElements.forEach { inlayElement ->
+              InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
+            }
           }
         } finally {
           result.setResult(Unit)
@@ -213,7 +227,6 @@ object RunChunkHandler {
     }
     if (ApplicationManager.getApplication().isUnitTestMode || isDebug) return
     cleanupOutdatedOutputs(element)
-    InlaysManager.getEditorManager(editor)?.updateCell(inlayElement) ?: LOGGER.error("Editor doesn't have an inlay manager")
     ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
   }
 

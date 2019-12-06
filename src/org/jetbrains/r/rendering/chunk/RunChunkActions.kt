@@ -8,13 +8,16 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
+import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
+import org.intellij.datavis.inlays.InlaysManager
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*
@@ -128,7 +131,7 @@ private fun isEnabled(e: AnActionEvent): Boolean {
 private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffset: Int) {
   ChunkExecutionState().apply {
     editor.chunkExecutionState = this
-    RunChunkHandler.runAllChunks(file, currentPsiElement, terminationRequired, startOffset - 1, endOffset).onProcessed {
+    RunChunkHandler.runAllChunks(file, editor, currentPsiElement, terminationRequired, startOffset - 1, endOffset).onProcessed {
       editor.chunkExecutionState = null
     }
   }
@@ -136,8 +139,14 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   val element = getCodeFenceByEvent(e)!!
+  val editor = e.editor ?: return
   element.project.chunkExecutionState = ChunkExecutionState(currentPsiElement = AtomicReference(element), isDebug = isDebug)
-  RunChunkHandler.execute(element, isDebug = isDebug).onProcessed { element.project.chunkExecutionState = null }
+  RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
+    element.project.chunkExecutionState = null
+    val inlayElement = runReadAction { TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi }
+                       ?: return@onProcessed
+    InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
+  }
 }
 
 private val AnActionEvent.codeFence: PsiElement?

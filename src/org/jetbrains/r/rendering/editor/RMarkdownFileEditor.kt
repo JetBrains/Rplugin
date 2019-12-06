@@ -13,7 +13,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileEditor.*
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -205,7 +206,7 @@ private fun createRunAllAction(): AnAction =
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
         ChunkExecutionState().apply {
           editor.chunkExecutionState = this
-          RunChunkHandler.runAllChunks(psiFile, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
+          RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
         }
       } else {
         state.terminationRequired.set(true)
