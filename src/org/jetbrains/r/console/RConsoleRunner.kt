@@ -160,7 +160,9 @@ class RConsoleRunner(private val project: Project,
     val addConsoleAction = createAddConsoleAction()
     val toggleSoftWrap = createToggleSoftWrapAction(consoleView)
 
-    val actions = listOf(executeAction, interruptAction, helpAction, historyAction, addConsoleAction, Separator(), toggleSoftWrap)
+    val actions = listOf(executeAction, interruptAction, historyAction, createSetCurrentDirectory(),
+                         Separator(),
+                         toggleSoftWrap, helpAction, addConsoleAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
@@ -190,6 +192,10 @@ class RConsoleRunner(private val project: Project,
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
     RConsoleToolWindowFactory.addContent(project, contentDescriptor)
+  }
+
+  private fun createSetCurrentDirectory(): AnAction {
+    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor")
   }
 
   private fun createAddConsoleAction(): AnAction =

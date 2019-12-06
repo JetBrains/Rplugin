@@ -14,9 +14,11 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
@@ -25,9 +27,11 @@ import com.intellij.util.ui.FontInfo
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RDebugger
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
 import java.awt.Font
@@ -149,6 +153,9 @@ class RConsoleView(val rInterop: RInterop,
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
     val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleView>("R_CONSOLE")
     const val INTERRUPT_ACTION_ID = "org.jetbrains.r.console.RConsoleView.RInterruptAction"
+
+    private fun getConsole(e: AnActionEvent) =
+      e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
   }
 
   class RInterruptAction : AnAction() {
@@ -182,9 +189,25 @@ class RConsoleView(val rInterop: RInterop,
                     !consoleEditor.getSelectionModel().hasSelection()
       e.presentation.isEnabled = enabled
     }
+  }
 
-    private fun getConsole(e: AnActionEvent) =
-      e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
+  class RSetCurrentDirectoryFromEditor : AnAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+      val console = getConsole(e) ?: return
+      val project = e.project ?: return
+      val path = getVirtualFile(project)?.parent?.path ?: return
+      runAsync {
+        console.rInterop.setWorkingDir(path)
+      }
+    }
+
+    override fun update(e: AnActionEvent) {
+      val project = e.project
+      e.presentation.isEnabled = project != null && getVirtualFile(project)?.isInLocalFileSystem == true
+    }
+
+    private fun getVirtualFile(project: Project): VirtualFile? =
+      (FileEditorManager.getInstance(project).selectedEditor as? AdvancedTextEditor)?.virtualFile
   }
 }
 

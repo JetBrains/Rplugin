@@ -118,6 +118,11 @@ You can find the source code in the following repositories:
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control C" replace-all="true"/>
         </action>
 
+        <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
+                class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor" text="Set Current Directory From Editor"
+                icon="AllIcons.Nodes.ExtractedFolder"
+                description="Set current directory in the R Console to the directory of an opened file in the editor"/>
+
         <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction" text="Rename Console">
           <add-to-group group-id="ToolWindowContextMenu" anchor="last"/>
         </action>
