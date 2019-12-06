@@ -23,15 +23,12 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.impl.source.tree.TreeUtil
-import com.intellij.psi.search.PsiElementProcessor
 import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.rendering.chunk.ChunkPathManager
 import org.intellij.datavis.inlays.InlaysManager
 import org.intellij.datavis.inlays.components.ProcessOutput
-import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -86,13 +83,7 @@ object RunChunkHandler {
               currentElement.set(null)
             }
           } finally {
-            val inlayElements = runReadAction {
-              chunks.mapNotNull {
-                TreeUtil.findChildBackward(it.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
-              }
-            }
-
-            inlayElements.forEach { inlayElement ->
+            runReadAction { chunks.mapNotNull { findInlayElementByFenceElement(it) } }.forEach { inlayElement ->
               InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
             }
           }
@@ -140,14 +131,13 @@ object RunChunkHandler {
     val rInterop = console.rInterop
     val parent = element.parent
     val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
-    val codeElement = PsiElementProcessor.FindFilteredElement<LeafPsiElement> {
+    val codeElement = FindFilteredElement<LeafPsiElement> {
       (it as? LeafPsiElement)?.elementType == R_FENCE_ELEMENT_TYPE
     }.apply { PsiTreeUtil.processElements(parent, this) }.foundElement
       ?: return promise.apply { setError("cannot find code fence") }
     val project = element.project
     val file = element.containingFile
-    val inlayElement = TreeUtil.findChildBackward(parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
-                       ?: return promise.apply { setError("cannot find code fence") }
+    val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
     val paragraph = FindFilteredElement<MarkdownParagraphImpl> { it is MarkdownParagraphImpl }.also {
       PsiTreeUtil.processElements(file, it)
     }.foundElement

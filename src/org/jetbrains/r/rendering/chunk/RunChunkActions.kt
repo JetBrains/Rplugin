@@ -143,11 +143,13 @@ private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   element.project.chunkExecutionState = ChunkExecutionState(currentPsiElement = AtomicReference(element), isDebug = isDebug)
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
     element.project.chunkExecutionState = null
-    val inlayElement = runReadAction { TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi }
-                       ?: return@onProcessed
+    val inlayElement = runReadAction { findInlayElementByFenceElement(element) } ?: return@onProcessed
     InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
   }
 }
+
+internal fun findInlayElementByFenceElement(element: PsiElement) =
+  TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
 private val AnActionEvent.codeFence: PsiElement?
   get() = getData(CODE_FENCE_DATA_KEY)
