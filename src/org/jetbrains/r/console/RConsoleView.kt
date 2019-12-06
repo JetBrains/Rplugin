@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -24,6 +25,7 @@ import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.ui.FontInfo
+import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
@@ -77,6 +79,19 @@ class RConsoleView(val rInterop: RInterop,
       }
     })
   }
+
+  var workingDirectory: String = ""
+    set(directory) {
+      if (field != directory) {
+        field = directory
+        invokeLater {
+          val contentManager = RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager ?: return@invokeLater
+          val content = contentManager.contents.firstOrNull { UIUtil.findComponentOfType(it.component, RConsoleView::class.java) == this }
+                        ?: return@invokeLater
+          content.displayName = "[ " + directory + " ]"
+        }
+      }
+    }
 
   fun executeText(text: String) {
     AppUIUtil.invokeOnEdt {
@@ -198,6 +213,7 @@ class RConsoleView(val rInterop: RInterop,
       val path = getVirtualFile(project)?.parent?.path ?: return
       runAsync {
         console.rInterop.setWorkingDir(path)
+        console.debugger.refreshVariableView()
       }
     }
 

@@ -18,7 +18,9 @@ import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindow
@@ -180,6 +182,8 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
 
   fun refreshVariableView() {
     if (!isVariableRefreshEnabled) return
+    consoleView.workingDirectory = FileUtil.getLocationRelativeToUserHome(
+      LocalFileSystem.getInstance().extractPresentableUrl(rInterop.workingDir))
     if (isEnabled) {
       updateStack(calculateRXStackFrames())
     } else {
