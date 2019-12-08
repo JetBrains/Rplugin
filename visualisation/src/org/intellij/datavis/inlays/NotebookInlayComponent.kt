@@ -4,16 +4,12 @@
 
 package org.intellij.datavis.inlays
 
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.FoldRegion
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
+import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
@@ -30,12 +26,9 @@ import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
 
-class NotebookInlayComponent(val cell: PsiElement)
+class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImpl)
   : InlayComponent(), MouseListener, MouseMotionListener {
   companion object {
-
-    private const val newParagraphHint = "Add paragraph (Alt+Shift+B)"
-
     val separatorRenderer = CustomHighlighterRenderer { editor, highlighter1, g ->
       val y1 = editor.offsetToPoint2D(highlighter1.endOffset).y.toInt()
 
@@ -64,26 +57,13 @@ class NotebookInlayComponent(val cell: PsiElement)
   /** Inlay short view, shown in collapsed state or in empty state. */
   private var toolbar: NotebookInlayToolbar? = null
 
-  /** Stores timestamp of last press of "Run cell" button. Timestamp is used to prevent double clicks and double runs. */
-  private var lastRunPressed: Long = 0
-
   private var gutter: JComponent? = null
 
   private var mouseOverNewParagraphArea = false
 
   private var separatorHighlighter: RangeHighlighter? = null
 
-  private var codeFoldRegion: FoldRegion? = null
-
-  private val runAction = {
-    // To prevent double tap on run button.
-    if (System.currentTimeMillis() - lastRunPressed > 1000) {
-      val executeCellAction = ActionManager.getInstance().getAction("ZeppelinRunCellAction")
-      val actionEvent = createActionEvent()
-      executeCellAction.actionPerformed(actionEvent)
-      lastRunPressed = System.currentTimeMillis()
-    }
-  }
+  private val disposable = Disposer.newDisposable()
 
   init {
     cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
@@ -91,30 +71,16 @@ class NotebookInlayComponent(val cell: PsiElement)
                                 InlayDimensions.leftBorderUnscaled,
                                 InlayDimensions.bottomBorderUnscaled,
                                 InlayDimensions.rightBorderUnscaled)
-
     isOpaque = false
-
-    getOrAddToolbar().setDefaultState { runAction.invoke() }
-
+    Disposer.register(editor.disposable, disposable)
     addMouseListener(this)
     addMouseMotionListener(this)
-  }
-
-  /** Helper function or "Run" and "Create paragraph below" actions. */
-  private fun createActionEvent(): AnActionEvent {
-
-    val data = mapOf(PlatformDataKeys.EDITOR.name to inlay!!.editor,
-                     PlatformDataKeys.PROJECT.name to cell.project)
-
-    val dataContext = SimpleDataContext.getSimpleContext(data, null)
-    return AnActionEvent.createFromDataContext("", null, dataContext)
   }
 
   // region MouseListener
   override fun mouseReleased(e: MouseEvent?) {}
 
   override fun mouseEntered(e: MouseEvent?) {}
-
 
   override fun mouseExited(e: MouseEvent?) {
     if (mouseOverNewParagraphArea) {
@@ -189,8 +155,6 @@ class NotebookInlayComponent(val cell: PsiElement)
       return
     }
 
-    val editor = inlay!!.editor
-
     if (separatorHighlighter != null) {
       editor.markupModel.removeHighlighter(separatorHighlighter!!)
     }
@@ -233,23 +197,15 @@ class NotebookInlayComponent(val cell: PsiElement)
 
     updateCellSeparator()
 
-    gutter = (inlay.editor as EditorImpl).gutter as JComponent
+    gutter = editor.gutter as JComponent
   }
 
   override fun disposeInlay() {
-
     if (separatorHighlighter != null && inlay != null) {
-      inlay!!.editor.markupModel.removeHighlighter(separatorHighlighter!!)
+      editor.markupModel.removeHighlighter(separatorHighlighter!!)
       separatorHighlighter = null
     }
-
-    if(codeFoldRegion != null && inlay != null) {
-      val foldingModel = inlay!!.editor.foldingModel
-      foldingModel.runBatchFoldingOperation {
-        foldingModel.removeFoldRegion(codeFoldRegion!!)
-      }
-    }
-
+    Disposer.dispose(disposable)
     super.disposeInlay()
   }
 
@@ -295,8 +251,7 @@ class NotebookInlayComponent(val cell: PsiElement)
         remove(state)
       }
 
-      state = NotebookInlayOutput((inlay!!.editor as EditorImpl).project!!,
-                          (inlay!!.editor as EditorImpl).disposable).apply {
+      state = NotebookInlayOutput(editor.project!!, disposable).apply {
         addToolbar()
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
@@ -315,9 +270,7 @@ class NotebookInlayComponent(val cell: PsiElement)
         remove(state)
       }
 
-      state = NotebookInlayData((inlay!!.editor as EditorImpl).project!!,
-                                (inlay!!.editor as EditorImpl).disposable,
-                                dataFrame).apply {
+      state = NotebookInlayData(editor.project!!, disposable, dataFrame).apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
             adjustSize(height, this)
@@ -384,7 +337,7 @@ class NotebookInlayComponent(val cell: PsiElement)
       if (state != null) {
         remove(state)
       }
-      state = NotebookInlayMultiOutput(cell.project, (inlay!!.editor as EditorImpl).disposable).apply {
+      state = NotebookInlayMultiOutput(cell.project, disposable).apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
             adjustSize(height, this)

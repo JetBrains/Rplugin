@@ -48,7 +48,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
-  private val graphicsPanel = GraphicsPanel(project)
+  private val graphicsPanel = GraphicsPanel(project, project)
 
   init {
     setContent(graphicsPanel.component)

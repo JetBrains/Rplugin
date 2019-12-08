@@ -21,8 +21,7 @@ import java.io.File
 import javax.swing.JComponent
 import javax.swing.JLabel
 
-class GraphicsPanel(private val project: Project) {
-  private val uiParent: Disposable? = Disposer.get("ui")
+class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
   private val label = JLabel(NO_GRAPHICS, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
 
@@ -113,9 +112,7 @@ class GraphicsPanel(private val project: Project) {
     currentImageFile = file
     currentEditor = editor
     rootPanel.contentComponent = internalComponent
-    if (uiParent != null) {
-      Disposer.register(uiParent, editor)
-    }
+    Disposer.register(disposableParent, editor)
   }
 
   private fun closeEditor(message: String) {

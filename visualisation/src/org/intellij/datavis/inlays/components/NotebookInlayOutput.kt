@@ -129,7 +129,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   }
 
   inner class OutputImg(parent: Disposable) : Output(parent) {
-    private val graphicsPanel = GraphicsPanel(project)
+    private val graphicsPanel = GraphicsPanel(project, parent)
     private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
 
     private var imagePath: String? = null
@@ -523,16 +523,6 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   fun addToolbar() {
     addToolbar = true
     output?.addToolbar()
-  }
-
-  fun setError(data: String) {
-
-    if (output == null || output is OutputHtml) {
-      addTextOutput()
-    }
-
-    output!!.clear()
-    output!!.scrollToTop()
   }
 
   fun addData(type: String, data: String) {

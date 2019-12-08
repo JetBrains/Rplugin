@@ -130,10 +130,9 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
             removeInlay(it.value, cleanup = false)
           }
           inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
-            updateCell(it)
+            if (it !in inlays.keys) { updateCell(it) }
           }
           regions.clear()
-
           updateToolbarPositions()
           updateInlays()
         }
@@ -377,7 +376,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     InlayDimensions.init(editor)
 
     val offset = getInlayOffset(cell)
-    val inlayComponent = NotebookInlayComponent(cell)
+    val inlayComponent = NotebookInlayComponent(cell, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
