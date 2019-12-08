@@ -11,7 +11,7 @@ public interface RForStatement extends RExpression, RLoopStatement {
   List<RExpression> getExpressionList();
 
   @Nullable
-  RExpression getTarget();
+  RIdentifierExpression getTarget();
 
   @Nullable
   RExpression getRange();

@@ -185,7 +185,7 @@ while_statement ::= while nl* '(' nl* expression nl* ')' nl* expression { pin=1
   methods = [ condition = "expression[0]" body = "expression[1]"]
 }
 for_statement ::= for nl* '(' nl* identifier_expression 'in' (nl* expression) ')' nl* expression { pin=1
-  methods=[ target = "expression[0]" range = "expression[1]" body = "expression[2]"]
+  methods=[ getTarget range = "expression[1]" body = "expression[2]"]
 }
 repeat_statement ::= repeat (nl* expression) { pin=1 methods = [ body = "expression" ] }
 break_statement ::= break { methods = [ getLoop ] }

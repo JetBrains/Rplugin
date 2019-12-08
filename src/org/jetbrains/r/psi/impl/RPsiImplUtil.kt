@@ -18,6 +18,7 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
 import org.jetbrains.r.parsing.RElementTypes.*
@@ -330,6 +331,18 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getLoop(rBreak: RBreakStatement): RLoopStatement? {
     return getLoopImpl(rBreak)
+  }
+
+  @JvmStatic
+  fun getTarget(forLoop: RForStatement): RIdentifierExpression? {
+    var child: PsiElement? = forLoop.getFirstChild()
+    while (child != null) {
+      if (child is RIdentifierExpression) return child
+      if (child.elementType == R_IN) return null
+      child = child.nextSibling
+    }
+
+    return null
   }
 
   @JvmStatic

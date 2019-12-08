@@ -33,9 +33,8 @@ public class RForStatementImpl extends RExpressionImpl implements RForStatement 
 
   @Override
   @Nullable
-  public RExpression getTarget() {
-    List<RExpression> p1 = getExpressionList();
-    return p1.size() < 1 ? null : p1.get(0);
+  public RIdentifierExpression getTarget() {
+    return RPsiImplUtil.getTarget(this);
   }
 
   @Override
