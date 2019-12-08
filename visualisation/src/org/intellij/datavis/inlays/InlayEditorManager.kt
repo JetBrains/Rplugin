@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.FoldRegion
 import com.intellij.openapi.editor.Inlay
@@ -359,7 +360,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun updateToolbarPositions() {
-    toolbars.values.forEach { it.updateBounds() }
+    invokeLater { toolbars.values.forEach { it.updateBounds() } }
   }
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
