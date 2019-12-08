@@ -426,6 +426,13 @@ You can find the source code in the following repositories:
 
         <!-- refactorings -->
         <lang.refactoringSupport language="R" implementationClass="org.jetbrains.r.refactoring.RRefactoringProvider"/>
+        <renameInputValidator implementation="org.jetbrains.r.refactoring.rename.RRenameInputValidator"/>
+        <nameSuggestionProvider implementation="org.jetbrains.r.refactoring.rename.RNameSuggestionProvider"/>
+        <renameHandler implementation="org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler"/>
+        <renameHandler implementation="org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler"/>
+        <renamePsiElementProcessor implementation="org.jetbrains.r.refactoring.rename.RenameRPsiElementProcessor"
+                                 id="RPsiElement"
+                                 order="first"/>
 
         <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/plugin.xml:448-->
         <vetoRenameCondition implementation="org.jetbrains.r.psi.references.RenamingVetoCondition"/>
@@ -504,6 +511,10 @@ You can find the source code in the following repositories:
         <localInspection shortName="RTripleColonToDoubleColonInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RBundle" key="inspection.triple.colon.to.double.colon.name"
                          implementationClass="org.jetbrains.r.inspections.TripleColonToDoubleColonInspection"/>
+
+        <localInspection shortName="RNamingConventionInspectionInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.triple.colon.to.double.colon.name"
+                         implementationClass="org.jetbrains.r.inspections.NamingConventionInspection"/>
 
 
         <intentionAction>

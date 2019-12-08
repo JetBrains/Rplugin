@@ -5,12 +5,9 @@
 package org.jetbrains.r.refactoring
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RControlFlowHolder
-import org.jetbrains.r.psi.api.RFile
-import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.refactoring.inline.RInlineUtil
+import org.jetbrains.r.psi.api.*
 
 object RRefactoringUtil {
   fun getRScope(local: PsiElement): RControlFlowHolder {
@@ -29,7 +26,12 @@ object RRefactoringUtil {
     if (scope == null) return emptyList()
     val assignments = mutableSetOf<RAssignmentStatement>()
 
-    scope.acceptChildren(object : RInlineUtil.RRecursiveElementVisitor() {
+    scope.acceptChildren(object : RVisitor(), PsiRecursiveVisitor {
+      override fun visitElement(element: PsiElement) {
+        if (element !is RFunctionExpression)
+          element.acceptChildren(this)
+      }
+
       override fun visitAssignmentStatement(o: RAssignmentStatement) {
         assignments.add(o)
       }
@@ -37,17 +39,25 @@ object RRefactoringUtil {
     return assignments
   }
 
-  fun getUniqueName(baseName: String, unavailableNames: MutableSet<String>): String {
+  fun getUniqueName(baseName: String, unavailableNames: MutableSet<String>, isFunctionName: Boolean = false): String {
     if (baseName !in unavailableNames) {
       unavailableNames.add(baseName)
       return baseName
     }
 
     var i = 1
-    while ("$baseName$i" in unavailableNames) {
-      ++i
+    val name = if (isFunctionName && baseName.contains(".")) {
+      while (baseName.replaceFirst(".", "$i.") in unavailableNames) {
+        ++i
+      }
+      baseName.replaceFirst(".", "$i.")
     }
-    val name = "$baseName$i"
+    else {
+      while ("$baseName$i" in unavailableNames) {
+        ++i
+      }
+      "$baseName$i"
+    }
     unavailableNames.add(name)
     return name
   }

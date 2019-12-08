@@ -30,6 +30,7 @@ import org.jetbrains.r.psi.cfg.buildControlFlow
 import org.jetbrains.r.psi.getParameters
 import org.jetbrains.r.psi.isNamespaceAccess
 import org.jetbrains.r.psi.references.*
+import org.jetbrains.r.refactoring.RNamesValidator
 import java.util.*
 
 /**
@@ -425,7 +426,9 @@ internal object RPsiImplUtil {
   }
 
   private fun renameIdentifier(name: String, expression: RIdentifierExpression, oldNameIdentifier: ASTNode) {
-    val dummyFile = RElementGenerator.createDummyFile(name, false, expression.project)
+    val text = oldNameIdentifier.chars
+    val realName = if (text.startsWith('`') && text.endsWith('`')) "`$name`" else RNamesValidator.quoteIfNeeded(name)
+    val dummyFile = RElementGenerator.createDummyFile(realName, false, expression.project)
     val identifier = dummyFile.node.firstChildNode.findChildByType(R_IDENTIFIER)
     if (identifier != null) {
       expression.node.replaceChild(oldNameIdentifier, identifier)

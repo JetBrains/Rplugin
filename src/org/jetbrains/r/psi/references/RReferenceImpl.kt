@@ -12,9 +12,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.light.LightElement
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.RElementGenerator
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -67,15 +65,7 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
 
   @Throws(IncorrectOperationException::class)
   override fun handleElementRename(newElementName: String): PsiElement? {
-    val oldNameIdentifier = element.node.findChildByType(RElementTypes.R_IDENTIFIER)
-    if (oldNameIdentifier != null) {
-      val dummyFile = RElementGenerator.createDummyFile(newElementName, false, element.project)
-      val identifier = dummyFile.node.firstChildNode.findChildByType(RElementTypes.R_IDENTIFIER)
-      if (identifier != null) {
-        element.node.replaceChild(oldNameIdentifier, identifier)
-      }
-    }
-    return element
+    return element.setName(newElementName)
   }
 
 

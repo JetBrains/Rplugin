@@ -5,10 +5,12 @@
 package org.jetbrains.r.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
+import com.intellij.psi.PsiElement
 import org.jetbrains.r.refactoring.extractmethod.RExtractMethodHandler
 
 class RRefactoringProvider : RefactoringSupportProvider() {
   override fun getIntroduceVariableHandler() = RIntroduceVariableHandler()
   override fun getIntroduceParameterHandler() = RIntroduceParameterHandler()
   override fun getExtractMethodHandler() = RExtractMethodHandler()
+  override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean = true
 }
