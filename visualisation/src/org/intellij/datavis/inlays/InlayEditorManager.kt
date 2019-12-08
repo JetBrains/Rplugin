@@ -90,16 +90,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     ApplicationManager.getApplication().invokeLater {
       if (ApplicationManager.getApplication().isUnitTestMode) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
-      val inlayComponent = getInlayComponent(psi) ?: addInlayComponent(psi)
-      if (inlayOutputs.isNotEmpty()) {
-        addInlayOutputs(inlayComponent, inlayOutputs, psi)
+      if (inlayOutputs.isEmpty()) return@invokeLater
+      getInlayComponent(psi)?.let { oldComponent ->
+        oldComponent.parent?.remove(oldComponent)
+        oldComponent.disposeInlay()
+        inlays.remove(oldComponent.cell)
       }
-      else {
-        inlayComponent.parent?.remove(inlayComponent)
-        inlayComponent.disposeInlay()
-        inlays.remove(inlayComponent.cell)
-      }
-
+      addInlayOutputs(addInlayComponent(psi), inlayOutputs, psi)
       ApplicationManager.getApplication().invokeLater {
         updateInlays()
       }
