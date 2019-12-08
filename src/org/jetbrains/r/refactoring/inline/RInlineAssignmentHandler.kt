@@ -11,19 +11,18 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SyntaxTraverser
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RReferenceBase
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.refactoring.RRefactoringUtil
 import org.jetbrains.r.skeleton.psi.RSkeletonBase
 
 /**
@@ -52,8 +51,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
     val targetElement = if (editor != null) TargetElementUtil.findTargetElement(editor, TargetElementUtil.getInstance().getAllAccepted()) else null
     if (targetElement is RIdentifierExpression && RPsiUtil.isNamedArgument(targetElement)) return
 
-    val searchScope = GlobalSearchScope.getScopeRestrictedByFileTypes(GlobalSearchScope.allScope(project), RFileType, RMarkdownFileType)
-    if (ReferencesSearch.search(psiElement, searchScope).findFirst() == null) {
+    if (ReferencesSearch.search(psiElement, LocalSearchScope(RRefactoringUtil.getRScope(psiElement))).findFirst() == null) {
       RInlineUtil.showErrorAndExit(project, editor, RBundle.message(
         "inline.assignment.handler.error.rule.never.used.description")) { return }
     }
@@ -67,7 +65,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
 
     val assignmentStatement = psiElement as? RAssignmentStatement ?: psiElement.parent as RAssignmentStatement
     val name = assignmentStatement.name
-    val controlFlow = RInlineUtil.getScope(assignmentStatement).controlFlow
+    val controlFlow = RRefactoringUtil.getRScope(assignmentStatement).controlFlow
 
     val lastDefs = RInlineUtil.getLatestDefs(controlFlow, name, reference?.element)
     if (lastDefs.size > 1) RInlineUtil.showErrorAndExit(project, editor, RBundle.message(
@@ -116,7 +114,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
   }
 
   private fun hasFunctionInside(function: RAssignmentStatement): Boolean {
-    return RInlineUtil.collectAssignments(function.assignedValue).any { it.isFunctionDeclaration }
+    return RRefactoringUtil.collectAssignments(function.assignedValue).any { it.isFunctionDeclaration }
   }
 
   private fun hasUseMethod(function: RAssignmentStatement): Boolean {

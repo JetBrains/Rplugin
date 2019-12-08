@@ -20,14 +20,6 @@ import org.jetbrains.r.psi.cfg.RControlFlow
 import java.util.*
 
 object RInlineUtil {
-  fun getScope(local: RPsiElement): RControlFlowHolder {
-    var context: RControlFlowHolder? = PsiTreeUtil.getParentOfType(local, RFunctionExpression::class.java)
-    if (context == null) {
-      context = local.containingFile as RFile
-    }
-    return context
-  }
-
   fun getLatestDefs(controlFlow: RControlFlow, varName: String, anchor: PsiElement?): List<PsiElement> {
     if (anchor is RAssignmentStatement) return listOf(anchor)
 
@@ -87,22 +79,6 @@ object RInlineUtil {
     }, false)
 
     return result.toList()
-  }
-
-  fun collectUsedNames(scope: PsiElement?): Collection<String> {
-    return collectAssignments(scope).map { it.name }
-  }
-
-  fun collectAssignments(scope: PsiElement?): Collection<RAssignmentStatement> {
-    if (scope == null) return emptyList()
-    val assignments = mutableSetOf<RAssignmentStatement>()
-
-    scope.acceptChildren(object : RRecursiveElementVisitor() {
-      override fun visitAssignmentStatement(o: RAssignmentStatement) {
-        assignments.add(o)
-      }
-    })
-    return assignments
   }
 
   fun collectReturns(project: Project, functionExpression: RFunctionExpression): Set<ReturnResult> {

@@ -22,6 +22,7 @@ import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getParameters
+import org.jetbrains.r.refactoring.RRefactoringUtil
 
 /**
  * Inlining of variables and functions.
@@ -50,7 +51,7 @@ class RInlineAssignmentProcessor(private val project: Project,
   override fun findUsages(): Array<UsageInfo> {
     val name = assignment.assignee?.name ?: return UsageInfo.EMPTY_ARRAY
     if (inlineThisOnly) return arrayOf(UsageInfo(refElement!!))
-    val controlFlow = RInlineUtil.getScope(assignment).controlFlow
+    val controlFlow = RRefactoringUtil.getRScope(assignment).controlFlow
     return RInlineUtil.getPostRefs(controlFlow, name, assignment).map { UsageInfo(it) }.toTypedArray()
   }
 
@@ -61,7 +62,7 @@ class RInlineAssignmentProcessor(private val project: Project,
       CommonRefactoringUtil.sortDepthFirstRightLeftOrder(usages)
       for (info in usages) {
         val element = info.element as? RIdentifierExpression ?: continue
-        val controlFlow = RInlineUtil.getScope(element).controlFlow
+        val controlFlow = RRefactoringUtil.getRScope(element).controlFlow
         if (RInlineUtil.getLatestDefs(controlFlow, element.name, element).any { it != assignment }) {
           RInlineUtil.showErrorAndExit(project, editor, RBundle.message("inline.local.processor.error.another.definition")) { return false }
         }
@@ -139,8 +140,8 @@ class RInlineAssignmentProcessor(private val project: Project,
 
       val call = place.parent as RCallExpression
       val file = call.containingFile
-      val scope = RInlineUtil.getScope(call)
-      val usedNames = RInlineUtil.collectUsedNames(scope).toMutableSet()
+      val scope = RRefactoringUtil.getRScope(call)
+      val usedNames = RRefactoringUtil.collectUsedNames(scope).toMutableSet()
       var firstInScope: PsiElement = call
       while (firstInScope.parent !is RBlockExpression && firstInScope.parent !is RFile) {
         firstInScope = firstInScope.parent
@@ -180,7 +181,7 @@ class RInlineAssignmentProcessor(private val project: Project,
         // Ignore if not all argument passed
         val value = realValues[arg] ?: continue
         if (!PsiTreeUtil.instanceOf(value, *SAFE_NO_COPY)) {
-          val uniqueName = getUniqueName(arg, usedNames)
+          val uniqueName = RRefactoringUtil.getUniqueName(arg, usedNames)
           val assign = RElementFactory.createRPsiElementFromText(project, "$uniqueName <- ${value.text}")
           assignExpressions.add(assign)
           val newValue = RElementFactory.createRPsiElementFromText(project, uniqueName)
@@ -191,7 +192,7 @@ class RInlineAssignmentProcessor(private val project: Project,
       val tmp = mutableListOf<PsiElement>()
       for (dotsArg in dotsArgs) {
         if (!PsiTreeUtil.instanceOf(dotsArg, *SAFE_NO_COPY)) {
-          val uniqueName = getUniqueName("dotArg", usedNames)
+          val uniqueName = RRefactoringUtil.getUniqueName("dotArg", usedNames)
           val assign = RElementFactory.createRPsiElementFromText(project, "$uniqueName <- ${dotsArg.text}")
           assignExpressions.add(assign)
           val newValue = RElementFactory.createRPsiElementFromText(project, uniqueName)
@@ -212,7 +213,7 @@ class RInlineAssignmentProcessor(private val project: Project,
           if (newValue == null && name != "...") {
             val parent = o.parent
             if (RPsiUtil.getAssignmentByAssignee(o) != null || parent is RForStatement && parent.target == o) {
-              val uniqueName = getUniqueName(name, usedNames)
+              val uniqueName = RRefactoringUtil.getUniqueName(name, usedNames)
               newValue = RElementFactory.createRPsiElementFromText(project, uniqueName)
               realValues[name] = newValue
             }
@@ -258,7 +259,7 @@ class RInlineAssignmentProcessor(private val project: Project,
         singleReturn = returns.first()
       }
       else {
-        resultName = getUniqueName("result", usedNames)
+        resultName = RRefactoringUtil.getUniqueName("result", usedNames)
         returns.forEach { it.doRefactor(resultName) }
       }
 
@@ -284,21 +285,6 @@ class RInlineAssignmentProcessor(private val project: Project,
         inserted.add(call.replace(RElementFactory.createRPsiElementFromText(project, resultName!!)))
       }
       CodeStyleManager.getInstance(project).reformatText(file, inserted.map { it.textRange })
-    }
-
-    private fun getUniqueName(oldName: String, usedNames: MutableSet<String>): String {
-      if (oldName !in usedNames) {
-        usedNames.add(oldName)
-        return oldName
-      }
-
-      var i = 1
-      while ("$oldName$i" in usedNames) {
-        ++i
-      }
-      val name = "$oldName$i"
-      usedNames.add(name)
-      return name
     }
 
     private fun areParenthesesNecessary(innerExpression: PsiElement,
