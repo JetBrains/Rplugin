@@ -10,6 +10,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.FoldRegion
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.InlayModel
 import com.intellij.openapi.editor.colors.EditorColorsListener
@@ -56,6 +57,7 @@ import java.awt.event.ComponentEvent
 class EditorInlaysManager(val project: Project, private val editor: EditorImpl, val descriptor: InlayElementDescriptor) {
 
   private val inlays: MutableMap<PsiElement, NotebookInlayComponent> = LinkedHashMap()
+  private val inlayElements = LinkedHashSet<PsiElement>()
   private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
   @Volatile private var toolbarUpdateScheduled: Boolean = false
 
@@ -84,19 +86,16 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   fun dispose() {
     inlays.values.forEach { it.disposeInlay() }
     inlays.clear()
+    inlayElements.clear()
   }
 
   fun updateCell(psi: PsiElement) {
     ApplicationManager.getApplication().invokeLater {
       if (ApplicationManager.getApplication().isUnitTestMode) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
+      getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
       if (inlayOutputs.isEmpty()) return@invokeLater
-      getInlayComponent(psi)?.let { oldComponent ->
-        oldComponent.parent?.remove(oldComponent)
-        oldComponent.disposeInlay()
-        inlays.remove(oldComponent.cell)
-      }
-      addInlayOutputs(addInlayComponent(psi), inlayOutputs, psi)
+      addInlayOutputs(addInlayComponent(psi), inlayOutputs)
       ApplicationManager.getApplication().invokeLater {
         updateInlays()
       }
@@ -104,20 +103,37 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun addInlayOutputs(inlayComponent: NotebookInlayComponent,
-                              inlayOutputs: List<InlayOutput>,
-                              psi: PsiElement) {
-    inlayComponent.addInlayOutputs(inlayOutputs) {
-      descriptor.cleanup(psi)
-      inlayComponent.parent?.remove(inlayComponent)
-      inlayComponent.disposeInlay()
-      inlays.remove(inlayComponent.cell)
-    }
+                              inlayOutputs: List<InlayOutput>) {
+    inlayComponent.addInlayOutputs(inlayOutputs) { removeInlay(inlayComponent) }
+  }
+
+  private fun removeInlay(inlayComponent: NotebookInlayComponent, cleanup: Boolean = true) {
+    val cell = inlayComponent.cell
+    if (cleanup && cell.isValid) descriptor.cleanup(cell)
+    inlayComponent.parent?.remove(inlayComponent)
+    inlayComponent.disposeInlay()
+    inlays.remove(cell)
   }
 
   private fun addFoldingListener() {
     Disposer.get("ui")?.let { uiParent ->
+      data class Region(val textRange: TextRange, val isExpanded: Boolean)
       val listener = object : FoldingListener {
+        private val regions = ArrayList<Region>()
+
+        override fun onFoldRegionStateChange(region: FoldRegion) {
+          regions.add(Region(TextRange.create(region.startOffset, region.endOffset), region.isExpanded))
+        }
+
         override fun onFoldProcessingEnd() {
+          inlays.filter { pair -> regions.filter { !it.isExpanded }.any { pair.key.textRange.intersects(it.textRange) } }.forEach {
+            removeInlay(it.value, cleanup = false)
+          }
+          inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
+            updateCell(it)
+          }
+          regions.clear()
+
           updateToolbarPositions()
           updateInlays()
         }
@@ -170,11 +186,17 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       node = node.parent
     }
     var isAdded = false
+    inlayElements.filter { !it.isValid }.forEach { getInlayComponent(it)?.let { inlay -> removeInlay(inlay) } }
+    inlayElements.removeIf { !it.isValid }
     while (node != null && node.textRange.startOffset < offset + length) {
-      PsiTreeUtil.collectElements(node) { psi -> descriptor.isToolbarActionElement(psi) }.forEach { psi ->
-        if (psi !in toolbars) {
-          addToolbar(psi, descriptor.getToolbarActions(psi)!!)
-          isAdded = true
+      PsiTreeUtil.collectElements(node) { psi -> descriptor.isToolbarActionElement(psi) || descriptor.isInlayElement(psi) }.forEach { psi ->
+        if (descriptor.isToolbarActionElement(psi)) {
+          if (psi !in toolbars) {
+            addToolbar(psi, descriptor.getToolbarActions(psi)!!)
+            isAdded = true
+          }
+        } else {
+          inlayElements.add(psi)
         }
       }
       node = node.nextSibling
@@ -218,8 +240,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         val inlayOutputs = descriptor.getInlayOutputs(psiCell).takeIf { it.isNotEmpty() } ?: return@forEach
         ApplicationManager.getApplication().invokeLater {
           if (getInlayComponent(psiCell) == null) {
-            val inlayComponent = addInlayComponent(psiCell)
-            addInlayOutputs(inlayComponent, inlayOutputs, psiCell)
+            addInlayOutputs(addInlayComponent(psiCell), inlayOutputs)
           }
         }
       }
@@ -227,16 +248,18 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun restoreToolbars() {
-    val result = ArrayList<Pair<PsiElement, ActionGroup>>()
+    val toolbars = ArrayList<Pair<PsiElement, ActionGroup>>()
+    val inlaysPsiElements = ArrayList<PsiElement>()
     ReadAction.nonBlocking {
       PsiTreeUtil.processElements(descriptor.psiFile) { element ->
-        descriptor.getToolbarActions(element)?.let {
-          result.add(element to it)
-        }
+        descriptor.getToolbarActions(element)?.let { toolbars.add(element to it) }
+        if (descriptor.isInlayElement(element) == true) inlaysPsiElements.add(element)
         true
       }
     }.finishOnUiThread(ModalityState.NON_MODAL) {
-      result.forEach { (psi, action) ->
+      inlayElements.clear()
+      inlayElements.addAll(inlaysPsiElements)
+      toolbars.forEach { (psi, action) ->
         addToolbar(psi, action)
       }
       updateHighlighting()
@@ -327,27 +350,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   /** It could be that user started to type below inlay. In this case we will detect new position and perform inlay repositioning. */
   private fun updateInlayPosition(inlayComponent: NotebookInlayComponent) {
-    if (!inlayComponent.cell.isValid) {
-      inlayComponent.parent.remove(inlayComponent)
+    // editedCell here contains old text. This event will be processed by PSI later.
+    val offset = getInlayOffset(inlayComponent.cell)
+    if (inlayComponent.inlay!!.offset != offset) {
       inlayComponent.disposeInlay()
-      inlays.remove(inlayComponent.cell)
-      return
+      val inlay = addBlockElement(offset, inlayComponent)
+      inlayComponent.assignInlay(inlay)
     }
-    val isFolded = isInlayFolded(inlayComponent)
-    inlayComponent.isVisible = !isFolded
-    if (!isFolded) {
-      // editedCell here contains old text. This event will be processed by PSI later.
-      val offset = getInlayOffset(inlayComponent.cell)
-      if (inlayComponent.inlay!!.offset != offset) {
-        inlayComponent.disposeInlay()
-        val inlay = addBlockElement(offset, inlayComponent)
-        inlayComponent.assignInlay(inlay)
-      }
-    }
-  }
-
-  private fun isInlayFolded(inlayComponent: NotebookInlayComponent): Boolean {
-    return editor.foldingModel.getCollapsedRegionAtOffset(inlayComponent.cell.textOffset) != null
   }
 
   private fun updateToolbarPositions() {
