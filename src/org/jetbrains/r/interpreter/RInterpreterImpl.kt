@@ -311,7 +311,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       if (result.stdout.isBlank()) {
         throw RuntimeException("Cannot get any output from helper '$scriptName'")
       }
-      return result.stdout.lines()
+      val lines = result.stdout
+      val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
+                  ?: throw RuntimeException("Cannot find start marker, output '$lines'")
+      val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
+                ?: throw RuntimeException("Cannot find end marker, output '$lines'")
+      return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end).split(System.lineSeparator())
     } finally {
       LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
@@ -328,6 +333,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   companion object {
     val LOG = Logger.getInstance(RInterpreterImpl::class.java)
 
+    private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
+    private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
     private const val HTTPS_SUFFIX = "[https]"
     private const val WORD_DELIMITER = " "
     private const val GROUP_DELIMITER = "\t"
