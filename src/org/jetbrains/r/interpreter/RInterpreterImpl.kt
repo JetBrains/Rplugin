@@ -316,7 +316,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                   ?: throw RuntimeException("Cannot find start marker, output '$lines'")
       val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
                 ?: throw RuntimeException("Cannot find end marker, output '$lines'")
-      return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end).split(System.lineSeparator())
+      val output = lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
+      return if (output.contains(System.lineSeparator())) output.split(System.lineSeparator()) else output.split("\n")
     } finally {
       LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
