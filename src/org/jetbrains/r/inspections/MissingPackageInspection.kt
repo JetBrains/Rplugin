@@ -45,7 +45,6 @@ class MissingPackageInspection : RInspection() {
           val packageExpression = psiElement.argumentList.expressionList[0]
           checkPackage(packageExpression, problemsHolder)
         }
-        val a: RParameter? = null
         psiElement.acceptChildren(this)
       }
     })
