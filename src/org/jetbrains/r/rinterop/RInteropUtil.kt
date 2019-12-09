@@ -173,7 +173,9 @@ object RInteropUtil {
       } else {
         command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath)
       }
-    } else command
+    } else {
+      command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))
+    }
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
     return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) }) }
   }
