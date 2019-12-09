@@ -58,7 +58,7 @@ protobuf {
 
 plugins {
     idea
-    kotlin("jvm") version "1.3.40"
+    kotlin("jvm") version "1.3.61"
     id("org.jetbrains.intellij") version "0.4.10"
     id("org.jetbrains.grammarkit") version "2019.2.1"
     id("de.undercouch.download") version "3.4.3"
