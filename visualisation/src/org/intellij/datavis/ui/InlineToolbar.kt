@@ -69,6 +69,7 @@ class InlineToolbar(val cell: PsiElement,
   }
 
   fun updateBounds() {
+    if (editor.isDisposed) return
     val toolbarWidth = actionToolBar.component.preferredSize.width
     val toolbarHeight = actionToolBar.component.preferredSize.height
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
