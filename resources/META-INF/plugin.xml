@@ -512,8 +512,8 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.triple.colon.to.double.colon.name"
                          implementationClass="org.jetbrains.r.inspections.TripleColonToDoubleColonInspection"/>
 
-        <localInspection shortName="RNamingConventionInspectionInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.triple.colon.to.double.colon.name"
+        <localInspection shortName="RNamingConventionInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RBundle" key="inspection.naming.convention.name"
                          implementationClass="org.jetbrains.r.inspections.NamingConventionInspection"/>
 
 
