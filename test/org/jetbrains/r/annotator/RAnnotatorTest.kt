@@ -34,6 +34,8 @@ class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
 
   fun testArgumentsWithoutComma() = doTest()
 
+  fun testLambdaCall() = doTest()
+
   fun testSampleFromColorSettingsPage() {
     myFixture.configureByText("foo.R", RColorSettingsPage.R_DEMO_FOR_TESTS)
     myFixture.checkHighlighting(false, true, false)

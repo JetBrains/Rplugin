@@ -23,9 +23,10 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     val expression = callExpression.expression
     if (expression is RNamespaceAccessExpression && expression.identifier != null) {
       highlight(expression.identifier!!, FUNCTION_CALL)
-    } else {
+    } else if (expression is RIdentifierExpression) {
       highlight(expression, FUNCTION_CALL)
     }
+    // otherwise it's a complex expression, lets use the default highlighting for it
   }
 
   override fun visitNamespaceAccessExpression(o: RNamespaceAccessExpression) {

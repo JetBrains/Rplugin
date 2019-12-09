@@ -1,0 +1,1 @@
+(function(){<info descr="R_FUNCTION_CALL">print</info>(1 + 2 + 3)})()
