@@ -65,7 +65,7 @@ internal class RDebugCodeGenerator(private val project: Project) {
       }
 
       override fun visitErrorElement(element: PsiErrorElement?) {
-        throw RDebuggerException(RBundle.message("debugger.failed.to.execute", file.virtualFile.canonicalPath.orEmpty()))
+        throw RDebuggerException(RBundle.message("debugger.failed.to.execute.syntax.error", file.virtualFile.canonicalPath.orEmpty()))
       }
     })
     insertions.sortWith(Comparator.comparingInt<Pair<Int,String>> { it.first }.thenByDescending { it.second })

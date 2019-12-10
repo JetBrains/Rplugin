@@ -40,6 +40,7 @@ import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.PlatformDebuggerImplIcons
 import icons.org.jetbrains.r.RBundle
+import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.intellij.datavis.inlays.components.ProcessOutput
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -195,7 +196,11 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     val promise = AsyncPromise<Unit>()
     executor.execute {
       interactivePromise = promise
-      f()
+      try {
+        f()
+      } catch (e: RDebuggerException) {
+        RNotificationUtil.notifyConsoleError(project, e.message)
+      }
     }
     return promise
   }
