@@ -198,10 +198,12 @@ class RConsoleView(val rInterop: RInterop,
     }
 
     override fun update(e: AnActionEvent) {
-      val consoleEditor = getConsole(e)?.getConsoleEditor()
+      val console = getConsole(e)
+      val consoleEditor = console?.getConsoleEditor()
       val enabled = consoleEditor != null &&
                     IJSwingUtilities.hasFocus(consoleEditor.getComponent()) &&
-                    !consoleEditor.getSelectionModel().hasSelection()
+                    !consoleEditor.getSelectionModel().hasSelection() &&
+                    console.executeActionHandler.state != RConsoleExecuteActionHandler.State.TERMINATED
       e.presentation.isEnabled = enabled
     }
   }
