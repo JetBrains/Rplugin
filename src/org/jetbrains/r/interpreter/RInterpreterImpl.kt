@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.interpreter
 
-import com.google.common.collect.Lists
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
@@ -69,7 +68,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
     return runAsync {
-      val lines = forceRunHelper(AVAILABLE_PACKAGES_HELPER, repoUrls)
+      val lines = RInterpreter.forceRunHelper(interpreterPath, AVAILABLE_PACKAGES_HELPER, project.basePath, repoUrls)
       lines.mapNotNull { line ->
         val items = line.split(GROUP_DELIMITER)
         if (items.size == 2) {
@@ -91,25 +90,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   override fun getProcessOutput(scriptText: String) = runScript(scriptText, interpreterPath, project.basePath!!)
 
-  override fun runHelperWithArgs(helper: File, vararg args: String): ProcessOutput {
-    val command = Lists.newArrayList<String>(
-      interpreterPath,
-      "--slave",
-      "-f", helper.getAbsolutePath(),
-      "--args")
 
-    Collections.addAll(command, *args)
-
-    val processHandler = CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(project.basePath!!))
-    val output = processHandler.runProcess(DEFAULT_TIMEOUT)
-
-    if (output.exitCode != 0) {
-      LOG.warn("Failed to run script. Exit code: " + output.exitCode)
-      LOG.warn(output.stderr)
-    }
-
-    return output
-  }
 
   override fun getSkeletonFileByPackageName(name: String): PsiFile? {
     val cached = name2PsiFile[name]
@@ -156,7 +137,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getUserPath(): String {
-    val lines = forceRunHelper(GET_ENV_HELPER, listOf("R_LIBS_USER"))
+    val lines = RInterpreter.forceRunHelper(interpreterPath, GET_ENV_HELPER, project.basePath, listOf("R_LIBS_USER"))
     val firstLine = lines[0]
     if (firstLine.isNotBlank()) {
       return firstLine.expandTilde()
@@ -176,7 +157,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun forceGetMirrors(): List<RMirror> {
-    val lines = forceRunHelper(CRAN_MIRRORS_HELPER, listOf())
+    val lines = RInterpreter.forceRunHelper(interpreterPath, CRAN_MIRRORS_HELPER, project.basePath, listOf())
     return parseMirrors(lines)
   }
 
@@ -202,7 +183,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
-    val lines = forceRunHelper(DEFAULT_REPOSITORIES_HELPER, listOf())
+    val lines = RInterpreter.forceRunHelper(interpreterPath, DEFAULT_REPOSITORIES_HELPER, project.basePath, listOf())
     val blankIndex = lines.indexOfFirst { it.isBlank() }
     if (blankIndex < 0) {
       LOG.error("Cannot find separator in helper's output:\n${lines.joinToString("\n")}")
@@ -244,7 +225,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
-    val lines = forceRunHelper(LIBRARY_PATHS_HELPER, listOf())
+    val lines = RInterpreter.forceRunHelper(interpreterPath, LIBRARY_PATHS_HELPER, project.basePath, listOf())
     val paths = lines.filter { it.isNotBlank() }
     return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList().also {
       if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
@@ -252,7 +233,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadInstalledPackages(): List<RPackage> {
-    val lines = forceRunHelper(INSTALLED_PACKAGES_HELPER, listOf())
+    val lines = RInterpreter.forceRunHelper(interpreterPath, INSTALLED_PACKAGES_HELPER, project.basePath, listOf())
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()
         .filter { it.isNotBlank() }
@@ -293,36 +274,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     }
   }
 
-  private fun forceRunHelper(helper: File, args: List<String>): List<String> {
-    val scriptName = helper.name
-    val time = System.currentTimeMillis()
-    try {
-      val result = runAsync { runHelperWithArgs(helper, *args.toTypedArray()) }
-                     .onError { LOG.error(it) }
-                     .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
-      if (result.exitCode != 0) {
-        val message = "Helper '$scriptName' has non-zero exit code: ${result.exitCode}"
-        throw RuntimeException("$message\nStdout: ${result.stdout}\nStderr: ${result.stderr}")
-      }
-      if (result.stderr.isNotBlank()) {
-        // Note: this could be a warning message therefore there is no need to throw
-        LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
-      }
-      if (result.stdout.isBlank()) {
-        throw RuntimeException("Cannot get any output from helper '$scriptName'")
-      }
-      val lines = result.stdout
-      val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
-                  ?: throw RuntimeException("Cannot find start marker, output '$lines'")
-      val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
-                ?: throw RuntimeException("Cannot find end marker, output '$lines'")
-      val output = lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
-      return if (output.contains(System.lineSeparator())) output.split(System.lineSeparator()) else output.split("\n")
-    } finally {
-      LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
-    }
-  }
-
   private fun buildVersion(versionInfo: Map<String, String>): Version {
     val major = versionInfo["major"]?.toInt() ?: 0
     val minorAndUpdate = versionInfo["minor"]?.split(".")
@@ -334,8 +285,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   companion object {
     val LOG = Logger.getInstance(RInterpreterImpl::class.java)
 
-    private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
-    private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
     private const val HTTPS_SUFFIX = "[https]"
     private const val WORD_DELIMITER = " "
     private const val GROUP_DELIMITER = "\t"

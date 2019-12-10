@@ -11,6 +11,7 @@ import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.r.interpreter.RInterpreter
@@ -51,7 +52,7 @@ object RSkeletonUtil {
     }
   }
 
-  fun updateSkeletons(rInterpreter: RInterpreter, progressIndicator: ProgressIndicator? = null): Boolean {
+  fun updateSkeletons(rInterpreter: RInterpreter, project: Project, progressIndicator: ProgressIndicator? = null): Boolean {
     checkVersion(rInterpreter.skeletonsDirectory)
     val generationMap = HashMap<String, List<RPackage>>()
     for (skeletonPath in rInterpreter.skeletonPaths) {
@@ -78,12 +79,13 @@ object RSkeletonUtil {
 
       generationMap[skeletonPath] = newPackages
     }
-    return generateSkeletons(generationMap, rInterpreter, progressIndicator)
+    return generateSkeletons(generationMap, rInterpreter, project, progressIndicator)
   }
 
   internal fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
-                        rInterpreter: RInterpreter,
-                        progressIndicator: ProgressIndicator? = null): Boolean {
+                                 rInterpreter: RInterpreter,
+                                 project: Project,
+                                 progressIndicator: ProgressIndicator? = null): Boolean {
     var result = false
 
     val es = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE)
@@ -106,12 +108,16 @@ object RSkeletonUtil {
             }
 
             val packageName = rPackage.packageName
-            val output = rInterpreter.runHelperWithArgs(RepoUtils.PACKAGE_SUMMARY, packageName)
-            if (output.exitCode != 0) {
+            var isError = false
+            val stdout = RInterpreter.forceRunHelperOutput(rInterpreter.interpreterPath,
+                                                           RepoUtils.PACKAGE_SUMMARY,
+                                                           project.basePath,
+                                                           listOf(packageName)) { output ->
               reportError(rPackage, output)
-              return@submit
+              isError = true
             }
-            val binPackage: RLibraryPackage = convertToBinFormat(packageName, output.stdout)
+            if (isError) return@submit
+            val binPackage: RLibraryPackage = convertToBinFormat(packageName, stdout)
 
             FileOutputStream(skeletonFile).use {
               binPackage.writeTo(it)

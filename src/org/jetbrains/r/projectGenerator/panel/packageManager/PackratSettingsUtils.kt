@@ -4,22 +4,20 @@
 
 package icons.org.jetbrains.r.projectGenerator.panel.packageManager
 
-import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.execution.ExecuteExpressionUtils
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.packages.RHelpersUtil
 import java.util.*
 import javax.xml.bind.ValidationException
 
-private const val SCRIPT_PATH = "projectGenerator/getPackratOptions.R"
+private val SCRIPT_PATH = RHelpersUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
 
 fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
-  val packratOptionsResult = ExecuteExpressionUtils
-    .executeScriptInBackground(rScriptPath, SCRIPT_PATH, emptyList(), RBundle.message("project.settings.get.all.packrat.settings.title"))
-  if (packratOptionsResult.stderr.isNotEmpty()) {
-    throw ValidationException(packratOptionsResult.stderr)
+  val stdout = RInterpreter.forceRunHelperOutput(rScriptPath, SCRIPT_PATH, null, emptyList()) {
+    throw ValidationException(it.stderr)
   }
 
-  val packratOptions = packratOptionsResult.stdout.filter { it != '>' }.split("$").drop(1)
+  val packratOptions = stdout.filter { it != '>' }.split("$").drop(1)
   for (option in packratOptions) {
     val optionLines = option.split("\n").filter { it.isNotBlank() }
     val optionName = optionLines[0]

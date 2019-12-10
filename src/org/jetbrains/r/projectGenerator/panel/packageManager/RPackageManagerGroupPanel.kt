@@ -90,7 +90,7 @@ class RPackageManagerGroupPanel(name: String,
 
     if (panel is RPackratPanel) {
       try {
-        panel.updatePackratSettings(rProjectSettings.rScriptPath!!)
+        panel.updatePackratSettings(rProjectSettings.interpreterPath!!)
       }
       catch (e: ValidationException) {
         e.message?.let { return listOf(ValidationInfo(it)) }

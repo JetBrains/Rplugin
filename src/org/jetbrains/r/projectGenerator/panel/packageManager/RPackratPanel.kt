@@ -164,10 +164,10 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     tableModel.setIsBadRowValue(errorMessages.containsKey(row), row)
   }
 
-  fun updatePackratSettings(rScriptPath: String) {
-    if (rScriptPath != lastSettingsRequest.scriptPath) {
-      lastSettingsRequest.scriptPath = rScriptPath
-      lastSettingsRequest.settings = getAllPackratSettings(rScriptPath)
+  fun updatePackratSettings(interpreter: String) {
+    if (interpreter != lastSettingsRequest.interpreterPath) {
+      lastSettingsRequest.interpreterPath = interpreter
+      lastSettingsRequest.settings = getAllPackratSettings(interpreter)
     }
     tableModel.updateDataRows(lastSettingsRequest.settings.toTypedArray())
     val bordersSize = (tablePanel.border as SideBorder).getBorderInsets(tablePanel)
@@ -298,5 +298,5 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     }
   }
 
-  private data class LastSettingsRequest(var scriptPath: String? = null, var settings: List<PackratSettings<*>> = emptyList())
+  private data class LastSettingsRequest(var interpreterPath: String? = null, var settings: List<PackratSettings<*>> = emptyList())
 }

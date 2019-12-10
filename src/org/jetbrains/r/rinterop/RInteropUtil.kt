@@ -21,6 +21,7 @@ import com.intellij.util.PathUtilRt
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.settings.RSettings
@@ -133,7 +134,7 @@ object RInteropUtil {
   private fun runRWrapper(project: Project): Promise<ColoredProcessHandler> {
     val result = AsyncPromise<ColoredProcessHandler>()
     val interpreterPath = getInterpreterPath(project)
-    val paths = getRPaths(interpreterPath)
+    val paths = getRPaths(interpreterPath, project)
     val version = RInterpreterUtil.getVersionByPath(interpreterPath)
                   ?: return result.also { result.setError("Cannot parse R interpreter version") }
 
@@ -235,11 +236,12 @@ object RInteropUtil {
                             val path: String,
                             val ldPath: String)
 
-  private fun getRPaths(interpreter: String): RPaths {
-    val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }?.absolutePath
+  private fun getRPaths(interpreter: String, project: Project): RPaths {
+
+    val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
                        ?: throw RuntimeException("GetEnvVars.R not found")
-    val output = CapturingProcessHandler(GeneralCommandLine(interpreter, "--slave", "-f", script))
-      .runProcess(10000).stdout.trim()
+    
+    val output = RInterpreter.forceRunHelperOutput(interpreter, script, project.basePath, emptyList())
     val paths = output.split('\n').map { it.trim() }
     if (paths.size < 5) {
       LOG.error("cannot get rwrapper parameters, output: `$output`")

@@ -20,9 +20,10 @@ import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RInterpreterPanel
@@ -115,7 +116,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
           return false
         }
       }
-      rProjectSettings.installedPackages = findAllInstallPackages(rProjectSettings.rScriptPath)
+      rProjectSettings.installedPackages = findAllInstallPackages(rProjectSettings.interpreterPath)
       rProjectSettings.isInstalledPackagesSetUpToDate = true
     }
     checkForError(rProjectGenerator.validateGeneratorSettings()) { return false }
@@ -212,13 +213,10 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     return decoratorPanel
   }
 
-  private fun findAllInstallPackages(rScriptPath: String?): Set<String> {
-    rScriptPath ?: return emptySet()
+  private fun findAllInstallPackages(rInterpreterPath: String?): Set<String> {
+    rInterpreterPath ?: return emptySet()
 
-    val executionResult = ExecuteExpressionUtils.executeScriptInBackground(rScriptPath, SCRIPT_PATH, emptyList(),
-                                                                           RBundle.message("project.settings.find.packages"))
-    if (executionResult.exitCode != 0) return emptySet()
-    val packagesList = executionResult.stdout.split("\n").filter { it.isNotBlank() }.drop(1)
+    val packagesList = RInterpreter.forceRunHelper(rInterpreterPath, SCRIPT_PATH, null, emptyList()) .drop(1)
     return HashSet(packagesList)
   }
 
@@ -227,7 +225,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   }
 
   companion object {
-    private const val SCRIPT_PATH = "projectGenerator/getAllInstalledPackages.R"
+    private val SCRIPT_PATH = RHelpersUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R")
     private val MISSING_RSCRIPT = RBundle.message("project.settings.missing.rscript")
   }
 }

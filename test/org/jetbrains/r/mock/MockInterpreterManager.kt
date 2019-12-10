@@ -76,8 +76,6 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
 
     override fun findLibraryPathBySkeletonPath(skeletonPath: String): String? = ""
 
-    override fun runHelperWithArgs(helper: File, vararg args: String) = throw NotImplementedError()
-
     override fun getSkeletonFileByPackageName(name: String): PsiFile? {
       val ioFile = File(skeletonPaths.first(), getPackageByName(name)?.getLibraryBinFileName() ?: return null)
       val virtualFile = runAsync { VfsUtil.findFileByIoFile(ioFile, true) }
