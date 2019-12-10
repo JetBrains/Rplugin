@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.debugger.exception.RDebuggerException
 
 
 class DebugSelection : REditorActionBase() {
@@ -19,9 +20,21 @@ class DebugSelection : REditorActionBase() {
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess {
         it.executeActionHandler.fireBeforeExecution()
-        it.debugger.executeDebugSource(selection.file, selection.range)
+        try {
+          it.debugger.executeDebugSource(selection.file, selection.range)
+        } catch (e: RDebuggerException) {
+          RNotificationUtil.notifyConsoleError(project, e.message)
+        }
       }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
+  }
+
+  override fun update(e: AnActionEvent) {
+    super.update(e)
+    val project = e.project ?: return
+    val console = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
+    e.presentation.isEnabled = e.presentation.isEnabled && console.isRunningCommand != true && !console.debugger.isEnabled
+
   }
 }

@@ -29,4 +29,11 @@ class RunSelection : REditorActionBase() {
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.show(project)
   }
+
+  override fun update(e: AnActionEvent) {
+    super.update(e)
+    val project = e.project ?: return
+    e.presentation.isEnabled = e.presentation.isEnabled &&
+                               RConsoleManager.getInstance(project).currentConsoleOrNull?.isRunningCommand != true
+  }
 }
