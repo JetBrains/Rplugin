@@ -29,11 +29,9 @@ import icons.org.jetbrains.r.psi.TableManipulationColumn
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.CancellablePromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
@@ -307,7 +305,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {
-    RDataFrameViewerImpl.ensureDplyrInstalled(project)
+    try {
+      RDataFrameViewerImpl.ensureDplyrInstalled(project)
+    } catch (e: RequiredPackageException) {
+       return rejectedPromise(e)
+    }
     return executeAsync(asyncStub::dataFrameRegister, ref.proto).toPromise(executor).then {
       val index = it.value
       if (index == -1) {
