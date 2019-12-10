@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.webcore.packaging.PackageManagementService
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 
 abstract class DependencyManagementFix : LocalQuickFix {
@@ -44,9 +45,9 @@ abstract class DependencyManagementFix : LocalQuickFix {
       override fun onTaskFinish() {}
     }
 
-    val emptyPackageManagementServiceListener = object : PackageManagementService.Listener {
-      override fun operationStarted(packageName: String) {}
-      override fun operationFinished(packageName: String, errorDescription: PackageManagementService.ErrorDescription?) {}
+    val emptyPackageManagementServiceListener = object : RPackageManagementService.MultiListener {
+      override fun operationStarted(packageNames: List<String>) {}
+      override fun operationFinished(packageNames: List<String>, errorDescriptions: List<PackageManagementService.ErrorDescription?>) {}
     }
   }
 }

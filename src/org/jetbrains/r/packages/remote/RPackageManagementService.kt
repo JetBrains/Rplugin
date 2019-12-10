@@ -186,32 +186,33 @@ class RPackageManagementService(private val project: Project,
     listener: Listener,
     installToUser: Boolean
   ) {
-    installPackages(listOf(repoPackage), forceUpgrade, listener)
+    val multiListener = convertToInstallMultiListener(listener)
+    installPackages(listOf(repoPackage), forceUpgrade, multiListener)
   }
 
-  @Throws(PackageDetailsException::class)  // TODO [mine]: this is runtime error. Why should I track it?
-  fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: Listener) {
-    fun fillPackageDetails(repoPackage: RepoPackage): RepoPackage {
-      return if (repoPackage.repoUrl == null || repoPackage.latestVersion == null) {
-        val names2packages = RepoUtils.getPackageDetails(project) ?: throw MissingPackageDetailsException("Package mapping is not set")
-        val filled = names2packages[repoPackage.name]
-        filled ?: throw UnresolvedPackageDetailsException("Can't get details for package '" + repoPackage.name + "'")
-      }
-      else {
-        repoPackage
-      }
-    }
-
-    val packageName = if (packages.size == 1) packages[0].name else null
-    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageName, listener))
+  @Throws(PackageDetailsException::class)
+  fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
+    val packageNames = packages.map { it.name }
+    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
     onOperationStart()
-    packages.map { fillPackageDetails(it) }.let { them ->
+    packages.map { resolvePackage(it) }.let { them ->
       if (forceUpgrade) {
         manager.update(them)
       }
       else {
         manager.install(them)
       }
+    }
+  }
+
+  @Throws(PackageDetailsException::class)
+  fun resolvePackage(repoPackage: RepoPackage): RepoPackage {
+    return if (repoPackage.repoUrl == null || repoPackage.latestVersion == null) {
+      val names2packages = RepoUtils.getPackageDetails(project) ?: throw MissingPackageDetailsException("Package mapping is not set")
+      val filled = names2packages[repoPackage.name]
+      filled ?: throw UnresolvedPackageDetailsException("Can't get details for package '" + repoPackage.name + "'")
+    } else {
+      repoPackage
     }
   }
 
@@ -224,8 +225,9 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun uninstallPackages(installedPackages: List<InstalledPackage>, listener: Listener) {
-    val packageName = if (installedPackages.size == 1) installedPackages[0].name else null
-    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageName, listener))
+    val packageNames = installedPackages.map { it.name }
+    val multiListener = convertToUninstallMultiListener(listener)
+    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, multiListener))
     onOperationStart()
     manager.uninstall(installedPackages)
   }
@@ -238,15 +240,15 @@ class RPackageManagementService(private val project: Project,
     consumer.consume(RepoUtils.formatDetails(project, packageName))
   }
 
-  private fun getTaskListener(packageName: String?, listener: Listener): RPackageTaskManager.TaskListener {
+  private fun getTaskListener(packageNames: List<String>, listener: MultiListener): RPackageTaskManager.TaskListener {
     return object : RPackageTaskManager.TaskListener {
       override fun started() {
-        listener.operationStarted(packageName)
+        listener.operationStarted(packageNames)
       }
 
-      override fun finished(exceptions: List<ExecutionException>) {
+      override fun finished(exceptions: List<ExecutionException?>) {
         onOperationStop()
-        listener.operationFinished(packageName, toErrorDescription(exceptions))
+        listener.operationFinished(packageNames, toErrorDescriptions(exceptions))
       }
     }
   }
@@ -278,13 +280,18 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
+  interface MultiListener {
+    fun operationStarted(packageNames: List<String>)
+    fun operationFinished(packageNames: List<String>, errorDescriptions: List<ErrorDescription?>)
+  }
+
   companion object {
     private val LOGGER = Logger.getInstance(RPackageManagementService::class.java)
     private const val ARGUMENT_DELIMITER = " "
     private const val DEPENDS_DELIMITER = "\t"
 
-    internal fun toErrorDescription(exceptions: List<ExecutionException>): ErrorDescription? {
-      return toErrorDescription(exceptions.firstOrNull())
+    internal fun toErrorDescriptions(exceptions: List<ExecutionException?>): List<ErrorDescription?> {
+      return exceptions.map { toErrorDescription(it) }
     }
 
     internal fun toErrorDescription(exception: ExecutionException?): ErrorDescription? {
@@ -305,6 +312,30 @@ class RPackageManagementService(private val project: Project,
           property()
         } else {
           values
+        }
+      }
+    }
+
+    fun convertToInstallMultiListener(listener: Listener): MultiListener {
+      return convertToMultiListener(listener, { it.first() }, { it.first() })
+    }
+
+    private fun convertToUninstallMultiListener(listener: Listener): MultiListener {
+      return convertToMultiListener(listener, { if (it.size == 1) it.first() else null }, { it.first() })
+    }
+
+    private fun convertToMultiListener(
+      listener: Listener,
+      nameAggregator: (List<String>) -> String?,
+      errorAggregator: (List<ErrorDescription?>) -> ErrorDescription?
+    ): MultiListener {
+      return object : MultiListener {
+        override fun operationStarted(packageNames: List<String>) {
+          listener.operationStarted(nameAggregator(packageNames))
+        }
+
+        override fun operationFinished(packageNames: List<String>, errorDescriptions: List<ErrorDescription?>) {
+          listener.operationFinished(nameAggregator(packageNames), errorAggregator(errorDescriptions))
         }
       }
     }

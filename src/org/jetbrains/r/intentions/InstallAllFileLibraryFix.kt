@@ -33,22 +33,32 @@ class InstallAllFileLibraryFix : DependencyManagementFix() {
         rPackageManagementService.reloadAllPackages()
       }
 
-      var isNotified = false
-      packageNames.forEach {
-        try {
-          rPackageManagementService.installPackages(listOf(RepoPackage(it, null)), false, emptyPackageManagementServiceListener)
-        }
-        catch (e: PackageDetailsException) {
-          if (!isNotified) {
-            isNotified = true
-            Notification(
-              RBundle.message("install.all.library.fix.notification.group.id"),
-              RBundle.message("install.all.library.fix.notification.title"),
-              RBundle.message("install.all.library.fix.notification.content"),
-              NotificationType.ERROR
-            ).notify(project)
-          }
-        }
+      val resolved = resolveAndNotify(project, rPackageManagementService, packageNames)
+      if (resolved.isNotEmpty()) {
+        rPackageManagementService.installPackages(resolved, false, emptyPackageManagementServiceListener)
+      }
+    }
+  }
+
+  private fun resolveAndNotify(project: Project, service: RPackageManagementService, packageNames: List<String>): List<RepoPackage> {
+    return resolve(service, packageNames).also { resolved ->
+      if (resolved.size != packageNames.size) {
+        Notification(
+          RBundle.message("install.all.library.fix.notification.group.id"),
+          RBundle.message("install.all.library.fix.notification.title"),
+          RBundle.message("install.all.library.fix.notification.content"),
+          NotificationType.ERROR
+        ).notify(project)
+      }
+    }
+  }
+
+  private fun resolve(service: RPackageManagementService, packageNames: List<String>): List<RepoPackage> {
+    return packageNames.mapNotNull { packageName ->
+      try {
+        service.resolvePackage(RepoPackage(packageName, null))
+      } catch (e: PackageDetailsException) {
+        null
       }
     }
   }

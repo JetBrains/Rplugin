@@ -171,36 +171,48 @@ class RequiredPackageInstaller(private val project: Project) {
     }
 
     if (needInstall.isEmpty()) return
-    val installPackageListener = object : PackageManagementService.Listener {
-      override fun operationStarted(packageName: String) {}
+    val installPackageListener = object : RPackageManagementService.MultiListener {
+      override fun operationStarted(packageNames: List<String>) {}
 
-      override fun operationFinished(packageName: String,
-                                     errorDescription: PackageManagementService.ErrorDescription?) {
-        if (errorDescription != null) {
-          packageInstallationErrorDescriptions.replace(packageName, errorDescription.message)
-          errorOccurred()
-        }
-        else {
-          packageInstallationErrorDescriptions.remove(packageName)
+      override fun operationFinished(packageNames: List<String>,
+                                     errorDescriptions: List<PackageManagementService.ErrorDescription?>) {
+        for ((packageName, errorDescription) in packageNames.zip(errorDescriptions)) {
+          if (errorDescription != null) {
+            packageInstallationErrorDescriptions.replace(packageName, errorDescription.message)
+            errorOccurred()
+          }
+          else {
+            packageInstallationErrorDescriptions.remove(packageName)
+          }
         }
       }
     }
 
     runBackgroundableTask(RBundle.message("required.package.background.preparing.title"), project, true) {
-      needInstall.forEach {
-        val packageName = it.name
-        try {
-          RepoUtils.getPackageDetails(project) ?: rPackageManagementService.reloadAllPackages()
-          rPackageManagementService.installPackages(listOf(RepoPackage(packageName, null)), true, installPackageListener)
+      reloadPackagesIfNecessary()
+      val resolved = resolvePackages(needInstall)
+      if (resolved.isNotEmpty()) {
+        rPackageManagementService.installPackages(resolved, true, installPackageListener)
+      }
+    }
+  }
+
+  private fun reloadPackagesIfNecessary() {
+    RepoUtils.getPackageDetails(project) ?: rPackageManagementService.reloadAllPackages()
+  }
+
+  private fun resolvePackages(packages: List<RequiredPackage>): List<RepoPackage> {
+    return packages.mapNotNull { required ->
+      try {
+        rPackageManagementService.resolvePackage(RepoPackage(required.name, null))
+      } catch (e: PackageDetailsException) {
+        val message = when (e) {
+          is MissingPackageDetailsException -> MISSING_DETAILS_ERROR_MESSAGE
+          is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(required.name)
         }
-        catch (e: PackageDetailsException) {
-          val message = when (e) {
-            is MissingPackageDetailsException -> MISSING_DETAILS_ERROR_MESSAGE
-            is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(packageName)
-          }
-          packageInstallationErrorDescriptions.replace(packageName, message)
-          errorOccurred()
-        }
+        packageInstallationErrorDescriptions.replace(required.name, message)
+        errorOccurred()
+        null
       }
     }
   }

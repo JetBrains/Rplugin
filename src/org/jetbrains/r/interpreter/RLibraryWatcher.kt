@@ -25,17 +25,39 @@ class RLibraryWatcher(private val project: Project) {
   private val rootsToWatch = HashSet<LocalFileSystem.WatchRequest>()
   private val files4Watching = ArrayList<VirtualFile>()
   private val libraryPaths = ArrayList<VirtualFile>()
+  private val switch = RLibraryWatcherSwitch()
 
   init {
     bulkFileListener = object: BulkFileListener {
       override fun after(events: MutableList<out VFileEvent>) {
-        if (events.any { event -> event.file?.let { file ->
-              libraryPaths.any { ancestor -> VfsUtil.isAncestor(ancestor, file, true) } } == true }) {
-            project.messageBus.syncPublisher(TOPIC).libraryChanged()
-          }
+        if (events.any { it.isLibraryEvent() }) {
+          onLibraryChanged()
         }
+      }
     }
     VirtualFileManager.VFS_CHANGES.subscribe(project, bulkFileListener)
+  }
+
+  private fun VFileEvent.isLibraryEvent(): Boolean {
+    return file?.isLibraryFile() == true
+  }
+
+  private fun VirtualFile.isLibraryFile(): Boolean {
+    return libraryPaths.any { ancestor -> VfsUtil.isAncestor(ancestor, this, true) }
+  }
+
+  private fun onLibraryChanged() {
+    switch.onActive {
+      project.messageBus.syncPublisher(TOPIC).libraryChanged()
+    }
+  }
+
+  fun disable() {
+    switch.disable()
+  }
+
+  fun enable() {
+    switch.enable()
   }
 
   @Synchronized

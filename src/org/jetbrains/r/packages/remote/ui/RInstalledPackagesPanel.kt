@@ -83,7 +83,8 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
           if (outdated.isNotEmpty()) {
             RUpdateAllConfirmDialog(outdated) {
               val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
-              service.installPackages(packages, true, listener)
+              val multiListener = RPackageManagementService.convertToInstallMultiListener(listener)
+              service.installPackages(packages, true, multiListener)
             }.show()
           } else {
             showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)

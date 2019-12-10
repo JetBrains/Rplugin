@@ -21,6 +21,7 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RLibraryWatcher
 import java.util.concurrent.ConcurrentSkipListSet
 
 class RPackageTaskManager(
@@ -54,7 +55,7 @@ class RPackageTaskManager(
 
   interface TaskListener {
     fun started()
-    fun finished(exceptions: List<ExecutionException>)
+    fun finished(exceptions: List<ExecutionException?>)
   }
 
   private class PackagingTask(
@@ -65,13 +66,24 @@ class RPackageTaskManager(
   ) : Task.Backgroundable(project, title) {
 
     override fun run(indicator: ProgressIndicator) {
+      val watcher = RLibraryWatcher.getInstance(project)
+      watcher.disable()
+      try {
+        runTask(indicator)
+      } finally {
+        watcher.enable()
+      }
+    }
+
+    private fun runTask(indicator: ProgressIndicator) {
       taskStarted(indicator)
-      val exceptions = mutableListOf<ExecutionException>()
+      val exceptions = mutableListOf<ExecutionException?>()
       for ((index, action) in actions.withIndex()) {
         try {
-          indicator.text = "${action.name}..."
+          indicator.text = makeIndicatorText(index)
           indicator.fraction = index.toDouble() / actions.count().toDouble()
           action.doAction()
+          exceptions.add(null)
           taskNotify(action, null)
         }
         catch (e: ExecutionException) {
@@ -80,6 +92,15 @@ class RPackageTaskManager(
         }
       }
       taskFinished(exceptions)
+    }
+
+    private fun makeIndicatorText(index: Int): String {
+      val action = actions[index]
+      return if (actions.size > 1) {
+        "Packaging task $index/${actions.size}: ${action.name}"
+      } else {
+        action.name
+      }
     }
 
     private fun taskStarted(indicator: ProgressIndicator) {
@@ -106,16 +127,17 @@ class RPackageTaskManager(
       notification?.notify(myProject)
     }
 
-    private fun taskFinished(exceptions: List<ExecutionException>) {
+    private fun taskFinished(exceptions: List<ExecutionException?>) {
       val notification = if (actions.count() > 1) {
-        if (exceptions.isEmpty()) {
+        val numExceptions = exceptions.count { it != null }
+        if (numExceptions == 0) {
           val title = RBundle.message("package.task.manager.finished.success.title", title)
           val content = RBundle.message("package.task.manager.finished.success.content", actions.count())
           Notification(PACKAGING_GROUP_ID, title, content, NotificationType.INFORMATION, null)
         }
         else {
           val title = RBundle.message("package.task.manager.finished.failed.title", title)
-          val content = RBundle.message("package.task.manager.finished.failed.content", exceptions.count(), actions.count() - exceptions.count())
+          val content = RBundle.message("package.task.manager.finished.failed.content", numExceptions, actions.size - numExceptions)
           Notification(PACKAGING_GROUP_ID, title, content, NotificationType.ERROR, null)
         }
       }
