@@ -40,9 +40,9 @@ object RInteropUtil {
     ProcessIOExecutorService.INSTANCE.execute {
       runRWrapper(project).onError {
         promise.setError(it)
-      }.onSuccess { process ->
+      }.onSuccess { (process, paths) ->
         createdProcess = process
-        createRInterop(process, project, promise)
+        createRInterop(process, project, promise, paths)
       }
     }
     return promise.onError { createdProcess?.destroyProcess() }
@@ -50,7 +50,8 @@ object RInteropUtil {
 
   private fun createRInterop(process: ColoredProcessHandler,
                              project: Project,
-                             promise: AsyncPromise<RInterop>) {
+                             promise: AsyncPromise<RInterop>,
+                             paths: RPaths) {
     val linePromise = AsyncPromise<String>()
     process.addProcessListener(object : ProcessListener {
       val output = StringBuilder()
@@ -75,7 +76,9 @@ object RInteropUtil {
         if (updateCrashes.isNotEmpty()) {
           reportMinidumps(updateCrashes)
         }
-        if (linePromise.state == Promise.State.PENDING) linePromise.setError(RuntimeException("RWrapper terminated"))
+        if (linePromise.state == Promise.State.PENDING) {
+          linePromise.setError(RuntimeException("RWrapper terminated, exitcode: ${event.exitCode}, rpath: ${paths}"))
+        }
       }
 
       override fun startNotified(event: ProcessEvent) {
@@ -131,8 +134,8 @@ object RInteropUtil {
     LOG.error("RWrapper terminated with Runtime Error, the crash minidump found: ${updateCrashes[0].name} ", *attachments)
   }
 
-  private fun runRWrapper(project: Project): Promise<ColoredProcessHandler> {
-    val result = AsyncPromise<ColoredProcessHandler>()
+  private fun runRWrapper(project: Project): Promise<Pair<ColoredProcessHandler, RPaths>> {
+    val result = AsyncPromise<Pair<ColoredProcessHandler, RPaths>>()
     val interpreterPath = getInterpreterPath(project)
     val paths = getRPaths(interpreterPath, project)
     val version = RInterpreterUtil.getVersionByPath(interpreterPath)
@@ -178,7 +181,7 @@ object RInteropUtil {
       command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))
     }
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
-    return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) }) }
+    return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) } to paths) }
   }
 
   private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
@@ -242,7 +245,7 @@ object RInteropUtil {
                        ?: throw RuntimeException("GetEnvVars.R not found")
     
     val output = RInterpreter.forceRunHelperOutput(interpreter, script, project.basePath, emptyList())
-    val paths = output.split('\n').map { it.trim() }
+    val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     if (paths.size < 5) {
       LOG.error("cannot get rwrapper parameters, output: `$output`")
       throw RuntimeException("Cannot get environment variables for running rwrapper")
