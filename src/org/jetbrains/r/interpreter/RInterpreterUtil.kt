@@ -8,6 +8,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
@@ -20,6 +21,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
@@ -32,7 +34,8 @@ object RInterpreterUtil {
   const val EDT_TIMEOUT = 5 * 1000 // 5 sec
   private const val INTERPRETER_ALIVE_TIMEOUT = 2000L
   private val R_DISTRO_REGEX = "R-.*".toRegex()
-
+  private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
+  private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
   private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
 
   private val fromPathVariable: ArrayList<String>
@@ -174,5 +177,64 @@ object RInterpreterUtil {
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
       dumbService.queueTask(UnindexedFilesUpdater(project))
     }
+  }
+
+  /**
+   * @param errorHandler if errorHelper is not null, it could be called instead of throwing the exception.
+   * @throws RuntimeException if errorHandler is null and the helper exited with non-zero code or produced zero length output.
+   */
+  fun runHelper(interpreterPath: String,
+                helper: File,
+                workingDirectory: String?,
+                args: List<String>,
+                errorHandler: ((ProcessOutput) -> Unit)? = null): String {
+    val scriptName = helper.name
+    val time = System.currentTimeMillis()
+    try {
+      val result = runAsync { runHelperWithArgs(interpreterPath, helper, workingDirectory, args) }
+                     .onError { RInterpreterImpl.LOG.error(it) }
+                     .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
+      if (result.exitCode != 0) {
+        if (errorHandler != null) {
+          errorHandler(result)
+          return ""
+        } else {
+          val message = "Helper '$scriptName' has non-zero exit code: ${result.exitCode}"
+          throw RuntimeException("$message\nStdout: ${result.stdout}\nStderr: ${result.stderr}")
+        }
+      }
+      if (result.stderr.isNotBlank()) {
+        // Note: this could be a warning message therefore there is no need to throw
+        RInterpreterImpl.LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
+      }
+      if (result.stdout.isBlank()) {
+        if (errorHandler != null) {
+          errorHandler(result)
+          return ""
+        }
+        throw RuntimeException("Cannot get any output from helper '$scriptName'")
+      }
+      val lines = result.stdout
+      val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
+                  ?: throw RuntimeException("Cannot find start marker, output '$lines'")
+      val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
+                ?: throw RuntimeException("Cannot find end marker, output '$lines'")
+      return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
+    } finally {
+      RInterpreterImpl.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
+    }
+  }
+
+  private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
+    val command = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
+    val processHandler = CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(workingDirectory))
+    val output = processHandler.runProcess(DEFAULT_TIMEOUT)
+
+    if (output.exitCode != 0) {
+      RInterpreterImpl.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
+      RInterpreterImpl.LOG.warn(output.stderr)
+    }
+
+    return output
   }
 }

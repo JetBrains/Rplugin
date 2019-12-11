@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.skeleton.RSkeletonFileType
@@ -109,10 +110,10 @@ object RSkeletonUtil {
 
             val packageName = rPackage.packageName
             var isError = false
-            val stdout = RInterpreter.forceRunHelperOutput(rInterpreter.interpreterPath,
-                                                           RepoUtils.PACKAGE_SUMMARY,
-                                                           project.basePath,
-                                                           listOf(packageName)) { output ->
+            val stdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
+                                                         RepoUtils.PACKAGE_SUMMARY,
+                                                         project.basePath,
+                                                         listOf(packageName)) { output ->
               reportError(rPackage, output)
               isError = true
             }

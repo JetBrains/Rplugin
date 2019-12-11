@@ -21,7 +21,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
@@ -216,7 +215,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   private fun findAllInstallPackages(rInterpreterPath: String?): Set<String> {
     rInterpreterPath ?: return emptySet()
 
-    val packagesList = RInterpreter.forceRunHelper(rInterpreterPath, SCRIPT_PATH, null, emptyList()) .drop(1)
+    val packagesList = RInterpreterUtil.runHelper(rInterpreterPath, SCRIPT_PATH, null, emptyList()).lines().drop(1)
     return HashSet(packagesList)
   }
 

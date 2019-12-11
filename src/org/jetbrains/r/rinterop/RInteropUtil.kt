@@ -21,7 +21,6 @@ import com.intellij.util.PathUtilRt
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.settings.RSettings
@@ -244,7 +243,7 @@ object RInteropUtil {
     val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
                        ?: throw RuntimeException("GetEnvVars.R not found")
     
-    val output = RInterpreter.forceRunHelperOutput(interpreter, script, project.basePath, emptyList())
+    val output = RInterpreterUtil.runHelper(interpreter, script, project.basePath, emptyList())
     val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     if (paths.size < 5) {
       LOG.error("cannot get rwrapper parameters, output: `$output`")

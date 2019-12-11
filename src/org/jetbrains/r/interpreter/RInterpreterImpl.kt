@@ -68,7 +68,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
     return runAsync {
-      val lines = RInterpreter.forceRunHelper(interpreterPath, AVAILABLE_PACKAGES_HELPER, project.basePath, repoUrls)
+      val lines = runHelper(AVAILABLE_PACKAGES_HELPER, *(repoUrls.toTypedArray()))
       lines.mapNotNull { line ->
         val items = line.split(GROUP_DELIMITER)
         if (items.size == 2) {
@@ -137,7 +137,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getUserPath(): String {
-    val lines = RInterpreter.forceRunHelper(interpreterPath, GET_ENV_HELPER, project.basePath, listOf("R_LIBS_USER"))
+    val lines = runHelper(GET_ENV_HELPER, "R_LIBS_USER")
     val firstLine = lines[0]
     if (firstLine.isNotBlank()) {
       return firstLine.expandTilde()
@@ -157,7 +157,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun forceGetMirrors(): List<RMirror> {
-    val lines = RInterpreter.forceRunHelper(interpreterPath, CRAN_MIRRORS_HELPER, project.basePath, listOf())
+    val lines = runHelper(CRAN_MIRRORS_HELPER)
     return parseMirrors(lines)
   }
 
@@ -183,7 +183,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
-    val lines = RInterpreter.forceRunHelper(interpreterPath, DEFAULT_REPOSITORIES_HELPER, project.basePath, listOf())
+    val lines = runHelper(DEFAULT_REPOSITORIES_HELPER)
     val blankIndex = lines.indexOfFirst { it.isBlank() }
     if (blankIndex < 0) {
       LOG.error("Cannot find separator in helper's output:\n${lines.joinToString("\n")}")
@@ -225,7 +225,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
-    val lines = RInterpreter.forceRunHelper(interpreterPath, LIBRARY_PATHS_HELPER, project.basePath, listOf())
+    val lines = runHelper(LIBRARY_PATHS_HELPER)
     val paths = lines.filter { it.isNotBlank() }
     return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList().also {
       if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
@@ -233,7 +233,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadInstalledPackages(): List<RPackage> {
-    val lines = RInterpreter.forceRunHelper(interpreterPath, INSTALLED_PACKAGES_HELPER, project.basePath, listOf())
+    val lines = runHelper(INSTALLED_PACKAGES_HELPER)
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()
         .filter { it.isNotBlank() }
@@ -281,6 +281,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     val update = if (minorAndUpdate?.size == 2) minorAndUpdate[1].toInt() else 0
     return Version(major, minor, update)
   }
+
+  private fun runHelper(helper: File, vararg args: String) =
+    RInterpreterUtil.runHelper(interpreterPath, helper, project.basePath, args.toList()).lines()
 
   companion object {
     val LOG = Logger.getInstance(RInterpreterImpl::class.java)

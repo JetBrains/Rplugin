@@ -4,7 +4,7 @@
 
 package icons.org.jetbrains.r.projectGenerator.panel.packageManager
 
-import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
 import java.util.*
 import javax.xml.bind.ValidationException
@@ -13,7 +13,7 @@ private val SCRIPT_PATH = RHelpersUtil.findFileInRHelpers("R/projectGenerator/ge
 
 fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
-  val stdout = RInterpreter.forceRunHelperOutput(rScriptPath, SCRIPT_PATH, null, emptyList()) {
+  val stdout = RInterpreterUtil.runHelper(rScriptPath, SCRIPT_PATH, null, emptyList()) {
     throw ValidationException(it.stderr)
   }
 
