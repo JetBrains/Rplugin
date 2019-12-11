@@ -124,12 +124,12 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
 
     val g2d = g.create()
 
-    g2d.color = if (selected) {
-      inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
-    }
-    else {
+    g2d.color = //if (selected) {
+      //inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
+    //}
+    //else {
       (inlay!!.editor as EditorImpl).backgroundColor
-    }
+    //}
 
     g2d.fillRect(0, 0, width, InlayDimensions.topOffset + InlayDimensions.cornerRadius)
     g2d.fillRect(0, height - InlayDimensions.bottomOffset - InlayDimensions.cornerRadius, width,
@@ -181,10 +181,10 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
           g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
           g.drawLine(0, y, gutterWidth + 10, y)
 
-          if (selected) {
-            g.color = editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
-            g.fillRect(gutterWidth - 10, r.y + 1, 10, r.height - 1 - editor.lineHeight)
-          }
+//          if (selected) {
+//            g.color = editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
+//            g.fillRect(gutterWidth - 10, r.y + 1, 10, r.height - 1 - editor.lineHeight)
+//          }
         }
       }
     } catch (e: Exception) {
