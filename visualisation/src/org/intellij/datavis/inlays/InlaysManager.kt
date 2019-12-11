@@ -8,7 +8,6 @@ import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -29,8 +28,6 @@ import icons.org.intellij.datavis.inlays.EditorInlaysManager
  *
  * ToDo should be split into InlaysManager with all basics and NotebookInlaysManager with all specific.
  */
-
-val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
 
 private val logger = Logger.getInstance(InlaysManager::class.java)
 

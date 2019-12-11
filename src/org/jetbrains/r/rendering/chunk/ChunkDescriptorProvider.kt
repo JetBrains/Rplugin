@@ -7,6 +7,12 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.editor.markup.EffectType
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -23,6 +29,8 @@ import org.jetbrains.r.rendering.chunk.RunChunkNavigator.createRunChunkActionGro
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
+import java.awt.Color
+import java.awt.Font
 import java.io.File
 import java.util.concurrent.Future
 import javax.swing.ImageIcon
@@ -31,12 +39,12 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
   override fun getInlayDescriptor(editor: Editor): InlayElementDescriptor? {
     return runReadAction {
       val psiFile = PsiDocumentManager.getInstance(editor.project ?: return@runReadAction null).getPsiFile(editor.document)
-       if (psiFile?.virtualFile?.fileType is RMarkdownFileType) RMarkdownInlayDescriptor(psiFile) else null
+       if (psiFile?.virtualFile?.fileType is RMarkdownFileType) RMarkdownInlayDescriptor(psiFile, editor) else null
     }
   }
 }
 
-class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
+class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor: Editor) : InlayElementDescriptor {
   override fun cleanup(psi: PsiElement): Future<Void> {
     val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
     return FileUtil.asyncDelete(File(cacheDirectory))
@@ -51,9 +59,22 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     return getImages(psi) + getUrls(psi) + getTables(psi) + getOutputs(psi)
   }
 
+  override fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>) {
+    editor.markupModel.removeAllHighlighters()
+    editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor?.let { backgroundColor ->
+      toolbarElements.forEach { fillChunkArea(it.parent.textRange, backgroundColor) }
+    }
+  }
+
   override fun getToolbarActions(psi: PsiElement): ActionGroup? = if (isChunkFenceLang(psi)) createRunChunkActionGroup(psi) else null
 
   override fun isToolbarActionElement(psi: PsiElement): Boolean = isChunkFenceLang(psi)
+
+  private fun fillChunkArea(textRange: TextRange, backgroundColor: Color?) {
+    editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
+                                           TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
+                                           HighlighterTargetArea.LINES_IN_RANGE)
+  }
 
   companion object {
     fun getImages(psi: PsiElement): List<InlayOutput> {
@@ -107,3 +128,5 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       }?.apply { sortBy { it.lastModified() } }
   }
 }
+
+private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")

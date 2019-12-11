@@ -24,9 +24,11 @@ interface InlayElementDescriptor {
 
   fun isInlayElement(psi: PsiElement): Boolean
 
-  fun getInlayOutputs(psi: PsiElement): List<InlayOutput>
+  fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutput>
 
-  fun getToolbarActions(psi: PsiElement): ActionGroup?
+  fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>)
+
+  fun getToolbarActions(toolbarElement: PsiElement): ActionGroup?
 
   fun isToolbarActionElement(psi: PsiElement): Boolean
 

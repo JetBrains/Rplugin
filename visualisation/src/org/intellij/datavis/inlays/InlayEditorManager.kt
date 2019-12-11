@@ -23,10 +23,6 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.FoldingListener
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.editor.markup.EffectType
-import com.intellij.openapi.editor.markup.HighlighterLayer
-import com.intellij.openapi.editor.markup.HighlighterTargetArea
-import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
@@ -36,8 +32,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.NonUrgentExecutor
 import icons.org.intellij.datavis.ui.InlineToolbar
 import org.intellij.datavis.inlays.*
-import java.awt.Color
-import java.awt.Font
 import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -167,16 +161,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun updateHighlighting() {
-    editor.markupModel.removeAllHighlighters()
-    editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor?.let {backgroundColor ->
-      toolbars.keys.forEach { fillChunkArea(it.parent.textRange, backgroundColor) }
-    }
-  }
-
-  private fun fillChunkArea(textRange: TextRange, backgroundColor: Color?) {
-    editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
-                                           TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
-                                           HighlighterTargetArea.LINES_IN_RANGE)
+    descriptor.onUpdateHighlighting(toolbars.keys)
   }
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {
