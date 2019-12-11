@@ -174,7 +174,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     TestCase.assertNotNull(fenceLang)
     val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
     promise.blockingGet(10000)
-    return RMarkdownInlayDescriptor(myFixture.file).getInlayOutputs(fenceLang)
+    return RMarkdownInlayDescriptor(myFixture.file, myFixture.editor).getInlayOutputs(fenceLang)
   }
 }
 
