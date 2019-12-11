@@ -9,8 +9,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.util.ui.UIUtil
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
@@ -96,13 +96,8 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private fun openEditor(imageFile: File) {
-    val virtualFile = VfsUtil.findFileByIoFile(imageFile, true)
-    if (virtualFile != null) {
-      VfsUtil.markDirtyAndRefresh(false, false, false, virtualFile)
-      openEditor(virtualFile)
-    } else {
-      LOGGER.warn("Cannot get virtual file for '$imageFile'")
-    }
+    val content = imageFile.readBytes()
+    openEditor(BinaryLightVirtualFile(imageFile.name, content))
   }
 
   private fun openEditor(file: VirtualFile) {
