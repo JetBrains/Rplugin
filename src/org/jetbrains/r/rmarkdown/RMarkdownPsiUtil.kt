@@ -26,10 +26,10 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object RMarkdownPsiUtil {
-  val EXECUTABLE_R_FENCE_PATTERN = Regex("\\{[rR]([\\s,].*)?}") //Pattern = Pattern.compile("\\{r(\\s.*)?}", Pattern.DOTALL)
-  val EXECUTABLE_PYTHON_FENCE_PATTERN = Regex("\\{python(\\s.*)?}")
   val PRESENTABLE_TYPES = HEADERS
   val TRANSPARENT_CONTAINERS = TokenSet.create(MARKDOWN_FILE, UNORDERED_LIST, ORDERED_LIST, LIST_ITEM, BLOCK_QUOTE)
+
+  val executableFenceLabelPattern: Pattern = Pattern.compile("\\{(\\w+)([^,]*)(,.*)?}", Pattern.DOTALL)
 
   private val HEADER_ORDER = listOf(
     TokenSet.create(MARKDOWN_FILE_ELEMENT_TYPE),
@@ -40,10 +40,16 @@ object RMarkdownPsiUtil {
     HEADER_LEVEL_5_SET,
     HEADER_LEVEL_6_SET)
 
-  private val executableFenceLabelPattern: Pattern = Pattern.compile("\\{(r|python)\\s+(\\w+).*}", Pattern.DOTALL)
-
   fun isSpace(node: ASTNode): Boolean {
     return FormatterUtil.isWhitespaceOrEmpty(node) || node.elementType == RElementTypes.R_NL || node.elementType == MARKDOWN_EOL
+  }
+
+  fun getExecutableFenceLanguage(fullFenceHeader: CharSequence): String? {
+    val matcher = executableFenceLabelPattern.matcher(fullFenceHeader)
+    if (matcher.matches()) {
+      return matcher.group(1).toLowerCase()
+    }
+    return null
   }
 
   /** Find top-level AST nodes (from guest language) inside guest fence */
@@ -186,11 +192,8 @@ object RMarkdownPsiUtil {
    */
   private fun getExecutableFenceLabelInt(element: PsiElement): String? {
     val fenceLang = element.node.findChildByType(MarkdownTokenTypes.FENCE_LANG)?.text ?: return null
-    if (fenceLang.matches(EXECUTABLE_R_FENCE_PATTERN) || fenceLang.matches(EXECUTABLE_PYTHON_FENCE_PATTERN)) {
-      val m: Matcher = executableFenceLabelPattern.matcher(fenceLang)
-      return if (m.matches()) m.group(2) else ""
-    }
-    return null
+    val m: Matcher = executableFenceLabelPattern.matcher(fenceLang)
+    return if (m.matches()) m.group(2).trim() else ""
   }
 
   private fun getOrCalculateUnnamedExecutableFences(file: PsiFile): HashMap<PsiElement, Int> {

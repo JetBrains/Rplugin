@@ -12,7 +12,6 @@ import org.intellij.plugins.markdown.lang.lexer.MarkdownToplevelLexer
 import java.util.*
 
 val R_FENCE_ELEMENT_TYPE = IElementType("R Fence", RMarkdownLanguage)
-val PYTHON_FENCE_ELEMENT_TYPE = IElementType("Python Fence", RMarkdownLanguage)
 
 val MARKDOWN_EOL: IElementType = MarkdownElementType.platformType(MarkdownTokenTypes.EOL)
 
@@ -36,11 +35,7 @@ class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer(RMarkdownFlav
     }
     super.advance()
     if (delegate.tokenType === FenceLangType) {
-      val fenceType = when {
-        tokenSequence.matches(RMarkdownPsiUtil.EXECUTABLE_R_FENCE_PATTERN) -> R_FENCE_ELEMENT_TYPE
-        tokenSequence.matches(RMarkdownPsiUtil.EXECUTABLE_PYTHON_FENCE_PATTERN) -> PYTHON_FENCE_ELEMENT_TYPE
-        else -> return
-      }
+      val fenceType: IElementType = RmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType ?: return
       queue.add(getTokenData())
 
       super.advance()

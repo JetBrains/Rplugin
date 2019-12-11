@@ -8,7 +8,7 @@
 
     <!-- ensure compatibility with all intellij products-->
     <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.python</depends>
+    <depends optional="true" config-file="python-deps.xml">com.intellij.modules.python</depends>
     <depends>com.intellij.modules.xdebugger</depends>
     <depends>org.intellij.plugins.markdown</depends>
 
@@ -80,6 +80,11 @@ You can find the source code in the following repositories:
 </html>
 
         ]]></description>
+
+    <extensionPoints>
+      <extensionPoint qualifiedName="com.intellij.rmdFenceProvider"
+                      interface="org.jetbrains.r.rmarkdown.RmdFenceProvider"/>
+    </extensionPoints>
 
     <application-components>
         <component>
@@ -265,10 +270,6 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
-    <extensions defaultExtensionNs="Pythonid">
-        <inspectionExtension implementation="org.jetbrains.r.rmarkdown.RMarkdownPyInspectionExtension"/>
-    </extensions>
-
     <extensions defaultExtensionNs="com.intellij">
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
@@ -314,6 +315,8 @@ You can find the source code in the following repositories:
         <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
 
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
+
+        <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForR"/>
 
        <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
 
@@ -513,8 +516,6 @@ You can find the source code in the following repositories:
         <!-- Project generators -->
         <moduleType id="R_MODULE" implementationClass="org.jetbrains.r.projectGenerator.builder.RModuleType"/>
         <projectTemplatesFactory implementation="org.jetbrains.r.projectGenerator.template.RTemplatesFactory" />
-        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
-        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
 
         <datavis.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
         <datavis.inlays.components.graphicsManager implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManager"/>

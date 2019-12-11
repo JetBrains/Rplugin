@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<idea-plugin>
+    <extensions defaultExtensionNs="Pythonid">
+        <inspectionExtension implementation="org.jetbrains.r.rmarkdown.RMarkdownPyInspectionExtension"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
+
+        <rmdFenceProvider implementation="org.jetbrains.r.rmarkdown.RmdFenceProviderForPython"/>
+    </extensions>
+
+</idea-plugin>

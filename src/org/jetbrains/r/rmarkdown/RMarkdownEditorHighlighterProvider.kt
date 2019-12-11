@@ -18,8 +18,6 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.tree.IElementType
-import com.jetbrains.python.PythonLanguage
-import org.jetbrains.r.RLanguage
 
 class RMarkdownEditorHighlighterProvider : EditorHighlighterProvider {
   override fun getEditorHighlighter(project: Project?,
@@ -36,8 +34,9 @@ private class RMarkdownTemplateEditorHighlighter(project: Project?,
   LayeredLexerEditorHighlighter(RMarkdownSyntaxHighlighter(), colors) {
 
   init {
-    registerLayer(R_FENCE_ELEMENT_TYPE, layerDescriptor(project, virtualFile, RLanguage.INSTANCE))
-    registerLayer(PYTHON_FENCE_ELEMENT_TYPE, layerDescriptor(project, virtualFile, PythonLanguage.INSTANCE))
+    for (extension in RmdFenceProvider.EP_NAME.extensionList) {
+      registerLayer(extension.fenceElementType, layerDescriptor(project, virtualFile, extension.fenceLanguage))
+    }
   }
 
   private fun layerDescriptor(project: Project?,

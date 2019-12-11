@@ -9,12 +9,12 @@ import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiFileImpl
+import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
-import com.jetbrains.python.PythonLanguage
+import com.intellij.util.containers.FactoryMap
 import org.intellij.plugins.markdown.lang.parser.MarkdownParserManager
-import org.jetbrains.r.RLanguage
 
-object RMarkdownFileViewProviderFactory : FileViewProviderFactory {
+class RMarkdownFileViewProviderFactory : FileViewProviderFactory {
   override fun createFileViewProvider(
     file: VirtualFile,
     language: Language?,
@@ -22,6 +22,8 @@ object RMarkdownFileViewProviderFactory : FileViewProviderFactory {
     eventSystemEnabled: Boolean
   ): FileViewProvider = RMarkdownFileViewProvider(manager, file, eventSystemEnabled)
 }
+
+private val guestElementTypeMap: MutableMap<Language, TemplateDataElementType> = FactoryMap.create { RMarkdownTemplate(it) }
 
 class RMarkdownFileViewProvider(
   manager: PsiManager,
@@ -33,8 +35,8 @@ class RMarkdownFileViewProvider(
     return RMarkdownFileViewProvider(manager, fileCopy, false)
   }
 
-  override fun getLanguages(): MutableSet<Language> {
-    return mutableSetOf(baseLanguage, RLanguage.INSTANCE, PythonLanguage.INSTANCE)
+  override fun getLanguages(): Set<Language> {
+    return setOf(baseLanguage) + RmdFenceProvider.EP_NAME.extensionList.map { it.fenceLanguage }.toSet()
   }
 
   override fun getBaseLanguage(): Language {
@@ -46,13 +48,13 @@ class RMarkdownFileViewProvider(
   }
 
   override fun createFile(lang: Language): PsiFile? {
-    val elementType = when(lang) {
-      RLanguage.INSTANCE -> R_TEMPLATE
-      PythonLanguage.INSTANCE -> PYTHON_TEMPLATE
-      else -> return super.createFile(lang)?.apply {
+    if (RmdFenceProvider.find { it.fenceLanguage == lang } == null) {
+      return super.createFile(lang)?.apply {
         putUserData(MarkdownParserManager.FLAVOUR_DESCRIPTION, RMarkdownFlavourDescriptor)
       }
     }
+
+    val elementType = guestElementTypeMap[lang]
     val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(lang)!!
     return (parserDefinition.createFile(this) as PsiFileImpl).apply { contentElementType = elementType }
   }

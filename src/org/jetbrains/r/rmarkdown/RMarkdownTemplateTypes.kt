@@ -11,14 +11,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import com.intellij.psi.tree.IElementType
-import com.jetbrains.python.PythonLanguage
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.ast.accept
 import org.intellij.markdown.ast.visitors.RecursiveVisitor
 import org.intellij.markdown.parser.MarkdownParser
-import org.jetbrains.r.RLanguage
 import org.intellij.markdown.IElementType as MarkdownIElementType
 
 val INNER_ELEMENT = IElementType("INNER", RMarkdownLanguage)
@@ -27,7 +25,7 @@ val OUTER_ELEMENT = IElementType("OUTER", RMarkdownLanguage)
 
 class RMarkdownTemplate(private val templateLanguage: Language)
   : TemplateDataElementType(
-  "RMARKDOWN_R_TEMPLATRE",
+  "RMARKDOWN_TEMPLATE_${templateLanguage.displayName}",
   RMarkdownLanguage,
   INNER_ELEMENT,
   OUTER_ELEMENT) {
@@ -99,12 +97,5 @@ class RMarkdownTemplate(private val templateLanguage: Language)
 
 fun getLanguage(fenceLanguage: ASTNode, sourceCode: CharSequence): String? {
   val text = sourceCode.substring(fenceLanguage.startOffset, fenceLanguage.endOffset).toLowerCase()
-  return when {
-    text.matches(RMarkdownPsiUtil.EXECUTABLE_R_FENCE_PATTERN) -> "r"
-    text.matches(RMarkdownPsiUtil.EXECUTABLE_PYTHON_FENCE_PATTERN) -> "python"
-    else -> null
-  }
+  return RMarkdownPsiUtil.getExecutableFenceLanguage(text)
 }
-
-val R_TEMPLATE = RMarkdownTemplate(RLanguage.INSTANCE)
-val PYTHON_TEMPLATE = RMarkdownTemplate(PythonLanguage.INSTANCE)
