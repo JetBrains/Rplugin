@@ -214,15 +214,18 @@ object RInterpreterUtil {
         }
         throw RuntimeException("Cannot get any output from helper '$scriptName'")
       }
-      val lines = result.stdout
-      val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
-                  ?: throw RuntimeException("Cannot find start marker, output '$lines'")
-      val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
-                ?: throw RuntimeException("Cannot find end marker, output '$lines'")
-      return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
+      return getScriptStdout(result.stdout)
     } finally {
       RInterpreterImpl.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
+  }
+
+  fun getScriptStdout(lines: String): String {
+    val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
+                ?: throw RuntimeException("Cannot find start marker, output '$lines'")
+    val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
+              ?: throw RuntimeException("Cannot find end marker, output '$lines'")
+    return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
   }
 
   private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {

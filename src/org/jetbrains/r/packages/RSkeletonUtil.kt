@@ -146,7 +146,8 @@ object RSkeletonUtil {
   }
 
   private fun reportError(rPackage: RPackage, output: ProcessOutput) {
-    if (output.stdout.startsWith("cannot-load-package")) {
+    val scriptOutput = RInterpreterUtil.getScriptStdout(output.stdout)
+    if (scriptOutput.startsWith("intellij-cannot-load-package")) {
       LOG.warn("Cannot load package $rPackage in R interpreter: ${output.stderr}")
     }
     else {
