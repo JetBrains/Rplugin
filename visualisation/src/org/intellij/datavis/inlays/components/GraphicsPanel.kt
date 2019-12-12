@@ -47,7 +47,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   val imageSize: Dimension?
     get() = currentEditor?.document?.value?.let { image ->
-      Dimension(image.width, image.height)
+      Dimension(image.width / scaleMultiplier, image.height / scaleMultiplier)
     }
 
   val imageComponentSize: Dimension
@@ -119,7 +119,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   private fun adjustImageZoom(zoomModel: ImageZoomModel) {
     if (!isAdvancedMode) {
-      zoomModel.zoomFactor = if (!isRetina) 1.0 else 0.5
+      zoomModel.zoomFactor = 1.0 / scaleMultiplier
     } else {
       zoomModel.fitZoomToWindow()
     }
@@ -137,6 +137,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   companion object {
     private val LOGGER = Logger.getInstance(GraphicsPanel::class.java)
     private val isRetina = SystemInfo.isMac && UIUtil.isRetina()
+    private val scaleMultiplier = if (!isRetina) 1 else 2
     private const val NO_GRAPHICS = "No graphics available"
     private const val GRAPHICS_COULD_NOT_BE_LOADED = "Graphics couldn't be loaded"
   }
