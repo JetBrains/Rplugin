@@ -35,15 +35,12 @@ internal object REditorActionUtil {
     if (code != null && !StringUtil.isEmptyOrSpaces(code)) {
       return SelectedCode(code, virtualFile, TextRange(editor.selectionModel.selectionStart, editor.selectionModel.selectionEnd))
     }
-    val startElememt = findFirstElementToEvaluate(editor) ?: return null
-    val lastElementToExecute = lastElementToExecute(startElememt)
-    val range = TextRange(startElememt.textRange.startOffset, lastElementToExecute.textRange.endOffset)
-
-    val text = range.subSequence(editor.document.charsSequence).toString()
-    if (StringUtil.isEmptyOrSpaces(text)) return null
-    val result = SelectedCode(text, virtualFile, range)
-
-    val nextSibling = nextElement(lastElementToExecute)
+    val project = editor.project ?: return null
+    val document = editor.document
+    val file = PsiDocumentManager.getInstance(project).getPsiFile(document) ?: return null
+    val content = document.charsSequence
+    val startElement = findFirstElementToEvaluate(editor.caretModel.offset, content, file) ?: return null
+    val (result, nextSibling) = select(startElement, content, virtualFile) ?: return null
     if (nextSibling != null) {
       val siblingEndPos = nextSibling.textOffset
       editor.caretModel.currentCaret.moveToOffset(siblingEndPos)
@@ -52,13 +49,29 @@ internal object REditorActionUtil {
     return result
   }
 
-  private fun findFirstElementToEvaluate(editor: Editor): RExpression? {
-    val project = editor.project ?: return null
-    val document = editor.document
-    val file = PsiDocumentManager.getInstance(project).getPsiFile(document) ?: return null
-    val charsSequence = document.charsSequence
+  fun getSelectedCode(caretOffset: Int,
+                      content: CharSequence,
+                      file: PsiFile): Pair<SelectedCode, PsiElement?>? {
+    val virtualFile = file.virtualFile ?: return null
+    val startElement = findFirstElementToEvaluate(caretOffset, content, file) ?: return null
+    return select(startElement, content, virtualFile)
+  }
 
-    var offset: Int = findLineStart(editor.caretModel.offset, charsSequence)
+  private fun select(startElement: RExpression,
+                     charsSequence: CharSequence,
+                     virtualFile: VirtualFile): Pair<SelectedCode, PsiElement?>? {
+    val lastElementToExecute = lastElementToExecute(startElement)
+    val range = TextRange(startElement.textRange.startOffset, lastElementToExecute.textRange.endOffset)
+
+    val text = range.subSequence(charsSequence).toString()
+    if (StringUtil.isEmptyOrSpaces(text)) return null
+    return SelectedCode(text, virtualFile, range) to nextElement(lastElementToExecute)
+  }
+
+  private fun findFirstElementToEvaluate(caretOffset: Int,
+                                         charsSequence: CharSequence,
+                                         file: PsiFile): RExpression? {
+    var offset: Int = findLineStart(caretOffset, charsSequence)
 
     while (true) {
       var element: PsiElement = file.findElementAt(offset) ?: return null
