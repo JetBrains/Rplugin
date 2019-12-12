@@ -10,7 +10,9 @@ import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -172,11 +174,15 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
   }
 }
 
-class ChunkExecutionState(val terminationRequired: AtomicBoolean = AtomicBoolean(),
+class ChunkExecutionState(private val editor: Editor,
+                          val terminationRequired: AtomicBoolean = AtomicBoolean(),
                           val isDebug: Boolean = false,
                           val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
-                          val cancellableExecutionPromise: AtomicReference<CancellablePromise<Unit>> = AtomicReference())
-
+                          val pendingLineRanges: MutableList<IntRange> = ArrayList<IntRange>(),
+                          @Volatile var currentLineRange: IntRange? = null,
+                          val cancellableExecutionPromise: AtomicReference<CancellablePromise<Unit>> = AtomicReference()) {
+  fun revalidateGutter() = invokeLater { (editor as EditorEx).gutterComponentEx.revalidateMarkup() }
+}
 
 var Editor.chunkExecutionState: ChunkExecutionState?
   get() = project?.chunkExecutionState
@@ -204,7 +210,7 @@ private fun createRunAllAction(): AnAction =
       val state = editor.chunkExecutionState
       if (state == null) {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
-        ChunkExecutionState().apply {
+        ChunkExecutionState(editor).apply {
           editor.chunkExecutionState = this
           RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
         }
@@ -260,3 +266,4 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
   }
 
 private abstract class SameTextAction(text: String, icon: Icon? = null) : AnAction(text, text, icon)
+

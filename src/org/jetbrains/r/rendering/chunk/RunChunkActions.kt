@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
@@ -129,7 +130,7 @@ private fun isEnabled(e: AnActionEvent): Boolean {
 }
 
 private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffset: Int) {
-  ChunkExecutionState().apply {
+  ChunkExecutionState(editor).apply {
     editor.chunkExecutionState = this
     RunChunkHandler.runAllChunks(file, editor, currentPsiElement, terminationRequired, startOffset - 1, endOffset).onProcessed {
       editor.chunkExecutionState = null
@@ -139,8 +140,17 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   val element = getCodeFenceByEvent(e)!!
-  val editor = e.editor ?: return
-  element.project.chunkExecutionState = ChunkExecutionState(currentPsiElement = AtomicReference(element), isDebug = isDebug)
+  val parent = element.parent ?: return
+  val editor = e.editor as? EditorEx ?: return
+  val document = editor.document
+  val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
+  if (!isDebug) {
+    val range = IntRange(document.getLineNumber(parent.textRange.startOffset), document.getLineNumber(parent.textRange.endOffset))
+    chunkExecutionState.pendingLineRanges.add(range)
+    chunkExecutionState.currentLineRange = null
+    chunkExecutionState.revalidateGutter()
+  }
+  element.project.chunkExecutionState = chunkExecutionState
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
     element.project.chunkExecutionState = null
     val inlayElement = runReadAction { findInlayElementByFenceElement(element) } ?: return@onProcessed

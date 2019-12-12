@@ -68,9 +68,20 @@ object RunChunkHandler {
       runAsync {
         console.debugger.isVariableRefreshEnabled = false
         try {
-          val chunks = runReadAction { PsiTreeUtil.collectElements(psiFile) {
-            isChunkFenceLang(it) && (it.textRange.endOffset - 1) in start..end
-          } }
+          val document = editor.document
+          val ranges = ArrayList<IntRange>()
+          val chunks = runReadAction {
+            val chunks = PsiTreeUtil.collectElements(psiFile) { isChunkFenceLang(it) && (it.textRange.endOffset - 1) in start..end }
+            chunks.map { it.parent }.forEach { chunk ->
+              ranges.add(IntRange(document.getLineNumber(chunk.textRange.startOffset), document.getLineNumber(chunk.textRange.endOffset)))
+            }
+            chunks
+          }
+          editor.chunkExecutionState?.let { chunkExecutionState ->
+            chunkExecutionState.pendingLineRanges.addAll(ranges)
+            chunkExecutionState.currentLineRange = null
+            chunkExecutionState.revalidateGutter()
+          }
           try {
             for (element in chunks) {
               if (terminationRequired.get()) {
@@ -220,17 +231,29 @@ object RunChunkHandler {
     ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
   }
 
-  private fun executeCode(console: RConsoleView, codeElement: PsiElement, fenceElement: PsiElement, debug: Boolean = false):
-    Promise<List<ProcessOutput>> {
+  private fun executeCode(console: RConsoleView,
+                          codeElement: PsiElement,
+                          fenceElement: PsiElement,
+                          debug: Boolean = false): Promise<List<ProcessOutput>> {
     return if (debug) {
       console.debugger.executeChunk(codeElement.containingFile.virtualFile, codeElement.textRange)
     } else {
       val result = mutableListOf<ProcessOutput>()
+      val chunkState = console.executeActionHandler.chunkState
+      if (chunkState != null) {
+        val first = chunkState.pendingLineRanges.first()
+        chunkState.pendingLineRanges.remove(first)
+        chunkState.currentLineRange = first
+        chunkState.revalidateGutter()
+      }
       val executePromise = console.executeCodeAsyncWithBusy(codeElement.text) { s, type ->
         result.add(ProcessOutput(s, type))
       }
       val promise = AsyncPromise<List<ProcessOutput>>()
-      executePromise.onProcessed { promise.setResult(result) }
+      executePromise.onProcessed {
+        promise.setResult(result)
+        chunkState?.currentLineRange = null
+      }
       codeElement.project.chunkExecutionState?.cancellableExecutionPromise?.set(executePromise)
       promise
     }
