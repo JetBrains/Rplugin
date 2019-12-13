@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
@@ -104,7 +105,8 @@ class RGraphicsDevice(
       override val hint = "Recorded snapshot at '${snapshot.file}'"
 
       override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
-        return interop.graphicsRescaleStored(parentDirectory.absolutePath, snapshot.number, snapshot.version, parameters)
+        val directoryPath = FileUtil.toSystemIndependentName(parentDirectory.absolutePath)
+        return interop.graphicsRescaleStored(directoryPath, snapshot.number, snapshot.version, parameters)
       }
 
       override fun onSuccessfulRescale() {
