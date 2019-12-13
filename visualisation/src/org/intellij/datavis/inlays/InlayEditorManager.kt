@@ -323,8 +323,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   /** Aligns all editor inlays to fill full width of editor. */
   private fun updateInlayComponentsWidth() {
-    val gutterWidth = (editor.gutter as EditorGutterComponentEx).width
-    val inlayWidth = editor.component.width - gutterWidth - InlayDimensions.rightBorder
+    val inlayWidth = InlayDimensions.calculateInlayWidth(editor)
     if (inlayWidth > 0) {
       inlays.values.forEach {
         it.setSize(inlayWidth, it.height)

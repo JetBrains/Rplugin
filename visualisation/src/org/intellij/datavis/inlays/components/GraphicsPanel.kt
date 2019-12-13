@@ -43,19 +43,13 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   val component = rootPanel.component
 
-  val imageInsets = ImageComponent.IMAGE_INSETS
-
   val imageSize: Dimension?
     get() = currentEditor?.document?.value?.let { image ->
       Dimension(image.width / scaleMultiplier, image.height / scaleMultiplier)
     }
 
   val imageComponentSize: Dimension
-    get() {
-      val insets = imageInsets
-      val panelDimension = component.size
-      return Dimension(panelDimension.width - insets * 2, panelDimension.height - toolPanelHeight - insets * 2)
-    }
+    get() = calculateImageSizeForRegion(component.size, toolPanelHeight)
 
   val maximumSize: Dimension?
     get() = imageSize?.let { size ->
@@ -138,7 +132,12 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     private val LOGGER = Logger.getInstance(GraphicsPanel::class.java)
     private val isRetina = SystemInfo.isMac && UIUtil.isRetina()
     private val scaleMultiplier = if (!isRetina) 1 else 2
+    private const val imageInsets = ImageComponent.IMAGE_INSETS
     private const val NO_GRAPHICS = "No graphics available"
     private const val GRAPHICS_COULD_NOT_BE_LOADED = "Graphics couldn't be loaded"
+
+    fun calculateImageSizeForRegion(region: Dimension, topOffset: Int = 0): Dimension {
+      return Dimension(region.width - imageInsets * 2, region.height - imageInsets * 2 - topOffset)
+    }
   }
 }

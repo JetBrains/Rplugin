@@ -27,7 +27,9 @@ import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.rendering.chunk.ChunkPathManager
+import org.intellij.datavis.inlays.InlayDimensions
 import org.intellij.datavis.inlays.InlaysManager
+import org.intellij.datavis.inlays.components.GraphicsPanel
 import org.intellij.datavis.inlays.components.ProcessOutput
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
@@ -158,7 +160,10 @@ object RunChunkHandler {
     val screenParameters = if (ApplicationManager.getApplication().isHeadlessEnvironment) {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
-      RGraphicsUtils.getDefaultScreenParameters()
+      val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
+      val imageSize = GraphicsPanel.calculateImageSizeForRegion(inlayContentSize)
+      val resolution = RGraphicsUtils.getDefaultResolution(false)
+      RGraphicsUtils.ScreenParameters(imageSize, resolution)
     }
     try {
       if (console.isRunningCommand) {

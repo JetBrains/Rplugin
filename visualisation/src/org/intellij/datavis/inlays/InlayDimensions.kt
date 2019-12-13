@@ -4,8 +4,10 @@
 
 package org.intellij.datavis.inlays
 
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.util.ui.JBUI
+import java.awt.Dimension
 import java.awt.Font
 
 object InlayDimensions {
@@ -86,5 +88,16 @@ object InlayDimensions {
     minHeight = smallHeight
 
     rightBorder = spaceWidth * 3
+  }
+
+  fun calculateInlayWidth(editor: EditorEx): Int {
+    return editor.component.width - editor.gutterComponentEx.width - rightBorder
+  }
+
+  fun calculateInlayContentSize(editor: EditorEx, inlayHeight: Int = defaultHeight): Dimension {
+    val inlayWidth = calculateInlayWidth(editor)
+    val contentWidth = inlayWidth - JBUI.scale(rightBorderUnscaled)- JBUI.scale(leftBorderUnscaled)
+    val contentHeight = inlayHeight - topBorder - bottomBorder
+    return Dimension(contentWidth, contentHeight)
   }
 }
