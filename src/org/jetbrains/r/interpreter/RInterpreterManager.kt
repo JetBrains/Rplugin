@@ -181,6 +181,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
   private fun refreshSkeletons(interpreter: RInterpreterImpl) {
+    if (!project.isOpen || project.isDisposed) return
     interpreter.skeletonPaths.forEach { skeletonPath ->
       val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return@forEach
       VfsUtil.markDirtyAndRefresh(false, true, true, libraryRoot)
