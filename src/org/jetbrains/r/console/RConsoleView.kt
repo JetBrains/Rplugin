@@ -20,7 +20,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
@@ -92,9 +91,8 @@ class RConsoleView(val rInterop: RInterop,
         }
       }
     }
-
   fun executeText(text: String) {
-    AppUIUtil.invokeOnEdt {
+    invokeLater {
       runWriteAction {
         consoleEditor.document.setText(text)
       }
