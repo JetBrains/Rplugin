@@ -37,6 +37,7 @@ import com.intellij.util.ui.UIUtil
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
@@ -106,7 +107,8 @@ class RConsoleRunner(private val project: Project,
 
             createContentDescriptorAndActions()
             consoleView.createDebuggerPanel()
-            promise.setResult(consoleView)
+            // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
+            runAsync { promise.setResult(consoleView) }
 
             // Setup viewer handler
             runBackgroundableTask(RBundle.message("console.runner.initializing.viewer.title"), project, false) {

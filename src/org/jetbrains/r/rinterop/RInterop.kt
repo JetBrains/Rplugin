@@ -14,6 +14,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
@@ -171,7 +172,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun sourceFile(file: VirtualFile) {
-    replExecute(FileDocumentManager.getInstance().getDocument(file)?.text ?: "")
+    replExecute(runReadAction { FileDocumentManager.getInstance ().getDocument(file)?.text ?: "" } )
   }
 
   fun executeCodeAsync(code: String, consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<Unit> {

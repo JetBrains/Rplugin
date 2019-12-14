@@ -5,6 +5,7 @@
 package org.jetbrains.r.console
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -158,14 +159,16 @@ class RConsoleManager(private val project: Project) {
     private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
       return if (RSettings.getInstance(project).interpreterPath.isNotBlank()) {
         RConsoleRunner(project, project.basePath!!).initAndRun().onSuccess { console ->
-          val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
-          if (requestFocus) {
-            toolWindow?.show {
-              val focusManager = IdeFocusManager.findInstanceByComponent(console)
-              focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.component) ?: return@show, project)
+          invokeLater {
+            val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
+            if (requestFocus) {
+              toolWindow?.show {
+                val focusManager = IdeFocusManager.findInstanceByComponent(console)
+                focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.component) ?: return@show, project)
+              }
             }
+            toolWindow?.component?.validate()
           }
-          toolWindow?.component?.validate()
         }
       } else {
         AsyncPromise<RConsoleView>().apply {
