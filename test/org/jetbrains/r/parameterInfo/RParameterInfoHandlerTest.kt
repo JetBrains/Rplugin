@@ -222,7 +222,9 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SHOW_PARAMETER_INFO)
     UIUtil.dispatchAllInvocationEvents()
 
-    assertEquals(wrap(*expectedResults, isDisabled = isDisabled), hintFixture.currentHintText)
+    val expectedVariants = wrap(*expectedResults, isDisabled = isDisabled).split('-').sorted()
+    val actualVariants = hintFixture.currentHintText?.split('-')?.sorted()
+    assertEquals(expectedVariants, actualVariants)
   }
 
   companion object {
