@@ -361,6 +361,8 @@ You can find the source code in the following repositories:
         <stubElementTypeHolder class="org.jetbrains.r.skeleton.psi.RSkeletonElementTypes"/>
         <fileType extensions="RPluginSkeletonFile" name="RPluginSkeletonFile" fieldName="INSTANCE" implementationClass="org.jetbrains.r.skeleton.RSkeletonFileType"/>
 
+        <codeInsight.parameterInfo language="R" implementationClass="org.jetbrains.r.parameterInfo.RParameterInfoHandler"/>
+
         <!-- Settings -->
         <projectConfigurable groupId="project"
                              id="org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable"
