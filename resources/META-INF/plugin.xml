@@ -362,6 +362,7 @@ You can find the source code in the following repositories:
         <fileType extensions="RPluginSkeletonFile" name="RPluginSkeletonFile" fieldName="INSTANCE" implementationClass="org.jetbrains.r.skeleton.RSkeletonFileType"/>
 
         <codeInsight.parameterInfo language="R" implementationClass="org.jetbrains.r.parameterInfo.RParameterInfoHandler"/>
+        <codeInsight.parameterNameHints language="R" implementationClass="org.jetbrains.r.parameterInfo.RInlayParameterHintsProvider"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"
