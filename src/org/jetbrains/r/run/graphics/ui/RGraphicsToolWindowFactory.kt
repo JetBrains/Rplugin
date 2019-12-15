@@ -5,12 +5,13 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import org.jetbrains.r.console.RConsoleManager
 
-class RGraphicsToolWindowFactory : ToolWindowFactory {
+class RGraphicsToolWindowFactory : ToolWindowFactory, DumbAware {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentManager = toolWindow.contentManager
     val content = contentManager.factory.createContent(RGraphicsToolWindow(project), null, false)

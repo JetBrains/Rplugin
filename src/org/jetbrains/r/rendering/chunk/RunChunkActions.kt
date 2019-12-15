@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
@@ -43,7 +43,7 @@ const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveA
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
 const val INTERRUPT_CHUNK_EXECUTION_ID = "org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
 
-class RunChunksAboveAction: AnAction(), RPromotedAction {
+class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
@@ -56,7 +56,7 @@ class RunChunksAboveAction: AnAction(), RPromotedAction {
   }
 }
 
-class RunChunksBelowAction: AnAction(), RPromotedAction {
+class RunChunksBelowAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType && canRunChunk(e.editor)
   }
@@ -69,7 +69,7 @@ class RunChunksBelowAction: AnAction(), RPromotedAction {
   }
 }
 
-class RunChunkAction : AnAction(), RPromotedAction {
+class RunChunkAction : DumbAwareAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
@@ -80,7 +80,7 @@ class RunChunkAction : AnAction(), RPromotedAction {
   }
 }
 
-class DebugChunkAction : AnAction(), RPromotedAction {
+class DebugChunkAction : DumbAwareAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = isEnabled(e)
@@ -91,7 +91,7 @@ class DebugChunkAction : AnAction(), RPromotedAction {
   }
 }
 
-class InterruptChunkExecutionAction : AnAction(), RPromotedAction {
+class InterruptChunkExecutionAction : DumbAwareAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType &&

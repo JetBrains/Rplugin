@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -33,7 +34,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     ToolbarAction("org.jetbrains.r.actions.RunSelection"),
     ToolbarAction("org.jetbrains.r.actions.DebugSelection"))
 
-  private inner class ToolbarAction(actionId: String) : AnAction() {
+  private inner class ToolbarAction(actionId: String) : DumbAwareAction() {
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }
 
     override fun actionPerformed(e: AnActionEvent) {

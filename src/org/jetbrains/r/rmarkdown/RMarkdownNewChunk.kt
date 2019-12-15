@@ -5,11 +5,11 @@
 package org.jetbrains.r.rmarkdown
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.TreeUtil
@@ -21,7 +21,7 @@ import org.jetbrains.r.actions.caret
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.actions.psiFile
 
-class RMarkdownNewChunk : AnAction(), RPromotedAction {
+class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val offset = e.caret?.offset ?: return

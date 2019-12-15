@@ -70,62 +70,60 @@ class RConsoleRunner(private val project: Project,
 
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
-    RInterpreterManager.getInstance(project).initializeInterpreter().onSuccess {
-      UIUtil.invokeLaterIfNeeded {
-        RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
-          val interpreterPath = RInterpreterManager.getInterpreter(project)?.interpreterPath ?: throw IllegalStateException(
-            "Interpreter must be initlialized here")
-          UIUtil.invokeLaterIfNeeded {
-            consoleView = RConsoleView(rInterop, interpreterPath, project, consoleTitle)
-            ProcessTerminatedListener.attach(rInterop.processHandler)
-            rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
-              override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                if (outputType == ProcessOutputType.SYSTEM) {
-                  consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
-                }
+    UIUtil.invokeLaterIfNeeded {
+      RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
+        val interpreterPath = RInterpreterManager.getInterpreter(project)?.interpreterPath ?: throw IllegalStateException(
+          "Interpreter must be initlialized here")
+        UIUtil.invokeLaterIfNeeded {
+          consoleView = RConsoleView(rInterop, interpreterPath, project, consoleTitle)
+          ProcessTerminatedListener.attach(rInterop.processHandler)
+          rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
+            override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+              if (outputType == ProcessOutputType.SYSTEM) {
+                consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
               }
-
-              override fun processTerminated(event: ProcessEvent) {
-                finishConsole()
-              }
-            })
-
-            // Setup console listener for graphics device
-            val resolution = RGraphicsSettings.getScreenParameters(project).resolution
-            val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
-            graphicsDevice.addListener(RGraphicsToolWindowListener(project))
-            consoleView.addOnSelectListener {
-              RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
             }
 
-            // Setup console listener for HTML viewer
-            val viewerState = RViewerUtils.createViewerState()
-            viewerState.addListener(RViewerToolWindowListener(project))
-            consoleView.addOnSelectListener {
-              RViewerRepository.getInstance(project).setActiveState(viewerState)
+            override fun processTerminated(event: ProcessEvent) {
+              finishConsole()
             }
+          })
 
-            createContentDescriptorAndActions()
-            consoleView.createDebuggerPanel()
-            // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
-            runAsync { promise.setResult(consoleView) }
-
-            // Setup viewer handler
-            runBackgroundableTask(RBundle.message("console.runner.initializing.viewer.title"), project, false) {
-              val viewerHandler = UpdateViewerHandler(rInterop, viewerState)
-              consoleView.executeActionHandler.addListener(viewerHandler)
-            }
-
-            // Setup custom graphical device (it's more time consuming so it should be the last one)
-            runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-              val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
-              consoleView.executeActionHandler.addListener(graphicsHandler)
-            }
+          // Setup console listener for graphics device
+          val resolution = RGraphicsSettings.getScreenParameters(project).resolution
+          val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
+          graphicsDevice.addListener(RGraphicsToolWindowListener(project))
+          consoleView.addOnSelectListener {
+            RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
           }
-        }.onError {
-          showErrorMessage(project,  it.message ?: "Cannot find suitable rwrapper",  "Cannot run console")
-          promise.setError(it)
+
+          // Setup console listener for HTML viewer
+          val viewerState = RViewerUtils.createViewerState()
+          viewerState.addListener(RViewerToolWindowListener(project))
+          consoleView.addOnSelectListener {
+            RViewerRepository.getInstance(project).setActiveState(viewerState)
+          }
+
+          createContentDescriptorAndActions()
+          consoleView.createDebuggerPanel()
+          // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
+          runAsync { promise.setResult(consoleView) }
+
+          // Setup viewer handler
+          runBackgroundableTask(RBundle.message("console.runner.initializing.viewer.title"), project, false) {
+            val viewerHandler = UpdateViewerHandler(rInterop, viewerState)
+            consoleView.executeActionHandler.addListener(viewerHandler)
+          }
+
+          // Setup custom graphical device (it's more time consuming so it should be the last one)
+          runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
+            val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
+            consoleView.executeActionHandler.addListener(graphicsHandler)
+          }
         }
+      }.onError {
+        showErrorMessage(project,  it.message ?: "Cannot find suitable rwrapper",  "Cannot run console")
+        promise.setError(it)
       }
     }
     return promise

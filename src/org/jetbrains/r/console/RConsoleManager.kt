@@ -133,13 +133,9 @@ class RConsoleManager(private val project: Project) {
     fun runConsole(project: Project, requestFocus: Boolean = false): Promise<RConsoleView> {
       val promise = AsyncPromise<RConsoleView>()
       if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-        RInterpreterManager.getInstance(project).initializeInterpreter().onSuccess {
-          doRunConsole(project, requestFocus).processed(promise)
-        }
+        RInterpreterManager.getInstance(project).initializeInterpreter()
       }
-      else {
-        doRunConsole(project, requestFocus).processed(promise)
-      }
+      doRunConsole(project, requestFocus).processed(promise)
       return promise
     }
 

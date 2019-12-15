@@ -7,7 +7,6 @@ package org.jetbrains.r.console
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.ApplicationManager
@@ -16,6 +15,7 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -171,7 +171,7 @@ class RConsoleView(val rInterop: RInterop,
       e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
   }
 
-  class RInterruptAction : AnAction() {
+  class RInterruptAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
       if (console.isRunningCommand) {
@@ -206,7 +206,7 @@ class RConsoleView(val rInterop: RInterop,
     }
   }
 
-  class RSetCurrentDirectoryFromEditor : AnAction() {
+  class RSetCurrentDirectoryFromEditor : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
       val project = e.project ?: return

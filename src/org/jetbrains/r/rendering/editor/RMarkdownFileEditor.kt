@@ -17,6 +17,8 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -224,7 +226,7 @@ private fun createRunAllAction(): AnAction =
 
 
 private fun createOutputDirectoryAction(project: Project, report: VirtualFile): ComboBoxAction =
-  object : ComboBoxAction() {
+  object : ComboBoxAction(), DumbAware {
     init {
       templatePresentation.icon = AllIcons.General.OpenDisk
       templatePresentation.description = RBundle.message("rmarkdown.editor.toolbar.chooseOutputDirectory")
@@ -265,5 +267,5 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
       get() = Paths.get(RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(report.path)).fileName.toString()
   }
 
-private abstract class SameTextAction(text: String, icon: Icon? = null) : AnAction(text, text, icon)
+private abstract class SameTextAction(text: String, icon: Icon? = null) : DumbAwareAction(text, text, icon)
 

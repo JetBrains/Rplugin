@@ -4,17 +4,17 @@
 
 package org.jetbrains.r.actions
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import org.jetbrains.r.psi.api.RFile
 import javax.swing.Icon
 
-abstract class REditorActionBase : AnAction, RPromotedAction {
+abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
   constructor() : super()
 
   constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)

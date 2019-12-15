@@ -11,6 +11,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.markup.GutterIconRenderer
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import org.jetbrains.r.actions.editor
@@ -67,7 +68,7 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
   }
 }
 
-internal class ChunkAction(private val element: PsiElement, private val action: AnAction) : AnAction() {
+internal class ChunkAction(private val element: PsiElement, private val action: AnAction) : DumbAwareAction() {
   init {
     copyFrom(action)
   }
