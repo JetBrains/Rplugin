@@ -19,6 +19,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RReferenceBase
@@ -119,7 +120,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
 
   private fun hasUseMethod(function: RAssignmentStatement): Boolean {
     var result = false
-    function.assignedValue?.acceptChildren(object : RInlineUtil.RRecursiveElementVisitor() {
+    function.assignedValue?.acceptChildren(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(o: RCallExpression) {
         if (result) return
         if (!o.isFunctionFromLibrary("UseMethod", "base")) return
@@ -130,7 +131,7 @@ class RInlineAssignmentHandler : InlineActionHandler() {
   }
 
   private fun hasInterruptIfs(project: Project, function: RAssignmentStatement): Boolean {
-    val returns = RInlineUtil.collectReturns(project, function.assignedValue as RFunctionExpression).map { it.returnStatement }
+    val returns = RRefactoringUtil.collectReturns(project, function.assignedValue as RFunctionExpression).map { it.returnStatement }
     val cache = mutableSetOf<RIfStatement>()
     return returns
       .mapNotNull { PsiTreeUtil.getParentOfType(it, RIfStatement::class.java, true, RFunctionExpression::class.java) }

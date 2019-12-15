@@ -13,9 +13,11 @@ import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.api.RAssignmentStatement
+import org.jetbrains.r.psi.api.RForStatement
+import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.cfg.RControlFlow
 import java.util.*
 
@@ -81,72 +83,8 @@ object RInlineUtil {
     return result.toList()
   }
 
-  fun collectReturns(project: Project, functionExpression: RFunctionExpression): Set<ReturnResult> {
-    val controlFlow = functionExpression.controlFlow
-    val instructions = controlFlow.instructions
-
-    val returns = mutableSetOf<ReturnResult>()
-    ControlFlowUtil.iteratePrev(instructions.size - 1, instructions) { instruction: Instruction ->
-      val element = instruction.element ?: return@iteratePrev ControlFlowUtil.Operation.NEXT
-
-      if (element is RBlockExpression && element.children.isEmpty()) {
-        returns.add(ImplicitNullResult(project, element.firstChild))
-        return@iteratePrev ControlFlowUtil.Operation.CONTINUE
-      }
-
-      if (element is RBlockExpression || element is RIfStatement) return@iteratePrev ControlFlowUtil.Operation.NEXT
-      if (element is RParameter) return@iteratePrev ControlFlowUtil.Operation.CONTINUE
-
-      if (element is RLoopStatement) {
-        returns.add(ImplicitNullResult(project, element))
-        return@iteratePrev ControlFlowUtil.Operation.CONTINUE
-      }
-
-      if (RPsiUtil.isReturn(element)) {
-        val realArg = (element as RCallExpression).argumentList.expressionList.first()
-        returns.add(CorrectReturnResult(project, element, realArg))
-        return@iteratePrev ControlFlowUtil.Operation.CONTINUE
-      }
-
-      returns.add(CorrectReturnResult(project, element))
-      return@iteratePrev ControlFlowUtil.Operation.CONTINUE
-    }
-
-    return returns
-  }
-
   inline fun showErrorAndExit(project: Project, editor: Editor?, message: String, returnAction: () -> Unit) {
     CommonRefactoringUtil.showErrorHint(project, editor, message, RBundle.message("inline.assignment.handler.error.title"), null)
     returnAction()
-  }
-
-  abstract class ReturnResult(val returnStatement: PsiElement, val returnValue: String) {
-    abstract fun doRefactor(resultVariableName: String): PsiElement
-    abstract fun getPsiReturnValue(): PsiElement
-  }
-
-  class CorrectReturnResult(private val project: Project, psiElement: PsiElement, private val elementInsideReturn: PsiElement? = null)
-    : ReturnResult(psiElement, elementInsideReturn?.text ?: psiElement.text) {
-    override fun doRefactor(resultVariableName: String): PsiElement {
-      return returnStatement.replace(RElementFactory.createRPsiElementFromText(project, "$resultVariableName <- $returnValue"))
-    }
-
-    override fun getPsiReturnValue(): PsiElement = elementInsideReturn ?: returnStatement
-  }
-
-  class ImplicitNullResult(private val project: Project, lastStatement: PsiElement) : ReturnResult(lastStatement, "NULL") {
-    override fun doRefactor(resultVariableName: String): PsiElement {
-      val parent = returnStatement.parent
-      val element = RElementFactory.createRPsiElementFromText(project, "$resultVariableName <- $returnValue")
-      return parent.addAfter(element, returnStatement)
-    }
-
-    override fun getPsiReturnValue(): PsiElement = RElementFactory.createRPsiElementFromText(project, returnValue)
-  }
-
-  open class RRecursiveElementVisitor : RVisitor(), PsiRecursiveVisitor {
-    override fun visitElement(element: PsiElement) {
-      element.acceptChildren(this)
-    }
   }
 }

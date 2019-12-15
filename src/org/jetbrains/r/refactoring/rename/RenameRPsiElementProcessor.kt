@@ -61,10 +61,12 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
       override fun visitAssignmentStatement(o: RAssignmentStatement) {
         val name = (o.assignee as? RIdentifierExpression)?.name ?: return
         if (name == newName) addResult(o)
+        o.acceptChildren(this)
       }
 
       override fun visitParameter(o: RParameter) {
         if (o.name == newName) addResult(o)
+        o.acceptChildren(this)
       }
     })
   }

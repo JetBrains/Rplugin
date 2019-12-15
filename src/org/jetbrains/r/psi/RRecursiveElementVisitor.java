@@ -6,9 +6,10 @@
 package org.jetbrains.r.psi;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiRecursiveVisitor;
 import org.jetbrains.r.psi.api.RVisitor;
 
-public class RRecursiveElementVisitor extends RVisitor {
+public class RRecursiveElementVisitor extends RVisitor implements PsiRecursiveVisitor {
     @Override
     public void visitElement(PsiElement element) {
         element.acceptChildren(this);

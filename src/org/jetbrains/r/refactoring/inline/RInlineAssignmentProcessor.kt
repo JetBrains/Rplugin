@@ -20,6 +20,7 @@ import com.intellij.util.IncorrectOperationException
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.getParameters
 import org.jetbrains.r.refactoring.RRefactoringUtil
@@ -206,7 +207,7 @@ class RInlineAssignmentProcessor(private val project: Project,
 
       val mappingIdentifiers = mutableMapOf<PsiElement, PsiElement>()
       val dotsForReplacing = mutableSetOf<PsiElement>()
-      val visitor = object : RInlineUtil.RRecursiveElementVisitor() {
+      val visitor = object : RRecursiveElementVisitor() {
         override fun visitIdentifierExpression(o: RIdentifierExpression) {
           val name = o.name
           var newValue = realValues[name]
@@ -251,9 +252,9 @@ class RInlineAssignmentProcessor(private val project: Project,
         }
       }
 
-      val returns = RInlineUtil.collectReturns(project, functionCopy)
+      val returns = RRefactoringUtil.collectReturns(project, functionCopy)
       var resultName: String? = null
-      var singleReturn: RInlineUtil.ReturnResult? = null
+      var singleReturn: RRefactoringUtil.ReturnResult? = null
       val inserted = mutableListOf<PsiElement>()
       if (returns.size == 1) {
         singleReturn = returns.first()
@@ -274,7 +275,7 @@ class RInlineAssignmentProcessor(private val project: Project,
 
       if (singleReturn != null) {
         val par = call.parent
-        if (singleReturn is RInlineUtil.ImplicitNullResult && (par is RFile || par is RBlockExpression && par.expressionList.last() != call)) {
+        if (singleReturn is RRefactoringUtil.ImplicitNullResult && (par is RFile || par is RBlockExpression && par.expressionList.last() != call)) {
           call.delete()
         }
         else {
