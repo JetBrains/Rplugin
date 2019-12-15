@@ -65,20 +65,26 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
   }
 
   override fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>) {
-    editor.markupModel.removeAllHighlighters()
+    val markupModel = editor.markupModel
+    markupModel.removeAllHighlighters()
     editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor?.let { backgroundColor ->
-      toolbarElements.forEach { fillChunkArea(it.parent.textRange, backgroundColor) }
+      toolbarElements.forEach { fillChunkArea(it.parent.textRange, backgroundColor, markupModel) }
     }
+
   }
 
   override fun getToolbarActions(psi: PsiElement): ActionGroup? = if (isChunkFenceLang(psi)) createRunChunkActionGroup(psi) else null
 
   override fun isToolbarActionElement(psi: PsiElement): Boolean = isChunkFenceLang(psi)
 
-  private fun fillChunkArea(textRange: TextRange, backgroundColor: Color?) {
+  private fun fillChunkArea(textRange: TextRange, backgroundColor: Color, markupModel: MarkupModel) {
     editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
                                            TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
-                                           HighlighterTargetArea.LINES_IN_RANGE).apply { setLineMarkerRenderer(ChunkProgressRenderer) }
+                                           HighlighterTargetArea.LINES_IN_RANGE)
+    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
+                                    HighlighterLayer.SELECTION, null, HighlighterTargetArea.LINES_IN_RANGE).apply {
+      setLineMarkerRenderer(ChunkProgressRenderer)
+    }
   }
 
   companion object {
@@ -144,10 +150,10 @@ private object ChunkProgressRenderer : LineMarkerRenderer {
     val visualLineRange = IntRange(visibleLineStart, visibleLineEnd)
 
     chunkExecutionState.pendingLineRanges.mapNotNull { it.intersect(visualLineRange) }.forEach {
-      paintIntRange((g as Graphics2D), editor, it, Color(100, 144, 100))
+      paintIntRange((g as Graphics2D), editor, it, Color(180, 250 , 180))
     }
     chunkExecutionState.currentLineRange?.intersect(visualLineRange)?.let {
-      paintIntRange((g as Graphics2D), editor, it, Color(0, 0x90, 0))
+      paintIntRange((g as Graphics2D), editor, it, Color(100, 240, 100))
     }
   }
 
@@ -157,9 +163,9 @@ private object ChunkProgressRenderer : LineMarkerRenderer {
                             gutterColor: Color) {
     val editorImpl = editor as EditorImpl
     val area = getGutterArea(editor)
-    val x = area.val1 + 2
-    val endX = area.val2 - 2
-    val start = editorImpl.visualLineToY(block.first)
+    val x = area.val1
+    val endX = area.val2
+    val start = editorImpl.visualLineToY(block.first + 1)
     val end = editorImpl.visualLineToY(block.last)
     paintRect(g, gutterColor, null, x, start, endX, end)
   }
