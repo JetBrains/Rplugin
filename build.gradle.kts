@@ -87,7 +87,7 @@ allprojects {
     }
 
     intellij {
-        version = if (runWithIC()) "IC-2019.3" else "PC-${ideaMajor()}.${ideaMinor()}-EAP-CANDIDATE-SNAPSHOT"
+        version = if (runWithIC()) "IC-2019.3" else "PC-2019.3"
         downloadSources = !CI
         updateSinceUntilBuild = true
         instrumentCode = false
