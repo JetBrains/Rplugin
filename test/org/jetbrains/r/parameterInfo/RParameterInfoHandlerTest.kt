@@ -212,7 +212,12 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
       $fooDeclaration
       foo(aa = 10, <caret>20, 30)
     """.trimIndent(), result, isDisabled = true)
+  }
 
+  fun testSameNameArgumentsInDots() {
+    doTest("""
+      data.table::data.table(aa = 100, keep.r<caret>ownames = FALSE, aa = 20)
+    """.trimIndent(), "..., <keep.rownames = FALSE>, [...], [check.names = FALSE], [key = NULL], [stringsAsFactors = FALSE]")
   }
 
   fun doTest(text: String, vararg expectedResults: String, isDisabled: Boolean = false) {

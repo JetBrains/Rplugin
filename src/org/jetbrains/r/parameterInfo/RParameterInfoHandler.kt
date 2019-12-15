@@ -70,7 +70,6 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
             break
           }
 
-          skipNames.add(arg.name)
           var ind = names.indexOf(arg.name)
           if (ind == -1) {
             ind = names.indexOf(DOTS)
@@ -79,6 +78,9 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
               it.isDisabled = true
               break
             }
+          }
+          else {
+            skipNames.add(arg.name)
           }
 
           if (probableNewPermutation.lastOrNull() != ind) probableNewPermutation.add(ind)
@@ -180,7 +182,7 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
                                         var isDisabled: Boolean = false)
 
   companion object {
-    const val DOTS = "..."
-    const val MAX_DEFAULT_VALUE_LEN = 32
+    private const val DOTS = "..."
+    private const val MAX_DEFAULT_VALUE_LEN = 32
   }
 }
