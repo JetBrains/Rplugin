@@ -91,7 +91,7 @@ object RInteropUtil {
     ProcessIOExecutorService.INSTANCE.execute {
       try {
         val line = try {
-          linePromise.blockingGet(RWRAPPER_LAUNCH_TIMEOUT) ?: ""
+          linePromise.blockingGet(RInterpreterUtil.RWRAPPER_INITIALIZED_TIMEOUT) ?: ""
         } catch (e: TimeoutException) {
           throw RuntimeException("RWrapper does not produce output")
         }

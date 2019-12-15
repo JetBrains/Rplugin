@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.indexing.FileBasedIndex
@@ -26,13 +27,15 @@ import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
+
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 object RInterpreterUtil {
-  const val DEFAULT_TIMEOUT = 2 * 60 * 1000 // 2 min
-  const val EDT_TIMEOUT = 5 * 1000 // 5 sec
-  private const val INTERPRETER_ALIVE_TIMEOUT = 2000L
+  val DEFAULT_TIMEOUT
+    get() = Registry.intValue("r.interpreter.defaultTimeout", 2 * 60 * 1000)
+  val RWRAPPER_INITIALIZED_TIMEOUT
+    get() = Registry.intValue("r.interpreter.initializedTimeout", 20 * 1000)
   private val R_DISTRO_REGEX = "R-.*".toRegex()
   private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
   private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
@@ -83,7 +86,7 @@ object RInterpreterUtil {
 
     val commandLine = GeneralCommandLine().withExePath(interpreterPath).withParameters("--version")
     val process = commandLine.createProcess()
-    return if (process.waitFor(INTERPRETER_ALIVE_TIMEOUT, TimeUnit.MILLISECONDS)) {
+    return if (process.waitFor(RWRAPPER_INITIALIZED_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)) {
       checkOutput(process.inputStream) ?: checkOutput(process.errorStream)
     } else {
       null

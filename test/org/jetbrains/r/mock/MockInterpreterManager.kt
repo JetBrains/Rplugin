@@ -18,7 +18,6 @@ import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil.EDT_TIMEOUT
 import org.jetbrains.r.interpreter.R_UNKNOWN
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -80,7 +79,7 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
       val ioFile = File(skeletonPaths.first(), getPackageByName(name)?.getLibraryBinFileName() ?: return null)
       val virtualFile = runAsync { VfsUtil.findFileByIoFile(ioFile, true) }
                           .onError { throw it }
-                          .blockingGet(EDT_TIMEOUT) ?: return null
+                          .blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: return null
       return PsiManager.getInstance(project).findFile(virtualFile)
     }
 

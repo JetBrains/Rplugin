@@ -25,7 +25,7 @@ class RSettings(private val project: Project) : PersistentStateComponent<Element
       fun getSuggestedPath(): String {
         return runAsync { RInterpreterUtil.suggestHomePath() }.
           onError { Logger.getInstance(RSettings::class.java).error(it) }.
-          blockingGet(RInterpreterUtil.EDT_TIMEOUT) ?: ""
+          blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: ""
       }
 
       return backingPath ?: getSuggestedPath().also {

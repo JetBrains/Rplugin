@@ -539,6 +539,10 @@ You can find the source code in the following repositories:
         <!-- Diagnostics -->
         <errorHandler implementation="org.jetbrains.r.diagnostic.RExceptionAnalyzerReporter"/>
 
+        <!-- Registry keys -->
+        <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
+        <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
+
     </extensions>
 
 </idea-plugin>
