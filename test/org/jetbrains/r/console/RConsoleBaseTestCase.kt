@@ -30,6 +30,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
     super.setUp()
     console = RConsoleView(rInterop, "dummyPath", project, "Test R Console")
     console.createDebuggerPanel()
+    console.component // initialize editor and more...
     RConsoleManager.getInstance(project).setCurrentConsoleForTests(console)
     // console is not running command, it just haven't received the first prompt from rwrapper
     var i = 0

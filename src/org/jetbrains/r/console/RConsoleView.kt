@@ -4,21 +4,37 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.codeInsight.daemon.impl.AnnotationHolderImpl
+import com.intellij.codeInsight.daemon.impl.HighlightInfo
+import com.intellij.codeInsight.daemon.impl.HighlightInfoType
+import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.lang.annotation.AnnotationSession
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKey
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.editor.colors.EditorColors
+import com.intellij.openapi.editor.ex.EditorEx
+import com.intellij.openapi.editor.ex.RangeHighlighterEx
+import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.editor.markup.MarkupModel
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
@@ -26,7 +42,10 @@ import com.intellij.util.ui.FontInfo
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebugger
+import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
@@ -46,6 +65,8 @@ class RConsoleView(val rInterop: RInterop,
   val executeActionHandler = RConsoleExecuteActionHandler(this)
 
   private val onSelectListeners = mutableListOf<() -> Unit>()
+
+  private val postFlushActions = ArrayList<() -> Unit>()
 
   init {
     consolePromptDecorator.mainPrompt = ""
@@ -85,11 +106,15 @@ class RConsoleView(val rInterop: RInterop,
         }
       }
     }
+
   fun executeText(text: String) {
     invokeLater {
       runWriteAction {
         consoleEditor.document.setText(text)
+        PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
+      annotateForHistory()
+
       consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
       executeActionHandler.runExecuteAction(this)
     }
@@ -168,6 +193,118 @@ class RConsoleView(val rInterop: RInterop,
     }
   }
 
+  override fun addTextRangeToHistory(textRange: TextRange, inputEditor: EditorEx, preserveMarkup: Boolean): String {
+    val addTextRangeToHistory = super.addTextRangeToHistory(textRange, inputEditor, preserveMarkup)
+    moveHighlightingFromAnnotatorToHistory(inputEditor, textRange)
+    return addTextRangeToHistory
+  }
+
+  private fun moveHighlightingFromAnnotatorToHistory(inputEditor: EditorEx, textRange: TextRange) {
+    val to = DocumentMarkupModel.forDocument(editor.document, project, true)
+    val from = DocumentMarkupModel.forDocument(inputEditor.document, project, true)
+    val infos: List<HighlightInfo> = from.allHighlighters.mapNotNull { rangeHighlighter ->
+      if (!rangeHighlighter.isValid) return@mapNotNull null
+      rangeHighlighter.errorStripeTooltip as? HighlightInfo
+    }
+    val input = textRange.subSequence(from.document.charsSequence)
+    scheduleAnnotationsForHistory(to, input, infos, textRange)
+  }
+
+  private fun annotateForHistory() {
+    val annotationSession = AnnotationSession(file)
+    val annotationHolder = AnnotationHolderImpl(annotationSession)
+    val annotator = RAnnotatorVisitor(annotationHolder)
+
+    file.accept(object : RRecursiveElementVisitor() {
+      override fun visitElement(element: PsiElement) {
+        super.visitElement(element)
+        element.accept(annotator)
+      }
+    })
+
+    val infos = annotationHolder.map { HighlightInfo.fromAnnotation(it) }
+    val to = DocumentMarkupModel.forDocument(editor.document, project, true)
+    val input = consoleEditor.document.charsSequence
+    scheduleAnnotationsForHistory(to, input, infos, TextRange(0, input.length))
+  }
+
+  private fun scheduleAnnotationsForHistory(to: MarkupModel, input: CharSequence, infos: List<HighlightInfo>, textRange: TextRange) {
+    if (infos.isEmpty()) return
+    val severityRegistrar = SeverityRegistrar.getSeverityRegistrar(project)
+    val nextLineBegins: List<Int> = input.mapIndexedNotNull { i, c -> if (c == '\n') i + 1 else null } + input.length
+
+    var nextNewLineIndex = 0
+    var currentLineStart = 0
+
+    val lineToHighlights = arrayOfNulls<MutableList<(Int) -> Unit>>(nextLineBegins.size)
+
+    val sorted = infos.sortedWith(Comparator
+                                    .comparingInt<HighlightInfo> { it.startOffset }
+                                     .thenComparingInt { it.endOffset })
+    for (highlightInfo in sorted) {
+      if (highlightInfo.severity !== HighlightSeverity.INFORMATION) continue
+      if (highlightInfo.type.attributesKey === EditorColors.IDENTIFIER_UNDER_CARET_ATTRIBUTES) continue
+      if (highlightInfo.startOffset < textRange.startOffset || highlightInfo.endOffset > textRange.endOffset) continue
+
+      val startInRange = highlightInfo.startOffset - textRange.startOffset
+      val endInRange = highlightInfo.endOffset - textRange.startOffset
+
+      while (startInRange >= nextLineBegins[nextNewLineIndex]) {
+        currentLineStart = nextLineBegins[nextNewLineIndex]
+        nextNewLineIndex++
+      }
+      if (endInRange > nextLineBegins[nextNewLineIndex]) {
+        // Do not consider highlights for several lines at once!
+        continue
+      }
+      val start = startInRange - currentLineStart
+      val end = endInRange - currentLineStart
+
+      val layer = getLayer(highlightInfo, severityRegistrar)
+      val textAttributes = highlightInfo.getTextAttributes(file, consoleEditor.colorsScheme)
+
+      val applyHighlight = { lineOffset: Int ->
+        val h = to.addRangeHighlighter(start + lineOffset, end + lineOffset, layer,
+                                       textAttributes, HighlighterTargetArea.EXACT_RANGE)
+        (h as RangeHighlighterEx).isAfterEndOfLine = false
+      }
+      val list = lineToHighlights[nextNewLineIndex] ?: ArrayList<(Int) -> Unit>().also {
+        lineToHighlights[nextNewLineIndex] = it
+      }
+      list.add(applyHighlight)
+    }
+
+    val historyLengthBeforeInput = to.document.textLength
+    val promptAttributes = promptAttributes?.attributes
+    postFlushActions.add {
+      val allHighlighters = to.allHighlighters.toList()
+      var currentOffset = historyLengthBeforeInput
+      for (currentLine in 0..nextLineBegins.size) {
+        // Firstly, find console prompt
+        val promptIndex = allHighlighters.indexOfFirst { it.startOffset == currentOffset }.takeIf { it != -1 } ?: break
+        val prompt = allHighlighters[promptIndex]
+        if (prompt.textAttributes != promptAttributes)
+          break // very strange
+
+        // shift to the start of input code
+        currentOffset = prompt.endOffset
+
+        // and apply highlights from the current line
+        lineToHighlights[currentLine]?.forEach {
+          it(currentOffset)
+        }
+        currentOffset += nextLineBegins[currentLine] - (if (currentLine > 0) nextLineBegins[currentLine - 1] else 0)
+      }
+    }
+  }
+
+  override fun flushDeferredText() {
+    super.flushDeferredText()
+    postFlushActions.forEach { it() }
+    postFlushActions.clear()
+  }
+
+
   class RSetCurrentDirectoryFromEditor : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
@@ -193,3 +330,17 @@ internal const val R_CONSOLE_PROMPT = "> "
 internal const val R_CONSOLE_DEBUG_PROMPT = "Debug> "
 internal const val R_CONSOLE_CONTINUE = "+ "
 internal const val R_CONSOLE_READ_LN_PROMPT = "?> "
+
+// Copy-paste from UpdateHighlightersUtil#getLayer
+private fun getLayer(info: HighlightInfo, severityRegistrar: SeverityRegistrar): Int {
+  val severity = info.severity
+  return when {
+    severity === HighlightSeverity.WARNING -> HighlighterLayer.WARNING
+    severity === HighlightSeverity.WEAK_WARNING -> HighlighterLayer.WEAK_WARNING
+    severityRegistrar.compare(severity, HighlightSeverity.ERROR) >= 0 -> HighlighterLayer.ERROR
+    severity === HighlightInfoType.INJECTED_FRAGMENT_SEVERITY -> HighlighterLayer.CARET_ROW - 1
+    severity === HighlightInfoType.INJECTED_FRAGMENT_SYNTAX_SEVERITY -> HighlighterLayer.CARET_ROW - 2
+    severity === HighlightInfoType.ELEMENT_UNDER_CARET_SEVERITY -> HighlighterLayer.ELEMENT_UNDER_CARET
+    else -> HighlighterLayer.ADDITIONAL_SYNTAX
+  }
+}
