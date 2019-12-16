@@ -10,10 +10,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.FoldRegion
-import com.intellij.openapi.editor.Inlay
-import com.intellij.openapi.editor.InlayModel
+import com.intellij.openapi.editor.*
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.CaretEvent
@@ -32,9 +29,12 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.NonUrgentExecutor
 import icons.org.intellij.datavis.ui.InlineToolbar
 import org.intellij.datavis.inlays.*
+import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Manages inlays.
@@ -55,6 +55,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private val inlayElements = LinkedHashSet<PsiElement>()
   private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
   @Volatile private var toolbarUpdateScheduled: Boolean = false
+  @Volatile var lastViewportUpdateTime: Long = 0
 
   init {
     addResizeListener()
@@ -62,20 +63,16 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     addFoldingListener()
     addDocumentListener()
     addInlayModelListener()
+    addViewportListener()
     editor.settings.isRightMarginShown = false
     UISettings.instance.showEditorToolTip = false
     MouseWheelUtils.wrapEditorMouseWheelListeners(editor)
-    restoreOutputs()
-    restoreToolbars()
+    restoreToolbars().onSuccess { restoreOutputs() }
     onCaretPositionChanged()
     onColorSchemeChanged()
     ApplicationManager.getApplication().invokeLater {
       updateInlayComponentsWidth()
     }
-  }
-
-  private fun onColorSchemeChanged() {
-    project.messageBus.connect(editor.disposable).subscribe(EditorColorsManager.TOPIC, EditorColorsListener { updateHighlighting() })
   }
 
   fun dispose() {
@@ -85,14 +82,29 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   fun updateCell(psi: PsiElement) {
+    if (ApplicationManager.getApplication().isUnitTestMode) return
     ApplicationManager.getApplication().invokeLater {
-      if (ApplicationManager.getApplication().isUnitTestMode) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
       getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
       if (inlayOutputs.isEmpty()) return@invokeLater
       addInlayOutputs(addInlayComponent(psi), inlayOutputs)
       ApplicationManager.getApplication().invokeLater {
+        editor.scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE)
         updateInlays()
+      }
+    }
+  }
+
+  private fun updateInlaysForViewport() {
+    invokeLater {
+      val viewport = editor.scrollPane.viewport
+      val startLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y)).line
+      val endLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y + viewport.height)).line
+      val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
+      val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
+      inlayElements.filter { it.textRange.startOffset in startOffset until endOffset }.forEach { inlay ->
+        if (inlays.containsKey(inlay)) return@forEach
+        updateCell(inlay)
       }
     }
   }
@@ -219,23 +231,28 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     }, editor.disposable)
   }
 
-  private fun restoreOutputs() {
-    ReadAction.nonBlocking {
-      PsiTreeUtil.collectElements(descriptor.psiFile) { descriptor.isInlayElement(it) }.forEach { psiCell ->
-        val inlayOutputs = descriptor.getInlayOutputs(psiCell).takeIf { it.isNotEmpty() } ?: return@forEach
-        ApplicationManager.getApplication().invokeLater {
-          if (getInlayComponent(psiCell) == null) {
-            addInlayOutputs(addInlayComponent(psiCell), inlayOutputs)
-          }
-        }
+
+  private fun addViewportListener() {
+    editor.scrollPane.viewport.addChangeListener {
+      if (System.currentTimeMillis() - lastViewportUpdateTime > 50) {
+        lastViewportUpdateTime = System.currentTimeMillis()
+        updateInlaysForViewport()
       }
-    }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
+    }
   }
 
-  private fun restoreToolbars() {
+  private fun onColorSchemeChanged() {
+    project.messageBus.connect(editor.disposable).subscribe(EditorColorsManager.TOPIC, EditorColorsListener { updateHighlighting() })
+  }
+
+  private fun restoreOutputs() {
+    updateInlaysForViewport()
+  }
+
+  private fun restoreToolbars(): CancellablePromise<*> {
     val toolbars = ArrayList<Pair<PsiElement, ActionGroup>>()
     val inlaysPsiElements = ArrayList<PsiElement>()
-    ReadAction.nonBlocking {
+    return ReadAction.nonBlocking {
       PsiTreeUtil.processElements(descriptor.psiFile) { element ->
         descriptor.getToolbarActions(element)?.let { toolbars.add(element to it) }
         if (descriptor.isInlayElement(element) == true) inlaysPsiElements.add(element)
@@ -344,7 +361,9 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun updateToolbarPositions() {
-    invokeLater { toolbars.values.forEach { it.updateBounds() } }
+    invokeLater {
+      toolbars.values.forEach { it.updateBounds() }
+    }
   }
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
@@ -391,3 +410,5 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     return inlays[cell]
   }
 }
+
+const val VIEWPORT_INLAY_RANGE = 20

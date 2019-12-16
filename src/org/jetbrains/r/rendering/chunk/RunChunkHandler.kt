@@ -84,21 +84,15 @@ object RunChunkHandler {
             chunkExecutionState.currentLineRange = null
             chunkExecutionState.revalidateGutter()
           }
-          try {
-            for (element in chunks) {
-              if (terminationRequired.get()) {
-                continue
-              }
-              currentElement.set(element)
-              invokeAndWaitIfNeeded { execute(element, false, true) }
-                .onError { LOGGER.error("Cannot execute chunk: " + it) }
-                .blockingGet(Int.MAX_VALUE)
-              currentElement.set(null)
+          for (element in chunks) {
+            if (terminationRequired.get()) {
+              continue
             }
-          } finally {
-            runReadAction { chunks.mapNotNull { findInlayElementByFenceElement(it) } }.forEach { inlayElement ->
-              InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
-            }
+            currentElement.set(element)
+            invokeAndWaitIfNeeded { execute(element, isDebug = false, isBatchMode = true) }
+              .onError { LOGGER.error("Cannot execute chunk: " + it) }
+              .blockingGet(Int.MAX_VALUE)
+            currentElement.set(null)
           }
         } finally {
           result.setResult(Unit)
@@ -182,7 +176,7 @@ object RunChunkHandler {
           graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
         }
       }
-      executeCode(console, codeElement, element, isDebug).onProcessed { outputs ->
+      executeCode(console, codeElement, isDebug).onProcessed { outputs ->
         runAsync {
           graphicsDevice?.shutdown()
           afterRunChunk(element, rInterop, outputs, promise, console, editor, inlayElement, isBatchMode, isDebug)
@@ -232,13 +226,14 @@ object RunChunkHandler {
       console.resetHandler()
     }
     if (ApplicationManager.getApplication().isUnitTestMode || isDebug) return
+    InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
     cleanupOutdatedOutputs(element)
+
     ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
   }
 
   private fun executeCode(console: RConsoleView,
                           codeElement: PsiElement,
-                          fenceElement: PsiElement,
                           debug: Boolean = false): Promise<List<ProcessOutput>> {
     return if (debug) {
       console.debugger.executeChunk(codeElement.containingFile.virtualFile, codeElement.textRange)
@@ -251,13 +246,13 @@ object RunChunkHandler {
         chunkState.currentLineRange = first
         chunkState.revalidateGutter()
       }
+      val promise = AsyncPromise<List<ProcessOutput>>()
       val executePromise = console.executeCodeAsyncWithBusy(codeElement.text) { s, type ->
         result.add(ProcessOutput(s, type))
-      }
-      val promise = AsyncPromise<List<ProcessOutput>>()
-      executePromise.onProcessed {
+      }.onProcessed {
         promise.setResult(result)
         chunkState?.currentLineRange = null
+        chunkState?.revalidateGutter()
       }
       codeElement.project.chunkExecutionState?.cancellableExecutionPromise?.set(executePromise)
       promise
@@ -288,7 +283,9 @@ object RunChunkHandler {
     if (outputs.any { it.text.isNotEmpty() }) {
       runReadAction { ChunkPathManager.getOutputFile(element) }?.let {
         val text = Gson().toJson(outputs.filter { output -> output.text.isNotEmpty() })
-        File(it).writeText(text)
+        val file = File(it)
+        check(FileUtil.createParentDirs(file)) { "cannot create parent directories" }
+        file.writeText(text)
       }
     }
   }
