@@ -16,7 +16,6 @@ import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RArgumentList
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
-import org.jetbrains.r.psi.api.RNamedArgument
 
 class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfoHandler.RParameterInfoArgumentList> {
 
@@ -52,62 +51,29 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
     }
 
     val expressions = parameterOwner.expressionList
-    val argumentNames = parameterOwner.namedArgumentList.map { it.name }
     context.objectsToView.map { it as RParameterInfoArgumentList }.forEach {
-      var curArgIndex = 0
-      val skipNames = mutableSetOf<String>()
-      val probableNewPermutation = mutableListOf<Int>()
       val names = it.names
       it.currentArgumentIndex = 0
       it.isDisabled = false
 
-      for (i in expressions.indices) {
-        val arg = expressions[i]
-        if (arg is RNamedArgument) {
-          if (arg.name in skipNames) {
-            // Multiple named argument with same name
-            it.isDisabled = true
-            break
-          }
+      val (permutation, unusedArguments) = RParameterInfoUtil.getArgumentsPermutation(names, parameterOwner)
+      if (permutation.contains(-1)) {
+        it.isDisabled = true
+        it.permutation = names.indices.toList()
+        return
+      }
 
-          var ind = names.indexOf(arg.name)
-          if (ind == -1) {
-            ind = names.indexOf(DOTS)
-            if (ind == -1) {
-              // Unused argument
-              it.isDisabled = true
-              break
-            }
-          }
-          else {
-            skipNames.add(arg.name)
-          }
+      val probableNewPermutation = mutableListOf<Int>()
+      permutation.forEachIndexed { ind, permInd ->
+        if (probableNewPermutation.lastOrNull() != permInd) probableNewPermutation.add(permInd)
 
-          if (probableNewPermutation.lastOrNull() != ind) probableNewPermutation.add(ind)
-        } else {
-          while (curArgIndex < names.size && (names[curArgIndex] in skipNames || names[curArgIndex] in argumentNames)) ++curArgIndex
-          if (curArgIndex == names.size) {
-            // Too many arguments
-            it.isDisabled = true
-            break
-          }
-          if (names[curArgIndex] != DOTS) skipNames.add(names[curArgIndex])
-          if (probableNewPermutation.lastOrNull() != curArgIndex) probableNewPermutation.add(curArgIndex)
-        }
-
+        val arg = expressions[ind]
         val stOffset = findPrevCommaOffset(arg) + 1
         val fnOffset = findNextCommaOffset(arg)
         if (carriageOffset in stOffset..fnOffset) it.currentArgumentIndex = probableNewPermutation.lastIndex
       }
 
-      if (it.isDisabled) {
-        it.permutation = names.indices.toList()
-      } else {
-        names.forEachIndexed { ind, name ->
-          if (name != DOTS && name !in skipNames || name == DOTS && ind !in probableNewPermutation) probableNewPermutation.add(ind)
-        }
-        it.permutation = probableNewPermutation
-      }
+      it.permutation = probableNewPermutation + unusedArguments
     }
   }
 
