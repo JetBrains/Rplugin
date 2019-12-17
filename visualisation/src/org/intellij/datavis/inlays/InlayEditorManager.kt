@@ -71,6 +71,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     onCaretPositionChanged()
     onColorSchemeChanged()
     ApplicationManager.getApplication().invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       updateInlayComponentsWidth()
     }
   }
@@ -84,6 +85,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   fun updateCell(psi: PsiElement) {
     if (ApplicationManager.getApplication().isUnitTestMode) return
     ApplicationManager.getApplication().invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
       getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
       if (inlayOutputs.isEmpty()) return@invokeLater
@@ -97,6 +99,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private fun updateInlaysForViewport() {
     invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       val viewport = editor.scrollPane.viewport
       val startLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y)).line
       val endLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y + viewport.height)).line
@@ -362,6 +365,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private fun updateToolbarPositions() {
     invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       toolbars.values.forEach { it.updateBounds() }
     }
   }
