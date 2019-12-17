@@ -26,6 +26,7 @@ message RLibraryPackage {
     NA = 1;
     RECOMMENDED = 2;
     BASE = 3;
+    OPTIONAL = 4;
   }
   string name = 1;
   Priority priority = 2;

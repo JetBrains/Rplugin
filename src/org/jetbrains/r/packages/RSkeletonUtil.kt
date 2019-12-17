@@ -208,7 +208,11 @@ object RSkeletonUtil {
       "NA" -> RLibraryPackage.Priority.NA
       "BASE" -> RLibraryPackage.Priority.BASE
       "RECOMMENDED" -> RLibraryPackage.Priority.RECOMMENDED
-      else -> throw IOException("Unknown priority: $it")
+      "OPTIONAL" -> RLibraryPackage.Priority.OPTIONAL
+      else -> {
+        LOG.error("Unknown priority: $it")
+        RLibraryPackage.Priority.NA
+      }
     }
     packageBuilder.setPriority(priority)
 
