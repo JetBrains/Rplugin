@@ -228,11 +228,9 @@ object RepoUtils {
     // if networking is off but requested package is already up-to-date
     val version = getPackageVersion(repoPackage.name, rInterop)
     if (version != null) {
-      if (version == repoPackage.latestVersion) {
+      if (areSameVersions(version, repoPackage.latestVersion)) {
         return
       } else {
-        // TODO [mine]: BUG -- sometimes versions get different representation
-        // i.e. "1.3-3" was expected but got "1.3.3"
         LOGGER.warn("updatePackage(): Expected version = ${repoPackage.latestVersion}, got = $version")
       }
     }
@@ -285,6 +283,14 @@ object RepoUtils {
     }
   }
 
+  private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
+    return aVersion?.unifyVersion() == bVersion?.unifyVersion()
+  }
+
+  private fun String.unifyVersion(): String {
+    return replace('-', '.')
+  }
+
   @Throws(ExecutionException::class)
   fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: InstalledPackage) {
     val packageName = repoPackage.name
@@ -299,7 +305,7 @@ object RepoUtils {
     }
     rInterop.repoRemovePackage(packageName, FileUtil.toSystemIndependentName(libraryPath.path))
     val version = getPackageVersion(packageName, rInterop)
-    if (version != null && version == repoPackage.version) {
+    if (version != null && areSameVersions(version, repoPackage.version)) {
       throw ExecutionException("Cannot remove package '$packageName'. Check console for process output")
     }
   }
