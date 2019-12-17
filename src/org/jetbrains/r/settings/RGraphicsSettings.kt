@@ -28,11 +28,21 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       }
     }
 
+    fun setScreenDimension(project: Project, dimension: Dimension) {
+      setScreenParameters(project, dimension, null)
+    }
+
     fun setScreenParameters(project: Project, parameters: RGraphicsUtils.ScreenParameters) {
+      setScreenParameters(project, parameters.dimension, parameters.resolution ?: 0)
+    }
+    
+    private fun setScreenParameters(project: Project, dimension: Dimension, resolutionMaybe: Int?) {
       getInstance(project).state.apply {
-        width = parameters.width
-        height = parameters.height
-        resolution = parameters.resolution ?: 0
+        width = dimension.width
+        height = dimension.height
+        if (resolutionMaybe != null) {
+          resolution = resolutionMaybe
+        }
         version = CURRENT_VERSION
       }
     }

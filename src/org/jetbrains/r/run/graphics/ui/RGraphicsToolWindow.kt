@@ -30,7 +30,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
+class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
   private var lastZoomed = listOf<RSnapshot>()
   private var lastIndex = -1
@@ -264,6 +264,7 @@ class RGraphicsToolWindow(project: Project) : SimpleToolWindowPanel(true, true) 
   private fun postScreenDimension() {
     val newDimension = getAdjustedScreenDimension()
     if (newDimension.width > 0 && newDimension.height > 0) {
+      RGraphicsSettings.setScreenDimension(project, newDimension)
       repository.configuration?.let { oldConfiguration ->
         val parameters = oldConfiguration.screenParameters
         val newParameters = parameters.copy(dimension = newDimension)

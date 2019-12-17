@@ -90,9 +90,11 @@ class RConsoleRunner(private val project: Project,
           })
 
           // Setup console listener for graphics device
-          val resolution = RGraphicsSettings.getScreenParameters(project).resolution
-          val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, resolution)
-          graphicsDevice.addListener(RGraphicsToolWindowListener(project))
+          val screenParameters = RGraphicsSettings.getScreenParameters(project)
+          val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
+            configuration = configuration.copy(screenParameters = screenParameters)
+            addListener(RGraphicsToolWindowListener(project))
+          }
           consoleView.addOnSelectListener {
             RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
           }
