@@ -33,7 +33,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   }
 
   companion object {
-    const val DEFAULT_TIMEOUT = 3000
+    const val DEFAULT_TIMEOUT = 20000
 
     private fun getRInterop(project: Project): RInterop {
       return RInteropUtil.runRWrapperAndInterop(project).blockingGet(DEFAULT_TIMEOUT)!!
