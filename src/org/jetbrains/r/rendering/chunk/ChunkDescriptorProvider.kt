@@ -78,13 +78,13 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
   override fun isToolbarActionElement(psi: PsiElement): Boolean = isChunkFenceLang(psi)
 
   private fun fillChunkArea(textRange: TextRange, backgroundColor: Color, markupModel: MarkupModel) {
-    editor.markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
+    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
                                            TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
                                            HighlighterTargetArea.LINES_IN_RANGE)
-    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
-                                    HighlighterLayer.SELECTION, null, HighlighterTargetArea.LINES_IN_RANGE).apply {
-      setLineMarkerRenderer(ChunkProgressRenderer)
-    }
+//    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
+//                                    HighlighterLayer.SELECTION, null, HighlighterTargetArea.LINES_IN_RANGE).apply {
+//      setLineMarkerRenderer(ChunkProgressRenderer)
+//    }
   }
 
   companion object {
