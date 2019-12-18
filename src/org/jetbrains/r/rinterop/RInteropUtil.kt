@@ -54,10 +54,16 @@ object RInteropUtil {
     val linePromise = AsyncPromise<String>()
     process.addProcessListener(object : ProcessListener {
       val output = StringBuilder()
+      val stderr = StringBuffer()
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
         when (outputType) {
-          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> LOG.debug("RWRAPPER " + StringUtil.escapeStringCharacters(text))
+          ProcessOutputType.STDERR, ProcessOutputType.SYSTEM -> {
+            if (linePromise.state == Promise.State.PENDING) {
+              stderr.append(text)
+            }
+            LOG.debug("RWRAPPER " + StringUtil.escapeStringCharacters(text))
+          }
           ProcessOutputType.STDOUT -> {
             if (linePromise.state != Promise.State.PENDING) return
             output.append(text)
@@ -76,7 +82,11 @@ object RInteropUtil {
           reportMinidumps(updateCrashes)
         }
         if (linePromise.state == Promise.State.PENDING) {
-          linePromise.setError(RuntimeException("RWrapper terminated, exitcode: ${event.exitCode}, rpath: ${paths}"))
+          linePromise.setError(RuntimeException(
+"""RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
+rpath: ${paths}${System.lineSeparator()}
+stderr: ${stderr}
+""".trimIndent()))
         }
       }
 
@@ -172,9 +182,9 @@ object RInteropUtil {
     command = command.withEnvironment("PATH", paths.path)
     command = if (SystemInfo.isUnix) {
       if (SystemInfo.isMac) {
-        command.withEnvironment("DYLD_FALLBACK_LIBRARY_PATH", paths.ldPath)
+        command.withEnvironment("DYLD_FALLBACK_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
       } else {
-        command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath)
+        command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
       }
     } else {
       command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))

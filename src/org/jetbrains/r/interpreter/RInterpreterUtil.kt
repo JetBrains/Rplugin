@@ -23,6 +23,7 @@ import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
@@ -232,7 +233,20 @@ object RInterpreterUtil {
   }
 
   private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
-    val command = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
+    val conda = RCondaUtil.getSystemCondaExecutable()
+    val condaRoot = conda?.let { RCondaUtil.getCondaRoot(conda) }
+    val interpreterFile = Paths.get(interpreterPath).toFile()
+    val defaultCommands = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
+    val command = if (condaRoot != null && FileUtil.isAncestor(condaRoot, interpreterFile, true)) {
+      val environment = RCondaUtil.getEnvironmentName(interpreterFile)
+      if (environment == null) {
+        mutableListOf(conda, "run").apply { addAll(defaultCommands) }
+      } else {
+        mutableListOf(conda, "run", "-n", environment).apply { addAll(defaultCommands) }
+      }
+    } else {
+      defaultCommands
+    }
     val processHandler = CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(workingDirectory))
     val output = processHandler.runProcess(DEFAULT_TIMEOUT)
 
