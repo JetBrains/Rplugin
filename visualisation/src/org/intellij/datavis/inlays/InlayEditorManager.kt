@@ -86,6 +86,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     if (ApplicationManager.getApplication().isUnitTestMode) return
     ApplicationManager.getApplication().invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
+      if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
       getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
       if (inlayOutputs.isEmpty()) return@invokeLater
@@ -105,8 +106,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       val endLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y + viewport.height)).line
       val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
       val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
-      inlayElements.filter { it.textRange.startOffset in startOffset until endOffset }.forEach { inlay ->
-        if (inlays.containsKey(inlay)) return@forEach
+      inlayElements.filter { it.textRange.startOffset in startOffset until endOffset && !inlays.containsKey(it) }.forEach { inlay ->
         updateCell(inlay)
       }
     }
