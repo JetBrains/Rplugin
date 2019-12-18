@@ -247,7 +247,7 @@ object RunChunkHandler {
         chunkState.revalidateGutter()
       }
       val promise = AsyncPromise<List<ProcessOutput>>()
-      val executePromise = console.executeCodeAsyncWithBusy(codeElement.text) { s, type ->
+      val executePromise = console.rInterop.executeCodeAsync(codeElement.text, isRepl = true) { s, type ->
         result.add(ProcessOutput(s, type))
       }.onProcessed {
         promise.setResult(result)

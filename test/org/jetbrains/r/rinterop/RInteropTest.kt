@@ -95,27 +95,32 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testReplReadline() {
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      override fun onRequestReadLn(prompt: String) {
+        rInterop.replSendReadLn("100")
+        rInterop.replSendReadLn("200")
+        rInterop.replSendReadLn("300")
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
     rInterop.replExecute("x = 0")
     rInterop.replExecute("""
       for (i in 1:3) {
         x = x + as.integer(readline())
       }
     """.trimIndent())
-    rInterop.replSendReadLn("100")
-    rInterop.replSendReadLn("200")
-    rInterop.replSendReadLn("300")
     TestCase.assertEquals("[1] 600\n", rInterop.executeCode("x").stdout)
   }
 
   fun testViewRequest() {
     val promise = AsyncPromise<Pair<RValue, String>>()
-    rInterop.addReplListener(object : RInterop.ReplListener {
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
       override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
         promise.setResult(value to title)
         return resolvedPromise()
       }
     })
-    rInterop.replStartProcessing()
+    rInterop.asyncEventsStartProcessing()
     rInterop.replExecute("tt = data.frame(x = 1:9, y = 2:10)")
     rInterop.replExecute("View(tt, 'abcdd')")
     val (value, title) = promise.blockingGet(DEFAULT_TIMEOUT)!!
@@ -129,19 +134,14 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       // As stated in parallel::mclapply documentation, it does not work on Windows
       return
     }
-    rInterop.replStartProcessing()
-    val promptPromise = AsyncPromise<Unit>()
+    rInterop.asyncEventsStartProcessing()
     val stdoutPromise = AsyncPromise<String>()
     val stderrPromise = AsyncPromise<String>()
     val expectedStdoutLength = 9
     val expectedStderrLength = 9 * 10 / 2
-    val listener = object : RInterop.ReplListener {
+    val listener = object : RInterop.AsyncEventsListener {
       val stdout = StringBuilder()
       val stderr = StringBuilder()
-
-      override fun onPrompt(isDebug: Boolean) {
-        promptPromise.setResult(Unit)
-      }
 
       override fun onText(text: String, type: ProcessOutputType) {
         when (type) {
@@ -156,7 +156,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
         }
       }
     }
-    rInterop.addReplListener(listener)
+    rInterop.addAsyncEventsListener(listener)
 
     rInterop.replExecute("""
       a <- parallel::mclapply(1:9, mc.cores = 2, function(x) {
@@ -165,20 +165,19 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
         return(x*x)
       })
     """.trimIndent())
-    promptPromise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("123456789", stdoutPromise.blockingGet(DEFAULT_TIMEOUT)!!.asSequence().sorted().joinToString(""))
     TestCase.assertEquals("!".repeat(expectedStderrLength), stderrPromise.blockingGet(DEFAULT_TIMEOUT))
     TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).evaluateAsStringList())
-    rInterop.removeReplListener(listener)
+    rInterop.removeAsyncEventsListener(listener)
   }
 
   fun testDataTablePrint() {
-    rInterop.replStartProcessing()
+    rInterop.asyncEventsStartProcessing()
 
     fun doTest(command: String, expectOutput: Boolean) {
       var wasOutput = false
       val promise = AsyncPromise<Unit>()
-      val listener = object : RInterop.ReplListener {
+      val listener = object : RInterop.AsyncEventsListener {
         override fun onText(text: String, type: ProcessOutputType) {
           if (type == ProcessOutputType.STDOUT && text.isNotBlank()) {
             wasOutput = true
@@ -188,11 +187,11 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
           promise.setResult(Unit)
         }
       }
-      rInterop.addReplListener(listener)
+      rInterop.addAsyncEventsListener(listener)
       rInterop.replExecute(command)
       promise.blockingGet(DEFAULT_TIMEOUT)
       TestCase.assertEquals(expectOutput, wasOutput)
-      rInterop.removeReplListener(listener)
+      rInterop.removeAsyncEventsListener(listener)
     }
 
     rInterop.executeCode("library(data.table)")

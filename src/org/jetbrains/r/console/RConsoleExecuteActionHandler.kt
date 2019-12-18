@@ -40,7 +40,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     PROMPT, DEBUG_PROMPT, READ_LN, BUSY, TERMINATED
   }
   @Volatile var state = State.BUSY
-    private set(newState) {
+    internal set(newState) {
       when (newState) {
         State.PROMPT -> {
           consolePromptDecorator.mainPrompt = R_CONSOLE_PROMPT
@@ -65,7 +65,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   @Volatile
   var chunkState: ChunkExecutionState? = null
 
-  internal inner class ReplListener : RInterop.ReplListener {
+  internal inner class AsyncEventsListener : RInterop.AsyncEventsListener {
     private var debugLines = mutableListOf<String>()
     private val stdoutCache = StringBuilder()
 
@@ -116,7 +116,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       onPromptAsync(isDebug)
     }
 
-    fun onPromptAsync(isDebug: Boolean): Promise<Unit> {
+    private fun onPromptAsync(isDebug: Boolean): Promise<Unit> {
       val currentDebugLines = debugLines
       debugLines = mutableListOf()
       return consoleView.debugger.handlePrompt(isDebug, currentDebugLines).then { isPrompt ->
@@ -139,11 +139,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
   }
 
-  internal val replListener = ReplListener()
+  private val asyncEventsListener = AsyncEventsListener()
 
   init {
-    rInterop.addReplListener(replListener)
-    rInterop.replStartProcessing()
+    rInterop.addAsyncEventsListener(asyncEventsListener)
+    rInterop.asyncEventsStartProcessing()
   }
 
   fun interruptTextExecution() {
@@ -196,7 +196,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     } else {
       fireBeforeExecution()
       state = State.BUSY
-      rInterop.replExecute(text)
+      rInterop.executeCodeAsync(text, isRepl = true)
     }
   }
 

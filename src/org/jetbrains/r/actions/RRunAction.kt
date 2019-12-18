@@ -45,7 +45,8 @@ abstract class RRunActionBase : REditorActionBase() {
 
 class RRunAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    console.rInterop.sourceFile(file)
+    val code = FileDocumentManager.getInstance().getDocument(file)?.text ?: return
+    console.rInterop.executeCodeAsync(code, isRepl = true)
   }
 
   override fun update(e: AnActionEvent) {

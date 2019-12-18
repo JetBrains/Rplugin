@@ -14,15 +14,12 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Version
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
 import com.jetbrains.rd.util.getOrCreate
@@ -46,7 +43,7 @@ import kotlin.collections.HashSet
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 
-data class RIExecutionResult(val stdout: String, val stderr: String)
+data class RIExecutionResult(val stdout: String, val stderr: String, val exception: String? = null)
 
 private const val DEADLINE_TEST = 40L
 
@@ -68,10 +65,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
     }, 0L, HEARTBEAT_PERIOD.toLong())
   }
-  private val replListeners = HashSet<ReplListener>()
+  private val asyncEventsListeners = HashSet<AsyncEventsListener>()
   @Volatile private var finished = false
-  private var replProcessingStarted = false
-  private val replEventsBeforeStarted = mutableListOf<Service.ReplEvent>()
+  private var asyncProcessingStarted = false
+  private val asyncEventsBeforeStarted = mutableListOf<Service.AsyncEvent>()
   private val cacheIndex = AtomicInteger(0)
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
 
@@ -137,7 +134,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   init {
     val info = execute(stub::getInfo, Empty.getDefaultInstance())
     rVersion = RVersion.forceParse(info.rVersion)
-    processReplEvents()
+    processAsyncEvents()
   }
 
   fun executeTask(f: () -> Unit) {
@@ -167,40 +164,102 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeAsync(asyncStub::setOutputWidth, Int32Value.of(width))
   }
 
-  fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
-    return executeRequest(RPIServiceGrpc.getExecuteCodeMethod(), buildCodeRequest(code), withCheckCancelled)
-  }
-
-  fun sourceFile(file: VirtualFile) {
-    replExecute(runReadAction { FileDocumentManager.getInstance ().getDocument(file)?.text ?: "" } )
-  }
-
-  fun executeCodeAsync(code: String, consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<Unit> {
-    return executeRequestAsync(RPIServiceGrpc.getExecuteCodeMethod(), buildCodeRequest(code), consumer)
-  }
-
-  fun addReplListener(listener: ReplListener) {
-    replListeners.add(listener)
-  }
-
-  fun removeReplListener(listener: ReplListener) {
-    replListeners.remove(listener)
-  }
-
   fun replExecute(code: String) {
-    executeWithCheckCancel(asyncStub::replExecute, StringValue.of(code))
+    executeCodeAsync(code, isRepl = true).getWithCheckCanceled()
   }
 
-  fun replSendReadLn(s: String) {
-    executeWithCheckCancel(asyncStub::replSendReadLn, StringValue.of(s))
+  fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
+    val promise = executeCodeAsync(code)
+    return if (withCheckCancelled) {
+      promise.getWithCheckCanceled()
+    } else {
+      promise.blockingGet(Int.MAX_VALUE)!!
+    }
   }
 
-  fun replSendDebuggerCommand(command: Service.DebuggerCommand) {
-    executeWithCheckCancel(asyncStub::replSendDebuggerCommand, Service.DebuggerCommandRequest.newBuilder().setCommand(command).build())
+  fun executeCodeAsync(code: String, withEcho: Boolean = true,
+                       debugFileId: String = "",
+                       isRepl: Boolean = false,
+                       returnOutput: Boolean = !isRepl,
+                       outputConsumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+    val request = Service.ExecuteCodeRequest.newBuilder()
+      .setCode(code)
+      .setDebugFileId(debugFileId)
+      .setWithEcho(withEcho)
+      .setStreamOutput(returnOutput || outputConsumer != null)
+      .setIsRepl(isRepl)
+      .build()
+    val number = rInteropTestGenerator?.nextStubNumber()
+    rInteropTestGenerator?.onExecuteRequestAsync(number!!, RPIServiceGrpc.getExecuteCodeMethod(), request)
+    val call = channel.newCall(RPIServiceGrpc.getExecuteCodeMethod(), CallOptions.DEFAULT)
+    val promise = object : AsyncPromise<RIExecutionResult>() {
+      override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        if (super.cancel(mayInterruptIfRunning)) {
+          call.cancel("Interrupt of execution", null)
+          return true
+        }
+        return false
+      }
+    }
+
+    val stdoutBuffer = StringBuilder()
+    val stderrBuffer = StringBuilder()
+    var exception: String? = null
+
+    ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<Service.ExecuteCodeResponse> {
+      override fun onNext(value: Service.ExecuteCodeResponse) {
+        when (value.msgCase) {
+          Service.ExecuteCodeResponse.MsgCase.OUTPUT -> {
+            rInteropTestGenerator?.onOutputAvailable(number!!, value.output)
+            when (value.output.type) {
+              Service.CommandOutput.Type.STDOUT -> {
+                outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDOUT)
+                if (returnOutput) stdoutBuffer.append(value.output.text.toStringUtf8())
+              }
+              Service.CommandOutput.Type.STDERR -> {
+                outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDERR)
+                if (returnOutput) stderrBuffer.append(value.output.text.toStringUtf8())
+              }
+              else -> {}
+            }
+          }
+          Service.ExecuteCodeResponse.MsgCase.EXCEPTION -> {
+            exception = value.exception
+          }
+          else -> {}
+        }
+      }
+
+      override fun onError(t: Throwable?) {
+        promise.setError(t ?: RuntimeException())
+      }
+
+      override fun onCompleted() {
+        rInteropTestGenerator?.onExecuteRequestFinish(number!!)
+        promise.setResult(RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString(), exception))
+      }
+    })
+    return promise
   }
 
   fun replInterrupt() {
-    executeWithCheckCancel(asyncStub::replInterrupt, Empty.getDefaultInstance())
+    executeAsync(asyncStub::replInterrupt, Empty.getDefaultInstance())
+  }
+
+  fun replSendReadLn(s: String) {
+    executeWithCheckCancel(asyncStub::sendReadLn, StringValue.of(s))
+  }
+
+  fun replSendDebuggerCommand(command: Service.DebuggerCommand) {
+    executeWithCheckCancel(asyncStub::sendDebuggerCommand, Service.DebuggerCommandRequest.newBuilder().setCommand(command).build())
+  }
+
+  fun addAsyncEventsListener(listener: AsyncEventsListener) {
+    asyncEventsListeners.add(listener)
+  }
+
+  fun removeAsyncEventsListener(listener: AsyncEventsListener) {
+    asyncEventsListeners.remove(listener)
   }
 
   fun graphicsInit(properties: RGraphicsUtils.InitProperties, inMemory: Boolean): RIExecutionResult {
@@ -422,10 +481,6 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeWithCheckCancel(asyncStub::debugGetSysFunctionCode, Int32Value.of(index)).value
   }
 
-  fun debugExecute(code: String, fileId: String) {
-    executeWithCheckCancel(asyncStub::debugExecute, Service.DebugExecuteRequest.newBuilder().setCode(code).setFileId(fileId).build())
-  }
-
   fun clearEnvironment(env: RRef) {
     executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
     invalidateCaches()
@@ -507,41 +562,31 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return promise
   }
 
-  private fun buildCodeRequest(code: String): Service.ExecuteCodeRequest {
-    return Service.ExecuteCodeRequest.newBuilder().setCode(code).setWithEcho(true).build()
-  }
-
-  private fun processReplEvent(event: Service.ReplEvent) {
+  private fun processAsyncEvent(event: Service.AsyncEvent) {
     when (event.eventCase) {
-      Service.ReplEvent.EventCase.BUSY -> {
-        replListeners.forEach { it.onBusy() }
-      }
-      Service.ReplEvent.EventCase.TEXT -> {
+      Service.AsyncEvent.EventCase.TEXT -> {
         val text = event.text.text
         val type = when (event.text.type) {
           Service.CommandOutput.Type.STDOUT -> ProcessOutputType.STDOUT
           Service.CommandOutput.Type.STDERR -> ProcessOutputType.STDERR
           else -> return
         }
-        replListeners.forEach { it.onText(text.toStringUtf8(), type) }
+        asyncEventsListeners.forEach { it.onText(text.toStringUtf8(), type) }
       }
-      Service.ReplEvent.EventCase.REQUESTREADLN -> {
+      Service.AsyncEvent.EventCase.REQUESTREADLN -> {
         invalidateCaches()
         val prompt = event.requestReadLn.prompt
-        replListeners.forEach { it.onRequestReadLn(prompt) }
+        asyncEventsListeners.forEach { it.onRequestReadLn(prompt) }
       }
-      Service.ReplEvent.EventCase.PROMPT -> {
+      Service.AsyncEvent.EventCase.PROMPT -> {
         invalidateCaches()
         val isDebug = event.prompt.isDebug
-        replListeners.forEach { it.onPrompt(isDebug) }
+        asyncEventsListeners.forEach { it.onPrompt(isDebug) }
       }
-      Service.ReplEvent.EventCase.TERMINATION -> {
-        replListeners.forEach { it.onTermination() }
-      }
-      Service.ReplEvent.EventCase.VIEWREQUEST -> {
+      Service.AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
-        val remaining = AtomicInteger(replListeners.size)
-        replListeners.forEach { listener ->
+        val remaining = AtomicInteger(asyncEventsListeners.size)
+        asyncEventsListeners.forEach { listener ->
           listener.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
             .onProcessed {
               if (remaining.decrementAndGet() == 0) {
@@ -556,37 +601,34 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  fun replStartProcessing() {
+  fun asyncEventsStartProcessing() {
     executor.execute {
-      if (!replProcessingStarted) {
-        replProcessingStarted = true
-        replEventsBeforeStarted.forEach { processReplEvent(it) }
-        replEventsBeforeStarted.clear()
+      if (!asyncProcessingStarted) {
+        asyncProcessingStarted = true
+        asyncEventsBeforeStarted.forEach { processAsyncEvent(it) }
+        asyncEventsBeforeStarted.clear()
       }
     }
   }
 
-  private fun processReplEvents() {
-    val future = asyncStub.replGetNextEvent(Empty.getDefaultInstance())
+  private fun processAsyncEvents() {
+    val future = asyncStub.getNextAsyncEvent(Empty.getDefaultInstance())
     future.addListener(Runnable {
       try {
         val event = future.get()
-        if (replProcessingStarted) {
-          processReplEvent(event)
+        if (asyncProcessingStarted) {
+          processAsyncEvent(event)
         } else {
-          replEventsBeforeStarted.add(event)
-        }
-        if (event.eventCase == Service.ReplEvent.EventCase.TERMINATION) {
-          return@Runnable
+          asyncEventsBeforeStarted.add(event)
         }
       } catch (ignored: CancellationException) {
       } catch (e: ExecutionException) {
         if ((e.cause as? StatusRuntimeException)?.status?.code == Status.Code.UNAVAILABLE) {
-          processReplEvent(Service.ReplEvent.newBuilder().setTermination(Empty.getDefaultInstance()).build())
+          asyncEventsListeners.forEach { it.onTermination() }
           return@Runnable
         }
       }
-      processReplEvents()
+      processAsyncEvents()
     }, executor)
   }
 
@@ -628,7 +670,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  interface ReplListener {
+  interface AsyncEventsListener {
     fun onText(text: String, type: ProcessOutputType) {}
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
@@ -644,7 +686,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 }
 
-internal fun <T> ListenableFuture<T>.getWithCheckCanceled(): T {
+internal fun <T> Future<T>.getWithCheckCanceled(): T {
   while (true) {
     try {
       ProgressManager.checkCanceled()

@@ -13,7 +13,7 @@ class RConsoleReadlineTest : RConsoleBaseTestCase() {
   fun testReadline() {
     val promise1 = AsyncPromise<Unit>()
     val promise2 = AsyncPromise<Unit>()
-    rInterop.addReplListener(object : RInterop.ReplListener {
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         promise1.setResult(Unit)
       }

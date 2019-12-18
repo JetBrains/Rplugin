@@ -459,7 +459,7 @@ class RDebugger(private val consoleView: RConsoleView) : Disposable {
     currentCommand = null
     updateStack(emptyList())
     debuggerEndPromise = AsyncPromise()
-    rInterop.debugExecute(source, fileId)
+    rInterop.executeCodeAsync(source, debugFileId = fileId, isRepl = true)
     return debuggerEndPromise!!
   }
 

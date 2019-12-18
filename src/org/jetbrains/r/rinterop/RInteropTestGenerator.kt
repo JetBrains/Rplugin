@@ -23,8 +23,8 @@ class RInteropTestGenerator {
     return stubMessageEnumerator.getAndIncrement()
   }
 
-  fun <TRequest : GeneratedMessageV3> onExecuteRequestAsync(number: Int, methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
-                                                            request: TRequest) {
+  fun <TRequest : GeneratedMessageV3, TResponse : GeneratedMessageV3>
+    onExecuteRequestAsync(number: Int, methodDescriptor: MethodDescriptor<TRequest, TResponse>, request: TRequest) {
     commandMessages.put(number, CommandMessage(methodDescriptor.fullMethodName.let { it.substring(it.indexOf('/') + 1) }, request.toByteArray()))
   }
 

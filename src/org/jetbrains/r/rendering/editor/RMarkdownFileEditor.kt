@@ -183,7 +183,7 @@ class ChunkExecutionState(private val editor: Editor,
                           val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
                           val pendingLineRanges: MutableList<IntRange> = ArrayList<IntRange>(),
                           @Volatile var currentLineRange: IntRange? = null,
-                          val cancellableExecutionPromise: AtomicReference<CancellablePromise<Unit>> = AtomicReference()) {
+                          val cancellableExecutionPromise: AtomicReference<CancellablePromise<*>> = AtomicReference()) {
   fun revalidateGutter() = invokeLater { (editor as EditorEx).gutterComponentEx.revalidateMarkup() }
 }
 

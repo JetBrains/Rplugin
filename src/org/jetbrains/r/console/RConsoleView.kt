@@ -5,7 +5,6 @@
 package org.jetbrains.r.console
 
 import com.intellij.execution.console.LanguageConsoleImpl
-import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKey
@@ -25,13 +24,9 @@ import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.ui.FontInfo
 import com.intellij.util.ui.UIUtil
-import icons.org.jetbrains.r.RBundle
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RDebugger
-import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
@@ -51,7 +46,6 @@ class RConsoleView(val rInterop: RInterop,
   val executeActionHandler = RConsoleExecuteActionHandler(this)
 
   private val onSelectListeners = mutableListOf<() -> Unit>()
-  private var promiseToInterrupt: CancellablePromise<Unit>? = null
 
   init {
     consolePromptDecorator.mainPrompt = ""
@@ -99,32 +93,6 @@ class RConsoleView(val rInterop: RInterop,
       consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
       executeActionHandler.runExecuteAction(this)
     }
-  }
-
-  fun executeCodeAsyncWithBusy(code: String, consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<Unit> {
-    if (isRunningCommand) {
-      throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
-    }
-    val isDebug = executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT
-    val executePromise = rInterop.executeCodeAsync(code, consumer)
-    val result = object : AsyncPromise<Unit>() {
-      override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-        executePromise.cancel(mayInterruptIfRunning)
-        return super.cancel(mayInterruptIfRunning)
-      }
-    }
-    rInterop.executeTask {
-      promiseToInterrupt = executePromise
-      executeActionHandler.replListener.onBusy()
-      executePromise.onProcessed {
-        rInterop.executeTask {
-          promiseToInterrupt = null
-          rInterop.invalidateCaches()
-          executeActionHandler.replListener.onPromptAsync(isDebug).processed(result)
-        }
-      }
-    }
-    return result
   }
 
   fun createDebuggerPanel() {
@@ -175,13 +143,7 @@ class RConsoleView(val rInterop: RInterop,
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
       if (console.isRunningCommand) {
-        console.promiseToInterrupt?.cancel() ?: run {
-          if (console.debugger.isEnabled) {
-            console.debugger.stop()
-          } else {
-            console.executeActionHandler.interruptTextExecution()
-          }
-        }
+        console.executeActionHandler.interruptTextExecution()
         console.print("^C\n", ConsoleViewContentType.SYSTEM_OUTPUT)
       } else {
         val document = console.getConsoleEditor().getDocument()
