@@ -42,6 +42,23 @@ object RCondaUtil {
     return if (condaInPath != null) condaInPath.path else getCondaExecutableByName(condaName)
   }
 
+  fun findCondaByRInterpreter(file: File): File? {
+    var current: File? = file
+    while (current != null) {
+      current = current.parentFile
+      if (CONDA_DEFAULT_ROOTS.contains(current?.name)) {
+        findCondaByCondaRoot(file)?.let { return it }
+      }
+    }
+    return null
+  }
+
+  private fun findCondaByCondaRoot(file: File): File? =
+    Paths.get(file.absolutePath,
+              if (SystemInfo.isWindows) "Scripts" else "bin",
+              if (SystemInfo.isWindows) "conda.exe" else "conda").toFile().takeIf { it.exists() }
+
+
   private fun getCondaExecutableByName(condaName: String): String? {
     val userHome = LocalFileSystem.getInstance().findFileByPath(
       SystemProperties.getUserHome().replace('\\', '/'))

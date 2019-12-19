@@ -233,16 +233,15 @@ object RInterpreterUtil {
   }
 
   private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
-    val conda = RCondaUtil.getSystemCondaExecutable()
-    val condaRoot = conda?.let { RCondaUtil.getCondaRoot(conda) }
     val interpreterFile = Paths.get(interpreterPath).toFile()
+    val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
     val defaultCommands = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
-    val command = if (condaRoot != null && FileUtil.isAncestor(condaRoot, interpreterFile, true)) {
+    val command = if (conda != null) {
       val environment = RCondaUtil.getEnvironmentName(interpreterFile)
       if (environment == null) {
-        mutableListOf(conda, "run").apply { addAll(defaultCommands) }
+        mutableListOf(conda.absolutePath, "run").apply { addAll(defaultCommands) }
       } else {
-        mutableListOf(conda, "run", "-n", environment).apply { addAll(defaultCommands) }
+        mutableListOf(conda.absolutePath, "run", "-n", environment).apply { addAll(defaultCommands) }
       }
     } else {
       defaultCommands
