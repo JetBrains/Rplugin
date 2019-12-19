@@ -21,6 +21,8 @@ import com.intellij.util.EnvironmentUtil
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
+import com.intellij.util.io.exists
+import com.intellij.util.io.isDirectory
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.rinterop.RCondaUtil
@@ -99,17 +101,23 @@ object RInterpreterUtil {
   }
 
   fun suggestAllInterpreters(enabledOnly: Boolean): List<RInterpreterInfo> {
+    fun MutableList<RInterpreterInfo>.addInterpreter(path: String, name: String) {
+      if (findByPath(path) == null) {
+        RBasicInterpreterInfo.from(name, path)?.let { inflated ->
+          add(inflated)
+          RInterpreterSettings.addOrEnableInterpreter(inflated)
+        }
+      }
+    }
+
     fun suggestAllExisting(): List<RInterpreterInfo> {
       return mutableListOf<RInterpreterInfo>().apply {
         addAll(RInterpreterSettings.existingInterpreters)
-        val suggestedPaths = suggestAllHomePaths()
-        for (path in suggestedPaths) {
-          if (findByPath(path) == null) {
-            RBasicInterpreterInfo.from(SUGGESTED_INTERPRETER_NAME, path)?.let { inflated ->
-              add(inflated)
-              RInterpreterSettings.addOrEnableInterpreter(inflated)
-            }
-          }
+        suggestAllHomePaths().forEach { path ->
+          addInterpreter(path, SUGGESTED_INTERPRETER_NAME)
+        }
+        suggestCondaPaths().forEach { (path, environment) ->
+          addInterpreter(path, environment)
         }
       }
     }
@@ -125,6 +133,25 @@ object RInterpreterUtil {
 
   fun suggestHomePath(): String {
     return suggestAllHomePaths().firstOrNull() ?: ""
+  }
+
+  private fun suggestCondaPaths(): List<CondaPath> {
+    val result = mutableListOf<CondaPath>()
+    val systemCondaExecutable = RCondaUtil.getSystemCondaExecutable() ?: return result
+    val condaRoot = RCondaUtil.getCondaRoot(systemCondaExecutable)?.absolutePath ?: return result
+    val rbin = if (SystemInfo.isWindows) "R.exe" else "R"
+    Paths.get(condaRoot, "bin", rbin).takeIf { it.exists() }?.let {
+      result.add(CondaPath(it.toString(), "(base)"))
+    }
+    Paths.get(condaRoot, "envs").takeIf { it.exists() && it.isDirectory() }
+                                        ?.toFile()?.listFiles()
+                                        ?.filter { it.isDirectory }
+                                        ?.forEach { env ->
+      Paths.get(env.absolutePath, "bin", rbin).takeIf { it.exists() }?.let {
+        result.add(CondaPath(it.toString(), env.name))
+      }
+    }
+    return result
   }
 
   fun suggestAllHomePaths(): List<String> {
@@ -256,4 +283,6 @@ object RInterpreterUtil {
 
     return output
   }
+
+  private data class CondaPath(val path: String, val environment: String)
 }
