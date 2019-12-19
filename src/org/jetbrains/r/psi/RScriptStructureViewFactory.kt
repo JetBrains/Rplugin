@@ -13,7 +13,7 @@ import com.intellij.lang.PsiStructureViewFactory
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.psi.api.RFunctionExpression
+import org.jetbrains.r.psi.api.RAssignmentStatement
 
 class RScriptStructureViewFactory : PsiStructureViewFactory {
   override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
@@ -51,6 +51,6 @@ private class RStructureViewModel(private val file: PsiFile) : TextEditorBasedSt
   }
 
   override fun getSuitableClasses(): Array<Class<*>> {
-    return arrayOf(RFunctionExpression::class.java, PsiComment::class.java)
+    return arrayOf(RAssignmentStatement::class.java, PsiComment::class.java)
   }
 }

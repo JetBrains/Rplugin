@@ -4,6 +4,9 @@
 
 package org.jetbrains.r.structureView
 
+import com.intellij.lang.LanguageStructureViewBuilder
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.psi.PsiElement
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.util.ui.tree.TreeUtil
@@ -62,7 +65,7 @@ class RStructureViewTest : RUsefulTestCase() {
       f5 <- function() {}
     """, """
       -test.R
-       f1
+       [f1]
        -Header 1
         f2
        -Header 2
@@ -72,6 +75,47 @@ class RStructureViewTest : RUsefulTestCase() {
        -Header 4
         f5
     """, true)
+  }
+
+  fun testCurrentStructureElement() {
+    myFixture.configureByText("test.R", """
+      #<caret> Header 1 ----
+      
+      <caret>fun1 <- function() {
+      }
+      
+      noCaretHere <- function() {
+      }
+      
+      fun2 <- function () {
+        foo()<caret>
+      }
+    """.trimIndent())
+    val builder = LanguageStructureViewBuilder.INSTANCE.getStructureViewBuilder(myFixture.file)
+    val fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(myFixture.file.virtualFile)
+    val structureView = builder!!.createStructureView(fileEditor, myFixture.project)
+
+    val caretModel = myFixture.editor.caretModel
+
+    val offsets = caretModel.allCarets.map { it.offset }
+
+    val actual = offsets.joinToString(separator = "") {
+      caretModel.moveToOffset(it)
+      val currentEditorElement = structureView.treeModel.currentEditorElement
+      (currentEditorElement as? PsiElement)?.text + "\n***\n"
+    }
+
+    UsefulTestCase.assertSameLines("""
+      # Header 1 ----
+      ***
+      fun1 <- function() {
+      }
+      ***
+      fun2 <- function () {
+        foo()
+      }
+      ***
+    """.trimIndent(), actual)
   }
 
   private fun doTest(@Language("RMarkdown") source: String,
