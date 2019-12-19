@@ -13,6 +13,7 @@ import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RForStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RPsiElement
 
 class RVariableInplaceRenameHandler : VariableInplaceRenameHandler() {
 
@@ -21,7 +22,7 @@ class RVariableInplaceRenameHandler : VariableInplaceRenameHandler() {
   }
 
   override fun isAvailable(element: PsiElement?, editor: Editor, file: PsiFile): Boolean {
-    if (RPsiUtil.isLibraryElement(element ?: return false)) return false
+    if (element !is RPsiElement || RPsiUtil.isLibraryElement(element)) return false
     val parent = element.parent
     if (element is RIdentifierExpression && parent is RForStatement && parent.target == element) return true
     return super.isAvailable(element, editor, file)

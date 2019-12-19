@@ -11,14 +11,12 @@ import com.intellij.psi.codeStyle.SuggestedNameInfo
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.rename.NameSuggestionProvider
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RForStatement
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 class RNameSuggestionProvider : NameSuggestionProvider {
   override fun getSuggestedNames(element: PsiElement, nameSuggestionContext: PsiElement?, result: MutableSet<String>): SuggestedNameInfo? {
+    if (!(element is RPsiElement || element.containingFile is RFile)) return null
     val elementForRefactoring =
       if (element is PsiNameIdentifierOwner) element.identifyingElement ?: return null
       else element

@@ -14,6 +14,7 @@ import com.intellij.refactoring.rename.inplace.MemberInplaceRenameHandler
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.RPsiElement
 
 class RMemberInplaceRenameHandler : MemberInplaceRenameHandler() {
   override fun doRename(elementToRename: PsiElement, editor: Editor, dataContext: DataContext?): InplaceRefactoring? {
@@ -28,7 +29,7 @@ class RMemberInplaceRenameHandler : MemberInplaceRenameHandler() {
   }
 
   override fun isAvailable(element: PsiElement?, editor: Editor, file: PsiFile): Boolean {
-    if (RPsiUtil.isLibraryElement(element ?: return false)) return false
+    if (element !is RPsiElement || RPsiUtil.isLibraryElement(element)) return false
     val realElement =
       if (element is RIdentifierExpression) element.parent
       else element
