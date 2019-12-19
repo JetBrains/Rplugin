@@ -13,6 +13,7 @@ import com.intellij.openapi.editor.impl.FontInfo
 import com.intellij.openapi.editor.impl.view.EditorPainter
 import com.intellij.openapi.editor.impl.view.FontLayoutService
 import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.JBUI
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -228,7 +229,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
       return
     }
 
-    inlay!!.dispose()
+    Disposer.dispose(inlay!!)
     inlay = null
   }
   //endregion

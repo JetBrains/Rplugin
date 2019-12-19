@@ -77,7 +77,10 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   fun dispose() {
-    inlays.values.forEach { it.disposeInlay() }
+    inlays.values.forEach {
+      it.disposeInlay()
+      it.dispose()
+    }
     inlays.clear()
     inlayElements.clear()
   }
@@ -122,6 +125,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     if (cleanup && cell.isValid) descriptor.cleanup(cell)
     inlayComponent.parent?.remove(inlayComponent)
     inlayComponent.disposeInlay()
+    inlayComponent.dispose()
     inlays.remove(cell)
   }
 
@@ -361,6 +365,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       val inlay = addBlockElement(offset, inlayComponent)
       inlayComponent.assignInlay(inlay)
     }
+    inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
   }
 
   private fun updateToolbarPositions() {

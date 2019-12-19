@@ -71,7 +71,6 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
                                 InlayDimensions.leftBorderUnscaled,
                                 InlayDimensions.bottomBorderUnscaled,
                                 InlayDimensions.rightBorderUnscaled)
-    isOpaque = false
     Disposer.register(editor.disposable, disposable)
     addMouseListener(this)
     addMouseMotionListener(this)
@@ -205,8 +204,11 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
       editor.markupModel.removeHighlighter(separatorHighlighter!!)
       separatorHighlighter = null
     }
-    Disposer.dispose(disposable)
     super.disposeInlay()
+  }
+
+  fun dispose() {
+    Disposer.dispose(disposable)
   }
 
   /** Changes size of component  and also called updateSize for inlay. */
