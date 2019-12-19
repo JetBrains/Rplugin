@@ -51,6 +51,7 @@ class InstallationPackageException(message: String, names2errors: Map<String, St
 }
 
 interface RequiredPackageListener {
+  fun onPackagesMissed(missingPackages: List<RequiredPackage>) {}
   fun onPackagesInstalled()
   fun onErrorOccurred(e: InstallationPackageException)
 }
@@ -111,6 +112,9 @@ class RequiredPackageInstaller(private val project: Project) {
     if (missingPackages.isEmpty()) {
       listener?.onPackagesInstalled()
       return
+    }
+    else {
+      listener?.onPackagesMissed(missingPackages)
     }
 
     if (!askUser) {

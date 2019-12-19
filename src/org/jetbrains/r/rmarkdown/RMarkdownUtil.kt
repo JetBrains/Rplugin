@@ -27,6 +27,10 @@ object RMarkdownUtil {
   fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
       val listener = object : RequiredPackageListener {
+        override fun onPackagesMissed(missingPackages: List<RequiredPackage>) {
+          promise.setError(RBundle.message("run.chunk.executor.missedPackages") + missingPackages.joinToString { it.name })
+        }
+
         override fun onPackagesInstalled() {
           promise.setResult(Unit)
         }
