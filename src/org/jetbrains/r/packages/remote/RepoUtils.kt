@@ -216,7 +216,7 @@ object RepoUtils {
 
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
-      interpreter.updateState()
+      interpreter.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
       RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
     }
 

@@ -27,7 +27,6 @@ import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
@@ -150,21 +149,25 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
   private fun scheduleSkeletonUpdate(): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    runAsync {
-      rInterpreter?.updateState()
-      promise.setResult(Unit)
-      val interpreter = rInterpreter ?: return@runAsync
-      val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
-        override fun run(indicator: ProgressIndicator) {
-          RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
-          RLibraryWatcher.getInstance(project).refresh()
-          updateSkeletons(interpreter)
-        }
+    return AsyncPromise<Unit>().also { promise ->
+      val interpreter = rInterpreter
+      if (interpreter != null) {
+        interpreter.updateState()
+          .onProcessed { promise.setResult(Unit) }
+          .onSuccess {
+            val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
+              override fun run(indicator: ProgressIndicator) {
+                RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
+                RLibraryWatcher.getInstance(project).refresh()
+                updateSkeletons(interpreter)
+              }
+            }
+            ProgressManager.getInstance().run(updater)
+          }
+      } else {
+        promise.setResult(Unit)
       }
-      ProgressManager.getInstance().run(updater)
     }
-    return promise
   }
 
   private fun updateSkeletons(interpreter: RInterpreterImpl) {

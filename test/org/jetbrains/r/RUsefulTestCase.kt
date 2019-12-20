@@ -27,6 +27,7 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterImpl
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.mock.MockInterpreterManager
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.references.RReferenceBase
@@ -137,7 +138,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     check(!(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
     val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
     val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
-    rInterpreter.updateState()
+    rInterpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
     val packagesForTest = missingTestSkeletons.map {
       rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package $it found for $interpreterPath")
     }

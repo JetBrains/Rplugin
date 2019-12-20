@@ -83,7 +83,7 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
       return PsiManager.getInstance(project).findFile(virtualFile)
     }
 
-    override fun updateState() {}
+    override fun updateState() = runAsync {  }
   }
 
   override fun hasInterpreter(): Boolean = true

@@ -40,6 +40,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                        private val project: Project) : RInterpreter {
   @Volatile
   private var state = State.EMPTY
+  private var updatePromise: Promise<Unit>? = null
 
   override val version: Version = buildVersion(versionInfo)
   override val interpreterName: String get() = versionInfo["version.string"]?.replace(' ', '_')  ?: "unnamed"
@@ -56,10 +57,10 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       val current = state
       val currentSkeletonRoots = current.skeletonRoots
       if (current.skeletonPaths.size != currentSkeletonRoots.size || !currentSkeletonRoots.all { it.isValid }) {
-        runAsync {
-          if (!project.isOpen || project.isDisposed) return@runAsync
-          updateState()
-          RInterpreterUtil.updateIndexableSet(project)
+        if (project.isOpen && !project.isDisposed) {
+          updateState().onSuccess {
+            RInterpreterUtil.updateIndexableSet(project)
+          }
         }
         return currentSkeletonRoots.filter { it.isValid }.toSet()
       }
@@ -120,7 +121,25 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     return File(jarPath)
   }
 
-  override fun updateState() {
+  @Synchronized
+  override fun updateState(): Promise<Unit> {
+    return updatePromise ?: createUpdatePromise().also {
+      updatePromise = it
+    }
+  }
+
+  private fun createUpdatePromise(): Promise<Unit> {
+    return runAsync { doUpdateState() }
+      .onProcessed { resetUpdatePromise() }
+      .onError { LOG.error("Unable to update state", it) }
+  }
+
+  @Synchronized
+  private fun resetUpdatePromise() {
+    updatePromise = null
+  }
+
+  private fun doUpdateState() {
     val cachedMirrors = state.cranMirrors
     state = State.EMPTY
     name2PsiFile.clear()

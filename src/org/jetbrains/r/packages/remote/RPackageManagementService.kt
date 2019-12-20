@@ -301,7 +301,7 @@ class RPackageManagementService(private val project: Project,
     private fun <R>RInterpreter.withAutoUpdate(property: RInterpreter.() -> List<R>): List<R> {
       return property().let { values ->
         if (values.isEmpty()) {
-          updateState()
+          updateState().blockingGet(DEFAULT_TIMEOUT)
           property()
         } else {
           values

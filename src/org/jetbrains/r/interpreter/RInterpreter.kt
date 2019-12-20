@@ -48,7 +48,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getSkeletonFileByPackageName(name: String): PsiFile?
 
-  fun updateState()
+  fun updateState(): Promise<Unit>
 
   fun findLibraryPathBySkeletonPath(skeletonPath: String): String?
 }

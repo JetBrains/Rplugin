@@ -28,7 +28,7 @@ class LibraryWatcherTest : RUsefulTestCase() {
     val project = myFixture.project
     val interpreterPath = RInterpreterUtil.suggestHomePath()
     val interpreter = RInterpreterImpl(RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!), interpreterPath, project)
-    interpreter.updateState()
+    interpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
     runCommand(interpreterPath, "CMD", "REMOVE", packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
     assertNotEmpty(interpreter.libraryPaths)
