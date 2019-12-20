@@ -188,7 +188,7 @@ stderr: ${stderr}
         command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
       }
     } else {
-      command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + System.getenv("PATH"))
+      command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
     }
     command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
     return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) } to paths) }
