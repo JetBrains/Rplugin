@@ -204,7 +204,7 @@ object RSkeletonUtil {
     val lines: List<String> = packageSummary.split("\n")
     if (lines.isEmpty()) throw IOException("Empty summary")
 
-    val priority = when (val it = lines[0]) {
+    val priority = when (val it = lines[0].trim()) {
       "NA" -> RLibraryPackage.Priority.NA
       "BASE" -> RLibraryPackage.Priority.BASE
       "RECOMMENDED" -> RLibraryPackage.Priority.RECOMMENDED
