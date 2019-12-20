@@ -201,7 +201,7 @@ object RSkeletonUtil {
   private fun convertToBinFormat(packageName: String, packageSummary: String ): RLibraryPackage {
     val packageBuilder = RLibraryPackage.newBuilder().setName(packageName)
     packageBuilder.setName(packageName)
-    val lines: List<String> = packageSummary.split("\n")
+    val lines: List<String> = packageSummary.lines()
     if (lines.isEmpty()) throw IOException("Empty summary")
 
     val priority = when (val it = lines[0].trim()) {
