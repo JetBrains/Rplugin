@@ -75,18 +75,26 @@ object RInterpreterUtil {
   }
 
   fun getVersionByPath(interpreterPath: String): Version? {
-    fun checkOutput(inputStream: InputStream): Version? {
-      return inputStream.bufferedReader().use {
-        val line = it.readLine()
-        if (line?.startsWith("R version") == true) {
-          val items = line.split(' ')
-          Version.parseVersion(items[2])
-        } else {
-          null
-        }
+    fun parseVersion(line: String?): Version? {
+      return if (line?.startsWith("R version") == true) {
+        val items = line.split(' ')
+        Version.parseVersion(items[2])
+      } else {
+        null
       }
     }
 
+    fun checkOutput(inputStream: InputStream): Version? {
+      return inputStream.bufferedReader().use {
+        val line = it.readLine()
+        parseVersion(line)
+      }
+    }
+    if (SystemInfo.isWindows) {
+      val result = runRInterpreter(interpreterPath, listOf(interpreterPath, "--version"), null)
+      return parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
+    }
+    // that's fine just to run R normally on Unix because it's a script
     val commandLine = GeneralCommandLine().withExePath(interpreterPath).withParameters("--version")
     val process = commandLine.createProcess()
     return if (process.waitFor(RWRAPPER_INITIALIZED_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)) {
@@ -260,9 +268,15 @@ object RInterpreterUtil {
   }
 
   private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
+    val defaultCommands = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
+    return runRInterpreter(interpreterPath, defaultCommands, workingDirectory)
+  }
+
+  private fun runRInterpreter(interpreterPath: String,
+                              defaultCommands: List<String>,
+                              workingDirectory: String?): ProcessOutput {
     val interpreterFile = Paths.get(interpreterPath).toFile()
     val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
-    val defaultCommands = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
     val command = if (conda != null) {
       val environment = RCondaUtil.getEnvironmentName(interpreterFile)
       if (environment == null) {
@@ -280,7 +294,6 @@ object RInterpreterUtil {
       RInterpreterImpl.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
       RInterpreterImpl.LOG.warn(output.stderr)
     }
-
     return output
   }
 

@@ -47,7 +47,7 @@ object RCondaUtil {
     while (current != null) {
       current = current.parentFile
       if (CONDA_DEFAULT_ROOTS.contains(current?.name)) {
-        findCondaByCondaRoot(file)?.let { return it }
+        findCondaByCondaRoot(current)?.let { return it }
       }
     }
     return null
