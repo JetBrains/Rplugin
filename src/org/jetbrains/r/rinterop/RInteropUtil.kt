@@ -53,7 +53,7 @@ object RInteropUtil {
                              paths: RPaths) {
     val linePromise = AsyncPromise<String>()
     process.addProcessListener(object : ProcessListener {
-      val output = StringBuilder()
+      val stdout = StringBuilder()
       val stderr = StringBuffer()
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
@@ -66,16 +66,16 @@ object RInteropUtil {
           }
           ProcessOutputType.STDOUT -> {
             if (linePromise.state != Promise.State.PENDING) return
-            output.append(text)
-            if (text.contains('\n')) linePromise.setResult(output.toString())
+            stdout.append(text)
+            if (text.contains('\n')) linePromise.setResult(stdout.toString())
           }
         }
       }
 
       override fun processTerminated(event: ProcessEvent) {
         LOG.info("RWRAPPER TERMINATED, code=${event.exitCode}")
-        if (output.isNotBlank()) {
-          LOG.info(output.toString())
+        if (stdout.isNotBlank()) {
+          LOG.info(stdout.toString())
         }
         val updateCrashes = updateCrashes()
         if (updateCrashes.isNotEmpty()) {
@@ -85,6 +85,7 @@ object RInteropUtil {
           linePromise.setError(RuntimeException(
 """RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
 rpath: ${paths}${System.lineSeparator()}
+stdout: ${stdout}
 stderr: ${stderr}
 """.trimIndent()))
         }
