@@ -87,7 +87,7 @@ allprojects {
     }
 
     intellij {
-        version = if (runWithIC()) "IC-2019.3" else "PC-2019.3"
+        version = if (runWithIC()) "IC-2019.3.1" else "PC-2019.3.1"
         downloadSources = !CI
         updateSinceUntilBuild = true
         instrumentCode = false
