@@ -176,7 +176,12 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
           val oldSize = graphicsPanel.imageSize
           val newSize = graphicsPanel.imageComponentSize
           if (oldSize != newSize) {
-            resize(newSize)
+            // Note: there might be lots of attempts to resize image on IDE startup
+            // but most of them will fail (and throw an exception)
+            // due to the parent being disposed
+            if (!Disposer.isDisposed(parent)) {
+              resize(newSize)
+            }
           }
         }
       })

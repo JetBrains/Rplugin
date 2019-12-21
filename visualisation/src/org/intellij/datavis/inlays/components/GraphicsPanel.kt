@@ -73,11 +73,8 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
 
   fun showImage(imageFile: File) {
-    try {
-      openEditor(imageFile)
-    } catch (e: Exception) {
+    if (!tryShowImage(imageFile)) {
       closeEditor(GRAPHICS_COULD_NOT_BE_LOADED)
-      LOGGER.error("Failed to load graphics", e)
     }
   }
 
@@ -87,6 +84,18 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun reset() {
     closeEditor(NO_GRAPHICS)
+  }
+
+  private fun tryShowImage(imageFile: File): Boolean {
+    try {
+      if (!Disposer.isDisposed(disposableParent)) {
+        openEditor(imageFile)
+        return true
+      }
+    } catch (e: Exception) {
+      LOGGER.error("Failed to load graphics", e)
+    }
+    return false
   }
 
   private fun openEditor(imageFile: File) {
