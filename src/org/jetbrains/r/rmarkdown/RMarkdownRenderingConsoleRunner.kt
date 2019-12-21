@@ -11,7 +11,7 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessOutputTypes.STDOUT
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
@@ -20,7 +20,6 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -35,16 +34,12 @@ import javax.swing.JPanel
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
                                       private val consoleTitle: String = "RMarkdown Console") {
-  private val knitOutputListener = KnitrOutputListener()
-  private var currentRenderFilePath: String = ""
+  @Volatile
   private var isInterrupted = false
   @Volatile
   private var currentProcessHandler: OSProcessHandler? = null
   @Volatile
   private var currentConsoleView: ConsoleViewImpl? = null
-
-  fun getResultPath() = knitOutputListener.getResultFileName()
-
 
   fun interruptRendering(){
     isInterrupted = true
@@ -75,13 +70,12 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, onFinished: (() -> Unit)?) {
-    knitOutputListener.onKnitrEnds = onFinished
-    currentRenderFilePath = path
     val commandLine = GeneralCommandLine(commands)
     commandLine.setWorkDirectory(renderDirectory)
     val processHandler = OSProcessHandler(commandLine)
     currentProcessHandler = processHandler
-    processHandler.addProcessListener(knitOutputListener)
+    val knitListener = makeKnitListener(path, onFinished)
+    processHandler.addProcessListener(knitListener)
     runInEdt {
       val consoleView = createConsoleView(processHandler)
       consoleView.attachToProcess(processHandler)
@@ -123,33 +117,29 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     notification.notify(project)
   }
 
-  private inner class KnitrOutputListener : ProcessAdapter() {
-    private var outputFile : String? = null
-    private var exitCode = -1
-    private val OUTPUT_KEY = " --output "
-    var onKnitrEnds: (()->Unit)? = null
+  private fun makeKnitListener(renderFilePath: String, onKnitEnds: (() -> Unit)?): ProcessListener {
+    return object : ProcessAdapter() {
+      override fun processTerminated(event: ProcessEvent) {
+        val exitCode = event.exitCode
+        if (!isInterrupted) {
+          if (exitCode == 0) {
+            val outputPath = replaceExtension(renderFilePath)
+            RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath,  outputPath)
+          } else {
+            renderingErrorNotification()
+          }
+        } else {
+          isInterrupted = false
+        }
+        onKnitEnds?.invoke()
+      }
 
-    override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-      super.onTextAvailable(event, outputType)
-      if (outputType == STDOUT && event.text.isNotBlank() && event.text.split(OUTPUT_KEY).size == 2) {
-        outputFile = event.text.split(OUTPUT_KEY).lastOrNull()?.substringBefore(" ")?.trim()
+      private fun replaceExtension(path: String): String {
+        val extensionIndex = path.lastIndexOf('.')
+        val withoutExtension = path.substring(0, extensionIndex)
+        return "$withoutExtension.html"
       }
     }
-
-    override fun processTerminated(event: ProcessEvent) {
-      super.processTerminated(event)
-      exitCode = event.exitCode
-      if (exitCode != 0 && !isInterrupted) {
-        renderingErrorNotification()
-      } else if (!isInterrupted){
-        RMarkdownSettings.getInstance(project).state.setProfileLastOutput(currentRenderFilePath,  outputFile.orEmpty())
-      } else {
-        isInterrupted = false
-      }
-      onKnitrEnds?.invoke()
-    }
-
-    fun getResultFileName() : String = outputFile.takeIf { exitCode == 0 } ?: ""
   }
 
   companion object {
