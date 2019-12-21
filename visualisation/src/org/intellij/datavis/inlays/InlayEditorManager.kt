@@ -10,7 +10,10 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.editor.*
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.FoldRegion
+import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.InlayModel
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.CaretEvent
@@ -19,6 +22,7 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.FoldingListener
+import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -54,6 +58,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private val inlays: MutableMap<PsiElement, NotebookInlayComponent> = LinkedHashMap()
   private val inlayElements = LinkedHashSet<PsiElement>()
   private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
+  private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
   @Volatile private var toolbarUpdateScheduled: Boolean = false
   @Volatile var lastViewportUpdateTime: Long = 0
 
@@ -91,12 +96,15 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
+      scrollKeeper.savePosition()
       getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
       if (inlayOutputs.isEmpty()) return@invokeLater
       addInlayOutputs(addInlayComponent(psi), inlayOutputs)
+      scrollKeeper.restorePosition(true)
       ApplicationManager.getApplication().invokeLater {
-        editor.scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE)
+        scrollKeeper.savePosition()
         updateInlays()
+        scrollKeeper.restorePosition(true)
       }
     }
   }
@@ -338,10 +346,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         }
       }
     }
-
-    inlayComponent.onHeightChanged = {
+    inlayComponent.beforeHeightChanged = {
+      scrollKeeper.savePosition()
+    }
+    inlayComponent.afterHeightChanged = {
       updateToolbarPositions()
       updateInlaysInEditor(editor)
+      scrollKeeper.restorePosition(true)
     }
   }
 

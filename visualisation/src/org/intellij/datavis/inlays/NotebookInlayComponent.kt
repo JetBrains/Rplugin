@@ -38,19 +38,14 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
     }
   }
 
-  lateinit var onHeightChanged: () -> Unit
+  lateinit var beforeHeightChanged: () -> Unit
+  lateinit var afterHeightChanged: () -> Unit
   var selected = false
 
   private var state: NotebookInlayState? = null
 
   /** Settings could be loaded before the data comes and that's why we are storing this settings and trying to apply them later. */
   private var delayedCurrentTab: String? = null
-
-  /** Invoked on any settings change (size or series settings).*/
-  var onChange: (() -> Unit)? = null
-
-  // ToDo Currently called even on collapse/expand, but should not.
-  var onSizeChange: (() -> Unit)? = null
 
   private var expandedHeight = 0
 
@@ -220,28 +215,11 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
     val newWidth = max(size.width + dx, InlayDimensions.minWidth)
     var newHeight = size.height + dy
 
-    // We will not allow to have size below minimal
-    //    if (state == null) {
-    //      newHeight = InlayDimensions.smallHeight
-    //    }
-    //    else {
     newHeight = max(InlayDimensions.minHeight, newHeight)
-    //}
-
     val newDx = newWidth - size.width
     val newDy = newHeight - size.height
 
-    // Inside super.deltaSize we also have check for dx == 0 && dy == 0.
     super.deltaSize(newDx, newDy)
-    if (newDx == 0 && newDy == 0) {
-      return
-    }
-
-    // Only height changes is valuable, the width will always be the same as editor width.
-    if (newDy != 0) {
-      onSizeChange?.invoke()
-      onChange?.invoke()
-    }
   }
 
   /** Creates a component for displaying output. */
@@ -305,14 +283,14 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
 
   /** Adjusts size of notebook output. Method called when success data comes with inlay component desired height. */
   private fun adjustSize(height: Int, output: NotebookInlayState) {
-
+    beforeHeightChanged()
     output.onHeightCalculated = null
 
     val desiredHeight = min(InlayDimensions.defaultHeight, height + InlayDimensions.topBorder + InlayDimensions.bottomBorder)
 
     deltaSize(0, desiredHeight - size.height)
 
-    onHeightChanged()
+    afterHeightChanged()
   }
 
   /**
