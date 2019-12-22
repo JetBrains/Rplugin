@@ -60,7 +60,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   private val localFunctionRequiredPackage = listOf(RequiredPackage("roxygen2"))
 
   override fun getCustomDocumentationElement(editor: Editor, file: PsiFile, contextElement: PsiElement?): PsiElement? {
-    if (contextElement == null) return null
+    if (contextElement == null || contextElement.language != RLanguage.INSTANCE) return null
 
     if (hasNoDocumentation(contextElement) && editor.caretModel.currentCaret.offset == contextElement.textRange.startOffset) {
       return getElementForDocumentation(PsiTreeUtil.prevLeaf(contextElement))
@@ -76,7 +76,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       contextElement is RPsiElement -> contextElement
       elementText == "%%" || elementText == "%/%" -> contextElement.parent
       elementText.startsWith("%") -> // resolve to infix operator reference
-        contextElement.parent.reference!!.resolve()
+        contextElement.parent.reference?.resolve()
       keywords.contains(elementText) -> contextElement
       else -> contextElement.parent
     }
@@ -386,7 +386,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
 
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
-    val reference = restoreConsoleHelpCall(psiElement ?: return null) ?: return null
+    if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
+    val reference = restoreConsoleHelpCall(psiElement) ?: return null
 
     checkPossibilityReturnDocumentation(reference) { return it }
 
