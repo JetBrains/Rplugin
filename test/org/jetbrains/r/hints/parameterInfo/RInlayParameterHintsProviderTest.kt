@@ -148,12 +148,12 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
   }
 
   private fun doParameterNameTest(text: String) {
-    enableHints("R_HINT_OPTION_PARAMETER_HINT", "R_HINT_OPTION_WRAP_DOTS")
+    enableHints("R_HINT_OPTION_WRAP_DOTS")
     doTest(text)
   }
 
   private fun doParameterNameWithoutDotsWrapTest(text: String) {
-    enableHints("R_HINT_OPTION_PARAMETER_HINT")
+    enableHints()
     doTest(text)
   }
 

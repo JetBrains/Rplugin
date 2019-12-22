@@ -19,12 +19,12 @@ import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 @Suppress("UnstableApiUsage")
 class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
-  override fun getSupportedOptions(): List<Option> = listOf(PARAMETER_HINT_OPTION, WRAP_DOTS_OPTION)
+  override fun getSupportedOptions(): List<Option> = listOf(WRAP_DOTS_OPTION)
 
   override fun getDefaultBlackList(): Set<String> = setOf("(...)", "(x, ...)")
 
   override fun getParameterHints(element: PsiElement?): List<InlayInfo> {
-    if (element !is RArgumentList || !PARAMETER_HINT_OPTION.isEnabled()) return emptyList()
+    if (element !is RArgumentList) return emptyList()
 
     val isWrapDots = WRAP_DOTS_OPTION.isEnabled()
     val assignment = RPsiUtil.resolveCall(element.parent as RCallExpression).singleOrNull() ?: return emptyList()
@@ -97,7 +97,6 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
   companion object {
     private val WRAP_DOTS_OPTION = Option("R_HINT_OPTION_WRAP_DOTS", RBundle.message("inlay.hints.wrap.dots.option.description"), true)
-    private val PARAMETER_HINT_OPTION = Option("R_HINT_OPTION_PARAMETER_HINT", RBundle.message("inlay.hints.parameter.hint.description"), true)
 
     private const val DOTS = "..."
 
