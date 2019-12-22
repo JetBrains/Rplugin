@@ -24,6 +24,8 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.*
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
@@ -41,16 +43,18 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   @Volatile
   private var currentConsoleView: ConsoleViewImpl? = null
 
-  fun interruptRendering(){
+  fun interruptRendering() {
     isInterrupted = true
     currentConsoleView?.print("\nInterrupted\n", ConsoleViewContentType.ERROR_OUTPUT)
     currentProcessHandler?.process?.destroy()
   }
 
-  fun render(project: Project, file: VirtualFile, onFinished: (() -> Unit)? = null) {
-    RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
-      .onSuccess { doRender(project, file, onFinished) }
-      .onError { onFinished?.invoke() }
+  fun render(project: Project, file: VirtualFile): Promise<Unit> {
+    return AsyncPromise<Unit>().also { promise ->
+      RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
+        .onSuccess { doRender(project, file, promise) }
+        .onError { promise.setError("Unable to install dependencies for rendering") }
+    }
   }
 
   private fun createConsoleView(processHandler: OSProcessHandler): ConsoleViewImpl {
@@ -69,12 +73,12 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     return consoleView
   }
 
-  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, onFinished: (() -> Unit)?) {
+  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, promise: AsyncPromise<Unit>) {
     val commandLine = GeneralCommandLine(commands)
     commandLine.setWorkDirectory(renderDirectory)
     val processHandler = OSProcessHandler(commandLine)
     currentProcessHandler = processHandler
-    val knitListener = makeKnitListener(path, onFinished)
+    val knitListener = makeKnitListener(path, promise)
     processHandler.addProcessListener(knitListener)
     runInEdt {
       val consoleView = createConsoleView(processHandler)
@@ -84,7 +88,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     }
   }
 
-  private fun doRender(project: Project, rMarkdownFile: VirtualFile, onFinished: (() -> Unit)?) {
+  private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>) {
     val interpreter = RInterpreterManager.getInterpreter(project) ?: return
     val pathToRscript = getRScriptPath(interpreter.interpreterPath)
     val scriptPath = StringUtil.escapeBackSlashes(R_MARKDOWN_HELPER.absolutePath)
@@ -93,7 +97,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile.path))
     val libraryPath = StringUtil.escapeBackSlashes(getPandocLibraryPath())
     val script = arrayListOf<String>(pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory)
-    runRender(script, knitRootDirectory, rMarkdownFile.path, onFinished)
+    runRender(script, knitRootDirectory, rMarkdownFile.path, promise)
   }
 
   private fun getRScriptPath(interpreterPath: String): String {
@@ -117,7 +121,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     notification.notify(project)
   }
 
-  private fun makeKnitListener(renderFilePath: String, onKnitEnds: (() -> Unit)?): ProcessListener {
+  private fun makeKnitListener(renderFilePath: String, promise: AsyncPromise<Unit>): ProcessListener {
     return object : ProcessAdapter() {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
@@ -125,13 +129,15 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
           if (exitCode == 0) {
             val outputPath = replaceExtension(renderFilePath)
             RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath,  outputPath)
+            promise.setResult(Unit)
           } else {
             renderingErrorNotification()
+            promise.setError("Rendering has non-zero exit code")
           }
         } else {
           isInterrupted = false
+          promise.setError("Rendering was interrupted")
         }
-        onKnitEnds?.invoke()
       }
 
       private fun replaceExtension(path: String): String {

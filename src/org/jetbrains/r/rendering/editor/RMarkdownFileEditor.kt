@@ -102,7 +102,7 @@ private class BuildManager(private val project: Project, private val report: Vir
     private set
   private var renderingRunner: RMarkdownRenderingConsoleRunner? = null
 
-  fun toggleBuild(e: AnActionEvent, onRenderFinished: (() -> Unit)? = null) {
+  fun toggleBuild(e: AnActionEvent, onRenderSuccess: (() -> Unit)? = null) {
     runAsync {
       if (!isRunning) {
         isRunning = true
@@ -113,13 +113,14 @@ private class BuildManager(private val project: Project, private val report: Vir
         ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
         RMarkdownRenderingConsoleRunner(project).apply {
           renderingRunner = this
-          render(project, report) {
-            if (isRunning) {
-              onRenderFinished?.invoke()  // Don't invoke this if rendering was interrupted
+          render(project, report)
+            .onSuccess {
+              onRenderSuccess?.invoke()
             }
-            renderingRunner = null
-            isRunning = false
-          }
+            .onProcessed {
+              renderingRunner = null
+              isRunning = false
+            }
         }
       } else {
         isRunning = false
