@@ -8,8 +8,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet
+import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.ProcessingContext
-import com.jetbrains.extensions.python.toPsi
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.RElementFilters
@@ -30,7 +30,7 @@ class RReferenceContributor : PsiReferenceContributor() {
             val result = super.getDefaultContexts()
             val workingDir = (file as? RFile)?.runtimeInfo?.workingDir
             if (workingDir != null) {
-              val dir = LocalFileSystem.getInstance().findFileByPath(workingDir)?.toPsi(project)
+              val dir = LocalFileSystem.getInstance().findFileByPath(workingDir)?.let { PsiUtilCore.findFileSystemItem(project, it)}
               if (dir != null) {
                 return result.plus(dir).toMutableList()
               }
