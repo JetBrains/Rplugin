@@ -91,7 +91,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     val promise = rInterop.executeCodeAsync("x <- 0; while (TRUE) x = x + 1")
     Thread.sleep(100)
     promise.cancel()
-    TestCase.assertEquals("[1] 123\n", rInterop.executeCode("123").stdout)
+    TestCase.assertEquals("[1] 123\n", rInterop.executeCodeAsync("123").blockingGet(DEFAULT_TIMEOUT)?.stdout)
   }
 
   fun testReplReadline() {
