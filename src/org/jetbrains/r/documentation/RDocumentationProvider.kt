@@ -440,7 +440,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     if (context == null || context.language != RLanguage.INSTANCE) return null
     if (link == INSTALL_REQUIRED_PACKAGES_LINK) {
       RequiredPackageInstaller.getInstance(psiManager.project)
-        .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, null, false)
+        .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, false)
       return null
     }
 

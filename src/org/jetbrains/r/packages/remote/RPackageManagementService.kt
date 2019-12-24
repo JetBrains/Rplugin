@@ -18,6 +18,7 @@ import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
@@ -39,7 +40,7 @@ class MissingPackageDetailsException(message: String) : PackageDetailsException(
 class UnresolvedPackageDetailsException(message: String) : PackageDetailsException(message)
 
 class RPackageManagementService(private val project: Project,
-                                private val serviceListener: RPackageServiceListener) : PackageManagementService() {
+                                private val serviceListener: RPackageServiceListener? = null) : PackageManagementService() {
   private val interpreterManager: RInterpreterManager  // Should be evaluated lazily otherwise it will break unit tests
     get() = RInterpreterManager.getInstance(project)
 
@@ -173,18 +174,22 @@ class RPackageManagementService(private val project: Project,
 
   private fun loadInstalledPackages(): ExpiringList<InstalledPackage> {
     val installed = interpreter.withAutoUpdate { installedPackages }
-    return installed.filter { it.isUser }.map { InstalledPackage(it.packageName, it.packageVersion) }
+    return installed.filter { it.isUser }.map { it.toInstalledPackage() }
+  }
+
+  fun findInstalledPackageByName(name: String): InstalledPackage? {
+    return interpreter.getPackageByName(name)?.toInstalledPackage()
   }
 
   private fun onOperationStart() {
     numScheduledOperations.incrementAndGet()
-    serviceListener.onTaskStart()
+    serviceListener?.onTaskStart()
   }
 
   private fun onOperationStop() {
     val numOperationsLeft = numScheduledOperations.decrementAndGet()
     if (numOperationsLeft <= 0) {
-      serviceListener.onTaskFinish()
+      serviceListener?.onTaskFinish()
     }
   }
 
@@ -330,6 +335,8 @@ class RPackageManagementService(private val project: Project,
         }
       }
     }
+
+    fun RPackage.toInstalledPackage() = InstalledPackage(packageName, packageVersion)
 
     fun convertToInstallMultiListener(listener: Listener): MultiListener {
       return convertToMultiListener(listener, { it.first() }, { it.first() })

@@ -18,12 +18,11 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import com.jetbrains.rd.util.ConcurrentHashMap
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.*
-import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
-import java.util.concurrent.ConcurrentSkipListSet
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RequiredPackageException(val missingPackages: List<RequiredPackage>) : RuntimeException() {
@@ -31,9 +30,7 @@ class RequiredPackageException(val missingPackages: List<RequiredPackage>) : Run
     get() = RBundle.message("required.package.exception.message", StringUtil.join(missingPackages, ", "))
 }
 
-class RequiredPackage(val name: String, val minimalVersion: String) {
-  constructor(name: String) : this(name, "")
-
+data class RequiredPackage(val name: String, val minimalVersion: String = "") {
   fun isVersionSet(): Boolean {
     return minimalVersion.isNotEmpty()
   }
@@ -50,38 +47,24 @@ class InstallationPackageException(message: String, names2errors: Map<String, St
   }
 }
 
-interface RequiredPackageListener {
-  fun onPackagesMissed(missingPackages: List<RequiredPackage>) {}
-  fun onPackagesInstalled()
-  fun onErrorOccurred(e: InstallationPackageException)
-}
-
 class RequiredPackageInstaller(private val project: Project) {
 
-  private val rPackageManagementService = RPackageManagementService(project, object : RPackageServiceListener {
-    override fun onTaskStart() {}
-    override fun onTaskFinish() {}
-  })
-
-  private val notificationShown = ConcurrentSkipListSet<String>()
+  private val rPackageManagementService = RPackageManagementService(project)
   private val packageInstallationErrorDescriptions = ConcurrentHashMap<String, String>()
-  private val installationTasks = CopyOnWriteArrayList<InstallationTask>()
+  private val utilityNames2installationTasks = ConcurrentHashMap<String, InstallationTask>()
 
   init {
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.SECOND) {
-      val installedPackages = rPackageManagementService.installedPackages
-      for (installationTask in installationTasks) {
-        val missingPackages = getMissingPackages(installationTask.requiredPackage, installedPackages)
+      val names2tasks = utilityNames2installationTasks.toMap()  // Note: make a copy before iterating
+      for ((utilityName, installationTask) in names2tasks) {
+        val missingPackages = getMissingPackages(installationTask.requiredPackages)
         if (missingPackages.isEmpty()) {
-          installationTasks.remove(installationTask)
-          notificationShown.remove(installationTask.utilityName)
+          utilityNames2installationTasks.remove(utilityName)
           installationTask.allRequiredPackagesInstalled()
         }
       }
-
-      val installedPackagesNames = installedPackages.map { it.name }
       for ((packageName, errorDescription) in packageInstallationErrorDescriptions) {
-        if (errorDescription.isNotBlank() && installedPackagesNames.contains(packageName)) {
+        if (errorDescription.isNotBlank() && rPackageManagementService.findInstalledPackageByName(packageName) != null) {
           packageInstallationErrorDescriptions.remove(packageName)
         }
       }
@@ -101,33 +84,43 @@ class RequiredPackageInstaller(private val project: Project) {
    */
   fun installPackagesWithUserPermission(utilityName: String,
                                         packages: List<RequiredPackage>,
-                                        listener: RequiredPackageListener?,
-                                        askUser: Boolean = true) {
+                                        askUser: Boolean = true): Promise<Unit> {
     if (ApplicationManager.getApplication().isUnitTestMode) {
-      listener?.onPackagesInstalled()
-      return
+      return AsyncPromise<Unit>().apply { setResult(Unit) }
     }
 
     val missingPackages = getMissingPackages(packages)
     if (missingPackages.isEmpty()) {
-      listener?.onPackagesInstalled()
-      return
-    }
-    else {
-      listener?.onPackagesMissed(missingPackages)
+      return AsyncPromise<Unit>().apply { setResult(Unit) }
     }
 
-    if (!askUser) {
-      installationTasks.add(InstallationTask(utilityName, packages, null, listener))
-      installPackages(missingPackages)
-      return
+    val task = findOrCreateInstallationTask(utilityName, missingPackages, askUser)
+    if (askUser) {
+      task.notification?.notify(project)
     }
+    return task.promise
+  }
 
-    if (!notificationShown.add(utilityName)) {
-      return
+  private fun findOrCreateInstallationTask(utilityName: String, packages: List<RequiredPackage>, askUser: Boolean): InstallationTask {
+    return utilityNames2installationTasks[utilityName] ?: createInstallationTask(utilityName, packages, askUser)
+  }
+
+  private fun createInstallationTask(utilityName: String, packages: List<RequiredPackage>, askUser: Boolean): InstallationTask {
+    return if (!askUser) {
+      createInstantInstallationTask(utilityName, packages)
+    } else {
+      createUserInstallationTask(utilityName, packages)
     }
+  }
 
-    val packagesList = missingPackages.joinToString(", ") {
+  private fun createInstantInstallationTask(utilityName: String, packages: List<RequiredPackage>): InstallationTask {
+    return registerInstallationTask(utilityName, packages, null).also { task ->
+      startTask(task)
+    }
+  }
+
+  private fun createUserInstallationTask(utilityName: String, packages: List<RequiredPackage>): InstallationTask {
+    val packagesList = packages.joinToString(", ") {
       val version = if (!it.isVersionSet()) "" else " (${it.minimalVersion})"
       "${it.name}$version"
     }
@@ -137,33 +130,45 @@ class RequiredPackageInstaller(private val project: Project) {
       RBundle.message("required.package.notification.title", utilityName),
       packagesList,
       NotificationType.INFORMATION
-    ).addAction(object : NotificationAction(RBundle.message("required.package.notification.action")) {
-      override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-        notification.expire()
-        installPackages(getMissingPackages(packages))
-      }
-    })
+    )
 
-    installationTasks.add(InstallationTask(utilityName, packages, notification, listener))
-    notification.notify(project)
+    return registerInstallationTask(utilityName, packages, notification).also { task ->
+      notification.addAction(object : NotificationAction(RBundle.message("required.package.notification.action")) {
+        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+          if (!task.isStarted) {
+            notification.expire()
+            startTask(task)
+          }
+        }
+      })
+    }
   }
 
-  fun getMissingPackages(packages: List<RequiredPackage>,
-                         installedPackages: Collection<InstalledPackage> = rPackageManagementService.installedPackages): List<RequiredPackage> {
+  private fun registerInstallationTask(utilityName: String, packages: List<RequiredPackage>, notification: Notification?): InstallationTask {
+    return InstallationTask(utilityName, packages, notification).also { task ->
+      utilityNames2installationTasks[utilityName] = task
+    }
+  }
+
+  fun getMissingPackages(packages: List<RequiredPackage>): List<RequiredPackage> {
     return if (ApplicationManager.getApplication().isUnitTestMode) {
       emptyList()
     }
     else {
-      packages.filter { requiredPackage ->
-        installedPackages.all { it.name != requiredPackage.name || it.version < requiredPackage.minimalVersion }
-      }
+      packages.filter { findRequiredPackage(it) == null }
     }
   }
 
+  private fun findRequiredPackage(requiredPackage: RequiredPackage): InstalledPackage? {
+    return rPackageManagementService.findInstalledPackageByName(requiredPackage.name)?.takeIf {
+      it.version >= requiredPackage.minimalVersion
+    }
+  }
 
-  private fun installPackages(missingPackages: List<RequiredPackage>) {
+  private fun startTask(task: InstallationTask) {
+    task.isStarted = true
     val needInstall = mutableListOf<RequiredPackage>()
-    for (missingPackage in missingPackages) {
+    for (missingPackage in task.requiredPackages) {
       packageInstallationErrorDescriptions.getOrPut(missingPackage.name) {
         needInstall.add(missingPackage)
         ""
@@ -218,36 +223,38 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   private fun errorOccurred() {
-    val installedPackages = rPackageManagementService.installedPackages
+    val installationTasks = utilityNames2installationTasks.values.toList()  // Note: make a copy before iterating
     for (installationTask in installationTasks) {
-      val missingPackages = getMissingPackages(installationTask.requiredPackage, installedPackages)
-      if (missingPackages.isNotEmpty() && missingPackages.all { !packageInstallationErrorDescriptions[it.name].isNullOrBlank() }) {
+      val missingPackages = getMissingPackages(installationTask.requiredPackages)
+      if (missingPackages.isNotEmpty() && missingPackages.any { !packageInstallationErrorDescriptions[it.name].isNullOrBlank() }) {
         installationTask.errorOccurred(InstallationPackageException(INSTALLATION_ERROR_MESSAGE, packageInstallationErrorDescriptions))
       }
     }
   }
 
   private class InstallationTask(val utilityName: String,
-                                 val requiredPackage: List<RequiredPackage>,
-                                 private val notification: Notification?,
-                                 private val listener: RequiredPackageListener?) {
-    private var errorNotified = AtomicBoolean(false)
+                                 val requiredPackages: List<RequiredPackage>,
+                                 val notification: Notification?) {
+    private val errorNotified = AtomicBoolean(false)
+    val promise = AsyncPromise<Unit>()
+
+    @Volatile
+    var isStarted = false
 
     fun allRequiredPackagesInstalled() {
       expire()
       runAsync {
-        listener?.onPackagesInstalled()
+        promise.setResult(Unit)
       }
     }
 
     fun errorOccurred(e: InstallationPackageException) {
-      errorNotified.compareAndSet(false, {
+      if (errorNotified.compareAndSet(false, true)) {
         expire()
         runAsync {
-          listener?.onErrorOccurred(e)
+          promise.setError(e.message ?: UNKNOWN_ERROR_MESSAGE)
         }
-        true
-      }())
+      }
     }
 
     fun expire() {

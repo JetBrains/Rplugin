@@ -92,7 +92,7 @@ internal object RXPresentationUtils {
             is RDataFrameException -> callback.errorOccurred(it.message.orEmpty())
             is RequiredPackageException -> {
               RequiredPackageInstaller.getInstance(ref.rInterop.project).installPackagesWithUserPermission(
-                RBundle.message("rx.presentation.utils.view.table.utility.name"), it.missingPackages, null)
+                RBundle.message("rx.presentation.utils.view.table.utility.name"), it.missingPackages)
             }
           }
         }.onProcessed {

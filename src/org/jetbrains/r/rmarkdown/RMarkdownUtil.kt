@@ -8,12 +8,9 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.packages.InstallationPackageException
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.packages.RequiredPackageListener
 
 object RMarkdownUtil {
   private val NOTIFICATION_GROUP = RBundle.message("rmarkdown.processor.notification.group.display")
@@ -25,21 +22,16 @@ object RMarkdownUtil {
   )
 
   fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      val listener = object : RequiredPackageListener {
-        override fun onPackagesInstalled() {
-          promise.setResult(Unit)
-        }
-
-        override fun onErrorOccurred(e: InstallationPackageException) {
-          val title = makeNotificationTitle(utilityName)
-          val content = makeNotificationContent(utilityName)
-          Notification(NOTIFICATION_GROUP, title, content, NotificationType.ERROR).notify(project)
-          promise.setError(e.message ?: UNKNOWN_ERROR_MESSAGE)
-        }
+    return RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages)
+      .onError {
+        notifyFailure(project, utilityName)
       }
-      RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages, listener)
-    }
+  }
+
+  private fun notifyFailure(project: Project, utilityName: String) {
+    val title = makeNotificationTitle(utilityName)
+    val content = makeNotificationContent(utilityName)
+    Notification(NOTIFICATION_GROUP, title, content, NotificationType.ERROR).notify(project)
   }
 
   private fun makeNotificationTitle(utilityName: String): String {

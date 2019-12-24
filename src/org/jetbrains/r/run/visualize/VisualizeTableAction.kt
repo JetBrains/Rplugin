@@ -80,7 +80,7 @@ class VisualizeTableHandler : CodeInsightActionHandler {
             }
             is RequiredPackageException -> {
               RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(
-                RBundle.message("visualize.table.action.error.utility.name"), it.missingPackages, null)
+                RBundle.message("visualize.table.action.error.utility.name"), it.missingPackages)
             }
           }
         }
