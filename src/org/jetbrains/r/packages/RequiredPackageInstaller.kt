@@ -20,9 +20,9 @@ import com.jetbrains.rd.util.ConcurrentHashMap
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.*
+import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RequiredPackageException(val missingPackages: List<RequiredPackage>) : RuntimeException() {
@@ -36,21 +36,10 @@ data class RequiredPackage(val name: String, val minimalVersion: String = "") {
   }
 }
 
-class InstallationPackageException(message: String, names2errors: Map<String, String>)
-  : RuntimeException(createErrorMessage(message, names2errors))
-{
-  companion object {
-    private fun createErrorMessage(message: String, names2errors: Map<String, String>): String {
-      val details = names2errors.toList().joinToString("\n") { "${it.first} (${it.second})" }
-      return "$message:\n$details"
-    }
-  }
-}
-
 class RequiredPackageInstaller(private val project: Project) {
 
   private val rPackageManagementService = RPackageManagementService(project)
-  private val packageInstallationErrorDescriptions = ConcurrentHashMap<String, String>()
+  private val installingPackages2minimalVersions = ConcurrentHashMap<String, String>()
   private val utilityNames2installationTasks = ConcurrentHashMap<String, InstallationTask>()
 
   init {
@@ -60,12 +49,13 @@ class RequiredPackageInstaller(private val project: Project) {
         val missingPackages = getMissingPackages(installationTask.requiredPackages)
         if (missingPackages.isEmpty()) {
           utilityNames2installationTasks.remove(utilityName)
-          installationTask.allRequiredPackagesInstalled()
+          installationTask.allRequiredPackagesProcessed()
         }
       }
-      for ((packageName, errorDescription) in packageInstallationErrorDescriptions) {
-        if (errorDescription.isNotBlank() && rPackageManagementService.findInstalledPackageByName(packageName) != null) {
-          packageInstallationErrorDescriptions.remove(packageName)
+      val names2versions = installingPackages2minimalVersions.toMap()  // Note: make a copy before iterating
+      for ((packageName, minimalVersion) in names2versions) {
+        if (findRequiredPackage(RequiredPackage(packageName, minimalVersion)) != null) {
+          installingPackages2minimalVersions.remove(packageName)
         }
       }
     }
@@ -76,31 +66,26 @@ class RequiredPackageInstaller(private val project: Project) {
    *
    * @param utilityName string name of your utility
    * @param packages    list of [required packages][RequiredPackage]
-   * @param listener    package installation listener
    * @param askUser     if true, the user will be shown a [notification][Notification] and installation of packages will start only after his consent.
    *                    It is not recommended to set it to false if the user has not given consent in any other form
-   *
-   * @see [RequiredPackageListener]
    */
   fun installPackagesWithUserPermission(utilityName: String,
                                         packages: List<RequiredPackage>,
                                         askUser: Boolean = true): Promise<Unit> {
-    if (ApplicationManager.getApplication().isUnitTestMode) {
-      return AsyncPromise<Unit>().apply { setResult(Unit) }
-    }
-
+    val isUiMode = askUser && !ApplicationManager.getApplication().isUnitTestMode
     val missingPackages = getMissingPackages(packages)
     if (missingPackages.isEmpty()) {
       return AsyncPromise<Unit>().apply { setResult(Unit) }
     }
 
-    val task = findOrCreateInstallationTask(utilityName, missingPackages, askUser)
-    if (askUser) {
+    val task = findOrCreateInstallationTask(utilityName, missingPackages, isUiMode)
+    if (isUiMode) {
       task.notification?.notify(project)
     }
     return task.promise
   }
 
+  @Synchronized
   private fun findOrCreateInstallationTask(utilityName: String, packages: List<RequiredPackage>, askUser: Boolean): InstallationTask {
     return utilityNames2installationTasks[utilityName] ?: createInstallationTask(utilityName, packages, askUser)
   }
@@ -135,7 +120,7 @@ class RequiredPackageInstaller(private val project: Project) {
     return registerInstallationTask(utilityName, packages, notification).also { task ->
       notification.addAction(object : NotificationAction(RBundle.message("required.package.notification.action")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-          if (!task.isStarted) {
+          if (!task.isStarted && !task.isDone) {
             notification.expire()
             startTask(task)
           }
@@ -151,12 +136,7 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   fun getMissingPackages(packages: List<RequiredPackage>): List<RequiredPackage> {
-    return if (ApplicationManager.getApplication().isUnitTestMode) {
-      emptyList()
-    }
-    else {
-      packages.filter { findRequiredPackage(it) == null }
-    }
+    return packages.filter { findRequiredPackage(it) == null }
   }
 
   private fun findRequiredPackage(requiredPackage: RequiredPackage): InstalledPackage? {
@@ -167,14 +147,7 @@ class RequiredPackageInstaller(private val project: Project) {
 
   private fun startTask(task: InstallationTask) {
     task.isStarted = true
-    val needInstall = mutableListOf<RequiredPackage>()
-    for (missingPackage in task.requiredPackages) {
-      packageInstallationErrorDescriptions.getOrPut(missingPackage.name) {
-        needInstall.add(missingPackage)
-        ""
-      }
-    }
-
+    val needInstall = registerRequiredPackages(task.requiredPackages)
     if (needInstall.isEmpty()) return
     val installPackageListener = object : RPackageManagementService.MultiListener {
       override fun operationStarted(packageNames: List<String>) {}
@@ -182,13 +155,7 @@ class RequiredPackageInstaller(private val project: Project) {
       override fun operationFinished(packageNames: List<String>,
                                      errorDescriptions: List<PackageManagementService.ErrorDescription?>) {
         for ((packageName, errorDescription) in packageNames.zip(errorDescriptions)) {
-          if (errorDescription != null) {
-            packageInstallationErrorDescriptions.replace(packageName, errorDescription.message)
-            errorOccurred()
-          }
-          else {
-            packageInstallationErrorDescriptions.remove(packageName)
-          }
+          packageProcessed(packageName, errorDescription?.message)
         }
       }
     }
@@ -198,6 +165,21 @@ class RequiredPackageInstaller(private val project: Project) {
       val resolved = resolvePackages(needInstall)
       if (resolved.isNotEmpty()) {
         rPackageManagementService.installPackages(resolved, true, installPackageListener)
+      }
+    }
+  }
+
+  @Synchronized
+  private fun registerRequiredPackages(requiredPackages: List<RequiredPackage>): List<RequiredPackage> {
+    return mutableListOf<RequiredPackage>().also { needInstall ->
+      for (required in requiredPackages) {
+        val previousVersion = installingPackages2minimalVersions[required.name]
+        if (previousVersion == null || previousVersion < required.minimalVersion) {
+          installingPackages2minimalVersions[required.name] = required.minimalVersion
+        }
+        if (previousVersion == null) {
+          needInstall.add(required)
+        }
       }
     }
   }
@@ -215,49 +197,64 @@ class RequiredPackageInstaller(private val project: Project) {
           is MissingPackageDetailsException -> MISSING_DETAILS_ERROR_MESSAGE
           is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(required.name)
         }
-        packageInstallationErrorDescriptions.replace(required.name, message)
-        errorOccurred()
+        packageProcessed(required.name, message)
         null
       }
     }
   }
 
-  private fun errorOccurred() {
+  private fun packageProcessed(packageName: String, errorMessage: String?) {
+    installingPackages2minimalVersions.remove(packageName)
     val installationTasks = utilityNames2installationTasks.values.toList()  // Note: make a copy before iterating
     for (installationTask in installationTasks) {
-      val missingPackages = getMissingPackages(installationTask.requiredPackages)
-      if (missingPackages.isNotEmpty() && missingPackages.any { !packageInstallationErrorDescriptions[it.name].isNullOrBlank() }) {
-        installationTask.errorOccurred(InstallationPackageException(INSTALLATION_ERROR_MESSAGE, packageInstallationErrorDescriptions))
-      }
+      packageProcessedForTask(installationTask, packageName, errorMessage)
+    }
+  }
+
+  private fun packageProcessedForTask(task: InstallationTask, packageName: String, errorMessage: String?) {
+    task.packageProcessed(packageName, errorMessage)
+    if (task.isDone) {
+      utilityNames2installationTasks.remove(task.utilityName)
     }
   }
 
   private class InstallationTask(val utilityName: String,
                                  val requiredPackages: List<RequiredPackage>,
                                  val notification: Notification?) {
+    private val unprocessedPackages = ConcurrentSkipListSet<String>(requiredPackages.map { it.name })
     private val errorNotified = AtomicBoolean(false)
     val promise = AsyncPromise<Unit>()
+
+    val isDone: Boolean
+      get() = unprocessedPackages.isEmpty()
 
     @Volatile
     var isStarted = false
 
-    fun allRequiredPackagesInstalled() {
-      expire()
-      runAsync {
-        promise.setResult(Unit)
-      }
-    }
-
-    fun errorOccurred(e: InstallationPackageException) {
-      if (errorNotified.compareAndSet(false, true)) {
-        expire()
-        runAsync {
-          promise.setError(e.message ?: UNKNOWN_ERROR_MESSAGE)
+    fun packageProcessed(packageName: String, errorMessage: String?) {
+      if (unprocessedPackages.remove(packageName)) {
+        if (errorMessage != null) {
+          errorOccurred(packageName, errorMessage)
+        } else if (unprocessedPackages.isEmpty()) {
+          allRequiredPackagesProcessed()
         }
       }
     }
 
-    fun expire() {
+    fun allRequiredPackagesProcessed() {
+      unprocessedPackages.clear()
+      expire()
+      promise.setResult(Unit)  // Note: does nothing if it's already been failed
+    }
+
+    private fun errorOccurred(packageName: String, errorMessage: String) {
+      if (errorNotified.compareAndSet(false, true)) {
+        expire()
+        promise.setError("$INSTALLATION_ERROR_MESSAGE:\n$packageName ($errorMessage)")
+      }
+    }
+
+    private fun expire() {
       notification?.expire()
     }
   }

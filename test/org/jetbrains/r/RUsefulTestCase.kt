@@ -186,6 +186,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   methods
   stats
   utils
+  roxygen2
 """.trimIndent().split("\n").toSet()
   }
 }
