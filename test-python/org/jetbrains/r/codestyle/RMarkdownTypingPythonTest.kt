@@ -12,95 +12,35 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
-class RMarkdownTypingTest : RUsefulTestCase() {
-  fun testFunctionInRFence() {
+class RMarkdownTypingPythonTest : RUsefulTestCase() {
+  fun testFunctionInPythonFence() {
     doTest("""
-      ```{r}
-      x <- function (a, b) {<caret>
-      }
+      ```{python}
+      def hello (n):<caret>
+          foo (n)
       ```
     """, """
-      ```{r}
-      x <- function (a, b) {
-        <caret>
-      }
-      ```
-    """, "\n")
-  }
-
-  fun testEndInRFence() {
-    doTest("""
-      ```{r}
-      x <- function (a, b) {
-      }<caret>
-      ```
-    """, """
-      ```{r}
-      x <- function (a, b) {
-      }
-      <caret>
-      ```
-    """, "\n")
-  }
-
-  fun testInsideRFence() {
-    doTest("""
-      ```{r}
-      x <- 10<caret>
-      
-      y <- function (a, b) {
-      }
-      ```
-    """, """
-      ```{r}
-      x <- 10
-      <caret>
-      
-      y <- function (a, b) {
-      }
-      ```
-    """, "\n")
-  }
-
-  // There is a problem with last expression. It seems same nature as DS-208
-  fun testAfterIncompleteExpressionInRFence() {
-    doTest("""
-      ```{r}
-      x <- 10 +<caret>
-      
-      y <- function (a, b) {
-      }
-      ```
-    """, """
-      ```{r}
-      x <- 10 +
+      ```{python}
+      def hello (n):
           <caret>
-      
-      y <- function (a, b) {
-      }
+          foo (n)
       ```
     """, "\n")
   }
 
-  fun testStrangeIndentInTheStartInRFence() {
+  fun testNewFunctionInPythonFence() {
     doTest("""
-      ```{r}
-              x <- 10
+      ```{python}
+      def hello (n):<caret>
       
-      y <- 20<caret>
-      
-      z <- function (a, b) {
-      }
+      foo()
       ```
     """, """
-      ```{r}
-              x <- 10
-      
-      y <- 20
-      <caret>
-      
-      z <- function (a, b) {
-      }
+      ```{python}
+      def hello (n):
+          <caret>
+
+      foo()
       ```
     """, "\n")
   }

@@ -153,8 +153,9 @@ allprojects {
 project(":") {
     version = "${ideaMajor()}.${ideaMinor()}.${prop("buildNumber")}"
     intellij {
+        val plugins = if (runWithIC()) arrayOf("markdown", "yaml") else arrayOf("markdown", "yaml", "python-ce")
         pluginName = "rplugin"
-        setPlugins("markdown", "yaml", if (runWithIC()) "PythonCore:193.5233.102" else "python-ce")
+        setPlugins(*plugins)
     }
 
     idea {
@@ -165,11 +166,13 @@ project(":") {
 
     sourceSets {
         main {
-            java.srcDirs("src", "gen")
+            val srcDirs = if (runWithIC()) arrayOf("src", "gen") else arrayOf("src", "src-python", "gen")
+            java.srcDirs(*srcDirs)
             resources.srcDirs("resources")
         }
         test {
-            java.srcDirs("test")
+            val testDirs = if (runWithIC()) arrayOf("test") else arrayOf("test", "test-python")
+            java.srcDirs(*testDirs)
             resources.srcDirs( "testData")
         }
     }

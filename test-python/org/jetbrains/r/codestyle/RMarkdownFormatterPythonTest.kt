@@ -10,7 +10,7 @@ import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
-class RMarkdownFormatterTest : RUsefulTestCase() {
+class RMarkdownFormatterPythonTest : RUsefulTestCase() {
   fun testRMarkdownDefaultFenceFormatting() {
     // Do not use `print` method because it can be a keyword in some python versions and has different formatting style
     doTest("""
@@ -31,7 +31,18 @@ class RMarkdownFormatterTest : RUsefulTestCase() {
         foo()
         bar()
       ```
+      
+      ```{python}
+      foo( 'hello world')
+      
+      def hello (n):
+        foo (n)
+      
+      ```
 
+      ```{python}
+      foo( 'hello world')
+      ```
     """, """
       ```{r}
       x <- function(a, b) {
@@ -50,7 +61,18 @@ class RMarkdownFormatterTest : RUsefulTestCase() {
       foo()
       bar()
       ```
+      
+      ```{python}
+      foo('hello world')
+      
+      def hello(n):
+          foo(n)
+      
+      ```
 
+      ```{python}
+      foo('hello world')
+      ```
     """)
   }
 

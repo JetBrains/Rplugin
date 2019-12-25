@@ -8,10 +8,10 @@ import com.intellij.openapi.module.ModifiableModuleModel
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
-import com.jetbrains.python.sdk.baseDir
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.step.RGeneratorSettingsWizardStep
 import org.jetbrains.r.projectGenerator.template.RProjectGenerator
@@ -44,7 +44,7 @@ class RModuleBuilder(private val generator: RProjectGenerator) : ModuleBuilder()
     if (module != null) {
       val moduleRootManager = ModuleRootManager.getInstance(module)
       val contentRoots = moduleRootManager.contentRoots
-      var toStoreDirectory = module.baseDir
+      var toStoreDirectory = module.rootManager.contentRoots.firstOrNull()
       if (contentRoots.isNotEmpty()) {
         toStoreDirectory = contentRoots[0]
       }
