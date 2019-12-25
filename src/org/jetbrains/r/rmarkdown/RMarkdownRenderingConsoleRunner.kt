@@ -52,8 +52,16 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   fun render(project: Project, file: VirtualFile): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
       RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
-        .onSuccess { doRender(project, file, promise) }
-        .onError { promise.setError("Unable to install dependencies for rendering") }
+        .onSuccess {
+          if (!isInterrupted) {
+            doRender(project, file, promise)
+          } else {
+            promise.setError("Rendering was interrupted")
+          }
+        }
+        .onError {
+          promise.setError("Unable to install dependencies for rendering")
+        }
     }
   }
 
