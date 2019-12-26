@@ -5,14 +5,18 @@
 package org.jetbrains.r.breadcrumbs
 
 import com.intellij.lang.Language
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import icons.org.jetbrains.r.RBundle
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 
@@ -22,12 +26,22 @@ class RBreadcrumbsProvider : BreadcrumbsProvider {
   }
 
   override fun acceptElement(element: PsiElement): Boolean {
-    return element is RAssignmentStatement || element is RFile || element is MarkdownFile || element is MarkdownCodeFenceImpl
+    return assignmentShouldBeShown(element) ||
+           RPsiUtil.isSectionDivider(element) ||
+           element is RFile ||
+           element is MarkdownFile ||
+           element is MarkdownCodeFenceImpl
   }
+
+  private fun assignmentShouldBeShown(element: PsiElement) =
+    element is RAssignmentStatement &&
+    element.assignedValue is RFunctionExpression &&
+    PsiTreeUtil.getParentOfType(element, RAssignmentStatement::class.java) == null // check for top-level
 
   override fun getElementInfo(element: PsiElement): String {
     return when (element) {
       is RAssignmentStatement -> element.name
+      is PsiComment -> RPsiUtil.extractNameFromSectionComment(element)
       is RFile -> element.name
       is MarkdownFile -> element.name
       is MarkdownCodeFenceImpl -> RMarkdownPsiUtil.getExecutableFenceLabel(element)

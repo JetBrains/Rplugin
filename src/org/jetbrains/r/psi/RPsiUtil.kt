@@ -5,6 +5,7 @@
 package org.jetbrains.r.psi
 
 import com.google.common.collect.Lists
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiReference
@@ -16,6 +17,8 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RAssignmentStatementImpl
 import org.jetbrains.r.psi.stubs.RParameterStub
 import org.jetbrains.r.skeleton.psi.RSkeletonBase
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 object RPsiUtil {
@@ -121,6 +124,21 @@ object RPsiUtil {
            parent.isBinary &&
            (parent.operator is RAtOperator || parent.operator is RListSubsetOperator) &&
            parent.rightExpr == expression
+  }
+
+  fun isSectionDivider(psi: PsiElement): Boolean {
+    if (psi !is PsiComment) return false
+    val text: String = psi.text
+    return text.endsWith("----") ||
+           text.endsWith("====") ||
+           text.endsWith("####")
+
+  }
+
+  private val EXTRACT_NAME_FROM_COMMENT_SECTION = Pattern.compile("(#\\s*)+(\\w(\\s*\\w)*)\\s*(-+|=+|#+)", Pattern.DOTALL)
+
+  fun extractNameFromSectionComment(element: PsiComment): String {
+    return EXTRACT_NAME_FROM_COMMENT_SECTION.matcher(element.text).takeIf { it.matches() }?.group(2) ?: "Untitled"
   }
 }
 

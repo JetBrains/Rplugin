@@ -54,7 +54,7 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
     if (element is RFile) {
       element.acceptChildren(object : PsiElementVisitor() {
         override fun visitComment(comment: PsiComment) {
-          if (isSectionDivider(comment)) {
+          if (RPsiUtil.isSectionDivider(comment)) {
             childrenElements.add(RStructureViewElement(comment))
           }
         }
@@ -69,24 +69,15 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
       })
     }
 
-    if (isSectionDivider(element)) {
+    if (RPsiUtil.isSectionDivider(element)) {
       var nextSibling: PsiElement? = element.nextSibling
-      while (nextSibling != null && !isSectionDivider(nextSibling)) {
+      while (nextSibling != null && !RPsiUtil.isSectionDivider(nextSibling)) {
         nextSibling.accept(functionCollector)
         nextSibling = nextSibling.nextSibling
       }
     }
 
     return ArrayUtil.toObjectArray(childrenElements, StructureViewTreeElement::class.java)
-  }
-
-  private fun isSectionDivider(psi: PsiElement): Boolean {
-    if (psi !is PsiComment) return false
-    val text: String = psi.text
-    return text.endsWith("----") ||
-           text.endsWith("====") ||
-           text.endsWith("####")
-
   }
 
   override fun getPresentableText(): String? {
@@ -96,25 +87,9 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
         element.assignee?.text ?: "anonymous function"
       element is RAssignmentStatement ->
         element.assignee?.text ?: throw IllegalStateException("Empty name")
-      element is PsiComment -> extractNameFromSectionComment(element.text)
+      element is PsiComment -> RPsiUtil.extractNameFromSectionComment(element)
       else -> throw IllegalStateException("Unknown structure node: ${element.javaClass.name}")
     }
-  }
-
-  private fun extractNameFromSectionComment(text: String): String {
-    val last = text.last()
-    var lastNameIndex = text.length - 1
-    while (lastNameIndex >= 0 && text[lastNameIndex] == last) lastNameIndex--
-    while (lastNameIndex >= 0 && text[lastNameIndex].isWhitespace()) lastNameIndex--
-    if (lastNameIndex < 0) return "Untitled"
-
-    var firstNameIndex = 0
-    while (firstNameIndex < text.length && text[firstNameIndex] == '#') firstNameIndex++
-    while (firstNameIndex < text.length && text[firstNameIndex].isWhitespace()) firstNameIndex++
-
-    if (firstNameIndex > lastNameIndex) return "Untitled"
-
-    return text.substring(firstNameIndex, lastNameIndex + 1)
   }
 
   override fun getLocationString(): String? {
