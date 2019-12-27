@@ -314,6 +314,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(stub::sendReadLn, StringValue.of(s))
   }
 
+  fun replSendEof() = executeTask {
+    execute(stub::sendEof, Empty.getDefaultInstance())
+  }
+
   fun addAsyncEventsListener(listener: AsyncEventsListener) {
     asyncEventsListeners.add(listener)
   }
@@ -689,6 +693,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         val prompt = event.requestReadLn.prompt
         fireListeners { it.onRequestReadLn(prompt) }
       }
+      Service.AsyncEvent.EventCase.SUBPROCESSINPUT -> {
+        fireListeners { it.onSubprocessInput() }
+      }
       Service.AsyncEvent.EventCase.PROMPT -> {
         invalidateCaches()
         isDebug = false
@@ -849,6 +856,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(content: String, url: String) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
+    fun onSubprocessInput() {}
   }
 
   companion object {

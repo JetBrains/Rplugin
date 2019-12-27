@@ -42,7 +42,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   private var showStackTraceHandler: HyperlinkInfo? = null
 
   enum class State {
-    PROMPT, DEBUG_PROMPT, READ_LN, BUSY, TERMINATED
+    PROMPT, DEBUG_PROMPT, READ_LN, BUSY, TERMINATED, SUBPROCESS_INPUT
   }
   @Volatile var state = State.BUSY
     internal set(newState) {
@@ -55,7 +55,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           consolePromptDecorator.mainPrompt = R_CONSOLE_DEBUG_PROMPT
           consolePromptDecorator.indentPrompt = R_CONSOLE_CONTINUE
         }
-        State.READ_LN -> {
+        State.READ_LN, State.SUBPROCESS_INPUT -> {
           consolePromptDecorator.mainPrompt = R_CONSOLE_READ_LN_PROMPT
           consolePromptDecorator.indentPrompt = ""
         }
@@ -89,6 +89,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         lines.dropLast(1).forEach { consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT) }
         consolePromptDecorator.mainPrompt = lines.last()
       }
+    }
+
+    override fun onSubprocessInput() {
+      state = State.SUBPROCESS_INPUT
     }
 
     override fun onPrompt(isDebug: Boolean) {
@@ -151,7 +155,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
 
   fun interruptTextExecution() {
-    if (state == State.BUSY || state == State.READ_LN) {
+    if (state == State.BUSY || state == State.READ_LN || state == State.SUBPROCESS_INPUT) {
       rInterop.replInterrupt()
     }
   }
@@ -176,6 +180,12 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           DocumentReferenceManager.getInstance().create(consoleView.getCurrentEditor().document))
         state = State.BUSY
         rInterop.replSendReadLn(text)
+      }
+      State.SUBPROCESS_INPUT -> {
+        val text = consoleView.prepareExecuteAction(true, false, true)
+        (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
+          DocumentReferenceManager.getInstance().create(consoleView.getCurrentEditor().document))
+        rInterop.replSendReadLn(text + System.lineSeparator())
       }
       State.BUSY -> {
         throwExceptionInTests()

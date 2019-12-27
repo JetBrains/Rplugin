@@ -104,7 +104,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       }
     })
     rInterop.asyncEventsStartProcessing()
-    rInterop.replExecute("x = 0")
+    rInterop.executeCode("x <- 0")
     rInterop.replExecute("""
       for (i in 1:3) {
         x = x + as.integer(readline())

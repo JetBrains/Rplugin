@@ -136,12 +136,13 @@ class RConsoleRunner(private val project: Project,
     historyController.install()
     val executeAction = createConsoleExecAction()
     val interruptAction = createInterruptAction(consoleView)
+    val eofAction = createEofAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
     val addConsoleAction = createAddConsoleAction()
     val toggleSoftWrap = createToggleSoftWrapAction(consoleView)
 
-    val actions = listOf(executeAction, interruptAction, historyAction, createSetCurrentDirectory(),
+    val actions = listOf(executeAction, interruptAction, eofAction, historyAction, createSetCurrentDirectory(),
                          Separator(),
                          toggleSoftWrap, addConsoleAction, helpAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
@@ -234,6 +235,24 @@ class RConsoleRunner(private val project: Project,
         AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
                                             SimpleDataContext.getSimpleContext(
                                               mapOf(RConsoleView.R_CONSOLE_DATA_KEY.name to console), e.dataContext))
+    }
+
+  private fun createEofAction(console: RConsoleView): AnAction =
+    object : AnAction(), RPromotedAction {
+      private val action = ActionManager.getInstance().getAction(RConsoleView.EOF_ACTION_ID).also { copyFrom(it) }
+
+      override fun actionPerformed(e: AnActionEvent) {
+        action.actionPerformed(createEvent(e))
+      }
+
+      override fun update(e: AnActionEvent) {
+        action.update(createEvent(e))
+      }
+
+      private fun createEvent(e: AnActionEvent): AnActionEvent =
+        AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
+                                           SimpleDataContext.getSimpleContext(
+                                             mapOf(RConsoleView.R_CONSOLE_DATA_KEY.name to console), e.dataContext))
     }
 
 

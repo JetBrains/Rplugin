@@ -13,7 +13,7 @@ import com.intellij.psi.PsiFile
 class RConsoleAutopopupBlockingHandler : TypedHandlerDelegate() {
   override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
     editor.getUserData(REPL_KEY)?.executeActionHandler?.state?.let {
-      if (it == RConsoleExecuteActionHandler.State.READ_LN) {
+      if (it == RConsoleExecuteActionHandler.State.READ_LN || it == RConsoleExecuteActionHandler.State.SUBPROCESS_INPUT) {
         return Result.STOP
       }
     }

@@ -183,6 +183,7 @@ class RConsoleView(val rInterop: RInterop,
     val IS_R_CONSOLE_KEY = Key.create<Boolean>("IS_R_CONSOLE")
     val R_CONSOLE_DATA_KEY = DataKey.create<RConsoleView>("R_CONSOLE")
     const val INTERRUPT_ACTION_ID = "org.jetbrains.r.console.RConsoleView.RInterruptAction"
+    const val EOF_ACTION_ID = "org.jetbrains.r.console.RConsoleView.REofAction"
 
     private fun getConsole(e: AnActionEvent) =
       e.getData(R_CONSOLE_DATA_KEY) ?: e.project?.let { RConsoleManager.getInstance(it).currentConsoleOrNull }
@@ -328,6 +329,19 @@ class RConsoleView(val rInterop: RInterop,
     postFlushActions.clear()
   }
 
+  class REofAction : DumbAwareAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+      val console = getConsole(e) ?: return
+      if (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.SUBPROCESS_INPUT) {
+        console.rInterop.replSendEof()
+        console.executeActionHandler.state = RConsoleExecuteActionHandler.State.BUSY
+      }
+    }
+
+    override fun update(e: AnActionEvent) {
+      e.presentation.isVisible = false
+    }
+  }
 
   class RSetCurrentDirectoryFromEditor : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
