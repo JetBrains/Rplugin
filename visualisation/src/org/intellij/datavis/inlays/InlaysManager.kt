@@ -53,6 +53,7 @@ class InlaysManager(val project: Project) : ProjectComponent {
     EditorFactory.getInstance().addEditorFactoryListener(object : EditorFactoryListener {
       override fun editorCreated(event: EditorFactoryEvent) {
         val editor = event.editor
+        if (project != editor.project) return
         val descriptor = getDescriptor(editor) ?: return
         InlayDimensions.init(editor as EditorImpl)
         editor.putUserData(KEY, EditorInlaysManager(project, editor, descriptor))
