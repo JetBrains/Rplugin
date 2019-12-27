@@ -94,6 +94,10 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     if (ApplicationManager.getApplication().isUnitTestMode) return
     ApplicationManager.getApplication().invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
+      if (!psi.isValid) {
+        getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
+        return@invokeLater
+      }
       if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) return@invokeLater
       val inlayOutputs = descriptor.getInlayOutputs(psi)
       scrollKeeper.savePosition()
