@@ -1,0 +1,152 @@
+package org.jetbrains.r.hints
+
+import com.intellij.codeInsight.hints.InlayHintsSettings
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.editor.*
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.event.EditorFactoryEvent
+import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.editor.ex.EditorEx
+import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.injected.changesHandler.range
+import com.jetbrains.extensions.python.toPsi
+import org.jetbrains.r.RLanguage
+import org.jetbrains.r.rmarkdown.RMarkdownLanguage
+import java.util.concurrent.ConcurrentHashMap
+
+@Suppress("UnstableApiUsage")
+class RReturnHintsModel(private val project: Project) : EditorFactoryListener {
+
+  private val documentModels = ConcurrentHashMap<Document, DocumentReturnExtensionInfo>()
+  private val hintsSetting = InlayHintsSettings.instance()
+
+  init {
+    EditorFactory.getInstance().addEditorFactoryListener(this, project)
+  }
+
+  override fun editorCreated(event: EditorFactoryEvent) {
+    val editorEx = event.editor as? EditorEx ?: return
+    if (FileDocumentManager.getInstance().getFile(editorEx.document)?.toPsi(project)?.language !in listOf(RLanguage.INSTANCE, RMarkdownLanguage)) return
+    editorEx.registerLineExtensionPainter(RReturnHintLineExtensionPainter(project, editorEx.document)::getLineExtensions)
+  }
+
+  override fun editorReleased(event: EditorFactoryEvent) {
+    clearDocumentInfo(event.editor.document)
+  }
+
+  fun getExtensionInfo(document: Document, offset: Int): List<RReturnHint>? {
+    if (!hintsSetting.hintsEnabled(RReturnHintInlayProvider.settingsKey, RLanguage.INSTANCE)) {
+      clearDocumentInfo(document)
+    }
+
+    return documentModels[document]?.getExtensionAtOffset(offset)
+  }
+
+  fun clearDocumentInfo(document: Document) {
+    documentModels.remove(document)?.dispose()
+  }
+
+  fun activeDocuments(vararg extraDocuments: Document): List<Document> {
+    return documentModels.keys.toList() + listOfNotNull(*extraDocuments)
+  }
+
+  fun update(document: Document, actualHints: Map<PsiElement, RReturnHint>) {
+    if (actualHints.isEmpty()) {
+      clearDocumentInfo(document)
+      return
+    }
+
+    val updatedModel = runReadAction {
+      val model = DocumentReturnExtensionInfo(document)
+      for ((element, hint) in actualHints) {
+        // hack to prevent move inlay to the next line that element contains trailing whitespaces
+        val endWhitespaceLen = element.text.takeLastWhile { it.isWhitespace() }.length
+        val lineNumber = document.getLineNumber(element.textRange.endOffset - endWhitespaceLen)
+        val lineEndOffset = document.getLineEndOffset(lineNumber)
+        model.markEndOfLine(lineEndOffset, hint)
+      }
+      model
+    }
+
+    documentModels.put(document, updatedModel)?.dispose()
+  }
+
+  private class DocumentReturnExtensionInfo(private val document: Document) {
+    private val lineEndMarkers = ConcurrentHashMap<RangeMarker, RReturnHint>()
+
+    fun markEndOfLine(lineEndOffset: Int, hint: RReturnHint) {
+      val endLineMarker = document.createRangeMarker(lineEndOffset, lineEndOffset)
+      endLineMarker.isGreedyToRight = true
+
+      lineEndMarkers[endLineMarker] = hint
+    }
+
+    fun getExtensionAtOffset(offset: Int): List<RReturnHint> {
+      // Protect operations working with the document offsets
+      return runReadAction {
+        val values = lineEndMarkers.entries.filter { (marker, _) ->
+          val textRange = marker.range
+          if (offset < textRange.startOffset || offset > textRange.endOffset) return@filter false
+          if (textRange.endOffset > document.textLength) return@filter false
+
+          val document = marker.document
+          if (!document.getText(textRange).contains('\n')) {
+            textRange.endOffset == offset
+          } else {
+            // New line may appear after session of fast typing with one or several enter hitting.
+            // We can't believe startOffset too because typing session may had started with
+            // typing adding several chars at the original line.
+            val originalLineNumber = document.getLineNumber(textRange.startOffset)
+            val currentOriginalLineEnd = document.getLineEndOffset(originalLineNumber)
+
+            currentOriginalLineEnd == offset
+          }
+        }.map { it.value }
+        listOfNotNull(values.firstOrNull { it is RExplicitReturnHint }, values.firstOrNull { it is RImplicitReturnHint })
+      }
+    }
+
+    fun dispose() {
+      val keys = lineEndMarkers.keys()
+      ApplicationManager.getApplication().invokeLater {
+        for (marker in keys) marker.dispose()
+      }
+    }
+  }
+
+  companion object {
+    fun getInstance(project: Project): RReturnHintsModel =
+      project.getComponent(RReturnHintsModel::class.java) ?: error("Component 'RReturnHintsModel' is expected to be registered")
+  }
+}
+
+private class RReturnHintLineExtensionPainter(private val project: Project, private val document: Document) {
+
+  fun getLineExtensions(lineNumber: Int): List<LineExtensionInfo> {
+    val hint = getLineHint(lineNumber) ?: return emptyList()
+
+    val textAttributes =
+      EditorColorsManager.getInstance().globalScheme.getAttributes(DefaultLanguageHighlighterColors.INLINE_PARAMETER_HINT)
+    val result = mutableListOf<LineExtensionInfo>()
+    hint.map { LineExtensionInfo(it, textAttributes) }.forEach {
+      result.add(SPACE_LINE_EXTENSION_INFO)
+      result.add(it)
+    }
+
+    return result
+  }
+
+  private fun getLineHint(lineNumber: Int): List<String>? {
+    if (lineNumber >= document.lineCount) return null
+    val lineEndOffset = document.getLineEndOffset(lineNumber)
+    return RReturnHintsModel.getInstance(project).getExtensionInfo(document, lineEndOffset)?.map { it.hintText }
+  }
+
+  companion object {
+    val SPACE_LINE_EXTENSION_INFO = LineExtensionInfo(" ", TextAttributes())
+  }
+}

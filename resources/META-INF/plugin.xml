@@ -104,6 +104,14 @@ You can find the source code in the following repositories:
             <interface-class>org.jetbrains.r.interpreter.RInterpreterManager</interface-class>
             <implementation-class>org.jetbrains.r.interpreter.RInterpreterManagerImpl</implementation-class>
         </component>
+
+        <component>
+          <implementation-class>org.jetbrains.r.hints.RReturnHintPass$Companion$Factory</implementation-class>
+        </component>
+
+        <component>
+          <implementation-class>org.jetbrains.r.hints.RReturnHintsModel</implementation-class>
+        </component>
     </project-components>
 
     <actions>
@@ -363,6 +371,8 @@ You can find the source code in the following repositories:
 
         <codeInsight.parameterInfo language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RParameterInfoHandler"/>
         <codeInsight.parameterNameHints language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RInlayParameterHintsProvider"/>
+
+        <codeInsight.inlayProvider language="R" implementationClass="org.jetbrains.r.hints.RReturnHintInlayProvider"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"
