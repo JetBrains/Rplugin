@@ -15,7 +15,6 @@ import org.jetbrains.r.inspections.MissingPackageInspection
 import org.jetbrains.r.intentions.InstallLibraryFix
 import org.jetbrains.r.packages.remote.PackageDetailsException
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.packages.remote.RepoUtils
 
 class InstallAllFileLibraryFix : DependencyManagementFix() {
 
@@ -29,7 +28,7 @@ class InstallAllFileLibraryFix : DependencyManagementFix() {
       val packageNames = getAllPackagesWithSameQuickFix<InstallLibraryFix>(file, project, MissingPackageInspection())
 
       val rPackageManagementService = RPackageManagementService(project, emptyRPackageServiceListener)
-      if (RepoUtils.getPackageDetails(project) == null) {
+      if (!rPackageManagementService.arePackageDetailsLoaded) {
         rPackageManagementService.reloadAllPackages()
       }
 

@@ -88,6 +88,9 @@ class RPackageManagementService(private val project: Project,
       service.cranMirror = index
     }
 
+  val arePackageDetailsLoaded: Boolean
+    get() = interpreter.packageDetails != null
+
   override fun getAllRepositories(): List<String> {
     return mutableListOf<String>().also {
       it.addAll(defaultRepositories.map { r -> r.url })
@@ -223,7 +226,7 @@ class RPackageManagementService(private val project: Project,
   @Throws(PackageDetailsException::class)
   fun resolvePackage(repoPackage: RepoPackage): RepoPackage {
     return if (repoPackage.repoUrl == null || repoPackage.latestVersion == null) {
-      val names2packages = RepoUtils.getPackageDetails(project) ?: throw MissingPackageDetailsException("Package mapping is not set")
+      val names2packages = interpreter.packageDetails ?: throw MissingPackageDetailsException("Package mapping is not set")
       val filled = names2packages[repoPackage.name]
       filled ?: throw UnresolvedPackageDetailsException("Can't get details for package '" + repoPackage.name + "'")
     } else {

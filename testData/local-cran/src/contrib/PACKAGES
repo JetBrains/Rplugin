@@ -1,0 +1,14 @@
+Package: anRPluginTestPackage1
+Version: 0.1.0
+MD5sum: bcb4a339525b5a26feb2653579a7cec4
+NeedsCompilation: no
+
+Package: anRPluginTestPackage2
+Version: 0.1.0
+MD5sum: eb9054f4441039d1914c46b665d78765
+NeedsCompilation: no
+
+Package: anRPluginTestPackage3
+Version: 0.1.0
+MD5sum: 126f6552c9b650a6e1eb166ecf80def3
+NeedsCompilation: no

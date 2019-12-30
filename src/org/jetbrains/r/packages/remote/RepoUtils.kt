@@ -13,8 +13,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.RepoPackage
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -176,17 +174,6 @@ object RepoUtils {
            throw ExecutionException("Cannot get interpreter for packaging task. Please, specify path to the R executable")
   }
 
-  private fun getConsoleForCurrentInterpreter(interpreter: RInterpreter, project: Project): RConsoleView {
-    val current = RConsoleManager.getInstance(project).currentConsoleOrNull
-    return if (current != null && current.interpreterPath == interpreter.interpreterPath) {
-      current
-    } else {
-      RConsoleManager.runConsole(project)
-        .onError { LOGGER.error("Cannot run new console for packaging task", it) }
-        .blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
-    }
-  }
-
   private fun getPackageVersion(packageName: String, rInterop: RInterop): String? {
     val versionOutput = rInterop.repoGetPackageVersion(packageName)
     return if (versionOutput.stderr.isBlank()) {  // Note: stderr won't be blank if package is missing
@@ -204,7 +191,7 @@ object RepoUtils {
 
   fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage) {
     val interpreter = getInterpreter(rInterpreter, project)
-    val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
+    val rInterop = interpreter.interop
     val repoUrl = repoPackage.repoUrl ?: throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
     val url = trimRepoUrlSuffix(repoUrl)
 
@@ -295,7 +282,7 @@ object RepoUtils {
   fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: InstalledPackage) {
     val packageName = repoPackage.name
     val interpreter = getInterpreter(rInterpreter, project)
-    val rInterop = getConsoleForCurrentInterpreter(interpreter, project).rInterop
+    val rInterop = interpreter.interop
     if (!checkPackageInstalled(packageName, rInterop)) {
       throw ExecutionException("Cannot remove package '$packageName'. It is not installed")
     }

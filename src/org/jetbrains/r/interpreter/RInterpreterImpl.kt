@@ -23,6 +23,8 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
+import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackage
@@ -33,6 +35,7 @@ import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
+import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -56,6 +59,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
   private val updateEpoch = AtomicInteger(0)
 
+  override val interop: RInterop
+    get() = getConsoleForInterpreter(this, project).rInterop
+
   override val skeletonRoots: Set<VirtualFile>
     get() {
       val current = state
@@ -70,6 +76,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       }
       return currentSkeletonRoots
     }
+
+  override val packageDetails: Map<String, RRepoPackage>?
+    get() = RepoUtils.getPackageDetails(project)
 
   override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
     return runAsync {
@@ -351,6 +360,17 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       }
 
       return null
+    }
+
+    private fun getConsoleForInterpreter(interpreter: RInterpreter, project: Project): RConsoleView {
+      val current = RConsoleManager.getInstance(project).currentConsoleOrNull
+      return if (current != null && current.interpreterPath == interpreter.interpreterPath) {
+        current
+      } else {
+        RConsoleManager.runConsole(project)
+          .onError { LOG.error("Cannot run new console for interpreter", it) }
+          .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
+      }
     }
 
     private fun String.expandTilde(): String {

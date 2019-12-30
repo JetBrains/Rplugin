@@ -31,7 +31,7 @@ class InstallLibraryFix(override val packageName: String) : DependencyManagement
                           project, true) {
       try {
         val rPackageManagementService = RPackageManagementService(project, emptyRPackageServiceListener)
-        if (RepoUtils.getPackageDetails(project) == null) {
+        if (!rPackageManagementService.arePackageDetailsLoaded) {
           rPackageManagementService.reloadAllPackages()
         }
 

@@ -173,7 +173,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   companion object {
-    private val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
+    val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
     val SKELETON_LIBRARY_PATH = TEST_DATA_PATH + "/skeletons"
     private val packageNamesForTests: Set<String> = """
   base

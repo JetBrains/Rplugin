@@ -185,7 +185,9 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   private fun reloadPackagesIfNecessary() {
-    RepoUtils.getPackageDetails(project) ?: rPackageManagementService.reloadAllPackages()
+    if (!rPackageManagementService.arePackageDetailsLoaded) {
+      rPackageManagementService.reloadAllPackages()
+    }
   }
 
   private fun resolvePackages(packages: List<RequiredPackage>): List<RepoPackage> {

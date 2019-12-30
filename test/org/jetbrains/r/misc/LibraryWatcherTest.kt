@@ -4,20 +4,14 @@
 
 package org.jetbrains.r.misc
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.testFramework.PlatformTestUtil
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreterImpl
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import org.jetbrains.r.interpreter.RInterpreterTestUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
-import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
 class LibraryWatcherTest : RUsefulTestCase() {
   private val packageName = "rplugin.test.package"
-  private val packageFile = "$testDataPath/packages/$packageName.tar.gz"
+  private val packagePath = "$testDataPath/packages/$packageName.tar.gz"
 
   override fun tearDown() {
     RLibraryWatcher.getInstance(project).registerRootsToWatch(emptyList())
@@ -26,10 +20,8 @@ class LibraryWatcherTest : RUsefulTestCase() {
 
   fun testPackageInstallUninstall() {
     val project = myFixture.project
-    val interpreterPath = RInterpreterUtil.suggestHomePath()
-    val interpreter = RInterpreterImpl(RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!), interpreterPath, project)
-    interpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
-    runCommand(interpreterPath, "CMD", "REMOVE", packageName)
+    val interpreter = RInterpreterTestUtil.makeSlaveInterpreter(project)
+    RInterpreterTestUtil.removePackage(interpreter, packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
     assertNotEmpty(interpreter.libraryPaths)
 
@@ -39,39 +31,23 @@ class LibraryWatcherTest : RUsefulTestCase() {
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {
       atomicInteger.incrementAndGet()
     }
-    runCommand(interpreterPath, "CMD", "INSTALL", packageFile)
+    RInterpreterTestUtil.installPackage(interpreter, packagePath)
     assertEquals(0, atomicInteger.get())
     libraryWatcher.refresh()
     waitForAtomic(atomicInteger, 1)
     assertEquals(1, atomicInteger.get())
-    runCommand(interpreterPath, "CMD", "REMOVE", packageName)
+    RInterpreterTestUtil.removePackage(interpreter, packageName)
     assertEquals(1, atomicInteger.get())
     libraryWatcher.refresh()
     waitForAtomic(atomicInteger, 2)
     assertEquals(2, atomicInteger.get())
   }
 
-  private fun runCommand(vararg args: String) {
-    LOG.warn("Running: " + args.joinToString())
-    val generalCommandLine = GeneralCommandLine(*args)
-    val processHandler = CapturingProcessHandler(generalCommandLine)
-    val processOutput = processHandler.runProcess(DEFAULT_TIMEOUT)
-    LOG.warn("STDOUT: " + processOutput.stdout)
-    LOG.warn("STDERR: " + processOutput.stderr)
-  }
-
   companion object {
     private const val TIMEOUT = 5000L
 
     private fun waitForAtomic(atomic: AtomicInteger, expected: Int) {
-      val start = System.currentTimeMillis()
-      while (atomic.get() != expected) {
-        if (System.currentTimeMillis() - start > TIMEOUT) {
-          throw TimeoutException("Waiting for atomic counter for $TIMEOUT ms")
-        }
-        PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-        Thread.sleep(20L)
-      }
+      RInterpreterTestUtil.waitForAtomic(atomic, expected, TIMEOUT)
     }
   }
 }

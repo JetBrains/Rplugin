@@ -13,6 +13,7 @@ import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.rinterop.RInterop
 
 interface RInterpreter : RInterpreterInfo {
   val installedPackages: ExpiringList<RPackage>
@@ -24,6 +25,10 @@ interface RInterpreter : RInterpreterInfo {
   val cranMirrors: List<RMirror>
 
   val defaultRepositories: List<RDefaultRepository>
+
+  val interop: RInterop
+
+  val packageDetails: Map<String, RRepoPackage>?
 
   fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>>
 

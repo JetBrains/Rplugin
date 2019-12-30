@@ -94,7 +94,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
       override fun updateButton(e: AnActionEvent) {
         e.presentation.isEnabled = rPackageManagementService != null && !isTaskRunning &&
-                                   RepoUtils.getPackageDetails(myProject) != null  // Wait until package details are loaded
+                                   rPackageManagementService?.arePackageDetailsLoaded == true
       }
     }
   }
