@@ -57,6 +57,12 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameFunctionInFunctionCollisions() = doExceptionTestWithProject("was", true, "scopeFun")
 
+  fun testRenameRFile() {
+    val psiFile = myFixture.configureByText("foo.R", "print('Hello world')")
+    myFixture.renameElement(psiFile, "bar.R")
+    assertEquals(psiFile.name, "bar.R")
+  }
+
   private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true) {
     myFixture.configureByFile("rename/" + getTestName(true) + DOT_R_EXTENSION)
     val variableHandler = RVariableInplaceRenameHandler()

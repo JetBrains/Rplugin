@@ -21,19 +21,19 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
 
   override fun substituteElementToRename(element: PsiElement, editor: Editor?): PsiElement? {
     if (RPsiUtil.isLibraryElement(element)) return null
-
-    if (element is RIdentifierExpression) {
-      val parent = element.parent
-      return when {
-        parent is RForStatement && parent.target == element -> element
-        parent is RAssignmentStatement || parent is RParameter -> parent
-        else -> null
+    return when (element) {
+      is RIdentifierExpression -> {
+        val parent = element.parent
+        when {
+          parent is RForStatement && parent.target == element -> element
+          parent is RAssignmentStatement || parent is RParameter -> parent
+          else -> null
+        }
       }
+      is RForStatement -> element.target
+      is RAssignmentStatement, is RParameter, is RFile -> element
+      else -> null
     }
-
-    if (element is RForStatement) return element.target
-    if (element is RAssignmentStatement || element is RParameter) return element
-    return null
   }
 
   override fun findCollisions(element: PsiElement,
