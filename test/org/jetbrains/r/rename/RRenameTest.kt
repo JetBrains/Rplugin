@@ -16,6 +16,7 @@ import org.jetbrains.r.RFileType.DOT_R_EXTENSION
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler
 import org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
@@ -63,8 +64,25 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
     assertEquals(psiFile.name, "bar.R")
   }
 
-  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true) {
-    myFixture.configureByFile("rename/" + getTestName(true) + DOT_R_EXTENSION)
+  fun testRenameFunctionInRmd() = doTestWithProject("test_function_rmd", isRmd = true)
+
+  fun testRenameFunctionUsageInRmd() = doTestWithProject("test_function_rmd", isRmd = true)
+
+  fun testRenameParameterInRmd() = doTestWithProject("x1", isRmd = true)
+
+  fun testRenameParameterUsageInRmd() = doTestWithProject("x1", isRmd = true)
+
+  fun testRenameLocalVariableInRmd() = doTestWithProject("ttt1", isRmd = true)
+
+  fun testRenameLocalVariableUsageInRmd() = doTestWithProject("ttt1", isRmd = true)
+
+  fun testRenameForLoopTargetInRmd() = doTestWithProject("k", isRmd = true)
+
+  fun testRenameForLoopTargetUsageInRmd() = doTestWithProject("l", isRmd = true)
+
+  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false) {
+    val dotFileExtension = getDotExtension(isRmd)
+    myFixture.configureByFile("rename/" + getTestName(true) + dotFileExtension)
     val variableHandler = RVariableInplaceRenameHandler()
     val memberHandler = RMemberInplaceRenameHandler()
 
@@ -82,27 +100,31 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
     }
 
     CodeInsightTestUtil.doInlineRename(handler, newName, myFixture)
-    myFixture.checkResultByFile("rename/" + getTestName(true) + ".after.R", true)
+    myFixture.checkResultByFile("rename/" + getTestName(true) + ".after$dotFileExtension", true)
   }
 
   private fun doExceptionTestWithProject(newName: String,
                                          isFunctionCollision: Boolean,
                                          functionScope: String? = null,
-                                         isInlineAvailable: Boolean = true) {
-    myFixture.configureByFile("rename/" + getTestName(true) + DOT_R_EXTENSION)
-
+                                         isInlineAvailable: Boolean = true,
+                                         isRmd: Boolean = false) {
     val scopeString =
       if (functionScope != null) RBundle.message("rename.processor.function.scope", functionScope)
-      else RBundle.message("rename.processor.file.scope", myFixture.file.name)
+      else RBundle.message("rename.processor.file.scope", getTestName(true) + getDotExtension(isRmd))
     val message =
       if (isFunctionCollision) RBundle.message("rename.processor.collision.function.description", newName, scopeString)
       else RBundle.message("rename.processor.collision.variable.description", newName, scopeString)
 
     assertException(object : CollisionErrorCase() {
       override fun tryClosure() {
-        doTestWithProject(newName, isInlineAvailable)
+        doTestWithProject(newName, isInlineAvailable, isRmd)
       }
     }, message)
+  }
+
+  private fun getDotExtension(isRmd: Boolean): String {
+    val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension else DOT_R_EXTENSION.drop(1)
+    return ".$fileExtension"
   }
 
   private abstract inner class CollisionErrorCase : AbstractExceptionCase<BaseRefactoringProcessor.ConflictsInTestsException>() {

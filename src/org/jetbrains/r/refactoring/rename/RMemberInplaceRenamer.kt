@@ -6,9 +6,9 @@ package org.jetbrains.r.refactoring.rename
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.PsiReference
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.*
+import com.intellij.psi.templateLanguages.TemplateLanguageUtil
 import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenameHandler
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
@@ -44,5 +44,14 @@ class RMemberInplaceRenamer : MemberInplaceRenamer {
 
   override fun getRangeToRename(element: PsiElement): TextRange {
     return RenameUtil.fixTextRange(super.getRangeToRename(element), element)
+  }
+
+  override fun notSameFile(file: VirtualFile?, containingFile: PsiFile): Boolean {
+    val currentFile = PsiDocumentManager.getInstance(myProject).getPsiFile(myEditor.document) ?: return true
+    return TemplateLanguageUtil.getBaseFile(containingFile) !== TemplateLanguageUtil.getBaseFile(currentFile)
+  }
+
+  override fun getNameIdentifier(): PsiElement? {
+    return (myElementToRename as? PsiNameIdentifierOwner)?.nameIdentifier
   }
 }

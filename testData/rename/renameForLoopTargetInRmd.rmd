@@ -1,0 +1,16 @@
+```{r}
+for (i<caret> in 1:10) {
+  j <- i + i
+}
+
+i <- 0
+```
+
+```{python}
+for i in (1, 10):
+    j = i + i
+```
+
+```{r}
+(function(x) { i <- 10; i + i * x })(i + i)
+```

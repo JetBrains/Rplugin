@@ -1,0 +1,16 @@
+```{r}
+for (l in 1:10) {
+  j <- l + l
+}
+
+l <- 0
+```
+
+```{python}
+for i in (1, 10):
+    j = i + i
+```
+
+```{r}
+(function(x) { i <- 10; i + i * x })(l + l)
+```

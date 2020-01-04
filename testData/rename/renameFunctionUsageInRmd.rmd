@@ -1,0 +1,29 @@
+```{r}
+# @type x : numeric
+# @type y : numeric
+test_function <- function(x, y, z, d) {
+    print("This is test function")
+    barplot(x)
+    x + 1 + 1
+    z
+}
+
+z <- "dsds"
+test_function(z, 2, 1, 1)
+```
+
+```{python}
+def test_function():
+    return 42 + 42
+```
+
+```{r}
+test_functi<caret>on(1, 2, 3, 4)
+```
+
+```{r}
+function() {
+  test_function <- 42
+  test_function + 42
+}
+```

@@ -1,0 +1,18 @@
+```{r}
+ttt <- 10
+my_function <- function(xxx, yyy, zzz) {
+   t<caret>tt <- 10
+   print(ttt)
+}
+```
+
+```{python}
+ttt = 10
+def ttt1(a):
+    return a + ttt
+```
+
+```{r}
+ttt <- 15
+ttt + ttt
+```
