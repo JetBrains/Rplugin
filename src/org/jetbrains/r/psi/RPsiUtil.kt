@@ -107,7 +107,7 @@ object RPsiUtil {
 
     reference?.let { ref ->
       val multiResolve = ref.multiResolve(isIncomplete)
-      return multiResolve.map { it.element }.filterIsInstance<RAssignmentStatement>()
+      return multiResolve.map { it.element }.filterIsInstance<RAssignmentStatement>().filter { it.isFunctionDeclaration }
     }
     return emptyList()
   }
