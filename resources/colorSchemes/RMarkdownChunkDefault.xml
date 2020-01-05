@@ -2,7 +2,7 @@
 <list>
   <option name="RMARKDOWN_CHUNK">
     <value>
-      <option name="FOREGROUND" value="000000" />
+      <option name="FOREGROUND"/>
       <option name="BACKGROUND" value="EDFBFF" />
     </value>
   </option>
