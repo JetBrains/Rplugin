@@ -50,6 +50,8 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
 }
 
 class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor: Editor) : InlayElementDescriptor {
+  private val highlighters: ArrayList<RangeHighlighter> = ArrayList()
+
   override fun cleanup(psi: PsiElement): Future<Void> {
     val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
     return FileUtil.asyncDelete(File(cacheDirectory))
@@ -66,11 +68,11 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
 
   override fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>) {
     val markupModel = editor.markupModel
-    markupModel.removeAllHighlighters()
+    highlighters.forEach { markupModel.removeHighlighter(it) }
+    highlighters.clear()
     editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor?.let { backgroundColor ->
       toolbarElements.forEach { fillChunkArea(it.parent.textRange, backgroundColor, markupModel) }
     }
-
   }
 
   override fun getToolbarActions(psi: PsiElement): ActionGroup? = if (isChunkFenceLang(psi)) createRunChunkActionGroup(psi) else null
@@ -78,13 +80,15 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
   override fun isToolbarActionElement(psi: PsiElement): Boolean = isChunkFenceLang(psi)
 
   private fun fillChunkArea(textRange: TextRange, backgroundColor: Color, markupModel: MarkupModel) {
-    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset, HighlighterLayer.ADDITIONAL_SYNTAX + 1,
-                                           TextAttributes(null, backgroundColor, null, EffectType.ROUNDED_BOX, Font.PLAIN),
-                                           HighlighterTargetArea.LINES_IN_RANGE)
-//    markupModel.addRangeHighlighter(textRange.startOffset, textRange.endOffset,
-//                                    HighlighterLayer.SELECTION, null, HighlighterTargetArea.LINES_IN_RANGE).apply {
-//      setLineMarkerRenderer(ChunkProgressRenderer)
-//    }
+    highlighters.add(markupModel.addRangeHighlighter(textRange.startOffset,
+                                                     textRange.endOffset,
+                                                     HighlighterLayer.ADDITIONAL_SYNTAX + 1,
+                                                     TextAttributes(null,
+                                                                    backgroundColor,
+                                                                    null,
+                                                                    EffectType.ROUNDED_BOX,
+                                                                    Font.PLAIN),
+                                                     HighlighterTargetArea.LINES_IN_RANGE))
   }
 
   companion object {
