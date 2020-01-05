@@ -371,8 +371,8 @@ You can find the source code in the following repositories:
 
         <codeInsight.parameterInfo language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RParameterInfoHandler"/>
         <codeInsight.parameterNameHints language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RInlayParameterHintsProvider"/>
-
         <codeInsight.inlayProvider language="R" implementationClass="org.jetbrains.r.hints.RReturnHintInlayProvider"/>
+        <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"

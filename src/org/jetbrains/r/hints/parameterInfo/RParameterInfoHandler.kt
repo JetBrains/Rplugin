@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
 package org.jetbrains.r.hints.parameterInfo
@@ -33,7 +33,8 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
                                                             "function${assignment.functionParameters}") as RFunctionExpression).parameterList.parameterList
       val names = args.map { it.name }
       val values = args.map { it.defaultValue?.text }
-      RParameterInfoArgumentList(names, values, names.indices.toList())
+      RParameterInfoArgumentList(names, values,
+                                                                                                              names.indices.toList())
     }.toTypedArray()
 
     return argumentList
@@ -56,7 +57,8 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
       it.currentArgumentIndex = 0
       it.isDisabled = false
 
-      val (permutation, unusedArguments) = RParameterInfoUtil.getArgumentsPermutation(names, parameterOwner)
+      val (permutation, unusedArguments) = RParameterInfoUtil.getArgumentsPermutation(
+        names, parameterOwner)
       if (permutation.contains(-1)) {
         it.isDisabled = true
         it.permutation = names.indices.toList()

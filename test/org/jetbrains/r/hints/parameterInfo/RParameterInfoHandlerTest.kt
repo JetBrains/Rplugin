@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
 package org.jetbrains.r.hints.parameterInfo
@@ -227,7 +227,8 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SHOW_PARAMETER_INFO)
     UIUtil.dispatchAllInvocationEvents()
 
-    val expectedVariants = wrap(*expectedResults, isDisabled = isDisabled).split('-').map { it.trim() }.sorted()
+    val expectedVariants = wrap(*expectedResults,
+                                                                                                                           isDisabled = isDisabled).split('-').map { it.trim() }.sorted()
     val actualVariants = hintFixture.currentHintText?.split('-')?.map { it.trim() }?.sorted()
     assertEquals(expectedVariants, actualVariants)
   }

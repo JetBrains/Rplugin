@@ -1,13 +1,15 @@
 /*
- * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
 package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.codeInsight.hints.getLanguageForSettingKey
 import com.intellij.codeInsight.hints.settings.ParameterNameHintsSettings
+import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 @Suppress("UnstableApiUsage")
 class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
@@ -147,14 +149,71 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent())
   }
 
-  private fun doParameterNameTest(text: String) {
-    enableHints("R_HINT_OPTION_WRAP_DOTS")
-    doTest(text)
+  fun testParameterNamesInRmd() {
+    doParameterNameTest("""
+      ```{r}
+      foo <- function(a, b, c, d) {
+        a + b + c + d
+      }
+      
+      bar <- function() {}
+      
+      foo(<hint text="a:"/>10, <hint text="b:"/>20, d = 10, <hint text="c:"/>30)
+      ```
+      
+      ```{python}
+      def foo(a, b, c):
+        return 42 + 42
+      foo(50, 20, 40)
+      ```
+      
+      ```{r}
+      foo(<hint text="b:"/>30, <hint text="c:"/>20, a = 10, <hint text="d:"/>10)
+      ```
+      
+      ```{python}
+      foo(10, 20, 40)
+      bar()
+      ```
+    """.trimIndent(), true)
   }
 
-  private fun doParameterNameWithoutDotsWrapTest(text: String) {
+  fun testDotsInRmd() {
+    doParameterNameTest("""
+      ```{r}
+      foo <- function(a, b, ..., d) {
+        print(a, d, ..., b)
+      }
+      ```
+      
+      ```{r}
+      foo(<hint text="a:"/>10, <hint text="b:"/>Inf, <hint text="...("/>"abacaba", NULL<hint text=")"/>, 
+          d = 100, <hint text="..."/>foo(<hint text="a:"/>10, <hint text="b:"/>20, <hint text="..."/>30), NaN)
+      ```
+    """.trimIndent(), true)
+
+    doParameterNameWithoutDotsWrapTest("""
+      ```{r}
+      foo <- function(a, b, ..., d) {
+        print(a, d, ..., b)
+      }
+      ```
+      
+      ```{r}
+      foo(<hint text="a:"/>10, <hint text="b:"/>Inf, <hint text="..."/>"abacaba", NULL, 
+          d = 100, <hint text="..."/>foo(<hint text="a:"/>10, <hint text="b:"/>20, <hint text="..."/>30), NaN)
+      ```
+    """.trimIndent(), true)
+  }
+
+  private fun doParameterNameTest(text: String, isRmd: Boolean = false) {
+    enableHints("R_HINT_OPTION_WRAP_DOTS")
+    doTest(text, isRmd)
+  }
+
+  private fun doParameterNameWithoutDotsWrapTest(text: String, isRmd: Boolean = false) {
     enableHints()
-    doTest(text)
+    doTest(text, isRmd)
   }
 
   private fun enableHints(vararg names: String) {
@@ -168,8 +227,9 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     }
   }
 
-  private fun doTest(text: String) {
-    myFixture.configureByText("a.R", text)
+  private fun doTest(text: String, isRmd: Boolean) {
+    val fileDotExtension = if (isRmd) "." + RMarkdownFileType.defaultExtension else RFileType.DOT_R_EXTENSION
+    myFixture.configureByText("a$fileDotExtension", text)
     myFixture.testInlays()
   }
 }
