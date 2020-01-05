@@ -205,6 +205,24 @@ function(x){
     """.trimIndent())
   }
 
+  fun testParameterImportantThanExternalAssignment() {
+    doTest("", """
+      test_function <- function(pa<caret>ram, y, z, d) {
+          print(x + 1 + 1)
+      }
+      param <- 10
+      y <- param + param
+    """.trimIndent())
+
+    doTest("param <- 10", """
+      test_function <- function(param, y, z, d) {
+          print(x + 1 + 1)
+      }
+      param <- 10
+      y <- param + pa<caret>ram
+    """.trimIndent())
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     val results = resolve()

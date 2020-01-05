@@ -77,6 +77,28 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
      """)
   }
 
+  fun testParameter() {
+    doTest("""
+      func <- function(x<caret>, y, z) {
+        x + y + z
+      }
+      
+      x <- 15
+      p <- x + 10
+      func(x = p)
+    """, """
+      Usage (2 usages)
+       Variable
+        x
+       Found usages (2 usages)
+        Unclassified usage (2 usages)
+         light_idea_test_case (2 usages)
+           (2 usages)
+           2x + y + z
+           7func(x = p)
+     """)
+  }
+
   private fun doTest(@Language("R") code: String, expected: String) {
     myFixture.configureByText("test.R", code.trimIndent())
     val element = myFixture.elementAtCaret

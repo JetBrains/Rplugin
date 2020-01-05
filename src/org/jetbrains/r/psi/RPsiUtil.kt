@@ -17,7 +17,6 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RAssignmentStatementImpl
 import org.jetbrains.r.psi.stubs.RParameterStub
 import org.jetbrains.r.skeleton.psi.RSkeletonBase
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
@@ -160,6 +159,7 @@ val RIdentifierExpression.isDependantIdentifier: Boolean
   get() = parent.let { parent ->
     !(parent is RMemberExpression && parent.expressionList.firstOrNull() == this) &&
     (parent is RNamespaceAccessExpression ||
+     parent is RParameter && parent.variable == this ||
      (parent is RMemberExpression && parent.expressionList.first() != this) ||
      RPsiUtil.getNamedArgumentByNameIdentifier(this) != null ||
      isInsideSubscription)

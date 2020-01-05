@@ -27,9 +27,10 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
     if (element.isDependantIdentifier) return emptyArray()
 
-    if (element.getKind() == ReferenceKind.LOCAL_VARIABLE ||
-        element.getKind() == ReferenceKind.PARAMETER ||
-        element.getKind() == ReferenceKind.CLOSURE) {
+    val kind = element.getKind()
+    if (kind == ReferenceKind.LOCAL_VARIABLE ||
+        kind == ReferenceKind.PARAMETER ||
+        kind == ReferenceKind.CLOSURE) {
       val definition = element.findVariableDefinition()?.variableDescription?.firstDefinition
       if (definition?.parent is RAssignmentStatement || definition?.parent is RParameter) {
         result.add(PsiElementResolveResult(definition.parent))
