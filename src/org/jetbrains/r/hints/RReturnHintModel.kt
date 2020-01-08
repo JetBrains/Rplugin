@@ -13,7 +13,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
-import com.jetbrains.extensions.python.toPsi
+import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import java.util.concurrent.ConcurrentHashMap
@@ -30,7 +30,8 @@ class RReturnHintsModel(private val project: Project) : EditorFactoryListener {
 
   override fun editorCreated(event: EditorFactoryEvent) {
     val editorEx = event.editor as? EditorEx ?: return
-    if (FileDocumentManager.getInstance().getFile(editorEx.document)?.toPsi(project)?.language !in listOf(RLanguage.INSTANCE, RMarkdownLanguage)) return
+    val virtualFile = FileDocumentManager.getInstance().getFile(editorEx.document)
+    if (PsiUtilCore.findFileSystemItem(project, virtualFile)?.language !in listOf(RLanguage.INSTANCE, RMarkdownLanguage)) return
     editorEx.registerLineExtensionPainter(RReturnHintLineExtensionPainter(project, editorEx.document)::getLineExtensions)
   }
 

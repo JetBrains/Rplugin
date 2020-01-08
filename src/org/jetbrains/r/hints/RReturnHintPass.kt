@@ -22,7 +22,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.extensions.python.toPsi
+import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RFunctionExpression
@@ -96,7 +96,7 @@ class RReturnHintPass(private val file: PsiFile,
 
       fun filterAndUpdateDocumentsToForceRepaint(documents: List<Document>, project: Project): List<Document> {
         val fileDocumentManager = FileDocumentManager.getInstance()
-        return documents.filter { fileDocumentManager.getFile(it)?.toPsi(project)?.language == RMarkdownLanguage }.also {
+        return documents.filter { PsiUtilCore.findFileSystemItem(project, fileDocumentManager.getFile(it))?.language == RMarkdownLanguage }.also {
           documentsToForceRepaint.addAll(it)
         }
       }
