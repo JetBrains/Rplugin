@@ -5,6 +5,7 @@
 package org.intellij.datavis.inlays
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -337,10 +338,14 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
     else {
       val (data, type) = inlayOutputs.first()
       if (type == "TABLE") {
-        val csv = DataFrameCSVAdapter.fromCsvString(data)
-        createOrSetInlayData(csv).clearAction = cleanup
-        if (size.height == InlayDimensions.smallHeight) {
-          deltaSize(0, InlayDimensions.previewHeight - size.height)
+        runAsyncInlay {
+          val csv = DataFrameCSVAdapter.fromCsvString(data)
+          invokeLater {
+            createOrSetInlayData(csv).clearAction = cleanup
+            if (size.height == InlayDimensions.smallHeight) {
+              deltaSize(0, InlayDimensions.previewHeight - size.height)
+            }
+          }
         }
       }
       else {

@@ -5,6 +5,7 @@
 package org.intellij.datavis.inlays.components
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -88,19 +89,21 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   private fun tryShowImage(imageFile: File): Boolean {
     try {
-      if (!Disposer.isDisposed(disposableParent)) {
-        openEditor(imageFile)
-        return true
+      if (!imageFile.exists()) return false
+      val content = imageFile.readBytes()
+      var result = true
+      invokeAndWaitIfNeeded {
+        if (Disposer.isDisposed(disposableParent)) {
+          result = false
+          return@invokeAndWaitIfNeeded
+        }
+        openEditor(BinaryLightVirtualFile(imageFile.name, content))
       }
+      return result
     } catch (e: Exception) {
       LOGGER.error("Failed to load graphics", e)
     }
     return false
-  }
-
-  private fun openEditor(imageFile: File) {
-    val content = imageFile.readBytes()
-    openEditor(BinaryLightVirtualFile(imageFile.name, content))
   }
 
   private fun openEditor(file: VirtualFile) {

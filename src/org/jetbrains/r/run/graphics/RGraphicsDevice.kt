@@ -131,6 +131,7 @@ class RGraphicsDevice(
     })
   }
 
+  @Synchronized
   private fun rescale(newParameters: RGraphicsUtils.ScreenParameters, strategy: RescaleStrategy) {
     if (rInterop.isAlive) {
       devicePromise.onSuccess {

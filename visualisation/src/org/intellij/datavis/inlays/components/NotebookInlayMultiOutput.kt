@@ -8,6 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -19,6 +20,7 @@ import com.intellij.ui.tabs.impl.JBTabsImpl
 import org.intellij.datavis.inlays.InlayOutput
 import org.intellij.datavis.inlays.MouseWheelUtils
 import org.intellij.datavis.inlays.dataframe.DataFrameCSVAdapter
+import org.intellij.datavis.inlays.runAsyncInlay
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Rectangle
@@ -91,11 +93,15 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
     tabs.removeAllTabs()
     inlayOutputs.forEach {inlayOutput ->
       if (inlayOutput.type == "TABLE") {
-        val data = DataFrameCSVAdapter.fromCsvString(inlayOutput.data)
-        NotebookInlayData(project, disposable, data).apply {
-          addTab(inlayOutput)
-          setupOnHeightCalculated()
-          setDataFrame(data)
+        runAsyncInlay {
+          val data = DataFrameCSVAdapter.fromCsvString(inlayOutput.data)
+          invokeLater {
+            NotebookInlayData(project, disposable, data).apply {
+              addTab(inlayOutput)
+              setupOnHeightCalculated()
+              setDataFrame(data)
+            }
+          }
         }
       }
       else {

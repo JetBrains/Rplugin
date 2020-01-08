@@ -39,6 +39,7 @@ import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
 import org.intellij.datavis.inlays.MouseWheelUtils
+import org.intellij.datavis.inlays.runAsyncInlay
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLAnchorElement
 import java.awt.*
@@ -145,9 +146,14 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
     override fun addData(data: String) {
       imagePath = data
-      graphicsPanel.showImage(File(data))
-      onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
-      scheduleResizing()
+      runAsyncInlay {
+        graphicsPanel.showImage(File(data))
+      }.onSuccess {
+        invokeLater {
+          onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
+          scheduleResizing()
+        }
+      }
     }
 
     override fun clear() {
@@ -233,14 +239,20 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     override fun addData(data: String) {
-      File(data).takeIf { it.exists() && it.extension == "json" }?.let {file ->
-        Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>(){}.type).forEach {
-          console.addData(it.text, it.kind)
+      runAsyncInlay {
+        File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
+          Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
+        }.let { outputs ->
+          invokeLater {
+            if (outputs == null) {
+              console.addData(data, ProcessOutputType.STDOUT)
+            } else {
+              outputs.forEach { console.addData(it.text, it.kind) }
+            }
+            console.flushDeferredText()
+            onHeightCalculated?.invoke(console.preferredSize.height)
+          }
         }
-      } ?: console.addData(data, ProcessOutputType.STDOUT)
-      ApplicationManager.getApplication().invokeLater {
-        console.flushDeferredText()
-        onHeightCalculated?.invoke(console.preferredSize.height)
       }
     }
 
