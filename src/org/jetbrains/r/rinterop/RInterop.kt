@@ -596,6 +596,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
             }
         }
       }
+      Service.AsyncEvent.EventCase.TERMINATION -> {
+        asyncEventsListeners.forEach { it.onTermination() }
+      }
       else -> {
       }
     }
@@ -621,10 +624,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         } else {
           asyncEventsBeforeStarted.add(event)
         }
+        if (event.hasTermination()) return@Runnable
       } catch (ignored: CancellationException) {
       } catch (e: ExecutionException) {
         if ((e.cause as? StatusRuntimeException)?.status?.code == Status.Code.UNAVAILABLE) {
-          asyncEventsListeners.forEach { it.onTermination() }
+          processAsyncEvent(Service.AsyncEvent.newBuilder().setTermination(Empty.getDefaultInstance()).build())
           return@Runnable
         }
       }
