@@ -6,6 +6,7 @@ package org.jetbrains.r.actions
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AppUIUtil
@@ -45,8 +46,8 @@ abstract class RRunActionBase : REditorActionBase() {
 
 class RRunAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    val code = FileDocumentManager.getInstance().getDocument(file)?.text ?: return
-    console.rInterop.executeCodeAsync(code, isRepl = true)
+      val code = runReadAction { FileDocumentManager.getInstance().getDocument(file)?.text } ?: return
+      console.rInterop.executeCodeAsync(code, isRepl = true)
   }
 
   override fun update(e: AnActionEvent) {
