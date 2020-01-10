@@ -11,13 +11,12 @@ import com.intellij.openapi.project.Project
 class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateComponent<RAvailablePackageCache.State>(State()) {
   override var values: List<RRepoPackage>
     get() {
-      val chunked = state.flattenPackages.chunked(ENTRIES_PER_PACKAGE)
-      return chunked.map { it.toRepoPackage() }
+      return state.packages.map { it.toRepoPackage() }
     }
     set(newPackages) {
-      state.flattenPackages.apply {
+      state.packages.apply {
         clear()
-        addAll(newPackages.flatMap { it.toFlattenPackage() })
+        addAll(newPackages.map { it.toSerializable() })
       }
       state.lastUpdate = System.currentTimeMillis()
     }
@@ -34,22 +33,31 @@ class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateCompon
   override val lastUpdate: Long
     get() = state.lastUpdate
 
+  class SerializablePackage {
+    var name = ""
+    var repoUrl = ""
+    var latestVersion = ""
+    var depends = ""
+  }
+
   class State : BaseState() {
     var repoUrls by list<String>()
-    var flattenPackages by list<String>()
+    var packages by list<SerializablePackage>()
     var lastUpdate by property(0L)
   }
 
   companion object {
-    private const val ENTRIES_PER_PACKAGE = 4
-
-    private fun RRepoPackage.toFlattenPackage(): List<String> {
-      return listOf(name, repoUrl ?: "", latestVersion ?: "", depends ?: "")  // Actually 'repoUrl' and 'latestVersion' will never be null
+    private fun RRepoPackage.toSerializable(): SerializablePackage {
+      return SerializablePackage().also {
+        it.name = name
+        it.repoUrl = repoUrl ?: ""  // Note: will never be null
+        it.latestVersion = latestVersion ?: ""  // Note: will never be null
+        it.depends = depends ?: ""
+      }
     }
 
-    private fun List<String>.toRepoPackage(): RRepoPackage {
-      val depends = this[3].let { if (it.isNotEmpty()) it else null }
-      return RRepoPackage(this[0], this[1], this[2], depends)
+    private fun SerializablePackage.toRepoPackage(): RRepoPackage {
+      return RRepoPackage(name, repoUrl, latestVersion, depends.takeIf { it.isNotBlank() })
     }
 
     fun getInstance(project: Project) = project.service<RAvailablePackageCache>()
