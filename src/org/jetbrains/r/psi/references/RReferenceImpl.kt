@@ -5,12 +5,9 @@
 
 package org.jetbrains.r.psi.references
 
-import com.intellij.lang.Language
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
-import com.intellij.psi.PsiManager
 import com.intellij.psi.ResolveResult
-import com.intellij.psi.impl.light.LightElement
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.*
@@ -68,17 +65,4 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   override fun handleElementRename(newElementName: String): PsiElement? {
     return element.setName(newElementName)
   }
-
-
-  class RefLookupElement(manager: PsiManager, language: Language, private val refExpression: String) : LightElement(manager, language) {
-
-    fun getRefExpression(): PsiElement {
-      return org.jetbrains.r.psi.RElementFactory.createRefExpression(project, refExpression).reference.resolve()!!.parent
-    }
-
-
-    override fun toString(): String = ""
-  }
-
-
 }
