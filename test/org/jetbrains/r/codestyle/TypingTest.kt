@@ -6,12 +6,14 @@ package org.jetbrains.r.codestyle
 
 import com.intellij.application.options.CodeStyle
 import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import org.intellij.lang.annotations.Language
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class TypingTest : RUsefulTestCase() {
   fun testAfterBraceInFunction() {
@@ -245,10 +247,33 @@ class TypingTest : RUsefulTestCase() {
     """, "(")
   }
 
+  fun testParenthesisInTheEndOfRFence() {
+    doRmdTest("""
+      ```{r}
+      print<caret>
+      ```
+    """, """
+      ```{r}
+      print(<caret>)
+      ```
+    """, "(")
+  }
+
   private fun doTest(@Language("R") fileText: String,
                      @Language("R") expected: String,
                      insert: String = "\n") {
-    myFixture.configureByText(RFileType, fileText.trimIndent())
+    doGeneralTest(RFileType, fileText, expected, insert)
+  }
+
+  @Suppress("SameParameterValue")
+  private fun doRmdTest(@Language("RMarkdown") fileText: String,
+                        @Language("RMarkdown") expected: String,
+                        insert: String) {
+    doGeneralTest(RMarkdownFileType, fileText, expected, insert)
+  }
+
+  private fun doGeneralTest(fileType: FileType, fileText: String, expected: String, insert: String) {
+    myFixture.configureByText(fileType, fileText.trimIndent())
     try {
       val settings: CodeStyleSettings = CodeStyle.getSettings(myFixture.file).clone()
       CodeStyleSettingsManager.getInstance(project).setTemporarySettings(settings)

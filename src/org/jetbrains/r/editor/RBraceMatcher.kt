@@ -13,6 +13,7 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.rmarkdown.MARKDOWN_EOL
 
 private val bracePairs = arrayOf(
   BracePair(RElementTypes.R_LPAR, RElementTypes.R_RPAR, false),
@@ -22,6 +23,8 @@ private val bracePairs = arrayOf(
 
 private val completionContext = TokenSet.create(
   TokenType.WHITE_SPACE,
+  MARKDOWN_EOL,
+
   RParserDefinition.END_OF_LINE_COMMENT,
   RParserDefinition.SPACE,
   RParserDefinition.TAB,
