@@ -303,6 +303,8 @@ You can find the source code in the following repositories:
         <additionalTextAttributes scheme="Default" file="colorSchemes/RNamedArgumentDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RNamedArgumentDarcula.xml"/>
 
+        <statistics.counterUsagesCollector groupId="r.interpreters" version="1"/>
+
         <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"

@@ -35,6 +35,7 @@ import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
+import org.jetbrains.r.statistics.RStatistics
 
 interface RInterpreterManager {
   val interpreter: RInterpreter?
@@ -161,6 +162,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         ensureActiveInterpreterStored()
         scheduleSkeletonUpdate()
         promise.setResult(Unit)
+        RStatistics.logSetupInterpreter(it)
       }
     }
   }
