@@ -205,6 +205,31 @@ function(x){
     """.trimIndent())
   }
 
+  fun testResolveToForwardDeclaration() {
+    doTest("foobarbaz <- 312321321", """
+        bar <- function () {
+          foo <- function () {
+            print(foo<caret>barbaz)
+          }
+          foobarbaz <- 312321321
+          too <- 32131232
+        }
+    """.trimIndent())
+  }
+
+  fun testResolveToForwardDeclarationWithCall() {
+    doTest("foobarbaz <- 312321321", """
+        bar <- function () {
+          foo <- function () {
+            print(foo<caret>barbaz)
+          }
+          foobarbaz <- 312321321
+          foo()
+          too <- 32131232
+        }
+    """.trimIndent())
+  }
+
   fun testParameterImportantThanExternalAssignment() {
     doTest("", """
       test_function <- function(pa<caret>ram, y, z, d) {

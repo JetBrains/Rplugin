@@ -36,12 +36,23 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
   private val controlFlow = controlFlowHolder.controlFlow
   private val result = HashMap<Instruction, LocalVariableInfo>()
   private val variableDescriptions = HashMap<String, VariableDescription>()
+  private val innerFunctions = ArrayList<RFunctionExpression>()
 
   fun runAnalysis(inputState: LocalVariableInfo): LocalAnalysisResult {
     result[controlFlow.instructions[0]] = inputState
     for (instruction in controlFlow.instructions.drop(1)) {
       val info = join(instruction)
       result[instruction] = transferFunction(instruction, info)
+    }
+    val exitState = result[controlFlow.instructions.last()]!!
+    innerFunctions.forEach { function ->
+      val analysisInstance = AnalysisInstance(function, controlFlow2Result)
+      val analysisResult = analysisInstance.runAnalysis(exitState)
+      for (variableDescriptor in analysisResult.closure) {
+        if (variableDescriptor.firstDefinition.getControlFlowContainer() != controlFlowHolder) {
+          closure.add(variableDescriptor)
+        }
+      }
     }
     val analysisResult = LocalAnalysisResult(result, HashSet(closure))
     controlFlow2Result[controlFlowHolder] = analysisResult
@@ -50,8 +61,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
 
   private fun transferFunction(instruction: Instruction, info: LocalVariableInfo): LocalVariableInfo {
     var result: LocalVariableInfo = info
-    val element = instruction.element
-    when (element) {
+    when (val element = instruction.element) {
       is RAssignmentStatement -> {
         val assignee = element.assignee
         if (assignee is RIdentifierExpression) {
@@ -74,14 +84,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
       }
       is RFunctionExpression -> {
         if (controlFlowHolder !is RFile) {
-          val analysisInstance = AnalysisInstance(element, controlFlow2Result)
-          val analysisResult = analysisInstance.runAnalysis(info)
-          for (variableDescriptor in analysisResult.closure) {
-            if (variableDescriptor.firstDefinition.getControlFlowContainer() != controlFlowHolder) {
-              closure.add(variableDescriptor)
-            }
-          }
-
+          innerFunctions.add(element)
         }
       }
     }
