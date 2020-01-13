@@ -428,6 +428,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
    * @return
    */
   override fun getDocumentationElementForLink(psiManager: PsiManager, link: String?, context: PsiElement?): PsiElement? {
+    if (context == null || context.language != RLanguage.INSTANCE) return null
     if (link == INSTALL_REQUIRED_PACKAGES_LINK) {
       RequiredPackageInstaller.getInstance(psiManager.project)
         .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, null, false)

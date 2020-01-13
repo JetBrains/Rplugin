@@ -203,13 +203,27 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testNavigateLink() {
+    myFixture.configureByText("foo.R", "x <- 123")
     doLinkTest("base/html/print.html", "page for print")
     doLinkTest("base/html/00Index.html", "The R Base Package")
   }
 
   fun testExternalLink() {
+    myFixture.configureByText("foo.R", "x <- 123")
     doLinkTest("https://www.loc.gov/marc/relators/relaterm.html", "MARC Code List for Relators")
     doLinkTest("https://CRAN.R-project.org/package=Matrix", "Matrix: Sparse and Dense Matrix Classes and Methods")
+  }
+
+  fun testNavigateLinkDoesntWork() {
+    myFixture.configureByText("foo.txt", "x <- 123")
+    testLinkNull("base/html/print.html")
+    testLinkNull("base/html/00Index.html")
+  }
+
+  fun testExternalLinkDoesntWork() {
+    myFixture.configureByText("foo.txt", "x <- 123")
+    testLinkNull("https://www.loc.gov/marc/relators/relaterm.html")
+    testLinkNull("https://CRAN.R-project.org/package=Matrix")
   }
 
   // ---- END OF TESTS ---
@@ -236,9 +250,17 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
                Regex("href=\"psi_element://(?!http)").findAll(docText).count(), Regex("\\.html").findAll(docText).count())
   }
 
+  private fun testLinkNull(link: String) {
+    val psiManager = PsiManager.getInstance(project)
+    val docElement = docProvider.getDocumentationElementForLink(psiManager, link, myFixture.file)
+    assertNull("doc element should be null for other languages", docElement)
+    val docElementNullContext = docProvider.getDocumentationElementForLink(psiManager, link, null)
+    assertNull("doc element should be null for other languages", docElementNullContext)
+  }
+
   private fun doLinkTest(link: String, substr: String) {
     val psiManager = PsiManager.getInstance(project)
-    val docElement = docProvider.getDocumentationElementForLink(psiManager, link, null)
+    val docElement = docProvider.getDocumentationElementForLink(psiManager, link, myFixture.file)
     assertTrue("Bad element fo link ${link}", docElement != null)
 
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
