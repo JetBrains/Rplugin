@@ -236,6 +236,10 @@ class RParsingTest : RUsefulTestCase() {
     doTest()
   }
 
+  fun testDoubleStarts() {
+    doTest()
+  }
+
   //----------Syntax error tests-----------
   fun testErrorFor() {
     doTest()

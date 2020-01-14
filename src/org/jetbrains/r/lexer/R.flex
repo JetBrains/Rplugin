@@ -143,6 +143,7 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 "*"                         { return R_MULT; }
 "/"                         { return R_DIV; }
 "^"                         { return R_EXP; }
+"**"                        { return R_EXP; } // deprecated form
 
 // relational
 "<"                         { return R_LT; }
