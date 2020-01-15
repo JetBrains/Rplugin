@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.packages.remote
 
+import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -12,12 +13,14 @@ import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
+import org.jetbrains.r.psi.RElementFactory
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class PackageDetailsException(message: String) : RuntimeException(message)
@@ -158,12 +161,9 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  override fun getInstalledPackages(): Collection<InstalledPackage> {
+  override fun getInstalledPackages(): List<InstalledPackage> {
     val installed = interpreter.withAutoUpdate { installedPackages }
-    return installed.asSequence()
-      .filter { it.isUser }
-      .map { InstalledPackage(it.packageName, it.packageVersion) }
-      .toList()
+    return installed.filter { it.isUser }.map { InstalledPackage(it.packageName, it.packageVersion) }
   }
 
   private fun onOperationStart() {
@@ -278,6 +278,11 @@ class RPackageManagementService(private val project: Project,
         service.enabledRepositoryUrls.add(repository.url)
       }
     }
+  }
+
+  fun navigateToPackageDocumentation(pkg: InstalledPackage) {
+    val element = RElementFactory.buildRFileFromText(project, "$SHOW_PACKAGE_DOCS(${pkg.name})").firstChild
+    DocumentationManager.getInstance(project).showJavaDocInfoAtToolWindow(element, element.originalElement)
   }
 
   interface MultiListener {

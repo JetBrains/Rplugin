@@ -36,6 +36,8 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.*
 
+const val SHOW_PACKAGE_DOCS = ".jetbrains.show_package_help"
+
 private const val INDEX_HTML = "00Index.html"
 private const val WINDOWS_MAX_PATH_LENGTH = 259
 private const val INSTALL_REQUIRED_PACKAGES_LINK = "#Install#"
@@ -248,8 +250,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
     val dirNameForConsole = getDirNameForConsole(rInterop) ?: return null
 
+    val helpPathComponents = helpPath.split("/")
     if (helpPath.endsWith(INDEX_HTML)) {
-      val helpPackage = helpPath.split("/")[0]
+      val isLibrary = helpPathComponents[0] == "library"
+      val helpPackage = if (isLibrary) helpPathComponents[1] else helpPathComponents[0]
       val htmlPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, INDEX_HTML), WINDOWS_MAX_PATH_LENGTH)
 
       val htmlFile = File(htmlPath)
@@ -289,10 +293,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       return htmlPath
     }
 
-    val split = helpPath.split("/")
-
-    val helpPackage = split[split.size - 3]
-    val helpPage = split[split.size - 1]
+    val helpPackage = helpPathComponents[helpPathComponents.size - 3]
+    val helpPage = helpPathComponents[helpPathComponents.size - 1]
 
     val htmlPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, "$helpPage.html"),
                                     WINDOWS_MAX_PATH_LENGTH)
@@ -387,23 +389,25 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
-    val reference = restoreConsoleHelpCall(psiElement) ?: return null
-
-    checkPossibilityReturnDocumentation(reference) { return it }
-
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
-    try {
-      getDocumentationLocalFunction(rInterop, reference)?.let { path ->
-        return Scanner(File(path), StandardCharsets.UTF_8).use {
-          it.useDelimiter("\\A").next()
+    val path = extractPackageName(psiElement)?.let {
+      getHtmlPath(rInterop, "library/$it/html/$INDEX_HTML")
+    } ?: let {
+      val reference = restoreConsoleHelpCall(psiElement) ?: return null
+      checkPossibilityReturnDocumentation(reference) { return it }
+
+      try {
+        getDocumentationLocalFunction(rInterop, reference)?.let { path ->
+          return Scanner(File(path), StandardCharsets.UTF_8).use {
+            it.useDelimiter("\\A").next()
+          }
         }
       }
+      catch (e: RequiredPackageException) {
+        return e.message
+      }
+      getPath(rInterop, reference) ?: return null
     }
-    catch (e: RequiredPackageException) {
-      return e.message
-    }
-
-    val path = getPath(rInterop, reference) ?: return null
 
     val inputStream = if (path.startsWith("http")) {
       makeURL(path).openStream()
@@ -415,6 +419,12 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     return Scanner(inputStream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
   }
 
+  private fun extractPackageName(psiElement: PsiElement): String? {
+    val consoleHelpCallPattern = psiElement(RCallExpression::class.java).withChild(
+      psiElement(RIdentifierExpression::class.java).withText(SHOW_PACKAGE_DOCS))
+    return psiElement.takeIf { consoleHelpCallPattern.accepts(it) }
+                     ?.let { (psiElement as RCallExpression).argumentList.expressionList[0].text }
+  }
 
   /**
    * Intercepts clicks in documentation popup if link starts with psi_element://

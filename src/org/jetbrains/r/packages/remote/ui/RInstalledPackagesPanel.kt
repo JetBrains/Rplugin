@@ -24,7 +24,7 @@ import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.RepoUtils
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
-  InstalledPackagesPanel(project, area), RPackageServiceListener {
+  RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
 
   private val queue = MergingUpdateQueue(REFRESH_TASK_NAME, REFRESH_TIME_SPAN, true, null, project)
   private val manager: RInterpreterManager = RInterpreterManager.getInstance(project)
@@ -130,7 +130,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     return rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
   }
 
-  override fun updatePackages(packageManagementService: PackageManagementService?) {
+  override fun updatePackages(packageManagementService: RPackageManagementService?) {
     if (rPackageManagementService == null) {
       rPackageManagementService = packageManagementService as RPackageManagementService
       immediatelyUpdatePackages(packageManagementService)
@@ -139,7 +139,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     }
   }
 
-  private fun immediatelyUpdatePackages(packageManagementService: PackageManagementService?) {
+  private fun immediatelyUpdatePackages(packageManagementService: RPackageManagementService?) {
     super.updatePackages(packageManagementService)
   }
 
