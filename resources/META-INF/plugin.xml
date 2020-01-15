@@ -525,6 +525,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.naming.convention.name"
                          implementationClass="org.jetbrains.r.inspections.NamingConventionInspection"/>
 
+      <localInspection shortName="RDeprecatedDoubleStarts" language="R" enabledByDefault="true" groupName="R"
+                       bundle="messages.RBundle" key="inspection.deprecated.double.starts.name"
+                       implementationClass="org.jetbrains.r.inspections.DeprecatedDoubleStarts"/>
+
 
         <intentionAction>
             <category>R</category>
