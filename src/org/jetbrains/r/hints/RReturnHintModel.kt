@@ -127,10 +127,10 @@ class RReturnHintsModel(private val project: Project) : EditorFactoryListener {
 }
 
 private class RReturnHintLineExtensionPainter(private val project: Project, private val document: Document) {
+  private val returnHintsModel = RReturnHintsModel.getInstance(project)
 
   fun getLineExtensions(lineNumber: Int): List<LineExtensionInfo> {
     val hint = getLineHint(lineNumber) ?: return emptyList()
-
     val textAttributes =
       EditorColorsManager.getInstance().globalScheme.getAttributes(DefaultLanguageHighlighterColors.INLINE_PARAMETER_HINT)
     val result = mutableListOf<LineExtensionInfo>()
@@ -146,7 +146,7 @@ private class RReturnHintLineExtensionPainter(private val project: Project, priv
     if (lineNumber >= document.lineCount) return null
     if (Disposer.isDisposed(project)) return null
     val lineEndOffset = document.getLineEndOffset(lineNumber)
-    return RReturnHintsModel.getInstance(project).getExtensionInfo(document, lineEndOffset)?.map { it.hintText }
+    return returnHintsModel.getExtensionInfo(document, lineEndOffset)?.map { it.hintText }
   }
 
   companion object {
