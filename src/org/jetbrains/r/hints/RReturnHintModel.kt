@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.psi.util.PsiUtilCore
@@ -143,6 +144,7 @@ private class RReturnHintLineExtensionPainter(private val project: Project, priv
 
   private fun getLineHint(lineNumber: Int): List<String>? {
     if (lineNumber >= document.lineCount) return null
+    if (Disposer.isDisposed(project)) return null
     val lineEndOffset = document.getLineEndOffset(lineNumber)
     return RReturnHintsModel.getInstance(project).getExtensionInfo(document, lineEndOffset)?.map { it.hintText }
   }
