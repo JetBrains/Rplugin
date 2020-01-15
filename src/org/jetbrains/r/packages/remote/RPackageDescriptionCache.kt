@@ -10,18 +10,31 @@ import com.intellij.openapi.components.*
 // since it's doesn't rely on interpreter version whatsoever
 @State(name = "RPackageDescription", storages = [Storage("rPackageDescription.xml")])
 class RPackageDescriptionCache : SimplePersistentStateComponent<RPackageDescriptionCache.State>(State()) {
+  @Volatile
+  private var lastDescriptions: Map<String, String>? = null
+
   var descriptions: Map<String, String>
-    get() = state.descriptions
-    set(value) {
-      state.descriptions.apply {
-        clear()
-        putAll(value)
-      }
-      state.lastUpdate = System.currentTimeMillis()
+    get() = lastDescriptions ?: fetchDescriptions()
+    set(newDescriptions) {
+      updateDescriptions(newDescriptions)
     }
 
   val lastUpdate: Long
     get() = state.lastUpdate
+
+  @Synchronized
+  private fun fetchDescriptions(): Map<String, String> {
+    return state.descriptions.also { descriptions ->
+      lastDescriptions = descriptions
+    }
+  }
+
+  @Synchronized
+  private fun updateDescriptions(newDescriptions: Map<String, String>) {
+    state.descriptions = newDescriptions.toMutableMap()
+    state.lastUpdate = System.currentTimeMillis()
+    lastDescriptions = state.descriptions
+  }
 
   class State : BaseState() {
     var descriptions: MutableMap<String, String> by map<String, String>()

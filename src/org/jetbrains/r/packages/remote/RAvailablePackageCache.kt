@@ -9,29 +9,53 @@ import com.intellij.openapi.project.Project
 
 @State(name = "RAvailablePackageCache", storages = [Storage("rAvailablePackageCache.xml")])
 class RAvailablePackageCache : RCache<RRepoPackage>, SimplePersistentStateComponent<RAvailablePackageCache.State>(State()) {
+  @Volatile
+  private var lastPackages: List<RRepoPackage>? = null
+
+  @Volatile
+  private var lastUrls: List<String>? = null
+
   override var values: List<RRepoPackage>
-    get() {
-      return state.packages.map { it.toRepoPackage() }
-    }
+    get() = lastPackages ?: fetchPackages()
     set(newPackages) {
-      state.packages.apply {
-        clear()
-        addAll(newPackages.map { it.toSerializable() })
-      }
-      state.lastUpdate = System.currentTimeMillis()
+      updatePackages(newPackages)
     }
 
   var urls: List<String>
-    get() = state.repoUrls
+    get() = lastUrls ?: fetchUrls()
     set(newUrls) {
-      state.repoUrls.apply {
-        clear()
-        addAll(newUrls)
-      }
+      updateUrls(newUrls)
     }
 
   override val lastUpdate: Long
     get() = state.lastUpdate
+
+  @Synchronized
+  private fun fetchPackages(): List<RRepoPackage> {
+    return state.packages.map { it.toRepoPackage() }.also { packages ->
+      lastPackages = packages
+    }
+  }
+
+  @Synchronized
+  private fun updatePackages(newPackages: List<RRepoPackage>) {
+    state.packages = newPackages.asSequence().map { it.toSerializable() }.toMutableList()
+    state.lastUpdate = System.currentTimeMillis()
+    lastPackages = newPackages.toList()  // Note: make a copy
+  }
+
+  @Synchronized
+  private fun fetchUrls(): List<String> {
+    return state.repoUrls.also { urls ->
+      lastUrls = urls
+    }
+  }
+
+  @Synchronized
+  private fun updateUrls(newUrls: List<String>) {
+    state.repoUrls = newUrls.toMutableList()
+    lastUrls = state.repoUrls
+  }
 
   class SerializablePackage {
     var name = ""
