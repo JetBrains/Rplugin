@@ -25,7 +25,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RRecursiveElementVisitor
+import org.jetbrains.r.psi.api.RBlockExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
+import org.jetbrains.r.psi.api.RIfStatement
+import org.jetbrains.r.psi.api.RLoopStatement
 import org.jetbrains.r.refactoring.RRefactoringUtil
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import java.util.*
@@ -52,6 +55,22 @@ class RReturnHintPass(private val file: PsiFile,
     val actualHints = HashMap<PsiElement, RReturnHint>()
     file.viewProvider.getPsi(RLanguage.INSTANCE).accept(object : RRecursiveElementVisitor() {
       override fun visitFunctionExpression(o: RFunctionExpression) {
+        val body = o.expression
+        if (body !is RBlockExpression) {
+          o.acceptChildren(this)
+          return
+        }
+
+        val expressionList = body.expressionList
+        if (expressionList.size < 2) {
+          expressionList.firstOrNull()?.let {
+            if (it !is RIfStatement && it !is RLoopStatement) {
+              o.acceptChildren(this)
+              return
+            }
+          } ?: return
+        }
+
         functions.add(o)
         var returns = RRefactoringUtil.collectReturns(myProject, o).toList()
         if (!settings.showImplicitReturn) {

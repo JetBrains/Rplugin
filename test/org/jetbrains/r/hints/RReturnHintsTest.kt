@@ -18,7 +18,8 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
   fun testSingleReturn() {
     doRFileTest("""
       foo <- function(a, b, c) { 
-        a + length(b) + c <${e}foo>
+        l <- length(b)
+        a + l + c <${e}foo>
       }
     """.trimIndent())
   }
@@ -87,6 +88,7 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
       outer <- function(a) {
         b <- a + 10
         inner <- function(c) {
+          val <- 42
           42 * c <${e}inner>
         }
         
@@ -98,6 +100,7 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
   fun testFunWithError() {
     doRFileTest("""
       foo <- function() {
+        val <- 42
         10 + <${e}foo>
       }
     """.trimIndent())
@@ -111,11 +114,47 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent())
   }
 
+  fun testNotBlockBody() {
+    doRFileTest("""
+      foo <- function(a, b) a + b 
+    """.trimIndent())
+  }
+
+  fun testEmptyBlockBody() {
+    doRFileTest("""
+      foo <- function(a, b) {}
+    """.trimIndent())
+  }
+
+  fun testSingleExpressionBlockBody() {
+    doRFileTest("""
+      foo <- function(a, b) {
+        42 + a - bar(b, a)
+      }
+      
+      bar <- function(a, b) {
+        if (a > b) {
+          a + b <${e}bar>
+        }
+        else {
+          a - b <${e}bar>
+        } 
+      }
+      
+      baz <- function() {
+        for (i in 1:10) {
+          a <- i + 10
+        } <${n}baz>
+      }
+    """.trimIndent())
+  }
+
   fun testRmd() {
     doRMarkdownFileTest("""
       ```{r}
       foo <- function(a, b, c) { 
-        a + length(b) + c <${e}foo>
+        l <- length(b)
+        a + l + c <${e}foo>
       }
       
       foo <- function(a, b, c) { 
@@ -127,6 +166,7 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
       outer <- function(a) {
         b <- a + 10
         inner <- function(c) {
+          val <- 42
           42 * c <${e}inner>
         }
               
@@ -140,17 +180,20 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
     doRMarkdownFileTest("""
       ```{r}
       foo <- function(a) {
-        42 <${e}foo>
+        val <- 42
+        val <${e}foo>
       }
       ```
       
       ```{python}
       def foo(a):
+        val = 42
         return 42 + 42
       ```
       
       ```{r}
       foo1 <- function(a, b, c) {
+        val <- 42
         a + b + c <${e}foo1>
       }
       ```
