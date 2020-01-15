@@ -477,7 +477,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
                 RepoPackage repoPackage = cache.get(pkg.getName());
                 final String version = repoPackage != null ? repoPackage.getLatestVersion() : null;
                 myPackagesTableModel
-                  .addRow(new Object[] { "", pkg.getVersion(), version == null ? "" : version});
+                  .addRow(new Object[] {pkg, pkg.getVersion(), version == null ? "" : version});
               }
               if (!cache.isEmpty()) {
                 onUpdateFinished();
