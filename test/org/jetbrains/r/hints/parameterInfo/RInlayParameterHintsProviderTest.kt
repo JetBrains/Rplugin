@@ -57,7 +57,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="a:"/>42, d = 40, <hint text="b:"/>33, <hint text="..."/>bb = 43, aa = 20, aa = 15, 15, 20)
+      foo(<hint text="a:"/>42, d = 40, <hint text="b:"/>33, <hint text="...("/>bb = 43, aa = 20, aa = 15, 15, 20<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -81,7 +81,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="...("/>bb = 43, aa = 20<hint text=")"/>, a = 42, <hint text="...("/>aa = 15<hint text=")"/>, b = 40, d = 40, <hint text="..."/>15, 20)
+      foo(<hint text="...("/>bb = 43, aa = 20<hint text=")"/>, a = 42, <hint text="...("/>aa = 15<hint text=")"/>, b = 40, d = 40, <hint text="...("/>15, 20<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -101,7 +101,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
 
   fun testLibraryFunction() {
     doParameterNameTest("""
-      data.table::data.table(<hint text="...("/>aa = 100<hint text=")"/>, keep.rownames = FALSE, <hint text="..."/>aa = 20)
+      data.table::data.table(<hint text="...("/>aa = 100<hint text=")"/>, keep.rownames = FALSE, <hint text="...("/>aa = 20<hint text=")"/>)
       stats::filter(1:100, rep(1, 3), <hint text="method:"/>"convolution", <hint text="sides:"/>2, <hint text="circular:"/>FALSE)
     """.trimIndent())
   }
@@ -112,7 +112,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       stats::binomial("logit")
       stats::filter(1:100, rep(1, 3), "convolution", 2, FALSE)
-      dplyr::filter(dplyr::tibble(), <hint text="..."/>aa == 12, bb == 13)
+      dplyr::filter(dplyr::tibble(), <hint text="...("/>aa == 12, bb == 13<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -122,7 +122,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       stats::binomial(<hint text="link:"/>"logit")
       stats::filter(1:100, rep(1, 3), "convolution", 2, FALSE)
-      dplyr::filter(dplyr::tibble(), <hint text="..."/>aa == 12, bb == 13)
+      dplyr::filter(dplyr::tibble(), <hint text="...("/>aa == 12, bb == 13<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -146,6 +146,24 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
       
       foo(10, 20)
       bar(<hint text="x:"/>10, <hint text="y:"/>20, <hint text="z:"/>30)
+    """.trimIndent())
+  }
+
+  fun testFirstDotsArguments() {
+    doParameterNameTest("""
+      foo <- function(..., x, y) { }
+      
+      foo(10, 20, x = 10, y = 15, <hint text="...("/>30, 40<hint text=")"/>)
+      foo(<hint text="...("/>xx = 10, yy = 20<hint text=")"/>, x = 10, y = 15, <hint text="...("/>30, 40<hint text=")"/>)
+    """.trimIndent())
+  }
+
+  fun testSingleArgInDots() {
+    doParameterNameTest("""
+      foo <- function(x, ..., y) { }
+      
+      foo(<hint text="x:"/>10, 20, y = 15)
+      foo(<hint text="x:"/>10, <hint text="...("/>xx = 20<hint text=")"/>, y = 15)
     """.trimIndent())
   }
 
@@ -188,10 +206,12 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
       
       ```{r}
       foo(<hint text="a:"/>10, <hint text="b:"/>Inf, <hint text="...("/>"abacaba", NULL<hint text=")"/>, 
-          d = 100, <hint text="..."/>foo(<hint text="a:"/>10, <hint text="b:"/>20, <hint text="..."/>30), NaN)
+          d = 100, <hint text="...("/>foo(<hint text="a:"/>10, <hint text="b:"/>20, 30), NaN<hint text=")"/>)
       ```
     """.trimIndent(), true)
+  }
 
+  fun testDotsWithoutWrappingInRmd() {
     doParameterNameWithoutDotsWrapTest("""
       ```{r}
       foo <- function(a, b, ..., d) {
@@ -201,7 +221,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
       
       ```{r}
       foo(<hint text="a:"/>10, <hint text="b:"/>Inf, <hint text="..."/>"abacaba", NULL, 
-          d = 100, <hint text="..."/>foo(<hint text="a:"/>10, <hint text="b:"/>20, <hint text="..."/>30), NaN)
+          d = 100, <hint text="..."/>foo(<hint text="a:"/>10, <hint text="b:"/>20, 30), NaN)
       ```
     """.trimIndent(), true)
   }

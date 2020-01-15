@@ -33,18 +33,24 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
     val parameterNames = assignment.parameterNameList
     val dotsArgIndex = parameterNames.indexOf(DOTS)
     var isLastDots = false
-    var lastDotsArgEndOffset = -1
+
+    lateinit var firstDotArg: RPsiElement
+    lateinit var lastDotArg: RPsiElement
+    val expressions = element.expressionList
 
     fun wrapDotsIfNeed() {
-      if (!isWrapDots) return
-      val lastIndex = result.lastIndex
-      val prevOffset = result[lastIndex].offset
-      result[lastIndex] = InlayInfo("$DOTS(", prevOffset)
-      result.add(InlayInfo(")", lastDotsArgEndOffset))
+      if ((firstDotArg == expressions[0] || firstDotArg == lastDotArg) && firstDotArg !is RNamedArgument) return
+      val startOffset = firstDotArg.textOffset
+      if (!isWrapDots) {
+        result.add(InlayInfo(DOTS, startOffset))
+      }
+      else {
+        result.add(InlayInfo("$DOTS(", startOffset))
+        result.add(InlayInfo(")", lastDotArg.textRange.endOffset))
+      }
     }
 
     val permutation = RParameterInfoUtil.getArgumentsPermutation(parameterNames, element).first
-    val expressions = element.expressionList
     for (i in expressions.indices) {
       val parameterIndex = permutation[i]
       if (parameterIndex == -1) {
@@ -57,10 +63,10 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
       val arg = expressions[i]
       if (parameterIndex == dotsArgIndex) {
-        lastDotsArgEndOffset = arg.textRange.endOffset
+        lastDotArg = arg
         if (isLastDots) continue
 
-        result.add(InlayInfo(DOTS, arg.textOffset))
+        firstDotArg = arg
         isLastDots = true
       }
       else {
@@ -74,6 +80,9 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
       }
     }
 
+    if (isLastDots) {
+      wrapDotsIfNeed()
+    }
     return result
   }
 
