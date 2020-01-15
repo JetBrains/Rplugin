@@ -252,8 +252,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
     val helpPathComponents = helpPath.split("/")
     if (helpPath.endsWith(INDEX_HTML)) {
-      val isLibrary = helpPathComponents[0] == "library"
-      val helpPackage = if (isLibrary) helpPathComponents[1] else helpPathComponents[0]
+      val helpPackage = helpPathComponents[0]
       val htmlPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, INDEX_HTML), WINDOWS_MAX_PATH_LENGTH)
 
       val htmlFile = File(htmlPath)
@@ -391,7 +390,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
     val path = extractPackageName(psiElement)?.let {
-      getHtmlPath(rInterop, "library/$it/html/$INDEX_HTML")
+      getHtmlPath(rInterop, "$it/html/$INDEX_HTML")
     } ?: let {
       val reference = restoreConsoleHelpCall(psiElement) ?: return null
       checkPossibilityReturnDocumentation(reference) { return it }
