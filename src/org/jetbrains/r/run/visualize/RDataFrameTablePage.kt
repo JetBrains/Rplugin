@@ -157,7 +157,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   }
 
   private fun createActionsPanel() {
-    val actionsPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
+    val actionsPanel = JPanel(FlowLayout(FlowLayout.LEFT))
     fun createButton(action: AnAction): ActionButton {
       val button = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
       actionsPanel.add(button)

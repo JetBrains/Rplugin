@@ -14,4 +14,10 @@ val RENDER = load("render.svg")
 
 val UPGRADE_ALL = load("packages/upgradeAll.svg")
 
+val R_PACKAGES = load("toolWindow/RPackages.svg")
+
+val R_GRAPH = load("toolWindow/RGraph.svg")
+
+val R_HTML = load("toolWindow/RHtml.svg")
+
 private fun load(path: String) = IconLoader.findIcon("/icons/" + path)

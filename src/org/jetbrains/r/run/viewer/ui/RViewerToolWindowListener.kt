@@ -5,11 +5,12 @@
 package org.jetbrains.r.run.viewer.ui
 
 import com.intellij.openapi.project.Project
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 import org.jetbrains.r.run.viewer.RViewerState
 
 class RViewerToolWindowListener(project: Project) : RViewerState.Listener {
-  private val invoker = RNonStealingToolWindowInvoker(project, RViewerToolWindowFactory.ID)
+  private val invoker = RNonStealingToolWindowInvoker(project, RToolWindowFactory.VIEWER)
 
   override fun onCurrentChange(newUrl: String) {
     invoker.showWindow()

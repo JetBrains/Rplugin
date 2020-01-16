@@ -9,13 +9,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 
 /**
- * Use it to show tool window with [windowId] without stealing focus from current console
+ * Use it to show tool window with [displayName] without stealing focus from current console
  */
-class RNonStealingToolWindowInvoker(private val project: Project, private val windowId: String) {
+class RNonStealingToolWindowInvoker(private val project: Project, private val displayName: String) {
   private val toolWindow: ToolWindow by lazy {
-    ToolWindowManager.getInstance(project).getToolWindow(windowId)
+    ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)
   }
 
   fun showWindow() {
@@ -23,6 +24,8 @@ class RNonStealingToolWindowInvoker(private val project: Project, private val wi
       val contentComponent = RConsoleManager.getInstance(project).currentConsoleOrNull?.currentEditor?.contentComponent
       val hasFocus = contentComponent?.hasFocus()
       toolWindow.show(null)
+      val content = RToolWindowFactory.findContent(project, displayName)
+      toolWindow.contentManager.setSelectedContent(content)
       if (hasFocus == true) {
         contentComponent.grabFocus()
       }

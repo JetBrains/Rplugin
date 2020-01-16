@@ -329,6 +329,7 @@ You can find the source code in the following repositories:
        <lang.tokenSeparatorGenerator language="R" implementationClass="org.jetbrains.r.RTokenSeparatorGenerator"/>
 
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RFileEditorProvider"/>
+        <fileEditorProvider implementation="org.jetbrains.r.run.visualize.RTableEditorProvider"/>
 
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
@@ -416,22 +417,18 @@ You can find the source code in the following repositories:
         <lang.psiStructureViewFactory language="R"
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
 
-        <toolWindow id="R Packages" anchor="right" icon="/icons/toolWindow/RPackages.svg"
-                    factoryClass="org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory"/>
-
-        <toolWindow id="R Graphics" anchor="right" icon="/icons/toolWindow/RGraph.svg"
-                    factoryClass="org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory"/>
-
-        <toolWindow id="R HTML Viewer" anchor="right" icon="/icons/toolWindow/RHtml.svg"
-                    factoryClass="org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory"/>
-
         <toolWindow id="R Console" anchor="bottom" canCloseContents="true" icon="/icons/toolWindow/RConsole.svg"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
 
-        <toolWindow id="R Table View" anchor="right" canCloseContents="true" icon="/icons/toolWindow/RTable.svg"
-                    factoryClass="org.jetbrains.r.run.visualize.RTableViewToolWindowFactory" secondary="false"/>
+
+        <toolWindow id="R Tools" anchor="right" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
+                    factoryClass="org.jetbrains.r.rendering.toolwindow.RToolWindowFactory" secondary="false"/>
+
+
         <lang.psiStructureViewFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.structureView.RMarkdownStructureViewFactory"/>
+
+
 
         <!-- refactorings -->
         <lang.refactoringSupport language="R" implementationClass="org.jetbrains.r.refactoring.RRefactoringProvider"/>

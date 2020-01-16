@@ -4,15 +4,11 @@
 
 package org.jetbrains.r.run.visualize
 
-import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ToolWindowManager
 import icons.org.jetbrains.r.run.visualize.RDataFrameTablePage
 import org.intellij.datavis.ui.MaterialTable
-import org.jetbrains.r.console.RConsoleManager
-import java.awt.EventQueue
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
 
@@ -21,22 +17,16 @@ object RVisualizeTableUtil {
 
   @JvmStatic
   fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
-    EventQueue.invokeLater {
-      val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RTableViewToolWindowFactory.ID)
-      val contentManager = toolWindow.contentManager
-      contentManager.contents.forEach {
-        if ((it.component as? RDataFrameTablePage)?.viewer === viewer) {
-          contentManager.setSelectedContent(it)
-          it.displayName = name
-          return@invokeLater
-        }
+    invokeLater {
+      val fileEditorManager = FileEditorManager.getInstance(project)
+      fileEditorManager.openFiles.filterIsInstance<RTableVirtualFile>().firstOrNull { it.table.viewer === viewer }?.let {
+        fileEditorManager.openFile(it, true)
+        return@invokeLater
       }
       val page = RDataFrameTablePage(viewer)
-      val content = contentManager.factory.createContent(page, name, true)
-      viewer.registerDisposable(content)
-      contentManager.addContent(content)
-      toolWindow.show(null)
-      contentManager.setSelectedContent(content)
+      val rTableVirtualFile = RTableVirtualFile(page, name)
+      val fileEditor = fileEditorManager.openFile(rTableVirtualFile, true)[0]
+      viewer.registerDisposable(fileEditor)
     }
   }
 
@@ -54,15 +44,3 @@ object RVisualizeTableUtil {
     return materialTable
   }
 }
-
-class RTableViewToolWindowFactory : ToolWindowFactory, DumbAware {
-
-  override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {}
-
-  override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
-
-  companion object {
-    const val ID = "R Table View"
-  }
-}
-

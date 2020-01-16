@@ -5,11 +5,12 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.project.Project
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 
 class RGraphicsToolWindowListener(project: Project) : (RSnapshotsUpdate) -> Unit {
-  private val invoker = RNonStealingToolWindowInvoker(project, RGraphicsToolWindowFactory.ID)
+  private val invoker = RNonStealingToolWindowInvoker(project, RToolWindowFactory.PLOTS)
 
   override fun invoke(update: RSnapshotsUpdate) {
     if (update.normal.isNotEmpty()) {

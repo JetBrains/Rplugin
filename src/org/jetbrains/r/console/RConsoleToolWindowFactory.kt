@@ -18,10 +18,7 @@ import com.intellij.openapi.wm.impl.ToolWindowImpl
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
-import org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory
-import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowFactory
-import org.jetbrains.r.run.viewer.ui.RViewerToolWindowFactory
-import org.jetbrains.r.run.visualize.RTableViewToolWindowFactory
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
@@ -59,16 +56,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     fun setAvailableForRToolWindows(project: Project, isAvailable: Boolean) {
-      ToolWindowManager.getInstance(project).apply {
-        listOf(
-          RPackagesToolWindowFactory.ID,
-          RGraphicsToolWindowFactory.ID,
-          RViewerToolWindowFactory.ID,
-          RTableViewToolWindowFactory.ID
-        ).forEach { id ->
-          getToolWindow(id)?.setAvailable(isAvailable, null)
-        }
-      }
+      ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.setAvailable(isAvailable, null)
     }
 
     private fun createContent(contentDescriptor: RunContentDescriptor): Content {

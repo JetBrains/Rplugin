@@ -7,7 +7,6 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowManager
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.console.RConsoleManager
@@ -18,7 +17,7 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
-import org.jetbrains.r.packages.remote.ui.RPackagesToolWindowFactory
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import java.awt.BorderLayout
@@ -55,10 +54,8 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
 
   override fun apply() {
     fun restartInterpreter() {
-      fun getPackagesPanel(project: Project): RInstalledPackagesPanel {
-        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RPackagesToolWindowFactory.ID)
-        return toolWindow.contentManager.getContent(0)!!.component as RInstalledPackagesPanel
-      }
+      fun getPackagesPanel(project: Project): RInstalledPackagesPanel =
+         RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
 
       RInterpreterManager.getInstance(project).initializeInterpreter(true).onSuccess {
         RPackageService.getInstance(project).enabledRepositoryUrls.clear()
