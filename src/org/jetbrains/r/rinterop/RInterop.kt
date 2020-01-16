@@ -107,13 +107,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
     f: KFunction1<Request, ListenableFuture<Response>>,
     request: Request
-  ) : ListenableFuture<Response> {
-    val nextStubNumber = rInteropTestGenerator?.nextStubNumber()
-    rInteropTestGenerator?.onStubMessageRequest(nextStubNumber!!, request, f.name)
-    val future = f.invoke(request)
-    future.addListener(Runnable { rInteropTestGenerator?.onStubMessageResponse(nextStubNumber!!, future.get()) }, executor)
-    return future
-  }
+  ) : ListenableFuture<Response> =
+    rInteropTestGenerator?.let { interopTestGenerator ->
+      val nextStubNumber = interopTestGenerator.nextStubNumber()
+      rInteropTestGenerator.onStubMessageRequest(nextStubNumber, request, f.name)
+      f.invoke(request).apply { addListener(Runnable { rInteropTestGenerator.onStubMessageResponse(nextStubNumber, get()) }, executor) }
+    } ?: f.invoke(request)
 
   fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeWithCheckCancel(
     f: KFunction1<Request, ListenableFuture<Response>>,
