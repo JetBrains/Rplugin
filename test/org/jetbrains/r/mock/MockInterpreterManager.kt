@@ -15,6 +15,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -43,7 +44,7 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
 
     override val skeletonPaths = listOf(RUsefulTestCase.SKELETON_LIBRARY_PATH)
 
-    override val installedPackages: List<RPackage> = RSkeletonUtil.getSkeletonFiles(skeletonPaths.first(), "").keys.toList()
+    override val installedPackages = ExpiringList(RSkeletonUtil.getSkeletonFiles(skeletonPaths.first(), "").keys.toList()) { false }
 
     override val skeletonRoots = setOf(VfsUtil.findFile(Paths.get(RUsefulTestCase.SKELETON_LIBRARY_PATH), false)!!)
 

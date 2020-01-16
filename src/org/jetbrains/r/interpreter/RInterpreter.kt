@@ -8,13 +8,14 @@ import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
 
 interface RInterpreter : RInterpreterInfo {
-  val installedPackages: List<RPackage>
+  val installedPackages: ExpiringList<RPackage>
 
   val libraryPaths: List<VirtualFile>
 

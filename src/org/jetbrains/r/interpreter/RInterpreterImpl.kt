@@ -21,6 +21,8 @@ import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.common.ExpiringList
+import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackage
@@ -34,6 +36,7 @@ import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 class RInterpreterImpl(private val versionInfo: Map<String, String>,
                        override val interpreterPath: String,
@@ -51,6 +54,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   override val defaultRepositories get() = state.defaultRepositories
 
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
+  private val updateEpoch = AtomicInteger(0)
 
   override val skeletonRoots: Set<VirtualFile>
     get() {
@@ -142,6 +146,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private fun doUpdateState() {
     val cachedMirrors = state.cranMirrors
     state = State.EMPTY
+    updateEpoch.incrementAndGet()
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
     val name2installedPackages = installedPackages.asSequence().map { it.packageName to it }.toMap()
@@ -151,8 +156,15 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
     val repositories = getRepositories(mirrors)
-    state = State(libraryPaths, skeletonPaths, skeletonRoots, installedPackages, name2installedPackages,
+    state = State(libraryPaths, skeletonPaths, skeletonRoots, makeExpiring(installedPackages), name2installedPackages,
                   name2libraryPaths, getUserPath(), mirrors, repositories)
+  }
+
+  private fun <E>makeExpiring(values: List<E>): ExpiringList<E> {
+    val usedUpdateEpoch = updateEpoch.get()
+    return ExpiringList(values) {
+      usedUpdateEpoch < updateEpoch.get()
+    }
   }
 
   private fun getUserPath(): String {
@@ -376,14 +388,14 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private data class State(val libraryPaths: List<VirtualFile>,
                            val skeletonPaths: List<String>,
                            val skeletonRoots: Set<VirtualFile>,
-                           val installedPackages: List<RPackage>,
+                           val installedPackages: ExpiringList<RPackage>,
                            val name2installedPackages: Map<String, RPackage>,
                            val name2libraryPaths: Map<String, VirtualFile>,
                            val userLibraryPath: String,
                            val cranMirrors: List<RMirror>,
                            val defaultRepositories: List<RDefaultRepository>) {
     companion object {
-      val EMPTY = State(listOf(), listOf(), setOf(), listOf(), mapOf(), mapOf(), "", listOf(), listOf())
+      val EMPTY = State(listOf(), listOf(), setOf(), emptyExpiringList(), mapOf(), mapOf(), "", listOf(), listOf())
     }
   }
 }
