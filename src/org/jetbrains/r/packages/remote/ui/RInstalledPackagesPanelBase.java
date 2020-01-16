@@ -89,17 +89,13 @@ public class RInstalledPackagesPanelBase extends JPanel {
         return tableCellRenderer;
       }
     };
-    // Defence from javax.swing.JTable.initializeLocalVars:
-    //     setPreferredScrollableViewportSize(new Dimension(450, 400));
     myPackagesTable.setPreferredScrollableViewportSize(null);
-    myPackagesTable.setStriped(true);
     myPackagesTable.getTableHeader().setReorderingAllowed(false);
     new TableSpeedSearch(myPackagesTable);
 
     myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
       @Override
       public void actionPerformed(@NotNull AnActionEvent e) {
-        //PackageManagementUsageCollector.triggerUpgradePerformed(myProject, myPackageManagementService);
         upgradeAction();
       }
     };
