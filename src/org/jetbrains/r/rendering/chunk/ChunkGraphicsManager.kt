@@ -6,6 +6,7 @@ package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.project.Project
 import org.intellij.datavis.inlays.components.GraphicsManager
+import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
@@ -13,6 +14,10 @@ import java.awt.Dimension
 import java.io.File
 
 class ChunkGraphicsManager : GraphicsManager {
+  override fun isBusy(project: Project): Boolean {
+    return project.chunkExecutionState != null
+  }
+
   override fun resizeImage(project: Project, imagePath: String, newSize: Dimension, onResize: (File) -> Unit) {
     RSnapshot.from(File(imagePath))?.let { snapshot ->
       val resolution = RGraphicsUtils.getDefaultResolution(false)

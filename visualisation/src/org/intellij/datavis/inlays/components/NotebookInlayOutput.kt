@@ -195,10 +195,16 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
     private fun resize(newSize: Dimension) {
       imagePath?.let { path ->
-        GraphicsManager.getInstance()?.resizeImage(project, path, newSize) { imageFile ->
-          imagePath = imageFile.absolutePath
-          ApplicationManager.getApplication().invokeLater {
-            graphicsPanel.showImage(imageFile)
+        GraphicsManager.getInstance()?.let { manager ->
+          if (!manager.isBusy(project)) {
+            manager.resizeImage(project, path, newSize) { imageFile ->
+              imagePath = imageFile.absolutePath
+              ApplicationManager.getApplication().invokeLater {
+                graphicsPanel.showImage(imageFile)
+              }
+            }
+          } else {
+            scheduleResizing()  // Out of luck: try again in 500 ms
           }
         }
       }

@@ -10,6 +10,7 @@ import java.awt.Dimension
 import java.io.File
 
 interface GraphicsManager {
+  fun isBusy(project: Project): Boolean
   fun resizeImage(project: Project, imagePath: String, newSize: Dimension, onResize: (File) -> Unit)
 
   companion object {
