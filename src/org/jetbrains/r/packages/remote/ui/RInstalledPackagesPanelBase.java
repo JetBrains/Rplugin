@@ -609,9 +609,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     @Override
     public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
                                                    final boolean hasFocus, final int row, final int column) {
-      if (column == PACKAGE_NAME_COLUMN) {
-        RPackageManagementService service = myPackageManagementService;
-        InstalledPackage aPackage = service.getInstalledPackages().get(row);
+      InstalledPackage aPackage = getInstalledPackageAt(table, row);
+      if (column == PACKAGE_NAME_COLUMN && aPackage != null) {
         Point columnRow = getMouseColumnRow(MouseInfo.getPointerInfo().getLocation(), table);
         myPackageNameLinkLabel.setText(aPackage.getName());
         myPackageNameLinkLabel.setUnderline(columnRow.x == column && columnRow.y == row);
@@ -624,11 +623,20 @@ public class RInstalledPackagesPanelBase extends JPanel {
                        StringUtil.isNotEmpty(availableVersion) &&
                        isUpdateAvailable(version, availableVersion);
       cell.setIcon(update ? IconUtil.getMoveUpIcon() : null);
-      final Object pyPackage = table.getValueAt(row, 0);
-      if (pyPackage instanceof InstalledPackage) {
-        cell.setToolTipText(((InstalledPackage) pyPackage).getTooltipText());
+      if (aPackage != null) {
+        cell.setToolTipText(aPackage.getTooltipText());
       }
       return cell;
+    }
+
+    @Nullable
+    private InstalledPackage getInstalledPackageAt(final JTable table, final int row) {
+      final Object o = table.getValueAt(row, PACKAGE_NAME_COLUMN);
+      if (o instanceof InstalledPackage) {
+        return (InstalledPackage) o;
+      } else {
+        return null;
+      }
     }
   }
 

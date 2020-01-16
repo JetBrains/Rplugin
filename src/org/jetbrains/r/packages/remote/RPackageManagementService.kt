@@ -13,6 +13,7 @@ import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -60,7 +61,10 @@ class RPackageManagementService(private val project: Project,
   private val service: RPackageService
     get() = RPackageService.getInstance(project)
 
-  private var numScheduledOperations = AtomicInteger(0)
+  private val numScheduledOperations = AtomicInteger(0)
+
+  @Volatile
+  private var lastInstalledPackages: ExpiringList<InstalledPackage>? = null
 
   val defaultRepositories: List<RDefaultRepository>
     get() = interpreter.defaultRepositories
@@ -162,6 +166,12 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getInstalledPackages(): List<InstalledPackage> {
+    return lastInstalledPackages?.takeIf { it.hasNotExpired } ?: loadInstalledPackages().also { installed ->
+      lastInstalledPackages = installed
+    }
+  }
+
+  private fun loadInstalledPackages(): ExpiringList<InstalledPackage> {
     val installed = interpreter.withAutoUpdate { installedPackages }
     return installed.filter { it.isUser }.map { InstalledPackage(it.packageName, it.packageVersion) }
   }
@@ -310,7 +320,7 @@ class RPackageManagementService(private val project: Project,
       }
     }
 
-    private fun <R>RInterpreter.withAutoUpdate(property: RInterpreter.() -> List<R>): List<R> {
+    private fun <E, C : List<E>>RInterpreter.withAutoUpdate(property: RInterpreter.() -> C): C {
       return property().let { values ->
         if (values.isEmpty()) {
           updateState().blockingGet(DEFAULT_TIMEOUT)
