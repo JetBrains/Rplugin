@@ -100,6 +100,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
         rInterop.replSendReadLn("100")
         rInterop.replSendReadLn("200")
         rInterop.replSendReadLn("300")
+        rInterop.removeAsyncEventsListener(this)
       }
     })
     rInterop.asyncEventsStartProcessing()
@@ -108,7 +109,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       for (i in 1:3) {
         x = x + as.integer(readline())
       }
-    """.trimIndent())
+    """.trimIndent()).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[1] 600\n", rInterop.executeCode("x").stdout)
   }
 

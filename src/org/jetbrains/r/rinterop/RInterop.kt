@@ -182,8 +182,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeWithCheckCancel(asyncStub::setOutputWidth, Int32Value.of(width))
   }
 
-  fun replExecute(code: String) {
-    executeCodeImpl(code, isRepl = true)
+  fun replExecute(code: String): CancellablePromise<RIExecutionResult> {
+    return executeCodeImpl(code, isRepl = true)
   }
 
   fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
@@ -848,3 +848,4 @@ internal fun <T, R> ListenableFuture<T>.then(executor: Executor, f: (T) -> R): C
   }, executor)
   return promise
 }
+
