@@ -21,9 +21,9 @@ import com.intellij.util.PathUtilRt
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
-import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -146,7 +146,10 @@ stderr: ${stderr}
 
   private fun runRWrapper(project: Project): Promise<Pair<ColoredProcessHandler, RPaths>> {
     val result = AsyncPromise<Pair<ColoredProcessHandler, RPaths>>()
-    val interpreterPath = getInterpreterPath(project)
+    val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
+    if (StringUtil.isEmptyOrSpaces(interpreterPath)) {
+      throw RuntimeException(RBundle.message("console.runner.interpreter.not.specified"))
+    }
     val paths = getRPaths(interpreterPath, project)
     val version = RInterpreterUtil.getVersionByPath(interpreterPath)
                   ?: return result.also { result.setError("Cannot parse R interpreter version") }
@@ -217,31 +220,6 @@ stderr: ${stderr}
       SystemInfo.isWindows -> "x64-windows.exe"
       else -> throw IllegalStateException("Unsupported OS")
     }
-
-  private fun getInterpreterPath(project: Project): String {
-
-    val interpreterPath = if (ApplicationManager.getApplication().isUnitTestMode) RInterpreterUtil.suggestHomePath()
-    else RSettings.getInstance(project).interpreterPath
-
-    if (StringUtil.isEmptyOrSpaces(interpreterPath)) {
-      throw RuntimeException(RBundle.message("console.runner.interpreter.not.specified"))
-    }
-
-    if (SystemInfo.isWindows) {
-      val exeFile = File(interpreterPath)
-      if (!exeFile.exists()) {
-        throw RuntimeException("File ${exeFile.absolutePath}  doesn't exist")
-      }
-      Paths.get(exeFile.parentFile.absolutePath, "x64", "RTerm.exe").toFile().takeIf { it.exists() }?.let {
-        return it.absolutePath
-      }
-      Paths.get(exeFile.parentFile.absolutePath, "i386", "RTerm.exe").toFile().takeIf { it.exists() }?.let {
-        return it.absolutePath
-      }
-    }
-
-    return interpreterPath
-  }
 
   private data class RPaths(val home: String,
                             val share: String,

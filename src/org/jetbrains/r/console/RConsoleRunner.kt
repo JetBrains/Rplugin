@@ -71,9 +71,8 @@ class RConsoleRunner(private val project: Project,
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
     UIUtil.invokeLaterIfNeeded {
+      val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
       RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
-        val interpreterPath = RInterpreterManager.getInterpreter(project)?.interpreterPath ?: throw IllegalStateException(
-          "Interpreter must be initlialized here")
         UIUtil.invokeLaterIfNeeded {
           consoleView = RConsoleView(rInterop, interpreterPath, consoleTitle)
           ProcessTerminatedListener.attach(rInterop.processHandler)

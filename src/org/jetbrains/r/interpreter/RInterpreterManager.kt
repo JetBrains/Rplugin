@@ -37,6 +37,7 @@ import org.jetbrains.r.settings.RSettings
 
 interface RInterpreterManager {
   val interpreter: RInterpreter?
+  val interpreterPath: String
 
   fun hasInterpreter(): Boolean {
     return interpreter != null
@@ -51,7 +52,9 @@ interface RInterpreterManager {
 }
 
 class RInterpreterManagerImpl(private val project: Project): RInterpreterManager {
-  private var interpreterPath = fetchInterpreterPath()
+  @Volatile
+  override var interpreterPath: String = fetchInterpreterPath()
+    private set
   private var asyncPromise = AsyncPromise<Unit>()
   private var initialized = false
   private var rInterpreter: RInterpreterImpl? = null

@@ -57,8 +57,10 @@ import java.awt.BorderLayout
 import java.awt.Font
 import javax.swing.JComponent
 
-class RConsoleView(val rInterop: RInterop, val interpreterPath: String,
-                   title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+class RConsoleView(val rInterop: RInterop,
+                   val interpreterPath: String,
+                   title: String)
+  : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
   val executeActionHandler = RConsoleExecuteActionHandler(this)
   val consoleRuntimeInfo = RConsoleRuntimeInfoImpl(rInterop)
   val isRunningCommand: Boolean
