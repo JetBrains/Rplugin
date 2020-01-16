@@ -183,7 +183,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun replExecute(code: String) {
-    executeCodeImpl(code, isRepl = true).getWithCheckCanceled()
+    executeCodeImpl(code, isRepl = true)
   }
 
   fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
@@ -654,6 +654,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   private fun processAsyncEvent(event: Service.AsyncEvent) {
     when (event.eventCase) {
+      Service.AsyncEvent.EventCase.BUSY -> {
+        asyncEventsListeners.forEach { it.onBusy() }
+      }
       Service.AsyncEvent.EventCase.TEXT -> {
         val text = event.text.text
         val type = when (event.text.type) {
@@ -722,10 +725,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     future.addListener(Runnable {
       try {
         val event = future.get()
-        if (asyncProcessingStarted) {
-          processAsyncEvent(event)
-        } else {
-          asyncEventsBeforeStarted.add(event)
+        executeTask {
+          if (asyncProcessingStarted) {
+            processAsyncEvent(event)
+          } else {
+            asyncEventsBeforeStarted.add(event)
+          }
         }
         if (event.hasTermination()) return@Runnable
       } catch (ignored: CancellationException) {
@@ -736,7 +741,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         }
       }
       processAsyncEvents()
-    }, executor)
+    }, Executor { it.run() })
   }
 
   private fun stackFromProto(proto: Service.StackFrameList,
