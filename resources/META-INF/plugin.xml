@@ -4,7 +4,7 @@
     <version>2019.3-SNAPSHOT</version>
     <vendor>JetBrains</vendor>
 
-    <idea-version since-build="193.0.0"/>
+    <idea-version since-build="193.5223.0"/>
 
     <!-- ensure compatibility with all intellij products-->
     <depends>com.intellij.modules.lang</depends>
