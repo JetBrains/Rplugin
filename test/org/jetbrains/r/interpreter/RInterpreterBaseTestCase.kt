@@ -73,6 +73,9 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   private class LocalProvider(override val interop: RInterop, private val slaveInterpreter: RInterpreter) : MockInterpreterProvider {
     val knownPackages = LOCAL_PACKAGES.toMutableList()
 
+    override val isUpdating: Boolean?
+      get() = slaveInterpreter.isUpdating
+
     override val userLibraryPath: String
       get() = slaveInterpreter.userLibraryPath
 

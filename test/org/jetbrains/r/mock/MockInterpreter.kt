@@ -43,6 +43,9 @@ class MockInterpreter(private val project: Project, var provider: MockInterprete
 
   override val skeletonRoots = setOf(VfsUtil.findFile(Paths.get(RUsefulTestCase.SKELETON_LIBRARY_PATH), false)!!)
 
+  override val isUpdating: Boolean
+    get() = provider.isUpdating ?: false
+
   override val userLibraryPath: String
     get() = provider.userLibraryPath
 

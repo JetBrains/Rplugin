@@ -16,6 +16,8 @@ import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.rinterop.RInterop
 
 interface RInterpreter : RInterpreterInfo {
+  val isUpdating: Boolean
+
   val installedPackages: ExpiringList<RPackage>
 
   val libraryPaths: List<VirtualFile>

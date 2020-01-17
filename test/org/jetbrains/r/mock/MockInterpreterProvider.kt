@@ -16,6 +16,7 @@ import org.jetbrains.r.rinterop.RInterop
 
 interface MockInterpreterProvider {
   val interop: RInterop
+  val isUpdating: Boolean?
   val userLibraryPath: String
   val cranMirrors: List<RMirror>
   val libraryPaths: List<VirtualFile>
@@ -28,6 +29,9 @@ interface MockInterpreterProvider {
     val DUMMY = object : MockInterpreterProvider {
       override val interop: RInterop
         get() = throw NotImplementedError()
+
+      override val isUpdating: Boolean?
+        get() = null  // Note: exception is not thrown intentionally (see `MockInterpreter.isUpdating`)
 
       override val userLibraryPath: String
         get() = throw NotImplementedError()

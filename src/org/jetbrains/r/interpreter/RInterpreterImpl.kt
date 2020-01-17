@@ -46,6 +46,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                        private val project: Project) : RInterpreter {
   @Volatile
   private var state = State.EMPTY
+
+  @Volatile
   private var updatePromise: Promise<Unit>? = null
 
   override val version: Version = buildVersion(versionInfo)
@@ -55,6 +57,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   override val userLibraryPath get() = state.userLibraryPath
   override val cranMirrors get() = state.cranMirrors
   override val defaultRepositories get() = state.defaultRepositories
+  override val isUpdating get() = updatePromise != null
 
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
   private val updateEpoch = AtomicInteger(0)
