@@ -469,6 +469,11 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.unresolvedReference.name"
                          implementationClass="org.jetbrains.r.inspections.UnresolvedReferenceInspection"/>
 
+        <localInspection shortName="RMarkdownRequirements" language="R" enabledByDefault="true" groupName="R"
+                         level="WARNING"
+                         bundle="messages.RBundle" key="inspection.markdownRequirements.name"
+                         implementationClass="org.jetbrains.r.inspections.MarkdownRequirementsInspection"/>
+
         <localInspection shortName="RMissingPackage" language="R" enabledByDefault="true" groupName="R" level="ERROR"
                          bundle="messages.RBundle" key="inspection.missingPackage.name"
                          implementationClass="org.jetbrains.r.inspections.MissingPackageInspection"/>

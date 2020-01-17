@@ -21,6 +21,14 @@ object RMarkdownUtil {
     RequiredPackage("knitr")
   )
 
+  fun areRequirementsSatisfied(project: Project): Boolean {
+    return getMissingPackages(project).isEmpty()
+  }
+
+  fun getMissingPackages(project: Project): List<RequiredPackage> {
+    return RequiredPackageInstaller.getInstance(project).getMissingPackages(requiredPackages)
+  }
+
   fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {
     return RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(utilityName, requiredPackages)
       .onError {

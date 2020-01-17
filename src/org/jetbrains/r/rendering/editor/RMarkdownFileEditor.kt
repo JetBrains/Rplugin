@@ -32,6 +32,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
+import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.settings.REditorSettings
 import java.awt.BorderLayout
 import java.io.File
@@ -63,9 +64,9 @@ private fun createActionGroup(project: Project, report: VirtualFile, editor: Edi
     DefaultActionGroup(
       createOutputDirectoryAction(project, report),
       Separator(),
-      createBuildAction(manager),
+      createBuildAction(project, manager),
       createBuildAndShowAction(project, report, manager),
-      createRunAllAction(),
+      createRunAllAction(project),
       ActionManager.getInstance().getAction("RMarkdownNewChunk"),
       Separator(),
       createToggleSoftWrapAction(editor)
@@ -129,7 +130,7 @@ private class BuildManager(private val project: Project, private val report: Vir
   }
 }
 
-private fun createBuildAction(manager: BuildManager): AnAction {
+private fun createBuildAction(project: Project, manager: BuildManager): AnAction {
   val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
   val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
   val idleIcon = RENDER
@@ -138,6 +139,7 @@ private fun createBuildAction(manager: BuildManager): AnAction {
     override fun update(e: AnActionEvent) {
       val text = if (manager.isRunning) runningText else idleText
       val icon = if (manager.isRunning) runningIcon else idleIcon
+      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
       e.presentation.description = text
       e.presentation.text = text
       e.presentation.icon = icon
@@ -156,6 +158,7 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
   return object : SameTextAction(idleText, icon) {
     override fun update(e: AnActionEvent) {
       val text = if (manager.isRunning) runningText else idleText
+      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
       e.presentation.description = text
       e.presentation.text = text
     }
@@ -199,12 +202,13 @@ var Project.chunkExecutionState: ChunkExecutionState?
   }
 
 
-private fun createRunAllAction(): AnAction =
+private fun createRunAllAction(project: Project): AnAction =
   object : SameTextAction(RBundle.message("rmarkdown.editor.toolbar.runAllChunks")) {
 
     override fun update(e: AnActionEvent) {
       val state = e.editor?.chunkExecutionState
       e.presentation.icon = if (state == null) AllIcons.Actions.RunAll else AllIcons.Actions.Suspend
+      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
     }
 
     override fun actionPerformed(e: AnActionEvent) {

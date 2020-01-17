@@ -28,6 +28,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import java.util.concurrent.atomic.AtomicReference
 
@@ -109,9 +110,13 @@ fun canRunChunk(editor: Editor?): Boolean =
   editor?.project?.let { canRunChunk(it) } == true
 
 fun canRunChunk(project: Project): Boolean =
-  RConsoleManager.getInstance(project).currentConsoleOrNull?.executeActionHandler?.let {
+  RMarkdownUtil.areRequirementsSatisfied(project) && isConsoleReady(project)
+
+private fun isConsoleReady(project: Project): Boolean {
+  return RConsoleManager.getInstance(project).currentConsoleOrNull?.executeActionHandler?.let {
     it.chunkState == null && it.state == RConsoleExecuteActionHandler.State.PROMPT
   } ?: true
+}
 
 private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
   e.getData(CODE_FENCE_DATA_KEY)?.let { return it }
