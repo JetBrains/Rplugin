@@ -4,18 +4,17 @@
 
 package icons.org.jetbrains.r.intentions
 
-import com.intellij.codeInspection.InspectionEngine
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInsight.hint.HintManager
+import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ex.LocalInspectionToolWrapper
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.webcore.packaging.PackageManagementService
+import com.intellij.psi.util.PsiEditorUtil
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 
 abstract class DependencyManagementFix : LocalQuickFix {
 
@@ -40,14 +39,24 @@ abstract class DependencyManagementFix : LocalQuickFix {
   }
 
   companion object {
-    val emptyRPackageServiceListener = object : RPackageServiceListener {
-      override fun onTaskStart() {}
-      override fun onTaskFinish() {}
+    private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
+    private val NOTIFICATION_GROUP_ID = RBundle.message("install.all.library.fix.notification.group.id")
+    private val NOTIFICATION_TITLE = RBundle.message("install.all.library.fix.notification.title")
+
+    private val Throwable?.messageOrDefault: String
+      get() = this?.message ?: UNKNOWN_ERROR_MESSAGE
+
+    fun showErrorNotification(project: Project, e: Throwable?) {
+      val notification = Notification(NOTIFICATION_GROUP_ID, NOTIFICATION_TITLE, e.messageOrDefault, NotificationType.ERROR)
+      notification.notify(project)
     }
 
-    val emptyPackageManagementServiceListener = object : RPackageManagementService.MultiListener {
-      override fun operationStarted(packageNames: List<String>) {}
-      override fun operationFinished(packageNames: List<String>, errorDescriptions: List<PackageManagementService.ErrorDescription?>) {}
+    fun showErrorHint(descriptor: ProblemDescriptor, e: Throwable?) {
+      runInEdt {
+        PsiEditorUtil.Service.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let { editor ->
+          HintManager.getInstance().showErrorHint(editor, e.messageOrDefault)
+        }
+      }
     }
   }
 }

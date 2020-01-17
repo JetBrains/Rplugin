@@ -33,8 +33,14 @@ class RequiredPackageException(val missingPackages: List<RequiredPackage>) : Run
 }
 
 data class RequiredPackage(val name: String, val minimalVersion: String = "") {
-  fun isVersionSet(): Boolean {
+  private fun isVersionSet(): Boolean {
     return minimalVersion.isNotEmpty()
+  }
+
+  fun toFormat(isQuoted: Boolean): String {
+    val versionString = if (!isVersionSet()) "" else " ($minimalVersion)"
+    val nameString = if (isQuoted) "'$name'" else name
+    return "$nameString$versionString"
   }
 }
 
@@ -107,10 +113,7 @@ class RequiredPackageInstaller(private val project: Project) {
   }
 
   private fun createUserInstallationTask(utilityName: String, packages: List<RequiredPackage>): InstallationTask {
-    val packagesList = packages.joinToString(", ") {
-      val version = if (!it.isVersionSet()) "" else " (${it.minimalVersion})"
-      "${it.name}$version"
-    }
+    val packagesList = packages.joinToString(", ") { it.toFormat(false) }
 
     val notification = Notification(
       RBundle.message("required.package.notification.group.display"),
