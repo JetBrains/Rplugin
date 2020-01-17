@@ -9,7 +9,11 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.JBUI
+import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.settings.RGraphicsSettings
 import javax.swing.JPanel
 
 class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
@@ -59,10 +63,28 @@ class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
           }
         }
       }
+      actionGroup.add(DarkModeCheckBox())
       val actionToolbar = ActionManager.getInstance().createActionToolbar(TOOLBAR_PLACE, actionGroup, true)
       return JBUI.Panels.simplePanel(actionToolbar.component)
     }
 
     fun groupOf(vararg holders: ActionHolder) = ActionHolderGroup(listOf(*holders))
+  }
+
+  private class DarkModeCheckBox: CheckboxAction(RBundle.message("graphics.panel.action.darkMode.title"), RBundle.message("graphics.panel.action.darkMode.description"), null) {
+    override fun isSelected(e: AnActionEvent): Boolean {
+      val project = e.project ?: return false
+      return RGraphicsSettings.isDarkModeEnabled(project)
+    }
+
+    override fun update(e: AnActionEvent) {
+      super.update(e)
+      e.presentation.isEnabledAndVisible = EditorColorsManager.getInstance().isDarkEditor()
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+      val project = e.project ?: return
+      RGraphicsSettings.setDarkMode(project, state)
+    }
   }
 }

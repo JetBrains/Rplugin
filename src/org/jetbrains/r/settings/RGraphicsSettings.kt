@@ -6,6 +6,7 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import org.intellij.datavis.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 
@@ -35,6 +36,14 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
     fun setScreenParameters(project: Project, parameters: RGraphicsUtils.ScreenParameters) {
       setScreenParameters(project, parameters.dimension, parameters.resolution ?: 0)
     }
+
+    fun isDarkModeEnabled(project: Project): Boolean =
+      getInstance(project).state.darkMode
+
+    fun setDarkMode(project: Project, isEnabled: Boolean) {
+      getInstance(project).state.darkMode = isEnabled
+      project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
+    }
     
     private fun setScreenParameters(project: Project, dimension: Dimension, resolutionMaybe: Int?) {
       getInstance(project).state.apply {
@@ -54,4 +63,5 @@ class RGraphicsSettingsState : BaseState() {
   var height: Int by property(0)
   var resolution: Int by property(0)
   var version: Int by property(0)
+  var darkMode: Boolean by property(true)
 }

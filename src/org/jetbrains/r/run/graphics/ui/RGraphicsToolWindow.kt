@@ -15,6 +15,7 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.intellij.datavis.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.intellij.datavis.inlays.components.GraphicsPanel
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -54,6 +55,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     setContent(graphicsPanel.component)
     val groups = createActionHolderGroups(project)
     toolbar = RGraphicsToolbar(groups).component
+    project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
 
     graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent?) {
