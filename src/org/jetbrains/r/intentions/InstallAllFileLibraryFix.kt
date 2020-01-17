@@ -7,14 +7,12 @@ package icons.org.jetbrains.r.intentions
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
-import com.intellij.webcore.packaging.RepoPackage
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.inspections.MissingPackageInspection
 import org.jetbrains.r.intentions.InstallLibraryFix
-import org.jetbrains.r.packages.remote.PackageDetailsException
-import org.jetbrains.r.packages.remote.RPackageManagementService
+import org.jetbrains.r.packages.RequiredPackage
+import org.jetbrains.r.packages.RequiredPackageInstaller
 
 class InstallAllFileLibraryFix : DependencyManagementFix() {
 
@@ -23,42 +21,26 @@ class InstallAllFileLibraryFix : DependencyManagementFix() {
   }
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+    val missing = findAllMissingPackages(project, descriptor)
+    RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(getName(), missing, false)
+      .onError { notifyError(project, it) }
+  }
+
+  private fun findAllMissingPackages(project: Project, descriptor: ProblemDescriptor): List<RequiredPackage> {
     val file = descriptor.psiElement.containingFile
-    runBackgroundableTask(RBundle.message("install.all.library.fix.background"), project, true) {
-      val packageNames = getAllPackagesWithSameQuickFix<InstallLibraryFix>(file, project, MissingPackageInspection())
-
-      val rPackageManagementService = RPackageManagementService(project, emptyRPackageServiceListener)
-      if (!rPackageManagementService.arePackageDetailsLoaded) {
-        rPackageManagementService.reloadAllPackages()
-      }
-
-      val resolved = resolveAndNotify(project, rPackageManagementService, packageNames)
-      if (resolved.isNotEmpty()) {
-        rPackageManagementService.installPackages(resolved, false, emptyPackageManagementServiceListener)
-      }
-    }
+    val packageNames = getAllPackagesWithSameQuickFix<InstallLibraryFix>(file, project, MissingPackageInspection())
+    return packageNames.map { RequiredPackage(it) }
   }
 
-  private fun resolveAndNotify(project: Project, service: RPackageManagementService, packageNames: List<String>): List<RepoPackage> {
-    return resolve(service, packageNames).also { resolved ->
-      if (resolved.size != packageNames.size) {
-        Notification(
-          RBundle.message("install.all.library.fix.notification.group.id"),
-          RBundle.message("install.all.library.fix.notification.title"),
-          RBundle.message("install.all.library.fix.notification.content"),
-          NotificationType.ERROR
-        ).notify(project)
-      }
-    }
+  private fun notifyError(project: Project, e: Throwable?) {
+    val message = e?.message ?: UNKNOWN_ERROR_MESSAGE
+    val notification = Notification(NOTIFICATION_GROUP_ID, NOTIFICATION_TITLE, message, NotificationType.ERROR)
+    notification.notify(project)
   }
 
-  private fun resolve(service: RPackageManagementService, packageNames: List<String>): List<RepoPackage> {
-    return packageNames.mapNotNull { packageName ->
-      try {
-        service.resolvePackage(RepoPackage(packageName, null))
-      } catch (e: PackageDetailsException) {
-        null
-      }
-    }
+  companion object {
+    private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
+    private val NOTIFICATION_GROUP_ID = RBundle.message("install.all.library.fix.notification.group.id")
+    private val NOTIFICATION_TITLE = RBundle.message("install.all.library.fix.notification.title")
   }
 }

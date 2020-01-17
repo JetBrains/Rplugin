@@ -8,14 +8,12 @@ package org.jetbrains.r.intentions
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.util.PsiEditorUtil
-import com.intellij.webcore.packaging.RepoPackage
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.intentions.DependencyManagementFix
-import org.jetbrains.r.packages.remote.*
-
+import org.jetbrains.r.packages.RequiredPackage
+import org.jetbrains.r.packages.RequiredPackageInstaller
 
 /**
  * Also see http://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
@@ -27,36 +25,20 @@ class InstallLibraryFix(override val packageName: String) : DependencyManagement
   }
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-    runBackgroundableTask(RBundle.message("install.library.fix.background", packageName),
-                          project, true) {
-      try {
-        val rPackageManagementService = RPackageManagementService(project, emptyRPackageServiceListener)
-        if (!rPackageManagementService.arePackageDetailsLoaded) {
-          rPackageManagementService.reloadAllPackages()
-        }
+    val missing = listOf(RequiredPackage(packageName))
+    RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(getName(), missing, false)
+      .onError { notifyError(descriptor, it) }
+  }
 
-        rPackageManagementService
-          .installPackages(listOf(RepoPackage(packageName, null)), false, emptyPackageManagementServiceListener)
-      }
-      catch (e: PackageDetailsException) {
-        val message = when (e) {
-          is MissingPackageDetailsException -> MISSING_DETAILS_ERROR_MESSAGE
-          is UnresolvedPackageDetailsException -> getUnresolvedPackageErrorMessage(packageName)
-        }
-        runInEdt {
-          PsiEditorUtil.Service.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let {
-            HintManager.getInstance().showErrorHint(it, message)
-          }
-        }
+  private fun notifyError(descriptor: ProblemDescriptor, e: Throwable?) {
+    runInEdt {
+      PsiEditorUtil.Service.getInstance().findEditorByPsiElement(descriptor.psiElement)?.let { editor ->
+        HintManager.getInstance().showErrorHint(editor, e?.message ?: UNKNOWN_ERROR_MESSAGE)
       }
     }
   }
 
   companion object {
-    private val MISSING_DETAILS_ERROR_MESSAGE = RBundle.message("required.package.missing.details.error.message")
-
-    private fun getUnresolvedPackageErrorMessage(packageName: String): String {
-      return RBundle.message("install.library.fix.unresolved", packageName)
-    }
+    private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
   }
 }
