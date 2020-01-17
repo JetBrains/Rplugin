@@ -72,7 +72,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun fetchInterpreterPath(oldPath: String = ""): String {
     return if (ApplicationManager.getApplication().isUnitTestMode) {
-      ""
+      RInterpreterUtil.suggestHomePath()
     } else {
       val settings = RSettings.getInstance(project)
       val suggestedPath = settings.interpreterPath

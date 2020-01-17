@@ -87,7 +87,7 @@ class MockInterpreterManager(private val project: Project) : RInterpreterManager
     override fun updateState() = runAsync {  }
   }
   override val interpreterPath: String
-    get() = ""
+    get() = interpreter?.interpreterPath ?: ""
 
   override fun hasInterpreter(): Boolean = true
 }
