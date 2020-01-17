@@ -4,12 +4,17 @@
 
 package org.jetbrains.r.rendering.toolwindow
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentManager
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import org.jetbrains.r.R_GRAPH
 import org.jetbrains.r.R_HTML
@@ -20,25 +25,66 @@ import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindow
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindow
 import javax.swing.BorderFactory
+import javax.swing.Icon
+import javax.swing.JComponent
 
 class RToolWindowFactory : ToolWindowFactory, DumbAware  {
+  private val ELDER = Key.create<JComponent>("org.jetbrains.r.rendering.toolwindow.elder")
+
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentManager = toolWindow.contentManager
     val factory = contentManager.factory
     listOf(
-      factory.createContent(RGraphicsToolWindow(project), PLOTS, false).apply {
-        icon = R_GRAPH
-        putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE)
-      },
-      factory.createContent(createPackages(project), PACKAGES, false).apply {
-        icon = R_PACKAGES
-        putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE)
-      },
-      factory.createContent(RViewerToolWindow(project), VIEWER, false).apply {
-        icon = R_HTML
-        putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE)
-      }
+      factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
+      factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
+      factory.createContent(RViewerToolWindow(project), VIEWER, false).withIcon(R_HTML)
     ).forEach { contentManager.addContent(it) }
+    project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
+      override fun stateChanged() {
+        handleProjectViewStates(toolWindow, contentManager, project)
+      }
+    })
+    if (showFilesInRTools()) {
+      borrowFiles(project, contentManager)
+    }
+  }
+
+  private fun handleProjectViewStates(toolWindow: ToolWindow,
+                                      contentManager: ContentManager,
+                                      project: Project) {
+    val showFilesInRTools = showFilesInRTools()
+    if ((!toolWindow.isVisible || !showFilesInRTools) && contentManager.findContent(FILES) != null) {
+      returnFiles(project, contentManager)
+    }
+    if (showFilesInRTools && toolWindow.isVisible && contentManager.findContent(FILES) != null && ToolWindowManager.getInstance(project).getToolWindow(
+        "Project")?.isVisible == true) {
+      toolWindow.hide { }
+    }
+    if (showFilesInRTools && toolWindow.isVisible && contentManager.findContent(FILES) == null) {
+      borrowFiles(project, contentManager)
+    }
+  }
+
+  private fun showFilesInRTools() = Registry.`is`("r.ui.showFilesInRTools", false)
+
+  private fun borrowFiles(project: Project, contentManager: ContentManager) {
+    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")
+    val component = toolWindow.component
+    project.putUserData(ELDER, component.parent.parent.parent.parent as JComponent)
+    val content = contentManager.factory.createContent(component.parent.parent.parent as JComponent, FILES, false)
+                                        .withIcon(AllIcons.Toolwindows.ToolWindowProject)
+    contentManager.addContent(content, 0)
+    contentManager.setSelectedContent(content)
+    toolWindow.hide {}
+  }
+
+  private fun returnFiles(project: Project, contentManager: ContentManager) {
+    val elder = project.getUserData(ELDER)!!
+    val content = contentManager.findContent(FILES)
+    elder.add(content.component)
+    contentManager.removeContent(content, false)
+    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")
+    toolWindow.setAvailable(true, null)
   }
 
   override fun shouldBeAvailable(project: Project) = RConsoleManager.getInstance(project).initialized
@@ -55,9 +101,17 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     const val PLOTS = "Plots"
     const val VIEWER = "Viewer"
     const val PACKAGES = "Packages"
+    const val FILES = "Files"
+    const val HELP = "Help"
     const val ID = "R Tools"
+
 
     fun findContent(project: Project, displayName: String): Content =
       ToolWindowManager.getInstance(project).getToolWindow(ID).contentManager.findContent(displayName)
   }
+}
+
+private fun Content.withIcon(icon: Icon?): Content = apply {
+  this.icon = icon
+  putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE)
 }
