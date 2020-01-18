@@ -4,15 +4,19 @@
 
 package org.jetbrains.r.rendering.toolwindow
 
+import com.intellij.codeInsight.documentation.DocumentationComponent
+import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
+import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
 import com.intellij.webcore.packaging.PackagesNotificationPanel
@@ -23,6 +27,7 @@ import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindow
+import org.jetbrains.r.run.ui.RNonStealingToolWindowInvoker
 import org.jetbrains.r.run.viewer.ui.RViewerToolWindow
 import javax.swing.BorderFactory
 import javax.swing.Icon
@@ -37,6 +42,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     listOf(
       factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
       factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
+      factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Windows.Help),
       factory.createContent(RViewerToolWindow(project), VIEWER, false).withIcon(R_HTML)
     ).forEach { contentManager.addContent(it) }
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
@@ -47,6 +53,13 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     if (showFilesInRTools()) {
       borrowFiles(project, contentManager)
     }
+  }
+
+  private fun createHelp(project: Project): JComponent {
+    val manager = DocumentationManager.getInstance(project)
+    val component = DocumentationComponent(manager)
+    Disposer.register(project, component)
+    return component
   }
 
   private fun handleProjectViewStates(toolWindow: ToolWindow,
@@ -105,9 +118,17 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     const val HELP = "Help"
     const val ID = "R Tools"
 
+    fun showDocumentation(psiElement: PsiElement) {
+      val project = psiElement.project
+      DocumentationManager.getInstance(project).fetchDocInfo(psiElement, getDocumentationComponent(project))
+      RNonStealingToolWindowInvoker(project, HELP).showWindow()
+    }
 
     fun findContent(project: Project, displayName: String): Content =
       ToolWindowManager.getInstance(project).getToolWindow(ID).contentManager.findContent(displayName)
+
+    private fun getDocumentationComponent(project: Project): DocumentationComponent =
+      findContent(project, HELP).component as DocumentationComponent
   }
 }
 

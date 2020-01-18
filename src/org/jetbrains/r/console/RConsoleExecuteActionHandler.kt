@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.console
 
-import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.execution.console.BaseConsoleExecuteActionHandler
 import com.intellij.execution.console.LanguageConsoleView
@@ -26,6 +25,7 @@ import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValue
@@ -177,8 +177,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   override fun execute(text: String, console: LanguageConsoleView) {
     if (console != consoleView) return
     if (text.startsWith("?") && !text.startsWith("??")) {
-      val expression = getExpressionForHelp(console.project, text.drop(1).trim())
-      DocumentationManager.getInstance(console.project).showJavaDocInfoAtToolWindow(expression, expression.originalElement)
+      RToolWindowFactory.showDocumentation(getExpressionForHelp(console.project, text.drop(1).trim()))
     } else {
       fireBeforeExecution()
       state = State.BUSY
