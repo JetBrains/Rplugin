@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.JBUI
 import icons.org.jetbrains.r.RBundle
@@ -63,6 +64,7 @@ class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
           }
         }
       }
+      actionGroup.addSeparator()
       actionGroup.add(DarkModeCheckBox())
       val actionToolbar = ActionManager.getInstance().createActionToolbar(TOOLBAR_PLACE, actionGroup, true)
       return JBUI.Panels.simplePanel(actionToolbar.component)
@@ -78,8 +80,15 @@ class RGraphicsToolbar(groups: List<ActionHolderGroup>) {
     }
 
     override fun update(e: AnActionEvent) {
+      val presentation = e.presentation
+      val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor()
+      presentation.isEnabledAndVisible = isDarkEditor
+      val jComponent = presentation.getClientProperty(CustomComponentAction.COMPONENT_KEY)
+      // workaround an issue when look'n'feel doesn't change if the component is invisible/disabled
+      if (jComponent?.isVisible == false && isDarkEditor) {
+        com.intellij.util.IJSwingUtilities.updateComponentTreeUI(jComponent)
+      }
       super.update(e)
-      e.presentation.isEnabledAndVisible = EditorColorsManager.getInstance().isDarkEditor()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
