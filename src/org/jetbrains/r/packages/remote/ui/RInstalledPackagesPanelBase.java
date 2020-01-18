@@ -89,8 +89,10 @@ public class RInstalledPackagesPanelBase extends JPanel {
         return tableCellRenderer;
       }
     };
+    myPackagesTable.setShowVerticalLines(false);
     myPackagesTable.setPreferredScrollableViewportSize(null);
     myPackagesTable.getTableHeader().setReorderingAllowed(false);
+    myPackagesTable.setCellSelectionEnabled(false);
     new TableSpeedSearch(myPackagesTable);
 
     myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
