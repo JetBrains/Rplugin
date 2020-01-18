@@ -30,6 +30,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -58,13 +59,21 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private var asyncPromise = AsyncPromise<Unit>()
   private var initialized = false
   private var rInterpreter: RInterpreterImpl? = null
+  private var firstOpenedFile = true
 
   init {
     val connection = project.messageBus.connect()
     connection.subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, object : FileEditorManagerListener.Before {
       override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
-          ToolWindowManager.getInstance(project).invokeLater { RConsoleManager.getInstance(project).currentConsoleAsync }
+          if (firstOpenedFile) {
+            firstOpenedFile = false
+            ToolWindowManager.getInstance(project).invokeLater {
+              ToolWindowManager.getInstance(project).getToolWindow(RConsoleToolWindowFactory.ID)?.show { }
+            }
+          } else {
+            ToolWindowManager.getInstance(project).invokeLater { RConsoleManager.getInstance(project).currentConsoleAsync }
+          }
         }
       }
     })

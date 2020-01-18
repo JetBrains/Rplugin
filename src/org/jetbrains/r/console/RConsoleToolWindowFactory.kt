@@ -34,6 +34,8 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
         }
       }
     })
+    ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.show {  }
+    rConsoleManager.currentConsoleAsync
   }
 
   companion object {

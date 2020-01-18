@@ -166,7 +166,7 @@ class RConsoleView(val rInterop: RInterop,
   private fun splitWindow(splitView: JComponent) {
     val console = getComponent(0)
     removeAll()
-    val p = JBSplitter(false, 2f / 3)
+    val p = JBSplitter(false, 1f / 2)
     p.setFirstComponent(console as JComponent)
     p.setSecondComponent(splitView)
     p.isShowDividerControls = true
