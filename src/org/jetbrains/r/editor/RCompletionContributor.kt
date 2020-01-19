@@ -446,7 +446,7 @@ class RCompletionContributor : CompletionContributor() {
       }
       else {
         val name = assignment.name
-        val packageName = RPackage.getOrCreate(assignment.containingFile)?.packageName
+        val packageName = RPackage.getOrCreateRPackageBySkeletonFile(assignment.containingFile)?.name
         val icon = AllIcons.Nodes.Constant
         PrioritizedLookupElement.withGrouping(RLookupElement(name, false, icon, packageName), GLOBAL_GROUPING)
       }
@@ -455,7 +455,7 @@ class RCompletionContributor : CompletionContributor() {
     private fun createFunctionLookupElement(functionAssignment: RAssignmentStatement,
                                             isHelpFromRConsole: Boolean,
                                             isLocal: Boolean = false): LookupElement {
-      val packageName = if (isLocal) null else RPackage.getOrCreate(functionAssignment.containingFile)?.packageName
+      val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(functionAssignment.containingFile)?.name
       val icon = AllIcons.Nodes.Function
       val tailText = functionAssignment.functionParameters
       val noArgs = tailText == "()"

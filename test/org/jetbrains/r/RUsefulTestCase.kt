@@ -29,6 +29,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.mock.MockInterpreterManager
+import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.skeleton.RSkeletonFileType
@@ -140,7 +141,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
     rInterpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
     val packagesForTest = missingTestSkeletons.map {
-      rInterpreter.getPackageByName(it) ?: throw IllegalStateException("No package $it found for $interpreterPath")
+      rInterpreter.getPackageByName(it)?.run { RPackage(name, version) }
+      ?: throw IllegalStateException("No package $it found for $interpreterPath")
     }
     RSkeletonUtil.generateSkeletons(Collections.singletonMap(SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter, project)
   }

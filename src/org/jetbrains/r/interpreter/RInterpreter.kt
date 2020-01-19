@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
@@ -18,7 +18,7 @@ import org.jetbrains.r.rinterop.RInterop
 interface RInterpreter : RInterpreterInfo {
   val isUpdating: Boolean
 
-  val installedPackages: ExpiringList<RPackage>
+  val installedPackages: ExpiringList<RInstalledPackage>
 
   val libraryPaths: List<VirtualFile>
 
@@ -34,7 +34,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>>
 
-  fun getPackageByName(name: String): RPackage?
+  fun getPackageByName(name: String): RInstalledPackage?
 
   fun getLibraryPathByName(name: String): VirtualFile?
 

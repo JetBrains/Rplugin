@@ -26,10 +26,7 @@ import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.packages.RHelpersUtil
-import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.packages.RPackagePriority
-import org.jetbrains.r.packages.RSkeletonUtil
+import org.jetbrains.r.packages.*
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
@@ -114,7 +111,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     if (cached != null && cached.isValid) {
       return cached
     }
-    val skeletonFileName = getPackageByName(name)?.getLibraryBinFileName() ?: return null
+    val rInstalledPackage = getPackageByName(name) ?: return null
+    val skeletonFileName = RPackage(rInstalledPackage.name, rInstalledPackage.version).skeletonFileName
     skeletonRoots.forEach { skeletonRoot ->
       skeletonRoot.findChild(skeletonFileName)?.let { virtualFile ->
         val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
@@ -259,7 +257,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     }
   }
 
-  private fun mapNamesToLibraryPaths(packages: List<RPackage>, libraryPaths: List<VirtualFile>): Map<String, VirtualFile> {
+  private fun mapNamesToLibraryPaths(packages: List<RInstalledPackage>, libraryPaths: List<VirtualFile>): Map<String, VirtualFile> {
     return packages.asSequence()
       .mapNotNull { rPackage ->
         libraryPaths.find { it.path == rPackage.libraryPath }?.let { vf -> Pair(rPackage.packageName, vf) }
@@ -275,13 +273,14 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     }
   }
 
-  private fun loadInstalledPackages(): List<RPackage> {
-    val lines = runHelper(INSTALLED_PACKAGES_HELPER)
+  private fun loadInstalledPackages(): List<RInstalledPackage> {
+    val text = RInterpreterUtil.runHelper(interpreterPath, INSTALLED_PACKAGES_HELPER, project.basePath, arrayOf<String>().toList())
+    val lines = text.split("!!!JETBRAINS_RPLUGIN!!!")
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()
         .filter { it.isNotBlank() }
         .map {
-          val splitLine = it.split("\t")
+          val splitLine = it.split("^^^JETBRAINS_RPLUGIN^^^")
           try {
             val libraryPath = splitLine[0].trim()
             val packageName = splitLine[1].trim()
@@ -297,7 +296,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                 }
               }
             }
-            RPackage(packageName, version, priority, libraryPath)
+            val title = splitLine[4].trim()
+            val url = splitLine[5].trim()
+            RInstalledPackage(packageName, version, priority, libraryPath, mapOf("Title" to title, "URL" to url))
           }
           catch (e: Throwable) {
             throw RuntimeException("failed to split package-version in line '$it'", e)
@@ -307,7 +308,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       // Obtained sequence contains duplicates of the same packages but for different versions.
       // The most recent ones go first.
       // Also it's not sorted by package names
-      val names2packages = TreeMap<String, RPackage>(String.CASE_INSENSITIVE_ORDER)
+      val names2packages = TreeMap<String, RInstalledPackage>(String.CASE_INSENSITIVE_ORDER)
       for (rPackage in obtained) {
         names2packages.getOrPut(rPackage.packageName, { rPackage })
       }
@@ -411,8 +412,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private data class State(val libraryPaths: List<VirtualFile>,
                            val skeletonPaths: List<String>,
                            val skeletonRoots: Set<VirtualFile>,
-                           val installedPackages: ExpiringList<RPackage>,
-                           val name2installedPackages: Map<String, RPackage>,
+                           val installedPackages: ExpiringList<RInstalledPackage>,
+                           val name2installedPackages: Map<String, RInstalledPackage>,
                            val name2libraryPaths: Map<String, VirtualFile>,
                            val userLibraryPath: String,
                            val cranMirrors: List<RMirror>,

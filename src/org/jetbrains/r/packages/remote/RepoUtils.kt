@@ -11,13 +11,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.io.IOException
@@ -279,7 +279,7 @@ object RepoUtils {
   }
 
   @Throws(ExecutionException::class)
-  fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: InstalledPackage) {
+  fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RInstalledPackage) {
     val packageName = repoPackage.name
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = interpreter.interop

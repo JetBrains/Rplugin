@@ -5,10 +5,11 @@
 package org.jetbrains.r.packages.remote.ui;
 
 import com.google.common.collect.Lists;
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
+import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonShortcuts;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
@@ -18,9 +19,11 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.*;
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
+import com.intellij.ui.scale.JBUIScale;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.CatchingConsumer;
 import com.intellij.util.IconUtil;
@@ -31,6 +34,7 @@ import com.intellij.util.ui.UIUtilities;
 import com.intellij.webcore.packaging.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
 
 import javax.swing.*;
@@ -38,10 +42,10 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,15 +56,18 @@ public class RInstalledPackagesPanelBase extends JPanel {
   private static final String LOADING_PACKAGES_LIST_TITLE = "Loading Packages List";
 
   public static int IS_LOADED_COLUMN = 0;
-  public static int PACKAGE_NAME_COLUMN = 0;
-  public static int INSTALLED_VERSION_COLUMN = 2;
-  public static int REPO_VERSION_COLUMN = 3;
+  public static int PACKAGE_NAME_COLUMN = 1;
+  public static int DESCRIPTION_COLUMN = 2;
+  public static int VERSION_COLUMN = 3;
+  public static int BROWSE_COLUMN = 4;
+  public static int UNINSTALL_COLUMN = 5;
 
   private final AnActionButton myUpgradeButton;
   protected final AnActionButton myInstallButton;
-  private final AnActionButton myUninstallButton;
 
   private final SettableLinkLabel<?> myPackageNameLinkLabel = new SettableLinkLabel<>();
+  private final JBLabel myLabel = new JBLabel();
+  private final JBCheckBox myIsLoadedCheckBox = new JBCheckBox();
 
   protected final JBTable myPackagesTable;
   private final DefaultTableModel myPackagesTableModel;
@@ -69,14 +76,14 @@ public class RInstalledPackagesPanelBase extends JPanel {
   protected final Project myProject;
   protected final PackagesNotificationPanel myNotificationArea;
   private final Set<String> myCurrentlyInstalling = new HashSet<>();
-  private final Map<InstalledPackage, String> myWaitingToUpgrade = new HashMap<>();
+  private final Map<RInstalledPackage, String> myWaitingToUpgrade = new HashMap<>();
 
   public RInstalledPackagesPanelBase(@NotNull Project project, @NotNull PackagesNotificationPanel area) {
     super(new BorderLayout());
     myProject = project;
     myNotificationArea = area;
 
-    myPackagesTableModel = new DefaultTableModel(new String[]{"Package", "Version", "Latest version"}, 0) {
+    myPackagesTableModel = new DefaultTableModel(new String[]{ "", "Package", "Description", "Version", "", ""}, 0) {
       @Override
       public boolean isCellEditable(int i, int i1) {
         return false;
@@ -93,6 +100,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     myPackagesTable.setPreferredScrollableViewportSize(null);
     myPackagesTable.getTableHeader().setReorderingAllowed(false);
     myPackagesTable.setCellSelectionEnabled(false);
+    myPackagesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    initColumnWidth();
     new TableSpeedSearch(myPackagesTable);
 
     myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
@@ -112,24 +121,13 @@ public class RInstalledPackagesPanelBase extends JPanel {
       }
     };
     myInstallButton.setShortcut(CommonShortcuts.getNew());
-    myUninstallButton = new DumbAwareActionButton("Uninstall", IconUtil.getRemoveIcon()) {
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e) {
-        //PackageManagementUsageCollector.triggerUninstallPerformed(myProject, myPackageManagementService);
-        uninstallAction();
-      }
-    };
-    myUninstallButton.setShortcut(CommonShortcuts.getDelete());
     ToolbarDecorator decorator =
       ToolbarDecorator.createDecorator(myPackagesTable).disableUpDownActions().disableAddAction().disableRemoveAction()
-        .addExtraAction(myInstallButton)
-        .addExtraAction(myUninstallButton)
-        .addExtraAction(myUpgradeButton);
+        .addExtraAction(myInstallButton);
 
     decorator.addExtraActions(getExtraActions());
     add(decorator.createPanel());
     myInstallButton.setEnabled(false);
-    myUninstallButton.setEnabled(false);
     myUpgradeButton.setEnabled(false);
 
     myPackagesTable.getSelectionModel().addListSelectionListener(event -> updateUninstallUpgrade());
@@ -148,12 +146,61 @@ public class RInstalledPackagesPanelBase extends JPanel {
       @Override
       public void mouseClicked(MouseEvent e) {
         Point columnRow = getMouseColumnRow(e.getLocationOnScreen(), myPackagesTable);
-        if (columnRow.x == PACKAGE_NAME_COLUMN) {
-          List<InstalledPackage> packages = myPackageManagementService.getInstalledPackages();
-          assert packages.size() > columnRow.y;
-          InstalledPackage aPackage = packages.get(columnRow.y);
-          myPackageManagementService.navigateToPackageDocumentation(aPackage);
+        if (columnRow.x == IS_LOADED_COLUMN) {
+          loadUnloadPackage(columnRow);
         }
+        if (columnRow.x == PACKAGE_NAME_COLUMN) {
+          navigateToDocumentation(columnRow);
+        }
+        if (columnRow.x == BROWSE_COLUMN) {
+          openLink(columnRow);
+        }
+        if (columnRow.x == UNINSTALL_COLUMN) {
+          uninstallPackage(columnRow);
+        }
+      }
+
+      private void loadUnloadPackage(Point columnRow) {
+        RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
+        if (myPackageManagementService.isPackageLoaded(aPackage)) {
+          myPackageManagementService.unloadPackage(aPackage);
+        } else {
+          myPackageManagementService.loadPackage(aPackage);
+        }
+      }
+
+      private void navigateToDocumentation(Point columnRow) {
+        RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
+        myPackageManagementService.navigateToPackageDocumentation(aPackage);
+      }
+
+      private void uninstallPackage(Point columnRow) {
+        RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
+        int yesNo = Messages.showYesNoDialog(myPackagesTable,
+                                             "Are you sure you wish to uninstall '" + aPackage.getPackageName() + "' package?",
+                                             "Uninstall " + aPackage.getPackageName(),
+                                             AllIcons.Diff.Remove);
+        if (yesNo == Messages.YES) {
+          uninstallAction(Collections.singletonList(aPackage));
+        }
+      }
+
+      private void openLink(Point columnRow) {
+        RInstalledPackage installedPackage = getInstalledPackageAt(columnRow.y);
+        String url = installedPackage.getDescription().get("URL");
+        String link = null;
+        if (url != null && (url.startsWith("http"))) {
+          int firstLinkEnded = url.indexOf(", ");
+          if (firstLinkEnded == -1) {
+            link = url;
+          } else {
+            link = url.substring(0, firstLinkEnded);
+          }
+        }
+        if (link == null) {
+          link = "https://cran.r-project.org/package=" + installedPackage.getPackageName();
+        }
+        BrowserLauncher.getInstance().browse(link, null);
       }
     });
 
@@ -167,8 +214,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
           int column = myPackagesTable.columnAtPoint(p);
           if (row >= 0 && column >= 0) {
             Object pkg = myPackagesTable.getValueAt(row, 0);
-            if (pkg instanceof InstalledPackage) {
-              dialog.selectPackage((InstalledPackage) pkg);
+            if (pkg instanceof RInstalledPackage) {
+              dialog.selectPackage((RInstalledPackage) pkg);
             }
           }
           dialog.show();
@@ -177,6 +224,28 @@ public class RInstalledPackagesPanelBase extends JPanel {
         return false;
       }
     }.installOn(myPackagesTable);
+  }
+
+  private void initColumnWidth() {
+    TableColumnModel model = myPackagesTable.getColumnModel();
+    int singleIconWidth = JBUIScale.scale(20);
+    int versionMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "1.2.3.4");
+    int versionMaxWidth  = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "1.2.3.9999.1.2.3");
+    int packageMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "ggplot2");
+    int packageMaxWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "veryVeryLongPackageName");
+    int descriptionMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "very short package description");
+    model.getColumn(IS_LOADED_COLUMN).setMinWidth(singleIconWidth);
+    model.getColumn(IS_LOADED_COLUMN).setMaxWidth(singleIconWidth);
+    model.getColumn(PACKAGE_NAME_COLUMN).setMinWidth(packageMinWidth);
+    model.getColumn(PACKAGE_NAME_COLUMN).setMaxWidth(packageMaxWidth);
+    model.getColumn(DESCRIPTION_COLUMN).setMinWidth(descriptionMinWidth);
+    model.getColumn(DESCRIPTION_COLUMN).setMaxWidth(descriptionMinWidth * 10);
+    model.getColumn(VERSION_COLUMN).setMinWidth(versionMinWidth);
+    model.getColumn(VERSION_COLUMN).setMaxWidth(versionMaxWidth);
+    model.getColumn(BROWSE_COLUMN).setMinWidth(singleIconWidth);
+    model.getColumn(BROWSE_COLUMN).setMaxWidth(singleIconWidth);
+    model.getColumn(UNINSTALL_COLUMN).setMinWidth(singleIconWidth);
+    model.getColumn(UNINSTALL_COLUMN).setMaxWidth(singleIconWidth);
   }
 
   @NotNull
@@ -220,8 +289,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
       final Set<String> packagesShouldBePostponed = getPackagesToPostpone();
       for (int row : rows) {
         final Object packageObj = myPackagesTableModel.getValueAt(row, 0);
-        if (packageObj instanceof InstalledPackage) {
-          InstalledPackage pkg = (InstalledPackage)packageObj;
+        if (packageObj instanceof RInstalledPackage) {
+          RInstalledPackage pkg = (RInstalledPackage)packageObj;
           final String packageName = pkg.getName();
           final String currentVersion = pkg.getVersion();
           final String availableVersion = (String)myPackagesTableModel.getValueAt(row, 2);
@@ -243,8 +312,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private void upgradePostponedPackages() {
-    final Iterator<Map.Entry<InstalledPackage, String>> iterator = myWaitingToUpgrade.entrySet().iterator();
-    final Map.Entry<InstalledPackage, String> toUpgrade = iterator.next();
+    final Iterator<Map.Entry<RInstalledPackage, String>> iterator = myWaitingToUpgrade.entrySet().iterator();
+    final Map.Entry<RInstalledPackage, String> toUpgrade = iterator.next();
     iterator.remove();
     upgradePackage(toUpgrade.getKey(), toUpgrade.getValue());
   }
@@ -253,7 +322,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return Collections.emptySet();
   }
 
-  private void upgradePackage(@NotNull final InstalledPackage pkg, @Nullable final String toVersion) {
+  private void upgradePackage(@NotNull final RInstalledPackage pkg, @Nullable final String toVersion) {
     final RPackageManagementService selectedPackageManagementService = myPackageManagementService;
     myPackageManagementService.fetchPackageVersions(pkg.getName(), new CatchingConsumer<java.util.List<String>, Exception>() {
       @Override
@@ -331,8 +400,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
         final int index = selected[i];
         if (index >= myPackagesTable.getRowCount()) continue;
         final Object value = myPackagesTable.getValueAt(index, 0);
-        if (value instanceof InstalledPackage) {
-          final InstalledPackage pkg = (InstalledPackage)value;
+        if (value instanceof RInstalledPackage) {
+          final RInstalledPackage pkg = (RInstalledPackage)value;
           if (!canUninstallPackage(pkg)) {
             canUninstall = false;
           }
@@ -350,16 +419,15 @@ public class RInstalledPackagesPanelBase extends JPanel {
         }
       }
     }
-    myUninstallButton.setEnabled(canUninstall);
     myInstallButton.setEnabled(canInstall);
     myUpgradeButton.setEnabled(upgradeAvailable && canUpgrade);
   }
 
-  protected boolean canUninstallPackage(InstalledPackage pyPackage) {
+  protected boolean canUninstallPackage(RInstalledPackage pyPackage) {
     return true;
   }
 
-  protected boolean canInstallPackage(@NotNull final InstalledPackage pyPackage) {
+  protected boolean canInstallPackage(@NotNull final RInstalledPackage pyPackage) {
     return true;
   }
 
@@ -367,12 +435,11 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return true;
   }
 
-  protected boolean canUpgradePackage(InstalledPackage pyPackage) {
+  protected boolean canUpgradePackage(RInstalledPackage pyPackage) {
     return true;
   }
 
-  private void uninstallAction() {
-    final java.util.List<InstalledPackage> packages = getSelectedPackages();
+  private void uninstallAction(@NotNull List<RInstalledPackage> packages) {
     final RPackageManagementService selectedPackageManagementService = myPackageManagementService;
     if (selectedPackageManagementService != null) {
       ModalityState modalityState = ModalityState.current();
@@ -412,13 +479,13 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   @NotNull
-  private java.util.List<InstalledPackage> getSelectedPackages() {
-    final java.util.List<InstalledPackage> results = new ArrayList<>();
+  private java.util.List<RInstalledPackage> getSelectedPackages() {
+    final java.util.List<RInstalledPackage> results = new ArrayList<>();
     final int[] rows = myPackagesTable.getSelectedRows();
     for (int row : rows) {
       final Object packageName = myPackagesTableModel.getValueAt(row, 0);
-      if (packageName instanceof InstalledPackage) {
-        results.add((InstalledPackage)packageName);
+      if (packageName instanceof RInstalledPackage) {
+        results.add((RInstalledPackage)packageName);
       }
     }
     return results;
@@ -454,28 +521,21 @@ public class RInstalledPackagesPanelBase extends JPanel {
     progressManager.run(new Task.Backgroundable(myProject, LOADING_PACKAGES_LIST_TITLE, true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
       @Override
       public void run(@NotNull ProgressIndicator indicator) {
-        Collection<InstalledPackage> packages = Lists.newArrayList();
+        Collection<RInstalledPackage> packages = Lists.newArrayList();
         try {
           packages = packageManagementService.getInstalledPackages();
         }
         finally {
-          final Collection<InstalledPackage> finalPackages = packages;
+          final Collection<RInstalledPackage> finalPackages = packages;
 
           final Map<String, RepoPackage> cache = buildNameToPackageMap(packageManagementService.getAllPackagesCached());
           final boolean shouldFetchLatestVersionsForOnlyInstalledPackages = shouldFetchLatestVersionsForOnlyInstalledPackages();
-          if (cache.isEmpty()) {
-            if (!shouldFetchLatestVersionsForOnlyInstalledPackages) {
-              refreshLatestVersions(packageManagementService);
-            }
-          }
           UIUtil.invokeLaterIfNeeded(() -> {
             if (packageManagementService == myPackageManagementService) {
               myPackagesTableModel.getDataVector().clear();
-              for (InstalledPackage pkg : finalPackages) {
-                RepoPackage repoPackage = cache.get(pkg.getName());
-                final String version = repoPackage != null ? repoPackage.getLatestVersion() : null;
+              for (RInstalledPackage pkg : finalPackages) {
                 myPackagesTableModel
-                  .addRow(new Object[] {pkg, pkg.getVersion(), version == null ? "" : version});
+                  .addRow(new Object[] {"", pkg, pkg.getDescription().get("Title"), pkg.getVersion(), "", ""});
               }
               if (!cache.isEmpty()) {
                 onUpdateFinished();
@@ -490,8 +550,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
     });
   }
 
-  private InstalledPackage getInstalledPackageAt(int index) {
-    return (InstalledPackage) myPackagesTableModel.getValueAt(index, 0);
+  private RInstalledPackage getInstalledPackageAt(int index) {
+    return (RInstalledPackage) myPackagesTableModel.getValueAt(index, PACKAGE_NAME_COLUMN);
   }
 
   private void setLatestVersionsForInstalledPackages() {
@@ -506,7 +566,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     final AtomicInteger inProgressPackageCount = new AtomicInteger(packageCount);
     for (int i = 0; i < packageCount; ++i) {
       final int finalIndex = i;
-      final InstalledPackage pkg = getInstalledPackageAt(finalIndex);
+      final RInstalledPackage pkg = getInstalledPackageAt(finalIndex);
       serviceEx.fetchLatestVersion(pkg, new CatchingConsumer<String, Exception>() {
 
         private void decrement() {
@@ -525,7 +585,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
         public void consume(@Nullable final String latestVersion) {
           UIUtil.invokeLaterIfNeeded(() -> {
             if (finalIndex < myPackagesTableModel.getRowCount()) {
-              InstalledPackage p = getInstalledPackageAt(finalIndex);
+              RInstalledPackage p = getInstalledPackageAt(finalIndex);
               if (pkg == p) {
                 myPackagesTableModel.setValueAt(latestVersion, finalIndex, 2);
               }
@@ -559,30 +619,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
     return PackageVersionComparator.VERSION_COMPARATOR.compare(currentVersion, availableVersion) < 0;
   }
 
-  private void refreshLatestVersions(@NotNull final PackageManagementService packageManagementService) {
-    final Application application = ApplicationManager.getApplication();
-    application.executeOnPooledThread(() -> {
-      if (packageManagementService == myPackageManagementService) {
-        try {
-          java.util.List<RepoPackage> packages = packageManagementService.reloadAllPackages();
-          final Map<String, RepoPackage> packageMap = buildNameToPackageMap(packages);
-          application.invokeLater(() -> {
-            for (int i = 0; i != myPackagesTableModel.getRowCount(); ++i) {
-              final InstalledPackage pyPackage = (InstalledPackage)myPackagesTableModel.getValueAt(i, 0);
-              final RepoPackage repoPackage = packageMap.get(pyPackage.getName());
-              myPackagesTableModel.setValueAt(repoPackage == null ? null : repoPackage.getLatestVersion(), i, 2);
-            }
-            myPackagesTable.setPaintBusy(!myCurrentlyInstalling.isEmpty());
-          }, ModalityState.stateForComponent(myPackagesTable));
-        }
-        catch (IOException ignored) {
-          LOG.warn("Cannot refresh the list of available packages with their latest versions", ignored);
-          myPackagesTable.setPaintBusy(false);
-        }
-      }
-    });
-  }
-
   private Map<String, RepoPackage> buildNameToPackageMap(java.util.List<? extends RepoPackage> packages) {
     try {
       return doBuildNameToPackageMap(packages);
@@ -607,31 +643,37 @@ public class RInstalledPackagesPanelBase extends JPanel {
     @Override
     public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
                                                    final boolean hasFocus, final int row, final int column) {
-      InstalledPackage aPackage = getInstalledPackageAt(table, row);
-      if (column == PACKAGE_NAME_COLUMN && aPackage != null) {
+      RInstalledPackage aPackage = getInstalledPackageAt(table, row);
+      if (aPackage == null) return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      if (column == PACKAGE_NAME_COLUMN) {
         Point columnRow = getMouseColumnRow(MouseInfo.getPointerInfo().getLocation(), table);
         myPackageNameLinkLabel.setText(aPackage.getName());
         myPackageNameLinkLabel.setUnderline(columnRow.x == column && columnRow.y == row);
         return myPackageNameLinkLabel;
       }
-      final JLabel cell = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-      final String version = (String)table.getValueAt(row, 1);
-      final String availableVersion = (String)table.getValueAt(row, 2);
-      boolean update = column == 2 &&
-                       StringUtil.isNotEmpty(availableVersion) &&
-                       isUpdateAvailable(version, availableVersion);
-      cell.setIcon(update ? IconUtil.getMoveUpIcon() : null);
-      if (aPackage != null) {
-        cell.setToolTipText(aPackage.getTooltipText());
+      if (column == BROWSE_COLUMN) {
+        myLabel.setText("");
+        myLabel.setIcon(AllIcons.General.Web);
+        return myLabel;
       }
-      return cell;
+      if (column == UNINSTALL_COLUMN) {
+        myLabel.setText("");
+        myLabel.setIcon(AllIcons.Diff.Remove);
+        return myLabel;
+      }
+      if (column == IS_LOADED_COLUMN) {
+        myIsLoadedCheckBox.setText("");
+        myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage));
+        return myIsLoadedCheckBox;
+      }
+      return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     }
 
     @Nullable
-    private InstalledPackage getInstalledPackageAt(final JTable table, final int row) {
+    private RInstalledPackage getInstalledPackageAt(final JTable table, final int row) {
       final Object o = table.getValueAt(row, PACKAGE_NAME_COLUMN);
-      if (o instanceof InstalledPackage) {
-        return (InstalledPackage) o;
+      if (o instanceof RInstalledPackage) {
+        return (RInstalledPackage) o;
       } else {
         return null;
       }

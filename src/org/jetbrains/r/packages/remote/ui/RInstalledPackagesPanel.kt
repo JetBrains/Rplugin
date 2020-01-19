@@ -13,13 +13,17 @@ import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.intellij.webcore.packaging.*
+import com.intellij.webcore.packaging.ManagePackagesDialog
+import com.intellij.webcore.packaging.PackageManagementService
+import com.intellij.webcore.packaging.PackagesNotificationPanel
+import com.intellij.webcore.packaging.RepoPackage
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.packages.remote.ui.RPackageUpdateInfo
 import icons.org.jetbrains.r.packages.remote.ui.RUpdateAllConfirmDialog
 import org.jetbrains.r.UPGRADE_ALL
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.RepoUtils
 
@@ -72,7 +76,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
           val rowCount = myPackagesTable.rowCount
           for (row in 0 until rowCount) {
             val installedPackage = myPackagesTable.getValueAt(row, 0)
-            if (installedPackage is InstalledPackage) {
+            if (installedPackage is RInstalledPackage) {
               val currentVersion = installedPackage.version
               val availableVersion = myPackagesTable.getValueAt(row, 2) as String?
               if (availableVersion != null && availableVersion.isNotBlank() && availableVersion != currentVersion) {
@@ -113,7 +117,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     }
   }
 
-  override fun canUninstallPackage(aPackage: InstalledPackage): Boolean {
+  override fun canUninstallPackage(aPackage: RInstalledPackage): Boolean {
     return rPackageManagementService?.canUninstallPackage(aPackage) == true && manager.interpreter != null && !isTaskRunning
   }
 
@@ -122,11 +126,11 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     return RManagePackagesDialog(myProject, service, listener, this)
   }
 
-  override fun canInstallPackage(aPackage: InstalledPackage): Boolean {
+  override fun canInstallPackage(aPackage: RInstalledPackage): Boolean {
     return rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
   }
 
-  override fun canUpgradePackage(aPackage: InstalledPackage?): Boolean {
+  override fun canUpgradePackage(aPackage: RInstalledPackage?): Boolean {
     return rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
   }
 

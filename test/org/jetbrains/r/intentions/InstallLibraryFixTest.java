@@ -9,12 +9,13 @@ import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.ExecutionException;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.webcore.packaging.InstalledPackage;
 import org.jetbrains.r.inspections.MissingPackageInspection;
 import org.jetbrains.r.interpreter.RInterpreter;
 import org.jetbrains.r.interpreter.RInterpreterManager;
+import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RepoUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,7 +36,9 @@ public class InstallLibraryFixTest extends LightPlatformCodeInsightFixtureTestCa
         final String TEST_PACKAGE = "pals";
 
         try {
-            RepoUtils.INSTANCE.uninstallPackage(null, myFixture.getProject(), new InstalledPackage(TEST_PACKAGE, null));
+            RepoUtils.INSTANCE.uninstallPackage(null, myFixture.getProject(), new RInstalledPackage(TEST_PACKAGE, "1.0.0", null,
+                                                                                                    "",
+                                                                                                    Collections.emptyMap()));
         } catch (ExecutionException e) {
             e.printStackTrace();
             fail("could not uninstall package");

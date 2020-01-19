@@ -18,6 +18,7 @@ import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.R_UNKNOWN
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.packages.remote.RDefaultRepository
@@ -36,10 +37,11 @@ class MockInterpreter(private val project: Project, var provider: MockInterprete
 
   override val skeletonPaths = listOf(RUsefulTestCase.SKELETON_LIBRARY_PATH)
 
-  private val skeletonFiles = RSkeletonUtil.getSkeletonFiles(skeletonPaths.first(), "")
+  private val skeletonFiles = RSkeletonUtil.getSkeletonFiles(skeletonPaths.first())
 
-  override val installedPackages: ExpiringList<RPackage>
-    get() = provider.installedPackages.takeIf { it.isNotEmpty() } ?: ExpiringList(skeletonFiles.keys.toList()) { false }
+  override val installedPackages: ExpiringList<RInstalledPackage>
+    get() = provider.installedPackages.takeIf { it.isNotEmpty() } ?: ExpiringList(
+      skeletonFiles.keys.map { RInstalledPackage(it.name, it.version, null, RUsefulTestCase.SKELETON_LIBRARY_PATH, emptyMap()) }) { false }
 
   override val skeletonRoots = setOf(VfsUtil.findFile(Paths.get(RUsefulTestCase.SKELETON_LIBRARY_PATH), false)!!)
 
@@ -65,7 +67,7 @@ class MockInterpreter(private val project: Project, var provider: MockInterprete
     return provider.getAvailablePackages(repoUrls)
   }
 
-  override fun getPackageByName(name: String): RPackage? = installedPackages.firstOrNull { it.packageName == name }
+  override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.packageName == name }
 
   override fun getLibraryPathByName(name: String): VirtualFile? {
     throw NotImplementedError()
@@ -82,7 +84,8 @@ class MockInterpreter(private val project: Project, var provider: MockInterprete
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String? = ""
 
   override fun getSkeletonFileByPackageName(name: String): PsiFile? {
-    val ioFile = File(skeletonPaths.first(), getPackageByName(name)?.getLibraryBinFileName() ?: return null)
+    val installedPackage = getPackageByName(name) ?: return null
+    val ioFile = File(skeletonPaths.first(), RPackage(installedPackage.name, installedPackage.version).skeletonFileName)
     val virtualFile = runAsync { VfsUtil.findFileByIoFile(ioFile, true) }
                         .onError { throw it }
                         .blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: return null

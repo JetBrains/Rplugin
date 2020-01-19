@@ -7,15 +7,15 @@ package icons.org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.webcore.packaging.InstalledPackage
 import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.ui.RDimensionPreference
 import org.jetbrains.r.ui.calculateDialogPreferredSize
 import java.awt.Dimension
 import javax.swing.*
 
 data class RPackageUpdateInfo(
-  val installedPackage: InstalledPackage,
+  val installedPackage: RInstalledPackage,
   val latestVersion: String
 )
 

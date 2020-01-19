@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
-import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.packages.remote.RRepoPackage
@@ -20,7 +20,7 @@ interface MockInterpreterProvider {
   val userLibraryPath: String
   val cranMirrors: List<RMirror>
   val libraryPaths: List<VirtualFile>
-  val installedPackages: ExpiringList<RPackage>
+  val installedPackages: ExpiringList<RInstalledPackage>
   val packageDetails: Map<String, RRepoPackage>?
   val defaultRepositories: List<RDefaultRepository>
   fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>>
@@ -42,7 +42,7 @@ interface MockInterpreterProvider {
       override val libraryPaths: List<VirtualFile>
         get() = throw NotImplementedError()
 
-      override val installedPackages: ExpiringList<RPackage>
+      override val installedPackages: ExpiringList<RInstalledPackage>
         get() = emptyExpiringList(false)  // Note: exception is not thrown intentionally (see `MockInterpreter.installedPackages`)
 
       override val packageDetails: Map<String, RRepoPackage>?

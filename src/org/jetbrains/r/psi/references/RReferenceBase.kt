@@ -55,8 +55,8 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   fun areTargetsLoaded(incompleteCode: Boolean) : Boolean {
     val runtimeInfo = psiElement.containingFile?.runtimeInfo ?: return true
     return multiResolve(incompleteCode).all { result ->
-      val rPackage = createPackageByResultResult(result) ?: return@all true
-      runtimeInfo.loadedPackages.keys.contains(rPackage.packageName)
+      val name = findPackageNameByResolveResult(result) ?: return@all true
+      runtimeInfo.loadedPackages.keys.contains(name)
     }
   }
 
@@ -74,8 +74,8 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   }
 
   private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult): Int {
-    val rPackage = createPackageByResultResult(result) ?: return Int.MAX_VALUE
-    return loadedNamespaces[rPackage.packageName] ?: Int.MAX_VALUE
+    val name = findPackageNameByResolveResult(result) ?: return Int.MAX_VALUE
+    return loadedNamespaces[name] ?: Int.MAX_VALUE
   }
 
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
@@ -89,7 +89,7 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
   }
 
   companion object {
-    fun createPackageByResultResult(result: ResolveResult): RPackage? =
-      result.element?.containingFile?.takeIf { it.fileType == RSkeletonFileType }?.let { RPackage.getOrCreate(it) }
+    fun findPackageNameByResolveResult(result: ResolveResult): String? =
+      result.element?.containingFile?.takeIf { it.fileType == RSkeletonFileType }?.let { RPackage.getOrCreateRPackageBySkeletonFile(it)?.name }
   }
 }

@@ -16,12 +16,12 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import org.jetbrains.r.packages.RInstalledPackage
 import java.util.concurrent.ConcurrentSkipListSet
 
 class RPackageTaskManager(
@@ -45,7 +45,7 @@ class RPackageTaskManager(
     runTask(RBundle.message("package.task.manager.update.title"), updatePackages.map { UpdateTaskAction(interpreter, project, it) })
   }
 
-  fun uninstall(packages: List<InstalledPackage>) {
+  fun uninstall(packages: List<RInstalledPackage>) {
     runTask(RBundle.message("package.task.manager.uninstall.title"), listOf(UninstallTaskAction(interpreter, project, packages)))
   }
 
@@ -211,7 +211,7 @@ class RPackageTaskManager(
   private class UninstallTaskAction(
     private val interpreter: RInterpreter?,
     private val project: Project,
-    private val packages: List<InstalledPackage>
+    private val packages: List<RInstalledPackage>
   ) : PackagingTaskAction {
 
     override val name = RBundle.message("uninstall.task.action.name")

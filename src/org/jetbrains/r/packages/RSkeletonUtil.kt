@@ -14,6 +14,9 @@ import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.psi.PsiFile
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
@@ -31,7 +34,6 @@ object RSkeletonUtil {
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
-
   private const val PRIORITY_PREFIX = "## Package priority: "
 
   private val LOG = Logger.getInstance("#" + RSkeletonUtil::class.java.name)
@@ -63,12 +65,13 @@ object RSkeletonUtil {
         LOG.error("Cannot find library path for $skeletonPath")
         continue
       }
-      val package2skeletonFile = getSkeletonFiles(skeletonPath, libraryPath)
+      val package2skeletonFile = getSkeletonFiles(skeletonPath)
       val currentPackages = package2skeletonFile.keys
       val installedPackages = rInterpreter.installedPackages.filter { it.libraryPath == libraryPath }
+                                                            .map { RPackage(it.packageName, it.packageVersion) }
 
       val outdatedPackages = currentPackages.subtract(installedPackages)
-      val newPackages = installedPackages.subtract(currentPackages).filterNot { isBanned(it) }
+      val newPackages = installedPackages.subtract(currentPackages).filterNot { isBanned(it.name) }
 
       if (newPackages.isEmpty() && outdatedPackages.isEmpty()) {
         continue
@@ -96,7 +99,7 @@ object RSkeletonUtil {
     for ((skeletonPath, newPackages) in generationMap) {
       val skeletonsDir = File(skeletonPath)
       for (rPackage in newPackages) {
-        val skeletonFile = File(skeletonsDir, rPackage.getLibraryBinFileName())
+        val skeletonFile = File(skeletonsDir, rPackage.skeletonFileName)
         processed += 1
         val finalProcessed = processed
         val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
@@ -108,7 +111,7 @@ object RSkeletonUtil {
               text = "Generating bin for '$rPackage'"
             }
 
-            val packageName = rPackage.packageName
+            val packageName = rPackage.name
             var isError = false
             val stdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
                                                          RepoUtils.PACKAGE_SUMMARY,
@@ -163,15 +166,14 @@ object RSkeletonUtil {
                         ?.takeIf { it.size == 2 }
                         ?.let { Pair(it[0], it[1])}
 
-  internal fun getSkeletonFiles(skeletonPath: String, libraryPath: String): Map<RPackage, File> {
+  internal fun getSkeletonFiles(skeletonPath: String): Map<RPackage, File> {
     val skeletonDirectory = File(skeletonPath)
     if (!skeletonDirectory.exists() || !skeletonDirectory.isDirectory) {
       return emptyMap()
     }
     return skeletonDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }?.mapNotNull {
-      val (name, version) = parsePackageAndVersionFromSkeletonFilename(it.nameWithoutExtension) ?: return@mapNotNull null
-      val priority = getPriorityFromSkeletonFile(it)
-      RPackage(name, version, priority, libraryPath) to it
+      val (name, version) = RPackage.createRPackageBySkeletonFileName(it.name) ?: return@mapNotNull null
+      RPackage(name, version) to it
     }?.toMap() ?: mapOf()
   }
 
@@ -192,9 +194,9 @@ object RSkeletonUtil {
     }
   }
 
-  private fun isBanned(rPackage: RPackage) =
-    rPackage.packageName == "tcltk" && SystemInfo.isMac ||
-    rPackage.packageName == "translations"
+  private fun isBanned(packageName: String) =
+    packageName == "tcltk" && SystemInfo.isMac ||
+    packageName == "translations"
 
   private const val invalidPackageFormat = "Invalid package summary format"
 
@@ -280,5 +282,28 @@ object RSkeletonUtil {
       packageBuilder.addSymbols(builder.build())
     }
     return packageBuilder.build()
+  }
+}
+
+data class RPackage(val name: String, val version: String) {
+  val skeletonFileName
+    get() = "$name-${version}.${RSkeletonFileType.EXTENSION}"
+
+  companion object {
+    private val SKELETON_FILE_REGEX = "([^-]*)-(.*)\\.${RSkeletonFileType.EXTENSION}".toRegex()
+
+    /**
+     * if [file] type is Skeleton File Type, returns package and version which was used for its generation or null otherwise
+     */
+    fun getOrCreateRPackageBySkeletonFile(file: PsiFile): RPackage? {
+      if (file.virtualFile.fileType != RSkeletonFileType) return null
+      return CachedValuesManager.getCachedValue(file) {
+        CachedValueProvider.Result<RPackage>(createRPackageBySkeletonFileName(file.virtualFile.name), file)
+      }
+    }
+
+    fun createRPackageBySkeletonFileName(name: String): RPackage? = SKELETON_FILE_REGEX.matchEntire(name)?.let {
+      RPackage(it.groupValues[1], it.groupValues[2])
+    }
   }
 }

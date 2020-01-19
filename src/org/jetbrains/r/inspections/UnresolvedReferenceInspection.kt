@@ -50,7 +50,7 @@ class UnresolvedReferenceInspection : RInspection() {
       }
       val runtimeInfo = element.containingFile?.runtimeInfo ?: return
       if (reference.areTargetsLoaded(false)) return
-      val packageNames = targets.mapNotNull { RReferenceBase.createPackageByResultResult(it)?.packageName }
+      val packageNames = targets.mapNotNull { RReferenceBase.findPackageNameByResolveResult(it) }
       val quickFixes = packageNames.map { LoadPackageFix(it, runtimeInfo) }.toTypedArray()
       val message = missingPackageMessage(element.text, packageNames)
       myProblemHolder.registerProblem(element, message, ProblemHighlightType.WEAK_WARNING, *quickFixes)

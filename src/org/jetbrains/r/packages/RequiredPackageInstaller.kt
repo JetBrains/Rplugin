@@ -13,7 +13,6 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import com.jetbrains.rd.util.ConcurrentHashMap
@@ -21,7 +20,10 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.packages.remote.*
+import org.jetbrains.r.packages.remote.MissingPackageDetailsException
+import org.jetbrains.r.packages.remote.PackageDetailsException
+import org.jetbrains.r.packages.remote.RPackageManagementService
+import org.jetbrains.r.packages.remote.UnresolvedPackageDetailsException
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -139,7 +141,7 @@ class RequiredPackageInstaller(private val project: Project) {
     return packages.filter { findRequiredPackage(it) == null }
   }
 
-  private fun findRequiredPackage(requiredPackage: RequiredPackage): InstalledPackage? {
+  private fun findRequiredPackage(requiredPackage: RequiredPackage): RInstalledPackage? {
     return rPackageManagementService.findInstalledPackageByName(requiredPackage.name)?.takeIf {
       it.version >= requiredPackage.minimalVersion
     }

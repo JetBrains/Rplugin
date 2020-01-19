@@ -10,7 +10,7 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.mock.MockInterpreter
 import org.jetbrains.r.mock.MockInterpreterProvider
-import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.remote.RDefaultRepository
 import org.jetbrains.r.packages.remote.RMirror
@@ -85,7 +85,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     override val libraryPaths: List<VirtualFile>
       get() = slaveInterpreter.libraryPaths
 
-    override val installedPackages: ExpiringList<RPackage>
+    override val installedPackages: ExpiringList<RInstalledPackage>
       get() = slaveInterpreter.installedPackages
 
     override val packageDetails: Map<String, RRepoPackage>?

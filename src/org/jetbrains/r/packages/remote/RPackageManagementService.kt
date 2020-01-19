@@ -13,11 +13,12 @@ import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.common.ExpiringList
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
@@ -65,7 +66,7 @@ class RPackageManagementService(private val project: Project,
   private val numScheduledOperations = AtomicInteger(0)
 
   @Volatile
-  private var lastInstalledPackages: ExpiringList<InstalledPackage>? = null
+  private var lastInstalledPackages: ExpiringList<RInstalledPackage>? = null
 
   val defaultRepositories: List<RDefaultRepository>
     get() = interpreter.defaultRepositories
@@ -90,6 +91,21 @@ class RPackageManagementService(private val project: Project,
 
   val arePackageDetailsLoaded: Boolean
     get() = interpreter.packageDetails != null
+
+  fun isPackageLoaded(aPackage: RInstalledPackage): Boolean {
+    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
+    return currentConsoleOrNull.rInterop.loadedPackages.keys.contains(aPackage.name)
+  }
+
+  fun loadPackage(aPackage: RInstalledPackage) {
+    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
+    currentConsoleOrNull.rInterop.loadLibrary(aPackage.name)
+  }
+
+  fun unloadPackage(aPackage: RInstalledPackage) {
+    // TODO
+
+  }
 
   override fun getAllRepositories(): List<String> {
     return mutableListOf<String>().also {
@@ -169,19 +185,19 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  override fun getInstalledPackages(): List<InstalledPackage> {
+  override fun getInstalledPackages(): List<RInstalledPackage> {
     return lastInstalledPackages?.takeIf { it.hasNotExpired } ?: loadInstalledPackages().also { installed ->
       lastInstalledPackages = installed
     }
   }
 
-  private fun loadInstalledPackages(): ExpiringList<InstalledPackage> {
+  private fun loadInstalledPackages(): ExpiringList<RInstalledPackage> {
     val installed = interpreter.withAutoUpdate { installedPackages }
-    return installed.filter { it.isUser }.map { it.toInstalledPackage() }
+    return installed.filter { it.isUser }.map { it }
   }
 
-  fun findInstalledPackageByName(name: String): InstalledPackage? {
-    return interpreter.getPackageByName(name)?.toInstalledPackage()
+  fun findInstalledPackageByName(name: String): RInstalledPackage? {
+    return interpreter.getPackageByName(name)
   }
 
   private fun onOperationStart() {
@@ -238,7 +254,7 @@ class RPackageManagementService(private val project: Project,
     return false
   }
 
-  fun canUninstallPackage(installedPackage: InstalledPackage): Boolean {
+  fun canUninstallPackage(installedPackage: RInstalledPackage): Boolean {
     return interpreter.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
   }
 
@@ -247,7 +263,8 @@ class RPackageManagementService(private val project: Project,
     val multiListener = convertToUninstallMultiListener(listener)
     val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, multiListener))
     onOperationStart()
-    manager.uninstall(installedPackages)
+    val rInstalledPackages = installedPackages.map { it as RInstalledPackage }
+    manager.uninstall(rInstalledPackages)
   }
 
   override fun fetchPackageVersions(s: String, consumer: CatchingConsumer<List<String>, Exception>) {
@@ -298,7 +315,7 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  fun navigateToPackageDocumentation(pkg: InstalledPackage) {
+  fun navigateToPackageDocumentation(pkg: RInstalledPackage) {
     RToolWindowFactory.showDocumentation(RElementFactory.buildRFileFromText(project, "$SHOW_PACKAGE_DOCS(${pkg.name})").firstChild)
   }
 
@@ -337,8 +354,6 @@ class RPackageManagementService(private val project: Project,
         }
       }
     }
-
-    fun RPackage.toInstalledPackage() = InstalledPackage(packageName, packageVersion)
 
     fun convertToInstallMultiListener(listener: Listener): MultiListener {
       return convertToMultiListener(listener, { it.first() }, { it.first() })

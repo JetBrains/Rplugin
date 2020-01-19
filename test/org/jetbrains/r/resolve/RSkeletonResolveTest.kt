@@ -47,11 +47,11 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
   fun testResolveFilter() {
     val filterStats = resolve("fil<caret>ter()")
     TestCase.assertNotNull(filterStats)
-    TestCase.assertEquals("stats", RPackage.getOrCreate(filterStats!!.containingFile)?.packageName)
+    TestCase.assertEquals("stats", RPackage.getOrCreateRPackageBySkeletonFile(filterStats!!.containingFile)?.name)
     myFixture.file.runtimeInfo?.loadPackage("dplyr")
     val filterDplyr = resolve("fil<caret>ter()")
     TestCase.assertNotNull(filterDplyr)
-    TestCase.assertEquals("dplyr", RPackage.getOrCreate(filterDplyr!!.containingFile)?.packageName)
+    TestCase.assertEquals("dplyr", RPackage.getOrCreateRPackageBySkeletonFile(filterDplyr!!.containingFile)?.name)
   }
 
   fun testDoNotResolveToSkeletons() {
