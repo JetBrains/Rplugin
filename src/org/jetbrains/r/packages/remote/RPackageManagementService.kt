@@ -103,8 +103,8 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun unloadPackage(aPackage: RInstalledPackage) {
-    // TODO
-
+    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
+    currentConsoleOrNull.rInterop.unloadLibrary(aPackage.name)
   }
 
   override fun getAllRepositories(): List<String> {

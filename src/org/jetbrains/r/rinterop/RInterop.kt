@@ -185,6 +185,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
+  fun unloadLibrary(name: String) {
+    executeWithCheckCancel(asyncStub::unloadLibrary, StringValue.of(name))
+    invalidateCaches()
+  }
+
   fun setOutputWidth(width: Int) {
     executeWithCheckCancel(asyncStub::setOutputWidth, Int32Value.of(width))
   }
