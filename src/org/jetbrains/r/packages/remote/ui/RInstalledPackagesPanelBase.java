@@ -499,19 +499,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
     }
   }
 
-  @NotNull
-  private java.util.List<RInstalledPackage> getSelectedPackages() {
-    final java.util.List<RInstalledPackage> results = new ArrayList<>();
-    final int[] rows = myPackagesTable.getSelectedRows();
-    for (int row : rows) {
-      final Object packageName = myPackagesTableModel.getValueAt(row, 0);
-      if (packageName instanceof RInstalledPackage) {
-        results.add((RInstalledPackage)packageName);
-      }
-    }
-    return results;
-  }
-
   public void updatePackages(@Nullable RPackageManagementService packageManagementService) {
     myPackageManagementService = packageManagementService;
     myPackagesTable.clearSelection();
