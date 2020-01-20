@@ -23,6 +23,7 @@ import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
+import com.intellij.util.messages.Topic
 import com.jetbrains.rd.util.getOrCreate
 import icons.org.jetbrains.r.psi.TableManipulationColumn
 import io.grpc.*
@@ -48,7 +49,12 @@ import kotlin.reflect.KProperty
 
 data class RIExecutionResult(val stdout: String, val stderr: String, val exception: String? = null)
 
+interface LoadedLibrariesListener {
+  fun onLibrariesUpdated()
+}
+
 private const val DEADLINE_TEST = 40L
+val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 
 class RInterop(val processHandler: ProcessHandler, address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
@@ -133,7 +139,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   val loadedPackages: Map<String, Int> by Cached {
     executeWithCheckCancel(asyncStub::loaderGetLoadedNamespaces,
-                           Empty.getDefaultInstance()).listList.mapIndexed { index, s -> s to index }.toMap()
+                           Empty.getDefaultInstance()).listList.mapIndexed { index, s -> s to index }.toMap().also {
+      project.messageBus.syncPublisher(LOADED_LIBRARIES_UPDATED).onLibrariesUpdated()
+    }
   }
 
   val rMarkdownChunkOptions: List<String> by Cached {

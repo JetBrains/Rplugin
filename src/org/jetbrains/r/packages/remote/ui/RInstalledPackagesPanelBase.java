@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.CommonShortcuts;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -26,8 +27,10 @@ import com.intellij.ui.components.labels.LinkLabel;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.CatchingConsumer;
+import com.intellij.util.IJSwingUtilities;
 import com.intellij.util.IconUtil;
 import com.intellij.util.ObjectUtils;
+import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.StatusText;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.UIUtilities;
@@ -36,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
+import org.jetbrains.r.rinterop.RInteropKt;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -102,6 +106,16 @@ public class RInstalledPackagesPanelBase extends JPanel {
     myPackagesTable.setCellSelectionEnabled(false);
     myPackagesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     initColumnWidth();
+
+    MessageBusConnection connect = project.getMessageBus().connect();
+    connect.subscribe(EditorColorsManager.TOPIC, scheme -> {
+      IJSwingUtilities.updateComponentTreeUI(myLabel);
+      IJSwingUtilities.updateComponentTreeUI(myPackageNameLinkLabel);
+      IJSwingUtilities.updateComponentTreeUI(myIsLoadedCheckBox);
+    });
+
+    connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
+
     new TableSpeedSearch(myPackagesTable);
 
     myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
@@ -133,12 +147,19 @@ public class RInstalledPackagesPanelBase extends JPanel {
     myPackagesTable.getSelectionModel().addListSelectionListener(event -> updateUninstallUpgrade());
 
     myPackagesTable.addMouseMotionListener( new MouseMotionAdapter() {
+      boolean hit = false;
+
       @Override
       public void mouseMoved(MouseEvent e) {
         Point columnRow = getMouseColumnRow(e.getLocationOnScreen(), myPackagesTable);
         if (columnRow.x == PACKAGE_NAME_COLUMN) {
           myPackagesTable.repaint();
+          hit = true;
+        } else if (hit) {
+          myPackagesTable.repaint();
+          hit = false;
         }
+
       }
     });
 
