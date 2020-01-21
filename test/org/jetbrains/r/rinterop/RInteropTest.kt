@@ -202,4 +202,8 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     doTest("tt[, b := a * 2]", false)
     doTest("print(tt[, c := a * 2])", true)
   }
+
+  fun testWarning() {
+    TestCase.assertTrue("my message" in rInterop.executeCode("warning('my message')").stderr)
+  }
 }
