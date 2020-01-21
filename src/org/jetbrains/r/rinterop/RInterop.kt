@@ -203,7 +203,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return if (withCheckCancelled) {
       promise.getWithCheckCanceled()
     } else {
-      promise.blockingGet(Int.MAX_VALUE)!!
+      val timeout = if (ApplicationManager.getApplication().isUnitTestMode) EXECUTE_CODE_TEST_TIMEOUT else Int.MAX_VALUE
+      promise.blockingGet(timeout)!!
     }
   }
 
@@ -818,6 +819,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   companion object {
     private const val HEARTBEAT_PERIOD = 20000
+    private const val EXECUTE_CODE_TEST_TIMEOUT = 20000
   }
 }
 
