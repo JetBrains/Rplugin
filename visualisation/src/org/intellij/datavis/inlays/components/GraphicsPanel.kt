@@ -40,7 +40,7 @@ interface DarkModeNotifier {
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
   private val label = JLabel(NO_GRAPHICS, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
-
+  @Volatile
   private var currentFile: File? = null
 
   private val advancedModeComponent: JComponent?
