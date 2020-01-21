@@ -215,7 +215,7 @@ object RepoUtils {
     // if networking is off but requested package is already up-to-date
     val version = getPackageVersion(repoPackage.name, rInterop)
     if (version != null) {
-      if (areSameVersions(version, repoPackage.latestVersion)) {
+      if (version.isNewerOrSame(repoPackage.latestVersion)) {
         return
       } else {
         LOGGER.warn("updatePackage(): Expected version = ${repoPackage.latestVersion}, got = $version")
@@ -272,6 +272,10 @@ object RepoUtils {
 
   private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
     return aVersion?.unifyVersion() == bVersion?.unifyVersion()
+  }
+
+  private fun String.isNewerOrSame(version: String?): Boolean {
+    return version == null || unifyVersion() >= version.unifyVersion()
   }
 
   private fun String.unifyVersion(): String {
