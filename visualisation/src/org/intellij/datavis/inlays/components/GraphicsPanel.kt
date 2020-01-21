@@ -172,12 +172,11 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
         bufferedImage.setRGB(x, y, convertHCLtoRGB(currentHSL, alpha))
       }
     }
-    val baos = ByteArrayOutputStream()
-    ImageIO.write(bufferedImage, "png", baos)
-    baos.flush()
-    val output = baos.toByteArray()
-    baos.close()
-    return output
+    ByteArrayOutputStream().use { outputStream ->
+      ImageIO.write(bufferedImage, "png", outputStream)
+      outputStream.flush()
+      return outputStream.toByteArray()
+    }
   }
 
   private fun invert(color: Int, white: Int, black: Int) = (255 - color) * (white - black) / 255 + black
