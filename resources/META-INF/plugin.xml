@@ -558,7 +558,7 @@ You can find the source code in the following repositories:
         <!-- Registry keys -->
         <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
         <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
-        <registryKey defaultValue="true" key="r.ui.showFilesInRTools" description="Show project view (aka Files) in R Tools"/>
+        <registryKey defaultValue="false" key="r.ui.showFilesInRTools" description="Show project view (aka Files) in R Tools"/>
 
     </extensions>
 
