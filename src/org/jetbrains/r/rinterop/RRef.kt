@@ -44,8 +44,8 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsBoolean, proto).value
   }
 
-  fun evaluateAsStringList(): List<String> {
-    return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsStringList, proto).listList
+  fun getDistinctStrings(): List<String> {
+    return rInterop.executeWithCheckCancel(rInterop.asyncStub::getDistinctStrings, proto).listList
   }
 
   fun ls(): List<String> {

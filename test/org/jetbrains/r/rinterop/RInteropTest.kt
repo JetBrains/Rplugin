@@ -168,7 +168,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     """.trimIndent())
     TestCase.assertEquals("123456789", stdoutPromise.blockingGet(DEFAULT_TIMEOUT)!!.asSequence().sorted().joinToString(""))
     TestCase.assertEquals("!".repeat(expectedStderrLength), stderrPromise.blockingGet(DEFAULT_TIMEOUT))
-    TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).evaluateAsStringList())
+    TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).getDistinctStrings())
     rInterop.removeAsyncEventsListener(listener)
   }
 

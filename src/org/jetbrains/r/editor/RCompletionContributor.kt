@@ -417,7 +417,7 @@ class RCompletionContributor : CompletionContributor() {
         if (!RDplyrUtil.isSafe(other, runtimeInfo)) return
         "(${other.text})"
       }
-      val values = runtimeInfo.loadValueAsList(text).filter { it.isNotEmpty() }.toSet()
+      val values = runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() }
       result.addAllElements(values.map {
         PrioritizedLookupElement.withInsertHandler(
           RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),

@@ -21,7 +21,7 @@ interface RConsoleRuntimeInfo {
   val rMarkdownChunkOptions: List<String>
   val workingDir: String
   fun loadPackage(name: String)
-  fun loadValueAsList(expression: String): List<String>
+  fun loadDistinctStrings(expression: String): List<String>
   fun loadObjectNames(expression: String) : List<String>
   fun loadAllNamedArguments(expression: String) : List<String>
   fun getFormalArguments(expression: String) : List<String>
@@ -43,7 +43,7 @@ interface RConsoleRuntimeInfo {
 
 class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntimeInfo {
   private val objectNamesCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
-  private val valueAsListCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
+  private val distinctStringsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val allNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<Pair<String, TableType>, List<TableManipulationColumn>>() }
@@ -61,8 +61,8 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     rInterop.loadLibrary(name)
   }
 
-  override fun loadValueAsList(expression: String): List<String> {
-    return valueAsListCache.getOrPut(expression) { RRef.expressionRef(expression, rInterop).evaluateAsStringList() }
+  override fun loadDistinctStrings(expression: String): List<String> {
+    return distinctStringsCache.getOrPut(expression) { RRef.expressionRef(expression, rInterop).getDistinctStrings() }
   }
 
   override fun loadObjectNames(expression: String): List<String> {

@@ -145,7 +145,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       throw NotImplementedError()
     }
 
-    override fun loadValueAsList(expression: String): List<String> {
+    override fun loadDistinctStrings(expression: String): List<String> {
       throw NotImplementedError()
     }
 
