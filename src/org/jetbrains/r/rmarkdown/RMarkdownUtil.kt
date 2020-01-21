@@ -22,11 +22,15 @@ object RMarkdownUtil {
   )
 
   fun areRequirementsSatisfied(project: Project): Boolean {
-    return getMissingPackages(project).isEmpty()
+    return getMissingPackages(project)?.isEmpty() == true
   }
 
-  fun getMissingPackages(project: Project): List<RequiredPackage> {
-    return RequiredPackageInstaller.getInstance(project).getMissingPackages(requiredPackages)
+  /**
+   * @return list of missing R Markdown's requirements or `null` if such a list cannot be formed right now
+   * (notably when [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet)
+   */
+  fun getMissingPackages(project: Project): List<RequiredPackage>? {
+    return RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(requiredPackages)
   }
 
   fun checkOrInstallPackages(project: Project, utilityName: String): Promise<Unit> {

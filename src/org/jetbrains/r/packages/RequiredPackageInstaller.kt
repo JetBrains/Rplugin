@@ -19,6 +19,7 @@ import com.jetbrains.rd.util.ConcurrentHashMap
 import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.MissingPackageDetailsException
 import org.jetbrains.r.packages.remote.PackageDetailsException
@@ -142,6 +143,19 @@ class RequiredPackageInstaller(private val project: Project) {
 
   fun getMissingPackages(packages: List<RequiredPackage>): List<RequiredPackage> {
     return packages.filter { findRequiredPackage(it) == null }
+  }
+
+  /**
+   * Use it instead of [getMissingPackages] when a result should be returned immediately.
+   * This method is **not** waiting for [interpreter][org.jetbrains.r.interpreter.RInterpreter] to be initialized
+   * which can be useful in order to prevent both UI freezes and deadlocks (especially on IDE startup).
+   * @return list of currently missing packages
+   * or `null` if [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet
+   */
+  fun getMissingPackagesOrNull(packages: List<RequiredPackage>): List<RequiredPackage>? {
+    return RInterpreterManager.getInterpreter(project)?.let {
+      getMissingPackages(packages)
+    }
   }
 
   private fun findRequiredPackage(requiredPackage: RequiredPackage): RInstalledPackage? {
