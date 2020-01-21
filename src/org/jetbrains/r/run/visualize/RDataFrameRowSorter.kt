@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.rinterop.Service
+import org.jetbrains.r.rinterop.getWithCheckCanceled
 import java.util.concurrent.Future
 import javax.swing.JTable
 import javax.swing.RowSorter
@@ -82,7 +83,9 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
     currentUpdateTask?.let {
       if (!it.isDone) it.cancel(true)
     }
+    val toWait = currentUpdateTask
     currentUpdateTask = ApplicationManager.getApplication().executeOnPooledThread<Unit> {
+      toWait?.getWithCheckCanceled()
       if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
       currentViewer = initialViewer
       rowFilter?.let {
