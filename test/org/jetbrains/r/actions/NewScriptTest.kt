@@ -23,6 +23,7 @@ class NewScriptTest : RUsefulTestCase() {
   }
 
   fun testRMarkdownCreate() {
+    addLibraries()
     doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.NEW_R_MARKDOWN_TEMPLATE_NAME, "author")
   }
 

@@ -21,6 +21,7 @@ import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
@@ -91,7 +92,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onPrompt(isDebug: Boolean) {
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
-      RLibraryWatcher.getInstance(consoleView.project).refresh()
+      runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
       fireCommandExecuted()
     }
 
