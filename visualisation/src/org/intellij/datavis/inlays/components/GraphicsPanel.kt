@@ -179,8 +179,6 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
   }
 
-  private fun invert(color: Int, white: Int, black: Int) = (255 - color) * (white - black) / 255 + black
-
   private fun openEditor(file: VirtualFile) {
     closeEditor(NO_GRAPHICS)
     val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
