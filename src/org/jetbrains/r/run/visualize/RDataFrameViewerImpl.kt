@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.Promise
@@ -28,6 +29,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   private val chunks: Array<Array<Array<Any?>>?>
   private val promises: Array<Promise<Unit>?>
   private var disposableParent: Disposable? = null
+  private var virtualFile: RTableVirtualFile? = null
 
   private data class ColumnInfo(val name: String, val type: KClass<*>, val sortable: Boolean = true,
                                 val isRowNames: Boolean = false,
@@ -91,19 +93,25 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
 
   override fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer {
     return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
-      disposableParent?.let { newDataFrame.registerDisposable(it) }
+      disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
     }
   }
 
   override fun filter(f: Service.DataFrameFilterRequest.Filter): RDataFrameViewer {
     return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
-      disposableParent?.let { newDataFrame.registerDisposable(it) }
+      disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
     }
   }
 
-  override fun registerDisposable(parent: Disposable) {
+  override fun registerDisposable(parent: Disposable, virtualFile: RTableVirtualFile?) {
     disposableParent = parent
-    Disposer.register(parent, this)
+    this.virtualFile = virtualFile
+    val proxyDisposable = Disposable {
+      if (virtualFile?.getUserData(FileEditorManagerImpl.CLOSING_TO_REOPEN) != java.lang.Boolean.TRUE) {
+        Disposer.dispose(this)
+      }
+    }
+    Disposer.register(parent, proxyDisposable)
   }
 
   companion object {

@@ -40,7 +40,12 @@ class RTableEditorProvider : FileEditorProvider, DumbAware {
 
   override fun accept(project: Project, file: VirtualFile): Boolean = file is RTableVirtualFile
 
-  override fun createEditor(project: Project, file: VirtualFile): FileEditor = TableFileEditor(file as RTableVirtualFile)
+  override fun createEditor(project: Project, file: VirtualFile): FileEditor {
+    val rTableVirtualFile = file as RTableVirtualFile
+    val tableFileEditor = TableFileEditor(rTableVirtualFile)
+    rTableVirtualFile.table.viewer.registerDisposable(tableFileEditor, rTableVirtualFile)
+    return tableFileEditor
+  }
 
   override fun getPolicy(): FileEditorPolicy = FileEditorPolicy.HIDE_DEFAULT_EDITOR
 }

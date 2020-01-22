@@ -25,8 +25,7 @@ object RVisualizeTableUtil {
       }
       val page = RDataFrameTablePage(viewer)
       val rTableVirtualFile = RTableVirtualFile(page, name)
-      val fileEditor = fileEditorManager.openFile(rTableVirtualFile, true)[0]
-      viewer.registerDisposable(fileEditor)
+      fileEditorManager.openFile(rTableVirtualFile, true)[0]
     }
   }
 

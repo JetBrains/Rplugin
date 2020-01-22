@@ -34,6 +34,6 @@ interface RDataFrameViewer : Disposable {
   override fun dispose() {
   }
 
-  fun registerDisposable(parent: Disposable) {
+  fun registerDisposable(parent: Disposable, virtualFile: RTableVirtualFile?) {
   }
 }
