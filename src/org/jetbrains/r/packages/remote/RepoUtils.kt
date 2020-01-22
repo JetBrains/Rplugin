@@ -6,6 +6,7 @@
 package org.jetbrains.r.packages.remote
 
 import com.intellij.execution.ExecutionException
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -262,12 +263,17 @@ object RepoUtils {
 
   private fun getInstallArguments(url: String, libraryPath: String): Map<String, String> {
     return mutableMapOf<String, String>().also {
+      it["type"] = "'${getPreferredPackageType()}'"
       it["repos"] = "'$url'"
       it["dependencies"] = "TRUE"
       //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
       it["verbose"] = "FALSE"
       it["lib"] = "'$libraryPath'"
     }
+  }
+
+  private fun getPreferredPackageType(): String {
+    return if (ApplicationManager.getApplication().isUnitTestMode) "source" else "both"
   }
 
   private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
