@@ -12,6 +12,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
@@ -668,27 +669,27 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   private fun processAsyncEvent(event: Service.AsyncEvent) {
     when (event.eventCase) {
       Service.AsyncEvent.EventCase.BUSY -> {
-        asyncEventsListeners.forEach { it.onBusy() }
+        fireListeners { it.onBusy() }
       }
       Service.AsyncEvent.EventCase.TEXT -> {
-        val text = event.text.text
+        val text = event.text.text.toStringUtf8()
         val type = when (event.text.type) {
           Service.CommandOutput.Type.STDOUT -> ProcessOutputType.STDOUT
           Service.CommandOutput.Type.STDERR -> ProcessOutputType.STDERR
           else -> return
         }
-        asyncEventsListeners.forEach { it.onText(text.toStringUtf8(), type) }
+        fireListeners { it.onText(text, type) }
       }
       Service.AsyncEvent.EventCase.REQUESTREADLN -> {
         invalidateCaches()
         val prompt = event.requestReadLn.prompt
-        asyncEventsListeners.forEach { it.onRequestReadLn(prompt) }
+        fireListeners { it.onRequestReadLn(prompt) }
       }
       Service.AsyncEvent.EventCase.PROMPT -> {
         invalidateCaches()
         isDebug = false
         debugStack = emptyList()
-        asyncEventsListeners.forEach { it.onPrompt() }
+        fireListeners { it.onPrompt() }
       }
       Service.AsyncEvent.EventCase.DEBUGPROMPT -> {
         invalidateCaches()
@@ -696,29 +697,44 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         if (event.debugPrompt.changed) {
           debugStack = stackFromProto(event.debugPrompt.stack)
         }
-        asyncEventsListeners.forEach { it.onPrompt(true) }
+        fireListeners { it.onPrompt(true) }
       }
       Service.AsyncEvent.EventCase.EXCEPTION -> {
         lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
-        asyncEventsListeners.forEach { it.onException(event.exception.text) }
+        fireListeners { it.onException(event.exception.text) }
       }
       Service.AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
         val remaining = AtomicInteger(asyncEventsListeners.size)
         asyncEventsListeners.forEach { listener ->
-          listener.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
-            .onProcessed {
-              if (remaining.decrementAndGet() == 0) {
-                Disposer.dispose(ref)
-                executeAsync(asyncStub::viewRequestFinished, Empty.getDefaultInstance())
-              }
+          val promise = try {
+            listener.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
+          } catch (t: Throwable) {
+            LOG.error(t)
+            resolvedPromise<Unit>()
+          }
+          promise.onProcessed {
+            if (remaining.decrementAndGet() == 0) {
+              Disposer.dispose(ref)
+              executeAsync(asyncStub::viewRequestFinished, Empty.getDefaultInstance())
             }
+          }
         }
       }
       Service.AsyncEvent.EventCase.TERMINATION -> {
-        asyncEventsListeners.forEach { it.onTermination() }
+        fireListeners { it.onTermination() }
       }
       else -> {
+      }
+    }
+  }
+
+  private fun fireListeners(f: (AsyncEventsListener) -> Unit) {
+    asyncEventsListeners.forEach {
+      try {
+        f(it)
+      } catch (t: Throwable) {
+        LOG.error(t)
       }
     }
   }
@@ -862,4 +878,6 @@ internal fun <T, R> ListenableFuture<T>.then(executor: Executor, f: (T) -> R): C
   }, executor)
   return promise
 }
+
+private val LOG = Logger.getInstance(RInteropUtil.javaClass)
 

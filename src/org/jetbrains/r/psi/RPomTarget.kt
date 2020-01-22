@@ -49,6 +49,7 @@ abstract class RPomTarget: PomTarget {
       is RValueList -> createVariablePomTarget(rVar)
       is RValueEnvironment -> createVariablePomTarget(rVar)
       is RValueDataFrame -> createDataFramePomTarget(rVar)
+      is RValueGraph -> createGraphPomTarget(rVar)
       is RValueError -> throw IllegalStateException("Error: ${value.text}")
       else -> throw IllegalArgumentException("${rVar.value.javaClass} is not supported")
     }
@@ -57,6 +58,8 @@ abstract class RPomTarget: PomTarget {
 }
 
 private fun createDataFramePomTarget(rVar: RVar): RPomTarget = DataFramePomTarget(rVar)
+
+private fun createGraphPomTarget(rVar: RVar): RPomTarget = GraphPomTarget(rVar)
 
 private fun createVariablePomTarget(rVar: RVar): RPomTarget = VariablePomTarget(rVar)
 
@@ -89,6 +92,12 @@ internal class VariablePomTarget(private val rVar: RVar) : RPomTarget() {
 internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return VisualizeTableHandler.visualizeTable(rVar.ref.rInterop, rVar.ref, rVar.project, rVar.name)
+  }
+}
+
+internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
+  override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
+    return rVar.ref.rInterop.executeTask<Unit> { rVar.ref.evaluateAsText() }
   }
 }
 
