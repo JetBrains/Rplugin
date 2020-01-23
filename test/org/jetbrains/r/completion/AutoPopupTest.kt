@@ -7,6 +7,7 @@ package org.jetbrains.r.completion
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
 import icons.org.jetbrains.r.psi.TableManipulationColumn
+import junit.framework.TestCase
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfo
@@ -15,6 +16,7 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.settings.REditorSettings
 
 class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
   private lateinit var myTester: CompletionAutoPopupTester
@@ -37,6 +39,27 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
   }
 
   fun testMemberAccessAfterVariable() {
+    try {
+      assertTrue("Check default value", REditorSettings.disableCompletionAutoPopupForShortPrefix)
+      REditorSettings.disableCompletionAutoPopupForShortPrefix = false
+      myFixture.configureByText(RFileType, """
+            x<caret> 
+          """.trimIndent())
+      runReadAction {
+        myFixture.file.addRuntimeInfo(DummyRuntimeInfo())
+      }
+      myTester.typeWithPauses("x")
+      assertNotNull(myTester.getLookup())
+      myTester.typeWithPauses("$")
+      assertNotNull(myTester.getLookup())
+    }
+    finally {
+      REditorSettings.disableCompletionAutoPopupForShortPrefix = true
+    }
+  }
+
+  fun testShortPrefix() {
+    assertTrue("Check default value", REditorSettings.disableCompletionAutoPopupForShortPrefix)
     myFixture.configureByText(RFileType, """
           x<caret> 
         """.trimIndent())
@@ -44,7 +67,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       myFixture.file.addRuntimeInfo(DummyRuntimeInfo())
     }
     myTester.typeWithPauses("x")
-    assertNotNull(myTester.getLookup())
+    assertNull(myTester.getLookup())
     myTester.typeWithPauses("$")
     assertNotNull(myTester.getLookup())
   }

@@ -12,6 +12,9 @@ class REditorSettings : SimplePersistentStateComponent<REditorSettingsState>(REd
     val INSTANCE
       get() = service<REditorSettings>()
 
+    var disableCompletionAutoPopupForShortPrefix: Boolean
+      get() = INSTANCE.state.disableCompletionAutoPopupForShortPrefix
+      set(value) { INSTANCE.state.disableCompletionAutoPopupForShortPrefix = value }
     var useSoftWrapsInConsole: Boolean
       get() = INSTANCE.state.useSoftWrapsInConsole
       set(value) { INSTANCE.state.useSoftWrapsInConsole = value }
@@ -24,4 +27,5 @@ class REditorSettings : SimplePersistentStateComponent<REditorSettingsState>(REd
 class REditorSettingsState : BaseState() {
   var useSoftWrapsInConsole: Boolean by property(true)
   var useSoftWrapsInRMarkdown: Boolean by property(true)
+  var disableCompletionAutoPopupForShortPrefix: Boolean by property(true)
 }

@@ -18,13 +18,32 @@ import org.jetbrains.r.psi.api.RListSubsetOperator
 import org.jetbrains.r.psi.api.RNamespaceAccessExpression
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.settings.REditorSettings
+
+private const val identifierPrefixLength = 2
 
 class RCompletionAutoPopupHandler : TypedHandlerDelegate() {
 
   override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
-    if (charTyped != '$' && charTyped != ':' && charTyped != '/' && charTyped != '\\') return Result.CONTINUE
     if (file.fileType != RFileType && file.virtualFile?.fileType != RMarkdownFileType) return Result.CONTINUE
     val offset = editor.caretModel.offset
+
+    if (identifierPart(charTyped)) {
+      if (!REditorSettings.disableCompletionAutoPopupForShortPrefix) {
+        return Result.CONTINUE
+      }
+      if (offset < identifierPrefixLength) {
+        return Result.STOP
+      }
+      val content = editor.document.charsSequence
+      return if (identifierPart(content[offset - 1]) && identifierPart(content[offset - 2])) {
+        Result.CONTINUE
+      } else {
+        Result.STOP
+      }
+    }
+
+    if (charTyped != '$' && charTyped != ':' && charTyped != '/' && charTyped != '\\') return Result.CONTINUE
     AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC) l@{ psiFile ->
       val element = psiFile.findElementAt(offset) ?: return@l false
       val parent = element.parent ?: return@l false
@@ -51,3 +70,5 @@ class RCompletionAutoPopupHandler : TypedHandlerDelegate() {
     return Result.STOP
   }
 }
+
+private fun identifierPart(charTyped: Char) = Character.isLetterOrDigit(charTyped) || charTyped == '_' || charTyped == '.'

@@ -360,9 +360,12 @@ You can find the source code in the following repositories:
 
         <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
 
-        <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler"/>
+        <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler" order="first, before completionAutoPopup"/>
         <lookup.charFilter implementation="org.jetbrains.r.editor.RCharFilter" order="first"/>
         <!--<targetElementEvaluator language="R" implementationClass="org.jetbrains.r.editor.RTargetElementEvaluator"/>-->
+        <editorSmartKeysConfigurable instance="org.jetbrains.r.editor.RSmartKeys"
+                                     id="editor.preferences.rOptions"
+                                     displayName="R"/>
 
         <filetype.stubBuilder filetype="RPluginSkeletonFile" implementationClass="org.jetbrains.r.skeleton.RSkeletonFileStubBuilder"/>
         <fileType.fileViewProviderFactory filetype="RPluginSkeletonFile" implementationClass="org.jetbrains.r.skeleton.RSkeletonViewProviderFactory"/>
