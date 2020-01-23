@@ -42,7 +42,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     listOf(
       factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
       factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
-      factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Windows.Help),
+      factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Toolwindows.Documentation),
       factory.createContent(RViewerToolWindow(project), VIEWER, false).withIcon(R_HTML)
     ).forEach { contentManager.addContent(it) }
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
