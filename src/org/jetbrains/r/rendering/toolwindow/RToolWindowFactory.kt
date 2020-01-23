@@ -40,8 +40,8 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     val contentManager = toolWindow.contentManager
     val factory = contentManager.factory
     listOf(
-      factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
       factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
+      factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
       factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Windows.Help),
       factory.createContent(RViewerToolWindow(project), VIEWER, false).withIcon(R_HTML)
     ).forEach { contentManager.addContent(it) }
@@ -115,7 +115,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     const val VIEWER = "Viewer"
     const val PACKAGES = "Packages"
     const val FILES = "Files"
-    const val HELP = "Help"
+    const val HELP = "Documentation"
     const val ID = "R Tools"
 
     fun showDocumentation(psiElement: PsiElement) {
