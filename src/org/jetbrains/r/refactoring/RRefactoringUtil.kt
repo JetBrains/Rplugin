@@ -98,8 +98,9 @@ object RRefactoringUtil {
       }
 
       if (RPsiUtil.isReturn(element)) {
-        val realArg = (element as RCallExpression).argumentList.expressionList.first()
-        returns.add(CorrectReturnResult(project, element, realArg))
+        val expressionList = (element as RCallExpression).argumentList.expressionList
+        returns.add(if (expressionList.isNotEmpty()) CorrectReturnResult(project, element, expressionList.first())
+                                                else ImplicitNullResult(project, element))
         return@iteratePrev ControlFlowUtil.Operation.CONTINUE
       }
 

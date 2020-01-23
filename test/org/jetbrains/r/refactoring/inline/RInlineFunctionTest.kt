@@ -144,6 +144,18 @@ class RInlineFunctionTest : RUsefulTestCase() {
     """.trimIndent())
   }
 
+  fun testInlineFunctionWithSingleReturn() {
+    doAssertionTest { doTest("""
+      f <- function(a, b) {
+        if (a > 0) 
+          return()
+        print(a + b) 
+      }
+      
+      f()
+    """.trimIndent(), "") }
+  }
+
   fun testRename() {
     doTest("""
       f <- function(a) {
