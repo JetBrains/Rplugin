@@ -83,7 +83,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
   private fun showFilesInRTools() = Registry.`is`("r.ui.showFilesInRTools", false)
 
   private fun borrowFiles(project: Project, contentManager: ContentManager) {
-    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")
+    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")!!
     val component = toolWindow.component
     project.putUserData(ELDER, component.parent.parent.parent.parent as JComponent)
     val content = contentManager.factory.createContent(component.parent.parent.parent as JComponent, FILES, false)
@@ -98,7 +98,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     val content = contentManager.findContent(FILES)
     elder.add(content.component)
     contentManager.removeContent(content, false)
-    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")
+    val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Project")!!
     toolWindow.setAvailable(true, null)
   }
 
@@ -127,7 +127,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     }
 
     fun findContent(project: Project, displayName: String): Content =
-      ToolWindowManager.getInstance(project).getToolWindow(ID).contentManager.findContent(displayName)
+      ToolWindowManager.getInstance(project).getToolWindow(ID)!!.contentManager.findContent(displayName)
 
     fun showFile(project: Project, path: String): Promise<Unit> {
       return getViewerComponent(project).refresh(path).also {

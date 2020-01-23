@@ -68,11 +68,11 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
           if (firstOpenedFile) {
             firstOpenedFile = false
-            ToolWindowManager.getInstance(project).invokeLater {
+            ToolWindowManager.getInstance(project).invokeLater( Runnable {
               ToolWindowManager.getInstance(project).getToolWindow(RConsoleToolWindowFactory.ID)?.show { }
-            }
+            })
           } else {
-            ToolWindowManager.getInstance(project).invokeLater { RConsoleManager.getInstance(project).currentConsoleAsync }
+            ToolWindowManager.getInstance(project).invokeLater( Runnable { RConsoleManager.getInstance(project).currentConsoleAsync } )
           }
         }
       }

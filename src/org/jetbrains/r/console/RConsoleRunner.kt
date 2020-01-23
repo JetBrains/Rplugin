@@ -6,7 +6,6 @@
 package org.jetbrains.r.console
 
 import com.google.common.annotations.VisibleForTesting
-import com.intellij.execution.ExecutionManager
 import com.intellij.execution.Executor
 import com.intellij.execution.console.ConsoleExecuteAction
 import com.intellij.execution.console.ConsoleHistoryController
@@ -19,6 +18,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.execution.ui.RunContentManager
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.IdeEventQueue
@@ -277,7 +277,7 @@ class RConsoleRunner(private val project: Project,
   }
 
   private fun showConsole(defaultExecutor: Executor, contentDescriptor: RunContentDescriptor) {
-    ExecutionManager.getInstance(project).contentManager.showRunContent(defaultExecutor, contentDescriptor)
+    RunContentManager.getInstance(project).showRunContent(defaultExecutor, contentDescriptor)
   }
 }
 

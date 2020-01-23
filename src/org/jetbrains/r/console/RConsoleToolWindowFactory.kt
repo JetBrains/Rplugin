@@ -12,9 +12,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
-import com.intellij.openapi.wm.impl.ToolWindowImpl
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
@@ -25,8 +23,8 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val rConsoleManager = RConsoleManager.getInstance(project)
     rConsoleManager.registerContentManager(toolWindow.contentManager)
+    toolWindow.setToHideOnEmptyContent(true)
     setAvailableForRToolWindows(project, true)
-    (toolWindow as ToolWindowEx).isToHideOnEmptyContent = true
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
       override fun stateChanged() {
         if (toolWindow.isVisible) {
@@ -51,8 +49,8 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
     fun addContent(project: Project, contentDescriptor: RunContentDescriptor) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
-      (toolWindow as ToolWindowImpl).ensureContentInitialized()
       toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
+      toolWindow.setToHideOnEmptyContent(true)
       val content = createContent(contentDescriptor)
       toolWindow.contentManager.addContent(content)
     }

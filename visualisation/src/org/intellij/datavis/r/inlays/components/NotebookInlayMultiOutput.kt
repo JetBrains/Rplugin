@@ -52,7 +52,7 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
 
   init {
     Disposer.register(parent, disposable)
-    tabs = JBTabsImpl(project, ActionManager.getInstance(), IdeFocusManager.getInstance(project), disposable)
+    tabs = JBTabsImpl(project, IdeFocusManager.getInstance(project), disposable)
     tabs.addListener(object : TabsListener {
       override fun selectionChanged(oldSelection: TabInfo?, newSelection: TabInfo?) {
         oldSelection?.onViewportChange(false)  // Definitely false

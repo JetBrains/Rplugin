@@ -16,7 +16,7 @@ import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
  */
 class RNonStealingToolWindowInvoker(private val project: Project, private val displayName: String) {
   private val toolWindow: ToolWindow by lazy {
-    ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)
+    ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)!!
   }
 
   fun showWindow() {

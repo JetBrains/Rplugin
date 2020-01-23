@@ -26,8 +26,8 @@ class RedundantSemicolonInspection : RInspection() {
   }
 
   private inner class Visitor(private val myProblemHolder: ProblemsHolder) : RVisitor() {
-    override fun visitElement(element: PsiElement?) {
-      if (element == null || element.elementType != RElementTypes.R_SEMI) return
+    override fun visitElement(element: PsiElement) {
+      if (element.elementType != RElementTypes.R_SEMI) return
       var nextSibling = element.nextSibling
       while (nextSibling is PsiWhiteSpace  && !isNextLine(nextSibling) || nextSibling is PsiComment) {
         nextSibling = nextSibling.nextSibling

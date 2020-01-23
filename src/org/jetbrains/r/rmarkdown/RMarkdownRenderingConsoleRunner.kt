@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.rmarkdown
 
-import com.intellij.execution.ExecutionManager
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.ConsoleViewImpl
@@ -15,6 +14,7 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.execution.ui.RunContentManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.PathManager
@@ -74,7 +74,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     val contentDescriptor = RunContentDescriptor(consoleView, processHandler, rMarkdownConsolePanel, title)
     contentDescriptor.setFocusComputable { consoleView.preferredFocusableComponent }
     contentDescriptor.isAutoFocusContent = true
-    val contentManager = ExecutionManager.getInstance(project).contentManager
+    val contentManager = RunContentManager.getInstance(project)
     val executor = DefaultRunExecutor.getRunExecutorInstance()
     contentManager.allDescriptors.filter { it.displayName == title }.forEach { contentManager.removeRunContent(executor, it) }
     contentManager.showRunContent(executor, contentDescriptor)
