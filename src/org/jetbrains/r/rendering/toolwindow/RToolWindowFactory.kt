@@ -58,6 +58,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
   private fun createHelp(project: Project): JComponent {
     val manager = DocumentationManager.getInstance(project)
     val component = DocumentationComponent(manager)
+    component.setText(HELP_DEFAULT_TEXT, null, null)
     Disposer.register(project, component)
     return component
   }
@@ -136,3 +137,70 @@ private fun Content.withIcon(icon: Icon?): Content = apply {
   this.icon = icon
   putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE)
 }
+
+
+private const val HELP_DEFAULT_TEXT = """
+  <html>
+  <body>
+  <p><span></span></p>
+  <p><span>With the plugin for the </span>
+  <span><a href="https://www.r-project.org/">R language</a></span><span>,</span><span
+     >&nbsp;you can perform various statistical computing and enjoy your favorite features of the integrated development environment:</span>
+  </p>
+  <ul>
+    <li><span>Coding assistance:</span>
+      <ul>
+        <li><span>Error and syntax</span><span>&nbsp;highlighting</span><span>.</span></li>
+        <li><span>Code completion</span><span>.</span></li>
+        <li><span>Intention actions and quick fixes.</span></li>
+      </ul>
+     </li>
+  </ul>
+  <ul>
+    <li><span>Smart editing and auto-saving changes in your R files. Supported formats:</span>
+      <ul>
+        <li><span>R Script</span></li>
+        <li><span>R Markdown</span></li>
+      </ul>
+    </li>
+  </ul>
+  <ul>
+    <li><span>Previewing data in the graphic and tabular forms:</span>
+      <ul>
+        <li><span>R Graphics viewer</span></li>
+        <li><span>Table View</span></li>
+        <li><span>R HTML viewer</span></li>
+        <li><span>R Markdown preview</span></li>
+      </ul>
+     </li>
+  </ul>
+  <ul>
+    <li><span>Running and debugging R scripts with the live variables view.</span></li>
+    <li><span>Managing R packages; ability to create your own R packages.</span></li>
+  </ul>
+  <p><span>Find a bug? Please, file an issue <a href="https://youtrack.jetbrains.com/issues/R">here</a></span>.</p>
+  <p><span>For more details, see </span><span><a href="https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html">PyCharm web help</a></span><span>.</span></p>
+  <br>
+  <p>
+  This plugin comes with ABSOLUTELY NO WARRANTY.</p>
+  <p>
+  This is free software, and you are welcome to redistribute it under certain conditions.
+  </p>
+  <br>
+  <p>
+  Please note the plugin distribution contains Rkernel program covered by
+  <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>/<a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPL-3</a> licenses.
+  </p>
+  <br>
+  <p>
+  You can find the source code in the following repositories:
+  <ul>
+      <li><a href="https://github.com/JetBrains/Rplugin">Rplugin</a></li>
+      <li><a href="https://github.com/JetBrains/Rkernel-proto">Rkernel-proto</a></li>
+      <li><a href="https://github.com/JetBrains/Rkernel">Rkernel</a></li>
+  </ul>
+  </p>
+  </body>
+
+  </html>
+"""
