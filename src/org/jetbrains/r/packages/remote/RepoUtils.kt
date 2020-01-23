@@ -263,17 +263,15 @@ object RepoUtils {
 
   private fun getInstallArguments(url: String, libraryPath: String): Map<String, String> {
     return mutableMapOf<String, String>().also {
-      it["type"] = "'${getPreferredPackageType()}'"
+      if (ApplicationManager.getApplication().isUnitTestMode) {
+        it["type"] = "'source'"
+      }
       it["repos"] = "'$url'"
       it["dependencies"] = "TRUE"
       //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
       it["verbose"] = "FALSE"
       it["lib"] = "'$libraryPath'"
     }
-  }
-
-  private fun getPreferredPackageType(): String {
-    return if (ApplicationManager.getApplication().isUnitTestMode) "source" else "both"
   }
 
   private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
