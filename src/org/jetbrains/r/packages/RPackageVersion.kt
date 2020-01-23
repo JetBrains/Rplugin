@@ -57,3 +57,8 @@ data class RPackageVersion(val numbers: List<Int>) : Comparable<RPackageVersion>
     }
   }
 }
+
+fun String.isNewerOrSame(version: String?): Boolean {
+  val difference = RPackageVersion.compare(this, version)
+  return difference != null && difference >= 0
+}

@@ -19,6 +19,8 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.packages.RPackageVersion
+import org.jetbrains.r.packages.isNewerOrSame
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.io.IOException
@@ -275,15 +277,7 @@ object RepoUtils {
   }
 
   private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
-    return aVersion?.unifyVersion() == bVersion?.unifyVersion()
-  }
-
-  private fun String.isNewerOrSame(version: String?): Boolean {
-    return version == null || unifyVersion() >= version.unifyVersion()
-  }
-
-  private fun String.unifyVersion(): String {
-    return replace('-', '.')
+    return RPackageVersion.compare(aVersion, bVersion) == 0
   }
 
   @Throws(ExecutionException::class)
