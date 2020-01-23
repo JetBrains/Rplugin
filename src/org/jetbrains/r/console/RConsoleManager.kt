@@ -39,7 +39,7 @@ class RConsoleManager(private val project: Project) {
       currentConsole?.let { setResult(it) } ?: runConsole().processed(this)
     }
 
-  fun runAsync(lambda: (RConsoleView) -> Unit): Promise<Unit> {
+  private fun run(lambda: (RConsoleView) -> Unit): Promise<Unit> {
     return currentConsoleAsync.onError {
       throw IllegalStateException("Cannot run console", it)
     }.then {
@@ -50,6 +50,12 @@ class RConsoleManager(private val project: Project) {
       }
       LOGGER.error(e)
     }
+  }
+
+  fun runAsync(lambda: (RConsoleView) -> Unit): Promise<Unit> {
+    val result = AsyncPromise<Unit>()
+    run { org.jetbrains.concurrency.runAsync { lambda(it) }.processed(result) }
+    return result
   }
 
   @Synchronized
