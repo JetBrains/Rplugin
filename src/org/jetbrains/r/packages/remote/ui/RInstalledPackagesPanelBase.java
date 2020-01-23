@@ -8,8 +8,11 @@ import com.google.common.collect.Lists;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.browsers.BrowserLauncher;
+import com.intellij.openapi.actionSystem.ActionToolbarPosition;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonShortcuts;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
@@ -18,8 +21,10 @@ import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -42,11 +47,10 @@ import org.jetbrains.r.packages.remote.RPackageManagementService;
 import org.jetbrains.r.rinterop.RInteropKt;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -65,6 +69,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   public static int VERSION_COLUMN = 3;
   public static int BROWSE_COLUMN = 4;
   public static int UNINSTALL_COLUMN = 5;
+  public  static String TITLE = "Title";
 
   private final AnActionButton myUpgradeButton;
   protected final AnActionButton myInstallButton;
@@ -74,6 +79,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   private final JBCheckBox myIsLoadedCheckBox = new JBCheckBox();
 
   protected final JBTable myPackagesTable;
+  private final MyFilteringTableModel myPackageFilteringModel;
   private final DefaultTableModel myPackagesTableModel;
   // can be accessed from any thread
   protected volatile RPackageManagementService myPackageManagementService;
@@ -87,14 +93,15 @@ public class RInstalledPackagesPanelBase extends JPanel {
     myProject = project;
     myNotificationArea = area;
 
-    myPackagesTableModel = new DefaultTableModel(new String[]{ "", "Package", "Description", "Version", "", ""}, 0) {
+    myPackagesTableModel = new DefaultTableModel(new String[]{"", "Package", "Description", "Version", "", ""}, 0) {
       @Override
       public boolean isCellEditable(int i, int i1) {
         return false;
       }
     };
+    myPackageFilteringModel = new MyFilteringTableModel(myPackagesTableModel);
     final TableCellRenderer tableCellRenderer = new MyTableCellRenderer();
-    myPackagesTable = new JBTable(myPackagesTableModel) {
+    myPackagesTable = new JBTable(myPackageFilteringModel) {
       @Override
       public TableCellRenderer getCellRenderer(int row, int column) {
         return tableCellRenderer;
@@ -116,8 +123,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
 
-    new TableSpeedSearch(myPackagesTable);
-
     myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
       @Override
       public void actionPerformed(@NotNull AnActionEvent e) {
@@ -138,8 +143,26 @@ public class RInstalledPackagesPanelBase extends JPanel {
     ToolbarDecorator decorator =
       ToolbarDecorator.createDecorator(myPackagesTable).disableUpDownActions().disableAddAction().disableRemoveAction()
         .addExtraAction(myInstallButton);
+    decorator.setToolbarPosition(ActionToolbarPosition.TOP);
+    MyTextActionButton action = new MyTextActionButton();
+    DocumentAdapter listener = new DocumentAdapter() {
+      @Override
+      protected void textChanged(@NotNull DocumentEvent e) {
+        String text = action.myField.getText();
+        if (StringUtil.isEmpty(text)) {
+          myPackageFilteringModel.setFilter(null);
+          return;
+        }
+
+        //MinusculeMatcher matcher = NameUtil.buildMatcher("*" + mySearchField.getText(), NameUtil.MatchingCaseSensitivity.NONE);
+        myPackageFilteringModel.setFilter(text);
+      }
+    };
+    action.myField.getTextEditor().getDocument().addDocumentListener(listener);
 
     decorator.addExtraActions(getExtraActions());
+
+    decorator.addExtraAction(action);
     add(decorator.createPanel());
     myInstallButton.setEnabled(false);
     myUpgradeButton.setEnabled(false);
@@ -543,7 +566,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
               myPackagesTableModel.getDataVector().clear();
               for (RInstalledPackage pkg : finalPackages) {
                 myPackagesTableModel
-                  .addRow(new Object[] {"", pkg, pkg.getDescription().get("Title"), pkg.getVersion(), "", ""});
+                  .addRow(new Object[] {"", pkg, pkg.getDescription().get(TITLE), pkg.getVersion(), "", ""});
               }
               if (!cache.isEmpty()) {
                 onUpdateFinished();
@@ -703,5 +726,131 @@ public class RInstalledPackagesPanelBase extends JPanel {
       myUnderline = value;
     }
   }
-}
 
+  private static final class MyTextActionButton extends AnActionButton implements CustomComponentAction, DumbAware {
+    private final SearchTextField myField;
+
+    @Override
+    public boolean isDumbAware() {
+      return true;
+    }
+
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent e) {
+    }
+
+    public MyTextActionButton() {
+      super("", "", null);
+      myField = new SearchTextField();
+    }
+
+    @NotNull
+    @Override
+    public JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
+      return myField;
+    }
+  }
+
+  private static class MyFilteringTableModel extends AbstractTableModel {
+    private final TableModel myOriginalModel;
+    private final List<List<?>> myData = new ArrayList<>();
+    private final ArrayList<Integer> myIndex = new ArrayList<>();
+    private String myText = null;
+
+    private final TableModelListener myListDataListener = e -> refilter();
+
+    public MyFilteringTableModel(TableModel originalModel) {
+      myOriginalModel = originalModel;
+      myOriginalModel.addTableModelListener(myListDataListener);
+    }
+
+    public void dispose() {
+      myOriginalModel.removeTableModelListener(myListDataListener);
+    }
+
+    public void setFilter(@Nullable String text) {
+      myText = text;
+      refilter();
+    }
+
+    private void removeAllElements() {
+      int index1 = myData.size() - 1;
+      if (index1 >= 0) {
+        myData.clear();
+        fireTableRowsDeleted(0, index1);
+      }
+      myIndex.clear();
+    }
+
+    public void refilter() {
+      removeAllElements();
+      int count = 0;
+      for (int i = 0; i < myOriginalModel.getRowCount(); i++) {
+        RInstalledPackage aPackage = (RInstalledPackage)myOriginalModel.getValueAt(i, PACKAGE_NAME_COLUMN);
+        String title = aPackage.getDescription().get(TITLE);
+        if (myText == null ||
+            aPackage.getPackageName().contains(myText) ||
+            aPackage.getVersion().contains(myText) ||
+            (title != null && title.contains(myText))) {
+          List<Object> elements = Lists.newArrayListWithCapacity(myOriginalModel.getColumnCount());
+          for (int col = 0; col < myOriginalModel.getColumnCount(); col++) {
+            elements.add(myOriginalModel.getValueAt(i, col));
+          }
+          addToFiltered(elements);
+          myIndex.add(i);
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        fireTableRowsInserted(0, count - 1);
+      }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+      return myOriginalModel.isCellEditable(myIndex.get(rowIndex), columnIndex);
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+      myOriginalModel.setValueAt(aValue, myIndex.get(rowIndex), columnIndex);
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+      return myOriginalModel.getColumnClass(columnIndex);
+    }
+
+    @Override
+    public String getColumnName(int column) {
+      return myOriginalModel.getColumnName(column);
+    }
+
+    protected void addToFiltered(List<?> elt) {
+      myData.add(elt);
+    }
+
+    public int getSize() {
+      return myData.size();
+    }
+
+    @Override
+    public int getRowCount() {
+      return myData.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+      return myOriginalModel.getColumnCount();
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+      if (rowIndex >= myData.size() || rowIndex < 0 || columnIndex < 0 || columnIndex >= getColumnCount()) {
+        return null;
+      }
+      return myData.get(rowIndex).get(columnIndex);
+    }
+  }
+}
