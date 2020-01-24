@@ -4,7 +4,10 @@
 
 package org.jetbrains.r.run.visualize
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import icons.org.jetbrains.r.run.visualize.RDataFrameTablePage
@@ -38,6 +41,10 @@ object RVisualizeTableUtil {
     }
     val model = RDataFrameTableModel(viewer)
     val materialTable = MaterialTable(model, columnModel)
+    val connect = ApplicationManager.getApplication().messageBus.connect(viewer)
+    connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener { globalColorScheme ->
+      globalColorScheme?.defaultBackground?.let { materialTable.background = it }
+    })
     materialTable.rowSorter = RDataFrameRowSorter(model, materialTable)
     materialTable.rowHeight = DEFAULT_ROW_HEIGHT
     return materialTable

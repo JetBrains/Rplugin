@@ -4,6 +4,7 @@
 
 package org.intellij.datavis.ui
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.Gray
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
@@ -69,6 +70,7 @@ open class MaterialTable : JBTable {
   init {
     autoResizeMode = JTable.AUTO_RESIZE_OFF
     //table.fillsViewportHeight = true
+    background = EditorColorsManager.getInstance().globalScheme.defaultBackground
     setShowColumns(true)
     autoCreateRowSorter = true
     rowHeight = (font.size*1.8).toInt()
