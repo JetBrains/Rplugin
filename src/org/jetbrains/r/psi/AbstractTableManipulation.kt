@@ -46,6 +46,21 @@ data class TableManipulationCallInfo<T : TableManipulationFunction>(val psiCall:
 data class TableManipulationContextInfo<T : TableManipulationFunction>(val callInfo: TableManipulationCallInfo<T>,
                                                                        val currentTableArgument: TableManipulationArgument)
 
+
+enum class TableType {
+  UNKNOWN, DPLYR, DATA_FRAME, DATA_TABLE;
+  companion object  {
+    fun toTableType(type: Service.TableColumnsInfo.TableType): TableType = when (type) {
+      Service.TableColumnsInfo.TableType.DATA_FRAME -> DATA_FRAME
+      Service.TableColumnsInfo.TableType.DATA_TABLE -> DATA_TABLE
+      Service.TableColumnsInfo.TableType.DPLYR -> DPLYR
+      else -> UNKNOWN
+    }
+  }
+}
+
+data class TableInfo(val columns: List<TableManipulationColumn>, val type: TableType)
+
 data class TableManipulationColumn(val name: String, val type: String? = null)
 
 abstract class AbstractTableManipulation<T : TableManipulationFunction> {
@@ -55,7 +70,6 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
   protected abstract val subscriptionOperator: T
   protected abstract val doubleSubscriptionOperator: T
   protected abstract val defaultTransformValue: String
-  protected abstract val tableType: Service.TableColumnsInfoRequest.TableType
 
   protected open fun getCallInfoFromCallExpression(expression: RCallExpression): TableManipulationCallInfo<T>? {
     val function = getTableManipulationFunctionByExpressionName(expression.expression) ?: return null
@@ -133,10 +147,10 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
     }
   }
 
-  fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): List<TableManipulationColumn> {
+  fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
     val expression = StringBuilder()
     transformExpression(table, expression, runtimeInfo)
-    return runtimeInfo.loadTableColumns(expression.toString(), if (table.parent is RSubscriptionExpression) tableType else DATA_FRAME_TYPE)
+    return runtimeInfo.loadTableColumns(expression.toString())
   }
 
   protected abstract fun transformNotCall(expr: RExpression,
@@ -253,8 +267,4 @@ abstract class AbstractTableManipulation<T : TableManipulationFunction> {
       "sqrt", "tan", "tanpi", "trunc"
     )
   )
-
-  companion object {
-    private val DATA_FRAME_TYPE = Service.TableColumnsInfoRequest.TableType.DATA_FRAME
-  }
 }

@@ -6,15 +6,13 @@ package org.jetbrains.r.completion
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
-import icons.org.jetbrains.r.psi.TableManipulationColumn
-import junit.framework.TestCase
+import icons.org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RValueSimple
-import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.settings.REditorSettings
 
@@ -184,7 +182,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       throw NotImplementedError()
     }
 
-    override fun loadTableColumns(expression: String, tableType: Service.TableColumnsInfoRequest.TableType): List<TableManipulationColumn> {
+    override fun loadTableColumns(expression: String): TableInfo {
       throw NotImplementedError()
     }
 

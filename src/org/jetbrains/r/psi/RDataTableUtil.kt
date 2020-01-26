@@ -12,7 +12,6 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RNamedArgument
-import org.jetbrains.r.rinterop.Service
 
 object RDataTableUtil : AbstractTableManipulation<DataTableFunction>() {
   override val nameToFunction = DataTableFunction.values()
@@ -26,7 +25,6 @@ object RDataTableUtil : AbstractTableManipulation<DataTableFunction>() {
   override val subscriptionOperator = DataTableFunction.SUBSCRIPTION_OPERATOR
   override val doubleSubscriptionOperator = DataTableFunction.DOUBLE_SUBSCRIPTION_OPERATOR
   override val defaultTransformValue = ""
-  override val tableType = Service.TableColumnsInfoRequest.TableType.DATA_TABLE
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")

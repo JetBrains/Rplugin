@@ -7,7 +7,6 @@ package org.jetbrains.r.psi
 import icons.org.jetbrains.r.psi.*
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.rinterop.Service
 
 object RDplyrUtil : AbstractTableManipulation<DplyrFunction>() {
   const val PIPE_OPERATOR = "%>%"
@@ -20,7 +19,6 @@ object RDplyrUtil : AbstractTableManipulation<DplyrFunction>() {
   override val subscriptionOperator = DplyrFunction.SUBSCRIPTION_OPERATOR
   override val doubleSubscriptionOperator = DplyrFunction.DOUBLE_SUBSCRIPTION_OPERATOR
   override val defaultTransformValue = "NA"
-  override val tableType = Service.TableColumnsInfoRequest.TableType.DPLYR
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")

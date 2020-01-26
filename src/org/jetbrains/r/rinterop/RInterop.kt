@@ -26,7 +26,9 @@ import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.messages.Topic
 import com.jetbrains.rd.util.getOrCreate
+import icons.org.jetbrains.r.psi.TableInfo
 import icons.org.jetbrains.r.psi.TableManipulationColumn
+import icons.org.jetbrains.r.psi.TableType
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
@@ -536,9 +538,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeWithCheckCancel(asyncStub::getFormalArguments, function.proto).listList
   }
 
-  fun getTableColumnsInfo(table: RRef, tableType: Service.TableColumnsInfoRequest.TableType): List<TableManipulationColumn> {
-    val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).setTableType(tableType).build()
-    return executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).columnsList.map { TableManipulationColumn(it.name, it.type) }
+  fun getTableColumnsInfo(table: RRef): TableInfo {
+    val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
+    return executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
+      TableInfo(columnsList.map { TableManipulationColumn(it.name, it.type) }, TableType.toTableType(tableType))
+    }
   }
 
   fun convertRd2HTML(outputFilePath: String, rdFilePath: String = "", dbPath: String = "", dbPage: String = "", topicPackage: String = ""): RIExecutionResult {

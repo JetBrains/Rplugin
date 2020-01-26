@@ -23,6 +23,7 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import icons.org.jetbrains.r.psi.TableManipulationColumn
 import icons.org.jetbrains.r.psi.TableManipulationContextType
+import icons.org.jetbrains.r.psi.TableType
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleView
@@ -322,8 +323,10 @@ class RCompletionContributor : CompletionContributor() {
       val position = parameters.position
       val (dplyrCallInfo, currentArgument) = RDplyrUtil.getContextInfo(position) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      var columns = if (dplyrCallInfo.function.tableArguments > 0) {
-        RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+      val tableInfo = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+      var columns = if (dplyrCallInfo.function.contextType != TableManipulationContextType.SUBSCRIPTION &&
+                        dplyrCallInfo.function.tableArguments > 0) {
+        tableInfo.columns
       }
       else {
         emptyList()
@@ -343,7 +346,7 @@ class RCompletionContributor : CompletionContributor() {
           val currentArg = dplyrCallInfo.arguments[currentArgument.index]
           if (currentArg !is RNamedArgument || currentArg.name != "by") return
           val firstColumns = columns.map { it.name }.toSet()
-          val columns2 = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo)
+          val columns2 = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo).columns
             .filter { it.name !in firstColumns }
           columns = columns + columns2
           if (expression is RIdentifierExpression) {
@@ -366,10 +369,13 @@ class RCompletionContributor : CompletionContributor() {
       val (dataTableCallInfo, currentArgument) = RDataTableUtil.getContextInfo(position) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
       val tableArguments = dataTableCallInfo.function.tablesArguments
+      val isDataTable: Boolean
       var columns = if (tableArguments.isNotEmpty()) {
-        dataTableCallInfo.function.getTableArguments(dataTableCallInfo.psiCall, dataTableCallInfo.arguments, runtimeInfo).map {
+        val tableInfos = dataTableCallInfo.function.getTableArguments(dataTableCallInfo.psiCall, dataTableCallInfo.arguments, runtimeInfo).map {
           RDataTableUtil.getTableColumns(it, runtimeInfo)
-        }.flatten()
+        }
+        isDataTable = tableInfos.all { it.type == TableType.DATA_TABLE }
+        tableInfos.map { it.columns }.flatten()
           .groupBy { it.name }
           .map { (name, list) ->
             TableManipulationColumn(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
@@ -377,12 +383,18 @@ class RCompletionContributor : CompletionContributor() {
       }
       else {
         // If signature like my_fun <- function(...) {}
-        RDataTableUtil.getTableColumns(dataTableCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+        val tableInfo = RDataTableUtil.getTableColumns(dataTableCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+        isDataTable = tableInfo.type == TableType.DATA_TABLE
+        tableInfo.columns
       }
 
-      val isQuoteNeeded = dataTableCallInfo.function.isQuotesNeeded(dataTableCallInfo.psiCall, dataTableCallInfo.arguments,
-                                                                    currentArgument, runtimeInfo)
-      if (isQuoteNeeded) {
+      val isQuotesNeeded = position.parent !is RStringLiteralExpression &&
+                           (dataTableCallInfo.function.isQuotesNeeded(dataTableCallInfo.psiCall,
+                                                                      dataTableCallInfo.arguments,
+                                                                      currentArgument, runtimeInfo) ||
+                           (!isDataTable && dataTableCallInfo.function.contextType == TableManipulationContextType.SUBSCRIPTION))
+
+      if (isQuotesNeeded) {
         columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
       }
 

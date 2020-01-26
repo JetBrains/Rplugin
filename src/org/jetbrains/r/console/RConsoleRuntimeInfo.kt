@@ -8,12 +8,11 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
-import icons.org.jetbrains.r.psi.TableManipulationColumn
+import icons.org.jetbrains.r.psi.TableInfo
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValue
-import org.jetbrains.r.rinterop.Service.TableColumnsInfoRequest.TableType
 
 interface RConsoleRuntimeInfo {
   val variables: Map<String, RValue>
@@ -25,7 +24,7 @@ interface RConsoleRuntimeInfo {
   fun loadObjectNames(expression: String) : List<String>
   fun loadAllNamedArguments(expression: String) : List<String>
   fun getFormalArguments(expression: String) : List<String>
-  fun loadTableColumns(expression: String, tableType: TableType): List<TableManipulationColumn>
+  fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
 
   companion object {
@@ -46,7 +45,7 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val distinctStringsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val allNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
-  private val tableColumnsCache by rInterop.Cached { mutableMapOf<Pair<String, TableType>, List<TableManipulationColumn>>() }
+  private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
 
   override val rMarkdownChunkOptions by lazy { rInterop.rMarkdownChunkOptions }
 
@@ -77,9 +76,9 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     return formalArgumentsCache.getOrPut(expression) { rInterop.getFormalArguments(RRef.expressionRef(expression, rInterop)) }
   }
 
-  override fun loadTableColumns(expression: String, tableType: TableType): List<TableManipulationColumn> {
-    return tableColumnsCache.getOrPut(expression to tableType) {
-      rInterop.getTableColumnsInfo(RRef.expressionRef(expression, rInterop), tableType)
+  override fun loadTableColumns(expression: String): TableInfo {
+    return tableColumnsCache.getOrPut(expression) {
+      rInterop.getTableColumnsInfo(RRef.expressionRef(expression, rInterop))
     }
   }
 }
