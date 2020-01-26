@@ -189,6 +189,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   stats
   utils
   roxygen2
+  ggplot2
 """.trimIndent().split("\n").toSet()
   }
 }

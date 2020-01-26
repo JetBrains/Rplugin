@@ -28,6 +28,8 @@ import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.editor.completion.AES_PARAMETER_FILTER
+import org.jetbrains.r.editor.completion.GGPlot2AesColumnCompletionProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.parsing.RElementTypes.*
@@ -75,6 +77,7 @@ class RCompletionContributor : CompletionContributor() {
     addDplyrContextCompletion()
     addDataTableContextCompletion()
     addStringLiteralCompletion()
+    addGGPlotAesColumnCompletionProvider()
   }
 
   private fun addNamespaceAccessExpression() {
@@ -112,6 +115,11 @@ class RCompletionContributor : CompletionContributor() {
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.STRING_FILTER), StringLiteralCompletionProvider())
+  }
+
+  private fun addGGPlotAesColumnCompletionProvider() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
+      .and(AES_PARAMETER_FILTER), GGPlot2AesColumnCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
