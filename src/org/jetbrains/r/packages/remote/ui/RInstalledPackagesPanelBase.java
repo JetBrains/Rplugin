@@ -582,7 +582,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private RInstalledPackage getInstalledPackageAt(int index) {
-    return (RInstalledPackage) myPackagesTableModel.getValueAt(index, PACKAGE_NAME_COLUMN);
+    return (RInstalledPackage) myPackageFilteringModel.getValueAt(index, PACKAGE_NAME_COLUMN);
   }
 
   private void setLatestVersionsForInstalledPackages() {
