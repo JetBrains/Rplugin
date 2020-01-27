@@ -32,7 +32,9 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     ToolbarAction("org.jetbrains.r.actions.RDebugAction"),
     Separator(),
     ToolbarAction("org.jetbrains.r.actions.RunSelection"),
-    ToolbarAction("org.jetbrains.r.actions.DebugSelection"))
+    ToolbarAction("org.jetbrains.r.actions.DebugSelection"),
+    Separator(),
+    ToolbarAction("org.jetbrains.r.actions.REditorHelpAction"))
 
   private inner class ToolbarAction(actionId: String) : DumbAwareAction() {
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }

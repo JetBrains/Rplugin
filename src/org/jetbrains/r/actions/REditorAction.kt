@@ -11,7 +11,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import javax.swing.Icon
 
 abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
@@ -33,6 +35,18 @@ abstract class REditorRunActionBase : REditorActionBase {
   override fun update(e: AnActionEvent) {
     super.update(e)
     e.presentation.isEnabled = e.presentation.isEnabled && !REditorActionUtil.isRunningCommand(e.project)
+  }
+}
+
+class REditorHelpAction : REditorActionBase {
+  constructor() : super()
+
+  constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
+
+  override fun actionPerformed(e: AnActionEvent) {
+    val editor = e.editor ?: return
+    val elementAtCaret = PsiUtilBase.getElementAtCaret(editor) ?: return
+    RToolWindowFactory.showDocumentation(elementAtCaret)
   }
 }
 

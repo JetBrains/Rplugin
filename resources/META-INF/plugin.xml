@@ -155,6 +155,12 @@ You can find the source code in the following repositories:
     </actions>
 
     <actions>
+      <action id="org.jetbrains.r.actions.REditorHelpAction" class="org.jetbrains.r.actions.REditorHelpAction" text="Help"
+              description="Get help for the element under the cursor" icon="AllIcons.Actions.Help" >
+        <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
+        <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
+        <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
+      </action>
         <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
                 description="Run file in console" icon="AllIcons.Actions.Execute" >
           <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
