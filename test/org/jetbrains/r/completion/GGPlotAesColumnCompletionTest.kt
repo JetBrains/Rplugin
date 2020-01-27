@@ -42,6 +42,30 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
                          expected = listOf())
   }
 
+  fun testPlusOperator() {
+    checkCompletionDplyr("""ggplot(data = table, aes(yyyy_aa, yyyy_ab)) + geom_points(aes(yyyy_<caret>))""",
+                         initial = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad"),
+                         expected = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad"))
+  }
+
+  fun testNonPlusOperator() {
+    checkCompletionDplyr("""ggplot(data = table, aes(yyyy_aa, yyyy_ab)) * geom_points(aes(yyyy_<caret>))""",
+                         initial = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad"),
+                         expected = listOf())
+  }
+
+  fun testPlusOperatorVariable() {
+    val initial = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad")
+    rInterop.executeCode("library(data.table)", true)
+    rInterop.executeCode("table <- data.table(${initial.joinToString(", ") { "$it = NA" }})", false)
+    rInterop.executeCode("""
+  library(ggplot2)
+  foo <- ggplot(data = table, aes(yyyy_aa, yyyy_ab))
+  """)
+    checkCompletionDataTable("""foo + geom_points(aes(yyyy_<caret>))""",
+                         expected = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad"))
+  }
+
 
   private fun checkCompletionDataTable(text: String,
                                         expected: List<String> = emptyList(),
