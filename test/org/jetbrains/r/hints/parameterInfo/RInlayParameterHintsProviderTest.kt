@@ -81,7 +81,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="...("/>bb = 43, aa = 20<hint text=")"/>, a = 42, <hint text="...("/>aa = 15<hint text=")"/>, b = 40, d = 40, <hint text="...("/>15, 20<hint text=")"/>)
+      foo(bb = 43, aa = 20, a = 42, aa = 15, b = 40, d = 40, <hint text="...("/>15, 20<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -101,7 +101,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
 
   fun testLibraryFunction() {
     doParameterNameTest("""
-      data.table::data.table(<hint text="...("/>aa = 100<hint text=")"/>, keep.rownames = FALSE, <hint text="...("/>aa = 20<hint text=")"/>)
+      data.table::data.table(aa = 100, keep.rownames = FALSE, aa = 20)
       stats::filter(1:100, rep(1, 3), <hint text="method:"/>"convolution", <hint text="sides:"/>2, <hint text="circular:"/>FALSE)
     """.trimIndent())
   }
@@ -154,7 +154,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
       foo <- function(..., x, y) { }
       
       foo(10, 20, x = 10, y = 15, <hint text="...("/>30, 40<hint text=")"/>)
-      foo(<hint text="...("/>xx = 10, yy = 20<hint text=")"/>, x = 10, y = 15, <hint text="...("/>30, 40<hint text=")"/>)
+      foo(xx = 10, yy = 20, x = 10, y = 15, <hint text="...("/>30, 40<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -163,7 +163,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
       foo <- function(x, ..., y) { }
       
       foo(<hint text="x:"/>10, 20, y = 15)
-      foo(<hint text="x:"/>10, <hint text="...("/>xx = 20<hint text=")"/>, y = 15)
+      foo(<hint text="x:"/>10, xx = 20, y = 15)
     """.trimIndent())
   }
 

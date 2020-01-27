@@ -39,7 +39,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
     val expressions = element.expressionList
 
     fun wrapDotsIfNeed() {
-      if ((firstDotArg == expressions[0] || firstDotArg == lastDotArg) && firstDotArg !is RNamedArgument) return
+      if ((firstDotArg == expressions[0] || firstDotArg == lastDotArg)) return
       val startOffset = firstDotArg.textOffset
       if (!isWrapDots) {
         result.add(InlayInfo(DOTS, startOffset))
