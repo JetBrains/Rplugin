@@ -5,6 +5,8 @@
 package org.jetbrains.r.psi
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.pom.PomTarget
 import com.intellij.psi.PsiManager
@@ -108,12 +110,16 @@ internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssi
     return RConsoleManager.getInstance(assignment.project).runAsync { console ->
       val rVar = assignment.createRVar(console)
       val virtualFile = rVar.ref.functionSourcePosition()?.file ?: return@runAsync
-      val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
-      if (psiFile !is RFile) return@runAsync
-      val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runAsync
-      val parameter = rFunctionExpression.parameterList.parameterList.first { it.name == name }
-      val editor = PsiUtilBase.findEditor(parameter) ?: return@runAsync
-      editor.caretModel.moveToOffset(parameter.textRange.startOffset)
+      runReadAction {
+        val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
+        if (psiFile !is RFile) return@runReadAction
+        val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runReadAction
+        val parameter = rFunctionExpression.parameterList.parameterList.first { it.name == name }
+        invokeLater {
+          val editor = PsiUtilBase.findEditor(parameter) ?: return@invokeLater
+          editor.caretModel.moveToOffset(parameter.textRange.startOffset)
+        }
+      }
     }
   }
 
