@@ -57,7 +57,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="a:"/>42, d = 40, <hint text="b:"/>33, <hint text="...("/>bb = 43, aa = 20, aa = 15, 15, 20<hint text=")"/>)
+      foo(<hint text="a:"/>42, d = 40, <hint text="b:"/>33, bb = 43, aa = 20, aa = 15, <hint text="...("/>15, 20<hint text=")"/>)
     """.trimIndent())
   }
 
@@ -65,7 +65,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="a:"/>42, <hint text="b:"/>33, <hint text="...("/>bb = 43, aa = 20, aa = 15, 15, 20<hint text=")"/>, d = 40)
+      foo(<hint text="a:"/>42, <hint text="b:"/>33, bb = 43, aa = 20, aa = 15, <hint text="...("/>15, 20<hint text=")"/>, d = 40)
     """.trimIndent())
   }
 
@@ -73,7 +73,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     doParameterNameWithoutDotsWrapTest("""
       foo <- function(a, b, ..., d) { a + b + d }
       
-      foo(<hint text="a:"/>42, <hint text="b:"/>33, <hint text="..."/>bb = 43, aa = 20, aa = 15, 15, 20, d = 40)
+      foo(<hint text="a:"/>42, <hint text="b:"/>33, bb = 43, aa = 20, aa = 15, <hint text="..."/>15, 20, d = 40)
     """.trimIndent())
   }
 
@@ -94,7 +94,7 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
           function() {
             42 + 43 + 44 + bar(<hint text="mode:"/>"normal", <hint text="len:"/>500)
           },
-          <hint text="...("/>aa = 15, bb = 20, cc = 60<hint text=")"/>,
+          aa = 15, bb = 20, cc = 60,
           d = "wiwi")
     """.trimIndent())
   }

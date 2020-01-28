@@ -62,7 +62,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
       }
 
       val arg = expressions[i]
-      if (parameterIndex == dotsArgIndex) {
+      if (parameterIndex == dotsArgIndex && arg !is RNamedArgument) {
         lastDotArg = arg
         if (isLastDots) continue
 
