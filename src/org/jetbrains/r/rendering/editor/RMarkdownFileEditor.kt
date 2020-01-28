@@ -67,6 +67,7 @@ private fun createActionGroup(project: Project, report: VirtualFile, editor: Edi
       createBuildAction(project, manager),
       createBuildAndShowAction(project, report, manager),
       createRunAllAction(project),
+      ActionManager.getInstance().getAction("org.jetbrains.r.actions.RunSelection"),
       ActionManager.getInstance().getAction("RMarkdownNewChunk"),
       Separator(),
       createToggleSoftWrapAction(editor)

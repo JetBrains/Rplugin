@@ -14,6 +14,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import javax.swing.Icon
 
 abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
@@ -22,8 +23,8 @@ abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
   constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
 
   override fun update(e: AnActionEvent) {
-    e.presentation.isVisible = e.isFromActionToolbar || e.psiFile is RFile
-    e.presentation.isEnabled = e.psiFile is RFile
+    e.presentation.isVisible = e.isFromActionToolbar || e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
+    e.presentation.isEnabled = e.psiFile is RFile || e.virtualFile?.fileType == RMarkdownFileType
   }
 }
 
