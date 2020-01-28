@@ -677,7 +677,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
       RInstalledPackage aPackage = getInstalledPackageAt(table, row);
       if (aPackage == null) return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       if (column == PACKAGE_NAME_COLUMN) {
-        Point columnRow = getMouseColumnRow(MouseInfo.getPointerInfo().getLocation(), table);
+        PointerInfo info = MouseInfo.getPointerInfo();
+        Point columnRow = (info != null) ? getMouseColumnRow(info.getLocation(), table) : new Point(-1, -1);
         myPackageNameLinkLabel.setText(aPackage.getName());
         myPackageNameLinkLabel.setUnderline(columnRow.x == column && columnRow.y == row);
         return myPackageNameLinkLabel;
