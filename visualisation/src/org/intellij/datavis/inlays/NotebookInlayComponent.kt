@@ -353,4 +353,8 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
       }
     }
   }
+
+  fun onViewportChange(isInViewport: Boolean) {
+    state?.onViewportChange(isInViewport)
+  }
 }

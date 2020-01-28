@@ -117,12 +117,27 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       val viewport = editor.scrollPane.viewport
-      val startLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y)).line
-      val endLine = editor.xyToLogicalPosition(Point(0, viewport.viewPosition.y + viewport.height)).line
+      val yMin = viewport.viewPosition.y
+      val yMax = yMin + viewport.height
+      val startLine = editor.xyToLogicalPosition(Point(0, yMin)).line
+      val endLine = editor.xyToLogicalPosition(Point(0, yMax)).line
       val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
       val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
-      inlayElements.filter { it.textRange.startOffset in startOffset until endOffset && !inlays.containsKey(it) }.forEach { inlay ->
-        updateCell(inlay)
+      for (element in inlayElements) {
+        updateInlayForViewport(element, yMin until yMax, startOffset until endOffset)
+      }
+    }
+  }
+
+  private fun updateInlayForViewport(element: PsiElement, viewportRange: IntRange, expansionRange: IntRange) {
+    val inlay = inlays[element]
+    if (inlay != null) {
+      val bounds = inlay.bounds
+      val isInViewport = bounds.y <= viewportRange.last && bounds.y + bounds.height >= viewportRange.first
+      inlay.onViewportChange(isInViewport)
+    } else {
+      if (element.textRange.startOffset in expansionRange) {
+        updateCell(element)
       }
     }
   }

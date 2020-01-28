@@ -51,6 +51,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
@@ -115,6 +116,10 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       Disposer.register(parent, disposable)
     }
 
+    open fun onViewportChange(isInViewport: Boolean) {
+      // Do nothing by default
+    }
+
     open fun addToolbar() {
       toolbarPane.toolbarComponent = createToolbar()
     }
@@ -132,6 +137,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   inner class OutputImg(parent: Disposable) : Output(parent) {
     private val graphicsPanel = GraphicsPanel(project, parent)
     private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
+    private val viewportVisibility = AtomicBoolean(false)
 
     private var imagePath: String? = null
 
@@ -176,6 +182,15 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       }
     }
 
+    override fun onViewportChange(isInViewport: Boolean) {
+      val oldVisibility = viewportVisibility.getAndSet(isInViewport)
+      if (oldVisibility != isInViewport) {
+        if (isInViewport) {
+          scheduleResizing()
+        }
+      }
+    }
+
     private fun scheduleResizing() {
       queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
         override fun run() {
@@ -185,7 +200,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
             // Note: there might be lots of attempts to resize image on IDE startup
             // but most of them will fail (and throw an exception)
             // due to the parent being disposed
-            if (!Disposer.isDisposed(parent)) {
+            if (!Disposer.isDisposed(parent) && viewportVisibility.get()) {
               resize(newSize)
             }
           }
@@ -562,5 +577,9 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
   override fun getCollapsedDescription(): String {
     return if (output == null) "" else output!!.getCollapsedDescription()
+  }
+
+  override fun onViewportChange(isInViewport: Boolean) {
+    output?.onViewportChange(isInViewport)
   }
 }

@@ -47,11 +47,16 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
 
   private var maxHeight: Int = -1
 
+  @Volatile
+  private var isInViewport: Boolean = false
+
   init {
     Disposer.register(parent, disposable)
     tabs = JBTabsImpl(project, ActionManager.getInstance(), IdeFocusManager.getInstance(project), disposable)
     tabs.addListener(object : TabsListener {
       override fun selectionChanged(oldSelection: TabInfo?, newSelection: TabInfo?) {
+        oldSelection?.onViewportChange(false)  // Definitely false
+        newSelection?.onViewportChange(isInViewport)  // Might be true
         onChange?.invoke()
       }
     })
@@ -119,6 +124,15 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
 
   override fun getCollapsedDescription(): String {
     return "foooo"
+  }
+
+  override fun onViewportChange(isInViewport: Boolean) {
+    this.isInViewport = isInViewport
+    tabs.selectedInfo?.onViewportChange(isInViewport)
+  }
+
+  private fun TabInfo.onViewportChange(isInViewport: Boolean) {
+    (component as NotebookInlayState?)?.onViewportChange(isInViewport)
   }
 
   private fun NotebookInlayState.setupOnHeightCalculated() {
