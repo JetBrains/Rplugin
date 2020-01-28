@@ -263,9 +263,9 @@ class RCompletionContributor : CompletionContributor() {
     }
 
     private fun addNamedArgumentsCompletion(originalFile: PsiFile, parent: PsiElement?, result: CompletionResultSet) {
-      if (parent !is RArgumentList) return
+      if (parent !is RArgumentList && parent !is RNamedArgument) return
 
-      val mainCall = parent.parent as? RCallExpression ?: return
+      val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression  ?: return
       val shownNames = HashSet<String>()
 
       for (functionDeclaration in RPsiUtil.resolveCall(mainCall)) {
