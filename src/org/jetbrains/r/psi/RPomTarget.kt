@@ -12,7 +12,6 @@ import com.intellij.pom.PomTarget
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PomTargetPsiElementImpl
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiUtilBase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
@@ -114,10 +113,9 @@ internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssi
         val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
         if (psiFile !is RFile) return@runReadAction
         val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runReadAction
-        val parameter = rFunctionExpression.parameterList.parameterList.first { it.name == name }
+        val parameter = rFunctionExpression.parameterList.parameterList.firstOrNull { it.name == name } ?: return@runReadAction
         invokeLater {
-          val editor = PsiUtilBase.findEditor(parameter) ?: return@invokeLater
-          editor.caretModel.moveToOffset(parameter.textRange.startOffset)
+          parameter.navigate(true)
         }
       }
     }
