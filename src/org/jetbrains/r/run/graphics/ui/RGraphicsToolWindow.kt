@@ -111,12 +111,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun showCurrent() {
     lastSnapshot?.let { snapshot ->
-      val message = snapshot.error
-      if (message != null) {
-        graphicsPanel.showMessage(message)
-      } else {
-        graphicsPanel.showImage(snapshot.file)
-      }
+      graphicsPanel.showImage(snapshot.file)
     }
   }
 
@@ -151,7 +146,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       override val id = EXPORT_GRAPHICS_ACTION_ID
 
       override val canClick: Boolean
-        get() = lastNormal.isNotEmpty() && lastSnapshot?.error == null
+        get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
         val title = RBundle.message("graphics.panel.file.saver.title")

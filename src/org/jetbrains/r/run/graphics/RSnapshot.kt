@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.run.graphics
 
-import org.jetbrains.r.RBundle
 import java.io.File
 
 enum class RSnapshotType {
@@ -16,7 +15,6 @@ enum class RSnapshotType {
 data class RSnapshot(
   val file: File,
   val type: RSnapshotType,
-  val error: String?,
 
   /**
    * Number of the snapshot.
@@ -30,7 +28,14 @@ data class RSnapshot(
    * Due to rescaling, graphics device can produce multiple rescaled versions
    * of the snapshot with the same [number]
    */
-  val version: Int
+  val version: Int,
+
+  /**
+   * This might be `null` in two cases:
+   * 1) the graphics device is outdated and doesn't specify a snapshot's resolution at all
+   * 2) a resolution wasn't specified explicitly before a snapshot's rescale
+   */
+  val resolution: Int?
 ) {
   companion object {
     // Note: for goodness' sake, don't move these literals to bundle!
@@ -38,24 +43,26 @@ data class RSnapshot(
     private const val NORMAL_SUFFIX = "normal"
     private const val SKETCH_SUFFIX = "sketch"
     private const val ZOOMED_SUFFIX = "zoomed"
-    private const val MARGIN_SUFFIX = "margin"
-
-    private val MARGIN_ERROR_TEXT = RBundle.message("graphics.snapshot.error.margins")
 
     fun from(file: File): RSnapshot? {
       val parts = file.nameWithoutExtension.split('_')
-      val numParts = parts.size
-      return if ((numParts == 4 || numParts == 5) && parts[0] == SNAPSHOT_MAGIC) {
-        val type = extractType(parts[1])
-        val error = if (numParts == 5) extractError(parts[2]) else null
-        val (number, version) = parts.subList(parts.size - 2, parts.size).let {
-          Pair(it[0].toInt(), it[1].toInt())
+      if (parts.isEmpty() || parts[0] != SNAPSHOT_MAGIC) {
+        return null
+      }
+      return when (val numParts = parts.size) {
+        4, 5 -> {
+          // format: snapshot_type_number_version[_resolution]
+          val type = extractType(parts[1])
+          val number = parts[2].toInt()
+          val version = parts[3].toInt()
+          val resolution = if (numParts == 5) parts[4].toInt().takeIf { it > 0 } else null
+          RSnapshot(file, type, number, version, resolution)
         }
-        RSnapshot(file, type, error, number, version)
-      } else if (numParts == 3) {
-        RSnapshot(file, RSnapshotType.NORMAL, null, parts[1].toInt(), parts[2].toInt())
-      } else {
-        null
+        3 -> {
+          // format: snapshot_number_version (for backward compatibility)
+          RSnapshot(file, RSnapshotType.NORMAL, parts[1].toInt(), parts[2].toInt(), null)
+        }
+        else -> null
       }
     }
 
@@ -66,10 +73,6 @@ data class RSnapshot(
         ZOOMED_SUFFIX -> RSnapshotType.ZOOMED
         else -> throw RuntimeException("Unsupported snapshot type: '$text'")
       }
-    }
-
-    private fun extractError(text: String): String {
-      return if (text == MARGIN_SUFFIX) MARGIN_ERROR_TEXT else throw RuntimeException("Unsupported snapshot error tag: '$text'")
     }
   }
 }
