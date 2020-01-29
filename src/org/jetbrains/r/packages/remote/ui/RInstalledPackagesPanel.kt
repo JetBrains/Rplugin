@@ -45,6 +45,9 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     }
   }
 
+  private val isReady: Boolean
+    get() = rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
+
   @Volatile
   private var isTaskRunning = false
   private var rPackageManagementService: RPackageManagementService? = null
@@ -97,8 +100,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
       }
 
       override fun updateButton(e: AnActionEvent) {
-        e.presentation.isEnabled = rPackageManagementService != null && !isTaskRunning &&
-                                   rPackageManagementService?.arePackageDetailsLoaded == true
+        e.presentation.isEnabled = isReady && rPackageManagementService?.arePackageDetailsLoaded == true
       }
     }
   }
@@ -118,7 +120,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   override fun canUninstallPackage(aPackage: RInstalledPackage): Boolean {
-    return rPackageManagementService?.canUninstallPackage(aPackage) == true && manager.interpreter != null && !isTaskRunning
+    return isReady && rPackageManagementService?.canUninstallPackage(aPackage) == true
   }
 
   override fun createManagePackagesDialog(): ManagePackagesDialog {
@@ -126,13 +128,9 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     return RManagePackagesDialog(myProject, service, listener, this)
   }
 
-  override fun canInstallPackage(aPackage: RInstalledPackage): Boolean {
-    return rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
-  }
+  override fun canInstallPackage(aPackage: RInstalledPackage) = isReady
 
-  override fun canUpgradePackage(aPackage: RInstalledPackage?): Boolean {
-    return rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
-  }
+  override fun canUpgradePackage(aPackage: RInstalledPackage?) = isReady
 
   override fun updatePackages(packageManagementService: RPackageManagementService?) {
     if (rPackageManagementService == null) {
