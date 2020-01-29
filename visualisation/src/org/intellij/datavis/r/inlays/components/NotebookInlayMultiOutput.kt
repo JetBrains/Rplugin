@@ -111,9 +111,9 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
       }
       else {
         NotebookInlayOutput(project, disposable).apply {
-          addTab(inlayOutput)
           setupOnHeightCalculated()
           addData(inlayOutput.type, inlayOutput.data)
+          addTab(inlayOutput)
         }
       }
     }

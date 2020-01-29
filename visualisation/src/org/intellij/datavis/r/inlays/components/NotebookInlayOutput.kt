@@ -53,6 +53,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.AbstractAction
+import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities.invokeLater
@@ -86,9 +87,18 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     private val outputFont = monospacedFont.derive(UIUtil.getLabelFont().deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL)))
   }
 
+  interface ActionHolder {
+    val icon: Icon
+    val text: String
+    val description: String
+    fun onClick()
+  }
+
   abstract inner class Output(parent: Disposable) {
 
     protected val toolbarPane = ToolbarPane()
+
+    open val extraActions: List<ActionHolder> = emptyList()
 
     fun getComponent(): Component {
       return toolbarPane
@@ -125,7 +135,8 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     protected fun createToolbar(): JComponent {
-      val actionGroup = DefaultActionGroup(createSaveAsAction(), createClearAction())
+      val actions = createActions() + listOf(createClearAction())
+      val actionGroup = DefaultActionGroup(actions)
       val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true)
       return toolbar.component.apply {
         isOpaque = false
@@ -139,13 +150,33 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
     private val viewportVisibility = AtomicBoolean(false)
 
+    private val settingsActionHolder = object : ActionHolder {
+      override val icon = AllIcons.General.GearPlain
+      override val text = "Settings"
+      override val description = "Graphics settings for R Markdown"
+
+      override fun onClick() {
+        val dialog = GraphicsSettingsDialog(isAutoResizeEnabled) { newAutoResizeEnabled ->
+          graphicsPanel.isAdvancedMode = !newAutoResizeEnabled
+          isAutoResizeEnabled = newAutoResizeEnabled
+          scheduleResizingIfEnabled()
+        }
+        dialog.show()
+      }
+    }
+
     private var imagePath: String? = null
+
+    @Volatile
+    private var isAutoResizeEnabled: Boolean = true
+
+    override val extraActions: List<ActionHolder> = listOf(settingsActionHolder)
 
     init {
       toolbarPane.centralComponent = graphicsPanel.component
       graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
         override fun componentResized(e: ComponentEvent?) {
-          scheduleResizing()
+          scheduleResizingIfEnabled()
         }
       })
     }
@@ -157,7 +188,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       }.onSuccess {
         invokeLater {
           onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
-          scheduleResizing()
+          scheduleResizingIfEnabled()
         }
       }
     }
@@ -186,8 +217,14 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       val oldVisibility = viewportVisibility.getAndSet(isInViewport)
       if (oldVisibility != isInViewport) {
         if (isInViewport) {
-          scheduleResizing()
+          scheduleResizingIfEnabled()
         }
+      }
+    }
+
+    private fun scheduleResizingIfEnabled() {
+      if (isAutoResizeEnabled) {
+        scheduleResizing()
       }
     }
 
@@ -486,7 +523,18 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   private var output: Output? = null
 
   override fun createActions(): List<AnAction> {
-    return listOf(createSaveAsAction())
+    val extraActions = createExtraActions() ?: emptyList()
+    return extraActions + listOf(createSaveAsAction())
+  }
+
+  private fun createExtraActions(): List<AnAction>? {
+    return output?.extraActions?.map { holder ->
+      object : DumbAwareAction(holder.text, holder.description, holder.icon) {
+        override fun actionPerformed(e: AnActionEvent) {
+          holder.onClick()
+        }
+      }
+    }
   }
 
   private fun createSaveAsAction(): AnAction {
