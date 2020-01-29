@@ -20,7 +20,6 @@ import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
-import org.jetbrains.r.packages.isNewerOrSame
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.io.IOException
@@ -218,7 +217,7 @@ object RepoUtils {
     // if networking is off but requested package is already up-to-date
     val version = getPackageVersion(repoPackage.name, rInterop)
     if (version != null) {
-      if (version.isNewerOrSame(repoPackage.latestVersion)) {
+      if (RPackageVersion.isNewerOrSame(version, repoPackage.latestVersion)) {
         return
       } else {
         LOGGER.warn("updatePackage(): Expected version = ${repoPackage.latestVersion}, got = $version")
@@ -276,10 +275,6 @@ object RepoUtils {
     }
   }
 
-  private fun areSameVersions(aVersion: String?, bVersion: String?): Boolean {
-    return RPackageVersion.compare(aVersion, bVersion) == 0
-  }
-
   @Throws(ExecutionException::class)
   fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RInstalledPackage) {
     val packageName = repoPackage.name
@@ -294,7 +289,7 @@ object RepoUtils {
     }
     rInterop.repoRemovePackage(packageName, FileUtil.toSystemIndependentName(libraryPath.path))
     val version = getPackageVersion(packageName, rInterop)
-    if (version != null && areSameVersions(version, repoPackage.version)) {
+    if (version != null && RPackageVersion.isSame(version, repoPackage.version)) {
       throw ExecutionException("Cannot remove package '$packageName'. Check console for process output")
     }
   }

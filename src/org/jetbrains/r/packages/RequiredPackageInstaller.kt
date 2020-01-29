@@ -160,7 +160,7 @@ class RequiredPackageInstaller(private val project: Project) {
 
   private fun findRequiredPackage(requiredPackage: RequiredPackage): RInstalledPackage? {
     return rPackageManagementService.findInstalledPackageByName(requiredPackage.name)?.takeIf { candidate ->
-      candidate.version.isNewerOrSame(requiredPackage.minimalVersion)
+      RPackageVersion.isNewerOrSame(candidate.version, requiredPackage.minimalVersion)
     }
   }
 
@@ -193,7 +193,7 @@ class RequiredPackageInstaller(private val project: Project) {
     return mutableListOf<RequiredPackage>().also { needInstall ->
       for (required in requiredPackages) {
         val previousVersion = installingPackages2minimalVersions[required.name]
-        if (previousVersion == null || !previousVersion.isNewerOrSame(required.minimalVersion)) {
+        if (previousVersion == null || RPackageVersion.isOlder(previousVersion, required.minimalVersion)) {
           installingPackages2minimalVersions[required.name] = required.minimalVersion
         }
         if (previousVersion == null) {

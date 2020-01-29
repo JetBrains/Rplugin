@@ -6,59 +6,54 @@ package org.jetbrains.r.packages
 
 import kotlin.math.min
 
-data class RPackageVersion(val numbers: List<Int>) : Comparable<RPackageVersion> {
-  override fun compareTo(other: RPackageVersion): Int {
-    val minSize = min(numbers.size, other.numbers.size)
+object RPackageVersion {
+  fun isNewerOrSame(version: String?, comparedToVersion: String?): Boolean {
+    val difference = compare(version, comparedToVersion)
+    return difference != null && difference >= 0
+  }
+
+  fun isOlder(version: String?, comparedToVersion: String?) = !isNewerOrSame(version, comparedToVersion)
+
+  fun isSame(version: String?, comparedToVersion: String?) = compare(version, comparedToVersion) == 0
+
+  /**
+   * Compare two packages' version strings in *almost* (see notes) the same manner
+   * as the R function `compareVersion`.
+   * **Note:** `null`s are treated as empty strings.
+   * **Note:** two `null`s are considered equal (contrary to `compareVersion`)
+   * @return negative for less, positive for greater, zero for equal
+   * and `null` if version strings are invalid
+   */
+  fun compare(aVersion: String?, bVersion: String?): Int? {
+    return parse(aVersion ?: "")?.let { a ->
+      parse(bVersion ?: "")?.let { b ->
+        a.compareTo(b)
+      }
+    }
+  }
+
+  /**
+   * Convert version string to a list of version numbers.
+   * **Note:** blank version string is considered correct and yields an empty list
+   */
+  fun parse(version: String): List<Int>? {
+    return if (version.isNotBlank()) {
+      val tokens = version.trim().split('.', '-')
+      val numbers = tokens.mapNotNull { it.toIntOrNull() }
+      numbers.takeIf { it.size == tokens.size }
+    } else {
+      emptyList()
+    }
+  }
+
+  private fun List<Int>.compareTo(other: List<Int>): Int {
+    val minSize = min(size, other.size)
     for (i in 0 until minSize) {
-      when {
-        numbers[i] > other.numbers[i] -> return GREATER
-        numbers[i] < other.numbers[i] -> return LESS
+      val result = this[i].compareTo(other[i])
+      if (result != 0) {
+        return result
       }
     }
-    return when {
-      numbers.size > other.numbers.size -> GREATER
-      numbers.size < other.numbers.size -> LESS
-      else -> EQUAL
-    }
+    return size.compareTo(other.size)
   }
-
-  companion object {
-    private const val GREATER = 1
-    private const val EQUAL = 0
-    private const val LESS = -1
-
-    /**
-     * **Note:** blank version string is considered correct and yields [RPackageVersion] with empty [RPackageVersion.numbers] list
-     */
-    fun from(version: String): RPackageVersion? {
-      return if (version.isNotBlank()) {
-        val tokens = version.trim().split('.', '-')
-        val numbers = tokens.mapNotNull { it.toIntOrNull() }
-        if (numbers.size == tokens.size) RPackageVersion(numbers) else null
-      } else {
-        RPackageVersion(emptyList())
-      }
-    }
-
-    /**
-     * Compare two packages' version strings in *almost* (see notes) the same manner
-     * as the R function `compareVersion`.
-     * **Note:** `null`s are treated as empty strings.
-     * **Note:** two `null`s are considered equal (contrary to `compareVersion`)
-     * @return negative for less, positive for greater, zero for equal
-     * and `null` if version strings are invalid
-     */
-    fun compare(aVersion: String?, bVersion: String?): Int? {
-      return from(aVersion ?: "")?.let { a ->
-        from(bVersion ?: "")?.let { b ->
-          a.compareTo(b)
-        }
-      }
-    }
-  }
-}
-
-fun String.isNewerOrSame(version: String?): Boolean {
-  val difference = RPackageVersion.compare(this, version)
-  return difference != null && difference >= 0
 }

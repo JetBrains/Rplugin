@@ -21,10 +21,10 @@ class RPackageVersionTest : RUsefulTestCase() {
       "1.23-45.6" to listOf(1, 23, 45, 6),
       "12-345.6789-12345" to listOf(12, 345, 6789, 12345)
     )
-    for ((string, numbers) in string2numbers) {
-      val version = RPackageVersion.from(string)
-      TestCase.assertNotNull("Cannot parse version string '$string'", version)
-      TestCase.assertEquals("Incorrect version numbers for string '$string'", numbers, version!!.numbers)
+    for ((string, expectedNumbers) in string2numbers) {
+      val actualNumbers = RPackageVersion.parse(string)
+      TestCase.assertNotNull("Cannot parse version string '$string'", actualNumbers)
+      TestCase.assertEquals("Incorrect version numbers for string '$string'", expectedNumbers, actualNumbers)
     }
   }
 
@@ -40,8 +40,8 @@ class RPackageVersionTest : RUsefulTestCase() {
       "1.2.e"
     )
     for (string in strings) {
-      val version = RPackageVersion.from(string)
-      TestCase.assertNull("Incorrectly treated '$string' as a valid version string", version)
+      val numbers = RPackageVersion.parse(string)
+      TestCase.assertNull("Incorrectly treated '$string' as a valid version string", numbers)
     }
   }
 
