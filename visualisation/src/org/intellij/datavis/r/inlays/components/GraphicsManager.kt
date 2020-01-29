@@ -4,20 +4,18 @@
 
 package org.intellij.datavis.r.inlays.components
 
-import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
 import java.awt.Dimension
 import java.io.File
 
 interface GraphicsManager {
-  fun isBusy(project: Project): Boolean
-  fun resizeImage(project: Project, imagePath: String, newSize: Dimension, onResize: (File) -> Unit)
+  val isBusy: Boolean
+  fun getImageResolution(imagePath: String): Int?
+  fun resizeImage(imagePath: String, newSize: Dimension, onResize: (File) -> Unit)
 
   companion object {
-    private val EP = ExtensionPointName.create<GraphicsManager>("com.intellij.datavis.r.inlays.components.graphicsManager")
-
-    fun getInstance(): GraphicsManager? {
-      return EP.extensionList.firstOrNull()
+    fun getInstance(project: Project): GraphicsManager? {
+      return GraphicsManagerProvider.getInstance()?.getManager(project)
     }
   }
 }

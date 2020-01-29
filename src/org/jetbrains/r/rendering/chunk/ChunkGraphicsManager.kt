@@ -13,16 +13,23 @@ import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.Dimension
 import java.io.File
 
-class ChunkGraphicsManager : GraphicsManager {
-  override fun isBusy(project: Project): Boolean {
-    return project.chunkExecutionState != null
+class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
+  override val isBusy: Boolean
+    get() = project.chunkExecutionState != null
+
+  override fun getImageResolution(imagePath: String): Int? {
+    return imagePath.toSnapshot()?.resolution
   }
 
-  override fun resizeImage(project: Project, imagePath: String, newSize: Dimension, onResize: (File) -> Unit) {
-    RSnapshot.from(File(imagePath))?.let { snapshot ->
+  override fun resizeImage(imagePath: String, newSize: Dimension, onResize: (File) -> Unit) {
+    imagePath.toSnapshot()?.let { snapshot ->
       val resolution = RGraphicsUtils.getDefaultResolution(false)
       val newParameters = RGraphicsUtils.ScreenParameters(newSize, resolution)
       RGraphicsRepository.getInstance(project).rescale(snapshot, newParameters, onResize)
     }
+  }
+
+  companion object {
+    private fun String.toSnapshot() = RSnapshot.from(File(this))
   }
 }
