@@ -5,7 +5,6 @@
 
 package org.jetbrains.r.documentation
 
-import com.google.common.base.CharMatcher
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.AbstractDocumentationProvider
@@ -13,6 +12,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.SystemInfo.isWindows
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -388,15 +388,15 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
+    RDocumentationUtil.getTextFromElement(psiElement)?.let { return it }
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
     val path = extractPackageName(psiElement)?.let {
       getHtmlPath(rInterop, "$it/html/$INDEX_HTML")
     } ?: let {
-      val reference = restoreConsoleHelpCall(psiElement) ?: return null
-      checkPossibilityReturnDocumentation(reference) { return it }
+      checkPossibilityReturnDocumentation(psiElement) { return it }
 
       try {
-        getDocumentationLocalFunction(rInterop, reference)?.let { path ->
+        getDocumentationLocalFunction(rInterop, psiElement)?.let { path ->
           return Scanner(File(path), StandardCharsets.UTF_8).use {
             it.useDelimiter("\\A").next()
           }
@@ -405,7 +405,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       catch (e: RequiredPackageException) {
         return e.message
       }
-      getPath(rInterop, reference) ?: return null
+      getPath(rInterop, psiElement) ?: return null
     }
 
     val inputStream = if (path.startsWith("http")) {
@@ -437,14 +437,15 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
    * @return
    */
   override fun getDocumentationElementForLink(psiManager: PsiManager, link: String?, context: PsiElement?): PsiElement? {
-    if (context == null || context.language != RLanguage.INSTANCE) return null
+    if (context == null || context.language != RLanguage.INSTANCE || link == null) return null
+    RDocumentationUtil.navigateByLinkFromElement(context, link)?.let { return it }
     if (link == INSTALL_REQUIRED_PACKAGES_LINK) {
       RequiredPackageInstaller.getInstance(psiManager.project)
         .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, false)
       return null
     }
 
-    return RElementFactory.buildRFileFromText(psiManager.project, "help_url(\"${link}\")").firstChild
+    return RElementFactory.createRPsiElementFromText(psiManager.project, "help_url(\"${StringUtil.escapeStringCharacters(link)}\")")
   }
 
   private fun convertHelpPage(fromPath: String, toPath: String): Boolean {
@@ -538,8 +539,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       return null
     }
 
-    var linkPath = (reference as RCallExpression).argumentList.expressionList[0].text
-    linkPath = CharMatcher.anyOf("\"").trimFrom(linkPath)
+    val linkPath = (reference as RCallExpression).argumentList.expressionList[0].name ?: return null
 
     if (linkPath.startsWith("http") || linkPath.endsWith(INDEX_HTML)) {
       return linkPath
@@ -550,18 +550,6 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     val helpPage = split[2].replace(".html", "")
 
     return getRealPath(rInterop, helpPage, helpPackage)
-  }
-
-  private fun restoreConsoleHelpCall(reference: PsiElement?): PsiElement? {
-    val consoleHelpCallPattern = psiElement(RCallExpression::class.java).withChild(
-      psiElement(RIdentifierExpression::class.java).withText("help_from_console"))
-
-    if (!consoleHelpCallPattern.accepts(reference)) {
-      return reference
-    }
-
-    val programmeText = (reference as RCallExpression).argumentList.expressionList[0].text.dropWhile { it == '"' }.dropLastWhile { it == '"' }
-    return RElementFactory.buildRFileFromText(reference.project, programmeText).firstChild
   }
 
   private class RequiredPackageException(message: String?) : RuntimeException(message)

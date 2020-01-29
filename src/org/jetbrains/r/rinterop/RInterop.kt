@@ -431,12 +431,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getGraphicsShutdownMethod(), Empty.getDefaultInstance())
   }
 
-  fun htmlViewerInit(tracedFilePath: String) {
-    executeRequest(RPIServiceGrpc.getHtmlViewerInitMethod(), StringValue.of(tracedFilePath))
-  }
+  class HttpdResponse(val content: ByteArray, val url: String)
 
-  fun htmlViewerReset() {
-    executeRequest(RPIServiceGrpc.getHtmlViewerResetMethod(), Empty.getDefaultInstance())
+  fun httpdRequest(url: String): HttpdResponse? {
+    return executeWithCheckCancel(asyncStub::httpdRequest, StringValue.of(url))
+      .takeIf { it.success }
+      ?.let { HttpdResponse(it.content.toByteArray(), it.url) }
   }
 
   fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, screenParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
@@ -707,28 +707,42 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
         fireListeners { it.onException(event.exception.text) }
       }
+      Service.AsyncEvent.EventCase.TERMINATION -> {
+        asyncEventsListeners.forEach { it.onTermination() }
+      }
       Service.AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
-        val remaining = AtomicInteger(asyncEventsListeners.size)
-        asyncEventsListeners.forEach { listener ->
-          val promise = try {
-            listener.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value))
-          } catch (t: Throwable) {
-            LOG.error(t)
-            resolvedPromise<Unit>()
-          }
-          promise.onProcessed {
-            if (remaining.decrementAndGet() == 0) {
-              Disposer.dispose(ref)
-              executeAsync(asyncStub::viewRequestFinished, Empty.getDefaultInstance())
-            }
-          }
+        fireListenersAsync({ it.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value)) }) {
+          ref.dispose()
+          executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
-      Service.AsyncEvent.EventCase.TERMINATION -> {
-        fireListeners { it.onTermination() }
+      Service.AsyncEvent.EventCase.SHOWFILEREQUEST -> {
+        val request = event.showFileRequest
+        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title) }) {
+          executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
+        }
+      }
+      Service.AsyncEvent.EventCase.SHOWHELPREQUEST -> {
+        val request = event.showHelpRequest
+        fireListeners { it.onShowHelpRequest(request.content, request.url) }
       }
       else -> {
+      }
+    }
+  }
+
+  private fun fireListenersAsync(f: (AsyncEventsListener) -> Promise<Unit>, end: () -> Unit) {
+    val remaining = AtomicInteger(asyncEventsListeners.size)
+    asyncEventsListeners.forEach { listener ->
+      val promise = try {
+        f(listener)
+      } catch (t: Throwable) {
+        LOG.error(t)
+        resolvedPromise<Unit>()
+      }
+      promise.onProcessed {
+        if (remaining.decrementAndGet() == 0) end()
       }
     }
   }
@@ -832,9 +846,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onPrompt(isDebug: Boolean = false) {}
     fun onException(text: String) {}
     fun onTermination() {}
-    fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
-      return resolvedPromise()
-    }
+    fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> = resolvedPromise()
+    fun onShowHelpRequest(content: String, url: String) {}
+    fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
   }
 
   companion object {

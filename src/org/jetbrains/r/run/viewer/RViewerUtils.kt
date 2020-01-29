@@ -17,11 +17,4 @@ object RViewerUtils {
       url
     }
   }
-
-  fun createViewerState(): RViewerState {
-    // Note: 'FileUtil.createTempFile()' will break unit-tests
-    val tmpFile = File.createTempFile("rplugin-viewer", ".txt")
-    tmpFile.deleteOnExit()
-    return RBasicViewerState(tmpFile)
-  }
 }

@@ -4,28 +4,23 @@
 
 package org.jetbrains.r.run.viewer.ui
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
-import org.jetbrains.r.run.viewer.RViewerRepository
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 
-class RViewerToolWindow(project: Project) : SimpleToolWindowPanel(true, true) {
+class RViewerToolWindow : SimpleToolWindowPanel(true, true) {
   private val viewerPanel = RViewerPanel()
 
   init {
     setContent(viewerPanel.component)
-    RViewerRepository.getInstance(project).addUrlListener { url ->
-      ApplicationManager.getApplication().invokeLater {
-        refresh(url)
-      }
-    }
   }
 
-  fun refresh(url: String?) {
-    if (url != null) {
+  fun refresh(url: String?): Promise<Unit> {
+    return if (url != null) {
       viewerPanel.loadUrl(url)
     } else {
       viewerPanel.reset()
+      resolvedPromise()
     }
   }
 }

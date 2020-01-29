@@ -4,49 +4,22 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
-import org.jetbrains.r.console.UpdateViewerHandler
-import org.jetbrains.r.run.viewer.RViewerState
-import org.jetbrains.r.run.viewer.RViewerUtils
-import java.util.concurrent.TimeoutException
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.rinterop.RInterop
 
 class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
-  private lateinit var viewerHandler: UpdateViewerHandler
-
-  @Volatile
-  private lateinit var currentUrl: String
-
-  private val listener = object : RViewerState.Listener {
-    override fun onCurrentChange(newUrl: String) {
-      currentUrl = newUrl
-    }
-
-    override fun onReset() {
-      // Nothing to do here
-    }
-  }
-
   override fun setUp() {
     super.setUp()
 
     // Setup custom "default" browser
     // which should be used for URLs starting with either 'https:' or 'http:'.
     // That means all web request will be redirected to R stdout
-    rInterop.executeCode("options(browser = function(url) { print(url) })")
-
-    // UpdateViewerHandler will setup custom "non-default" browser.
-    // From now all local URLs will be written to traced tmp file
-    // and then sent to listeners of current RViewerState instance
-    val viewerState = RViewerUtils.createViewerState()
-    viewerState.addListener(listener)
-    viewerHandler = UpdateViewerHandler(rInterop, viewerState)
-    currentUrl = ""
-  }
-
-  override fun tearDown() {
-    // Switch back to custom "default" browser
-    rInterop.htmlViewerReset()
-    super.tearDown()
+    rInterop.executeCode(".jetbrains_ther_old_browser <- function(url) { cat(url) }")
+    rInterop.asyncEventsStartProcessing()
   }
 
   fun testOneFileUrl() {
@@ -85,41 +58,47 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
     browseWebUrl("http://google.com")
   }
 
+  fun testPager() {
+    var actualPath: String? = null
+    var actualTitle: String? = null
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+        actualPath = filePath
+        actualTitle = title
+        return resolvedPromise()
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
+    val file = FileUtil.createTempFile("rplugin", ".txt").also { it.deleteOnExit() }
+    rInterop.executeCode("options()\$pager('${StringUtil.escapeStringCharacters(file.absolutePath)}', title = 'mytitle')")
+    TestCase.assertEquals(file.absolutePath, actualPath)
+    TestCase.assertEquals("mytitle", actualTitle)
+  }
+
   private fun browseLocalUrl(expectedUrl: String) {
-    execute("browseURL('$expectedUrl')")
-    val actualUrl = waitForUrl()
+    var actualUrl: String? = null
+    val listener = object : RInterop.AsyncEventsListener {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+        actualUrl = filePath
+        return resolvedPromise()
+      }
+    }.also { rInterop.addAsyncEventsListener(it) }
+    rInterop.executeCode("browseURL('$expectedUrl')")
     TestCase.assertEquals(expectedUrl, actualUrl)
+    rInterop.removeAsyncEventsListener(listener)
   }
 
   private fun browseWebUrl(expectedUrl: String) {
-    val output = execute("browseURL('$expectedUrl')", true)
-    TestCase.assertNotNull(output)
-    output?.let {
-      val actualUrl = it.substring(5, it.length - 2)  // e.g. "[1] 'https://google.com'\n"
-      TestCase.assertEquals(expectedUrl, actualUrl)
-    }
-  }
-
-  private fun execute(command: String, returnOutput: Boolean = false): String? {
-    val result = rInterop.executeCode(command)
-    viewerHandler.onCommandExecuted()
-    return if (returnOutput) result.stdout else null
-  }
-
-  private fun waitForUrl(): String {
-    val start = System.currentTimeMillis()
-    while (currentUrl == "") {
-      if (System.currentTimeMillis() - start > TIMEOUT) {
-        throw TimeoutException("Waiting for URL for $TIMEOUT ms")
+    var wasShowFileRequest = false
+    val listener = object : RInterop.AsyncEventsListener {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+        wasShowFileRequest = true
+        return resolvedPromise()
       }
-      Thread.sleep(20L)
-    }
-    val url = currentUrl
-    currentUrl = ""
-    return url
-  }
-
-  companion object {
-    private const val TIMEOUT = 5000L
+    }.also { rInterop.addAsyncEventsListener(it) }
+    val actualUrl = rInterop.executeCode("browseURL('$expectedUrl')").stdout
+    TestCase.assertFalse(wasShowFileRequest)
+    TestCase.assertEquals(expectedUrl, actualUrl)
+    rInterop.removeAsyncEventsListener(listener)
   }
 }

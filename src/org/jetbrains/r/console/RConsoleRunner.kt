@@ -24,13 +24,11 @@ import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.IdeEventQueue
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.keymap.impl.KeyProcessorContext
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
@@ -43,16 +41,11 @@ import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
-import org.jetbrains.r.run.viewer.RViewerRepository
-import org.jetbrains.r.run.viewer.RViewerState
-import org.jetbrains.r.run.viewer.RViewerUtils
-import org.jetbrains.r.run.viewer.ui.RViewerToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
@@ -98,23 +91,10 @@ class RConsoleRunner(private val project: Project,
             RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
           }
 
-          // Setup console listener for HTML viewer
-          val viewerState = RViewerUtils.createViewerState()
-          viewerState.addListener(RViewerToolWindowListener(project))
-          consoleView.addOnSelectListener {
-            RViewerRepository.getInstance(project).setActiveState(viewerState)
-          }
-
           createContentDescriptorAndActions()
           consoleView.createDebuggerPanel()
           // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
           runAsync { promise.setResult(consoleView) }
-
-          // Setup viewer handler
-          runBackgroundableTask(RBundle.message("console.runner.initializing.viewer.title"), project, false) {
-            val viewerHandler = UpdateViewerHandler(rInterop, viewerState)
-            consoleView.executeActionHandler.addListener(viewerHandler)
-          }
 
           // Setup custom graphical device (it's more time consuming so it should be the last one)
           runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
@@ -290,23 +270,6 @@ internal class UpdateGraphicsHandler(private val device: RGraphicsDevice) : RCon
 
   override fun onCommandExecuted() {
     device.update()
-  }
-}
-
-@VisibleForTesting
-internal class UpdateViewerHandler(
-  rInterop: RInterop,
-  private val state: RViewerState
-) : RConsoleExecuteActionHandler.Listener {
-
-  init {
-    rInterop.htmlViewerInit(FileUtil.toSystemIndependentName(state.tracedFile.absolutePath))
-  }
-
-  override fun onCommandExecuted() {
-    ApplicationManager.getApplication().executeOnPooledThread {
-      state.update()
-    }
   }
 }
 

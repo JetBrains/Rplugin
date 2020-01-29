@@ -10,6 +10,7 @@ import icons.org.jetbrains.r.RBundle
 import org.intellij.datavis.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.run.viewer.RViewerUtils
 import java.io.File
 import java.net.URI
@@ -31,26 +32,23 @@ class RViewerPanel {
 
   val component = rootPanel.component
 
-  fun loadUrl(url: String) {
-    fun String.toQualifiedUrl(): String? {
-      val qualifiedUrl = RViewerUtils.getQualifiedUrl(url)
-      val path = URI.create(qualifiedUrl).path
-      val file = File(path)
-      return if (file.exists()) qualifiedUrl else null
+  fun loadUrl(url: String): Promise<Unit> {
+    val qualifiedUrl = RViewerUtils.getQualifiedUrl(url)
+    val path = URI.create(qualifiedUrl).path
+    val file = File(path)
+    return if (file.exists()) {
+      closeViewer(LOADING)
+      (if (file.extension.isNotEmpty()) htmlPanel.load(qualifiedUrl) else htmlPanel.loadText(file.readText())).onSuccess {
+        rootPanel.contentComponent = htmlPanel.component
+      }
+    } else {
+      closeViewer(makeNoSuchFileText(url))
+      resolvedPromise()
     }
-
-    url.toQualifiedUrl()?.let { openViewer(it) } ?: closeViewer(makeNoSuchFileText(url))
   }
 
   fun reset() {
     closeViewer(NO_CONTENT)
-  }
-
-  private fun openViewer(url: String) {
-    closeViewer(LOADING)
-    htmlPanel.load(url).onSuccess {
-      rootPanel.contentComponent = htmlPanel.component
-    }
   }
 
   private fun closeViewer(text: String) {
@@ -63,6 +61,15 @@ class RViewerPanel {
       return AsyncPromise<Unit>().also {
         runInPlatformWhenAvailable {
           webViewGuaranteed.engine.load(url)
+          it.setResult(Unit)
+        }
+      }
+    }
+
+    fun loadText(text: String): Promise<Unit> {
+      return AsyncPromise<Unit>().also {
+        runInPlatformWhenAvailable {
+          webViewGuaranteed.engine.loadContent(text, "text/plain")
           it.setResult(Unit)
         }
       }

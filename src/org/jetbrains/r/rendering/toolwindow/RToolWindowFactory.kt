@@ -20,6 +20,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
 import com.intellij.webcore.packaging.PackagesNotificationPanel
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.R_GRAPH
 import org.jetbrains.r.R_HTML
 import org.jetbrains.r.R_PACKAGES
@@ -43,7 +44,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
       factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
       factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
       factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Toolwindows.Documentation),
-      factory.createContent(RViewerToolWindow(project), VIEWER, false).withIcon(R_HTML)
+      factory.createContent(RViewerToolWindow(), VIEWER, false).withIcon(R_HTML)
     ).forEach { contentManager.addContent(it) }
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
       override fun stateChanged() {
@@ -128,8 +129,17 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     fun findContent(project: Project, displayName: String): Content =
       ToolWindowManager.getInstance(project).getToolWindow(ID).contentManager.findContent(displayName)
 
+    fun showFile(project: Project, path: String): Promise<Unit> {
+      return getViewerComponent(project).refresh(path).also {
+        RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+      }
+    }
+
     private fun getDocumentationComponent(project: Project): DocumentationComponent =
       findContent(project, HELP).component as DocumentationComponent
+
+    private fun getViewerComponent(project: Project): RViewerToolWindow =
+      findContent(project, VIEWER).component as RViewerToolWindow
   }
 }
 

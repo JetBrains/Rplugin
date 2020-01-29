@@ -11,19 +11,20 @@ import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
-import com.intellij.psi.PsiElement
 import icons.org.jetbrains.r.RBundle
 import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.documentation.RDocumentationUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -122,6 +123,20 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
       consoleView.print("\n", ConsoleViewContentType.ERROR_OUTPUT)
     }
+
+    override fun onShowHelpRequest(content: String, url: String) {
+      RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, content, url))
+    }
+
+    override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+      val promise = AsyncPromise<Unit>()
+      invokeLater {
+        RToolWindowFactory.showFile(consoleView.project, filePath).onProcessed {
+          promise.setResult(Unit)
+        }
+      }
+      return promise
+    }
   }
 
   private val asyncEventsListener = AsyncEventsListener()
@@ -177,18 +192,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   override fun execute(text: String, console: LanguageConsoleView) {
     if (console != consoleView) return
-    if (text.startsWith("?") && !text.startsWith("??")) {
-      RToolWindowFactory.showDocumentation(getExpressionForHelp(console.project, text.drop(1).trim()))
-    } else {
-      fireBeforeExecution()
-      state = State.BUSY
-      rInterop.executeCodeAsync(text, isRepl = true)
-    }
-  }
-
-  private fun getExpressionForHelp(project: Project, request: String): PsiElement {
-    val text = request.dropWhile { it == '"' }.dropLastWhile { it == '"' }
-    return RElementFactory.buildRFileFromText(project, "help_from_console(\"$text\")").firstChild
+    fireBeforeExecution()
+    state = State.BUSY
+    rInterop.executeCodeAsync(text, isRepl = true)
   }
 
   fun addListener(listener: Listener) {

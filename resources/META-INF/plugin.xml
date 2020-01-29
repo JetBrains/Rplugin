@@ -405,8 +405,6 @@ You can find the source code in the following repositories:
 
         <projectService serviceImplementation="org.jetbrains.r.run.graphics.RGraphicsRepository"/>
 
-        <projectService serviceImplementation="org.jetbrains.r.run.viewer.RViewerRepository"/>
-
         <projectService serviceImplementation="org.jetbrains.r.interpreter.RLibraryWatcher"/>
 
         <projectService serviceImplementation="org.jetbrains.r.console.RConsoleManager"/>
