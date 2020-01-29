@@ -31,6 +31,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.NonUrgentExecutor
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import icons.org.intellij.datavis.ui.InlineToolbar
 import org.intellij.datavis.inlays.*
 import org.jetbrains.concurrency.CancellablePromise
@@ -59,8 +61,8 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private val inlayElements = LinkedHashSet<PsiElement>()
   private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
   private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
+  private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, project)
   @Volatile private var toolbarUpdateScheduled: Boolean = false
-  @Volatile var lastViewportUpdateTime: Long = 0
 
   init {
     addResizeListener()
@@ -116,17 +118,27 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private fun updateInlaysForViewport() {
     invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
-      val viewport = editor.scrollPane.viewport
-      val yMin = viewport.viewPosition.y
-      val yMax = yMin + viewport.height
-      val startLine = editor.xyToLogicalPosition(Point(0, yMin)).line
-      val endLine = editor.xyToLogicalPosition(Point(0, yMax)).line
-      val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
-      val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
+      val viewportRange = calculateViewportRange()
+      val expansionRange = calculateInlayExpansionRange(viewportRange)
       for (element in inlayElements) {
-        updateInlayForViewport(element, yMin until yMax, startOffset until endOffset)
+        updateInlayForViewport(element, viewportRange, expansionRange)
       }
     }
+  }
+
+  private fun calculateViewportRange(): IntRange {
+    val viewport = editor.scrollPane.viewport
+    val yMin = viewport.viewPosition.y
+    val yMax = yMin + viewport.height
+    return yMin until yMax
+  }
+
+  private fun calculateInlayExpansionRange(viewportRange: IntRange): IntRange {
+    val startLine = editor.xyToLogicalPosition(Point(0, viewportRange.first)).line
+    val endLine = editor.xyToLogicalPosition(Point(0, viewportRange.last + 1)).line
+    val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
+    val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
+    return startOffset until endOffset
   }
 
   private fun updateInlayForViewport(element: PsiElement, viewportRange: IntRange, expansionRange: IntRange) {
@@ -268,10 +280,11 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private fun addViewportListener() {
     editor.scrollPane.viewport.addChangeListener {
-      if (System.currentTimeMillis() - lastViewportUpdateTime > 50) {
-        lastViewportUpdateTime = System.currentTimeMillis()
-        updateInlaysForViewport()
-      }
+      viewportQueue.queue(object : Update(VIEWPORT_TASK_IDENTITY) {
+        override fun run() {
+          updateInlaysForViewport()
+        }
+      })
     }
   }
 
@@ -447,6 +460,12 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private fun getInlayComponent(cell: PsiElement): NotebookInlayComponent? {
     return inlays[cell]
+  }
+
+  companion object {
+    private const val VIEWPORT_TASK_NAME = "On viewport change"
+    private const val VIEWPORT_TASK_IDENTITY = "On viewport change task"
+    private const val VIEWPORT_TIME_SPAN = 50
   }
 }
 
