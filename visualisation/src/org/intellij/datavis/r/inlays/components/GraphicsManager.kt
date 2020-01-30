@@ -11,7 +11,11 @@ import java.io.File
 interface GraphicsManager {
   val isBusy: Boolean
   fun getImageResolution(imagePath: String): Int?
-  fun resizeImage(imagePath: String, newSize: Dimension, onResize: (File) -> Unit)
+
+  /**
+   * @param newResolution if `null`, current resolution won't be changed
+   */
+  fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int? = null, onResize: (File) -> Unit)
 
   companion object {
     fun getInstance(project: Project): GraphicsManager? {

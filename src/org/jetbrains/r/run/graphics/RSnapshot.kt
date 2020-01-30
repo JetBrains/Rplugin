@@ -55,7 +55,7 @@ data class RSnapshot(
           val type = extractType(parts[1])
           val number = parts[2].toInt()
           val version = parts[3].toInt()
-          val resolution = if (numParts == 5) parts[4].toInt().takeIf { it > 0 } else null
+          val resolution = if (numParts == 5) parts[4].toResolutionOrNull() else null
           RSnapshot(file, type, number, version, resolution)
         }
         3 -> {
@@ -73,6 +73,10 @@ data class RSnapshot(
         ZOOMED_SUFFIX -> RSnapshotType.ZOOMED
         else -> throw RuntimeException("Unsupported snapshot type: '$text'")
       }
+    }
+
+    private fun String.toResolutionOrNull(): Int? {
+      return toInt().takeIf { it > 0 }?.let { RGraphicsUtils.downscaleForRetina(it) }
     }
   }
 }

@@ -156,10 +156,11 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       override val description = "Graphics settings for R Markdown"
 
       override fun onClick() {
-        val dialog = GraphicsSettingsDialog(isAutoResizeEnabled) { newAutoResizeEnabled ->
+        val dialog = GraphicsSettingsDialog(isAutoResizeEnabled, localResolution) { newAutoResizeEnabled, newLocalResolution ->
           graphicsPanel.isAdvancedMode = !newAutoResizeEnabled
           isAutoResizeEnabled = newAutoResizeEnabled
-          scheduleResizingIfEnabled()
+          targetResolution = newLocalResolution
+          scheduleRescalingIfNecessary()
         }
         dialog.show()
       }
@@ -170,25 +171,28 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     @Volatile
     private var isAutoResizeEnabled: Boolean = true
 
+    @Volatile
+    private var localResolution: Int? = null
+
+    @Volatile
+    private var targetResolution: Int? = null
+
     override val extraActions: List<ActionHolder> = listOf(settingsActionHolder)
 
     init {
       toolbarPane.centralComponent = graphicsPanel.component
       graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
         override fun componentResized(e: ComponentEvent?) {
-          scheduleResizingIfEnabled()
+          scheduleRescalingIfNecessary()
         }
       })
     }
 
     override fun addData(data: String) {
-      imagePath = data
-      runAsyncInlay {
-        graphicsPanel.showImage(File(data))
-      }.onSuccess {
+      addImage(File(data), ::runAsyncInlay).onSuccess {
         invokeLater {
           onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
-          scheduleResizingIfEnabled()
+          scheduleRescalingIfNecessary()
         }
       }
     }
@@ -217,49 +221,60 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       val oldVisibility = viewportVisibility.getAndSet(isInViewport)
       if (oldVisibility != isInViewport) {
         if (isInViewport) {
-          scheduleResizingIfEnabled()
+          scheduleRescalingIfNecessary()
         }
       }
     }
 
-    private fun scheduleResizingIfEnabled() {
-      if (isAutoResizeEnabled) {
-        scheduleResizing()
+    private fun <R>addImage(imageFile: File, executor: (() -> Unit) -> R): R {
+      val path = imageFile.absolutePath
+      localResolution = GraphicsManager.getInstance(project)?.getImageResolution(path)
+      targetResolution = localResolution
+      imagePath = path
+      return executor {
+        graphicsPanel.showImage(imageFile)
       }
     }
 
-    private fun scheduleResizing() {
+    private fun scheduleRescalingIfNecessary() {
+      if (isAutoResizeEnabled || localResolution != targetResolution) {
+        scheduleRescaling()
+      }
+    }
+
+    private fun scheduleRescaling() {
       queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
         override fun run() {
           val oldSize = graphicsPanel.imageSize
           val newSize = graphicsPanel.imageComponentSize
-          if (oldSize != newSize) {
+          if (oldSize != newSize || localResolution != targetResolution) {
             // Note: there might be lots of attempts to resize image on IDE startup
             // but most of them will fail (and throw an exception)
             // due to the parent being disposed
             if (!Disposer.isDisposed(parent) && viewportVisibility.get()) {
-              resize(newSize)
+              rescale(newSize, targetResolution)
             }
           }
         }
       })
     }
 
-    private fun resize(newSize: Dimension) {
+    private fun rescale(newSize: Dimension, newResolution: Int?) {
       imagePath?.let { path ->
         GraphicsManager.getInstance(project)?.let { manager ->
           if (!manager.isBusy) {
-            manager.resizeImage(path, newSize) { imageFile ->
-              imagePath = imageFile.absolutePath
-              ApplicationManager.getApplication().invokeLater {
-                graphicsPanel.showImage(imageFile)
-              }
+            manager.rescaleImage(path, newSize, newResolution) { imageFile ->
+              addImage(imageFile, ::invokeLater)
             }
           } else {
-            scheduleResizing()  // Out of luck: try again in 500 ms
+            scheduleRescaling()  // Out of luck: try again in 500 ms
           }
         }
       }
+    }
+
+    private fun invokeLater(task: () -> Unit) {
+      ApplicationManager.getApplication().invokeLater(task)
     }
   }
 

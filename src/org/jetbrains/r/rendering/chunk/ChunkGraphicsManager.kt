@@ -21,15 +21,18 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     return imagePath.toSnapshot()?.resolution
   }
 
-  override fun resizeImage(imagePath: String, newSize: Dimension, onResize: (File) -> Unit) {
+  override fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int?, onResize: (File) -> Unit) {
     imagePath.toSnapshot()?.let { snapshot ->
-      val resolution = RGraphicsUtils.getDefaultResolution(false)
+      val resolution = newResolution ?: snapshot.resolutionOrDefault
       val newParameters = RGraphicsUtils.ScreenParameters(newSize, resolution)
       RGraphicsRepository.getInstance(project).rescale(snapshot, newParameters, onResize)
     }
   }
 
   companion object {
+    private val RSnapshot.resolutionOrDefault: Int
+      get() = resolution ?: RGraphicsUtils.getDefaultResolution(false)
+
     private fun String.toSnapshot() = RSnapshot.from(File(this))
   }
 }
