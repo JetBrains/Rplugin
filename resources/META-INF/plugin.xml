@@ -161,6 +161,12 @@ You can find the source code in the following repositories:
         <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
       </action>
+      <action id="RInsertAssignmentAction" class="org.jetbrains.r.editor.RInsertAssignmentAction"
+              text="Insert Assignment Operator">
+        <keyboard-shortcut keymap="$default" first-keystroke="alt MINUS"/>
+        <keyboard-shortcut keymap="Mac OS X" first-keystroke="alt MINUS" replace-all="true"/>
+        <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="alt MINUS" replace-all="true"/>
+      </action>
         <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
                 description="Run file in console" icon="AllIcons.Actions.Execute" >
           <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
