@@ -6,15 +6,19 @@ package org.jetbrains.r.psi.references
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.console.RConsoleRuntimeInfo
+import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterManager.Companion.getInstance
 import org.jetbrains.r.psi.RPsiUtil.getFunction
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameterList
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -60,12 +64,26 @@ object RResolver {
     }
   }
 
-  fun resolveInFileOrLibrary(element: PsiElement,
-                             name: String,
-                             result: MutableList<ResolveResult>) {
-    val statements = RAssignmentNameIndex.find(name, element.project, RSearchScopeUtil.getScope(element))
+  private fun resolveBase(element: PsiElement,
+                          name: String,
+                          result: MutableList<ResolveResult>,
+                          globalSearchScope: GlobalSearchScope) {
+    val statements = RAssignmentNameIndex.find(name, element.project, globalSearchScope)
     val exported = statements.filter { it !is RSkeletonAssignmentStatement || it.stub.exported }
     addResolveResults(result, exported)
+  }
+
+  fun resolveInFilesOrLibrary(element: PsiElement,
+                              name: String,
+                              result: MutableList<ResolveResult>) {
+    resolveBase(element, name, result, RSearchScopeUtil.getScope(element))
+  }
+
+  fun resolveInFile(element: PsiElement,
+                    name: String,
+                    result: MutableList<ResolveResult>,
+                    file: VirtualFile) {
+    resolveBase(element, name, result, GlobalSearchScope.fileScope(element.project, file))
   }
 
   private fun addResolveResults(result: MutableList<ResolveResult>,
@@ -73,5 +91,30 @@ object RResolver {
     for (statement in statements) {
       result.add(PsiElementResolveResult(statement))
     }
+  }
+
+  private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult): Int {
+    val name = RReferenceBase.findPackageNameByResolveResult(result) ?: return Int.MAX_VALUE
+    return loadedNamespaces[name] ?: Int.MAX_VALUE
+  }
+
+  fun sortResolveResults(psiElement: PsiElement,
+                         runtimeInfo: RConsoleRuntimeInfo?,
+                         resolveResults: Array<ResolveResult>): Array<ResolveResult> {
+    resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
+    if (runtimeInfo != null) {
+      val loadedPackages = runtimeInfo.loadedPackages
+      val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
+      if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
+        return arrayOf(topResolveResult)
+      }
+    }
+    return resolveResults
+  }
+
+  fun addSortedResultsInFilesOrLibrary(element: RIdentifierExpression, result: MutableList<ResolveResult>) {
+    val libraryOrFileResult = mutableListOf<ResolveResult>()
+    resolveInFilesOrLibrary(element, element.name, libraryOrFileResult)
+    result.addAll(sortResolveResults(element, element.containingFile.runtimeInfo, libraryOrFileResult.toTypedArray()))
   }
 }

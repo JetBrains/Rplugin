@@ -8,6 +8,7 @@ package org.jetbrains.r.psi.references
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.*
@@ -24,18 +25,25 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     }
     if (element.isDependantIdentifier) return emptyArray()
 
-    val kind = element.getKind()
-    if (kind == ReferenceKind.LOCAL_VARIABLE ||
-        kind == ReferenceKind.PARAMETER ||
-        kind == ReferenceKind.CLOSURE) {
-      val definition = element.findVariableDefinition()?.variableDescription?.firstDefinition
-      if (definition?.parent is RAssignmentStatement || definition?.parent is RParameter) {
-        result.add(PsiElementResolveResult(definition.parent))
+    val localResolveResult = resolveLocally()
+    val controlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java)
+
+    if (controlFlowHolder?.getIncludedSources(element)?.resolveInSources(element, result, localResolveResult?.element) != true) {
+      if (localResolveResult != null) {
+        if (localResolveResult !is EmptyLocalResult) result.add(localResolveResult)
+        if (result.isEmpty()) return emptyArray()
       }
-      else if (definition != null) {
-        result.add(PsiElementResolveResult(definition))
+      else {
+        RResolver.addSortedResultsInFilesOrLibrary(element, result)
       }
-      return result.toTypedArray()
+    }
+
+    if (result.isNotEmpty()) {
+      val distinct = result.distinct()
+      return if (distinct.size > 1) {
+        distinct.map { PsiElementResolveResult(it.element!!, false) }.toTypedArray()
+      }
+      else distinct.toTypedArray()
     }
 
     val elementName = element.name
@@ -46,8 +54,30 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       }
     }
 
-    RResolver.resolveInFileOrLibrary(element, elementName, result)
+    RResolver.resolveInFilesOrLibrary(element, elementName, result)
     return result.toTypedArray()
+  }
+
+  private fun resolveLocally(): ResolveResult? {
+    val kind = element.getKind()
+    if (kind == ReferenceKind.LOCAL_VARIABLE ||
+        kind == ReferenceKind.PARAMETER ||
+        kind == ReferenceKind.CLOSURE) {
+      val definition = element.findVariableDefinition()?.variableDescription?.firstDefinition
+      if (definition?.parent is RAssignmentStatement || definition?.parent is RParameter) {
+        return PsiElementResolveResult(definition.parent)
+      }
+      else if (definition != null) {
+        return PsiElementResolveResult(definition)
+      }
+      return EmptyLocalResult
+    }
+    return null
+  }
+
+  private object EmptyLocalResult : ResolveResult {
+    override fun getElement(): PsiElement? = null
+    override fun isValidResult(): Boolean = false
   }
 
   private fun resolveNamedArgument(assignment: RNamedArgument,

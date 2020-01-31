@@ -5,6 +5,7 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.openapi.fileTypes.FileType
@@ -22,6 +23,8 @@ import org.jetbrains.r.psi.cfg.LocalAnalysisResult
 import org.jetbrains.r.psi.cfg.RControlFlow
 import org.jetbrains.r.psi.cfg.analyzeLocals
 import org.jetbrains.r.psi.cfg.buildControlFlow
+import org.jetbrains.r.psi.references.IncludedSources
+import org.jetbrains.r.psi.references.analyseIncludedSources
 import java.util.*
 
 
@@ -35,6 +38,9 @@ open class RFileImpl(viewProvider: FileViewProvider) : PsiFileBase(viewProvider,
     get() = CachedValuesManager.getCachedValue(this) {
       CachedValueProvider.Result.create(analyzeLocals().getValue(this), this)
     }
+
+  override val includedSources: Map<Instruction, IncludedSources>
+    get() = CachedValuesManager.getCachedValue(this) { CachedValueProvider.Result(analyseIncludedSources(), this) }
 
   private var myImports: CachedValue<List<RCallExpression>>? = null
 

@@ -10,7 +10,6 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.util.IncorrectOperationException
-import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.psi.api.RPsiElement
@@ -60,31 +59,18 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
     }
   }
 
-  private fun sortResolveResults(runtimeInfo: RConsoleRuntimeInfo?,
-                                 resolveResults: Array<ResolveResult>): Array<ResolveResult> {
-    resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
-    if (runtimeInfo != null) {
-      val loadedPackages = runtimeInfo.loadedPackages
-      val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults
-      if (getLoadingNumber(loadedPackages, topResolveResult) != Int.MAX_VALUE) {
-        return arrayOf(topResolveResult)
-      }
-    }
-    return resolveResults
-  }
-
-  private fun getLoadingNumber(loadedNamespaces: Map<String, Int>, result: ResolveResult): Int {
-    val name = findPackageNameByResolveResult(result) ?: return Int.MAX_VALUE
-    return loadedNamespaces[name] ?: Int.MAX_VALUE
-  }
-
   protected abstract fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult>
 
   private class Resolver<T : RPsiElement> : ResolveCache.PolyVariantResolver<RReferenceBase<T>> {
     override fun resolve(reference: RReferenceBase<T>, incompleteCode: Boolean): Array<ResolveResult> {
-      val resolveResults = reference.multiResolveInner(incompleteCode)
-      val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
-      return reference.sortResolveResults(runtimeInfo, resolveResults)
+      val resolveResults = reference.multiResolveInner(incompleteCode).toList()
+      val valid = resolveResults.filter { it.isValidResult }.toTypedArray()
+      val invalid = resolveResults - valid
+      if (valid.size > 1) {
+        val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
+        return RResolver.sortResolveResults(reference.psiElement, runtimeInfo, valid) + invalid
+      }
+      return resolveResults.toTypedArray()
     }
   }
 

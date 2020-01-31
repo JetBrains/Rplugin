@@ -122,6 +122,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
   private fun join(instruction: Instruction): LocalVariableInfo {
     return join(instruction.allPred()
                   .filter { pred -> controlFlow.isReachable(pred) && pred.num() < instruction.num() }
+                  .distinct()
                   .map { result.getValue(it) })
   }
 

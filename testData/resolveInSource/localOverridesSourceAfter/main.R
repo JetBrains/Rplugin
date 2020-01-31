@@ -1,0 +1,3 @@
+source("resolveInSource/localOverridesSourceAfter/A.R")
+fun <- function() 42 # this
+fu<caret>n()

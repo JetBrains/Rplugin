@@ -4,10 +4,25 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RArgumentList
+import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RNamedArgument
+import org.jetbrains.r.psi.api.RPsiElement
 
 object RParameterInfoUtil {
+
+  fun getArgumentByName(call: RCallExpression, name: String, isFirstParameter: Boolean = false): RPsiElement? {
+    val argumentList = call.argumentList
+    argumentList.namedArgumentList.firstOrNull { it.name == name }?.let { return it.assignedValue }
+    if (isFirstParameter) return argumentList.expressionList.firstOrNull { it !is RNamedArgument }
+    val definition = RPsiUtil.resolveCall(call, false).firstOrNull() ?: return null
+    val parameterNameList = definition.parameterNameList
+    val parameterIndex = parameterNameList.indexOf(name)
+    if (parameterIndex == -1) return null
+    val argumentIndex = getArgumentsPermutation(parameterNameList, argumentList).first.indexOf(parameterIndex)
+    return argumentList.expressionList.getOrNull(argumentIndex)
+  }
 
   fun getArgumentsPermutation(parameterNames: List<String>, argumentList: RArgumentList): Pair<List<Int>, List<Int>> {
     var curArgIndex = 0

@@ -19,7 +19,7 @@ class ROperatorReference(element: ROperator) : RReferenceBase<ROperator>(element
     //        String singleQuotedText = "'" + text + "'";
     //        String backquotedText = "`" + text + "`";
 
-    RResolver.resolveInFileOrLibrary(element, text, result)
+    RResolver.resolveInFilesOrLibrary(element, text, result)
     return result.toTypedArray()
   }
 
