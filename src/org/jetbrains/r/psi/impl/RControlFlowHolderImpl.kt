@@ -14,7 +14,7 @@ import org.jetbrains.r.psi.cfg.RControlFlow
 import org.jetbrains.r.psi.cfg.analyzeLocals
 import org.jetbrains.r.psi.cfg.buildControlFlow
 
-abstract class RControlFlowHolderImpl(astNode: ASTNode): org.jetbrains.r.psi.RElementImpl(astNode), RControlFlowHolder {
+abstract class RControlFlowHolderImpl(astNode: ASTNode) : RElementImpl(astNode), RControlFlowHolder {
   override val controlFlow: RControlFlow
     get() {
       return CachedValuesManager.getCachedValue(this) { CachedValueProvider.Result(buildControlFlow(), this) }
@@ -27,9 +27,9 @@ abstract class RControlFlowHolderImpl(astNode: ASTNode): org.jetbrains.r.psi.REl
 
   override val localAnalysisResult: LocalAnalysisResult
   get() {
-    var parentFunction = PsiTreeUtil.getParentOfType(this, org.jetbrains.r.psi.api.RFunctionExpression::class.java)
+    var parentFunction = PsiTreeUtil.getParentOfType(this, RFunctionExpression::class.java)
     while (parentFunction != null) {
-      val ancestor = PsiTreeUtil.getParentOfType(parentFunction, org.jetbrains.r.psi.api.RFunctionExpression::class.java) ?: break
+      val ancestor = PsiTreeUtil.getParentOfType(parentFunction, RFunctionExpression::class.java) ?: break
       parentFunction = ancestor
     }
     if (parentFunction == null) {
