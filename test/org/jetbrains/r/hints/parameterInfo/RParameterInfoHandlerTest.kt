@@ -220,15 +220,34 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), "..., <keep.rownames = FALSE>, [...], [check.names = FALSE], [key = NULL], [stringsAsFactors = FALSE]")
   }
 
-  fun doTest(text: String, vararg expectedResults: String, isDisabled: Boolean = false) {
+  fun testFunctionFromSource() {
+    myFixture.configureByFiles("hints/parameterInfoFunctionFromSource/main.R",
+                               "hints/parameterInfoFunctionFromSource/A.R",
+                               "hints/dummy.R")
+    doTest("", "<x>, y", fromSources = true)
+  }
+
+  fun testFunctionFrom2Source() {
+    myFixture.configureByFiles("hints/parameterInfoFunctionFrom2Source/main.R",
+                               "hints/parameterInfoFunctionFrom2Source/A.R",
+                               "hints/parameterInfoFunctionFrom2Source/B.R",
+                               "hints/dummy.R")
+    doTest("", "[b], <[a]>", fromSources = true)
+  }
+
+  fun doTest(text: String, vararg expectedResults: String, isDisabled: Boolean = false, fromSources: Boolean = false) {
     val hintFixture = EditorHintFixture(myFixture.testRootDisposable)
 
-    myFixture.configureByText("a.R", text)
+    if (!fromSources) {
+      myFixture.configureByText("a.R", text)
+    }
+    else {
+      addLibraries()
+    }
     myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SHOW_PARAMETER_INFO)
     UIUtil.dispatchAllInvocationEvents()
 
-    val expectedVariants = wrap(*expectedResults,
-                                                                                                                           isDisabled = isDisabled).split('-').map { it.trim() }.sorted()
+    val expectedVariants = wrap(*expectedResults, isDisabled = isDisabled).split('-').map { it.trim() }.sorted()
     val actualVariants = hintFixture.currentHintText?.split('-')?.map { it.trim() }?.sorted()
     assertEquals(expectedVariants, actualVariants)
   }

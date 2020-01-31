@@ -226,6 +226,23 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), true)
   }
 
+  fun testFunctionFromSource() {
+    myFixture.configureByFiles("hints/inlayFunctionFromSource/main.R",
+                               "hints/inlayFunctionFromSource/A.R",
+                               "hints/dummy.R")
+    addLibraries()
+    myFixture.testInlays()
+  }
+
+  fun testFunctionFrom2Source() {
+    myFixture.configureByFiles("hints/inlayFunctionFrom2Source/main.R",
+                               "hints/inlayFunctionFrom2Source/A.R",
+                               "hints/inlayFunctionFrom2Source/B.R",
+                               "hints/dummy.R")
+    addLibraries()
+    myFixture.testInlays()
+  }
+
   private fun doParameterNameTest(text: String, isRmd: Boolean = false) {
     enableHints("R_HINT_OPTION_WRAP_DOTS")
     doTest(text, isRmd)
