@@ -46,13 +46,10 @@ abstract class RPomTarget: PomTarget {
 
     fun createPomTarget(rVar: RVar): RPomTarget = when (val value = rVar.value) {
       is RValueFunction -> createFunctionPomTarget(rVar)
-      is RValueSimple -> createVariablePomTarget(rVar)
-      is RValueList -> createVariablePomTarget(rVar)
-      is RValueEnvironment -> createVariablePomTarget(rVar)
       is RValueDataFrame -> createDataFramePomTarget(rVar)
       is RValueGraph -> createGraphPomTarget(rVar)
       is RValueError -> throw IllegalStateException("Error: ${value.text}")
-      else -> throw IllegalArgumentException("${rVar.value.javaClass} is not supported")
+      else -> createVariablePomTarget(rVar)
     }
 
   }
