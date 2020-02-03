@@ -125,7 +125,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onShowHelpRequest(content: String, url: String) {
-      RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, content, url))
+      invokeLater {
+        RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, content, url))
+      }
     }
 
     override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
