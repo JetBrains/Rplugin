@@ -18,7 +18,11 @@ class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() 
   override fun getValueAt(row: Int, col: Int): Any? {
     val promise = viewer.ensureLoaded(row, col) { fireTableDataChanged() }
     return if (promise.isSucceeded) {
-      viewer.getValueAt(row, col)
+      when (val value = viewer.getValueAt(row, col)) {
+        is Float -> "%g".format(value)
+        is Double -> "%g".format(value)
+        else -> value
+      }
     } else {
       "<loading>"
     }
