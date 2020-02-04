@@ -415,6 +415,8 @@ You can find the source code in the following repositories:
         <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.settings.RMarkdownGraphicsSettings"/>
         
         <projectService serviceImplementation="org.jetbrains.r.packages.remote.RAvailablePackageCache"/>
 

@@ -7,14 +7,15 @@ package org.intellij.datavis.r.inlays.components
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.DocumentAdapter
 import org.intellij.datavis.r.inlays.components.forms.GraphicsSettingsDialogForm
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
+import kotlin.reflect.KProperty
 
 class GraphicsSettingsDialog(
-  private val initialAutoResizeEnabled: Boolean,
-  private val initialLocalResolution: Int?,
-  private val onSettingsChange: (Boolean, Int?) -> Unit
+  private val initialSettings: Settings,
+  private val onSettingsChange: (Settings) -> Unit
 ) : DialogWrapper(null, true) {
 
   private val form = GraphicsSettingsDialogForm()
@@ -22,28 +23,26 @@ class GraphicsSettingsDialog(
   private val isAutoResizeEnabled: Boolean
     get() = form.autoResizeCheckBox.isSelected
 
-  private var localResolution: Int?
-    get() = form.localResolutionTextField.text.toResolutionOrNull()
-    set(resolution) {
-      form.localResolutionTextField.text = resolution?.toString() ?: ""
+  private val isDarkModeEnabled: Boolean?
+    get() = with(form.darkModeCheckBox) {
+      isSelected.takeIf { isVisible }
     }
+
+  private val settings: Settings
+    get() = Settings(isAutoResizeEnabled, isDarkModeEnabled, globalResolution, localResolution)
+
+  private var localResolution by ResolutionField(form.localResolutionTextField)
+  private var globalResolution by ResolutionField(form.globalResolutionTextField)
 
   init {
     title = TITLE
     init()
-    form.autoResizeCheckBox.apply {
-      isSelected = initialAutoResizeEnabled
-      addItemListener {
-        updateOkAction()
-      }
-    }
-    localResolution = initialLocalResolution
-    form.localResolutionTextField.apply {
-      isEnabled = initialLocalResolution != null
-      addInputValidator { input ->
-        INVALID_INTEGER_INPUT_TEXT.takeIf { input.toResolutionOrNull() == null }
-      }
-    }
+    localResolution = initialSettings.localResolution
+    globalResolution = initialSettings.globalResolution
+    form.localResolutionTextField.setupResolutionField(initialSettings.localResolution)
+    form.globalResolutionTextField.setupResolutionField(initialSettings.globalResolution)
+    form.autoResizeCheckBox.setupCheckBox(initialSettings.isAutoResizedEnabled)
+    form.darkModeCheckBox.setupCheckBox(initialSettings.isDarkModeEnabled)
     updateOkAction()
   }
 
@@ -53,20 +52,37 @@ class GraphicsSettingsDialog(
 
   override fun doOKAction() {
     super.doOKAction()
-    onSettingsChange(isAutoResizeEnabled, localResolution)
+    onSettingsChange(settings)
   }
 
   private fun updateOkAction() {
-    isOKActionEnabled = checkLocalResolution() && checkSettingsChanged()
+    isOKActionEnabled = checkGlobalResolution() && checkLocalResolution() && settings != initialSettings
+  }
+
+  private fun checkGlobalResolution(): Boolean {
+    return initialSettings.globalResolution == null || globalResolution != null
   }
 
   private fun checkLocalResolution(): Boolean {
-    return initialLocalResolution == null || localResolution != null
+    return initialSettings.localResolution == null || localResolution != null
   }
 
-  private fun checkSettingsChanged(): Boolean {
-    return isAutoResizeEnabled != initialAutoResizeEnabled ||
-           localResolution != initialLocalResolution
+  private fun JCheckBox.setupCheckBox(isInitialSelected: Boolean?) {
+    if (isInitialSelected != null) {
+      isSelected = isInitialSelected
+      addItemListener {
+        updateOkAction()
+      }
+    } else {
+      isVisible = false
+    }
+  }
+
+  private fun JTextField.setupResolutionField(initialResolution: Int?) {
+    isEnabled = initialResolution != null
+    addInputValidator { input ->
+      INVALID_INTEGER_INPUT_TEXT.takeIf { input.toResolutionOrNull() == null }
+    }
   }
 
   private fun JTextField.addInputValidator(validator: (String) -> String?) {
@@ -78,6 +94,23 @@ class GraphicsSettingsDialog(
       }
     })
   }
+
+  private class ResolutionField(private val field: JTextField) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): Int? {
+      return field.text.toResolutionOrNull()
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int?) {
+      field.text = value?.toString() ?: ""
+    }
+  }
+
+  data class Settings(
+    val isAutoResizedEnabled: Boolean,
+    val isDarkModeEnabled: Boolean?,
+    val globalResolution: Int?,
+    val localResolution: Int?
+  )
 
   companion object {
     private const val TITLE = "Graphics settings"

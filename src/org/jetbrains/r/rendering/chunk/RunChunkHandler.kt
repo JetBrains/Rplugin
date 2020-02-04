@@ -45,6 +45,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -154,7 +155,7 @@ object RunChunkHandler {
     } else {
       val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
       val imageSize = GraphicsPanel.calculateImageSizeForRegion(inlayContentSize)
-      val resolution = RGraphicsUtils.getDefaultResolution(false)
+      val resolution = RMarkdownGraphicsSettings.getInstance(project).globalResolution
       RGraphicsUtils.ScreenParameters(imageSize, resolution)
     }
     try {

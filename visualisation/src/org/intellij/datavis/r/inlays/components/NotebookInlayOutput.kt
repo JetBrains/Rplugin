@@ -17,6 +17,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
@@ -145,7 +146,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
   }
 
-  inner class OutputImg(parent: Disposable) : Output(parent) {
+  inner class OutputImg(parent: Disposable) : Output(parent), Disposable {
     private val graphicsPanel = GraphicsPanel(project, parent)
     private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
     private val viewportVisibility = AtomicBoolean(false)
@@ -156,17 +157,35 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       override val description = "Graphics settings for R Markdown"
 
       override fun onClick() {
-        val dialog = GraphicsSettingsDialog(isAutoResizeEnabled, localResolution) { newAutoResizeEnabled, newLocalResolution ->
-          graphicsPanel.isAdvancedMode = !newAutoResizeEnabled
-          isAutoResizeEnabled = newAutoResizeEnabled
-          targetResolution = newLocalResolution
-          scheduleRescalingIfNecessary()
+        val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
+        val isDarkModeEnabled = if (isDarkEditor) graphicsManager?.isDarkModeEnabled else null
+        val initialSettings = GraphicsSettingsDialog.Settings(isAutoResizeEnabled, isDarkModeEnabled, globalResolution, localResolution)
+        val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
+          graphicsPanel.isAdvancedMode = !newSettings.isAutoResizedEnabled
+          isAutoResizeEnabled = newSettings.isAutoResizedEnabled
+          targetResolution = newSettings.localResolution
+          graphicsManager?.let { manager ->
+            if (newSettings.isDarkModeEnabled != null && newSettings.isDarkModeEnabled != isDarkModeEnabled) {
+              manager.isDarkModeEnabled = newSettings.isDarkModeEnabled
+            }
+            if (newSettings.globalResolution != null && newSettings.globalResolution != globalResolution) {
+              // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
+              // Note: no need to schedule rescaling here: it will be called automatically by a listener below
+              manager.globalResolution = newSettings.globalResolution
+            } else {
+              scheduleRescalingIfNecessary()
+            }
+          }
         }
         dialog.show()
       }
     }
 
+    private val graphicsManager: GraphicsManager?
+      get() = GraphicsManager.getInstance(project)
+
     private var imagePath: String? = null
+    private var globalResolutionSubscription: Disposable? = null
 
     @Volatile
     private var isAutoResizeEnabled: Boolean = true
@@ -175,17 +194,33 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     private var localResolution: Int? = null
 
     @Volatile
+    private var globalResolution: Int? = null
+
+    @Volatile
     private var targetResolution: Int? = null
 
     override val extraActions: List<ActionHolder> = listOf(settingsActionHolder)
 
     init {
+      Disposer.register(parent, this)
       toolbarPane.centralComponent = graphicsPanel.component
       graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
         override fun componentResized(e: ComponentEvent?) {
           scheduleRescalingIfNecessary()
         }
       })
+      graphicsManager?.let { manager ->
+        globalResolution = manager.globalResolution
+        globalResolutionSubscription = manager.addGlobalResolutionListener { newGlobalResolution ->
+          globalResolution = newGlobalResolution
+          targetResolution = newGlobalResolution
+          scheduleRescalingIfNecessary()
+        }
+      }
+    }
+
+    override fun dispose() {
+      globalResolutionSubscription?.dispose()
     }
 
     override fun addData(data: String) {
@@ -228,7 +263,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
     private fun <R>addImage(imageFile: File, executor: (() -> Unit) -> R): R {
       val path = imageFile.absolutePath
-      localResolution = GraphicsManager.getInstance(project)?.getImageResolution(path)
+      localResolution = graphicsManager?.getImageResolution(path)
       targetResolution = localResolution
       imagePath = path
       return executor {
@@ -261,7 +296,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
     private fun rescale(newSize: Dimension, newResolution: Int?) {
       imagePath?.let { path ->
-        GraphicsManager.getInstance(project)?.let { manager ->
+        graphicsManager?.let { manager ->
           if (!manager.isBusy) {
             manager.rescaleImage(path, newSize, newResolution) { imageFile ->
               addImage(imageFile, ::invokeLater)
