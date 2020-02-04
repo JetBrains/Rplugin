@@ -5,7 +5,9 @@
 package org.jetbrains.r.run.viewer.ui
 
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.javafx.JavaFxHtmlPanel
+import com.intellij.util.ui.JBUI
 import icons.org.jetbrains.r.RBundle
 import org.intellij.datavis.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.AsyncPromise
@@ -15,6 +17,8 @@ import org.jetbrains.r.run.viewer.RViewerUtils
 import java.io.File
 import java.net.URI
 import javax.swing.JLabel
+import javax.swing.JTextArea
+import javax.swing.border.EmptyBorder
 
 class RViewerPanel {
   private val label = JLabel(NO_CONTENT, JLabel.CENTER)
@@ -30,6 +34,12 @@ class RViewerPanel {
     }
   }
 
+  private val multilineLabel = MultilineLabel().apply {
+    border = EmptyBorder(JBUI.insets(5))
+  }
+
+  private val multilineScrollPane = JBScrollPane(multilineLabel)
+
   val component = rootPanel.component
 
   fun loadUrl(url: String): Promise<Unit> {
@@ -38,11 +48,21 @@ class RViewerPanel {
     val file = File(path)
     return if (file.exists()) {
       closeViewer(LOADING)
-      (if (file.extension.isNotEmpty()) htmlPanel.load(qualifiedUrl) else htmlPanel.loadText(file.readText())).onSuccess {
+      loadHtmlOrText(file, qualifiedUrl)
+    } else {
+      closeViewer(makeNoSuchFileText(url))
+      resolvedPromise()
+    }
+  }
+
+  private fun loadHtmlOrText(file: File, qualifiedUrl: String): Promise<Unit> {
+    return if (file.extension.isNotEmpty()) {
+      htmlPanel.load(qualifiedUrl).onSuccess {
         rootPanel.contentComponent = htmlPanel.component
       }
     } else {
-      closeViewer(makeNoSuchFileText(url))
+      multilineLabel.text = file.readText()
+      rootPanel.contentComponent = multilineScrollPane
       resolvedPromise()
     }
   }
@@ -73,6 +93,16 @@ class RViewerPanel {
           it.setResult(Unit)
         }
       }
+    }
+  }
+
+  private class MultilineLabel(text: String = "") : JTextArea(text) {
+    init {
+      setCursor(null)  // Note: `cursor = null` raises Type Mismatch warning
+      isEditable = false
+      isOpaque = false
+      wrapStyleWord = true
+      lineWrap = true
     }
   }
 
