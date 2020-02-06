@@ -10,9 +10,6 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.rinterop.RInterop
 
 interface RInterpreter : RInterpreterInfo {
@@ -24,15 +21,7 @@ interface RInterpreter : RInterpreterInfo {
 
   val userLibraryPath: String
 
-  val cranMirrors: List<RMirror>
-
-  val defaultRepositories: List<RDefaultRepository>
-
   val interop: RInterop
-
-  val packageDetails: Map<String, RRepoPackage>?
-
-  fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>>
 
   fun getPackageByName(name: String): RInstalledPackage?
 

@@ -59,7 +59,7 @@ class RManagePackagesDialog(
       button.removeActionListener(listener)
     }
     button.addActionListener {
-      RManageRepoDialog(project, packageManagementService) { needRefresh ->
+      RManageRepoDialog(project) { needRefresh ->
         if (needRefresh) {
           refreshPackages()
         }

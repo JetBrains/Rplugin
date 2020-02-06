@@ -23,7 +23,6 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.packages.remote.RepoUtils
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
@@ -106,8 +105,6 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   private fun makeRefreshButton(): AnActionButton {
     return object : DumbAwareActionButton(REFRESH_TEXT, REFRESH_ICON) {
       override fun actionPerformed(e: AnActionEvent) {
-        RepoUtils.resetPackageDescriptions()
-        RepoUtils.resetPackageDetails(myProject)
         immediatelyUpdatePackages(myPackageManagementService)
       }
 

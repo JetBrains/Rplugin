@@ -13,8 +13,7 @@ import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RPackageService
-import org.jetbrains.r.packages.remote.RepoUtils
+import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -52,33 +51,14 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
   }
 
   override fun apply() {
-    fun restartInterpreter() {
-      fun getPackagesPanel(project: Project): RInstalledPackagesPanel =
-         RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
-
-      RInterpreterManager.getInstance(project).initializeInterpreter(true).onSuccess {
-        RPackageService.getInstance(project).enabledRepositoryUrls.clear()
-        RepoUtils.resetPackageDetails(project)
-        ApplicationManager.getApplication().invokeLater {
-          getPackagesPanel(project).scheduleRefresh()
-        }
-      }
-    }
-
     RInterpreterSettings.setEnabledInterpreters(panel.currentInterpreters)
     val path = panel.currentSelection?.interpreterPath ?: ""
     val previousPath = settings.interpreterPath
     if (path != previousPath) {
       settings.interpreterPath = path
+      RConsoleManager.closeMismatchingConsoles(project, path)
       restartInterpreter()
-      RAdditionalActionsDialog { shouldCloseOldConsoles, shouldOpenNewConsole ->
-        if (shouldCloseOldConsoles) {
-          RConsoleManager.closeMismatchingConsoles(project, path)
-        }
-        if (shouldOpenNewConsole) {
-          RConsoleManager.runConsole(project)
-        }
-      }.show()
+      RConsoleManager.runConsole(project)
     }
     reset()
   }
@@ -87,7 +67,19 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
     return wrapper
   }
 
+  private fun restartInterpreter() {
+    RInterpreterManager.getInstance(project).initializeInterpreter(true).onSuccess {
+      RepoProvider.getInstance(project).onInterpreterVersionChange()
+      ApplicationManager.getApplication().invokeLater {
+        getPackagesPanel(project).scheduleRefresh()
+      }
+    }
+  }
+
   companion object {
     private val LOADING_INTERPRETERS_TEXT = RBundle.message("project.settings.interpreters.loading")
+
+    private fun getPackagesPanel(project: Project) =
+      RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
   }
 }

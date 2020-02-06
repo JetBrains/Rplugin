@@ -7,14 +7,30 @@ package org.jetbrains.r.execution
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.ThrowableComputable
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.packages.RHelpersUtil
 import java.nio.file.Paths
 
 private const val TIMEOUT = 60 * 1000 // 1 min
 
 object ExecuteExpressionUtils {
+  private val LOGGER = Logger.getInstance(ExecuteExpressionUtils::class.java)
+
+  fun <E>getListBlockingWithIndicator(title: String, debugName: String, timeout: Int = TIMEOUT, task: () -> Promise<List<E>>): List<E> {
+    return getSynchronously(title) {
+      getListBlocking(debugName, timeout, task)
+    }
+  }
+
+  fun <E>getListBlocking(debugName: String, timeout: Int = TIMEOUT, task: () -> Promise<List<E>>): List<E> {
+    return task()
+      .onError { LOGGER.error("Failed to get list blocking: $debugName", it) }
+      .blockingGet(timeout) ?: emptyList()
+  }
+
   fun <R> getSynchronously(title: String, task: () -> R): R {
     return ProgressManager.getInstance().runProcessWithProgressSynchronously(ThrowableComputable<R, Exception> {
       task()

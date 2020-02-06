@@ -304,7 +304,7 @@ object RepoUtils {
     return interpreter.getLibraryPathByName(packageName) ?: throw ExecutionException("Cannot get library path for package '$packageName'")
   }
 
-  fun formatDetails(project: Project, packageName: String): String {
+  fun formatDetails(repoPackage: RRepoPackage?): String {
     fun String.makeBlock(header: String?): String {
       return """
         ${if (header != null) "<h3>$header</h3>" else ""}
@@ -318,14 +318,11 @@ object RepoUtils {
         <body>
     """
     val builder = StringBuilder(begin)
-    getPackageDetails(project)?.get(packageName)?.let {
-      val description = getPackageDescriptions()[packageName]
+    if (repoPackage != null) {
+      val description = getPackageDescriptions()[repoPackage.name]
       builder.append(description?.makeBlock(null) ?: "")
-      builder.append(it.latestVersion?.makeBlock("Version") ?: "")
-      builder.append(it.depends?.makeBlock("Depends") ?: "")
-
-      // TODO [mine]: URL string causes dialog to show a blank description page for Bioconductor packages on MacOS
-      //builder.append(it.repoUrl?.makeBlock("Repository") ?: "")
+      builder.append(repoPackage.latestVersion?.makeBlock("Version") ?: "")
+      builder.append(repoPackage.depends?.makeBlock("Depends") ?: "")
     }
     val end = """
         </body>

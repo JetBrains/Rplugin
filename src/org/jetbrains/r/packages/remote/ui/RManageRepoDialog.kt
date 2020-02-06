@@ -13,6 +13,7 @@ import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBCheckBox
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlockingWithIndicator
 import org.jetbrains.r.packages.remote.*
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.awt.Dimension
@@ -21,15 +22,11 @@ import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class RManageRepoDialog(
-  private val project: Project,
-  private val controller: RPackageManagementService,
-  private val onModified: (Boolean) -> Unit
-) : DialogWrapper(project, false) {
-
+class RManageRepoDialog(project: Project, private val onModified: (Boolean) -> Unit) : DialogWrapper(project, false) {
   private val mainPanel: JPanel
   private val list = RepositoryCheckBoxList()
   private val refreshCheckBox = JBCheckBox(REFRESH_CHECKBOX_TEXT, true)
+  private val provider = RepoProvider.getInstance(project)
   private var currentCranMirror: Int = 0
 
   private val currentSelection: RRepository?
@@ -84,11 +81,12 @@ class RManageRepoDialog(
 
   private fun reloadList() {
     list.clear()
-    currentCranMirror = controller.cranMirror
-    val allRepositories = controller.defaultRepositories + controller.userRepositories
-    val enabledUrls = controller.enabledRepositoryUrls
-    for (repository in allRepositories) {
-      list.addItem(repository, repository.url, enabledUrls.contains(repository.url))
+    currentCranMirror = provider.selectedCranMirrorIndex
+    val repositorySelections = getListBlockingWithIndicator(GETTING_AVAILABLE_REPOSITORIES, "repositories selections") {
+      provider.repositorySelectionsAsync
+    }
+    for ((repository, isSelected) in repositorySelections) {
+      list.addItem(repository, repository.url, isSelected)
       list.model.getElementAt(list.itemsCount - 1).apply {
         isEnabled = repository.isOptional
         toolTipText = if (!repository.isOptional) DISABLED_CHECKBOX_HINT else null
@@ -125,9 +123,13 @@ class RManageRepoDialog(
   }
 
   private fun editCranMirrorAction() {
-    RChooseMirrorDialog(controller.mirrors, currentCranMirror) { choice ->
+    val mirrors = getListBlockingWithIndicator(GETTING_AVAILABLE_MIRRORS, "CRAN mirrors") {
+      provider.cranMirrorsAsync
+    }
+    val dialog = RChooseMirrorDialog(mirrors, currentCranMirror) { choice ->
       currentCranMirror = choice
-    }.show()
+    }
+    dialog.show()
   }
 
   private fun editUserRepositoryAction() {
@@ -170,9 +172,8 @@ class RManageRepoDialog(
   override fun doOKAction() {
     processDoNotAskOnOk(0)
     if (okAction.isEnabled) {
-      controller.cranMirror = currentCranMirror
-      controller.setRepositories(list.getRepositorySelections())
-      RepoUtils.resetPackageDetails(project)  // List of selected repositories may change => invalidate cache
+      provider.selectedCranMirrorIndex = currentCranMirror
+      provider.selectRepositories(list.getRepositorySelections())
       onModified(refreshCheckBox.isSelected)
       close(0)
     }

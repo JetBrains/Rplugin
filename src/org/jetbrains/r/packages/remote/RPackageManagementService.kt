@@ -15,12 +15,11 @@ import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
+import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.packages.RPackageService
-import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -60,37 +59,16 @@ class RPackageManagementService(private val project: Project,
       return getInitializedManager().interpreter!!
     }
 
-  private val service: RPackageService
-    get() = RPackageService.getInstance(project)
+  private val provider: RepoProvider
+    get() = RepoProvider.getInstance(project)
 
   private val numScheduledOperations = AtomicInteger(0)
 
   @Volatile
   private var lastInstalledPackages: ExpiringList<RInstalledPackage>? = null
 
-  val defaultRepositories: List<RDefaultRepository>
-    get() = interpreter.defaultRepositories
-
-  val userRepositories: List<RUserRepository>
-    get() = service.userRepositoryUrls.map { RUserRepository(it) }
-
-  val enabledRepositoryUrls: List<String>
-    get() {
-      actualizeEnabledRepositories()
-      return service.enabledRepositoryUrls.let { if (it.isNotEmpty()) it else listOf(CRAN_URL_PLACEHOLDER) }
-    }
-
-  val mirrors: List<RMirror>
-    get() = interpreter.cranMirrors
-
-  var cranMirror: Int
-    get() = service.cranMirror
-    set(index) {
-      service.cranMirror = index
-    }
-
   val arePackageDetailsLoaded: Boolean
-    get() = interpreter.packageDetails != null
+    get() = provider.names2availablePackages != null
 
   fun isPackageLoaded(aPackage: RInstalledPackage): Boolean {
     val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
@@ -108,33 +86,10 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getAllRepositories(): List<String> {
-    return mutableListOf<String>().also {
-      it.addAll(defaultRepositories.map { r -> r.url })
-      it.addAll(service.userRepositoryUrls)
+    val repositorySelections = getListBlocking("repositories selections") {
+      provider.repositorySelectionsAsync
     }
-  }
-
-  fun setRepositories(repositorySelections: List<Pair<RRepository, Boolean>>) {
-    val userUrls = mutableListOf<String>()
-    val enabledUrls = mutableListOf<String>()
-    for ((repository, isSelected) in repositorySelections) {
-      if (isSelected) {
-        enabledUrls.add(repository.url)
-      }
-      if (repository is RUserRepository) {
-        userUrls.add(repository.url)
-      }
-    }
-    service.apply {
-      enabledRepositoryUrls.apply {
-        clear()
-        addAll(enabledUrls)
-      }
-      userRepositoryUrls.apply {
-        clear()
-        addAll(userUrls)
-      }
-    }
+    return repositorySelections.map { it.first.url }
   }
 
   @Deprecated("")
@@ -144,44 +99,14 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun getAllPackagesCached(): List<RepoPackage> {
-    return RepoUtils.getFreshPackageDetails(project, enabledRepositoryUrls)?.values?.toList() ?: listOf()
-  }
-
-  override fun reloadAllPackages(): List<RepoPackage> {
-    return loadAllPackages()?.let {
-      RepoUtils.getPackageDescriptions()  // Force loading of package descriptions
-      RepoUtils.setPackageDetails(project, it.first, it.second)
-      it.first
-    } ?: listOf()
-  }
-
-  private fun loadAllPackages(): Pair<List<RRepoPackage>, List<String>>? {
-    val cranMirrors = interpreter.withAutoUpdate { cranMirrors }
-    return if (cranMirrors.isNotEmpty()) {
-      // Note: copy of repos URLs list is intentional.
-      // Downloading of packages will take a long time so we must ensure that the list will stay unchanged
-      val repoUrls = enabledRepositoryUrls.toList()
-      val mappedUrls = mapRepositoryUrls(repoUrls, cranMirrors)
-      interpreter.getAvailablePackages(mappedUrls).blockingGet(DEFAULT_TIMEOUT)?.let { packages ->
-        Pair(packages, repoUrls)
-      }
-    } else {
-      LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. No packages can be loaded")
-      null
+    return getListBlocking("cache of available packages") {
+      provider.allPackagesCachedAsync
     }
   }
 
-  private fun mapRepositoryUrls(repoUrls: List<String>, cranMirrors: List<RMirror>): List<String> {
-    return repoUrls.map { url ->
-      if (url == CRAN_URL_PLACEHOLDER) {
-        if (cranMirror !in cranMirrors.indices) {
-          LOGGER.warn("Cannot get CRAN mirror with previously stored index = $cranMirror. Fallback to the first mirror")
-          cranMirror = 0
-        }
-        cranMirrors[cranMirror].url
-      } else {
-        url
-      }
+  override fun reloadAllPackages(): List<RepoPackage> {
+    return getListBlocking("available packages") {
+      provider.loadAllPackagesAsync()
     }
   }
 
@@ -242,7 +167,7 @@ class RPackageManagementService(private val project: Project,
   @Throws(PackageDetailsException::class)
   fun resolvePackage(repoPackage: RepoPackage): RepoPackage {
     return if (repoPackage.repoUrl == null || repoPackage.latestVersion == null) {
-      val names2packages = interpreter.packageDetails ?: throw MissingPackageDetailsException("Package mapping is not set")
+      val names2packages = provider.names2availablePackages ?: throw MissingPackageDetailsException("Package mapping is not set")
       val filled = names2packages[repoPackage.name]
       filled ?: throw UnresolvedPackageDetailsException("Can't get details for package '" + repoPackage.name + "'")
     } else {
@@ -272,7 +197,8 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<String, Exception>) {
-    consumer.consume(RepoUtils.formatDetails(project, packageName))
+    val repoPackage = provider.names2availablePackages?.get(packageName)
+    consumer.consume(RepoUtils.formatDetails(repoPackage))
   }
 
   private fun getTaskListener(packageNames: List<String>, listener: MultiListener): RPackageTaskManager.TaskListener {
@@ -288,33 +214,6 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  private fun actualizeEnabledRepositories() {
-    removeOutdatedEnabledRepositories()
-    enableMandatoryRepositories()
-  }
-
-  private fun removeOutdatedEnabledRepositories() {
-    val enabled = service.enabledRepositoryUrls
-    val filtered = enabled.filter { url ->
-      defaultRepositories.find { it.url == url } != null || service.userRepositoryUrls.contains(url)
-    }
-    if (filtered.size != enabled.size) {
-      service.enabledRepositoryUrls.apply {
-        clear()
-        addAll(filtered)
-      }
-    }
-  }
-
-  private fun enableMandatoryRepositories() {
-    val mandatory = defaultRepositories.filter { !it.isOptional }
-    for (repository in mandatory) {
-      if (!service.enabledRepositoryUrls.contains(repository.url)) {
-        service.enabledRepositoryUrls.add(repository.url)
-      }
-    }
-  }
-
   fun navigateToPackageDocumentation(pkg: RInstalledPackage) {
     RToolWindowFactory.showDocumentation(RElementFactory.buildRFileFromText(project, "$SHOW_PACKAGE_DOCS(${pkg.name})").firstChild)
   }
@@ -326,8 +225,6 @@ class RPackageManagementService(private val project: Project,
 
   companion object {
     private val LOGGER = Logger.getInstance(RPackageManagementService::class.java)
-    private const val ARGUMENT_DELIMITER = " "
-    private const val DEPENDS_DELIMITER = "\t"
 
     internal fun toErrorDescriptions(exceptions: List<ExecutionException?>): List<ErrorDescription?> {
       return exceptions.map { toErrorDescription(it) }

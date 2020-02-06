@@ -7,7 +7,6 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -27,11 +26,6 @@ import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.*
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
-import org.jetbrains.r.packages.remote.RepoUtils
-import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -52,8 +46,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   override val installedPackages get() = state.installedPackages
   override val libraryPaths get() = state.libraryPaths
   override val userLibraryPath get() = state.userLibraryPath
-  override val cranMirrors get() = state.cranMirrors
-  override val defaultRepositories get() = state.defaultRepositories
   override val isUpdating get() = updatePromise != null
 
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
@@ -76,27 +68,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       }
       return currentSkeletonRoots
     }
-
-  override val packageDetails: Map<String, RRepoPackage>?
-    get() = RepoUtils.getPackageDetails(project)
-
-  override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
-    return runAsync {
-      val lines = runHelper(AVAILABLE_PACKAGES_HELPER, *(repoUrls.toTypedArray()))
-      lines.mapNotNull { line ->
-        val items = line.split(GROUP_DELIMITER)
-        if (items.size == 2) {
-          val depends = items[1].let {
-            if (it != "NA") it else null
-          }
-          val attributes = items[0].split(WORD_DELIMITER)
-          RRepoPackage(attributes[0], attributes[1], attributes[2], depends)
-        } else {
-          null
-        }
-      }
-    }
-  }
 
   override fun getPackageByName(name: String) = state.name2installedPackages[name]
 
@@ -154,20 +125,17 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun doUpdateState() {
-    val cachedMirrors = state.cranMirrors
     state = State.EMPTY
     updateEpoch.incrementAndGet()
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
     val name2installedPackages = installedPackages.asSequence().map { it.packageName to it }.toMap()
-    val mirrors = if (cachedMirrors.isNotEmpty()) cachedMirrors else getMirrors()
     val libraryPaths = loadLibraryPaths()
     val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
     val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
-    val repositories = getRepositories(mirrors)
     state = State(libraryPaths, skeletonPaths, skeletonRoots, makeExpiring(installedPackages), name2installedPackages,
-                  name2libraryPaths, getUserPath(), mirrors, repositories)
+                  name2libraryPaths, getUserPath())
   }
 
   private fun <E>makeExpiring(values: List<E>): ExpiringList<E> {
@@ -184,76 +152,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       return firstLine.expandTilde()
     } else {
       throw RuntimeException("Cannot get user library path")
-    }
-  }
-
-  private fun getMirrors(): List<RMirror> {
-    return if (!ApplicationManager.getApplication().isUnitTestMode) {
-      RepoUtils.cachedMirrors ?: forceGetMirrors().also {
-        RepoUtils.cachedMirrors = it
-      }
-    } else {
-      emptyList()
-    }
-  }
-
-  private fun forceGetMirrors(): List<RMirror> {
-    val lines = runHelper(CRAN_MIRRORS_HELPER)
-    return parseMirrors(lines)
-  }
-
-  private fun parseMirrors(lines: List<String>): List<RMirror> {
-    return lines
-      .mapNotNull { line ->
-        val items = line.split(GROUP_DELIMITER).filter { it.isNotBlank() }
-        if (items.count() >= 2) {
-          val url = items[1].trim()
-          val nameWords = items[0].split(WORD_DELIMITER).filter { it.isNotBlank() }.let { words ->
-            if (words.count() >= 2 && words.last() == HTTPS_SUFFIX) {
-              words.dropLast(1)
-            } else {
-              words
-            }
-          }
-          val name = nameWords.joinToString(" ").trim()
-          RMirror(name, url)
-        } else {
-          null
-        }
-      }
-  }
-
-  private fun getRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
-    val lines = runHelper(DEFAULT_REPOSITORIES_HELPER)
-    val blankIndex = lines.indexOfFirst { it.isBlank() }
-    if (blankIndex < 0) {
-      LOG.error("Cannot find separator in helper's output:\n${lines.joinToString("\n")}")
-      return emptyList()
-    }
-    val optional = lines.subList(0, blankIndex).filter { it.isNotBlank() }
-    val mandatory = lines.subList(blankIndex + 1, lines.size).filter { it.isNotBlank() }
-    return mergeRepositories(mandatory, optional, mirrors)
-  }
-
-  private fun mergeRepositories(mandatory: List<String>, optional: List<String>, mirrors: List<RMirror>): List<RDefaultRepository> {
-    return mutableListOf<RDefaultRepository>().apply {
-      // Note: obtained repositories can be mentioned among CRAN mirrors.
-      // In this case they should be replaced with "@CRAN@"
-      val mirrorUrls = mirrors.asSequence().map { it.url.trimSlash() }.toSet()
-      val seen = mutableSetOf<String>()
-      addAllNotSeen(mandatory, false, seen, mirrorUrls)
-      addAllNotSeen(optional, true, seen, mirrorUrls)
-    }
-  }
-
-  private fun MutableList<RDefaultRepository>.addAllNotSeen(urls: List<String>, isOptional: Boolean, seen: MutableSet<String>, mirrorUrls: Set<String>) {
-    for (url in urls) {
-      val trimmedUrl = url.trimSlash()
-      val mappedUrl = if (trimmedUrl in mirrorUrls) CRAN_URL_PLACEHOLDER else trimmedUrl
-      if (mappedUrl !in seen) {
-        add(RDefaultRepository(mappedUrl, isOptional))
-        seen.add(mappedUrl)
-      }
     }
   }
 
@@ -332,15 +230,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   companion object {
     val LOG = Logger.getInstance(RInterpreterImpl::class.java)
 
-    private const val HTTPS_SUFFIX = "[https]"
-    private const val WORD_DELIMITER = " "
-    private const val GROUP_DELIMITER = "\t"
-    private val whiteSpaceRegex = "\\s".toRegex()
-
-    private val AVAILABLE_PACKAGES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/available_packages.R")
     private val GET_ENV_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/get_env.R")
-    private val CRAN_MIRRORS_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/cran_mirrors.R")
-    private val DEFAULT_REPOSITORIES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/default_repositories.R")
     private val LIBRARY_PATHS_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/library_paths.R")
     private val INSTALLED_PACKAGES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/installed_packages.R")
 
@@ -384,10 +274,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
         this
       }
     }
-
-    private fun String.trimSlash(): String {
-      return if (endsWith("/")) dropLast(1) else this
-    }
   }
 
   override val skeletonPaths: List<String>
@@ -415,11 +301,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
                            val installedPackages: ExpiringList<RInstalledPackage>,
                            val name2installedPackages: Map<String, RInstalledPackage>,
                            val name2libraryPaths: Map<String, VirtualFile>,
-                           val userLibraryPath: String,
-                           val cranMirrors: List<RMirror>,
-                           val defaultRepositories: List<RDefaultRepository>) {
+                           val userLibraryPath: String) {
     companion object {
-      val EMPTY = State(listOf(), listOf(), setOf(), emptyExpiringList(), mapOf(), mapOf(), "", listOf(), listOf())
+      val EMPTY = State(listOf(), listOf(), setOf(), emptyExpiringList(), mapOf(), mapOf(), "")
     }
   }
 }
