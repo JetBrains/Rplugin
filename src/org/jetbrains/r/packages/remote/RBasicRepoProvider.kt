@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.packages.remote
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.Promise
@@ -47,7 +46,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
 
   override val cranMirrorsAsync by lazy {
     runAsync {
-      loadMirrors()
+      loadMirrorsWithoutCaching()
     }
   }
 
@@ -144,18 +143,8 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     }
   }
 
-  private fun loadMirrors(): List<RMirror> {
-    return if (!ApplicationManager.getApplication().isUnitTestMode) {
-      RepoUtils.cachedMirrors ?: loadMirrorsWithoutCaching().also {
-        RepoUtils.cachedMirrors = it
-      }
-    } else {
-      emptyList()
-    }
-  }
-
   private fun loadMirrorsWithoutCaching(): List<RMirror> {
-    val lines = runHelper(CRAN_MIRRORS_HELPER)
+    val lines = CRAN_MIRRORS_HELPER.readLines()
     return parseMirrors(lines)
   }
 
@@ -266,7 +255,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     private const val HTTPS_SUFFIX = "[https]"
 
     private val LOGGER = Logger.getInstance(RBasicRepoProvider::class.java)
-    private val CRAN_MIRRORS_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/cran_mirrors.R")
+    private val CRAN_MIRRORS_HELPER = RHelpersUtil.findFileInRHelpers("R/repos/local_cran_mirrors.txt")
     private val AVAILABLE_PACKAGES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/available_packages.R")
     private val DEFAULT_REPOSITORIES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/default_repositories.R")
 
