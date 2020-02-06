@@ -5,25 +5,17 @@
 package org.jetbrains.r.mock
 
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.rinterop.RInterop
 
 interface MockInterpreterProvider {
   val interop: RInterop
   val isUpdating: Boolean?
   val userLibraryPath: String
-  val cranMirrors: List<RMirror>
   val libraryPaths: List<VirtualFile>
   val installedPackages: ExpiringList<RInstalledPackage>
-  val packageDetails: Map<String, RRepoPackage>?
-  val defaultRepositories: List<RDefaultRepository>
-  fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>>
 
   companion object {
     val DUMMY = object : MockInterpreterProvider {
@@ -36,24 +28,11 @@ interface MockInterpreterProvider {
       override val userLibraryPath: String
         get() = throw NotImplementedError()
 
-      override val cranMirrors: List<RMirror>
-        get() = throw NotImplementedError()
-
       override val libraryPaths: List<VirtualFile>
         get() = throw NotImplementedError()
 
       override val installedPackages: ExpiringList<RInstalledPackage>
         get() = emptyExpiringList(false)  // Note: exception is not thrown intentionally (see `MockInterpreter.installedPackages`)
-
-      override val packageDetails: Map<String, RRepoPackage>?
-        get() = throw NotImplementedError()
-
-      override val defaultRepositories: List<RDefaultRepository>
-        get() = throw NotImplementedError()
-
-      override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
-        throw NotImplementedError()
-      }
     }
   }
 }

@@ -5,35 +5,36 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.testFramework.registerServiceInstance
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.mock.MockInterpreter
 import org.jetbrains.r.mock.MockInterpreterProvider
+import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RequiredPackage
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.packages.remote.*
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   private lateinit var slaveInterpreter: RInterpreter
-  private lateinit var localProvider: LocalProvider
+  private lateinit var localRepoProvider: LocalRepoProvider
 
   override fun setUp() {
     super.setUp()
     addLibraries()
     setupMockInterpreter()
+    setupMockRepoProvider()
   }
 
   fun runWithTestPackagesForgotten(packages: List<RequiredPackage>, task: () -> Unit) {
     try {
-      localProvider.knownPackages.removeAll(packages)
+      localRepoProvider.knownPackages.removeAll(packages)
       task()
     } finally {
-      localProvider.knownPackages.addAll(packages)
+      localRepoProvider.knownPackages.addAll(packages)
     }
   }
 
@@ -65,13 +66,19 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     RInterpreterManager.getInterpreter(project)?.let { interpreter ->
       val mock = interpreter as MockInterpreter
       slaveInterpreter = RInterpreterTestUtil.makeSlaveInterpreter(project)
-      localProvider = LocalProvider(rInterop, slaveInterpreter)
-      mock.provider = localProvider
+      mock.provider = LocalInterpreterProvider(rInterop, slaveInterpreter)
     }
   }
 
-  private class LocalProvider(override val interop: RInterop, private val slaveInterpreter: RInterpreter) : MockInterpreterProvider {
-    val knownPackages = LOCAL_PACKAGES.toMutableList()
+  private fun setupMockRepoProvider() {
+    localRepoProvider = LocalRepoProvider()
+    project.registerServiceInstance(RepoProvider::class.java, localRepoProvider)
+  }
+
+  private class LocalInterpreterProvider(
+    override val interop: RInterop,
+    private val slaveInterpreter: RInterpreter
+  ) : MockInterpreterProvider {
 
     override val isUpdating: Boolean?
       get() = slaveInterpreter.isUpdating
@@ -79,26 +86,23 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     override val userLibraryPath: String
       get() = slaveInterpreter.userLibraryPath
 
-    override val cranMirrors: List<RMirror>
-      get() = slaveInterpreter.cranMirrors
-
     override val libraryPaths: List<VirtualFile>
       get() = slaveInterpreter.libraryPaths
 
     override val installedPackages: ExpiringList<RInstalledPackage>
       get() = slaveInterpreter.installedPackages
+  }
 
-    override val packageDetails: Map<String, RRepoPackage>?
+  private class LocalRepoProvider : RepoProvider by MockRepoProvider() {
+    val knownPackages = LOCAL_PACKAGES.toMutableList()
+
+    override val names2availablePackages: Map<String, RRepoPackage>?
       get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
 
-    override val defaultRepositories: List<RDefaultRepository>
-      get() = listOf(RDefaultRepository(LOCAL_REPO_URL, false))
+    override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
+      get() = resolvedPromise(listOf(RDefaultRepository(LOCAL_REPO_URL, false) to true))
 
-    override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
-      return runAsync {
-        knownPackages.map { it.toRepoPackage() }
-      }
-    }
+    override fun loadAllPackagesAsync() = resolvedPromise(knownPackages.map { it.toRepoPackage() })
   }
 
   companion object {

@@ -19,6 +19,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl
+import com.intellij.testFramework.registerServiceInstance
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
@@ -29,8 +30,10 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.mock.MockInterpreterManager
+import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
+import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
@@ -57,6 +60,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   fun addLibraries() {
     setupMockInterpreterManager()
+    setupMockRepoProvider()
   }
 
   protected fun doExprTest(expressionList: String, checkWeakWarnings: Boolean = false): CodeInsightTestFixture {
@@ -126,6 +130,10 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
         dumbService.queueTask(UnindexedFilesUpdater(this))
       }
     }
+  }
+
+  private fun setupMockRepoProvider() {
+    project.registerServiceInstance(RepoProvider::class.java, MockRepoProvider())
   }
 
   private fun prepareTestSkeletons(project: Project) {

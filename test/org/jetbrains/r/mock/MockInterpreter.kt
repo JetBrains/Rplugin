@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
@@ -21,9 +20,6 @@ import org.jetbrains.r.interpreter.R_UNKNOWN
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.packages.remote.RDefaultRepository
-import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.packages.remote.RRepoPackage
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -51,21 +47,8 @@ class MockInterpreter(private val project: Project, var provider: MockInterprete
   override val userLibraryPath: String
     get() = provider.userLibraryPath
 
-  override val cranMirrors: List<RMirror>
-    get() = provider.cranMirrors
-
-  override val defaultRepositories: List<RDefaultRepository>
-    get() = provider.defaultRepositories
-
   override val interop: RInterop
     get() = provider.interop
-
-  override val packageDetails: Map<String, RRepoPackage>?
-    get() = provider.packageDetails
-
-  override fun getAvailablePackages(repoUrls: List<String>): Promise<List<RRepoPackage>> {
-    return provider.getAvailablePackages(repoUrls)
-  }
 
   override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.packageName == name }
 
