@@ -6,15 +6,19 @@ package org.jetbrains.r.debugger
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
+import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
-import com.intellij.ui.*
-import com.intellij.ui.border.CustomLineBorder
+import com.intellij.ui.AppUIUtil
+import com.intellij.ui.ClickListener
+import com.intellij.ui.DoubleClickListener
+import com.intellij.ui.ListenerUtil
 import com.intellij.util.Alarm
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.ui.UIUtil.getMultiClickInterval
@@ -36,6 +40,7 @@ import icons.org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import java.awt.BorderLayout
 import java.awt.event.*
@@ -247,8 +252,13 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         showHiddenVariables = state
       }
     })
+    actions.addAction(object : DumbAwareAction(ActionsBundle.message("action.EvaluateExpression.text"), null,
+                                               AllIcons.Debugger.EvaluateExpression) {
+      override fun actionPerformed(e: AnActionEvent) {
+        RDebuggerEvaluateHandler.perform(console.project, RXDebuggerEvaluator(stackFrame ?: return), e.dataContext)
+      }
+    })
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
-    toolbar.border = CustomLineBorder(CaptionPanel.CNT_ACTIVE_BORDER_COLOR, 0, 1, 0, 0)
     toolbar.setTargetComponent(tree)
     getPanel().add(toolbar.getComponent(), BorderLayout.WEST)
   }

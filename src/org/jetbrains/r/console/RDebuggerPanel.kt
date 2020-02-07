@@ -8,44 +8,65 @@ import com.intellij.icons.AllIcons
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
+import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.JBTabbedPane
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.PlatformDebuggerImplIcons
 import icons.org.jetbrains.r.RBundle
-import org.jetbrains.r.debugger.RDebuggerEvaluateHandler
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.RXVariablesView
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.RVar
-import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import java.awt.BorderLayout
 import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.SwingConstants
 
 class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()), Disposable, RConsoleExecuteActionHandler.Listener {
   private val rInterop = console.rInterop
   private val variablesView = RXVariablesView(console, this).also { Disposer.register(this, it) }
   private val framesView = XDebuggerFramesList(console.project)
-  private val tabs: JBTabbedPane
+  private val framesViewScrollPane: JBScrollPane
+  private var variablesAndFramesView: JBSplitter? = null
+  private val actionToolbar: ActionToolbar
   private var currentRXStackFrames = listOf<RXStackFrame>()
 
   private val positionHighlighter = ExecutionPointHighlighter(console.project)
   private var wasSelected: Any? = null
 
   private var bottomComponent: JComponent? = null
+
+  private var isFrameViewShown: Boolean = false
+    set(value) {
+      invokeLater {
+        if (value == field) return@invokeLater
+        field = value
+        if (value) {
+          remove(variablesView.panel)
+          variablesAndFramesView = JBSplitter(false, 0.5f).also {
+            it.firstComponent = variablesView.panel
+            it.secondComponent = framesViewScrollPane
+            add(it, BorderLayout.CENTER)
+          }
+        } else {
+          variablesAndFramesView?.let { remove(it) }
+          add(variablesView.panel, BorderLayout.CENTER)
+        }
+        validate()
+        repaint()
+      }
+    }
 
   init {
     framesView.addListSelectionListener {
@@ -60,16 +81,14 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       }
       variablesView.stackFrame = frame
     }
-    val framesViewScrollPane = JBScrollPane(framesView)
+    framesViewScrollPane = JBScrollPane(framesView)
 
-    tabs = JBTabbedPane(SwingConstants.TOP)
-    tabs.add(RBundle.message("debugger.tab.variables"), variablesView.panel)
-    tabs.add(RBundle.message("debugger.tab.frames"), framesViewScrollPane)
+    add(variablesView.panel, BorderLayout.CENTER)
 
     val toolbarActions = createDebugActions()
-    val actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, false)
-    add(tabs, BorderLayout.CENTER)
-    add(actionToolbar.component, BorderLayout.WEST)
+    actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, true)
+    actionToolbar.component.isVisible = false
+    add(actionToolbar.component, BorderLayout.NORTH)
     onCommandExecuted()
   }
 
@@ -116,13 +135,6 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     actions.addSeparator()
     actions.add(ActionManager.getInstance().getAction("ViewBreakpoints"))
     actions.add(createMuteBreakpointsAction())
-    actions.addSeparator()
-    actions.add(createAction(ActionsBundle.message("action.EvaluateExpression.text"),AllIcons.Debugger.EvaluateExpression,
-                             "EvaluateExpression", isActive = { true }) {
-      val stackFrame = framesView.selectedValue as? RXStackFrame ?:
-                       framesView.model.items.firstOrNull() as? RXStackFrame ?: return@createAction
-      RDebuggerEvaluateHandler.perform(rInterop.project, RXDebuggerEvaluator(stackFrame), it.dataContext)
-    })
     return actions
   }
 
@@ -168,8 +180,12 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   override fun onCommandExecuted() {
     if (rInterop.isDebug) {
+      isFrameViewShown = true
+      actionToolbar.component.isVisible = true
       updateStack(createRXStackFrames(rInterop.debugStack))
     } else {
+      isFrameViewShown = false
+      actionToolbar.component.isVisible = false
       val stackFrame = RXStackFrame(
         RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.showHiddenVariables,
         rInterop.globalEnvRef.getEqualityObject())
@@ -179,6 +195,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   override fun onBusy() {
     updateStack(emptyList())
+    actionToolbar.component.isVisible = rInterop.isDebug
   }
 
   override fun beforeExecution() {
@@ -228,10 +245,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   fun showLastErrorStack() {
+    isFrameViewShown = true
     val stack = createRXStackFrames(rInterop.lastErrorStack)
     updateStack(stack)
-    tabs.selectedIndex = 1
-    tabs.grabFocus()
+    framesView.grabFocus()
     if (stack.isNotEmpty()) {
       framesView.selectedIndex =
         stack
