@@ -206,4 +206,28 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
   fun testWarning() {
     TestCase.assertTrue("my message" in rInterop.executeCode("warning('my message')").stderr)
   }
+
+  fun testSetValue() {
+    rInterop.executeCode("aa <- 10; bb <- 20; cc <- 30")
+    RRef(ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "bb"), rInterop)
+      .setValue(RRef.expressionRef("123", rInterop))
+      .blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("[1] 123", rInterop.executeCode("bb").stdout.trim())
+
+    rInterop.executeCode("s1 <- list(1,2,3,4); s2 <- s1")
+    RRef(ProtoUtil.listElementRefProto(
+      ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "s2"), 1), rInterop)
+      .setValue(RRef.expressionRef("'Hello'", rInterop))
+      .blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("[1] 2", rInterop.executeCode("s1[[2]]").stdout.trim())
+    TestCase.assertEquals("[1] \"Hello\"", rInterop.executeCode("s2[[2]]").stdout.trim())
+
+    rInterop.executeCode("s1 <- c(1,2,3,4); s2 <- s1")
+    RRef(ProtoUtil.listElementRefProto(
+      ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "s2"), 1), rInterop)
+      .setValue(RRef.expressionRef("321", rInterop))
+      .blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("[1] 2", rInterop.executeCode("s1[2]").stdout.trim())
+    TestCase.assertEquals("[1] 321", rInterop.executeCode("s2[2]").stdout.trim())
+  }
 }

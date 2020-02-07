@@ -119,7 +119,9 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     actions.addSeparator()
     actions.add(createAction(ActionsBundle.message("action.EvaluateExpression.text"),AllIcons.Debugger.EvaluateExpression,
                              "EvaluateExpression", isActive = { true }) {
-      RDebuggerEvaluateHandler.perform(rInterop.project, RXDebuggerEvaluator(rInterop.currentEnvRef, rInterop.executor), it.dataContext)
+      val stackFrame = framesView.selectedValue as? RXStackFrame ?:
+                       framesView.model.items.firstOrNull() as? RXStackFrame ?: return@createAction
+      RDebuggerEvaluateHandler.perform(rInterop.project, RXDebuggerEvaluator(stackFrame), it.dataContext)
     })
     return actions
   }
@@ -169,7 +171,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       updateStack(createRXStackFrames(rInterop.debugStack))
     } else {
       val stackFrame = RXStackFrame(
-        RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, rInterop.executor, false, variablesView.showHiddenVariables,
+        RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.showHiddenVariables,
         rInterop.globalEnvRef.getEqualityObject())
       updateStack(listOf(stackFrame))
     }
@@ -185,7 +187,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   fun refreshStackFrames() {
     updateStack(currentRXStackFrames.map {
-      RXStackFrame(it.functionName, it.sourcePosition, it.loader, rInterop.executor,
+      RXStackFrame(it.functionName, it.sourcePosition, it.loader,
                    it.grayAttributes, variablesView.showHiddenVariables, it.equalityObject)
     })
   }
@@ -197,7 +199,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       } else {
         RBundle.message("debugger.anonymous.stack.frame")
       }
-      RXStackFrame(functionName, it.position?.xSourcePosition, it.environment.createVariableLoader(), rInterop.executor,
+      RXStackFrame(functionName, it.position?.xSourcePosition, it.environment.createVariableLoader(),
                    it.position == null || RSourceFileManager.isTemporary(it.position.file),
                    variablesView.showHiddenVariables, it.equalityObject)
     }.reversed()

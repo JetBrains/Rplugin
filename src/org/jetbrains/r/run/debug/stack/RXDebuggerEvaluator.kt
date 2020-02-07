@@ -14,23 +14,20 @@ import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RVar
-import java.util.concurrent.ExecutorService
 
-class RXDebuggerEvaluator(
-  private val environment: RRef, private val executor: ExecutorService, private var parentDisposable: Disposable? = null)
-  : XDebuggerEvaluator() {
+class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var parentDisposable: Disposable? = null) : XDebuggerEvaluator() {
   override fun evaluate(expression: String, callback: XEvaluationCallback, expressionPosition: XSourcePosition?) {
-    val resultPromise = RRef.expressionRef(expression, environment).copyToPersistentRef(parentDisposable)
+    val resultPromise = RRef.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable)
     parentDisposable?.let {
       Disposer.register(it, Disposable {
         if (resultPromise.isPending) resultPromise.cancel()
       })
     }
     resultPromise.onSuccess {
-      callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), executor))
+      callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), stackFrame))
     }.onError {
       if (it is RDebuggerException) {
-        callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { it.isNotEmpty() } ?: "Error")
+        callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { msg -> msg.isNotBlank() } ?: "Error")
       } else {
         callback.errorOccurred("")
       }

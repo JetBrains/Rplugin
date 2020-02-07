@@ -60,6 +60,20 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::getEqualityObject, proto).value
   }
 
+  fun setValue(value: RRef): CancellablePromise<Unit> {
+    val request = Service.SetValueRequest.newBuilder()
+      .setRef(proto)
+      .setValue(value.proto)
+      .build()
+    return rInterop.executeAsync(rInterop.asyncStub::setValue, request).then(rInterop.executor) {
+      if (it.responseCase == Service.SetValueResponse.ResponseCase.ERROR) {
+        throw RDebuggerException(it.error)
+      }
+    }
+  }
+
+  fun canSetValue() = ProtoUtil.canSetValue(proto)
+
   companion object {
     fun expressionRef(code: String, env: RRef) = RRef(ProtoUtil.expressionRefProto(code, env.proto), env.rInterop)
     fun expressionRef(code: String, rInterop: RInterop) = expressionRef(code, rInterop.currentEnvRef)
