@@ -18,7 +18,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
-import org.intellij.datavis.inlays.InlaysManager
+import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
 import org.jetbrains.r.actions.*

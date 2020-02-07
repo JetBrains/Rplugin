@@ -25,10 +25,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.intellij.datavis.inlays.InlayDimensions
-import org.intellij.datavis.inlays.InlaysManager
-import org.intellij.datavis.inlays.components.GraphicsPanel
-import org.intellij.datavis.inlays.components.ProcessOutput
+import org.intellij.datavis.r.inlays.InlayDimensions
+import org.intellij.datavis.r.inlays.InlaysManager
+import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise

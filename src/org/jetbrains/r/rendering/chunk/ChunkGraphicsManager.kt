@@ -5,7 +5,7 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.project.Project
-import org.intellij.datavis.inlays.components.GraphicsManager
+import org.intellij.datavis.r.inlays.components.GraphicsManager
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils

@@ -6,7 +6,7 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import org.intellij.datavis.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 

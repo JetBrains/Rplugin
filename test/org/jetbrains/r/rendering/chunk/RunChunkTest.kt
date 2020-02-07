@@ -10,7 +10,7 @@ import com.intellij.psi.search.PsiElementProcessor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.PlatformTestUtil
 import junit.framework.TestCase
-import org.intellij.datavis.inlays.InlayOutput
+import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending

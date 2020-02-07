@@ -22,10 +22,10 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.UIUtil
-import org.intellij.datavis.inlays.InlayDescriptorProvider
-import org.intellij.datavis.inlays.InlayDimensions
-import org.intellij.datavis.inlays.InlayElementDescriptor
-import org.intellij.datavis.inlays.InlayOutput
+import org.intellij.datavis.r.inlays.InlayDescriptorProvider
+import org.intellij.datavis.r.inlays.InlayDimensions
+import org.intellij.datavis.r.inlays.InlayElementDescriptor
+import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator.createRunChunkActionGroup
 import org.jetbrains.r.rendering.editor.ChunkExecutionState

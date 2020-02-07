@@ -13,8 +13,8 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.intellij.datavis.inlays.components.CHANGE_DARK_MODE_TOPIC
-import org.intellij.datavis.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.run.graphics.RGraphicsRepository

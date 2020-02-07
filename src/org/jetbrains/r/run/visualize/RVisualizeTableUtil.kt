@@ -10,7 +10,7 @@ import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import org.intellij.datavis.ui.MaterialTable
+import org.intellij.datavis.r.ui.MaterialTable
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
 

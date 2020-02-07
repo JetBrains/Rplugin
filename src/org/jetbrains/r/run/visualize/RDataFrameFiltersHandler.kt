@@ -4,13 +4,13 @@
 
 package org.jetbrains.r.run.visualize
 
-import org.intellij.datavis.inlays.table.filters.IFilter
-import org.intellij.datavis.inlays.table.filters.IParser
-import org.intellij.datavis.inlays.table.filters.gui.AbstractFiltersHandler
-import org.intellij.datavis.inlays.table.filters.gui.ChoicesHandler
-import org.intellij.datavis.inlays.table.filters.gui.IFilterEditor
-import org.intellij.datavis.inlays.table.filters.gui.ParserModel
-import org.intellij.datavis.inlays.table.filters.gui.editor.FilterEditor
+import org.intellij.datavis.r.inlays.table.filters.IFilter
+import org.intellij.datavis.r.inlays.table.filters.IParser
+import org.intellij.datavis.r.inlays.table.filters.gui.AbstractFiltersHandler
+import org.intellij.datavis.r.inlays.table.filters.gui.ChoicesHandler
+import org.intellij.datavis.r.inlays.table.filters.gui.IFilterEditor
+import org.intellij.datavis.r.inlays.table.filters.gui.ParserModel
+import org.intellij.datavis.r.inlays.table.filters.gui.editor.FilterEditor
 import org.jetbrains.r.rinterop.Service.DataFrameFilterRequest.Filter
 import javax.swing.RowFilter
 import javax.swing.table.TableModel

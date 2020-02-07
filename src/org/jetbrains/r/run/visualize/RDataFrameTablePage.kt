@@ -24,10 +24,10 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import org.intellij.datavis.VisualizationIcons
-import org.intellij.datavis.inlays.table.ClipboardUtils
-import org.intellij.datavis.inlays.table.filters.gui.TableFilterHeader
-import org.intellij.datavis.ui.MaterialTableUtils
+import org.intellij.datavis.r.VisualizationIcons
+import org.intellij.datavis.r.inlays.table.ClipboardUtils
+import org.intellij.datavis.r.inlays.table.filters.gui.TableFilterHeader
+import org.intellij.datavis.r.ui.MaterialTableUtils
 import org.jetbrains.concurrency.resolvedPromise
 import java.awt.BorderLayout
 import java.awt.Event

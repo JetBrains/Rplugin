@@ -5,7 +5,7 @@
 package org.jetbrains.r.run.visualize
 
 import com.google.protobuf.Empty
-import org.intellij.datavis.inlays.table.filters.IParser
+import org.intellij.datavis.r.inlays.table.filters.IParser
 import org.jetbrains.r.rinterop.Service.DataFrameFilterRequest.Filter
 import java.text.ParseException
 

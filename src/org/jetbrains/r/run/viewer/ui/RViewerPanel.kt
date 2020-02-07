@@ -8,7 +8,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.javafx.JavaFxHtmlPanel
 import com.intellij.util.ui.JBUI
-import org.intellij.datavis.inlays.components.EmptyComponentPanel
+import org.intellij.datavis.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
