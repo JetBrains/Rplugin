@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.elementType
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.api.RVisitor
 

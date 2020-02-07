@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.inspections
 
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 
 class ClosureAssignmentInspectionTest : RInspectionTest() {
 

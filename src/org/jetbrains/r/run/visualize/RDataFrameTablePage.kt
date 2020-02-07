@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.run.visualize
+package org.jetbrains.r.run.visualize
 
 import com.intellij.codeInsight.hints.presentation.MouseButton
 import com.intellij.codeInsight.hints.presentation.mouseButton
@@ -24,15 +24,11 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import icons.VisualizationIcons
+import org.intellij.datavis.VisualizationIcons
 import org.intellij.datavis.inlays.table.ClipboardUtils
 import org.intellij.datavis.inlays.table.filters.gui.TableFilterHeader
 import org.intellij.datavis.ui.MaterialTableUtils
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.run.visualize.RDataFrameRowSorter
-import org.jetbrains.r.run.visualize.RDataFrameTablePaginator
-import org.jetbrains.r.run.visualize.RDataFrameViewer
-import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import java.awt.BorderLayout
 import java.awt.Event
 import java.awt.FlowLayout

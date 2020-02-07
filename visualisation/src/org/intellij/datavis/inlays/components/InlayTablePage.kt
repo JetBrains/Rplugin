@@ -24,7 +24,7 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import icons.VisualizationIcons
+import org.intellij.datavis.VisualizationIcons
 import org.intellij.datavis.inlays.dataframe.DataFrame
 import org.intellij.datavis.inlays.dataframe.columns.DoubleType
 import org.intellij.datavis.inlays.dataframe.columns.IntType

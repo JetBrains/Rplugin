@@ -4,10 +4,6 @@
 
 package org.jetbrains.r.psi
 
-import icons.org.jetbrains.r.psi.AbstractTableManipulation
-import icons.org.jetbrains.r.psi.TableManipulationArgument
-import icons.org.jetbrains.r.psi.TableManipulationContextType
-import icons.org.jetbrains.r.psi.TableManipulationFunction
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression

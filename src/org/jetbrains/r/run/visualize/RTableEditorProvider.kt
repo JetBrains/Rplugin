@@ -15,7 +15,6 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightVirtualFile
-import icons.org.jetbrains.r.run.visualize.RDataFrameTablePage
 import javax.swing.Icon
 import javax.swing.JComponent
 

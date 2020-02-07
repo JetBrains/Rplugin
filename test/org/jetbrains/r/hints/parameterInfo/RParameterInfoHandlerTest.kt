@@ -7,7 +7,7 @@ package org.jetbrains.r.hints.parameterInfo
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.testFramework.fixtures.EditorHintFixture
 import com.intellij.util.ui.UIUtil
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 
 class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {

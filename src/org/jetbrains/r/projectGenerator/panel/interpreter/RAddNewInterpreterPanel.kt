@@ -5,8 +5,8 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.configuration.RManageInterpreterPanel
+import org.jetbrains.r.RBundle
+import org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterUtil

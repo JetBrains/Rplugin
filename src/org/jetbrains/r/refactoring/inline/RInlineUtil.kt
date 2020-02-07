@@ -9,15 +9,13 @@ import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RForStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.cfg.RControlFlow
 import java.util.*
 

@@ -12,10 +12,9 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.frame.*
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.run.debug.stack.RXVar
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.rinterop.RVar

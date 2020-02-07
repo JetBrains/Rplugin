@@ -19,7 +19,7 @@ import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil

@@ -18,13 +18,13 @@ import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.documentation.RDocumentationUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory

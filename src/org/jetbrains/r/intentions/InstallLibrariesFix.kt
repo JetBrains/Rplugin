@@ -6,8 +6,7 @@ package org.jetbrains.r.intentions
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.intentions.DependencyManagementFix
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 

@@ -17,11 +17,7 @@ import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.UIUtil
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.PackartLogicalConstants
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.PackratExpandedLogicalConstants
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.PackratSettings
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.getAllPackratSettings
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import java.awt.Component

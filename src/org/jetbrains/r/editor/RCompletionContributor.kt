@@ -21,9 +21,6 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.Consumer
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
-import icons.org.jetbrains.r.psi.TableManipulationColumn
-import icons.org.jetbrains.r.psi.TableManipulationContextType
-import icons.org.jetbrains.r.psi.TableType
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleView
@@ -34,6 +31,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
+import org.jetbrains.r.psi.TableType
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex

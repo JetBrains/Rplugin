@@ -23,14 +23,14 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.settings.RInterpreterSettings

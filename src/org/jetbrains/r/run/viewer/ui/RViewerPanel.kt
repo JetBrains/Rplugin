@@ -8,11 +8,11 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.javafx.JavaFxHtmlPanel
 import com.intellij.util.ui.JBUI
-import icons.org.jetbrains.r.RBundle
 import org.intellij.datavis.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.run.viewer.RViewerUtils
 import java.io.File
 import java.net.URI

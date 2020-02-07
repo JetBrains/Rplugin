@@ -2,14 +2,14 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.sdk
+package org.jetbrains.r.sdk
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.configuration.RAddInterpreterDialog
+import org.jetbrains.r.RBundle
+import org.jetbrains.r.configuration.RAddInterpreterDialog
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import java.awt.Point
 import javax.swing.JComponent

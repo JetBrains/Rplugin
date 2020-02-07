@@ -10,9 +10,9 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.intentions.InstallAllFileLibraryFix
 import org.jetbrains.annotations.Nls
+import org.jetbrains.r.RBundle
+import org.jetbrains.r.intentions.InstallAllFileLibraryFix
 import org.jetbrains.r.intentions.InstallLibraryFix
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.RPsiUtil

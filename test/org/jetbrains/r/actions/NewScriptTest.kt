@@ -11,7 +11,6 @@ package org.jetbrains.r.actions
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileTypes.FileTypes
 import com.intellij.psi.PsiDirectory
-import icons.org.jetbrains.r.actions.TestableCreateFileFromTemplateAction
 import org.jetbrains.r.RUsefulTestCase
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance

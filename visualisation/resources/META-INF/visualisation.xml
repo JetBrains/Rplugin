@@ -1,9 +1,9 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
+<idea-plugin allow-bundled-update="true">
 
   <extensionPoints>
-    <extensionPoint qualifiedName="com.intellij.datavis.inlays.inlayDescriptorProvider"
+    <extensionPoint qualifiedName="org.intellij.datavis.inlays.inlayDescriptorProvider"
                     interface="org.intellij.datavis.inlays.InlayDescriptorProvider"/>
-    <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.graphicsManager"
+    <extensionPoint qualifiedName="org.intellij.datavis.inlays.components.graphicsManager"
                     interface="org.intellij.datavis.inlays.components.GraphicsManager"/>
   </extensionPoints>
 

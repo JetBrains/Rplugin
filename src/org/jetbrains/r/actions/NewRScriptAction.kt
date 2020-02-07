@@ -10,7 +10,6 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import icons.org.jetbrains.r.actions.TestableCreateFileFromTemplateAction
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rmarkdown.RMarkdownFileType

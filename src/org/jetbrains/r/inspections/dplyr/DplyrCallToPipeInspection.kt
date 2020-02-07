@@ -7,7 +7,7 @@ package org.jetbrains.r.inspections.dplyr
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.RDplyrUtil

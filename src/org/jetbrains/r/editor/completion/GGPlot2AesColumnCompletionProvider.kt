@@ -15,7 +15,6 @@ import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
-import icons.org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.RLookupElement
 import org.jetbrains.r.editor.TABLE_MANIPULATION_COLUMNS_GROUPING
@@ -23,6 +22,7 @@ import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RDataTableUtil
 import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.*
 
 class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParameters>() {

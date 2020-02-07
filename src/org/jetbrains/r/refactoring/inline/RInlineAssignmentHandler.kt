@@ -15,8 +15,8 @@ import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
-import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor

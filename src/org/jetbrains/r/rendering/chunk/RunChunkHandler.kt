@@ -25,8 +25,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.rendering.chunk.ChunkPathManager
 import org.intellij.datavis.inlays.InlayDimensions
 import org.intellij.datavis.inlays.InlaysManager
 import org.intellij.datavis.inlays.components.GraphicsPanel
@@ -35,6 +33,7 @@ import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView

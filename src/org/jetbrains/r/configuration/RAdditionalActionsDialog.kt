@@ -6,7 +6,7 @@ package org.jetbrains.r.configuration
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBCheckBox
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import javax.swing.*
 
 class RAdditionalActionsDialog(private val onExit: (Boolean, Boolean) -> Unit) : DialogWrapper(null, true) {

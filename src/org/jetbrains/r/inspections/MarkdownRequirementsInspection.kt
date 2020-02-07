@@ -9,7 +9,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.intentions.InstallLibrariesFix
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.api.RFile

@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.intellij.datavis.inlays
+package org.intellij.datavis.inlays
 
 import com.intellij.ide.ui.UISettings
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -33,8 +33,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import icons.org.intellij.datavis.ui.InlineToolbar
-import org.intellij.datavis.inlays.*
+import org.intellij.datavis.ui.InlineToolbar
 import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
 import java.awt.event.ComponentAdapter

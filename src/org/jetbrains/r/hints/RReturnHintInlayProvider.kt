@@ -15,7 +15,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.layout.*
 import com.intellij.util.ui.JBUI
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage

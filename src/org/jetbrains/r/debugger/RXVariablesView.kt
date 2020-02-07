@@ -36,7 +36,7 @@ import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.rinterop.RVar

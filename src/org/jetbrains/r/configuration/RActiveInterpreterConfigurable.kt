@@ -7,8 +7,7 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.configuration.RManageInterpreterPanel
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo

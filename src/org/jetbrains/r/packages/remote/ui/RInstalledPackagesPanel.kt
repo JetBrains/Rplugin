@@ -17,9 +17,7 @@ import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.packages.remote.ui.RPackageUpdateInfo
-import icons.org.jetbrains.r.packages.remote.ui.RUpdateAllConfirmDialog
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.UPGRADE_ALL
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher

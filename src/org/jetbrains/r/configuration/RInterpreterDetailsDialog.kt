@@ -2,15 +2,15 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.configuration
+package org.jetbrains.r.configuration
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.sdk.RInterpreterListCellRenderer
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.sdk.RInterpreterListCellRenderer
 import org.jetbrains.r.ui.RDimensionPreference
 import org.jetbrains.r.ui.calculateDialogPreferredSize
 import javax.swing.JComponent

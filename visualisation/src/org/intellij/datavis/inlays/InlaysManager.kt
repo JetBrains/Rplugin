@@ -13,7 +13,6 @@ import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import icons.org.intellij.datavis.inlays.EditorInlaysManager
 
 /**
  * Manages inlays.

@@ -9,7 +9,7 @@ import com.intellij.lang.parameterInfo.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPsiUtil

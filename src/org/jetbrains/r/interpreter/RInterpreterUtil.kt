@@ -23,14 +23,13 @@ import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
-import icons.org.jetbrains.r.RBundle
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
-
 import java.util.*
 import java.util.concurrent.TimeUnit
 

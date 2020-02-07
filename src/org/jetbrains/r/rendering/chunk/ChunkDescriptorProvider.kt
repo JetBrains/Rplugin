@@ -22,7 +22,6 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.UIUtil
-import icons.org.jetbrains.r.rendering.chunk.ChunkPathManager
 import org.intellij.datavis.inlays.InlayDescriptorProvider
 import org.intellij.datavis.inlays.InlayDimensions
 import org.intellij.datavis.inlays.InlayElementDescriptor

@@ -10,8 +10,8 @@ import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import icons.org.jetbrains.r.RBundle
 import org.jetbrains.annotations.Nls
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.intentions.LoadPackageFix
 import org.jetbrains.r.psi.api.RCallExpression

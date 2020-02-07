@@ -2,7 +2,7 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.run.visualize
+package org.jetbrains.r.run.visualize
 
 import org.intellij.datavis.inlays.table.filters.IFilter
 import org.intellij.datavis.inlays.table.filters.IParser
@@ -12,9 +12,6 @@ import org.intellij.datavis.inlays.table.filters.gui.IFilterEditor
 import org.intellij.datavis.inlays.table.filters.gui.ParserModel
 import org.intellij.datavis.inlays.table.filters.gui.editor.FilterEditor
 import org.jetbrains.r.rinterop.Service.DataFrameFilterRequest.Filter
-import org.jetbrains.r.run.visualize.RDataFrameRowSorter
-import org.jetbrains.r.run.visualize.RFilterParser
-import org.jetbrains.r.run.visualize.RRowFilter
 import javax.swing.RowFilter
 import javax.swing.table.TableModel
 

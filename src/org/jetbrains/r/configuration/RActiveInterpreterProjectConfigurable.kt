@@ -7,7 +7,7 @@ package org.jetbrains.r.configuration
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import javax.swing.JComponent
 
 class RActiveInterpreterProjectConfigurable(private val project: Project) : SearchableConfigurable, Configurable.NoScroll {

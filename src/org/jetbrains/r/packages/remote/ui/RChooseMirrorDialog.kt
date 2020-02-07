@@ -7,7 +7,7 @@ package org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.remote.RMirror
 import org.jetbrains.r.ui.RDimensionPreference
 import org.jetbrains.r.ui.calculateDialogPreferredSize

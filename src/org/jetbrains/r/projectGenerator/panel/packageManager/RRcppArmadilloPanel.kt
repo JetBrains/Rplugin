@@ -7,9 +7,8 @@ package org.jetbrains.r.projectGenerator.panel.packageManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.RRcppPackageManagerPanel
 import org.jdesktop.swingx.VerticalLayout
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import javax.swing.JCheckBox
 

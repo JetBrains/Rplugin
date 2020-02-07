@@ -7,7 +7,7 @@ package org.jetbrains.r.projectGenerator.template
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.platform.ProjectTemplate
 import com.intellij.platform.ProjectTemplatesFactory
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.R_LOGO_16
 
 class RTemplatesFactory : ProjectTemplatesFactory() {

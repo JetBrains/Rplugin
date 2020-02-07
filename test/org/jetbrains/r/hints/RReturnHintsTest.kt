@@ -6,7 +6,7 @@ package org.jetbrains.r.hints
 
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.editor.impl.EditorImpl
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase

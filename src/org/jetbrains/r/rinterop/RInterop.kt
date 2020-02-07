@@ -26,9 +26,6 @@ import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.messages.Topic
 import com.jetbrains.rd.util.getOrCreate
-import icons.org.jetbrains.r.psi.TableInfo
-import icons.org.jetbrains.r.psi.TableManipulationColumn
-import icons.org.jetbrains.r.psi.TableType
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
@@ -37,6 +34,9 @@ import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.packages.RequiredPackageException
+import org.jetbrains.r.psi.TableInfo
+import org.jetbrains.r.psi.TableManipulationColumn
+import org.jetbrains.r.psi.TableType
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer

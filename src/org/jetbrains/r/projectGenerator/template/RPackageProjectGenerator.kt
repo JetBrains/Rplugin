@@ -8,8 +8,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.projectGenerator.panel.packageManager.RDefaultPackagePanel
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.panel.packageManager.*
 import java.util.function.Consumer
 import javax.swing.JComponent

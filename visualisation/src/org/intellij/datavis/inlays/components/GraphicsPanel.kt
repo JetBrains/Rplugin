@@ -17,8 +17,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
-import icons.org.intellij.datavis.inlays.components.convertHCLtoRGB
-import icons.org.intellij.datavis.inlays.components.convertRGBtoHSL
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.editor.impl.ImageEditorImpl

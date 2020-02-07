@@ -2,16 +2,16 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.configuration
+package org.jetbrains.r.configuration
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
-import icons.org.jetbrains.r.sdk.RInterpreterDetailsStep
-import icons.org.jetbrains.r.sdk.RInterpreterListCellRenderer
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.sdk.RInterpreterDetailsStep
+import org.jetbrains.r.sdk.RInterpreterListCellRenderer
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout

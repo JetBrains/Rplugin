@@ -11,7 +11,7 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.testFramework.exceptionCases.AbstractExceptionCase
 import com.intellij.testFramework.fixtures.CodeInsightTestUtil
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType.DOT_R_EXTENSION
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler

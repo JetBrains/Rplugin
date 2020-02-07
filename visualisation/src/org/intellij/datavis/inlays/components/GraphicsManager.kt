@@ -14,7 +14,7 @@ interface GraphicsManager {
   fun resizeImage(project: Project, imagePath: String, newSize: Dimension, onResize: (File) -> Unit)
 
   companion object {
-    private val EP = ExtensionPointName.create<GraphicsManager>("com.intellij.datavis.inlays.components.graphicsManager")
+    private val EP = ExtensionPointName.create<GraphicsManager>("org.intellij.datavis.inlays.components.graphicsManager")
 
     fun getInstance(): GraphicsManager? {
       return EP.extensionList.firstOrNull()

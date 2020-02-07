@@ -7,10 +7,9 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RExpOperator
-import org.jetbrains.r.psi.api.ROperator
 import org.jetbrains.r.psi.api.RVisitor
 
 /**

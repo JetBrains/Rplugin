@@ -5,15 +5,14 @@
 package org.jetbrains.r.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AppUIUtil
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.notifications.RNotificationUtil
 
 abstract class RRunActionBase : REditorRunActionBase() {
   override fun actionPerformed(e: AnActionEvent) {

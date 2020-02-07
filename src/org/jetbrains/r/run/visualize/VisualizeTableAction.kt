@@ -13,11 +13,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import icons.org.jetbrains.r.RBundle
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.api.RExpression

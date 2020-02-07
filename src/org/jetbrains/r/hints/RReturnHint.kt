@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.hints
 
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RFunctionExpression
 

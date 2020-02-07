@@ -8,8 +8,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
-import icons.org.jetbrains.r.psi.TableInfo
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValue

@@ -4,7 +4,7 @@
 
 package org.jetbrains.r.run.graphics
 
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import java.io.File
 
 enum class RSnapshotType {

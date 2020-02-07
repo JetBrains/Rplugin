@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.psi
 
-import icons.org.jetbrains.r.psi.*
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.psi.api.*
 

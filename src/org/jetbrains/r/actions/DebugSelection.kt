@@ -6,9 +6,9 @@ package org.jetbrains.r.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runInEdt
-import icons.org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.notifications.RNotificationUtil
 
 
 class DebugSelection : REditorRunActionBase() {

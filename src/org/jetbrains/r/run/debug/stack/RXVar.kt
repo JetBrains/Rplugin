@@ -2,13 +2,13 @@
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package icons.org.jetbrains.r.run.debug.stack
+package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
-import icons.org.jetbrains.r.RBundle
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValueEnvironment
