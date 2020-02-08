@@ -61,12 +61,12 @@ class RConsoleManager(private val project: Project) {
   @Synchronized
   private fun runConsole(): Promise<RConsoleView> {
     consolePromise?.let { return it }
-    return runSingleConsole().onProcessed {
+    return runSingleConsole().also {
+      consolePromise = it
+    }.onProcessed {
       synchronized(this) {
         consolePromise = null
       }
-    }.also {
-      consolePromise = it
     }
   }
 
