@@ -66,13 +66,18 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     connection.subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, object : FileEditorManagerListener.Before {
       override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         if (file.fileType == RFileType || file.fileType == RMarkdownFileType) {
+          val toolWindowManager = ToolWindowManager.getInstance(project)
           if (firstOpenedFile) {
             firstOpenedFile = false
-            ToolWindowManager.getInstance(project).invokeLater( Runnable {
-              ToolWindowManager.getInstance(project).getToolWindow(RConsoleToolWindowFactory.ID)?.show { }
+            toolWindowManager.invokeLater(Runnable {
+              toolWindowManager.getToolWindow(RConsoleToolWindowFactory.ID)?.show { }
             })
           } else {
-            ToolWindowManager.getInstance(project).invokeLater( Runnable { RConsoleManager.getInstance(project).currentConsoleAsync } )
+            toolWindowManager.invokeLater(Runnable {
+              if (toolWindowManager.getToolWindow(RConsoleToolWindowFactory.ID) != null) {
+                RConsoleManager.getInstance(project).currentConsoleAsync
+              }
+            })
           }
         }
       }
