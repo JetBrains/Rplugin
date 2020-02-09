@@ -52,6 +52,7 @@ object RInteropUtil {
                              promise: AsyncPromise<RInterop>,
                              paths: RPaths) {
     val linePromise = AsyncPromise<String>()
+    var rInteropForReport: RInterop? = null
     process.addProcessListener(object : ProcessListener {
       val stdout = StringBuilder()
       val stderr = StringBuffer()
@@ -78,8 +79,8 @@ object RInteropUtil {
           LOG.info(stdout.toString())
         }
         val updateCrashes = updateCrashes()
-        if (updateCrashes.isNotEmpty()) {
-          reportMinidumps(updateCrashes)
+        if (updateCrashes.isNotEmpty() || (event.exitCode != 0 && rInteropForReport != null)) {
+          reportCrash(rInteropForReport, updateCrashes)
         }
         if (linePromise.state == Promise.State.PENDING) {
           linePromise.setError(RuntimeException(
@@ -109,6 +110,7 @@ stderr: ${stderr}
         val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull()
                    ?: throw RuntimeException("Invalid RWrapper output")
         val rInterop = RInterop(process, "127.0.0.1", port, project)
+        rInteropForReport = rInterop
         val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
                            ?: throw RuntimeException("R Scripts not found")
         val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
@@ -126,8 +128,8 @@ stderr: ${stderr}
     }
   }
 
-  private fun reportMinidumps(updateCrashes: List<File>) {
-    val attachments = updateCrashes.map { file ->
+  internal fun reportCrash(rInterop: RInterop?, updateCrashes: List<File>) {
+    var attachments = updateCrashes.map { file ->
       try {
         val path = file.getPath()
         FileInputStream(file).use { content ->
@@ -141,7 +143,13 @@ stderr: ${stderr}
         return@map Attachment(file.path, e)
       }
     }.toTypedArray()
-    LOG.error("RWrapper terminated with Runtime Error, the crash minidump found: ${updateCrashes[0].name} ", *attachments)
+    rInterop?.rInteropGrpcLogger?.let {
+      val grpcLog = it.toJson(true)
+      attachments = attachments.plus(Attachment("grpc_log.json", grpcLog))
+    }
+    val message = "RWrapper terminated with Runtime Error" +
+                  (updateCrashes.firstOrNull()?.let { ", the crash minidump found: $it " } ?: "")
+    LOG.error(message, *attachments)
   }
 
   private fun runRWrapper(project: Project): Promise<Pair<ColoredProcessHandler, RPaths>> {

@@ -19,7 +19,7 @@ class DumpRInteropMessages : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val logPath = PathManager.getLogPath()
     val project = e.project ?: return
-    val json = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.rInteropTestGenerator?.toJson() ?: return
+    val json = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.rInteropGrpcLogger?.toJson() ?: return
     Paths.get(logPath, dateFormat.format(Date()) + ".json").toFile().writeText(json)
   }
 

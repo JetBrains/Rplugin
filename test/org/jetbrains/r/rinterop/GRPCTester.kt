@@ -25,18 +25,18 @@ class GRPCTester(path: String,
                  private val rInterop: RInterop,
                  private val pathReplacers: ArrayList<PathReplacer>) {
 
-  val messages: Array<RInteropTestGenerator.Message>
+  val messages: Array<RInteropGrpcLogger.Message>
 
   init {
     val text = XZCompressorInputStream(File(path).inputStream()).use { InputStreamReader(it).readText() }
-    messages = GsonBuilder().registerTypeAdapter(RInteropTestGenerator.Message::class.java, MessageDeserializer)
+    messages = GsonBuilder().registerTypeAdapter(RInteropGrpcLogger.Message::class.java, MessageDeserializer)
                             .create()
-                            .fromJson<Array<RInteropTestGenerator.Message>>(text, Array<RInteropTestGenerator.Message>::class.java)
+                            .fromJson<Array<RInteropGrpcLogger.Message>>(text, Array<RInteropGrpcLogger.Message>::class.java)
   }
 
-  fun proceedMessage(message: RInteropTestGenerator.Message): Pair<Any, Any?>? {
+  fun proceedMessage(message: RInteropGrpcLogger.Message): Pair<Any, Any?>? {
     val function = rInterop.stub::class.memberFunctions.first { it.name == message.methodName }
-    return buildRequestAndCall(function, message.methodName, message.request, if (message is RInteropTestGenerator.StubMessage) message.response else null)
+    return buildRequestAndCall(function, message.methodName, message.request, if (message is RInteropGrpcLogger.StubMessage) message.response else null)
   }
 
   private fun buildRequestAndCall(function: KFunction<*>,
@@ -90,17 +90,17 @@ class HtmlPathReplacer(private val project: Project, private val fileForUrls: St
   }
 }
 
-object MessageDeserializer : JsonDeserializer<RInteropTestGenerator.Message> {
+object MessageDeserializer : JsonDeserializer<RInteropGrpcLogger.Message> {
   private val decoder = Base64.getDecoder()
-  override fun deserialize(el: JsonElement, p1: Type, p2: JsonDeserializationContext): RInteropTestGenerator.Message {
+  override fun deserialize(el: JsonElement, p1: Type, p2: JsonDeserializationContext): RInteropGrpcLogger.Message {
     val asJsonObject = el.asJsonObject
     return if (asJsonObject.size() < 4) {
-      RInteropTestGenerator.StubMessage(asJsonObject["methodName"].asString,
-                                        decoder.decode(asJsonObject["request"].asString),
-                                        if (asJsonObject.size() == 2) null else decoder.decode(asJsonObject["response"].asString))
+      RInteropGrpcLogger.StubMessage(asJsonObject["methodName"].asString,
+                                     decoder.decode(asJsonObject["request"].asString),
+                                     if (asJsonObject.size() == 2) null else decoder.decode(asJsonObject["response"].asString))
     }
     else {
-      RInteropTestGenerator.CommandMessage(asJsonObject["methodName"].asString, decoder.decode(asJsonObject["request"].asString)).apply {
+      RInteropGrpcLogger.CommandMessage(asJsonObject["methodName"].asString, decoder.decode(asJsonObject["request"].asString)).apply {
         stdout.append(asJsonObject["stdout"].asString)
         stderr.append(asJsonObject["stderr"].asString)
       }

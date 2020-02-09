@@ -85,7 +85,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
   internal val sourceFileManager = RSourceFileManager(this)
 
-  val rInteropTestGenerator: RInteropTestGenerator? = if (ApplicationManager.getApplication().isInternal) RInteropTestGenerator() else null
+  val rInteropGrpcLogger: RInteropGrpcLogger? =
+    RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
   val rVersion: Version
   val globalEnvRef = RRef(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
@@ -106,10 +107,15 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     f: KFunction1<Request, Response>,
     request: Request
   ) : Response {
-    val nextStubNumber = rInteropTestGenerator?.nextStubNumber()
-    rInteropTestGenerator?.onStubMessageRequest(nextStubNumber!!, request, f.name)
-    val response = f.invoke(request)
-    rInteropTestGenerator?.onStubMessageResponse(nextStubNumber!!, response)
+    val nextStubNumber = rInteropGrpcLogger?.nextStubNumber()
+    rInteropGrpcLogger?.onStubMessageRequest(nextStubNumber!!, request, f.name)
+    val response = try {
+      f.invoke(request)
+    } catch (e: StatusRuntimeException) {
+      reportIfCrash(e)
+      throw e
+    }
+    rInteropGrpcLogger?.onStubMessageResponse(nextStubNumber!!, response)
     return response
   }
 
@@ -117,22 +123,31 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     f: KFunction1<Request, ListenableFuture<Response>>,
     request: Request
   ) : ListenableFuture<Response> =
-    rInteropTestGenerator?.let { interopTestGenerator ->
-      val nextStubNumber = interopTestGenerator.nextStubNumber()
-      rInteropTestGenerator.onStubMessageRequest(nextStubNumber, request, f.name)
-      f.invoke(request).apply { addListener(Runnable { rInteropTestGenerator.onStubMessageResponse(nextStubNumber, get()) }, executor) }
+    rInteropGrpcLogger?.let { grpcLogger ->
+      val nextStubNumber = grpcLogger.nextStubNumber()
+      rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
+      f.invoke(request).apply { addListener(Runnable {
+        try {
+          rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, get())
+        } catch (e: ExecutionException) {
+          reportIfCrash(e.cause)
+        }
+      }, executor) }
     } ?: f.invoke(request)
 
   fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeWithCheckCancel(
     f: KFunction1<Request, ListenableFuture<Response>>,
     request: Request) : Response {
-    val nextStubNumber = rInteropTestGenerator?.nextStubNumber()
-    rInteropTestGenerator?.onStubMessageRequest(nextStubNumber!!, request, f.name)
+    val nextStubNumber = rInteropGrpcLogger?.nextStubNumber()
+    rInteropGrpcLogger?.onStubMessageRequest(nextStubNumber!!, request, f.name)
     var result: Response? = null
     try {
-        f.invoke(request).getWithCheckCanceled().also { result = it; return it }
+      f.invoke(request).getWithCheckCanceled().also { result = it; return it }
+    } catch (e: ExecutionException) {
+      reportIfCrash(e.cause)
+      throw e
     } finally {
-      rInteropTestGenerator?.onStubMessageResponse(nextStubNumber!!, result)
+      rInteropGrpcLogger?.onStubMessageResponse(nextStubNumber!!, result)
     }
   }
 
@@ -250,8 +265,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setIsRepl(isRepl)
       .setIsDebug(isDebug)
       .build()
-    val number = rInteropTestGenerator?.nextStubNumber()
-    rInteropTestGenerator?.onExecuteRequestAsync(number!!, RPIServiceGrpc.getExecuteCodeMethod(), request)
+    val number = rInteropGrpcLogger?.nextStubNumber()
+    rInteropGrpcLogger?.onExecuteRequestAsync(number!!, RPIServiceGrpc.getExecuteCodeMethod(), request)
     if (isRepl) this.isDebug = isDebug
     val call = channel.newCall(RPIServiceGrpc.getExecuteCodeMethod(), CallOptions.DEFAULT)
     val promise = object : AsyncPromise<RIExecutionResult>() {
@@ -273,7 +288,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         override fun onNext(value: Service.ExecuteCodeResponse) {
           when (value.msgCase) {
             Service.ExecuteCodeResponse.MsgCase.OUTPUT -> {
-              rInteropTestGenerator?.onOutputAvailable(number!!, value.output)
+              rInteropGrpcLogger?.onOutputAvailable(number!!, value.output)
               when (value.output.type) {
                 Service.CommandOutput.Type.STDOUT -> {
                   outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDOUT)
@@ -294,11 +309,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         }
 
         override fun onError(t: Throwable?) {
+          reportIfCrash(t)
           promise.setError(t ?: RuntimeException())
         }
 
         override fun onCompleted() {
-          rInteropTestGenerator?.onExecuteRequestFinish(number!!)
+          rInteropGrpcLogger?.onExecuteRequestFinish(number!!)
           promise.setResult(RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString(), exception))
         }
       })
@@ -637,8 +653,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     request: TRequest,
     consumer: ((String, ProcessOutputType) -> Unit)? = null
   ): CancellablePromise<Unit> {
-    val number = rInteropTestGenerator?.nextStubNumber()
-    rInteropTestGenerator?.onExecuteRequestAsync(number!!, methodDescriptor, request)
+    val number = rInteropGrpcLogger?.nextStubNumber()
+    rInteropGrpcLogger?.onExecuteRequestAsync(number!!, methodDescriptor, request)
     val callOptions = if (isUnitTestMode) CallOptions.DEFAULT.withDeadlineAfter(DEADLINE_TEST, TimeUnit.SECONDS) else CallOptions.DEFAULT
     val call = channel.newCall(methodDescriptor, callOptions)
     val promise = object : AsyncPromise<Unit>() {
@@ -652,7 +668,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
     ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<Service.CommandOutput> {
       override fun onNext(value: Service.CommandOutput) {
-        rInteropTestGenerator?.onOutputAvailable(number!!, value)
+        rInteropGrpcLogger?.onOutputAvailable(number!!, value)
         if (consumer == null) return
         when (value.type) {
           Service.CommandOutput.Type.STDOUT -> consumer(value.text.toStringUtf8(), ProcessOutputType.STDOUT)
@@ -663,11 +679,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
 
       override fun onError(t: Throwable?) {
+        reportIfCrash(t)
         promise.setResult(Unit)
       }
 
       override fun onCompleted() {
-        rInteropTestGenerator?.onExecuteRequestFinish(number!!)
+        rInteropGrpcLogger?.onExecuteRequestFinish(number!!)
         promise.setResult(Unit)
       }
     })
@@ -775,7 +792,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   private fun processAsyncEvents() {
-    val future = asyncStub.getNextAsyncEvent(Empty.getDefaultInstance())
+    val future = executeAsync(asyncStub::getNextAsyncEvent, Empty.getDefaultInstance())
     future.addListener(Runnable {
       try {
         val event = future.get()
@@ -830,6 +847,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     cacheIndex.incrementAndGet()
   }
 
+  private fun reportIfCrash(t: Throwable?) {
+    if (t is StatusRuntimeException && t.status.code == Status.Code.UNAVAILABLE) {
+      RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
+    }
+  }
+
   inner class Cached<T>(val f: () -> T) {
     private val cached = object : AtomicClearableLazyValue<T>() {
       override fun compute() = f()
@@ -862,6 +885,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   companion object {
     private const val HEARTBEAT_PERIOD = 20000
     private const val EXECUTE_CODE_TEST_TIMEOUT = 20000
+    private const val GRPC_LOGGER_MAX_MESSAGES = 30
   }
 }
 

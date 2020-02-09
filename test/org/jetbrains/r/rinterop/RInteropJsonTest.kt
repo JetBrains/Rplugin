@@ -44,7 +44,7 @@ class RInteropJsonTest : RProcessHandlerBaseTestCase() {
       println("Proceeding: " + it.methodName)
       val (output, expected) = grpcTester.proceedMessage(it) ?: return
       println("output is " + output)
-      if (it is RInteropTestGenerator.StubMessage && checkMethods.contains(it.methodName) && expected != null) {
+      if (it is RInteropGrpcLogger.StubMessage && checkMethods.contains(it.methodName) && expected != null) {
         TestCase.assertTrue(output is GeneratedMessageV3)
       }
     }

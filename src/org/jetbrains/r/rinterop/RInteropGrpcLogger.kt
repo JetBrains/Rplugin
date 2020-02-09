@@ -11,10 +11,9 @@ import io.grpc.MethodDescriptor
 import java.lang.reflect.Type
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.ArrayList
 
-class RInteropTestGenerator {
-  val messages = ArrayList<Message>()
+class RInteropGrpcLogger(private val maxMessages: Int? = null) {
+  val messages = ArrayDeque<Message>()
   private val commandMessages = ContainerUtil.createConcurrentIntObjectMap<CommandMessage>()
   private val stubMessages = ContainerUtil.createConcurrentIntObjectMap<Pair<ByteArray, String>>()
   private val stubMessageEnumerator: AtomicInteger = AtomicInteger(0)
@@ -53,7 +52,12 @@ class RInteropTestGenerator {
   }
 
   @Synchronized
-  private fun addMessage(it: Message) = messages.add(it)
+  private fun addMessage(it: Message) {
+    messages.addLast(it)
+    if (maxMessages != null && messages.size > maxMessages) {
+      messages.removeFirst()
+    }
+  }
 
   interface Message {
     val methodName: String
@@ -70,12 +74,20 @@ class RInteropTestGenerator {
                     override val request: ByteArray,
                     val response: ByteArray?) : Message
 
-  fun toJson(): String {
-    val gsonBuilder = GsonBuilder()
-    return gsonBuilder.registerTypeAdapter(ByteArray::class.java, object : JsonSerializer<ByteArray> {
+  fun toJson(withPending: Boolean = false): String {
+    val gsonBuilder = GsonBuilder().registerTypeAdapter(ByteArray::class.java, object : JsonSerializer<ByteArray> {
       override fun serialize(p0: ByteArray?, p1: Type?, p2: JsonSerializationContext?): JsonElement {
         return JsonPrimitive(Base64.getEncoder().encodeToString(p0))
       }
-    }).setPrettyPrinting().create().toJson(messages)
+    }).setPrettyPrinting().create()
+    return if (withPending) {
+      gsonBuilder.toJson(mapOf<String, Any>(
+        "messages" to messages,
+        "pending" to stubMessages.values().map { StubMessage(it.second, it.first, null) }.toList(),
+          "pendingAsync" to commandMessages.values()
+      ))
+    } else {
+      gsonBuilder.toJson(messages)
+    }
   }
 }
