@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val CI = System.getenv("CI") != null
 
 val channel = prop("publishChannel")
-val platformVersion = prop("platformVersion")
 
 val excludedJars = listOf(
     "java-api.jar",
@@ -87,15 +86,15 @@ allprojects {
     }
 
     intellij {
-        version = if (runWithIC()) "IC-2019.3.1" else "PC-2019.3.1"
+        version = ideName()
         downloadSources = !CI
         updateSinceUntilBuild = true
         instrumentCode = false
         ideaDependencyCachePath = dependencyCachePath
 
         tasks.withType<PatchPluginXmlTask> {
-            sinceBuild("${ideaMajor()}.${ideaMinor()}")
-            untilBuild("${ideaMajor()}.*")
+            sinceBuild("${ideMajorVersion()}.${ideMinorVersion()}")
+            untilBuild("${ideMajorVersion()}.*")
         }
     }
 
@@ -151,9 +150,9 @@ allprojects {
 }
 
 project(":") {
-    version = "${ideaMajor()}.${ideaMinor()}.${prop("buildNumber")}"
+    version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
     intellij {
-        val plugins = if (runWithIC()) arrayOf("markdown", "yaml") else arrayOf("markdown", "yaml", "python-ce")
+        val plugins = if (isPyCharm()) arrayOf("markdown", "yaml") else arrayOf("markdown", "yaml", "python-ce")
         pluginName = "rplugin"
         setPlugins(*plugins)
     }
@@ -166,12 +165,12 @@ project(":") {
 
     sourceSets {
         main {
-            val srcDirs = if (runWithIC()) arrayOf("src", "gen") else arrayOf("src", "src-python", "gen")
+            val srcDirs = if (isPyCharm()) arrayOf("src", "gen") else arrayOf("src", "src-python", "gen")
             java.srcDirs(*srcDirs)
             resources.srcDirs("resources")
         }
         test {
-            val testDirs = if (runWithIC()) arrayOf("test") else arrayOf("test", "test-python")
+            val testDirs = if (isPyCharm()) arrayOf("test") else arrayOf("test", "test-python")
             java.srcDirs(*testDirs)
             resources.srcDirs( "testData")
         }
@@ -280,8 +279,10 @@ val Project.dependencyCachePath get(): String {
     return cachePath.absolutePath
 }
 
-fun Build_gradle.ideaMinor() = prop("ideaMinor")
+fun Build_gradle.ideMinorVersion() = prop("ideMinor")
 
-fun Build_gradle.ideaMajor() = prop("ideaMajor")
+fun Build_gradle.ideMajorVersion() = prop("ideMajor")
 
-fun Build_gradle.runWithIC() = prop("runWithIC") == "true"
+fun Build_gradle.ideName() = prop("ideName")
+
+fun Build_gradle.isPyCharm() = ideName().contains("PY") || ideName().contains("PC")
