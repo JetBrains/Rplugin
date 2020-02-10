@@ -40,6 +40,6 @@ interface InlayDescriptorProvider {
   fun getInlayDescriptor(editor: Editor): InlayElementDescriptor?
 
   companion object {
-    val EP = ExtensionPointName.create<InlayDescriptorProvider>("org.intellij.datavis.r.inlays.inlayDescriptorProvider")
+    val EP = ExtensionPointName.create<InlayDescriptorProvider>("com.intellij.datavis.r.inlays.inlayDescriptorProvider")
   }
 }

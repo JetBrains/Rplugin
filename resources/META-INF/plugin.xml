@@ -564,8 +564,8 @@ You can find the source code in the following repositories:
         <moduleType id="R_MODULE" implementationClass="org.jetbrains.r.projectGenerator.builder.RModuleType"/>
         <projectTemplatesFactory implementation="org.jetbrains.r.projectGenerator.template.RTemplatesFactory" />
 
-        <datavis.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
-        <datavis.inlays.components.graphicsManager implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManager"/>
+        <datavis.r.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
+        <datavis.r.inlays.components.graphicsManager implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManager"/>
 
         <!-- R help providers -->
         <webHelpProvider implementation="org.jetbrains.r.help.RWebHelpProvider"/>
