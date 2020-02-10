@@ -152,7 +152,7 @@ allprojects {
 project(":") {
     version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
     intellij {
-        val plugins = if (isPyCharm()) arrayOf("markdown", "yaml") else arrayOf("markdown", "yaml", "python-ce")
+        val plugins = if (isPyCharm()) arrayOf("markdown", "yaml", "python-ce") else arrayOf("markdown", "yaml")
         pluginName = "rplugin"
         setPlugins(*plugins)
     }
@@ -165,12 +165,12 @@ project(":") {
 
     sourceSets {
         main {
-            val srcDirs = if (isPyCharm()) arrayOf("src", "gen") else arrayOf("src", "src-python", "gen")
+            val srcDirs = if (isPyCharm()) arrayOf("src", "src-python", "gen") else arrayOf("src", "gen")
             java.srcDirs(*srcDirs)
             resources.srcDirs("resources")
         }
         test {
-            val testDirs = if (isPyCharm()) arrayOf("test") else arrayOf("test", "test-python")
+            val testDirs = if (isPyCharm()) arrayOf("test", "test-python") else arrayOf("test")
             java.srcDirs(*testDirs)
             resources.srcDirs( "testData")
         }
