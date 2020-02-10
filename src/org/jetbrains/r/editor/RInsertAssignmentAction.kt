@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.editor
@@ -18,10 +19,12 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 class RInsertAssignmentAction : DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
-    val language = e.psiFile?.language
+    val document = editor.document
+    val project = e.project ?: return
+    val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)
+    val language = psiFile?.language
     if (language != RLanguage.INSTANCE && language != RMarkdownLanguage) return
     val offset = editor.caretModel.offset
-    val document = editor.document
     val addSpaces = CodeStyle.getSettings(editor).getCommonSettings(RLanguage.INSTANCE).SPACE_AROUND_ASSIGNMENT_OPERATORS
 
     val insert = if (addSpaces && offset > 0)
@@ -39,7 +42,11 @@ class RInsertAssignmentAction : DumbAwareAction(), RPromotedAction {
 
   override fun update(e: AnActionEvent) {
     val presentation = e.presentation
-    val language = e.psiFile?.language
+    val editor = e.editor ?: return
+    val document = editor.document
+    val project = e.project ?: return
+    val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)
+    val language = psiFile?.language
     presentation.isEnabled = language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
 }
