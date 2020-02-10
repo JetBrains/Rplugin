@@ -14,7 +14,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.notifications.RNotificationUtil
 
-abstract class RRunActionBase : REditorRunActionBase() {
+abstract class RRunActionBase : REditorActionBase() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val file = e.virtualFile ?: return
@@ -28,9 +28,15 @@ abstract class RRunActionBase : REditorRunActionBase() {
       }
       console.executeActionHandler.fireBeforeExecution()
       doExecute(console, file)
+      console.executeActionHandler.fireBusy()
     }.onError {
       RNotificationUtil.notifyConsoleError(project, it.message)
     }
+  }
+
+  override fun update(e: AnActionEvent) {
+    super.update(e)
+    e.presentation.isEnabled = e.presentation.isEnabled && !REditorActionUtil.isRunningCommand(e.project)
   }
 
   abstract fun doExecute(console: RConsoleView, file: VirtualFile)

@@ -64,8 +64,7 @@ class RConsoleView(val rInterop: RInterop,
   val executeActionHandler = RConsoleExecuteActionHandler(this)
   val consoleRuntimeInfo = RConsoleRuntimeInfoImpl(rInterop)
   val isRunningCommand: Boolean
-    get() = executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT &&
-            executeActionHandler.state != RConsoleExecuteActionHandler.State.DEBUG_PROMPT
+    get() = executeActionHandler.isRunningCommand
 
   private val onSelectListeners = mutableListOf<() -> Unit>()
   var debuggerPanel: RDebuggerPanel? = null
@@ -329,12 +328,24 @@ class RConsoleView(val rInterop: RInterop,
     postFlushActions.clear()
   }
 
+  fun executeLater(f: () -> Unit) {
+    rInterop.executeTask {
+      while (!isRunningCommand) {
+        if (executeActionHandler.executeLaterQueue.isEmpty()) {
+          f()
+          return@executeTask
+        }
+        executeActionHandler.executeLaterQueue.poll().invoke()
+      }
+      executeActionHandler.executeLaterQueue.add(f)
+    }
+  }
+
   class REofAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
       if (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.SUBPROCESS_INPUT) {
         console.rInterop.replSendEof()
-        console.executeActionHandler.state = RConsoleExecuteActionHandler.State.BUSY
       }
     }
 

@@ -12,6 +12,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -32,6 +33,8 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValue
 import org.jetbrains.r.rinterop.RVar
+import java.util.*
+import kotlin.collections.HashSet
 
 class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
@@ -46,26 +49,31 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
   @Volatile var state = State.BUSY
     internal set(newState) {
-      when (newState) {
-        State.PROMPT -> {
-          consolePromptDecorator.mainPrompt = R_CONSOLE_PROMPT
-          consolePromptDecorator.indentPrompt = R_CONSOLE_CONTINUE
-        }
-        State.DEBUG_PROMPT -> {
-          consolePromptDecorator.mainPrompt = R_CONSOLE_DEBUG_PROMPT
-          consolePromptDecorator.indentPrompt = R_CONSOLE_CONTINUE
-        }
-        State.READ_LN, State.SUBPROCESS_INPUT -> {
-          consolePromptDecorator.mainPrompt = R_CONSOLE_READ_LN_PROMPT
-          consolePromptDecorator.indentPrompt = ""
-        }
-        else -> {
-          consolePromptDecorator.mainPrompt = ""
-          consolePromptDecorator.indentPrompt = ""
+      runInEdt {
+        when (newState) {
+          State.PROMPT -> {
+            consolePromptDecorator.mainPrompt = R_CONSOLE_PROMPT
+            consolePromptDecorator.indentPrompt = R_CONSOLE_CONTINUE
+          }
+          State.DEBUG_PROMPT -> {
+            consolePromptDecorator.mainPrompt = R_CONSOLE_DEBUG_PROMPT
+            consolePromptDecorator.indentPrompt = R_CONSOLE_CONTINUE
+          }
+          State.READ_LN, State.SUBPROCESS_INPUT -> {
+            consolePromptDecorator.mainPrompt = R_CONSOLE_READ_LN_PROMPT
+            consolePromptDecorator.indentPrompt = ""
+          }
+          else -> {
+            consolePromptDecorator.mainPrompt = ""
+            consolePromptDecorator.indentPrompt = ""
+          }
         }
       }
       field = newState
     }
+  internal val executeLaterQueue: Queue<() -> Unit> = ArrayDeque<() -> Unit>()
+  val isRunningCommand: Boolean
+    get() = state != State.PROMPT && state != State.DEBUG_PROMPT
 
   @Volatile
   var chunkState: ChunkExecutionState? = null
@@ -87,7 +95,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       if (prompt.isNotBlank()) {
         val lines = prompt.lines()
         lines.dropLast(1).forEach { consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT) }
-        consolePromptDecorator.mainPrompt = lines.last()
+        runInEdt {
+          consolePromptDecorator.mainPrompt = lines.last()
+        }
       }
     }
 
@@ -99,6 +109,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
       runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
       fireCommandExecuted()
+      while (!isRunningCommand && executeLaterQueue.isNotEmpty()) executeLaterQueue.poll().invoke()
     }
 
     override fun onTermination() {
@@ -178,8 +189,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         val text = consoleView.prepareExecuteAction(true, false, true)
         (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
           DocumentReferenceManager.getInstance().create(consoleView.getCurrentEditor().document))
-        state = State.BUSY
         rInterop.replSendReadLn(text)
+        fireBusy()
       }
       State.SUBPROCESS_INPUT -> {
         val text = consoleView.prepareExecuteAction(true, false, true)

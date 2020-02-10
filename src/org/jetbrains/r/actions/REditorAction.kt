@@ -28,17 +28,6 @@ abstract class REditorActionBase : DumbAwareAction, RPromotedAction {
   }
 }
 
-abstract class REditorRunActionBase : REditorActionBase {
-  constructor() : super()
-
-  constructor(text: String, description: String, icon: Icon?) : super(text, description, icon)
-
-  override fun update(e: AnActionEvent) {
-    super.update(e)
-    e.presentation.isEnabled = e.presentation.isEnabled && !REditorActionUtil.isRunningCommand(e.project)
-  }
-}
-
 class REditorHelpAction : REditorActionBase {
   constructor() : super()
 

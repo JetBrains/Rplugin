@@ -5,13 +5,13 @@
 package org.jetbrains.r.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.runInEdt
+import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.notifications.RNotificationUtil
 
 
-class DebugSelection : REditorRunActionBase() {
+class DebugSelection : REditorActionBase() {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
@@ -19,10 +19,12 @@ class DebugSelection : REditorRunActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
-        console.executeActionHandler.fireBeforeExecution()
-        runInEdt {
+        console.executeLater {
+          if (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT) return@executeLater
+          console.executeActionHandler.fireBeforeExecution()
           console.appendCommandText(selection.code.trim { it <= ' ' })
           console.rInterop.replSourceFile(selection.file, debug = true, textRange = selection.range)
+          console.executeActionHandler.fireBusy()
         }
       }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
