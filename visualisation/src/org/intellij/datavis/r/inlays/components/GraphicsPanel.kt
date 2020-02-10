@@ -189,6 +189,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   private fun closeEditor(message: String) {
     label.text = message
+    currentEditor?.let { Disposer.dispose(it) }
     rootPanel.contentComponent = null
     currentImageFile = null
     currentEditor = null
