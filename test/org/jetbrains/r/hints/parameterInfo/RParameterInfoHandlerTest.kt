@@ -5,6 +5,7 @@
 package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.application.impl.NonBlockingReadActionImpl
 import com.intellij.testFramework.fixtures.EditorHintFixture
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.RBundle
@@ -244,17 +245,29 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     else {
       addLibraries()
     }
-    myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SHOW_PARAMETER_INFO)
-    UIUtil.dispatchAllInvocationEvents()
+    showParameterInfo()
+    waitForParameterInfo()
 
     val expectedVariants = wrap(*expectedResults, isDisabled = isDisabled).split('-').map { it.trim() }.sorted()
     val actualVariants = hintFixture.currentHintText?.split('-')?.map { it.trim() }?.sorted()
     assertEquals(expectedVariants, actualVariants)
   }
 
+  private fun showParameterInfo() {
+    myFixture.performEditorAction(IdeActions.ACTION_EDITOR_SHOW_PARAMETER_INFO)
+  }
+
   companion object {
     const val t = "\t"
     const val n = "\n"
+
+    fun waitForParameterInfo() {
+      // effective there is a chain of 3 nonBlockingRead actions
+      for (i in 0..2) {
+        UIUtil.dispatchAllInvocationEvents()
+        NonBlockingReadActionImpl.waitForAsyncTaskCompletion()
+      }
+    }
 
     fun wrap(vararg results: String, isDisabled: Boolean = false): String {
       return results.joinToString("\n-\n") { result ->
