@@ -42,10 +42,11 @@ object RStatistics {
     val allInterpreters = RInterpreterUtil.suggestAllInterpreters(false)
     val selectedInfo: RInterpreterInfo? = allInterpreters.find { it.interpreterPath == selected.interpreterPath }
     return if (selectedInfo == null) {
-      // WTF actually???
+      // WTF actually??? This means we report information about interpreter and it is missing in all available interpreter list
       allInterpreters
     }
     else {
+      // Place current interpreter to the beginning
       val others = allInterpreters - selectedInfo
       (listOf(selectedInfo) + others)
     }.map { infoToString(it) }
