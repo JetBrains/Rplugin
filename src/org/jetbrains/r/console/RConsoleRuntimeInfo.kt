@@ -35,7 +35,8 @@ interface RConsoleRuntimeInfo {
     }
 
     fun get(project: Project): RConsoleRuntimeInfo? {
-      return RConsoleManager.getInstance(project).currentConsoleOrNull?.consoleRuntimeInfo
+      val console = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return null
+      return console.consoleRuntimeInfo.takeIf { console.rInterop.isAlive }
     }
   }
 }

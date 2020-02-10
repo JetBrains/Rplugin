@@ -83,8 +83,8 @@ class RInteropGrpcLogger(private val maxMessages: Int? = null) {
     return if (withPending) {
       gsonBuilder.toJson(mapOf<String, Any>(
         "messages" to messages,
-        "pending" to stubMessages.values().map { StubMessage(it.second, it.first, null) }.toList(),
-          "pendingAsync" to commandMessages.values()
+        "pending" to stubMessages.values().map { StubMessage(it.second, it.first, null) }
+          .plus(commandMessages.values()).toList()
       ))
     } else {
       gsonBuilder.toJson(messages)
