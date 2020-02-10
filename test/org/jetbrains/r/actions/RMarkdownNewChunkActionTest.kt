@@ -5,8 +5,9 @@
 package org.jetbrains.r.actions
 
 import org.intellij.lang.annotations.Language
+import org.jetbrains.r.RUsefulTestCase
 
-class RMarkdownNewChunkActionTest : EditorActionTest() {
+class RMarkdownNewChunkActionTest : RUsefulTestCase() {
 
   fun testInTheEmpty() {
     doTest("""

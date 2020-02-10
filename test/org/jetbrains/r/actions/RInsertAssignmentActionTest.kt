@@ -6,8 +6,9 @@ package org.jetbrains.r.actions
 
 import com.intellij.application.options.CodeStyle
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.RUsefulTestCase
 
-class RInsertAssignmentActionTest : EditorActionTest() {
+class RInsertAssignmentActionTest : RUsefulTestCase() {
   fun testAddAroundSpaces() {
     myFixture.configureByText("test.R", """
       x<caret>

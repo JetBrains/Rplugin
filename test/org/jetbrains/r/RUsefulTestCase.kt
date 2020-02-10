@@ -5,10 +5,10 @@
 package org.jetbrains.r
 
 import com.intellij.codeInsight.lookup.Lookup
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.impl.ProjectImpl
@@ -172,6 +172,17 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   private fun nameOfBinSummary(file: File): String {
     val fileName = file.nameWithoutExtension
     return fileName.indexOf('-').takeIf { it != -1 }?.let { fileName.substring(0, it) } ?: fileName
+  }
+
+  protected fun doActionTest(expected: String, actionId: String) {
+    val action = ActionManager.getInstance().getAction(actionId) ?: error("Action $actionId is non found")
+    DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
+      TransactionGuard.submitTransaction(project, Runnable {
+        val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
+        ActionUtil.performActionDumbAwareWithCallbacks(action, event, dataContext)
+      })
+    }
+    myFixture.checkResult(expected)
   }
 
   companion object {
