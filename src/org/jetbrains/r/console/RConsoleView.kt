@@ -328,19 +328,6 @@ class RConsoleView(val rInterop: RInterop,
     postFlushActions.clear()
   }
 
-  fun executeLater(f: () -> Unit) {
-    rInterop.executeTask {
-      while (!isRunningCommand) {
-        if (executeActionHandler.executeLaterQueue.isEmpty()) {
-          f()
-          return@executeTask
-        }
-        executeActionHandler.executeLaterQueue.poll().invoke()
-      }
-      executeActionHandler.executeLaterQueue.add(f)
-    }
-  }
-
   class REofAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return

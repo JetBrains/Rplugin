@@ -58,6 +58,7 @@ interface LoadedLibrariesListener {
 
 private const val DEADLINE_TEST = 40L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
+const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val processHandler: ProcessHandler, address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
@@ -69,7 +70,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   internal val asyncStub = RPIServiceGrpc.newFutureStub(channel).let {
     if (isUnitTestMode) it.withDeadline(Deadline.after(DEADLINE_TEST, TimeUnit.SECONDS)) else it
   }
-  val executor = ConcurrencyUtil.newSingleThreadExecutor("RInterop")
+  val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
   private val heartbeatTimer = Timer().also {
     it.schedule(object : TimerTask() {
       override fun run() {
@@ -228,13 +229,16 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
                      consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
-    val document = FileDocumentManager.getInstance().getDocument(file)
-                   ?: return AsyncPromise<RIExecutionResult>().also { it.setError("No document for $file") }
     var code = ""
-    var lineOffset = 0
+    var lineOffset = -1
     runReadAction {
+      val document = FileDocumentManager.getInstance().getDocument(file)
+                     ?: return@runReadAction
       code = textRange?.let { document.getText(it) } ?: document.text ?: ""
       lineOffset = textRange?.let { document.getLineNumber(it.startOffset) } ?: 0
+    }
+    if (lineOffset == -1) {
+      return AsyncPromise<RIExecutionResult>().also { it.setError("No document for $file") }
     }
     return executeCodeImpl(
       code,

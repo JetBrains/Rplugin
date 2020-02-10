@@ -21,7 +21,7 @@ class RunSelection : REditorActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
-        console.executeLater {
+        console.executeActionHandler.executeLater {
           console.executeActionHandler.fireBeforeExecution()
           console.appendCommandText(selection.code.trim { it <= ' ' })
           console.rInterop.replSourceFile(selection.file, textRange = selection.range)

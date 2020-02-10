@@ -19,7 +19,7 @@ class DebugSelection : REditorActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
-        console.executeLater {
+        console.executeActionHandler.executeLater {
           if (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT) return@executeLater
           console.executeActionHandler.fireBeforeExecution()
           console.appendCommandText(selection.code.trim { it <= ' ' })

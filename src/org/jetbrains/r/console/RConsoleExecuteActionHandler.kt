@@ -29,10 +29,7 @@ import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RRef
-import org.jetbrains.r.rinterop.RValue
-import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.rinterop.*
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -71,9 +68,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
       field = newState
     }
-  internal val executeLaterQueue: Queue<() -> Unit> = ArrayDeque<() -> Unit>()
+  // should be accessed only from RInterop Thread Pool
+  private val executeLaterQueue: Queue<() -> Unit> = ArrayDeque<() -> Unit>()
   val isRunningCommand: Boolean
-    get() = state != State.PROMPT && state != State.DEBUG_PROMPT
+    get() = state.let { it != State.PROMPT && it != State.DEBUG_PROMPT }
 
   @Volatile
   var chunkState: ChunkExecutionState? = null
@@ -109,7 +107,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
       runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
       fireCommandExecuted()
-      while (!isRunningCommand && executeLaterQueue.isNotEmpty()) executeLaterQueue.poll().invoke()
+      pollExecuteLaterQueue()
     }
 
     override fun onTermination() {
@@ -154,6 +152,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
       return promise
     }
+
+    private fun pollExecuteLaterQueue() {
+      assert(Thread.currentThread().name == RINTEROP_THREAD_NAME)
+      while (!isRunningCommand && executeLaterQueue.isNotEmpty()) executeLaterQueue.poll().invoke()
+    }
   }
 
   private val asyncEventsListener = AsyncEventsListener()
@@ -163,6 +166,22 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     consolePromptDecorator.indentPrompt = ""
     rInterop.addAsyncEventsListener(asyncEventsListener)
     rInterop.asyncEventsStartProcessing()
+  }
+
+  /**
+   * Schedule [f] execution on RInterop Thread Pool
+   */
+  fun executeLater(f: () -> Unit) {
+    rInterop.executeTask {
+      while (!isRunningCommand) {
+        if (executeLaterQueue.isEmpty()) {
+          f()
+          return@executeTask
+        }
+        executeLaterQueue.poll().invoke()
+      }
+     executeLaterQueue.add(f)
+    }
   }
 
   fun interruptTextExecution() {
