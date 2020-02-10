@@ -44,6 +44,8 @@ class RIncludedSourcesResolveTest : RLightCodeInsightFixtureTestCase() {
   // This case is not supported. The test is needed to make sure that there are no errors or stack overflow. Behavior is undefined
   fun testMutuallyRecursiveFunctions() = doTest()
 
+  fun testOverridesSourceFunction() = doTest()
+
   fun testSerialIncludes() = doTest()
 
   fun testSimple() = doTest()

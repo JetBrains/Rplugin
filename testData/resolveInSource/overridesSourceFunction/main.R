@@ -1,7 +1,4 @@
-new_source <- function() {
-  source("resolveInSource/overridesSourceFunction/A.R")
-}
-
-new_source()
+source("resolveInSource/overridesSourceFunction/A.R")
+source <- function(a) 42
 source("resolveInSource/overridesSourceFunction/B.R")
 fu<caret>n()

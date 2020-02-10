@@ -205,16 +205,25 @@ fun PsiElement.findBlockParent(): RPsiElement {
   return parent.findBlockParent()
 }
 
-fun RCallExpression.isFunctionFromLibrary(functionName: String, packageName: String): Boolean {
+fun RCallExpression.isFunctionFromLibrarySoft(functionName: String, packageName: String): Boolean {
   val expr = expression
-  val (name, namespaceName, reference) = when (expr) {
-    is RIdentifierExpression -> Triple(expr.name, "", expr.reference)
-    is RNamespaceAccessExpression -> Triple(expr.identifier?.name, expr.namespaceName, expr.identifier?.reference)
+  val (name, namespaceName) = when (expr) {
+    is RIdentifierExpression -> expr.name to ""
+    is RNamespaceAccessExpression -> expr.identifier?.name to expr.namespaceName
     else -> return false
   }
 
   if (namespaceName.isNotEmpty() && namespaceName != packageName) return false
   if (name != functionName) return false
+  return true
+}
+
+fun RCallExpression.isFunctionFromLibrary(functionName: String, packageName: String): Boolean {
+  if (!isFunctionFromLibrarySoft(functionName, packageName)) return false
+  val expr = expression
+  val reference =
+    if (expr is RIdentifierExpression) expr.reference
+    else (expr as RNamespaceAccessExpression).identifier?.reference
   val targets = reference?.multiResolve(false)?.mapNotNull { it.element }
   if (targets != null &&
       targets.any {

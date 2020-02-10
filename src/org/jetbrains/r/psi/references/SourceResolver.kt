@@ -16,9 +16,10 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.findVariableDefinition
-import org.jetbrains.r.psi.isFunctionFromLibrary
+import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import java.nio.file.Path
 
 sealed class IncludedSources {
@@ -126,17 +127,23 @@ private fun RControlFlowHolder.analyseIncludedSourcesInner(): Map<Instruction, I
   return result
 }
 
+private fun getSourceDeclaration(sourceIdentifier: PsiElement): RAssignmentStatement {
+  val result = mutableListOf<ResolveResult>()
+  RResolver.resolveInFilesOrLibrary(sourceIdentifier, "source", result)
+  return result.mapNotNull { it.element }.first { RPsiUtil.isLibraryElement(it) } as RAssignmentStatement
+}
+
 private fun updateSources(sources: IncludedSources, element: PsiElement?): IncludedSources {
   if (element !is RCallExpression) return sources
-  return if (element.isFunctionFromLibrary("source", "base")) {
-    val filepathArgument = RParameterInfoUtil.getArgumentByName(element, "file", true)
+  val localDefinition = (element.expression as? RIdentifierExpression)?.findVariableDefinition()?.variableDescription?.firstDefinition
+  return if (localDefinition == null && element.isFunctionFromLibrarySoft("source", "base")) {
+    val filepathArgument = RParameterInfoUtil.getArgumentByName(element, "file", getSourceDeclaration(element.expression))
     val filepath = if (filepathArgument is RStringLiteralExpression) filepathArgument.name else null
     if (filepath != null) IncludedSources.SingleSource(element.project, filepath, listOf(sources))
     else sources
   }
   else {
-    val definition = (element.expression as? RIdentifierExpression)?.findVariableDefinition()?.variableDescription?.firstDefinition
-    val function = (definition?.parent as? RAssignmentStatement)?.assignedValue as? RFunctionExpression
+    val function = (localDefinition?.parent as? RAssignmentStatement)?.assignedValue as? RFunctionExpression
     function?.getAllIncludedSources()?.let { IncludedSources.MultiSource(it, listOf(sources)) } ?: sources
   }
 }
