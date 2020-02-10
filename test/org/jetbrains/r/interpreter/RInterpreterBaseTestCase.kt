@@ -107,7 +107,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     private const val LOCAL_PACKAGE_BASE_NAME = "anRPluginTestPackage"  // Exercise for the reader: why it's prepended with "an"?
 
     private val LOCAL_REPO_PATH = "$TEST_DATA_PATH/$LOCAL_REPO_NAME"
-    private val LOCAL_REPO_URL = "file://$LOCAL_REPO_PATH"
+    private val LOCAL_REPO_URL = "file:$LOCAL_REPO_PATH"
 
     val LOCAL_PACKAGES = (1..3).map { index ->
       val name = "${LOCAL_PACKAGE_BASE_NAME}$index"

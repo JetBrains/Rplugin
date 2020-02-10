@@ -11,6 +11,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.interpreter.RInterpreter
@@ -267,11 +268,11 @@ object RepoUtils {
       if (ApplicationManager.getApplication().isUnitTestMode) {
         it["type"] = "'source'"
       }
-      it["repos"] = "'$url'"
+      it["repos"] = "\"${StringUtil.escapeStringCharacters(url)}\""
       it["dependencies"] = "TRUE"
       //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
       it["verbose"] = "FALSE"
-      it["lib"] = "'$libraryPath'"
+      it["lib"] = "\"${StringUtil.escapeStringCharacters(libraryPath)}\""
     }
   }
 
