@@ -11,21 +11,25 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.ThrowableComputable
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RHelpersUtil
 import java.nio.file.Paths
-
-private const val TIMEOUT = 60 * 1000 // 1 min
 
 object ExecuteExpressionUtils {
   private val LOGGER = Logger.getInstance(ExecuteExpressionUtils::class.java)
 
-  fun <E>getListBlockingWithIndicator(title: String, debugName: String, timeout: Int = TIMEOUT, task: () -> Promise<List<E>>): List<E> {
+  fun <E> getListBlockingWithIndicator(
+    title: String,
+    debugName: String,
+    timeout: Int = DEFAULT_TIMEOUT,
+    task: () -> Promise<List<E>>
+  ): List<E> {
     return getSynchronously(title) {
       getListBlocking(debugName, timeout, task)
     }
   }
 
-  fun <E>getListBlocking(debugName: String, timeout: Int = TIMEOUT, task: () -> Promise<List<E>>): List<E> {
+  fun <E> getListBlocking(debugName: String, timeout: Int = DEFAULT_TIMEOUT, task: () -> Promise<List<E>>): List<E> {
     return task()
       .onError { LOGGER.error("Failed to get list blocking: $debugName", it) }
       .blockingGet(timeout) ?: emptyList()
@@ -41,7 +45,7 @@ object ExecuteExpressionUtils {
                                 relativeScriptPath: String,
                                 args: List<String>,
                                 title: String,
-                                timeout: Int = TIMEOUT): ProcessOutput {
+                                timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
     return getSynchronously<ProcessOutput>(title) {
       executeScript(rScriptPath, relativeScriptPath, args, timeout)
     }
@@ -50,7 +54,7 @@ object ExecuteExpressionUtils {
   fun executeScript(rScriptPath: String,
                     relativeScriptPath: String,
                     args: List<String>,
-                    timeout: Int = TIMEOUT): ProcessOutput {
+                    timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
     val scriptPath = RHelpersUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString()).absolutePath
     val generalCommandLine = GeneralCommandLine(rScriptPath, scriptPath, *args.toTypedArray())
     return CapturingProcessHandler(generalCommandLine).runProcess(timeout)

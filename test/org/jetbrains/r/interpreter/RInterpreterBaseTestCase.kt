@@ -96,7 +96,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   private class LocalRepoProvider : RepoProvider by MockRepoProvider() {
     val knownPackages = LOCAL_PACKAGES.toMutableList()
 
-    override val names2availablePackages: Map<String, RRepoPackage>?
+    override val name2AvailablePackages: Map<String, RRepoPackage>?
       get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
 
     override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>

@@ -12,7 +12,7 @@ interface RepoProvider {
   var selectedCranMirrorIndex: Int
   val cranMirrorsAsync: Promise<List<RMirror>>
   val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
-  val names2availablePackages: Map<String, RRepoPackage>?
+  val name2AvailablePackages: Map<String, RRepoPackage>?
   val allPackagesCachedAsync: Promise<List<RRepoPackage>>
   fun loadAllPackagesAsync(): Promise<List<RRepoPackage>>
   fun selectRepositories(repositorySelections: List<Pair<RRepository, Boolean>>)

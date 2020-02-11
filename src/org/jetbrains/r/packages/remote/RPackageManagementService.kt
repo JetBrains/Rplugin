@@ -68,7 +68,7 @@ class RPackageManagementService(private val project: Project,
   private var lastInstalledPackages: ExpiringList<RInstalledPackage>? = null
 
   val arePackageDetailsLoaded: Boolean
-    get() = provider.names2availablePackages != null
+    get() = provider.name2AvailablePackages != null
 
   fun isPackageLoaded(aPackage: RInstalledPackage): Boolean {
     val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
@@ -167,8 +167,8 @@ class RPackageManagementService(private val project: Project,
   @Throws(PackageDetailsException::class)
   fun resolvePackage(repoPackage: RepoPackage): RepoPackage {
     return if (repoPackage.repoUrl == null || repoPackage.latestVersion == null) {
-      val names2packages = provider.names2availablePackages ?: throw MissingPackageDetailsException("Package mapping is not set")
-      val filled = names2packages[repoPackage.name]
+      val name2Packages = provider.name2AvailablePackages ?: throw MissingPackageDetailsException("Package mapping is not set")
+      val filled = name2Packages[repoPackage.name]
       filled ?: throw UnresolvedPackageDetailsException("Can't get details for package '" + repoPackage.name + "'")
     } else {
       repoPackage
@@ -197,7 +197,7 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<String, Exception>) {
-    val repoPackage = provider.names2availablePackages?.get(packageName)
+    val repoPackage = provider.name2AvailablePackages?.get(packageName)
     consumer.consume(RepoUtils.formatDetails(repoPackage))
   }
 

@@ -58,7 +58,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
       }
     }
 
-  override val names2availablePackages: Map<String, RRepoPackage>?
+  override val name2AvailablePackages: Map<String, RRepoPackage>?
     get() = RepoUtils.getPackageDetails(project)
 
   override val allPackagesCachedAsync: Promise<List<RRepoPackage>>
