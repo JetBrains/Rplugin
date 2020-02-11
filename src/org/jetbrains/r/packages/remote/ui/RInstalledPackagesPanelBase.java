@@ -224,7 +224,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
       private void uninstallPackage(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
-        if (aPackage != null) {
+        if (aPackage != null && myPackageManagementService.canUninstallPackage(aPackage)) {
           int yesNo = Messages.showYesNoDialog(myPackagesTable,
                                                "Are you sure you wish to uninstall '" + aPackage.getPackageName() + "' package?",
                                                "Uninstall " + aPackage.getPackageName(),
@@ -701,7 +701,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
       }
       if (column == UNINSTALL_COLUMN) {
         myLabel.setText("");
-        myLabel.setIcon(AllIcons.Diff.Remove);
+        var canUninstall = myPackageManagementService.canUninstallPackage(aPackage);
+        var icon = canUninstall ? AllIcons.Diff.Remove : null;
+        myLabel.setIcon(icon);
         return myLabel;
       }
       if (column == IS_LOADED_COLUMN) {
