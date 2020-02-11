@@ -12,8 +12,8 @@ import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -91,7 +91,7 @@ class RReturnHintsModel(private val project: Project) : EditorFactoryListener {
       // Protect operations working with the document offsets
       return runReadAction {
         val values = lineEndMarkers.entries.filter { (marker, _) ->
-          val textRange = marker.range
+          val textRange = marker.range ?: return@filter false
           if (offset < textRange.startOffset || offset > textRange.endOffset) return@filter false
           if (textRange.endOffset > document.textLength) return@filter false
 
@@ -153,3 +153,13 @@ private class RReturnHintLineExtensionPainter(private val project: Project, priv
     val SPACE_LINE_EXTENSION_INFO = LineExtensionInfo(" ", TextAttributes())
   }
 }
+
+private val RangeMarker.range: TextRange?
+  get() =
+    if (isValid) {
+      val start = startOffset
+      val end = endOffset
+      if (start in 0..end) TextRange(start, end)
+      else null // Probably a race condition had happened and range marker is invalidated
+    }
+    else null
