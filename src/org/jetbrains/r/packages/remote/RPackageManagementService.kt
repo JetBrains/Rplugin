@@ -201,6 +201,10 @@ class RPackageManagementService(private val project: Project,
     consumer.consume(RepoUtils.formatDetails(repoPackage))
   }
 
+  fun fetchLatestVersion(packageName: String): String? {
+    return provider.name2AvailablePackages?.get(packageName)?.latestVersion
+  }
+
   private fun getTaskListener(packageNames: List<String>, listener: MultiListener): RPackageTaskManager.TaskListener {
     return object : RPackageTaskManager.TaskListener {
       override fun started() {

@@ -22,6 +22,7 @@ import org.jetbrains.r.UPGRADE_ALL
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
@@ -72,18 +73,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
     return object : DumbAwareActionButton(UPGRADE_ALL_TEXT, UPGRADE_ALL_ICON) {
       override fun actionPerformed(e: AnActionEvent) {
         rPackageManagementService?.let { service ->
-          val outdated = mutableListOf<RPackageUpdateInfo>()
-          val rowCount = myPackagesTable.rowCount
-          for (row in 0 until rowCount) {
-            val installedPackage = myPackagesTable.getValueAt(row, 0)
-            if (installedPackage is RInstalledPackage) {
-              val currentVersion = installedPackage.version
-              val availableVersion = myPackagesTable.getValueAt(row, 2) as String?
-              if (availableVersion != null && availableVersion.isNotBlank() && availableVersion != currentVersion) {
-                outdated.add(RPackageUpdateInfo(installedPackage, availableVersion))
-              }
-            }
-          }
+          val outdated = findOutdatedPackages(service)
           if (outdated.isNotEmpty()) {
             RUpdateAllConfirmDialog(outdated) {
               val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
@@ -98,6 +88,14 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
       override fun updateButton(e: AnActionEvent) {
         e.presentation.isEnabled = isReady && rPackageManagementService?.arePackageDetailsLoaded == true
+      }
+
+      private fun findOutdatedPackages(service: RPackageManagementService): List<RPackageUpdateInfo> {
+        return service.installedPackages.mapNotNull { installed ->
+          service.fetchLatestVersion(installed.packageName)?.let { latestVersion ->
+            if (RPackageVersion.isOlder(installed.packageVersion, latestVersion)) RPackageUpdateInfo(installed, latestVersion) else null
+          }
+        }
       }
     }
   }
