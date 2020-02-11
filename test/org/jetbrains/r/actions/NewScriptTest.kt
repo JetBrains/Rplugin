@@ -23,7 +23,10 @@ class NewScriptTest : RUsefulTestCase() {
 
   fun testRMarkdownCreate() {
     addLibraries()
-    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.NEW_R_MARKDOWN_TEMPLATE_NAME, "author")
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.NOTEBOOK_TEMPLATE_NAME, "html_notebook")
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.DOCUMENT_TEMPLATE_NAME, "html_document")
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.PRESENTATION_TEMPLATE_NAME, "ioslides_presentation")
+    doTest(NewRMarkdownAction::class, "rmd", NewRMarkdownAction.SHINY_TEMPLATE_NAME, "shiny")
   }
 
   private fun findSrcDir(): PsiDirectory {
@@ -34,7 +37,7 @@ class NewScriptTest : RUsefulTestCase() {
                                                                 extension: String,
                                                                 templateName: String,
                                                                 subString: String) {
-    val fileName = "new_file"
+    val fileName = "$templateName.Rmd"
     val newFile = runWriteAction {
       fileCreatorClass.createInstance().createTestFile(fileName, templateName, findSrcDir())
     }

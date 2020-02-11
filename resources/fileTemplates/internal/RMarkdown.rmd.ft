@@ -1,7 +1,0 @@
----
-title: "Untitled"
-author: ${USER}
-date: ${DATE}
-output: rmarkdown::html_vignette
----
-

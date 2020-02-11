@@ -25,7 +25,10 @@ class NewRMarkdownAction : TestableCreateFileFromTemplateAction("RMarkdown file"
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
       .setTitle("New RMarkdown file")
-      .addKind("RMarkdown file", RMarkdownFileType.icon, NEW_R_MARKDOWN_TEMPLATE_NAME)
+      .addKind("RMarkdown Notebook", RMarkdownFileType.icon, NOTEBOOK_TEMPLATE_NAME)
+      .addKind("RMarkdown Document", RMarkdownFileType.icon, DOCUMENT_TEMPLATE_NAME)
+      .addKind("RMarkdown Presentation", RMarkdownFileType.icon, PRESENTATION_TEMPLATE_NAME)
+      .addKind("RMarkdown Shiny", RMarkdownFileType.icon, SHINY_TEMPLATE_NAME)
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {
@@ -38,6 +41,9 @@ class NewRMarkdownAction : TestableCreateFileFromTemplateAction("RMarkdown file"
   }
 
   companion object {
-    const val NEW_R_MARKDOWN_TEMPLATE_NAME = "RMarkdown"
+    const val NOTEBOOK_TEMPLATE_NAME = "RMarkdown.notebook"
+    const val DOCUMENT_TEMPLATE_NAME = "RMarkdown.document"
+    const val PRESENTATION_TEMPLATE_NAME = "RMarkdown.presentation"
+    const val SHINY_TEMPLATE_NAME = "RMarkdown.shiny"
   }
 }
