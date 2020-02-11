@@ -206,45 +206,53 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
       private void loadUnloadPackage(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
-        if (myPackageManagementService.isPackageLoaded(aPackage)) {
-          myPackageManagementService.unloadPackage(aPackage);
-        } else {
-          myPackageManagementService.loadPackage(aPackage);
+        if (aPackage != null) {
+          if (myPackageManagementService.isPackageLoaded(aPackage)) {
+            myPackageManagementService.unloadPackage(aPackage);
+          } else {
+            myPackageManagementService.loadPackage(aPackage);
+          }
         }
       }
 
       private void navigateToDocumentation(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
-        myPackageManagementService.navigateToPackageDocumentation(aPackage);
+        if (aPackage != null) {
+          myPackageManagementService.navigateToPackageDocumentation(aPackage);
+        }
       }
 
       private void uninstallPackage(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
-        int yesNo = Messages.showYesNoDialog(myPackagesTable,
-                                             "Are you sure you wish to uninstall '" + aPackage.getPackageName() + "' package?",
-                                             "Uninstall " + aPackage.getPackageName(),
-                                             AllIcons.Diff.Remove);
-        if (yesNo == Messages.YES) {
-          uninstallAction(Collections.singletonList(aPackage));
+        if (aPackage != null) {
+          int yesNo = Messages.showYesNoDialog(myPackagesTable,
+                                               "Are you sure you wish to uninstall '" + aPackage.getPackageName() + "' package?",
+                                               "Uninstall " + aPackage.getPackageName(),
+                                               AllIcons.Diff.Remove);
+          if (yesNo == Messages.YES) {
+            uninstallAction(Collections.singletonList(aPackage));
+          }
         }
       }
 
       private void openLink(Point columnRow) {
         RInstalledPackage installedPackage = getInstalledPackageAt(columnRow.y);
-        String url = installedPackage.getDescription().get("URL");
-        String link = null;
-        if (url != null && (url.startsWith("http"))) {
-          int firstLinkEnded = url.indexOf(", ");
-          if (firstLinkEnded == -1) {
-            link = url;
-          } else {
-            link = url.substring(0, firstLinkEnded);
+        if (installedPackage != null) {
+          String url = installedPackage.getDescription().get("URL");
+          String link = null;
+          if (url != null && (url.startsWith("http"))) {
+            int firstLinkEnded = url.indexOf(", ");
+            if (firstLinkEnded == -1) {
+              link = url;
+            } else {
+              link = url.substring(0, firstLinkEnded);
+            }
           }
+          if (link == null) {
+            link = "https://cran.r-project.org/package=" + installedPackage.getPackageName();
+          }
+          BrowserLauncher.getInstance().browse(link, null);
         }
-        if (link == null) {
-          link = "https://cran.r-project.org/package=" + installedPackage.getPackageName();
-        }
-        BrowserLauncher.getInstance().browse(link, null);
       }
     });
 
@@ -368,7 +376,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
   private void upgradePackage(@NotNull final RInstalledPackage pkg, @Nullable final String toVersion) {
     final RPackageManagementService selectedPackageManagementService = myPackageManagementService;
-    myPackageManagementService.fetchPackageVersions(pkg.getName(), new CatchingConsumer<java.util.List<String>, Exception>() {
+    myPackageManagementService.fetchPackageVersions(pkg.getName(), new CatchingConsumer<>() {
       @Override
       public void consume(java.util.List<String> releases) {
         if (!releases.isEmpty() && !isUpdateAvailable(pkg.getVersion(), releases.get(0))) {
@@ -581,6 +589,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     });
   }
 
+  @Nullable
   private RInstalledPackage getInstalledPackageAt(int index) {
     return (RInstalledPackage) myPackageFilteringModel.getValueAt(index, PACKAGE_NAME_COLUMN);
   }
@@ -598,33 +607,35 @@ public class RInstalledPackagesPanelBase extends JPanel {
     for (int i = 0; i < packageCount; ++i) {
       final int finalIndex = i;
       final RInstalledPackage pkg = getInstalledPackageAt(finalIndex);
-      serviceEx.fetchLatestVersion(pkg, new CatchingConsumer<String, Exception>() {
+      if (pkg != null) {
+        serviceEx.fetchLatestVersion(pkg, new CatchingConsumer<>() {
 
-        private void decrement() {
-          if (inProgressPackageCount.decrementAndGet() == 0) {
-            onUpdateFinished();
-          }
-        }
-
-        @Override
-        public void consume(Exception e) {
-          UIUtil.invokeLaterIfNeeded(() -> decrement());
-          LOG.warn("Cannot fetch the latest version of the installed package " + pkg, e);
-        }
-
-        @Override
-        public void consume(@Nullable final String latestVersion) {
-          UIUtil.invokeLaterIfNeeded(() -> {
-            if (finalIndex < myPackagesTableModel.getRowCount()) {
-              RInstalledPackage p = getInstalledPackageAt(finalIndex);
-              if (pkg == p) {
-                myPackagesTableModel.setValueAt(latestVersion, finalIndex, 2);
-              }
+          private void decrement() {
+            if (inProgressPackageCount.decrementAndGet() == 0) {
+              onUpdateFinished();
             }
-            decrement();
-          });
-        }
-      });
+          }
+
+          @Override
+          public void consume(Exception e) {
+            UIUtil.invokeLaterIfNeeded(this::decrement);
+            LOG.warn("Cannot fetch the latest version of the installed package " + pkg, e);
+          }
+
+          @Override
+          public void consume(@Nullable final String latestVersion) {
+            UIUtil.invokeLaterIfNeeded(() -> {
+              if (finalIndex < myPackagesTableModel.getRowCount()) {
+                RInstalledPackage p = getInstalledPackageAt(finalIndex);
+                if (pkg == p) {
+                  myPackagesTableModel.setValueAt(latestVersion, finalIndex, 2);
+                }
+              }
+              decrement();
+            });
+          }
+        });
+      }
     }
   }
 
