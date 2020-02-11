@@ -181,6 +181,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     closeEditor(NO_GRAPHICS)
     val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
     adjustImageZoom(editor.zoomModel)
+    removeImageInfoLabel(editor)
     currentImageFile = file
     currentEditor = editor
     rootPanel.contentComponent = internalComponent
@@ -210,6 +211,17 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       }
     }
     return lastToolPanelHeight
+  }
+
+  private fun removeImageInfoLabel(editor: ImageEditor) {
+    currentFile?.extension?.let { extension ->
+      val labels = UIUtil.findComponentsOfType(editor.component, JLabel::class.java)
+      for (label in labels) {
+        if (label.text.contains(extension, ignoreCase = true)) {
+          label.parent.remove(label)
+        }
+      }
+    }
   }
 
   companion object {
