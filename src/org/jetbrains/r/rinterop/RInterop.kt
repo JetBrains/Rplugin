@@ -73,13 +73,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     if (isUnitTestMode) it.withDeadline(Deadline.after(DEADLINE_TEST, TimeUnit.SECONDS)) else it
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
-  private val heartbeatTimer = Timer().also {
-    it.schedule(object : TimerTask() {
-      override fun run() {
-        executeAsync(asyncStub::isBusy, Empty.getDefaultInstance())
-      }
-    }, 0L, HEARTBEAT_PERIOD.toLong())
-  }
+  private val heartbeatTimer: Timer
   private val asyncEventsListeners = HashSet<AsyncEventsListener>()
   private var asyncProcessingStarted = false
   private val asyncEventsBeforeStarted = mutableListOf<Service.AsyncEvent>()
@@ -173,6 +167,14 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     val info = execute(stub::getInfo, Empty.getDefaultInstance())
     rVersion = RVersion.forceParse(info.rVersion)
     processAsyncEvents()
+
+    heartbeatTimer = Timer().also {
+      it.schedule(object : TimerTask() {
+        override fun run() {
+          executeAsync(asyncStub::isBusy, Empty.getDefaultInstance())
+        }
+      }, 0L, HEARTBEAT_PERIOD.toLong())
+    }
   }
 
   fun <R> executeTask(f: () -> R): Promise<R> {
@@ -837,8 +839,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   override fun dispose() {
     heartbeatTimer.cancel()
+    executeAsync(asyncStub::quit, Empty.getDefaultInstance())
     ProcessIOExecutorService.INSTANCE.execute {
-      executeAsync(asyncStub::quit, Empty.getDefaultInstance())
       try {
         terminationPromise.blockingGet(1000, TimeUnit.MILLISECONDS)
       } catch (ignored: TimeoutException) {

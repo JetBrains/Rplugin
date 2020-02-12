@@ -6,6 +6,7 @@
 package org.jetbrains.r.debugger
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Key
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -24,7 +25,7 @@ object RDebuggerUtil {
     val listener = object : XBreakpointListener<XLineBreakpoint<XBreakpointProperties<*>>> {
       override fun breakpointAdded(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
         if (RSourceFileManager.isInvalid(breakpoint.fileUrl)) {
-          breakpointManager.removeBreakpoint(breakpoint)
+          runWriteAction { breakpointManager.removeBreakpoint(breakpoint) }
           return
         }
         val sourcePosition = breakpoint.sourcePosition ?: return
