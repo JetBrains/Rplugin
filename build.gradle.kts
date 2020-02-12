@@ -8,7 +8,7 @@ import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val isTeamCity = System.getenv("USER") != "builduser"
+val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
 
 val channel = prop("publishChannel")
 
