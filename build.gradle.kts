@@ -2,12 +2,13 @@ import com.google.protobuf.gradle.*
 import org.gradle.api.JavaVersion.VERSION_11
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val CI = System.getenv("CI") != null
+val isTeamCity = System.getenv("USER") != "builduser"
 
 val channel = prop("publishChannel")
 
@@ -87,7 +88,7 @@ allprojects {
 
     intellij {
         version = ideName()
-        downloadSources = !CI
+        downloadSources = !isTeamCity
         updateSinceUntilBuild = true
         instrumentCode = false
         ideaDependencyCachePath = dependencyCachePath
@@ -181,11 +182,11 @@ project(":") {
     }
 
     tasks.prepareSandbox {
-        doCopyRWrapperTask(this, this@project)
+        prepareSandbox(this, this@project)
     }
 
     tasks.prepareTestingSandbox {
-        doCopyRWrapperTask(this, this@project)
+        prepareSandbox(this, this@project)
     }
 
     tasks.runIde {
@@ -241,6 +242,23 @@ fun hasProp(name: String): Boolean = extra.has(name)
 fun prop(name: String): String =
     extra.properties[name] as? String
         ?: error("Property `$name` is not defined in gradle.properties")
+
+fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project) {
+    buildRWrapper(project)
+    doCopyRWrapperTask(prepareSandboxTask, project)
+}
+
+fun buildRWrapper(project: Project) {
+    if (!isTeamCity && OperatingSystem.current()?.isUnix == true) {
+        val workingDir = "${project.rootDir}/rwrapper"
+        File("$workingDir/build_rwrapper.sh").takeIf { it.exists() }?.let { script ->
+            project.exec {
+                commandLine(script)
+                workingDir(workingDir)
+            }
+        }
+    }
+}
 
 fun doCopyRWrapperTask(prepareSandboxTask: PrepareSandboxTask, project: Project) {
     prepareSandboxTask.inputs.files(*(File("rwrapper").takeIf { it.exists() && it.isDirectory }?.list { _, name ->
