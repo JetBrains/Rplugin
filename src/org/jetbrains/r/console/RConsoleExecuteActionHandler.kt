@@ -239,28 +239,34 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     rInterop.executeCodeAsync(text, isRepl = true)
   }
 
+  @Synchronized
   fun addListener(listener: Listener) {
     listeners.add(listener)
   }
 
+  @Synchronized
   fun removeListener(listener: Listener) {
     listeners.remove(listener)
   }
 
+  @Synchronized
   fun resetListeners() {
     for (listener in listeners) {
       listener.onReset()
     }
   }
 
+  @Synchronized
   fun fireCommandExecuted() {
     listeners.forEach { it.onCommandExecuted() }
   }
 
+  @Synchronized
   fun fireBeforeExecution() {
     listeners.forEach { it.beforeExecution() }
   }
 
+  @Synchronized
   fun fireBusy() {
     if (state != State.BUSY) {
       state = State.BUSY
