@@ -13,10 +13,9 @@ import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.editor
-import org.jetbrains.r.actions.psiFile
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RInsertAssignmentAction : DumbAwareAction(), RPromotedAction {
+abstract class RInsertActionBase(private val symbol: String) : DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val document = editor.document
@@ -28,9 +27,9 @@ class RInsertAssignmentAction : DumbAwareAction(), RPromotedAction {
     val addSpaces = CodeStyle.getSettings(editor).getCommonSettings(RLanguage.INSTANCE).SPACE_AROUND_ASSIGNMENT_OPERATORS
 
     val insert = if (addSpaces && offset > 0)
-      if (!document.charsSequence[offset - 1].isWhitespace()) " <- "
-      else "<- "
-    else "<-"
+      if (!document.charsSequence[offset - 1].isWhitespace()) " $symbol "
+      else "$symbol "
+    else symbol
 
     runWriteAction {
       CommandProcessor.getInstance().executeCommand(e.project, Runnable {
@@ -50,3 +49,6 @@ class RInsertAssignmentAction : DumbAwareAction(), RPromotedAction {
     presentation.isEnabled = language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
 }
+
+class RInsertAssignmentAction : RInsertActionBase("<-")
+class RInsertPipeAction : RInsertActionBase("%>%")
