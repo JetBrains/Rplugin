@@ -443,7 +443,6 @@ You can find the source code in the following repositories:
 
         <!--- RMarkdown ui-->
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RMarkdownFileEditorProvider"/>
-        <codeInsight.lineMarkerProvider language="RMarkdown" implementationClass="org.jetbrains.r.rendering.chunk.RunChunkLineMarkerProvider"/>
 
         <!-- tool windows-->
         <lang.psiStructureViewFactory language="R"
