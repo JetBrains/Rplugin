@@ -255,27 +255,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
         }
       }
     });
-
-    new DoubleClickListener() {
-      @Override
-      protected boolean onDoubleClick(MouseEvent e) {
-        if (myPackageManagementService != null && myInstallButton.isEnabled()) {
-          ManagePackagesDialog dialog = createManagePackagesDialog();
-          Point p = e.getPoint();
-          int row = myPackagesTable.rowAtPoint(p);
-          int column = myPackagesTable.columnAtPoint(p);
-          if (row >= 0 && column >= 0) {
-            Object pkg = myPackagesTable.getValueAt(row, 0);
-            if (pkg instanceof RInstalledPackage) {
-              dialog.selectPackage((RInstalledPackage) pkg);
-            }
-          }
-          dialog.show();
-          return true;
-        }
-        return false;
-      }
-    }.installOn(myPackagesTable);
   }
 
   private void initColumnWidth() {
