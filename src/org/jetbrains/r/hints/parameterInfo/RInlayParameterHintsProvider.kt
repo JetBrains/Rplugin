@@ -23,7 +23,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
   override fun getDefaultBlackList(): Set<String> = setOf("(...)", "(x, ...)")
 
-  override fun getParameterHints(element: PsiElement?): List<InlayInfo> {
+  override fun getParameterHints(element: PsiElement): List<InlayInfo> {
     if (element !is RArgumentList) return emptyList()
 
     val isWrapDots = WRAP_DOTS_OPTION.isEnabled()
