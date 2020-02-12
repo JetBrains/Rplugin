@@ -249,7 +249,8 @@ fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project) {
 }
 
 fun buildRWrapper(project: Project) {
-    if (!isTeamCity && OperatingSystem.current()?.isUnix == true) {
+    if (!rwrapperBuilt && !isTeamCity && OperatingSystem.current()?.isUnix == true) {
+        rwrapperBuilt = true
         val workingDir = "${project.rootDir}/rwrapper"
         File("$workingDir/build_rwrapper.sh").takeIf { it.exists() }?.let { script ->
             project.exec {
@@ -304,3 +305,6 @@ fun Build_gradle.ideMajorVersion() = prop("ideMajor")
 fun Build_gradle.ideName() = prop("ideName")
 
 fun Build_gradle.isPyCharm() = ideName().contains("PY") || ideName().contains("PC")
+
+@kotlin.jvm.Volatile
+private var rwrapperBuilt = false
