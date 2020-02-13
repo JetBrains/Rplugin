@@ -7,7 +7,6 @@ package org.jetbrains.r.psi.references
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
@@ -32,18 +31,26 @@ class RReferenceContributor : PsiReferenceContributor() {
         val text = stringLiteral.name ?: return PsiReference.EMPTY_ARRAY
         if (URLUtil.URL_PATTERN.matcher(text).matches()) return arrayOf(WebReference(element))
 
+        val path = Path.of(text.trim())
+        val isAbsolute = path.isAbsolute
         val file = element.containingFile
         val project = element.project
         val set = object : FileReferenceSet(text, element, 1, this, true, true) {
           override fun getDefaultContexts(): MutableCollection<PsiFileSystemItem> {
+            if (isAbsolute) {
+              val pathRoot = path.root.toString()
+              LocalFileSystem.getInstance().findFileByPath(pathRoot)?.let { file ->
+                PsiUtilCore.findFileSystemItem(project, file)?.let { return mutableListOf(it) }
+              }
+              return mutableListOf()
+            }
+
             val result = super.getDefaultContexts()
             val workingDir = (file as? RFile)?.runtimeInfo?.workingDir
-            if (workingDir != null) {
-              val dir = LocalFileSystem.getInstance().findFileByPath(workingDir)?.let { PsiUtilCore.findFileSystemItem(project, it)}
-              if (dir != null) {
-                return result.plus(dir).toMutableList()
-              }
+            val dir = workingDir?.let { dir ->
+              LocalFileSystem.getInstance().findFileByPath(dir)?.let { PsiUtilCore.findFileSystemItem(project, it) }
             }
+            dir?.let { result.add(dir) }
             return result
           }
 

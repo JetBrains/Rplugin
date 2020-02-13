@@ -26,6 +26,13 @@ class FilePathCompletionTest : RLightCodeInsightFixtureTestCase() {
                     listOf("A.R", "A1.R", "BA.R"))
   }
 
+  fun testAbsolutePath() {
+    val dir = "$testDataPath/filePathCompletion/"
+    checkCompletion("\"$dir<caret>\"",
+                    emptyList(),
+                    listOf("absoluteFilePath.R"))
+  }
+
   private fun checkCompletion(text: String, files: List<String>, expected: List<String>) {
     myFixture.configureByText("currentFile.R", text)
     files.forEach { myFixture.addFileToProject(it, "") }
