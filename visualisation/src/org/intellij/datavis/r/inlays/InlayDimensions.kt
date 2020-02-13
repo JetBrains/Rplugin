@@ -37,33 +37,42 @@ object InlayDimensions {
   val cornerRadius = JBUI.scale(10)
 
   /** editor.lineHeight */
+  @Volatile
   var lineHeight: Int = JBUI.scale(10)
     private set
 
+  @Volatile
   var rightBorder: Int = 5
     private set
 
   /** Width of space character ib current editor (editor.getFontMetrics(Font.PLAIN).charWidth(' ')) */
   private var spaceWidth: Int = JBUI.scale(5)
 
+  @Volatile
   var smallHeight: Int = lineHeight
     private set
 
+  @Volatile
   var previewHeight: Int = lineHeight
     private set
 
+  @Volatile
   var defaultHeight: Int = lineHeight
     private set
 
+  @Volatile
   var tableHeight: Int = lineHeight
     private set
 
+  @Volatile
   var width: Int = spaceWidth * 120
     private set
 
+  @Volatile
   var minWidth: Int = spaceWidth * 10
     private set
 
+  @Volatile
   var minHeight: Int = spaceWidth * 10
     private set
 
