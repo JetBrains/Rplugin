@@ -340,9 +340,6 @@ You can find the source code in the following repositories:
         <lang.namesValidator language="R" implementationClass="org.jetbrains.r.refactoring.RNamesValidator"/>
 
         <!-- Codeinsight -->
-        <!--todo finalize impl for release of disable -->
-        <psi.referenceContributor
-                implementation="org.jetbrains.r.psi.references.externalres.ResourceScriptReferenceContributor"/>
 
         <lang.ast.factory language="R" implementationClass="org.jetbrains.r.parsing.RAstFactory"/>
 

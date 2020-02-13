@@ -8,12 +8,14 @@ package org.jetbrains.r.editor
 import com.intellij.codeInsight.AutoPopupController
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
@@ -38,7 +40,10 @@ import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
+import java.nio.file.Path
 import javax.swing.Icon
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 const val TABLE_MANIPULATION_COLUMNS_GROUPING = 110
 const val NAMED_ARGUMENT_GROUPING = 100
@@ -414,6 +419,8 @@ class RCompletionContributor : CompletionContributor() {
   private class StringLiteralCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
+      addFilePathCompletion(parameters, stringLiteral, result)
+
       val parent = stringLiteral.parent as? ROperatorExpression ?: return
       if (!parent.isBinary || (parent.operator?.name != "==" && parent.operator?.name != "!=")) return
       val other = (if (parent.leftExpr == stringLiteral) parent.rightExpr else parent.leftExpr) ?: return
@@ -452,6 +459,27 @@ class RCompletionContributor : CompletionContributor() {
   }
 
   companion object {
+    private fun addFilePathCompletion(parameters: CompletionParameters,
+                                      stringLiteral: RStringLiteralExpression,
+                                      _result: CompletionResultSet) {
+      val reference = parameters.position.containingFile.findReferenceAt(parameters.offset) as? FileReference ?: return
+      val filePrefix = Path.of(stringLiteral.name?.trim()).fileName.toString().replace(CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED, "")
+      val result = _result.withPrefixMatcher(filePrefix)
+      val variants = reference.variants.map {
+        when (it) {
+          is LookupElement -> it
+          is PsiNamedElement -> LookupElementBuilder.createWithIcon(it)
+          else -> LookupElementBuilder.create(it)
+        }
+      }
+
+      for (lookup in variants) {
+        if (result.prefixMatcher.prefixMatches(lookup)) {
+          result.addElement(lookup)
+        }
+      }
+    }
+
     private fun addPackageCompletion(position: PsiElement, result: CompletionResultSet) {
       val interpreter = RInterpreterManager.getInterpreter(position.project) ?: return
       val installedPackages = interpreter.installedPackages

@@ -20,6 +20,12 @@ class FilePathCompletionTest : RLightCodeInsightFixtureTestCase() {
                     listOf("xy.java", "yz.kt", "zz"))
   }
 
+  fun testInSource() {
+    checkCompletion("source(\"A<caret>\")",
+                    listOf("aa.R", "A.R", "A1.R", "BA.R", "B.Rmd"),
+                    listOf("A.R", "A1.R", "BA.R"))
+  }
+
   private fun checkCompletion(text: String, files: List<String>, expected: List<String>) {
     myFixture.configureByText("currentFile.R", text)
     files.forEach { myFixture.addFileToProject(it, "") }
