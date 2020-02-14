@@ -4,8 +4,13 @@
 
 package org.jetbrains.r.annotator
 
+import com.intellij.openapi.actionSystem.IdeActions
+import com.intellij.openapi.keymap.KeymapManager
+import com.intellij.openapi.keymap.KeymapUtil
+import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.highlighting.RColorSettingsPage
+import java.io.File
 import java.nio.file.Paths
 
 class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
@@ -38,7 +43,25 @@ class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
 
   fun testSourceAndLinks() {
     addLibraries()
-    doTest()
+
+    val shortcuts = KeymapManager.getInstance().activeKeymap.getShortcuts(IdeActions.ACTION_GOTO_DECLARATION)
+    val shortcutText = buildString {
+      ContainerUtil.find(shortcuts) { !it.isKeyboard }?.let {
+        append(KeymapUtil.getShortcutText(it).replace(Regex("Button\\d "), ""))
+      }
+
+      ContainerUtil.find(shortcuts) { it.isKeyboard }?.let {
+        if (isNotEmpty()) append(", ")
+        append(KeymapUtil.getShortcutText(it))
+      }
+    }
+
+    val fileText = File(testDataPath, getTestName(true) + ".R")
+      .readText()
+      .replace("ACTION_GOTO_DECLARATION", shortcutText)
+
+    myFixture.configureByText("a.R", fileText)
+    myFixture.checkHighlighting(false, true, false)
   }
 
   fun testSampleFromColorSettingsPage() {
