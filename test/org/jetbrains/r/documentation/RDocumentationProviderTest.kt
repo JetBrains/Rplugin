@@ -6,6 +6,7 @@ package org.jetbrains.r.documentation
 
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.documentation.DocumentationManager.ORIGINAL_ELEMENT_KEY
+import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.openapi.application.PathManager
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
@@ -246,8 +247,9 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     assertNotNull("No document found for ${originalElement.text}", docText)
     assertTrue("Wrong help page returned for ${originalElement.text}: $docText", docText!!.contains("page for $page")
                                                                                  && docText.contains("Package <em>$pack</em>"))
-    assertSame("Bad links in doc for ${originalElement.text}",
-               Regex("href=\"psi_element://(?!http)").findAll(docText).count(), Regex("\\.html").findAll(docText).count())
+    assertSame("Doc for ${originalElement.text} contains incorrect links or excess uses of PSI_ELEMENT_PROTOCOL",
+               Regex("<a href=\"(.+?)\">(.+?)</a>").findAll(docText).count(),
+               Regex(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL).findAll(docText).count())
   }
 
   private fun testLinkNull(link: String) {
