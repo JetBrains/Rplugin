@@ -16,7 +16,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -32,8 +31,6 @@ import com.intellij.ui.RelativeFont
 import com.intellij.ui.components.JBScrollBar
 import com.intellij.util.ui.TextTransferable
 import com.intellij.util.ui.UIUtil
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
 import javafx.application.Platform
 import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
@@ -49,10 +46,7 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.KeyEvent
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
-import java.util.concurrent.atomic.AtomicBoolean
+import java.nio.file.*
 import javax.swing.AbstractAction
 import javax.swing.Icon
 import javax.swing.JComponent
@@ -147,9 +141,21 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   }
 
   inner class OutputImg(parent: Disposable) : Output(parent), Disposable {
-    private val graphicsPanel = GraphicsPanel(project, parent)
-    private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
-    private val viewportVisibility = AtomicBoolean(false)
+    private val wrapper = GraphicsPanelWrapper(project, parent).apply {
+      isVisible = false
+    }
+
+    private val zoomActionHolder = object : ActionHolder {
+      override val icon = AllIcons.Actions.Preview
+      override val text = "Open plot in a new window"
+      override val description = "Preview this plot in a new window"
+
+      override fun onClick() {
+        wrapper.imagePath?.let { path ->
+          GraphicsZoomDialog(project, parent, path).show()
+        }
+      }
+    }
 
     private val settingsActionHolder = object : ActionHolder {
       override val icon = AllIcons.General.GearPlain
@@ -159,62 +165,49 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       override fun onClick() {
         val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
         val isDarkModeEnabled = if (isDarkEditor) graphicsManager?.isDarkModeEnabled else null
-        val initialSettings = GraphicsSettingsDialog.Settings(isAutoResizeEnabled, isDarkModeEnabled, globalResolution, localResolution)
+        val initialSettings = getInitialSettings(isDarkModeEnabled)
         val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
-          graphicsPanel.isAdvancedMode = !newSettings.isAutoResizedEnabled
-          isAutoResizeEnabled = newSettings.isAutoResizedEnabled
-          targetResolution = newSettings.localResolution
+          wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
+          wrapper.targetResolution = newSettings.localResolution
           graphicsManager?.let { manager ->
             if (newSettings.isDarkModeEnabled != null && newSettings.isDarkModeEnabled != isDarkModeEnabled) {
               manager.isDarkModeEnabled = newSettings.isDarkModeEnabled
             }
             if (newSettings.globalResolution != null && newSettings.globalResolution != globalResolution) {
               // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
-              // Note: no need to schedule rescaling here: it will be called automatically by a listener below
               manager.globalResolution = newSettings.globalResolution
-            } else {
-              scheduleRescalingIfNecessary()
             }
           }
         }
         dialog.show()
       }
+
+      private fun getInitialSettings(isDarkModeEnabled: Boolean?) = GraphicsSettingsDialog.Settings(
+        wrapper.isAutoResizeEnabled,
+        isDarkModeEnabled,
+        globalResolution,
+        wrapper.localResolution
+      )
     }
 
     private val graphicsManager: GraphicsManager?
       get() = GraphicsManager.getInstance(project)
 
-    private var imagePath: String? = null
     private var globalResolutionSubscription: Disposable? = null
-
-    @Volatile
-    private var isAutoResizeEnabled: Boolean = true
-
-    @Volatile
-    private var localResolution: Int? = null
 
     @Volatile
     private var globalResolution: Int? = null
 
-    @Volatile
-    private var targetResolution: Int? = null
-
-    override val extraActions: List<ActionHolder> = listOf(settingsActionHolder)
+    override val extraActions: List<ActionHolder> = listOf(zoomActionHolder, settingsActionHolder)
 
     init {
       Disposer.register(parent, this)
-      toolbarPane.centralComponent = graphicsPanel.component
-      graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
-        override fun componentResized(e: ComponentEvent?) {
-          scheduleRescalingIfNecessary()
-        }
-      })
+      toolbarPane.centralComponent = wrapper.component
       graphicsManager?.let { manager ->
         globalResolution = manager.globalResolution
         globalResolutionSubscription = manager.addGlobalResolutionListener { newGlobalResolution ->
+          wrapper.targetResolution = newGlobalResolution
           globalResolution = newGlobalResolution
-          targetResolution = newGlobalResolution
-          scheduleRescalingIfNecessary()
         }
       }
     }
@@ -224,10 +217,9 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     override fun addData(data: String) {
-      addImage(File(data), ::runAsyncInlay).onSuccess {
+      wrapper.addImage(File(data), false, ::runAsyncInlay).onSuccess {
         invokeLater {
-          onHeightCalculated?.invoke(graphicsPanel.maximumSize?.height ?: 0)
-          scheduleRescalingIfNecessary()
+          onHeightCalculated?.invoke(wrapper.maximumHeight ?: 0)
         }
       }
     }
@@ -243,7 +235,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     override fun saveAs() {
-      imagePath?.let { path ->
+      wrapper.imagePath?.let { path ->
         val title = "Export image"
         val description = "Save image to disk"
         saveWithFileChooser(title, description, "png", "snapshot.png") { destination ->
@@ -253,63 +245,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     }
 
     override fun onViewportChange(isInViewport: Boolean) {
-      val oldVisibility = viewportVisibility.getAndSet(isInViewport)
-      if (oldVisibility != isInViewport) {
-        if (isInViewport) {
-          scheduleRescalingIfNecessary()
-        }
-      }
-    }
-
-    private fun <R>addImage(imageFile: File, executor: (() -> Unit) -> R): R {
-      val path = imageFile.absolutePath
-      localResolution = graphicsManager?.getImageResolution(path)
-      targetResolution = localResolution
-      imagePath = path
-      return executor {
-        graphicsPanel.showImage(imageFile)
-      }
-    }
-
-    private fun scheduleRescalingIfNecessary() {
-      if (isAutoResizeEnabled || localResolution != targetResolution) {
-        scheduleRescaling()
-      }
-    }
-
-    private fun scheduleRescaling() {
-      queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-        override fun run() {
-          val oldSize = graphicsPanel.imageSize
-          val newSize = graphicsPanel.imageComponentSize
-          if (oldSize != newSize || localResolution != targetResolution) {
-            // Note: there might be lots of attempts to resize image on IDE startup
-            // but most of them will fail (and throw an exception)
-            // due to the parent being disposed
-            if (!Disposer.isDisposed(parent) && viewportVisibility.get()) {
-              rescale(newSize, targetResolution)
-            }
-          }
-        }
-      })
-    }
-
-    private fun rescale(newSize: Dimension, newResolution: Int?) {
-      imagePath?.let { path ->
-        graphicsManager?.let { manager ->
-          if (!manager.isBusy) {
-            manager.rescaleImage(path, newSize, newResolution) { imageFile ->
-              addImage(imageFile, ::invokeLater)
-            }
-          } else {
-            scheduleRescaling()  // Out of luck: try again in 500 ms
-          }
-        }
-      }
-    }
-
-    private fun invokeLater(task: () -> Unit) {
-      ApplicationManager.getApplication().invokeLater(task)
+      wrapper.isVisible = isInViewport
     }
   }
 

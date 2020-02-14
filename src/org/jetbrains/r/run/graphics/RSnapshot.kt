@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.graphics
 
 import java.io.File
+import java.nio.file.Paths
 
 enum class RSnapshotType {
   NORMAL,
@@ -37,6 +38,9 @@ data class RSnapshot(
    */
   val resolution: Int?
 ) {
+  val recordedFile: File
+    get() = Paths.get(file.parent, "recorded_${number}.snapshot").toFile()
+
   companion object {
     // Note: for goodness' sake, don't move these literals to bundle!
     private const val SNAPSHOT_MAGIC = "snapshot"

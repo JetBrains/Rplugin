@@ -15,6 +15,8 @@ import org.jetbrains.r.settings.RGraphicsSettings
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
   private val settings: RMarkdownGraphicsSettings
@@ -39,6 +41,16 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     return imagePath.toSnapshot()?.resolution
   }
 
+  override fun createImageGroup(imagePath: String): Pair<File, Disposable>? {
+    return imagePath.toSnapshot()?.let { snapshot ->
+      val groupDirectory = getCleanGroupDirectory(snapshot)
+      copyFileToGroup(snapshot.recordedFile, groupDirectory)
+      val copy = copyFileToGroup(File(imagePath), groupDirectory)
+      val group = Disposable { groupDirectory.deleteRecursively() }
+      Pair(copy, group)
+    }
+  }
+
   override fun addGlobalResolutionListener(listener: (Int) -> Unit): Disposable {
     return settings.addGlobalResolutionListener(listener)
   }
@@ -56,5 +68,18 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       get() = resolution ?: RGraphicsUtils.getDefaultResolution(false)  // NOT `settings.globalResolution`!
 
     private fun String.toSnapshot() = RSnapshot.from(File(this))
+
+    private fun getCleanGroupDirectory(snapshot: RSnapshot): File {
+      val parentPath = snapshot.file.parentFile.toPath()
+      return Files.createTempDirectory(parentPath, "group").toFile().also { temp ->
+        temp.deleteOnExit()
+      }
+    }
+
+    private fun copyFileToGroup(file: File, groupDirectory: File): File {
+      val copyPath = Paths.get(groupDirectory.absolutePath, file.name)
+      Files.copy(file.toPath(), copyPath)
+      return copyPath.toFile()
+    }
   }
 }

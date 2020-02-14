@@ -16,6 +16,14 @@ interface GraphicsManager {
   fun getImageResolution(imagePath: String): Int?
 
   /**
+   * Create the group of isolated transformations of reference image.
+   * @return pair of copied image file and an instance of [Disposable]
+   * which should be disposed in order to delete group,
+   * `null` if creation is not possible
+   */
+  fun createImageGroup(imagePath: String): Pair<File, Disposable>?
+
+  /**
    * @return an instance of [Disposable] that should be disposed in order to remove the listener.
    * This is pretty similar to `Observable` API from RxJava
    */
