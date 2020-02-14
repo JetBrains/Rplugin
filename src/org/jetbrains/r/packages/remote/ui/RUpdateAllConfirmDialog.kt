@@ -7,10 +7,9 @@ package org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
+import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RInstalledPackage
-import org.jetbrains.r.ui.RDimensionPreference
-import org.jetbrains.r.ui.calculateDialogPreferredSize
 import java.awt.Dimension
 import javax.swing.*
 
@@ -43,7 +42,7 @@ class RUpdateAllConfirmDialog(outdated: List<RPackageUpdateInfo>, private val on
       add(JLabel(DESCRIPTION))
       add(Box.createRigidArea(Dimension(0, 10)))
       add(scrollPane)
-      preferredSize = calculateDialogPreferredSize(RDimensionPreference.NARROW, RDimensionPreference.MODERATE)
+      preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.NARROW, DialogUtil.SizePreference.MODERATE)
     }
   }
 

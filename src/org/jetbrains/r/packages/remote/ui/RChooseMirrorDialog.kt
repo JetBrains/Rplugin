@@ -7,10 +7,9 @@ package org.jetbrains.r.packages.remote.ui
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
+import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.remote.RMirror
-import org.jetbrains.r.ui.RDimensionPreference
-import org.jetbrains.r.ui.calculateDialogPreferredSize
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -35,7 +34,7 @@ class RChooseMirrorDialog(mirrors: List<RMirror>, selection: Int, private val on
     return JPanel().apply {
       layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
       add(scrollPane)
-      preferredSize = calculateDialogPreferredSize(RDimensionPreference.NARROW, RDimensionPreference.WIDE)
+      preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.NARROW, DialogUtil.SizePreference.WIDE)
     }
   }
 
