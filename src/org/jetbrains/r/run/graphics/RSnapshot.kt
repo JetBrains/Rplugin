@@ -10,7 +10,6 @@ import java.nio.file.Paths
 enum class RSnapshotType {
   NORMAL,
   SKETCH,
-  ZOOMED,
 }
 
 data class RSnapshot(
@@ -46,7 +45,6 @@ data class RSnapshot(
     private const val SNAPSHOT_MAGIC = "snapshot"
     private const val NORMAL_SUFFIX = "normal"
     private const val SKETCH_SUFFIX = "sketch"
-    private const val ZOOMED_SUFFIX = "zoomed"
 
     fun from(file: File): RSnapshot? {
       val parts = file.nameWithoutExtension.split('_')
@@ -74,7 +72,6 @@ data class RSnapshot(
       return when (text) {
         NORMAL_SUFFIX -> RSnapshotType.NORMAL
         SKETCH_SUFFIX -> RSnapshotType.SKETCH
-        ZOOMED_SUFFIX -> RSnapshotType.ZOOMED
         else -> throw RuntimeException("Unsupported snapshot type: '$text'")
       }
     }

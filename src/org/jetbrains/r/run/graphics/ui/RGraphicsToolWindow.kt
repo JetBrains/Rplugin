@@ -15,14 +15,13 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.GraphicsZoomDialog
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
-import org.jetbrains.r.run.graphics.RSnapshotsUpdate
 import org.jetbrains.r.settings.RGraphicsSettings
-import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -33,7 +32,6 @@ import java.nio.file.StandardCopyOption
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
-  private var lastZoomed = listOf<RSnapshot>()
   private var lastIndex = -1
 
   private val lastSnapshot: RSnapshot?
@@ -76,8 +74,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     }
   }
 
-  private fun refresh(update: RSnapshotsUpdate) {
-    val normal = update.normal
+  private fun refresh(normal: List<RSnapshot>) {
     if (normal.isNotEmpty()) {
       val loadedNumber = loadSnapshotNumber()
       lastIndex = if (loadedNumber != null) {
@@ -91,7 +88,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         normal.lastIndex
       }
       lastNormal = normal
-      lastZoomed = update.zoomed
       showCurrent()
     } else {
       reset()
@@ -104,7 +100,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun reset() {
     lastNormal = listOf()
-    lastZoomed = listOf()
     lastIndex = -1
     graphicsPanel.reset()
   }
@@ -177,8 +172,9 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         get() = lastNormal.isNotEmpty()
 
       override fun onClick() {
-        val snapshot = lastZoomed[lastIndex]
-        Desktop.getDesktop().open(snapshot.file)
+        lastFile?.absolutePath?.let { imagePath ->
+          GraphicsZoomDialog(project, project, imagePath).show()
+        }
       }
     }
 

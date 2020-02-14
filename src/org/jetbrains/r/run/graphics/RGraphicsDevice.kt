@@ -12,11 +12,6 @@ import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 
-data class RSnapshotsUpdate(
-  val normal: List<RSnapshot>,
-  val zoomed: List<RSnapshot>
-)
-
 class RGraphicsDevice(
   private val rInterop: RInterop,
   private val tracedDirectory: File,
@@ -25,14 +20,13 @@ class RGraphicsDevice(
 ) {
 
   private var lastNormal = emptyList<RSnapshot>()
-  private var lastZoomed = emptyList<RSnapshot>()
 
   private val numbers2parameters = mutableMapOf<Int, RGraphicsUtils.ScreenParameters>()
-  private val listeners = mutableListOf<(RSnapshotsUpdate) -> Unit>()
+  private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
 
-  val lastUpdate: RSnapshotsUpdate
-    get() = RSnapshotsUpdate(lastNormal, lastZoomed)
+  val lastUpdate: List<RSnapshot>
+    get() = lastNormal
 
   var configuration: Configuration = Configuration(initialParameters, null)
     set(value) {
@@ -70,16 +64,13 @@ class RGraphicsDevice(
 
   fun clearSnapshot(number: Int) {
     lastNormal = removeSnapshotByNumber(lastNormal, number)
-    lastZoomed = removeSnapshotByNumber(lastZoomed, number)
     numbers2parameters.remove(number)
     notifyListenersOnUpdate()
   }
 
   fun clearAllSnapshots() {
-    deleteSnapshots(lastNormal)
-    deleteSnapshots(lastZoomed)
+    deleteSnapshots(lastNormal, true)
     lastNormal = listOf()
-    lastZoomed = listOf()
     numbers2parameters.clear()
     for (listener in listeners) {
       listener(lastUpdate)
@@ -90,12 +81,12 @@ class RGraphicsDevice(
     rInterop.graphicsShutdown()
   }
 
-  fun addListener(listener: (RSnapshotsUpdate) -> Unit) {
+  fun addListener(listener: (List<RSnapshot>) -> Unit) {
     listeners.add(listener)
     listener(lastUpdate)
   }
 
-  fun removeListener(listener: (RSnapshotsUpdate) -> Unit) {
+  fun removeListener(listener: (List<RSnapshot>) -> Unit) {
     listeners.remove(listener)
   }
 
@@ -157,11 +148,9 @@ class RGraphicsDevice(
   private fun lookForNewSnapshots(tracedSnapshotNumber: Int?) {
     fetchLatestSnapshots(tracedDirectory)?.let { type2snapshots ->
       val normal = type2snapshots[RSnapshotType.NORMAL] ?: listOf()
-      val zoomed = type2snapshots[RSnapshotType.ZOOMED] ?: listOf()
       if (checkUpdated(normal)) {
         traceUpdatedSnapshots(normal)
         lastNormal = normal
-        lastZoomed = zoomed
         postSnapshotNumber(tracedSnapshotNumber)
         notifyListenersOnUpdate()
       }
@@ -224,7 +213,7 @@ class RGraphicsDevice(
       return if (type != RSnapshotType.SKETCH) {
         Pair(type, snapshots.groupAndShrinkBy { it.version })
       } else {
-        deleteSnapshots(snapshots)
+        deleteSnapshots(snapshots, false)
         null
       }
     }
@@ -254,6 +243,7 @@ class RGraphicsDevice(
       val snapshot = snapshots.find { it.number == number }
       return if (snapshot != null) {
         if (snapshot.file.delete()) {
+          snapshot.recordedFile.delete()
           snapshots.minus(snapshot)
         } else {
           snapshots
@@ -263,8 +253,11 @@ class RGraphicsDevice(
       }
     }
 
-    private fun deleteSnapshots(snapshots: List<RSnapshot>) {
+    private fun deleteSnapshots(snapshots: List<RSnapshot>, deleteRecorded: Boolean) {
       for (snapshot in snapshots) {
+        if (deleteRecorded) {
+          snapshot.recordedFile.delete()
+        }
         snapshot.file.delete()
       }
     }

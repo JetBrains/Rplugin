@@ -37,7 +37,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     val screenDimension = DEFAULT_DIMENSION
     graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
     graphicsDevice.addListener { update ->
-      currentSnapshots = update.normal
+      currentSnapshots = update
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     currentSnapshots = null
