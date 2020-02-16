@@ -123,9 +123,10 @@ private fun RControlFlowHolder.analyseIncludedSourcesInner(): Map<Instruction, I
   return result
 }
 
-private fun getSourceDeclaration(sourceIdentifier: PsiElement): RAssignmentStatement {
+private fun getSourceDeclaration(sourceIdentifier: PsiElement): RAssignmentStatement? {
   val result = mutableListOf<ResolveResult>()
   RResolver.resolveInFilesOrLibrary(sourceIdentifier, "source", result)
+  if (result.isEmpty()) return null
   return result.mapNotNull { it.element }.first { RPsiUtil.isLibraryElement(it) } as RAssignmentStatement
 }
 
