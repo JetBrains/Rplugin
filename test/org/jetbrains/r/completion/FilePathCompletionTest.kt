@@ -33,6 +33,12 @@ class FilePathCompletionTest : RLightCodeInsightFixtureTestCase() {
                     listOf("absoluteFilePath.R"))
   }
 
+  fun testInvalidPath() {
+    checkCompletion("\"\\\\1 < \\\\2<caret>\"",
+                    emptyList(),
+                    emptyList())
+  }
+
   private fun checkCompletion(text: String, files: List<String>, expected: List<String>) {
     myFixture.configureByText("currentFile.R", text)
     files.forEach { myFixture.addFileToProject(it, "") }

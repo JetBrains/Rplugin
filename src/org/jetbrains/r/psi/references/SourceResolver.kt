@@ -20,6 +20,7 @@ import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.findVariableDefinition
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import org.jetbrains.r.util.PathUtil
 import java.nio.file.Path
 
 sealed class IncludedSources {
@@ -48,16 +49,11 @@ sealed class IncludedSources {
     private val file: RFile? by lazy { findRFile(filename, project) }
 
     private fun findRFile(filename: String, project: Project): RFile? {
-      val root =
-        when {
-          ApplicationManager.getApplication().isUnitTestMode -> "/src"
-          Path.of(filename).isAbsolute -> ""
-          else -> project.basePath
-        }
-      val path = Path.of(root, filename)
-      val virtualFile =
-        if (ApplicationManager.getApplication().isUnitTestMode) findTempFile(path)
-        else VfsUtil.findFile(path, true)
+      val relativePath = PathUtil.toPath(filename) ?: return null
+      val unitTestMode = ApplicationManager.getApplication().isUnitTestMode
+      val root = if (unitTestMode) "/src" else project.basePath ?: return null
+      val path = PathUtil.toPath(root)?.resolve(relativePath) ?: return null
+      val virtualFile = if (unitTestMode) findTempFile(path) else VfsUtil.findFile(path, true)
       return PsiManager.getInstance(project).findFile(virtualFile ?: return null) as? RFile
     }
 

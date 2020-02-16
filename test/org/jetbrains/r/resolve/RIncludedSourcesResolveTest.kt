@@ -66,6 +66,8 @@ class RIncludedSourcesResolveTest : RLightCodeInsightFixtureTestCase() {
 
   fun testSourceOverridesLocalBefore() = doTest()
 
+  fun testInvalidPath() = doTest()
+
   private fun doTest() {
     val filenames = File(TEST_DATA_PATH + "/resolveInSource/" + getTestName(true))
                       .listFiles()?.map { it.path }?.sortedByDescending { it.contains("main") }?.plus(listOf<String>(TEST_DATA_PATH + "/resolveInSource/dummy.R"))
