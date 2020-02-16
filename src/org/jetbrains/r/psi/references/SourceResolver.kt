@@ -45,8 +45,14 @@ sealed class IncludedSources {
                                                result: MutableList<ResolveResult>,
                                                lastConsideredSource: IncludedSources?): Boolean
 
-  class SingleSource(project: Project, filename: String, private val prev: List<IncludedSources> = emptyList()) : IncludedSources() {
-    private val file: RFile? by lazy { findRFile(filename, project) }
+  class SingleSource(private val project: Project,
+                     private val filename: String,
+                     private val prev: List<IncludedSources> = emptyList()) : IncludedSources() {
+    private var file: RFile? = null
+      @Synchronized
+      get() =
+        if (field == null || !field!!.isValid) findRFile(filename, project).also { field = it }
+        else field
 
     private fun findRFile(filename: String, project: Project): RFile? {
       val relativePath = PathUtil.toPath(filename) ?: return null

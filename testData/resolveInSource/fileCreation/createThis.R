@@ -1,0 +1,1 @@
+fun <- function() 42 # after creation
