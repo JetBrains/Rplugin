@@ -78,9 +78,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   internal inner class AsyncEventsListener : RInterop.AsyncEventsListener {
     override fun onText(text: String, type: ProcessOutputType) {
-      when (type) {
-        ProcessOutputType.STDOUT -> consoleView.print(text, ConsoleViewContentType.NORMAL_OUTPUT)
-        ProcessOutputType.STDERR -> consoleView.print(text, ConsoleViewContentType.ERROR_OUTPUT)
+      runInEdt {
+        when (type) {
+          ProcessOutputType.STDOUT -> consoleView.print(text, ConsoleViewContentType.NORMAL_OUTPUT)
+          ProcessOutputType.STDERR -> consoleView.print(text, ConsoleViewContentType.ERROR_OUTPUT)
+        }
       }
     }
 
@@ -91,9 +93,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     override fun onRequestReadLn(prompt: String) {
       state = State.READ_LN
       if (prompt.isNotBlank()) {
-        val lines = prompt.lines()
-        lines.dropLast(1).forEach { consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT) }
         runInEdt {
+          val lines = prompt.lines()
+          lines.dropLast(1).forEach { consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT) }
           consolePromptDecorator.mainPrompt = lines.last()
         }
       }
@@ -112,7 +114,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onTermination() {
       state = State.TERMINATED
-      consoleView.print(RBundle.message("console.process.terminated") + "\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+      runInEdt {
+        consoleView.print(RBundle.message("console.process.terminated") + "\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+      }
     }
 
     override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
@@ -120,21 +124,23 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     override fun onException(text: String) {
-      consoleView.print("\n" + RBundle.message("console.exception.message", text) + "\n", ConsoleViewContentType.ERROR_OUTPUT)
-      val handler = object : HyperlinkInfo {
-        override fun navigate(project: Project?) {
-          if (this != showStackTraceHandler) {
-            RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
-            return
+      runInEdt {
+        consoleView.print("\n" + RBundle.message("console.exception.message", text) + "\n", ConsoleViewContentType.ERROR_OUTPUT)
+        val handler = object : HyperlinkInfo {
+          override fun navigate(project: Project?) {
+            if (this != showStackTraceHandler) {
+              RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
+              return
+            }
+            consoleView.debuggerPanel?.showLastErrorStack()
           }
-          consoleView.debuggerPanel?.showLastErrorStack()
-        }
 
-        override fun includeInOccurenceNavigation() = false
+          override fun includeInOccurenceNavigation() = false
+        }
+        showStackTraceHandler = handler
+        consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
+        consoleView.print("\n", ConsoleViewContentType.ERROR_OUTPUT)
       }
-      showStackTraceHandler = handler
-      consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
-      consoleView.print("\n", ConsoleViewContentType.ERROR_OUTPUT)
     }
 
     override fun onShowHelpRequest(content: String, url: String) {
