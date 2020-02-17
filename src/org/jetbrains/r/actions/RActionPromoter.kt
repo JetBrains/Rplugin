@@ -8,8 +8,11 @@ import com.intellij.openapi.actionSystem.ActionPromoter
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 /**
  * Marker interface to distinguish R actions invoked in the editor from all other actions.
@@ -18,9 +21,15 @@ interface RPromotedAction
 
 class RActionPromoter : ActionPromoter {
   override fun promote(actions: MutableList<AnAction>, context: DataContext): List<AnAction> {
-    if (context.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType.let { it != RFileType && it != RMarkdownFileType }) {
-      return emptyList<AnAction>()
-    }
-    return actions.filter { it is RPromotedAction }
+    return if (isRContext(context)) actions.filter { it is RPromotedAction } else emptyList<AnAction>()
+  }
+
+  private fun isRContext(context: DataContext): Boolean {
+    val editor = context.getData(CommonDataKeys.EDITOR)
+    val document = editor?.document ?: return false
+    val project = context.getData(CommonDataKeys.PROJECT) ?: return false
+    val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)
+    val language = psiFile?.language
+    return language == RLanguage.INSTANCE || language == RMarkdownLanguage
   }
 }
