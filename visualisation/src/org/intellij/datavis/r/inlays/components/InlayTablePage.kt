@@ -26,6 +26,7 @@ import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
 import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons
+import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import org.intellij.datavis.r.inlays.dataframe.columns.DoubleType
 import org.intellij.datavis.r.inlays.dataframe.columns.IntType

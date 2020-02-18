@@ -1,8 +1,8 @@
 /*
- * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.intellij.datavis.r.inlays.table
+package org.intellij.datavis.r.inlays
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -84,7 +84,8 @@ object ClipboardUtils {
   }
 
   fun escape(cell: Any): String {
-    return cell.toString().replace(LINE_BREAK, " ").replace(CELL_BREAK, " ")
+    return cell.toString().replace(LINE_BREAK, " ").replace(
+      CELL_BREAK, " ")
   }
 
 }
