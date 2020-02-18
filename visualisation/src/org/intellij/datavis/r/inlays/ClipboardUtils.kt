@@ -8,12 +8,16 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import org.intellij.datavis.r.VisualizationBundle
+import java.awt.Image
 import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.UnsupportedFlavorException
 import javax.swing.JTable
 
 // TODO: Some problems with getting "event.isControlDown" on component placed on top of Idea Editor content.
-/** Clipboard utils to realize Ctrl+C functionality in Table. */
+/** Clipboard utils to realize Ctrl+C functionality in Table and Plots. */
 object ClipboardUtils {
 
   const val LINE_BREAK = "\r"
@@ -86,6 +90,28 @@ object ClipboardUtils {
   fun escape(cell: Any): String {
     return cell.toString().replace(LINE_BREAK, " ").replace(
       CELL_BREAK, " ")
+  }
+
+  fun copyImageToClipboard(image: Image) {
+    val transferable = ImageTransferable(image)
+    Toolkit.getDefaultToolkit().systemClipboard.setContents(transferable, null)
+  }
+
+  private class ImageTransferable(private val image: Image) : Transferable {
+    override fun getTransferDataFlavors(): Array<DataFlavor> {
+      return arrayOf(DataFlavor.imageFlavor)
+    }
+
+    override fun isDataFlavorSupported(flavor: DataFlavor): Boolean {
+      return flavor == DataFlavor.imageFlavor
+    }
+
+    override fun getTransferData(flavor: DataFlavor): Any {
+      if (!isDataFlavorSupported(flavor)) {
+        throw UnsupportedFlavorException(flavor)
+      }
+      return image
+    }
   }
 
 }

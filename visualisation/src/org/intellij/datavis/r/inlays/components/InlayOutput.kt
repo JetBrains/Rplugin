@@ -34,6 +34,7 @@ import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
 import org.intellij.datavis.r.VisualizationBundle
+import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.w3c.dom.events.EventTarget
@@ -175,6 +176,18 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
     isVisible = false
   }
 
+  private val copyActionHolder = object : NotebookInlayOutput.ActionHolder {
+    override val icon = AllIcons.Actions.Copy
+    override val text = "Copy plot to clipboard"
+    override val description = "Copy this plot to the clipboard"
+
+    override fun onClick() {
+      wrapper.image?.let { image ->
+        ClipboardUtils.copyImageToClipboard(image)
+      }
+    }
+  }
+
   private val zoomActionHolder = object : NotebookInlayOutput.ActionHolder {
     override val icon = AllIcons.Actions.Preview
     override val text = VisualizationBundle.message("inlay.output.image.zoom.text")
@@ -228,7 +241,7 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
   @Volatile
   private var globalResolution: Int? = null
 
-  override val extraActions: List<NotebookInlayOutput.ActionHolder> = listOf(zoomActionHolder, settingsActionHolder)
+  override val extraActions: List<NotebookInlayOutput.ActionHolder> = listOf(copyActionHolder, zoomActionHolder, settingsActionHolder)
 
   init {
     Disposer.register(parent, this)

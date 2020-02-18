@@ -23,6 +23,7 @@ import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import java.awt.Dimension
+import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -61,8 +62,11 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   val component = rootPanel.component
 
+  val image: BufferedImage?
+    get() = currentEditor?.document?.value
+
   val imageSize: Dimension?
-    get() = currentEditor?.document?.value?.let { image ->
+    get() = image?.let { image ->
       Dimension(image.width / scaleMultiplier, image.height / scaleMultiplier)
     }
 

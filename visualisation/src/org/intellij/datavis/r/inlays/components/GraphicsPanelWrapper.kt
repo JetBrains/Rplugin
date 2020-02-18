@@ -12,6 +12,7 @@ import com.intellij.util.ui.update.Update
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.awt.image.BufferedImage
 import java.io.File
 
 class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
@@ -70,6 +71,9 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         }
       }
     }
+
+  val image: BufferedImage?
+    get() = graphicsPanel.image
 
   val maximumHeight: Int?
     get() = graphicsPanel.maximumSize?.height
