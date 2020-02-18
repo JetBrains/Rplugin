@@ -19,6 +19,8 @@ class RNextGraphicsAction : RDumbAwareActionAdapter()
 
 class RExportGraphicsAction : RDumbAwareActionAdapter()
 
+class RCopyGraphicsAction : RDumbAwareActionAdapter()
+
 class RZoomGraphicsAction : RDumbAwareActionAdapter()
 
 class RClearGraphicsAction : RDumbAwareActionAdapter()

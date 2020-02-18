@@ -276,6 +276,10 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
                     description="Export graphics"
                     icon="AllIcons.ToolbarDecorator.Export"/>
+            <action id="org.jetbrains.r.run.graphics.ui.RCopyGraphicsAction"
+                    class="org.jetbrains.r.run.graphics.ui.RCopyGraphicsAction"
+                    description="Copy graphics to clipboard"
+                    icon="AllIcons.Actions.Copy"/>
             <action id="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
                     description="Zoom graphics"

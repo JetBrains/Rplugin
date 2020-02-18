@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.GraphicsZoomDialog
@@ -165,6 +166,19 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       }
     }
 
+    class CopyGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
+      override val id = COPY_GRAPHICS_ACTION_ID
+
+      override val canClick: Boolean
+        get() = lastNormal.isNotEmpty()
+
+      override fun onClick() {
+        graphicsPanel.image?.let { image ->
+          ClipboardUtils.copyImageToClipboard(image)
+        }
+      }
+    }
+
     class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
       override val id = ZOOM_GRAPHICS_ACTION_ID
 
@@ -238,6 +252,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       ),
       RGraphicsToolbar.groupOf(
         ExportGraphicsActionHolder(),
+        CopyGraphicsActionHolder(),
         ZoomGraphicsActionHolder(),
         ClearGraphicsActionHolder()
       ),
@@ -286,6 +301,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private const val PREVIOUS_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
     private const val NEXT_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
     private const val EXPORT_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
+    private const val COPY_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RCopyGraphicsAction"
     private const val ZOOM_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
     private const val CLEAR_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
     private const val CLEAR_ALL_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
