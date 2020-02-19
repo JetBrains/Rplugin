@@ -5,11 +5,13 @@
 
 package org.jetbrains.r.psi;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.r.RLanguage;
 import org.jetbrains.r.psi.api.RCallExpression;
 import org.jetbrains.r.psi.api.RIdentifierExpression;
@@ -20,6 +22,8 @@ import org.jetbrains.r.psi.api.RPsiElement;
  * @author brandl
  */
 public class RElementFactory {
+  private static Logger ourLogger = Logger.getInstance(RElementFactory.class);
+
   private RElementFactory() {
   }
 
@@ -32,6 +36,19 @@ public class RElementFactory {
     PsiFile fromText = buildRFileFromText(project, text);
     return (RPsiElement)fromText.getFirstChild();
   }
+
+  @Nullable
+  public static RPsiElement createRPsiElementFromTextOrNull(Project project, String text) {
+    PsiFile fromText = buildRFileFromText(project, text);
+    if (fromText.getFirstChild() instanceof RPsiElement) {
+      return (RPsiElement)fromText.getFirstChild();
+    }
+    else {
+      ourLogger.error("Cannot build psi element: " + text);
+      return null;
+    }
+  }
+
 
   public static RCallExpression createFuncallFromText(Project project, String text) {
     return (RCallExpression)createRPsiElementFromText(project, text);
