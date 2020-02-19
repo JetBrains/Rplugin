@@ -145,7 +145,7 @@ stderr: ${stderr}
     }.toTypedArray()
     rInterop?.rInteropGrpcLogger?.let {
       val grpcLog = it.toJson(true)
-      attachments = attachments.plus(Attachment("grpc_log.json", grpcLog))
+      attachments = attachments.plus(Attachment("grpc_log.json", grpcLog).apply { isIncluded = true })
     }
     val message = "RWrapper terminated with Runtime Error" +
                   (updateCrashes.firstOrNull()?.let { ", the crash minidump found: $it " } ?: "")
