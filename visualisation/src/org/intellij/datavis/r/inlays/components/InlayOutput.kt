@@ -33,6 +33,7 @@ import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.w3c.dom.events.EventTarget
@@ -126,7 +127,10 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   private fun notifyExportError(content: String) {
-    val notification = Notification("NotebookInlayOutput", "Export failure", content, NotificationType.ERROR)
+    val notification = Notification("NotebookInlayOutput",
+                                    VisualizationBundle.message("inlay.output.export.failure"),
+                                    content,
+                                    NotificationType.ERROR)
     notification.notify(project)
   }
 
@@ -146,7 +150,9 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   private fun createClearAction(): AnAction {
-    return object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+    return object : DumbAwareAction(VisualizationBundle.message("inlay.output.clear.text"),
+                                    VisualizationBundle.message("inlay.output.clear.description"),
+                                    AllIcons.Actions.GC) {
       override fun actionPerformed(e: AnActionEvent) {
         clearAction.invoke()
       }
@@ -154,7 +160,9 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   private fun createSaveAsAction(): AnAction {
-    return object : DumbAwareAction("Save As", "Save as", AllIcons.Actions.Menu_saveall) {
+    return object : DumbAwareAction(VisualizationBundle.message("inlay.output.save.as.text"),
+                                    VisualizationBundle.message("inlay.output.save.as.description"),
+                                    AllIcons.Actions.Menu_saveall) {
       override fun actionPerformed(e: AnActionEvent) {
         saveAs()
       }
@@ -169,8 +177,8 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
 
   private val zoomActionHolder = object : NotebookInlayOutput.ActionHolder {
     override val icon = AllIcons.Actions.Preview
-    override val text = "Open plot in a new window"
-    override val description = "Preview this plot in a new window"
+    override val text = VisualizationBundle.message("inlay.output.image.zoom.text")
+    override val description = VisualizationBundle.message("inlay.output.image.zoom.description")
 
     override fun onClick() {
       wrapper.imagePath?.let { path ->
@@ -181,8 +189,8 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
 
   private val settingsActionHolder = object : NotebookInlayOutput.ActionHolder {
     override val icon = AllIcons.General.GearPlain
-    override val text = "Settings"
-    override val description = "Graphics settings for R Markdown"
+    override val text = VisualizationBundle.message("inlay.output.image.settings.text")
+    override val description = VisualizationBundle.message("inlay.output.image.settings.description")
 
     override fun onClick() {
       val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor

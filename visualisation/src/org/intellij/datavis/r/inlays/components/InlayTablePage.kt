@@ -17,13 +17,14 @@ import com.intellij.openapi.fileChooser.FileSaverDialog
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
-import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import org.intellij.datavis.r.inlays.dataframe.columns.DoubleType
@@ -106,10 +107,10 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   }
 
   private fun setupTablePopupMenu(table: JTable) {
-    val copyAll = JMenuItem("Copy all")
+    val copyAll = JMenuItem(VisualizationBundle.message("inlay.table.copy.all"))
     copyAll.addActionListener { ClipboardUtils.copyAllToClipboard(table) }
 
-    val copySelected = JMenuItem("Copy selected")
+    val copySelected = JMenuItem(VisualizationBundle.message("inlay.table.copy.selected"))
     copySelected.addActionListener { ClipboardUtils.copySelectedToClipboard(table) }
 
     val popupMenu = JPopupMenu()
@@ -176,13 +177,17 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
   override fun createActions(): List<AnAction> {
 
-    val actionSaveAsCsv = object : DumbAwareAction("Export As", "Export as csv/tsv.", AllIcons.ToolbarDecorator.Export) {
+    val actionSaveAsCsv = object : DumbAwareAction(VisualizationBundle.message("inlay.table.export.as.text"),
+                                                   VisualizationBundle.message("inlay.table.export.as.description"),
+                                                   AllIcons.ToolbarDecorator.Export) {
       override fun actionPerformed(e: AnActionEvent) {
-        saveAsCsv()
+        saveAsCsv(e.project ?: return)
       }
     }
 
-    val filterTable = object : DumbAwareToggleAction("Filter", "Filter", AllIcons.Actions.Find) {
+    val filterTable = object : DumbAwareToggleAction(VisualizationBundle.message("inlay.table.filter.text"),
+                                                     VisualizationBundle.message("inlay.table.filter.description"),
+                                                     AllIcons.Actions.Find) {
 
       override fun isSelected(e: AnActionEvent): Boolean {
         return filterHeader != null
@@ -199,7 +204,9 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
       }
     }
 
-    val paginateTable = object : DumbAwareToggleAction("Pagination", "Pagination", VisualizationIcons.TABLE_PAGINATION) {
+    val paginateTable = object : DumbAwareToggleAction(VisualizationBundle.message("inlay.table.pagination.text"),
+                                                       VisualizationBundle.message("inlay.table.pagination.description"),
+                                                       VisualizationIcons.TABLE_PAGINATION) {
 
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null
@@ -221,12 +228,13 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   }
 
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
-  private fun saveAsCsv() {
-    val descriptor = FileSaverDescriptor("Export as tsv",
-                                         "Exports the selected range or whole table is nothing is selected as csv or tsv file.", "csv",
+  private fun saveAsCsv(project: Project) {
+    val descriptor = FileSaverDescriptor(VisualizationBundle.message("inlay.table.export.as.csv.text"),
+                                         VisualizationBundle.message("inlay.table.export.as.csv.description"), "csv",
                                          "tsv")
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
-    val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath))
+    val basePath = project.basePath ?: return
+    val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(basePath))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
     fun saveSelection(out: BufferedWriter, cellBreak: String) {

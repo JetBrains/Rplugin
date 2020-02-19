@@ -7,6 +7,7 @@ package org.intellij.datavis.r.inlays.table
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import org.intellij.datavis.r.VisualizationBundle
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import javax.swing.JTable
@@ -19,9 +20,12 @@ object ClipboardUtils {
 
   private const val CELL_BREAK = "\t"
 
-  fun copyAllToString(table: JTable) : String {
+  private fun copyAllToString(table: JTable) : String {
     if (table.rowCount == 0 || table.columnCount == 0) {
-      Notifications.Bus.notify(Notification("InlayTable", "Error", "No columns or rows in table.", NotificationType.ERROR))
+      Notifications.Bus.notify(Notification("InlayTable",
+                                            VisualizationBundle.message("clipboard.utils.error"),
+                                            VisualizationBundle.message("clipboard.utils.no.columns.or.rows"),
+                                            NotificationType.ERROR))
       return ""
     }
 
@@ -53,7 +57,10 @@ object ClipboardUtils {
     val selectedColumns = table.selectedColumns
 
     if (selectedColumnCount == 0 || selectedRowCount == 0) {
-      Notifications.Bus.notify(Notification("InlayTable", "Error", "No columns or rows selected.", NotificationType.ERROR))
+      Notifications.Bus.notify(Notification("InlayTable",
+                                            VisualizationBundle.message("clipboard.utils.error"),
+                                            VisualizationBundle.message("clipboard.utils.no.selection"),
+                                            NotificationType.ERROR))
       return ""
     }
 

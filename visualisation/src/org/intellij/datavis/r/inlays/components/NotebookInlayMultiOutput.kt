@@ -17,6 +17,7 @@ import com.intellij.ui.Gray
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
@@ -85,7 +86,9 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
   }
 
   private fun createClearAction(): DumbAwareAction {
-    return object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+    return object : DumbAwareAction(VisualizationBundle.message("notebook.inlay.clear.text"),
+                                    VisualizationBundle.message("notebook.inlay.clear.description"),
+                                    AllIcons.Actions.GC) {
       override fun actionPerformed(e: AnActionEvent) {
         clearAction.invoke()
       }

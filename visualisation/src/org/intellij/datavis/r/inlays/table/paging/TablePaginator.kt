@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.ui.ComboBox
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import org.intellij.datavis.r.inlays.table.DataFrameTableModel
 import org.intellij.datavis.r.inlays.table.PagingTableModel
@@ -70,7 +71,9 @@ class TablePaginator : JPanel(BorderLayout()) {
         if (currentPageChanging)
           return
         tableModel?.pageOffset = currentPageIndex() - 1
-        label.text = "Displaying ${tableModel!!.pageOffset * tableModel!!.pageSize + 1} to ${tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount} of ${tableModel!!.getRealRowCount()}"
+        label.text = VisualizationBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
+                                                 tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
+                                                 tableModel!!.getRealRowCount())
       }
 
       override fun changedUpdate(e: DocumentEvent?) {
@@ -226,15 +229,19 @@ class TablePaginator : JPanel(BorderLayout()) {
 
   private fun updateInfo() {
     currentPageChanging = true
-    label.text = "Displaying ${tableModel!!.pageOffset * tableModel!!.pageSize + 1} to ${tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount} of ${tableModel!!.getRealRowCount()}"
+    label.text = VisualizationBundle.message("paginator.displaying", tableModel!!.pageOffset * tableModel!!.pageSize + 1,
+                                                 tableModel!!.pageOffset * tableModel!!.pageSize + tableModel!!.rowCount,
+                                                 tableModel!!.getRealRowCount())
     currentPage.text = (tableModel!!.pageOffset + 1).toString()
-    totalPages.text = "Of " + tableModel!!.getPageCount().toString()
+    totalPages.text = VisualizationBundle.message("paginator.of", tableModel!!.getPageCount().toString())
     currentPageChanging = false
   }
 
   private fun createActionButtons() {
 
-    var action: AnAction = object : AnAction("First ", "Go to first page", AllIcons.Actions.Play_first) {
+    var action: AnAction = object : AnAction(VisualizationBundle.message("paginator.first.page.text"),
+                                             VisualizationBundle.message("paginator.first.page.description"),
+                                             AllIcons.Actions.Play_first) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset = 0
         updateInfo()
@@ -242,7 +249,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toFirst = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Previous", "Show previous page", AllIcons.Actions.Play_back) {
+    action = object : AnAction(VisualizationBundle.message("paginator.previous.page.text"),
+                               VisualizationBundle.message("paginator.previous.page.description"), AllIcons.Actions.Play_back) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset--
         updateInfo()
@@ -250,7 +258,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toPrevious = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Next", "Show next page", AllIcons.Actions.Play_forward) {
+    action = object : AnAction(VisualizationBundle.message("paginator.next.page.text"),
+                               VisualizationBundle.message("paginator.next.page.description"), AllIcons.Actions.Play_forward) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset++
         updateInfo()
@@ -258,7 +267,8 @@ class TablePaginator : JPanel(BorderLayout()) {
     }
     toNext = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Last", "Go to last page", AllIcons.Actions.Play_last) {
+    action = object : AnAction(VisualizationBundle.message("paginator.last.page.text"),
+                               VisualizationBundle.message("paginator.last.page.description"), AllIcons.Actions.Play_last) {
       override fun actionPerformed(e: AnActionEvent) {
         tableModel!!.pageOffset = tableModel!!.getPageCount() - 1
         updateInfo()

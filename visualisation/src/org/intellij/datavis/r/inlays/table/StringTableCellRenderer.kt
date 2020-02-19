@@ -4,14 +4,14 @@
 
 package org.intellij.datavis.r.inlays.table
 
+import org.jetbrains.annotations.NonNls
 import javax.swing.table.DefaultTableCellRenderer
+
+@NonNls
+private const val NULL = "<null>"
 
 class StringTableCellRenderer : DefaultTableCellRenderer() {
   override fun setValue(value: Any?) {
-    if(value == null) {
-      text = "<null>"
-    } else {
-      text = value.toString()
-    }
+    text = if(value == null) NULL else value.toString()
   }
 }

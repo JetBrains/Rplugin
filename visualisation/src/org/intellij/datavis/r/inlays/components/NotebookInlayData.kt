@@ -14,6 +14,7 @@ import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import java.awt.BorderLayout
@@ -36,7 +37,9 @@ class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: Dat
   }
 
   private fun createClearAction(): DumbAwareAction {
-    return object : DumbAwareAction("Clear", "Clear output", AllIcons.Actions.GC) {
+    return object : DumbAwareAction(VisualizationBundle.message("notebook.inlay.clear.text"),
+                                    VisualizationBundle.message("notebook.inlay.clear.description"),
+                                    AllIcons.Actions.GC) {
       override fun actionPerformed(e: AnActionEvent) {
         clearAction.invoke()
       }
