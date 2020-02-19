@@ -19,19 +19,42 @@ data class InlayOutput(val data: String,
                        val preferredWidth: Int = 0)
 
 interface InlayElementDescriptor {
-
+  /**
+   * psi arguments of the interface methods belong to the [psiFile]
+   */
   val psiFile: PsiFile
 
+  /**
+   * returns true if the [psi] could have inlay outputs
+   */
   fun isInlayElement(psi: PsiElement): Boolean
 
+  /**
+   * @return the output for the [inlayElement] or empty list if there is no outputs for the [inlayElement]
+   * @param inlayElement `isInlayElement(inlayElement)` is true
+   */
   fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutput>
 
-  fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>)
-
-  fun getToolbarActions(toolbarElement: PsiElement): ActionGroup?
-
+  /**
+   * @return true if the [psi] have inlay toolbar actions
+   */
   fun isToolbarActionElement(psi: PsiElement): Boolean
 
+  /**
+   * @return actions for an inlay toolbar
+   * @param toolbarElement `isToolbarActionElement(toolbarElement)` is true
+   */
+  fun getToolbarActions(toolbarElement: PsiElement): ActionGroup?
+
+  /**
+   * Callback for updating toolbar elements highlighting.
+   * The method is called when the highlighting of [toolbarElements] should be repainted.
+   */
+  fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>)
+
+  /**
+   * the method is called when inlay output of [psi] is intentionally removed by a user.
+   */
   fun cleanup(psi: PsiElement): Future<Void>
 }
 
@@ -40,6 +63,6 @@ interface InlayDescriptorProvider {
   fun getInlayDescriptor(editor: Editor): InlayElementDescriptor?
 
   companion object {
-    val EP = ExtensionPointName.create<InlayDescriptorProvider>("com.intellij.datavis.r.inlays.inlayDescriptorProvider")
+    val EP = ExtensionPointName.create<InlayDescriptorProvider>("com.intellij.datavis.inlays.inlayDescriptorProvider")
   }
 }
