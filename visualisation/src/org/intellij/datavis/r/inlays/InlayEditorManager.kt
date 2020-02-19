@@ -324,7 +324,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     return ReadAction.nonBlocking {
       PsiTreeUtil.processElements(descriptor.psiFile) { element ->
         descriptor.getToolbarActions(element)?.let { toolbars.add(element to it) }
-        if (descriptor.isInlayElement(element) == true) inlaysPsiElements.add(element)
+        if (descriptor.isInlayElement(element)) inlaysPsiElements.add(element)
         true
       }
     }.finishOnUiThread(ModalityState.NON_MODAL) {
