@@ -130,7 +130,7 @@ abstract public class DateComparator implements Comparator<Date> {
         }
 
         @Override long time() {
-            return (calendar.get(Calendar.YEAR) * 12)
+            return (calendar.get(Calendar.YEAR) * 12L)
                     + calendar.get(Calendar.MONTH);
         }
     }
@@ -142,7 +142,7 @@ abstract public class DateComparator implements Comparator<Date> {
         }
 
         @Override long time() {
-            return (calendar.get(Calendar.YEAR) * 400)
+            return (calendar.get(Calendar.YEAR) * 400L)
                     + calendar.get(Calendar.DAY_OF_YEAR);
         }
     }

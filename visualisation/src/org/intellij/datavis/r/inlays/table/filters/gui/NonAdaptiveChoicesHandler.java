@@ -144,9 +144,7 @@ class NonAdaptiveChoicesHandler extends ChoicesHandler {
                     choices.add(true);
                     choices.add(false);
                 } else {
-                    for (Object each : c.getEnumConstants()) {
-                        choices.add(each);
-                    }
+                    Collections.addAll(choices, c.getEnumConstants());
                 }
 
                 editor.setChoices(choices);
