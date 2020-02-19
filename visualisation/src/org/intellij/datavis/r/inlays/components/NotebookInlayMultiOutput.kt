@@ -9,8 +9,8 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.Gray
@@ -29,7 +29,7 @@ import java.awt.event.ComponentEvent
 import javax.swing.JPanel
 
 /** Page control with table and chart pages. */
-class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : NotebookInlayState() {
+class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : NotebookInlayState() {
 
   /** Page control for results viewing. */
   private val tabs: JBTabsImpl
@@ -46,6 +46,8 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
   private val disposable = Disposer.newDisposable()
 
   private var maxHeight: Int = -1
+
+  private val project = editor.project!!
 
   @Volatile
   private var isInViewport: Boolean = false
@@ -110,7 +112,7 @@ class NotebookInlayMultiOutput(val project: Project, parent: Disposable) : Noteb
         }
       }
       else {
-        NotebookInlayOutput(project, disposable).apply {
+        NotebookInlayOutput(editor, disposable).apply {
           setupOnHeightCalculated()
           addData(inlayOutput.type, inlayOutput.data)
           addTab(inlayOutput)

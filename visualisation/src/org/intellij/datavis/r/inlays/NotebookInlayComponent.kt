@@ -232,7 +232,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
         remove(state)
       }
 
-      state = NotebookInlayOutput(editor.project!!, disposable).apply {
+      state = NotebookInlayOutput(editor, disposable).apply {
         addToolbar()
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
@@ -318,7 +318,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
       if (state != null) {
         remove(state)
       }
-      state = NotebookInlayMultiOutput(cell.project, disposable).apply {
+      state = NotebookInlayMultiOutput(editor, disposable).apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
             adjustSize(height, this)

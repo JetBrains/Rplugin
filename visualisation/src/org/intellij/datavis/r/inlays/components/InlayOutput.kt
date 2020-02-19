@@ -70,6 +70,8 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
 
   abstract fun saveAs()
 
+  abstract fun acceptType(type: String): Boolean
+
   /**
    * Inlay component can can adjust itself to fit the Output.
    * We need callback because text output can return height immediately,
@@ -274,6 +276,10 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
     }
   }
 
+  override fun acceptType(type: String): Boolean {
+    return type == "IMG" || type == "IMGBase64" || type == "IMGSVG"
+  }
+
   override fun onViewportChange(isInViewport: Boolean) {
     wrapper.isVisible = isInViewport
   }
@@ -338,6 +344,10 @@ class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> U
     return console.text.substring(0, min(console.text.length, 60)) + " ....."
   }
 
+  override fun acceptType(type: String): Boolean {
+    return  type == "TEXT"
+  }
+
   override fun saveAs() {
     val title = "Export as txt"
     val description = "Export console content to text file"
@@ -385,7 +395,6 @@ class InlayOutputHtml(parent: Disposable, project: Project, clearAction: () -> U
 
   init {
     MouseWheelUtils.wrapMouseWheelListeners(jfxPanel)
-
     toolbarPane.centralComponent = jfxPanel
     jfxPanel.putClientProperty("AuxEditorComponent", true)
   }
@@ -401,6 +410,10 @@ class InlayOutputHtml(parent: Disposable, project: Project, clearAction: () -> U
         }
       }
     }
+  }
+
+  override fun acceptType(type: String): Boolean {
+    return  type == "HTML" || type == "URL"
   }
 
   override fun clear() {

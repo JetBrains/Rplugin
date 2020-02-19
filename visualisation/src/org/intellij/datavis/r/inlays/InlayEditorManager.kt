@@ -30,6 +30,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.concurrency.FutureResult
 import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
@@ -38,6 +39,7 @@ import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
 
@@ -91,27 +93,48 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayElements.clear()
   }
 
-  fun updateCell(psi: PsiElement) {
-    if (ApplicationManager.getApplication().isUnitTestMode) return
+  fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null): Future<Unit> {
+    val result = FutureResult<Unit>()
+    if (ApplicationManager.getApplication().isUnitTestMode) return result.apply { set(Unit) }
     ApplicationManager.getApplication().invokeLater {
-      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
-      if (!psi.isValid) {
-        getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
-        return@invokeLater
-      }
-      if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) return@invokeLater
-      val inlayOutputs = descriptor.getInlayOutputs(psi)
-      scrollKeeper.savePosition()
-      getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
-      if (inlayOutputs.isEmpty()) return@invokeLater
-      addInlayOutputs(addInlayComponent(psi), inlayOutputs)
-      scrollKeeper.restorePosition(true)
-      ApplicationManager.getApplication().invokeLater {
+      try {
+        if (Disposer.isDisposed(editor.disposable)) {
+          result.set(Unit)
+          return@invokeLater
+        }
+        if (!psi.isValid) {
+          getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
+          result.set(Unit)
+          return@invokeLater
+        }
+        if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) {
+          result.set(Unit)
+          return@invokeLater
+        }
+        val outputs = inlayOutputs ?: descriptor.getInlayOutputs(psi)
         scrollKeeper.savePosition()
-        updateInlays()
+        getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
+        if (outputs.isEmpty()) {
+          result.set(Unit)
+          return@invokeLater
+        }
+        addInlayOutputs(addInlayComponent(psi), outputs)
         scrollKeeper.restorePosition(true)
+      } catch (e: Throwable) {
+        result.set(Unit)
+        throw e
+      }
+      ApplicationManager.getApplication().invokeLater {
+        try {
+          scrollKeeper.savePosition()
+          updateInlays()
+          scrollKeeper.restorePosition(true)
+        } finally {
+          result.set(Unit)
+        }
       }
     }
+    return result
   }
 
   private fun updateInlaysForViewport() {

@@ -5,6 +5,8 @@
                     interface="org.intellij.datavis.r.inlays.InlayDescriptorProvider"/>
     <extensionPoint qualifiedName="com.intellij.datavis.r.inlays.components.graphicsManagerProvider"
                     interface="org.intellij.datavis.r.inlays.components.GraphicsManagerProvider"/>
+    <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.inlayOutputProvider"
+                    interface="org.intellij.datavis.r.inlays.components.InlayOutputProvider"/>
   </extensionPoints>
 
   <project-components>

@@ -8,7 +8,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 import com.intellij.ui.RelativeFont
 import com.intellij.util.ui.UIUtil
@@ -35,7 +35,7 @@ class ProcessOutput(val text: String, kind: Key<*>) {
 
 
 /** Notebook console logs and html result view. */
-class NotebookInlayOutput(private val project: Project, private val parent: Disposable) : NotebookInlayState(), ToolBarProvider {
+class NotebookInlayOutput(private val editor: Editor, private val parent: Disposable) : NotebookInlayState(), ToolBarProvider {
 
   companion object {
     private const val RESIZE_TASK_NAME = "Resize graphics"
@@ -55,13 +55,14 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
 
   private var output: InlayOutput? = null
 
-  private fun addTextOutput() = createOutput { InlayOutputText(parent, project, clearAction) }
+  private fun addTextOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputText(parent, editor.project!!, clearAction) }
 
-  private fun addHtmlOutput() = createOutput { InlayOutputHtml(parent, project, clearAction) }
+  private fun addHtmlOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputHtml(parent, editor.project!!, clearAction) }
 
-  private fun addImgOutput() = createOutput { InlayOutputImg(parent, project, clearAction) }
+  private fun addImgOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputImg(parent, editor.project!!, clearAction) }
 
-  private inline fun createOutput(constructor: (Disposable) -> InlayOutput) = constructor(parent).apply { setupOutput(this) }
+  private inline fun createOutput(constructor: (Disposable, Editor, () -> Unit) -> InlayOutput) =
+    constructor(parent, editor, clearAction).apply { setupOutput(this) }
 
   private fun setupOutput(output: InlayOutput) {
     this.output?.let { remove(it.getComponent()) }
@@ -87,11 +88,18 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   }
 
   fun addData(type: String, data: String) {
-    when (type) {
-      "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
-      "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
-      else -> output?.takeIf { it is InlayOutputText } ?: addTextOutput()
-    }.addData(data, type)
+    val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
+    if (provider != null) {
+      (output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor, clearAction ->
+        provider.create(parent, editor, clearAction)
+      }).addData(data, type)
+    } else {
+      when (type) {
+        "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
+        "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
+        else -> output?.takeIf { it is InlayOutputText } ?: addTextOutput()
+      }.addData(data, type)
+    }
   }
 
   override fun  clear() {
