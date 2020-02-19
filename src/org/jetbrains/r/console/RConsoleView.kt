@@ -55,6 +55,7 @@ import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
 import java.awt.Font
+import java.awt.event.KeyEvent
 import javax.swing.JComponent
 
 class RConsoleView(val rInterop: RInterop,
@@ -211,8 +212,9 @@ class RConsoleView(val rInterop: RInterop,
       val console = getConsole(e)
       val consoleEditor = console?.getConsoleEditor()
       val enabled = consoleEditor != null &&
+                    (e.inputEvent !is KeyEvent ||
                     IJSwingUtilities.hasFocus(consoleEditor.getComponent()) &&
-                    !consoleEditor.getSelectionModel().hasSelection() &&
+                    !consoleEditor.getSelectionModel().hasSelection()) &&
                     console.executeActionHandler.state != RConsoleExecuteActionHandler.State.TERMINATED
       e.presentation.isEnabled = enabled
     }
