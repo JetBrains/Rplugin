@@ -168,7 +168,7 @@ project(":") {
         main {
             val srcDirs = if (isPyCharm()) arrayOf("src", "src-python", "gen") else arrayOf("src", "gen")
             java.srcDirs(*srcDirs)
-            resources.srcDirs("resources")
+            resources.srcDirs("resources", if (is193()) "resources-193" else "resources-201")
         }
         test {
             val testDirs = if (isPyCharm()) arrayOf("test", "test-python") else arrayOf("test")
@@ -214,7 +214,7 @@ project(":visualisation") {
     sourceSets {
         main {
             java.srcDirs("src")
-            resources.srcDirs("resources")
+            resources.srcDirs("resources", if (is193()) "resources-193" else "resources-201")
         }
     }
 }
@@ -301,6 +301,8 @@ val Project.dependencyCachePath get(): String {
 fun Build_gradle.ideMinorVersion() = prop("ideMinor")
 
 fun Build_gradle.ideMajorVersion() = prop("ideMajor")
+
+fun Build_gradle.is193() = ideMajorVersion() == "193"
 
 fun Build_gradle.ideName() = prop("ideName")
 
