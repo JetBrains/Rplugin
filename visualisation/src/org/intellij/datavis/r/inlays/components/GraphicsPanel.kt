@@ -15,6 +15,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
+import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
 import org.intellij.images.editor.ImageEditor
@@ -25,6 +26,7 @@ import java.awt.Dimension
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -107,6 +109,26 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   fun showImage(imageFile: File) {
     if (!tryShowImage(imageFile)) {
       closeEditor(GRAPHICS_COULD_NOT_BE_LOADED)
+    }
+  }
+
+  fun showImageBase64(data: String) {
+    isAdvancedMode = true
+    invokeAndWaitIfNeeded {
+      if (Disposer.isDisposed(disposableParent)) {
+        return@invokeAndWaitIfNeeded
+      }
+      openEditor(BinaryLightVirtualFile("image", Base64.getMimeDecoder().decode(data)))
+    }
+  }
+
+  fun showSvgImage(data: String) {
+    isAdvancedMode = true
+    invokeAndWaitIfNeeded {
+      if (Disposer.isDisposed(disposableParent)) {
+        return@invokeAndWaitIfNeeded
+      }
+      openEditor(LightVirtualFile("image.svg", data))
     }
   }
 

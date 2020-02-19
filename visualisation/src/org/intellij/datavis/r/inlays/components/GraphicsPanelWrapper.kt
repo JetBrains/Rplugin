@@ -111,6 +111,14 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     })
   }
 
+  fun showSvgImage(data: String) {
+    graphicsPanel.showSvgImage(data)
+  }
+
+  fun showImageBase64(data: String) {
+    graphicsPanel.showImageBase64(data)
+  }
+
   private fun rescaleIfNecessary() {
     preferredImageSize?.let { newSize ->
       val oldSize = graphicsPanel.imageSize

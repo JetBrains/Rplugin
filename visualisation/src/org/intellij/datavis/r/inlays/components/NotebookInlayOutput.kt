@@ -40,13 +40,18 @@ import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLAnchorElement
-import java.awt.*
+import java.awt.Color
+import java.awt.Component
+import java.awt.Font
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.KeyEvent
 import java.io.File
-import java.nio.file.*
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import javax.swing.AbstractAction
 import javax.swing.Icon
 import javax.swing.JComponent
@@ -102,7 +107,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
     /** Clears view, removes text/html. */
     abstract fun clear()
 
-    abstract fun addData(data: String)
+    abstract fun addData(data: String, type: String)
     abstract fun scrollToTop()
     abstract fun getCollapsedDescription(): String
 
@@ -216,8 +221,18 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       globalResolutionSubscription?.dispose()
     }
 
-    override fun addData(data: String) {
-      wrapper.addImage(File(data), false, ::runAsyncInlay).onSuccess {
+    override fun addData(data: String, type: String) {
+      if (type == "IMG") {
+        wrapper.addImage(File(data), false, ::runAsyncInlay)
+      } else {
+        runAsyncInlay {
+          when (type) {
+            "IMGBase64" -> wrapper.showImageBase64(data)
+            "IMGSVG" -> wrapper.showSvgImage(data)
+            else -> Unit
+          }
+        }
+      }.onSuccess {
         invokeLater {
           onHeightCalculated?.invoke(wrapper.maximumHeight ?: 0)
         }
@@ -282,7 +297,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       console.clear()
     }
 
-    override fun addData(data: String) {
+    override fun addData(data: String, type: String) {
       runAsyncInlay {
         File(data).takeIf { it.exists() && it.extension == "json" }?.let { file ->
           Gson().fromJson<List<ProcessOutput>>(file.readText(), object : TypeToken<List<ProcessOutput>>() {}.type)
@@ -447,7 +462,7 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
       }
     }
 
-    override fun addData(data: String) {
+    override fun addData(data: String, type: String) {
       val isUrl = data.startsWith("file://") || data.startsWith("http://") || data.startsWith("https://")
       Platform.setImplicitExit(false)
       Platform.runLater {
@@ -600,9 +615,9 @@ class NotebookInlayOutput(private val project: Project, private val parent: Disp
   fun addData(type: String, data: String) {
     when (type) {
       "HTML", "URL" -> output?.takeIf { it is OutputHtml } ?: addHtmlOutput()
-      "IMG" -> output?.takeIf { it is OutputImg } ?: addImgOutput()
+      "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is OutputImg } ?: addImgOutput()
       else -> output?.takeIf { it is OutputText } ?: addTextOutput()
-    }.addData(data)
+    }.addData(data, type)
   }
 
   override fun  clear() {
