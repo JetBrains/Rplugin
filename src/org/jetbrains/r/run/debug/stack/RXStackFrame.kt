@@ -114,7 +114,11 @@ class RXStackFrame(val functionName: String,
 
 internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, stackFrame: RXStackFrame,
                                     hideFunctions: Boolean = false) {
-  val filteredVars = if (stackFrame.showHiddenVariables) vars else vars.filter { !it.name.startsWith('.') }
+  val filteredVars = if (stackFrame.showHiddenVariables) {
+    vars
+  } else {
+    vars.filter { !it.name.startsWith('.') || it.name == "..." }
+  }
   if (hideFunctions) {
     val functions = filteredVars.filter { it.value is RValueFunction }
     if (functions.isNotEmpty()) {

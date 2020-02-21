@@ -24,7 +24,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   }
 
   fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
-    return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto).then(rInterop.executor) {
+    return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto).then {
       if (it.responseCase == Service.CopyToPersistentRefResponse.ResponseCase.PERSISTENTINDEX) {
         return@then RPersistentRef(it.persistentIndex, rInterop, disposableParent)
       }
@@ -34,6 +34,12 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
 
   fun getValueInfo(): RValue {
     return ProtoUtil.rValueFromProto(rInterop.executeWithCheckCancel(rInterop.asyncStub::loaderGetValueInfo, proto))
+  }
+
+  fun getValueInfoAsync(): CancellablePromise<RValue> {
+    return rInterop.executeAsync(rInterop.asyncStub::loaderGetValueInfo, proto).then {
+      ProtoUtil.rValueFromProto(it)
+    }
   }
 
   fun evaluateAsText(): String {
@@ -65,7 +71,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
       .setRef(proto)
       .setValue(value.proto)
       .build()
-    return rInterop.executeAsync(rInterop.asyncStub::setValue, request).then(rInterop.executor) {
+    return rInterop.executeAsync(rInterop.asyncStub::setValue, request).then {
       if (it.responseCase == Service.SetValueResponse.ResponseCase.ERROR) {
         throw RDebuggerException(it.error)
       }

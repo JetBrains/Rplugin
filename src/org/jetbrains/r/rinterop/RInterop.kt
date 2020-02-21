@@ -922,7 +922,7 @@ internal fun <T> ListenableFuture<T>.toPromise(executor: Executor): CancellableP
   return this.then(executor) { it }
 }
 
-internal fun <T, R> ListenableFuture<T>.then(executor: Executor, f: (T) -> R): CancellablePromise<R> {
+internal fun <T, R> ListenableFuture<T>.then(executor: Executor = MoreExecutors.directExecutor(), f: (T) -> R): CancellablePromise<R> {
   val promise = object : AsyncPromise<R>() {
     override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
       if (super.cancel(mayInterruptIfRunning)) {

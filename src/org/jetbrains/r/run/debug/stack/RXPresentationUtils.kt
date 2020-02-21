@@ -7,6 +7,7 @@ package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
@@ -18,6 +19,8 @@ import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 internal object RXPresentationUtils {
   fun setPresentation(rVar: RVar, node: XValueNode, executor: ExecutorService) {
@@ -54,7 +57,18 @@ internal object RXPresentationUtils {
     }, false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.evaluate.link.text")) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
-        ref.getValueInfo()
+        val promise = ref.getValueInfoAsync()
+        while (true) {
+          try {
+            promise.get(50, TimeUnit.MILLISECONDS)
+            break
+          } catch (e: TimeoutException) {
+            if (callback.isObsolete) {
+              promise.cancel()
+              return@execute
+            }
+          }
+        }
         ref.rInterop.invalidateCaches()
         RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
         callback.evaluated("")
