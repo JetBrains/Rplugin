@@ -56,7 +56,8 @@ import kotlin.reflect.jvm.isAccessible
 
 class RConsoleRunner(private val project: Project,
                      private val workingDir: String,
-                     private val consoleTitle: String = RBundle.message("console.runner.default.title")) {
+                     private val consoleTitle: String = RBundle.message("console.runner.default.title"),
+                     private val contentIndex: Int? = null) {
   private lateinit var consoleView: RConsoleView
 
   internal var hasPendingPrompt = false
@@ -142,7 +143,9 @@ class RConsoleRunner(private val project: Project,
     val addConsoleAction = createAddConsoleAction()
     val toggleSoftWrap = createToggleSoftWrapAction(consoleView)
 
-    val actions = listOf(executeAction, interruptAction, eofAction, historyAction, createSetCurrentDirectory(),
+    val actions = listOf(executeAction, interruptAction, eofAction, historyAction,
+                         createSetCurrentDirectory(),
+                         createRestartRAction(),
                          Separator(),
                          toggleSoftWrap, addConsoleAction, helpAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
@@ -173,11 +176,15 @@ class RConsoleRunner(private val project: Project,
 
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
-    RConsoleToolWindowFactory.addContent(project, contentDescriptor)
+    RConsoleToolWindowFactory.addContent(project, contentDescriptor, contentIndex)
   }
 
   private fun createSetCurrentDirectory(): AnAction {
     return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor")
+  }
+
+  private fun createRestartRAction(): AnAction {
+    return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RestartRAction")
   }
 
   private fun createAddConsoleAction(): AnAction =

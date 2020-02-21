@@ -46,7 +46,6 @@ import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.ui.FontInfo
-import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -111,9 +110,7 @@ class RConsoleView(val rInterop: RInterop,
       if (field != directory) {
         field = directory
         invokeLater {
-          val contentManager = RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager ?: return@invokeLater
-          val content = contentManager.contents.firstOrNull { UIUtil.findComponentOfType(it.component, RConsoleView::class.java) == this }
-                        ?: return@invokeLater
+          val content = RConsoleToolWindowFactory.getConsoleContent(this) ?: return@invokeLater
           content.displayName = "[ " + directory + " ]"
         }
       }
@@ -369,6 +366,13 @@ class RConsoleView(val rInterop: RInterop,
 
     private fun getVirtualFile(project: Project): VirtualFile? =
       (FileEditorManager.getInstance(project).selectedEditor as? AdvancedTextEditor)?.virtualFile
+  }
+
+  class RestartRAction : DumbAwareAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+      val console = getConsole(e) ?: return
+      RConsoleToolWindowFactory.restartConsole(console)
+    }
   }
 }
 

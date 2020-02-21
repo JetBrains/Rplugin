@@ -10,11 +10,11 @@ import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
 import javax.swing.JComponent
 
-class RActiveInterpreterProjectConfigurable(private val project: Project) : SearchableConfigurable, Configurable.NoScroll {
-  private var configurable: RActiveInterpreterConfigurable? = null
+class RSettingsProjectConfigurable(private val project: Project) : SearchableConfigurable, Configurable.NoScroll {
+  private var configurable: RSettingsConfigurable? = null
 
-  private val guaranteedConfigurable: RActiveInterpreterConfigurable
-    get() = configurable ?: RActiveInterpreterConfigurable(project).also {
+  private val guaranteedConfigurable: RSettingsConfigurable
+    get() = configurable ?: RSettingsConfigurable(project).also {
       configurable = it
     }
 
@@ -27,7 +27,7 @@ class RActiveInterpreterProjectConfigurable(private val project: Project) : Sear
   }
 
   override fun getId(): String {
-    return RActiveInterpreterProjectConfigurable::class.qualifiedName ?: ""
+    return RSettingsProjectConfigurable::class.qualifiedName ?: ""
   }
 
   override fun getDisplayName(): String {

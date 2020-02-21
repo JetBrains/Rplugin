@@ -5,6 +5,7 @@
 package org.jetbrains.r.console
 
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -16,6 +17,7 @@ import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
+import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -47,16 +49,49 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }
 
-    fun addContent(project: Project, contentDescriptor: RunContentDescriptor) {
+    fun addContent(project: Project, contentDescriptor: RunContentDescriptor, contentIndex: Int? = null) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
       toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
       toolWindow.setToHideOnEmptyContent(true)
       val content = createContent(contentDescriptor)
-      toolWindow.contentManager.addContent(content)
+      if (contentIndex == null) {
+        toolWindow.contentManager.addContent(content)
+      } else {
+        toolWindow.contentManager.addContent(content, contentIndex)
+      }
     }
 
     fun setAvailableForRToolWindows(project: Project, isAvailable: Boolean) {
       ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.setAvailable(isAvailable, null)
+    }
+
+    fun restartConsole(console: RConsoleView) {
+      val toolWindow = getRConsoleToolWindows(console.project) ?: return
+      val content = getConsoleContent(console) ?: return
+      val index = toolWindow.contentManager.getIndexOfContent(content)
+      val title = content.toolwindowTitle
+      Disposer.dispose(console.rInterop)
+      console.rInterop.executeOnTermination {
+        invokeLater {
+          toolWindow.contentManager.removeContent(content, true)
+          RConsoleRunner(console.project, console.workingDirectory, title, index).initAndRun().then {
+            getConsoleContent(it)?.let { newContent ->
+              invokeLater {
+                toolWindow.show {
+                  toolWindow.contentManager.setSelectedContent(newContent)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    fun getConsoleContent(console: RConsoleView): Content? {
+      val toolWindow = getRConsoleToolWindows(console.project) ?: return null
+      return toolWindow.contentManager.contents.firstOrNull {
+        UIUtil.findComponentOfType(it.component, RConsoleView::class.java) == console
+      }
     }
 
     private fun createContent(contentDescriptor: RunContentDescriptor): Content {

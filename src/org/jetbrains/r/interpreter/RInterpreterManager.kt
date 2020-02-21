@@ -28,7 +28,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.configuration.RActiveInterpreterProjectConfigurable
+import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.notifications.RNotificationUtil
@@ -110,7 +110,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     if (!isViable) {
       val message = createInvalidPathErrorMessage(path, e?.message)
       val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterProjectConfigurable::class.java)
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
       }
       val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
         BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)

@@ -14,10 +14,11 @@ import com.jetbrains.rd.util.AtomicInteger
 import com.jetbrains.rd.util.concurrentMapOf
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
+import java.util.*
 
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
   private val files = concurrentMapOf<String, VirtualFile>()
-  private val cachedFunctionPositions by rInterop.Cached { concurrentMapOf<Service.RRef, RSourcePosition?>() }
+  private val cachedFunctionPositions by rInterop.Cached { concurrentMapOf<Service.RRef, Optional<RSourcePosition>>() }
 
   init {
     Disposer.register(rInterop, this)
@@ -49,8 +50,8 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   fun getFunctionPosition(rRef: RRef): RSourcePosition? {
     return cachedFunctionPositions.getOrPut(rRef.proto) {
       val position = rInterop.execute(rInterop.stub::getFunctionSourcePosition, rRef.proto)
-      rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }
-    }
+      rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }.let { Optional.ofNullable(it) }
+    }.orElse(null)
   }
 
   override fun dispose() {

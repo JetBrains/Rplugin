@@ -73,7 +73,7 @@ class RConsoleManager(private val project: Project) {
   val currentConsoleOrNull: RConsoleView?
     get() = currentConsole
 
-  private val consoles: List<RConsoleView>
+  val consoles: List<RConsoleView>
     get() = getContentDescription(project)?.contentConsolePairs?.map { it.second }?.toList() ?: listOf()
 
 

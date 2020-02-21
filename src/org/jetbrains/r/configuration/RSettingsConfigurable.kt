@@ -18,22 +18,36 @@ import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
-import java.awt.BorderLayout
-import javax.swing.JComponent
-import javax.swing.JPanel
+import java.awt.*
+import javax.swing.*
 
-class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConfigurable {
+class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable {
   private val settings = RSettings.getInstance(project)
-  private val panel = RManageInterpreterPanel(RBundle.message("project.settings.interpreter.label"), false, null)
-  private val wrapper = JPanel(BorderLayout())
+  private val interpreterPanel = RManageInterpreterPanel(RBundle.message("project.settings.interpreter.label"), false, null)
+  private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
+  private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
+  private val component = JPanel()
 
   init {
+    fun createConstraints(gridY: Int, weightY: Double = 0.0) = GridBagConstraints().apply {
+      gridx = 0
+      gridy = gridY
+      anchor = GridBagConstraints.NORTHWEST
+      weightx = 1.0
+      weighty = weightY
+      fill = GridBagConstraints.HORIZONTAL
+    }
     reset()
-    wrapper.add(panel.component, BorderLayout.NORTH)
+    component.layout = GridBagLayout()
+    component.add(interpreterPanel.component, createConstraints(0))
+    component.add(loadWorkspaceCheckBox, createConstraints(1))
+    component.add(saveWorkspaceCheckBox, createConstraints(2, 1.0))
   }
 
   override fun isModified(): Boolean {
-    return panel.isModified()
+    return interpreterPanel.isModified() ||
+           loadWorkspaceCheckBox.isSelected != settings.loadWorkspace ||
+           saveWorkspaceCheckBox.isSelected != settings.saveWorkspace
   }
 
   override fun reset() {
@@ -45,14 +59,16 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val selection = settings.interpreterPath.findAmong(existing)
-    panel.initialSelection = selection
-    panel.initialInterpreters = existing
-    panel.reset()
+    interpreterPanel.initialSelection = selection
+    interpreterPanel.initialInterpreters = existing
+    interpreterPanel.reset()
+    loadWorkspaceCheckBox.isSelected = settings.loadWorkspace
+    saveWorkspaceCheckBox.isSelected = settings.saveWorkspace
   }
 
   override fun apply() {
-    RInterpreterSettings.setEnabledInterpreters(panel.currentInterpreters)
-    val path = panel.currentSelection?.interpreterPath ?: ""
+    RInterpreterSettings.setEnabledInterpreters(interpreterPanel.currentInterpreters)
+    val path = interpreterPanel.currentSelection?.interpreterPath ?: ""
     val previousPath = settings.interpreterPath
     if (path != previousPath) {
       settings.interpreterPath = path
@@ -60,11 +76,18 @@ class RActiveInterpreterConfigurable(private val project: Project) : UnnamedConf
       restartInterpreter()
       RConsoleManager.runConsole(project)
     }
+    settings.loadWorkspace = loadWorkspaceCheckBox.isSelected
+    if (settings.saveWorkspace != saveWorkspaceCheckBox.isSelected) {
+      settings.saveWorkspace = saveWorkspaceCheckBox.isSelected
+      RConsoleManager.getInstance(project).consoles.forEach {
+        it.rInterop.saveOnExit = settings.saveWorkspace
+      }
+    }
     reset()
   }
 
   override fun createComponent(): JComponent {
-    return wrapper
+    return component
   }
 
   private fun restartInterpreter() {

@@ -26,6 +26,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.R_3_6
 import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -37,7 +38,7 @@ object RInteropUtil {
   val LOG = Logger.getInstance(RInteropUtil.javaClass)
   fun runRWrapperAndInterop(project: Project): Promise<RInterop> {
     val promise = AsyncPromise<RInterop>()
-    var createdProcess: OSProcessHandler? = null
+    var createdProcess: ColoredProcessHandler? = null
     ProcessIOExecutorService.INSTANCE.execute {
       runRWrapper(project).onError {
         promise.setError(it)
@@ -131,6 +132,7 @@ stderr: ${stderr}
   }
 
   internal fun reportCrash(rInterop: RInterop?, updateCrashes: List<File>) {
+    if (ApplicationManager.getApplication().isUnitTestMode || rInterop?.isAlive == false) return
     var attachments = updateCrashes.map { file ->
       try {
         val path = file.getPath()
@@ -183,6 +185,15 @@ stderr: ${stderr}
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
       .withEnvironment("R_DISABLE_BYTECODE", "1")
+
+    SessionUtil.getWorkspaceFile(project)?.let {
+      command = command.withParameters("--workspace-file", it)
+      if (!ApplicationManager.getApplication().isUnitTestMode) {
+        val settings = RSettings.getInstance(project)
+        if (!settings.loadWorkspace) command = command.withParameters("--no-restore")
+        if (!settings.saveWorkspace) command = command.withParameters("--no-save")
+      }
+    }
 
     if (crashpadHandler.exists()) {
       if (!crashpadHandler.canExecute()) {

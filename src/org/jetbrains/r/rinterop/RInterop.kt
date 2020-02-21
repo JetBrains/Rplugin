@@ -8,7 +8,6 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -17,12 +16,13 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.Version
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
@@ -32,6 +32,7 @@ import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
 import org.jetbrains.concurrency.*
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.interpreter.RVersion
@@ -83,7 +84,6 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   val rInteropGrpcLogger = RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
-  val rVersion: Version
   val globalEnvRef = RRef(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
   val globalEnvLoader = globalEnvRef.createVariableLoader()
   val currentEnvRef = RRef(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
@@ -163,11 +163,19 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeWithCheckCancel(asyncStub::getRMarkdownChunkOptions, Empty.getDefaultInstance()).listList
   }
 
-  init {
-    val info = execute(stub::getInfo, Empty.getDefaultInstance())
-    rVersion = RVersion.forceParse(info.rVersion)
-    processAsyncEvents()
+  private val getInfoResponse = execute(stub::getInfo, Empty.getDefaultInstance())
+  val rVersion = RVersion.forceParse(getInfoResponse.rVersion)
+  val workspaceFile = getInfoResponse.workspaceFile.takeIf { it.isNotEmpty() }
+  var saveOnExit = getInfoResponse.saveOnExit
+    set(value) {
+      if (field != value && workspaceFile != null) {
+        executeAsync(asyncStub::setSaveOnExit, BoolValue.of(value))
+        field = value
+      }
+    }
 
+  init {
+    processAsyncEvents()
     heartbeatTimer = Timer().also {
       it.schedule(object : TimerTask() {
         override fun run() {
@@ -230,7 +238,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return if (withCheckCancelled) {
       promise.getWithCheckCanceled()
     } else {
-      val timeout = if (ApplicationManager.getApplication().isUnitTestMode) EXECUTE_CODE_TEST_TIMEOUT else Int.MAX_VALUE
+      val timeout = if (isUnitTestMode) EXECUTE_CODE_TEST_TIMEOUT else Int.MAX_VALUE
       promise.blockingGet(timeout)!!
     }
   }
@@ -753,9 +761,6 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
       Service.AsyncEvent.EventCase.TERMINATION -> {
         fireListeners { it.onTermination() }
-        heartbeatTimer.cancel()
-        terminationPromise.setResult(Unit)
-        asyncStub.quitProceed(Empty.getDefaultInstance())
       }
       Service.AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
@@ -825,10 +830,17 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
           } else {
             asyncEventsBeforeStarted.add(event)
           }
+          if (event.hasTermination()) {
+            heartbeatTimer.cancel()
+            terminationPromise.setResult(Unit)
+            asyncStub.quitProceed(Empty.getDefaultInstance())
+          }
         }
         if (event.hasTermination()) return@Runnable
       } catch (ignored: CancellationException) {
       } catch (e: ExecutionException) {
+        heartbeatTimer.cancel()
+        terminationPromise.setResult(Unit)
         return@Runnable
       }
       processAsyncEvents()
@@ -848,11 +860,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   override fun dispose() {
     heartbeatTimer.cancel()
     executeAsync(asyncStub::quit, Empty.getDefaultInstance())
-    ProcessIOExecutorService.INSTANCE.execute {
-      try {
-        terminationPromise.blockingGet(1000, TimeUnit.MILLISECONDS)
-      } catch (ignored: TimeoutException) {
-        terminationPromise.setResult(Unit)
+    if (isUnitTestMode) {
+      if (!processHandler.isProcessTerminated) {
+        terminationPromise.blockingGet(20000)
       }
       channel.shutdownNow()
       channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
@@ -860,7 +870,34 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         processHandler.destroyProcess()
       }
       executor.shutdownNow()
+    } else {
+      ProgressManager.getInstance().run(object : Task.Backgroundable(project, RBundle.message("rinterop.terminating.title"), true) {
+        override fun run(indicator: ProgressIndicator) {
+          try {
+            indicator.isIndeterminate = true
+            terminationPromise.getWithCheckCanceled()
+            executeTask {
+              channel.shutdownNow()
+              channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
+              if (!processHandler.waitFor(2000)) {
+                processHandler.destroyProcess()
+              }
+              executor.shutdownNow()
+            }
+          } catch (e: ProcessCanceledException) {
+            terminationPromise.setResult(Unit)
+            processHandler.destroyProcess()
+            executor.shutdownNow()
+          }
+        }
+
+        override fun shouldStartInBackground() = false
+      }.apply { setCancelText(RBundle.message("rinterop.terminate.now")) })
     }
+  }
+
+  fun executeOnTermination(f: () -> Unit) {
+    terminationPromise.onProcessed { f() }
   }
 
   fun invalidateCaches() {
@@ -869,7 +906,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   private fun reportIfCrash(t: Throwable?) {
-    if (t is StatusRuntimeException && t.status.code == Status.Code.UNAVAILABLE && isAlive) {
+    if (t is StatusRuntimeException && t.status.code == Status.Code.UNAVAILABLE) {
       RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
     }
   }
@@ -918,7 +955,7 @@ internal fun <T> Future<T>.getWithCheckCanceled(): T {
     } catch (ignored: TimeoutException) {
     } catch (e: InterruptedException) {
       cancel(true)
-      throw ProcessCanceledException()
+      throw e
     } catch (e: ProcessCanceledException) {
       cancel(true)
       throw e

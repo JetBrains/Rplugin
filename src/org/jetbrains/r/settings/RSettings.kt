@@ -36,9 +36,14 @@ class RSettings(private val project: Project) : PersistentStateComponent<Element
       backingPath = value
     }
 
+  var loadWorkspace: Boolean = false
+  var saveWorkspace: Boolean = false
+
   override fun getState(): Element? {
     val root = Element("rsettings")
     root.setAttribute("path", interpreterPath)
+    root.setAttribute("loadWorkspace", loadWorkspace.toString())
+    root.setAttribute("saveWorkspace", saveWorkspace.toString())
     return root
   }
 
@@ -47,6 +52,8 @@ class RSettings(private val project: Project) : PersistentStateComponent<Element
     if (!path.isNullOrBlank()) {
       interpreterPath = path
     }
+    loadWorkspace = state.getAttributeValue("loadWorkspace")?.toBoolean() ?: false
+    saveWorkspace = state.getAttributeValue("saveWorkspace")?.toBoolean() ?: false
   }
 
   companion object {

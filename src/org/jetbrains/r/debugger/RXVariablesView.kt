@@ -13,6 +13,7 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.ui.AppUIUtil
@@ -232,11 +233,16 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       ActionManager.getInstance().getAction("XDebugger.CopyWatch")
     )
     actions.addSeparator()
-    actions.addAction(object : AnAction(RBundle.message("variable.view.clear.global.action.text"), null, AllIcons.Actions.GC) {
+    actions.addAction(object : AnAction(RBundle.message("variable.view.clear.environment.action.text"), null, AllIcons.Actions.GC) {
       override fun actionPerformed(e: AnActionEvent) {
-        console.rInterop.executeTask {
-          console.rInterop.clearEnvironment(console.rInterop.globalEnvRef)
-          console.executeActionHandler.fireCommandExecuted()
+        val environment = stackFrame?.environment ?: return
+        val yesNo = Messages.showYesNoDialog(e.project, RBundle.message("variable.view.clear.environment.message"),
+                                             RBundle.message("variable.view.clear.environment.action.text"), null)
+        if (yesNo == Messages.YES) {
+          console.rInterop.executeTask {
+            console.rInterop.clearEnvironment(environment)
+            console.executeActionHandler.fireCommandExecuted()
+          }
         }
       }
 
