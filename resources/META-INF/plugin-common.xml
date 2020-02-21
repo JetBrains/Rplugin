@@ -299,6 +299,20 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
+    <!-- Build package panel actions -->
+    <actions>
+        <group id="org.jetbrains.r.packages.build.ui.RPackageBuildToolbarActions">
+            <action id="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
+                    class="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
+                    description="Build and reload package"
+                    icon="AllIcons.Toolwindows.ToolWindowBuild"/>
+            <action id="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
+                    class="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
+                    description="Check package"
+                    icon="AllIcons.General.InspectionsOK"/>
+        </group>
+    </actions>
+
     <extensions defaultExtensionNs="com.intellij">
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>

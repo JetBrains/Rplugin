@@ -18,6 +18,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.content.ContentManager
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import org.jetbrains.concurrency.Promise
@@ -25,6 +26,8 @@ import org.jetbrains.r.R_GRAPH
 import org.jetbrains.r.R_HTML
 import org.jetbrains.r.R_PACKAGES
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.packages.build.ui.RPackageBuildToolWindow
+import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindow
@@ -40,12 +43,9 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentManager = toolWindow.contentManager
     val factory = contentManager.factory
-    listOf(
-      factory.createContent(createPackages(project), PACKAGES, false).withIcon(R_PACKAGES),
-      factory.createContent(RGraphicsToolWindow(project), PLOTS, false).withIcon(R_GRAPH),
-      factory.createContent(createHelp(project), HELP, false).withIcon(AllIcons.Toolwindows.Documentation),
-      factory.createContent(RViewerToolWindow(), VIEWER, false).withIcon(R_HTML)
-    ).forEach { contentManager.addContent(it) }
+    for (content in createNestedToolWindows(project, factory)) {
+      contentManager.addContent(content)
+    }
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
       override fun stateChanged() {
         handleProjectViewStates(toolWindow, contentManager, project)
@@ -53,6 +53,22 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     })
     if (showFilesInRTools()) {
       borrowFiles(project, contentManager)
+    }
+  }
+
+  private fun createNestedToolWindows(project: Project, factory: ContentFactory): List<Content> {
+    val holders = mutableListOf(
+      Triple(createPackages(project), PACKAGES, R_PACKAGES),
+      Triple(RGraphicsToolWindow(project), PLOTS, R_GRAPH),
+      Triple(createHelp(project), HELP, AllIcons.Toolwindows.Documentation),
+      Triple(RViewerToolWindow(), VIEWER, R_HTML)
+    )
+    if (RPackageBuildUtil.isPackage(project)) {
+      val holder = Triple(RPackageBuildToolWindow(project), BUILD, AllIcons.Toolwindows.ToolWindowBuild)
+      holders.add(holder)
+    }
+    return holders.map { (component, title, icon) ->
+      factory.createContent(component, title, false).withIcon(icon)
     }
   }
 
@@ -118,6 +134,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     const val PACKAGES = "Packages"
     const val FILES = "Files"
     const val HELP = "Documentation"
+    const val BUILD = "Build"
     const val ID = "R Tools"
 
     fun showDocumentation(psiElement: PsiElement) {

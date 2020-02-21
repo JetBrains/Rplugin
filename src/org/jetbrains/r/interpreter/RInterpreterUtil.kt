@@ -258,6 +258,32 @@ object RInterpreterUtil {
     }
   }
 
+  fun createProcessHandlerForHelper(
+    interpreterPath: String,
+    helper: File,
+    workingDirectory: String?,
+    args: List<String>
+  ): CapturingProcessHandler {
+    val commands = getRunHelperCommands(interpreterPath, helper, args)
+    return createProcessHandler(interpreterPath, commands, workingDirectory)
+  }
+
+  fun createProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler {
+    val interpreterFile = Paths.get(interpreterPath).toFile()
+    val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
+    val command = if (conda != null) {
+      val environment = RCondaUtil.getEnvironmentName(interpreterFile)
+      if (environment == null) {
+        mutableListOf(conda.absolutePath, "run").apply { addAll(commands) }
+      } else {
+        mutableListOf(conda.absolutePath, "run", "-n", environment).apply { addAll(commands) }
+      }
+    } else {
+      commands
+    }
+    return CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(workingDirectory))
+  }
+
   fun getScriptStdout(lines: String): String {
     val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
                 ?: throw RuntimeException("Cannot find start marker, output '$lines'")
@@ -267,28 +293,19 @@ object RInterpreterUtil {
   }
 
   private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
-    val defaultCommands = mutableListOf(interpreterPath, "--slave", "-f", helper.getAbsolutePath(), "--args").also { it.addAll(args) }
-    return runRInterpreter(interpreterPath, defaultCommands, workingDirectory)
+    val commands = getRunHelperCommands(interpreterPath, helper, args)
+    return runRInterpreter(interpreterPath, commands, workingDirectory)
+  }
+
+  private fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
+    return mutableListOf(interpreterPath, "--slave", "-f", helper.absolutePath, "--args").apply { addAll(args) }
   }
 
   private fun runRInterpreter(interpreterPath: String,
                               defaultCommands: List<String>,
                               workingDirectory: String?): ProcessOutput {
-    val interpreterFile = Paths.get(interpreterPath).toFile()
-    val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
-    val command = if (conda != null) {
-      val environment = RCondaUtil.getEnvironmentName(interpreterFile)
-      if (environment == null) {
-        mutableListOf(conda.absolutePath, "run").apply { addAll(defaultCommands) }
-      } else {
-        mutableListOf(conda.absolutePath, "run", "-n", environment).apply { addAll(defaultCommands) }
-      }
-    } else {
-      defaultCommands
-    }
-    val processHandler = CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(workingDirectory))
+    val processHandler = createProcessHandler(interpreterPath, defaultCommands, workingDirectory)
     val output = processHandler.runProcess(DEFAULT_TIMEOUT)
-
     if (output.exitCode != 0) {
       RInterpreterImpl.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
       RInterpreterImpl.LOG.warn(output.stderr)
