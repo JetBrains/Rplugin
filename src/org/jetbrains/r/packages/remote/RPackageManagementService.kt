@@ -70,19 +70,17 @@ class RPackageManagementService(private val project: Project,
   val arePackageDetailsLoaded: Boolean
     get() = provider.name2AvailablePackages != null
 
-  fun isPackageLoaded(aPackage: RInstalledPackage): Boolean {
+  fun isPackageLoaded(packageName: String): Boolean {
     val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
-    return currentConsoleOrNull.rInterop.loadedPackages.keys.contains(aPackage.name)
+    return currentConsoleOrNull.rInterop.loadedPackages.keys.contains(packageName)
   }
 
-  fun loadPackage(aPackage: RInstalledPackage) {
-    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
-    currentConsoleOrNull.rInterop.loadLibrary(aPackage.name)
+  fun loadPackage(packageName: String) {
+    RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.loadLibrary(packageName)
   }
 
-  fun unloadPackage(aPackage: RInstalledPackage) {
-    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
-    currentConsoleOrNull.rInterop.unloadLibrary(aPackage.name)
+  fun unloadPackage(packageName: String, withDynamicLibrary: Boolean) {
+    RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.unloadLibrary(packageName, withDynamicLibrary)
   }
 
   override fun getAllRepositories(): List<String> {

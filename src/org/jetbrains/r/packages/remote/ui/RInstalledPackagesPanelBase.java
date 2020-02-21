@@ -207,10 +207,11 @@ public class RInstalledPackagesPanelBase extends JPanel {
       private void loadUnloadPackage(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
         if (aPackage != null) {
-          if (myPackageManagementService.isPackageLoaded(aPackage)) {
-            myPackageManagementService.unloadPackage(aPackage);
+          var packageName = aPackage.getPackageName();
+          if (myPackageManagementService.isPackageLoaded(packageName)) {
+            myPackageManagementService.unloadPackage(packageName, false);
           } else {
-            myPackageManagementService.loadPackage(aPackage);
+            myPackageManagementService.loadPackage(packageName);
           }
         }
       }
@@ -687,7 +688,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       }
       if (column == IS_LOADED_COLUMN) {
         myIsLoadedCheckBox.setText("");
-        myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage));
+        myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage.getPackageName()));
         return myIsLoadedCheckBox;
       }
       return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);

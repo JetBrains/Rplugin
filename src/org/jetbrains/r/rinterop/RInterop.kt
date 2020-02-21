@@ -208,8 +208,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
-  fun unloadLibrary(name: String) {
-    executeWithCheckCancel(asyncStub::unloadLibrary, StringValue.of(name))
+  fun unloadLibrary(name: String, withDynamicLibrary: Boolean) {
+    val request = Service.UnloadLibraryRequest.newBuilder()
+      .setWithDynamicLibrary(withDynamicLibrary)
+      .setPackageName(name)
+      .build()
+    executeWithCheckCancel(asyncStub::unloadLibrary, request)
     invalidateCaches()
   }
 
