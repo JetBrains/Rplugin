@@ -153,7 +153,9 @@ allprojects {
 project(":") {
     version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
     intellij {
-        val plugins = if (isPyCharm()) arrayOf("markdown", "yaml", "python-ce") else arrayOf("markdown", "yaml")
+        val plugins = arrayOf("markdown", "yaml") +
+                      (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
+                      (if (is193()) emptyArray() else arrayOf("platform-images"))
         pluginName = "rplugin"
         setPlugins(*plugins)
     }
@@ -166,9 +168,13 @@ project(":") {
 
     sourceSets {
         main {
-            val srcDirs = if (isPyCharm()) arrayOf("src", "src-python", "gen") else arrayOf("src", "gen")
+            val srcDirs = arrayOf("src", "gen", "visualisation/src")  + if (isPyCharm()) arrayOf("src-python") else emptyArray()
             java.srcDirs(*srcDirs)
-            resources.srcDirs("resources", if (is193()) "resources-193" else "resources-201")
+            resources.srcDirs("resources",
+                              "visualisation/resources",
+                              if (is193()) "resources-193" else "resources-201",
+                              if (is193()) "visualisation/resources-193" else "visualisation/resources-201"
+            )
         }
         test {
             val testDirs = if (isPyCharm()) arrayOf("test", "test-python") else arrayOf("test")
@@ -204,18 +210,7 @@ project(":") {
     }
 
     dependencies {
-        compile(project(":visualisation"))
         testCompile(group = "org.tukaani", name =  "xz", version = "1.8")
-    }
-}
-
-
-project(":visualisation") {
-    sourceSets {
-        main {
-            java.srcDirs("src")
-            resources.srcDirs("resources", if (is193()) "resources-193" else "resources-201")
-        }
     }
 }
 
