@@ -5,7 +5,11 @@
 
 package org.jetbrains.r.run.graphics.ui
 
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
@@ -19,10 +23,12 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.GraphicsZoomDialog
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.ui.RToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -30,6 +36,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import javax.swing.JComponent
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
@@ -52,8 +59,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   init {
     setContent(graphicsPanel.component)
-    val groups = createActionHolderGroups(project)
-    toolbar = RGraphicsToolbar(groups).component
+    toolbar = createToolbar(project)
     project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
 
     graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
@@ -111,158 +117,110 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     }
   }
 
-  private fun createActionHolderGroups(project: Project): List<RGraphicsToolbar.ActionHolderGroup> {
-    class PreviousGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = PREVIOUS_GRAPHICS_ACTION_ID
+  private fun createToolbar(project: Project): JComponent {
+    return RToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), DarkModeCheckBox(project))
+  }
 
-      override val canClick: Boolean
-        get() = lastIndex > 0
-
-      override fun onClick() {
-        lastIndex--
-        showCurrent()
-        postSnapshotNumber()
-      }
-    }
-
-    class NextGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = NEXT_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastIndex < lastNormal.lastIndex
-
-      override fun onClick() {
-        lastIndex++
-        showCurrent()
-        postSnapshotNumber()
-      }
-    }
-
-    class ExportGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = EXPORT_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
-
-      override fun onClick() {
-        val title = RBundle.message("graphics.panel.file.saver.title")
-        val description = RBundle.message("graphics.panel.file.saver.description")
-        val descriptor = FileSaverDescriptor(title, description, "png")
-        val baseFile = VfsUtil.findFile(Paths.get(project.basePath!!), false)
-        val wrapper = FileSaverDialogImpl(descriptor, project).save(baseFile, "Snapshot")
-        if (wrapper != null) {
-          try {
-            val destination = wrapper.file
-            createDestinationFile(destination)
-            lastFile?.let { source ->
-              Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
-            }
-          } catch (e: Exception) {
-            val details = e.message?.let { ".\n$it" } ?: ""
-            val header = RBundle.message("graphics.panel.file.saver.failure.header")
-            RNotificationUtil.notifyGraphicsError(project, "$header: ${wrapper.file}$details")
-          }
-        }
-      }
-    }
-
-    class CopyGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = COPY_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
-
-      override fun onClick() {
-        graphicsPanel.image?.let { image ->
-          ClipboardUtils.copyImageToClipboard(image)
-        }
-      }
-    }
-
-    class ZoomGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = ZOOM_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
-
-      override fun onClick() {
-        lastFile?.absolutePath?.let { imagePath ->
-          GraphicsZoomDialog(project, project, imagePath).show()
-        }
-      }
-    }
-
-    class ClearGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = CLEAR_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
-
-      override fun onClick() {
-        lastNumber?.let { number ->
-          repository.clearSnapshot(number)
-        }
-      }
-    }
-
-    class ClearAllGraphicsActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = CLEAR_ALL_GRAPHICS_ACTION_ID
-
-      override val canClick: Boolean
-        get() = lastNormal.isNotEmpty()
-
-      override fun onClick() {
-        repository.clearAllSnapshots()
-      }
-    }
-
-    class TuneGraphicsDeviceActionHolder : RGraphicsToolbar.ActionHolder {
-      override val id = TUNE_GRAPHICS_DEVICE_ACTION_ID
-
-      override val canClick: Boolean
-        get() = true
-
-      override fun onClick() {
-        val panelDimension = getAdjustedScreenDimension()
-        val initialParameters = getInitialParameters()
-        RGraphicsSettingsDialog(panelDimension, initialParameters, isAutoResizeEnabled) { parameters, isEnabled ->
-          // Note: if auto resize is enabled, you can assume here that
-          // `parameters.dimension` equals to current panel size
-          // so there is no need to call `postScreenDimension()`
-          RGraphicsSettings.setScreenParameters(project, parameters)
-          graphicsPanel.isAdvancedMode = !isEnabled
-          isAutoResizeEnabled = isEnabled
-          repository.apply {
-            configuration?.let { oldConfiguration ->
-              configuration = oldConfiguration.copy(screenParameters = parameters)
-            }
-          }
-        }.show()
-      }
-
-      private fun getInitialParameters(): RGraphicsUtils.ScreenParameters {
-        return repository.configuration?.screenParameters ?: RGraphicsSettings.getScreenParameters(project)
-      }
-    }
-
-    return listOf(
-      RGraphicsToolbar.groupOf(
-        PreviousGraphicsActionHolder(),
-        NextGraphicsActionHolder()
+  private fun createActionHolderGroups(): List<List<RToolbarUtil.ActionHolder>> {
+    val hasSnapshots = { lastNormal.isNotEmpty() }
+    val groups = listOf(
+      listOf(
+        Triple(PREVIOUS_GRAPHICS_ACTION_ID, { lastIndex > 0 }, this::moveToPreviousSnapshot),
+        Triple(NEXT_GRAPHICS_ACTION_ID, { lastIndex < lastNormal.lastIndex }, this::moveToNextSnapshot)
       ),
-      RGraphicsToolbar.groupOf(
-        ExportGraphicsActionHolder(),
-        CopyGraphicsActionHolder(),
-        ZoomGraphicsActionHolder(),
-        ClearGraphicsActionHolder()
+      listOf(
+        Triple(EXPORT_GRAPHICS_ACTION_ID, hasSnapshots, this::exportCurrentSnapshot),
+        Triple(COPY_GRAPHICS_ACTION_ID, hasSnapshots, this::copyCurrentSnapshot),
+        Triple(ZOOM_GRAPHICS_ACTION_ID, hasSnapshots, this::zoomCurrentSnapshot),
+        Triple(CLEAR_GRAPHICS_ACTION_ID, hasSnapshots, this::clearCurrentSnapshot)
       ),
-      RGraphicsToolbar.groupOf(
-        ClearAllGraphicsActionHolder()
+      listOf(
+        Triple(CLEAR_ALL_GRAPHICS_ACTION_ID, hasSnapshots, this::clearAllSnapshots)
       ),
-      RGraphicsToolbar.groupOf(
-        TuneGraphicsDeviceActionHolder()
+      listOf(
+        Triple(TUNE_GRAPHICS_DEVICE_ACTION_ID, { true }, this::showSettingsDialog)
       )
     )
+    return groups.map { group ->
+      group.map { (id, canClick, onClick) ->
+        RToolbarUtil.createActionHolder(id, canClick, onClick)
+      }
+    }
+  }
+
+  private fun moveToPreviousSnapshot() {
+    lastIndex--
+    showCurrent()
+    postSnapshotNumber()
+  }
+
+  private fun moveToNextSnapshot() {
+    lastIndex++
+    showCurrent()
+    postSnapshotNumber()
+  }
+
+  private fun exportCurrentSnapshot() {
+    val descriptor = FileSaverDescriptor(EXPORT_GRAPHICS_DESCRIPTOR_TITLE, EXPORT_GRAPHICS_DESCRIPTOR_DESCRIPTION, "png")
+    val baseFile = VfsUtil.findFile(Paths.get(project.basePath!!), false)
+    val wrapper = FileSaverDialogImpl(descriptor, project).save(baseFile, "Snapshot")
+    if (wrapper != null) {
+      try {
+        val destination = wrapper.file
+        createDestinationFile(destination)
+        lastFile?.let { source ->
+          Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+      } catch (e: Exception) {
+        val details = e.message?.let { ".\n$it" } ?: ""
+        val message = "$EXPORT_GRAPHICS_FAILURE_HEADER: ${wrapper.file}$details"
+        RNotificationUtil.notifyGraphicsError(project, message)
+      }
+    }
+  }
+
+  private fun copyCurrentSnapshot() {
+    graphicsPanel.image?.let { image ->
+      ClipboardUtils.copyImageToClipboard(image)
+    }
+  }
+
+  private fun zoomCurrentSnapshot() {
+    lastFile?.absolutePath?.let { imagePath ->
+      GraphicsZoomDialog(project, project, imagePath).show()
+    }
+  }
+
+  private fun clearCurrentSnapshot() {
+    lastNumber?.let { number ->
+      repository.clearSnapshot(number)
+    }
+  }
+
+  private fun clearAllSnapshots() {
+    repository.clearAllSnapshots()
+  }
+
+  private fun showSettingsDialog() {
+    val panelDimension = getAdjustedScreenDimension()
+    val initialParameters = getInitialScreenParameters()
+    RGraphicsSettingsDialog(panelDimension, initialParameters, isAutoResizeEnabled) { parameters, isEnabled ->
+      // Note: if auto resize is enabled, you can assume here that
+      // `parameters.dimension` equals to current panel size
+      // so there is no need to call `postScreenDimension()`
+      RGraphicsSettings.setScreenParameters(project, parameters)
+      graphicsPanel.isAdvancedMode = !isEnabled
+      isAutoResizeEnabled = isEnabled
+      repository.apply {
+        configuration?.let { oldConfiguration ->
+          configuration = oldConfiguration.copy(screenParameters = parameters)
+        }
+      }
+    }.show()
+  }
+
+  private fun getInitialScreenParameters(): RGraphicsUtils.ScreenParameters {
+    return repository.configuration?.screenParameters ?: RGraphicsSettings.getScreenParameters(project)
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
@@ -291,6 +249,28 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     return repository.configuration?.snapshotNumber
   }
 
+  private class DarkModeCheckBox(private val project: Project): CheckboxAction(DARK_MODE_TITLE, DARK_MODE_DESCRIPTION, null) {
+    override fun isSelected(e: AnActionEvent): Boolean {
+      return RGraphicsSettings.isDarkModeEnabled(project)
+    }
+
+    override fun update(e: AnActionEvent) {
+      val presentation = e.presentation
+      val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor()
+      presentation.isEnabledAndVisible = isDarkEditor
+      val jComponent = presentation.getClientProperty(CustomComponentAction.COMPONENT_KEY)
+      // workaround an issue when look'n'feel doesn't change if the component is invisible/disabled
+      if (jComponent?.isVisible == false && isDarkEditor) {
+        com.intellij.util.IJSwingUtilities.updateComponentTreeUI(jComponent)
+      }
+      super.update(e)
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+      RGraphicsSettings.setDarkMode(project, state)
+    }
+  }
+
   companion object {
     const val TOOL_WINDOW_ID = "R Graphics"
 
@@ -306,6 +286,13 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private const val CLEAR_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
     private const val CLEAR_ALL_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
     private const val TUNE_GRAPHICS_DEVICE_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
+
+    private val EXPORT_GRAPHICS_DESCRIPTOR_TITLE = RBundle.message("graphics.panel.file.saver.title")
+    private val EXPORT_GRAPHICS_DESCRIPTOR_DESCRIPTION = RBundle.message("graphics.panel.file.saver.description")
+    private val EXPORT_GRAPHICS_FAILURE_HEADER = RBundle.message("graphics.panel.file.saver.failure.header")
+
+    private val DARK_MODE_TITLE = RBundle.message("graphics.panel.action.darkMode.title")
+    private val DARK_MODE_DESCRIPTION = RBundle.message("graphics.panel.action.darkMode.description")
 
     private fun createDestinationFile(file: File) {
       if (!file.exists() && !file.createNewFile()) {

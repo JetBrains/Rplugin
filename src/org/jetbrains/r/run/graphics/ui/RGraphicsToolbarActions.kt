@@ -4,14 +4,7 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.DumbAwareAction
-
-abstract class RDumbAwareActionAdapter : DumbAwareAction() {
-  override fun actionPerformed(e: AnActionEvent) {
-    // Nothing to do here
-  }
-}
+import org.jetbrains.r.ui.RDumbAwareActionAdapter
 
 class RPreviousGraphicsAction : RDumbAwareActionAdapter()
 
