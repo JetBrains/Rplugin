@@ -49,6 +49,14 @@ class RuntimeCompletionTests : RProcessHandlerBaseTestCase() {
     }
   }
 
+  fun testCompletionWithGlobalFunctionWithPercents() {
+    rInterop.executeCode("`%foo%` <- function(x, y = 10) return(x + y)", true)
+    rInterop.executeCode("xxxx1 <- 10; xxxx2 <- 20", true)
+    myFixture.configureByText("foo.R", "xxxx<caret>")
+    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    checkCompletion(listOf("xxxx1", "xxxx2"))
+  }
+
   private fun checkCompletion(expected: List<String>) {
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     val result = myFixture.completeBasic()

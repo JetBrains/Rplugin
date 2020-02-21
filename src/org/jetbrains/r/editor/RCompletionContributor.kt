@@ -203,7 +203,7 @@ class RCompletionContributor : CompletionContributor() {
       originFile.runtimeInfo?.variables?.let { variables ->
         variables.filterKeys { shownNames.add(it) }.forEach { (name, value) ->
           if (value is RValueFunction) {
-            val code = "${name} <- ${value.header} NULL"
+            val code = "${RNamesValidator.quoteIfNeeded(name)} <- ${value.header} NULL"
             val element = RElementFactory.createRPsiElementFromTextOrNull(originFile.project, code) as? RAssignmentStatement ?: return@forEach
             result.consume(createFunctionLookupElement(element, isHelpFromRConsole = false, isLocal = true))
           }
