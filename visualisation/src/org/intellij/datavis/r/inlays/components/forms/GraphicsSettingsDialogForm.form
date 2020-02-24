@@ -22,7 +22,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text value="For current plot"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.for.current.plot"/>
             </properties>
           </component>
           <vspacer id="4c825">
@@ -35,7 +35,8 @@
               <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Auto resize"/>
+              <selected value="true"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.auto.resize"/>
             </properties>
           </component>
           <component id="1ddaa" class="javax.swing.JLabel" binding="localResolutionLabel">
@@ -43,7 +44,7 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Resolution:"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.resolution"/>
             </properties>
           </component>
           <component id="f5bde" class="javax.swing.JTextField" binding="localResolutionTextField">
@@ -61,7 +62,7 @@
               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="dpi"/>
+              <text value="dpi" noi18n="true"/>
             </properties>
           </component>
           <hspacer id="a951b">
@@ -81,7 +82,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text value="For all plots"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.for.all.plots"/>
             </properties>
           </component>
           <component id="1c062" class="javax.swing.JLabel" binding="globalResolutionLabel">
@@ -89,7 +90,7 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Resolution:"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.resolution"/>
             </properties>
           </component>
           <component id="e7726" class="javax.swing.JTextField" binding="globalResolutionTextField">
@@ -105,7 +106,7 @@
               <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="dpi"/>
+              <text value="dpi" noi18n="true"/>
             </properties>
           </component>
           <component id="d27e" class="javax.swing.JCheckBox" binding="darkModeCheckBox">
@@ -113,7 +114,7 @@
               <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Adapt to dark theme"/>
+              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.adapt.to.dark.theme"/>
             </properties>
           </component>
         </children>
