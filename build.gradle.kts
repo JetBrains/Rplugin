@@ -88,10 +88,17 @@ allprojects {
 
     intellij {
         version = ideName()
-        downloadSources = !isTeamCity
         updateSinceUntilBuild = true
         instrumentCode = false
         ideaDependencyCachePath = dependencyCachePath
+
+        if (useInlayVisualisationFromPlugin()) {
+            localPath = guessLocalIdePath() ?: error("Pre-built IDE with visualisation plugin should be unpacked into './local-ide/'")
+            downloadSources = false
+        }
+        else {
+            downloadSources = !isTeamCity
+        }
 
         tasks.withType<PatchPluginXmlTask> {
             sinceBuild("${ideMajorVersion()}.${ideMinorVersion()}")
@@ -113,6 +120,12 @@ allprojects {
             languageVersion = "1.3"
             apiVersion = "1.3"
             freeCompilerArgs = listOf("-Xjvm-default=enable")
+        }
+    }
+
+    ideaPlatformPrefix()?.let { prefix ->
+        tasks.withType<org.jetbrains.intellij.tasks.RunIdeBase> {
+            systemProperty("idea.platform.prefix", prefix)
         }
     }
 
@@ -155,6 +168,7 @@ project(":") {
     intellij {
         val plugins = arrayOf("markdown", "yaml") +
                       (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
+                      (if (useInlayVisualisationFromPlugin()) arrayOf("rplugin-visualisation") else emptyArray()) +
                       (if (is193()) emptyArray() else arrayOf("platform-images"))
         pluginName = "rplugin"
         setPlugins(*plugins)
@@ -168,13 +182,23 @@ project(":") {
 
     sourceSets {
         main {
-            val srcDirs = arrayOf("src", "gen", "visualisation/src")  + if (isPyCharm()) arrayOf("src-python") else emptyArray()
-            java.srcDirs(*srcDirs)
-            resources.srcDirs("resources",
-                              "visualisation/resources",
-                              if (is193()) "resources-193" else "resources-201",
-                              if (is193()) "visualisation/resources-193" else "visualisation/resources-201"
-            )
+            val srcDirs = mutableListOf("src", "gen")
+            if (!useInlayVisualisationFromPlugin()) srcDirs += "visualisation/src"
+            if (isPyCharm()) srcDirs += "src-python"
+            java.srcDirs(*srcDirs.toTypedArray())
+
+            val resourcesSrcDirs = mutableListOf("resources")
+            resourcesSrcDirs.add(
+              when {
+                  useInlayVisualisationFromPlugin() -> "resources-201-inlay-as-plugin"
+                  is193() -> "resources-193"
+                  else -> "resources-201"
+              })
+            if (!useInlayVisualisationFromPlugin()) {
+                resourcesSrcDirs.add("visualisation/resources")
+                resourcesSrcDirs.add(if (is193()) "visualisation/resources-193" else "visualisation/resources-201")
+            }
+            resources.srcDirs(*resourcesSrcDirs.toTypedArray())
         }
         test {
             val testDirs = if (isPyCharm()) arrayOf("test", "test-python") else arrayOf("test")
@@ -301,7 +325,18 @@ fun Build_gradle.is193() = ideMajorVersion() == "193"
 
 fun Build_gradle.ideName() = prop("ideName")
 
-fun Build_gradle.isPyCharm() = ideName().contains("PY") || ideName().contains("PC")
+fun Build_gradle.isPyCharm() = ideName().contains("PY") || ideName().contains("PC") || ideaPlatformPrefix()?.contains("PyCharm") == true
+
+fun Build_gradle.guessLocalIdePath(): String? =
+  file("local-ide")
+    .takeIf { it.resolve("build.txt").exists() }
+    ?.absolutePath
+
+fun Build_gradle.useInlayVisualisationFromPlugin(): Boolean =
+  extra.properties["useInlayVisualisationFromPlugin"] == "true"
+
+fun Build_gradle.ideaPlatformPrefix(): String? =
+  (extra.properties["ideaPlatformPrefix"] as? String)?.takeIf { it.isNotBlank() }
 
 @kotlin.jvm.Volatile
 private var rwrapperBuilt = false
