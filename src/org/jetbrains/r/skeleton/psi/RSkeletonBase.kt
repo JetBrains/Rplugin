@@ -27,6 +27,8 @@ abstract class RSkeletonBase : PsiElementBase(), PsiCompiledElement {
 
   override fun isPhysical(): Boolean = false
 
+  override fun isWritable(): Boolean = false
+
   override fun getNode(): ASTNode {
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }

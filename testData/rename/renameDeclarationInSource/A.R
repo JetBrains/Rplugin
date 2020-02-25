@@ -1,0 +1,1 @@
+foo <- function() 42

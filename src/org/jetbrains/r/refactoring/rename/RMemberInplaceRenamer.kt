@@ -46,12 +46,17 @@ class RMemberInplaceRenamer : MemberInplaceRenamer {
     return RenameUtil.fixTextRange(super.getRangeToRename(element), element)
   }
 
-  override fun notSameFile(file: VirtualFile?, containingFile: PsiFile): Boolean {
-    val currentFile = PsiDocumentManager.getInstance(myProject).getPsiFile(myEditor.document) ?: return true
-    return TemplateLanguageUtil.getBaseFile(containingFile) !== TemplateLanguageUtil.getBaseFile(currentFile)
-  }
+  override fun notSameFile(file: VirtualFile?, containingFile: PsiFile): Boolean = !sameFile(containingFile)
 
   override fun getNameIdentifier(): PsiElement? {
-    return (myElementToRename as? PsiNameIdentifierOwner)?.nameIdentifier
+    return if (sameFile(myElementToRename.containingFile)) {
+      (myElementToRename as? PsiNameIdentifierOwner)?.nameIdentifier
+    }
+    else super.getNameIdentifier()
+  }
+
+  private fun sameFile(containingFile: PsiFile): Boolean {
+    val currentFile = PsiDocumentManager.getInstance(myProject).getPsiFile(myEditor.document) ?: return true
+    return TemplateLanguageUtil.getBaseFile(containingFile) == TemplateLanguageUtil.getBaseFile(currentFile)
   }
 }

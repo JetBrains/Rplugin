@@ -17,6 +17,7 @@ import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler
 import org.jetbrains.r.refactoring.rename.RVariableInplaceRenameHandler
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import java.io.File
 
 class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
@@ -80,9 +81,27 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameForLoopTargetUsageInRmd() = doTestWithProject("l", isRmd = true)
 
-  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false) {
+  fun testRenameDeclarationInSource() = doTestWithProject("bar", isSourceTest = true)
+
+  fun testRenameDeclarationInSourceCollisions() = doExceptionTestWithProject("x", false, fileScope = "B.R", isSourceTest = true)
+
+  private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)
-    myFixture.configureByFile("rename/" + getTestName(true) + dotFileExtension)
+    lateinit var startFiles: List<String>
+    lateinit var endFiles: List<String>
+    if (isSourceTest) {
+      addLibraries()
+      val files = File(myFixture.testDataPath + "/rename/" + getTestName(true))
+                    .listFiles()
+                    ?.map { it.absolutePath.replace(myFixture.testDataPath, "") }
+                    ?.sortedByDescending { it.contains("main") } ?: error("Cannot find root test directory")
+      startFiles = files.filter { !it.contains(".after.") }
+      endFiles = files - startFiles
+      myFixture.configureByFiles(*startFiles.toTypedArray())
+    }
+    else {
+      myFixture.configureByFile("rename/" + getTestName(true) + dotFileExtension)
+    }
     val variableHandler = RVariableInplaceRenameHandler()
     val memberHandler = RMemberInplaceRenameHandler()
 
@@ -100,24 +119,34 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
     }
 
     CodeInsightTestUtil.doInlineRename(handler, newName, myFixture)
-    myFixture.checkResultByFile("rename/" + getTestName(true) + ".after$dotFileExtension", true)
+    if (isSourceTest) {
+      if (endFiles.size != startFiles.size) error("Different number of start and end files")
+      for (i in startFiles.indices) {
+        myFixture.checkResultByFile(startFiles[i], endFiles[i], false)
+      }
+    }
+    else {
+      myFixture.checkResultByFile("rename/" + getTestName(true) + ".after$dotFileExtension", true)
+    }
   }
 
   private fun doExceptionTestWithProject(newName: String,
                                          isFunctionCollision: Boolean,
                                          functionScope: String? = null,
                                          isInlineAvailable: Boolean = true,
-                                         isRmd: Boolean = false) {
+                                         isRmd: Boolean = false,
+                                         fileScope: String = getTestName(true) + getDotExtension(isRmd),
+                                         isSourceTest: Boolean = false) {
     val scopeString =
       if (functionScope != null) RBundle.message("rename.processor.function.scope", functionScope)
-      else RBundle.message("rename.processor.file.scope", getTestName(true) + getDotExtension(isRmd))
+      else RBundle.message("rename.processor.file.scope", fileScope)
     val message =
       if (isFunctionCollision) RBundle.message("rename.processor.collision.function.description", newName, scopeString)
       else RBundle.message("rename.processor.collision.variable.description", newName, scopeString)
 
     assertException(object : CollisionErrorCase() {
       override fun tryClosure() {
-        doTestWithProject(newName, isInlineAvailable, isRmd)
+        doTestWithProject(newName, isInlineAvailable, isRmd, isSourceTest)
       }
     }, message)
   }

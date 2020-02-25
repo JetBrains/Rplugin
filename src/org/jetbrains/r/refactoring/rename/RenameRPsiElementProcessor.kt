@@ -12,7 +12,6 @@ import com.intellij.usageView.UsageInfo
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RPsiUtil
-import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
@@ -20,7 +19,7 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
   override fun canProcessElement(element: PsiElement): Boolean = element.language == RLanguage.INSTANCE
 
   override fun substituteElementToRename(element: PsiElement, editor: Editor?): PsiElement? {
-    if (RPsiUtil.isLibraryElement(element)) return null
+    if (RPsiUtil.isLibraryElement(element)) return element
     return when (element) {
       is RIdentifierExpression -> {
         val parent = element.parent
@@ -40,35 +39,32 @@ class RenameRPsiElementProcessor : RenamePsiElementProcessor() {
                               newName: String,
                               allRenames: MutableMap<out PsiElement, String>,
                               result: MutableList<UsageInfo>) {
-    val scope = RRefactoringUtil.getRScope(element)
-    val stringScope = if (scope is RFunctionExpression) {
-      val name = (scope.parent as? RAssignmentStatement)?.name ?: RBundle.message("rename.processor.function.no.name")
-      RBundle.message("rename.processor.function.scope", name)
-    } else {
-      RBundle.message("rename.processor.file.scope", (scope as RFile).name)
+    fun findCollisionsInner(element: RPsiElement) {
+      val scope = RRefactoringUtil.getRScope(element)
+      val stringScope = if (scope is RFunctionExpression) {
+        val name = (scope.parent as? RAssignmentStatement)?.name ?: RBundle.message("rename.processor.function.no.name")
+        RBundle.message("rename.processor.function.scope", name)
+      }
+      else {
+        RBundle.message("rename.processor.file.scope", (scope as RFile).name)
+      }
+
+      scope.getLocalVariableInfo(scope.controlFlow.instructions.last())?.variables?.get(newName)?.let { variableDefinition ->
+        val definition = variableDefinition.variableDescription.firstDefinition.let {
+          (it as? RExpression)?.let { RPsiUtil.getAssignmentByAssignee(it) } ?: it
+        }
+        val description = if (definition is RAssignmentStatement && definition.isFunctionDeclaration) {
+          RBundle.message("rename.processor.collision.function.description", newName, stringScope)
+        }
+        else {
+          RBundle.message("rename.processor.collision.variable.description", newName, stringScope)
+        }
+        result.add(RUnresolvableCollisionUsageInfo(definition, definition, description))
+      }
     }
 
-    fun addResult(element: PsiElement) {
-      val description = if (element is RAssignmentStatement && element.isFunctionDeclaration) {
-        RBundle.message("rename.processor.collision.function.description", newName, stringScope)
-      } else {
-        RBundle.message("rename.processor.collision.variable.description", newName, stringScope)
-      }
-      result.add(RUnresolvableCollisionUsageInfo(element, element, description))
-    }
-
-    scope.accept(object : RRecursiveElementVisitor() {
-      override fun visitAssignmentStatement(o: RAssignmentStatement) {
-        val name = (o.assignee as? RIdentifierExpression)?.name ?: return
-        if (name == newName) addResult(o)
-        o.acceptChildren(this)
-      }
-
-      override fun visitParameter(o: RParameter) {
-        if (o.name == newName) addResult(o)
-        o.acceptChildren(this)
-      }
-    })
+    (element as? RPsiElement)?.let { findCollisionsInner(it) }
+    result.mapNotNull { it.element as? RPsiElement }.forEach { findCollisionsInner(it) }
   }
 
   private class RUnresolvableCollisionUsageInfo(element: PsiElement,

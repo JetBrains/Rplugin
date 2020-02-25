@@ -1,0 +1,1 @@
+bar <- function() 42
