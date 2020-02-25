@@ -226,6 +226,28 @@ class RInlayParameterHintsProviderTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), true)
   }
 
+  fun testPipeOperator() {
+    doParameterNameTest("""
+      foo <- function (a, b, c) {
+        print(c)
+      }
+
+      10 %>% foo(<hint text="b:"/>30, <hint text="c:"/>40)
+      42 %>% foo(<hint text="b:"/>10, <hint text="c:"/>20) %>% foo(a = 10, <hint text="c:"/>40)
+    """.trimIndent())
+  }
+
+  fun testPipeOperatorWithDots() {
+    doParameterNameTest("""
+      foo <- function (a, ..., c) {
+        print(c)
+      }
+
+      10 %>% foo(c = 30, <hint text="...("/>40, 50<hint text=")"/>)
+      42 %>% foo(40)
+    """.trimIndent())
+  }
+
   fun testFunctionFromSource() {
     myFixture.configureByFiles("hints/inlayFunctionFromSource/main.R",
                                "hints/inlayFunctionFromSource/A.R",

@@ -33,8 +33,7 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
                                                             "function${assignment.functionParameters}") as RFunctionExpression).parameterList.parameterList
       val names = args.map { it.name }
       val values = args.map { it.defaultValue?.text }
-      RParameterInfoArgumentList(names, values,
-                                                                                                              names.indices.toList())
+      RParameterInfoArgumentList(names, values, names.indices.toList())
     }.toTypedArray()
 
     return argumentList
@@ -51,15 +50,16 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
       return
     }
 
-    val expressions = parameterOwner.expressionList
     context.objectsToView.map { it as RParameterInfoArgumentList }.forEach {
       val names = it.names
       it.currentArgumentIndex = 0
       it.isDisabled = false
 
-      val (permutation, unusedArguments) = RParameterInfoUtil.getArgumentsPermutation(
-        names, parameterOwner)
-      if (permutation.contains(-1)) {
+      val argumentPermutationInfo = RArgumentInfo(parameterOwner, names)
+      val expressions = argumentPermutationInfo.expressionListWithPipeExpression
+      val permutation = argumentPermutationInfo.argumentPermutationIndWithPipeExpression
+      val notPassedParameters = argumentPermutationInfo.notPassedParameterInd
+      if (!argumentPermutationInfo.isValid) {
         it.isDisabled = true
         it.permutation = names.indices.toList()
         return
@@ -75,7 +75,7 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
         if (carriageOffset in stOffset..fnOffset) it.currentArgumentIndex = probableNewPermutation.lastIndex
       }
 
-      it.permutation = probableNewPermutation + unusedArguments
+      it.permutation = probableNewPermutation + notPassedParameters
     }
   }
 

@@ -113,7 +113,7 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
       foo <- function() { 42 }
       
       foo(<caret>)
-    """.trimIndent(), RBundle.message("parameter.info.no.parameters").replace("<", "&lt;").replace(">", "&gt;"))
+    """.trimIndent(), noParametersMessage)
   }
 
   fun testDots() {
@@ -236,6 +236,32 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     doTest("", "[b], <[a]>", fromSources = true)
   }
 
+  fun testPipeOperator() {
+    doTest("""
+      foo <- function (a, b, c) {
+        print(c)
+      }
+      
+      10 %>% foo(2<caret>0, 30)
+    """.trimIndent(), "a, <b>, c")
+  }
+
+  fun testPipeOperatorWithDots() {
+    doTest("""
+      foo <- function(a, ..., c = 20)
+      
+      10 %>% foo(c = 30, 4<caret>0, 50)
+    """.trimIndent(), "a, [c = 20], <[...]>")
+  }
+
+  fun testPipeOperatorDisabled() {
+    doTest("""
+      foo <- function()
+      
+      10 %>% foo(<caret>)
+    """.trimIndent(), noParametersMessage, isDisabled = true)
+  }
+
   fun doTest(text: String, vararg expectedResults: String, isDisabled: Boolean = false, fromSources: Boolean = false) {
     val hintFixture = EditorHintFixture(myFixture.testRootDisposable)
 
@@ -261,7 +287,11 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     const val t = "\t"
     const val n = "\n"
 
-    fun waitForParameterInfo() {
+    private val noParametersMessage = RBundle.message("parameter.info.no.parameters")
+      .replace("<", "&lt;")
+      .replace(">", "&gt;")
+
+    private fun waitForParameterInfo() {
       // effective there is a chain of 3 nonBlockingRead actions
       for (i in 0..2) {
         UIUtil.dispatchAllInvocationEvents()
@@ -269,7 +299,7 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
       }
     }
 
-    fun wrap(vararg results: String, isDisabled: Boolean = false): String {
+    private fun wrap(vararg results: String, isDisabled: Boolean = false): String {
       return results.joinToString("\n-\n") { result ->
         val replacedQuote = result.replace("\"", "&quot;")
         val replacedHighlight = if (isDisabled) "<font color=a8a8a8>$replacedQuote</font>"

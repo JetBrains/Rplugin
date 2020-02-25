@@ -21,7 +21,6 @@ import org.jetbrains.r.editor.TABLE_MANIPULATION_COLUMNS_GROUPING
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RDataTableUtil
-import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.*
 
@@ -68,14 +67,9 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
   private fun addCompletionFromGGPlotCall(ggplotCall: RCallExpression,
                                           parameters: CompletionParameters,
                                           result: CompletionResultSet) {
-    val assignment = RPsiUtil.resolveCall(ggplotCall).singleOrNull() ?: return
-    val parameterNameList = assignment.parameterNameList
-    val argumentList = ggplotCall.argumentList
-    val argumentsPermutation = RParameterInfoUtil.getArgumentsPermutation(parameterNameList, argumentList).first
-    val dataParameter = argumentList.expressionList[argumentsPermutation.indexOf(0).takeIf { it != -1 } ?: return] // data argument
-    val data = if (dataParameter is RNamedArgument) dataParameter.assignedValue ?: return else dataParameter
     val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-    val tableInfo = RDataTableUtil.getTableColumns(data, runtimeInfo)
+    val dataParameter = RParameterInfoUtil.getArgumentByName(ggplotCall, "data") ?: return // data argument
+    val tableInfo = RDataTableUtil.getTableColumns(dataParameter, runtimeInfo)
     addCompletionResults(result, tableInfo)
   }
 

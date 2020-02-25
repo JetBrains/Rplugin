@@ -25,18 +25,16 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
 
   override fun getParameterHints(element: PsiElement): List<InlayInfo> {
     if (element !is RArgumentList) return emptyList()
+    val call = element.parent as RCallExpression
+    val argumentPermutationInfo = RParameterInfoUtil.getArgumentInfo(call) ?: return emptyList()
 
     val isWrapDots = WRAP_DOTS_OPTION.isEnabled()
-    val assignment = RPsiUtil.resolveCall(element.parent as RCallExpression).singleOrNull() ?: return emptyList()
     val result = mutableListOf<InlayInfo>()
-
-    val parameterNames = assignment.parameterNameList
-    val dotsArgIndex = parameterNames.indexOf(DOTS)
     var isLastDots = false
 
     lateinit var firstDotArg: RPsiElement
     lateinit var lastDotArg: RPsiElement
-    val expressions = element.expressionList
+    val expressions = argumentPermutationInfo.expressionList
 
     fun wrapDotsIfNeed() {
       if ((firstDotArg == expressions[0] || firstDotArg == lastDotArg)) return
@@ -50,10 +48,9 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
       }
     }
 
-    val permutation = RParameterInfoUtil.getArgumentsPermutation(parameterNames, element).first
-    for (i in expressions.indices) {
-      val parameterIndex = permutation[i]
-      if (parameterIndex == -1) {
+    for (arg in expressions) {
+      val argumentName = argumentPermutationInfo.getParameterNameForArgument(arg)
+      if (argumentName == null) {
         if (isLastDots) {
           wrapDotsIfNeed()
           isLastDots = false
@@ -61,8 +58,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
         continue
       }
 
-      val arg = expressions[i]
-      if (parameterIndex == dotsArgIndex && arg !is RNamedArgument) {
+      if (argumentName == DOTS && arg !is RNamedArgument) {
         lastDotArg = arg
         if (isLastDots) continue
 
@@ -71,7 +67,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
       }
       else {
         if (isMustProvideNameHint(arg)) {
-          result.add(InlayInfo(parameterNames[parameterIndex], arg.textOffset))
+          result.add(InlayInfo(argumentName, arg.textOffset))
         }
         else if (isLastDots) {
           wrapDotsIfNeed()

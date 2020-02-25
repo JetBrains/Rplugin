@@ -4,31 +4,26 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
+import org.jetbrains.r.psi.RDplyrUtil
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
-object RParameterInfoUtil {
+class RArgumentInfo(argumentList: RArgumentList, val parameterNames: List<String>) {
+  private val pipeArgument: RExpression? = findPipeArgument(argumentList)
+  val argumentPermutationIndWithPipeExpression: List<Int>
+  val notPassedParameterInd: List<Int>
 
-  fun getArgumentByName(call: RCallExpression, name: String): RPsiElement? {
-    return getArgumentByName(call, name, RPsiUtil.resolveCall(call, false).firstOrNull())
+  val expressionListWithPipeExpression = argumentList.expressionList.let {
+    if (pipeArgument != null) listOf(pipeArgument) + it else it
   }
+  val expressionList = dropPipeValue(expressionListWithPipeExpression)
 
-  fun getArgumentByName(call: RCallExpression, name: String, definition: RAssignmentStatement?): RPsiElement? {
-    val argumentList = call.argumentList
-    argumentList.namedArgumentList.firstOrNull { it.name == name }?.let { return it.assignedValue }
-    val parameterNameList = definition?.parameterNameList ?: return null
-    val parameterIndex = parameterNameList.indexOf(name)
-    if (parameterIndex == -1) return null
-    val argumentIndex = getArgumentsPermutation(parameterNameList, argumentList).first.indexOf(parameterIndex)
-    return argumentList.expressionList.getOrNull(argumentIndex)
-  }
-
-  fun getArgumentsPermutation(parameterNames: List<String>, argumentList: RArgumentList): Pair<List<Int>, List<Int>> {
+  init {
     var curArgIndex = 0
     val skipNames = mutableSetOf<String>()
     val argumentNames = argumentList.namedArgumentList.map { it.name }
     val resultPermutation = mutableListOf<Int>()
-    for (arg in argumentList.expressionList) {
+    for (arg in expressionListWithPipeExpression) {
       if (arg is RNamedArgument) {
         if (arg.name in skipNames) {
           // Multiple named argument with same name
@@ -63,12 +58,99 @@ object RParameterInfoUtil {
       }
     }
 
-    val unusedArguments = mutableListOf<Int>()
+    val notPassedParameters = mutableListOf<Int>()
     parameterNames.forEachIndexed { ind, name ->
-      if (name != DOTS && name !in skipNames || name == DOTS && ind !in resultPermutation)  unusedArguments.add(ind)
+      if (name != DOTS && name !in skipNames || name == DOTS && ind !in resultPermutation) notPassedParameters.add(ind)
     }
-    return resultPermutation to unusedArguments
+
+    this.argumentPermutationIndWithPipeExpression = resultPermutation
+    this.notPassedParameterInd = notPassedParameters
   }
 
-  private const val DOTS = "..."
+  val argumentNamesWithPipeExpression by lazy { argumentPermutationIndWithPipeExpression.map { parameterNames.getOrNull(it) } }
+
+  val argumentNames by lazy { dropPipeValue(argumentNamesWithPipeExpression) }
+  val argumentPermutationInd by lazy { dropPipeValue(argumentPermutationIndWithPipeExpression) }
+  val notPassedParameterNames by lazy { notPassedParameterInd.map { parameterNames[it] } }
+
+  val isValid by lazy { -1 !in argumentPermutationIndWithPipeExpression }
+  val allDotsArguments by lazy {
+    val dotsInd = parameterNames.indexOf(DOTS)
+    if (dotsInd == -1) return@lazy emptyList<RExpression>()
+    expressionListWithPipeExpression.filterIndexed { ind, _ -> argumentPermutationIndWithPipeExpression[ind] == dotsInd }
+  }
+
+  fun getParameterNameForArgument(expression: RExpression): String? {
+    val parent = expression.parent
+    val realArgument = if (parent is RNamedArgument && parent.assignedValue == expression) parent else expression
+    val ind = argumentPermutationIndWithPipeExpression.getOrNull(expressionListWithPipeExpression.indexOf(realArgument)) ?: return null
+    val name = parameterNames.getOrNull(ind)
+    return if (name == DOTS && expression != realArgument) null // if named argument passed to DOTS only RNamedExpression is correct result
+    else name
+  }
+
+  fun getArgumentPassedToParameter(parameterInd: Int): RExpression? {
+    val realInd = argumentPermutationIndWithPipeExpression.indexOf(parameterInd)
+    if (realInd == -1) return null
+    return expressionListWithPipeExpression[realInd].let { if (it is RNamedArgument) it.assignedValue else it }
+  }
+
+  fun getArgumentPassedToParameter(parameterName: String): RExpression? {
+    val ind = parameterNames.indexOf(parameterName)
+    if (ind == -1) return null
+    return getArgumentPassedToParameter(ind)
+  }
+
+  private fun <T> dropPipeValue(list: List<T>): List<T> = if (pipeArgument != null) list.drop(1) else list
+
+  companion object {
+    private const val PIPE_OPERATOR = "%>%"
+
+    private fun findPipeArgument(argumentList: RArgumentList): RExpression? {
+      val callParent = argumentList.parent.parent
+      return if (callParent is ROperatorExpression && callParent.operator?.name == PIPE_OPERATOR) callParent.leftExpr
+      else null
+    }
+  }
 }
+
+@Suppress("MemberVisibilityCanBePrivate")
+object RParameterInfoUtil {
+
+  fun getArgumentInfo(call: RCallExpression): RArgumentInfo? {
+    return getArgumentInfo(call, RPsiUtil.resolveCall(call).singleOrNull())
+  }
+
+  fun getArgumentInfo(call: RCallExpression, definition: RAssignmentStatement?): RArgumentInfo? {
+    if (definition == null) return null
+    return RArgumentInfo(call.argumentList, definition.parameterNameList)
+  }
+
+  /**
+   * If you need information about several parameters, use [RArgumentInfo][getArgumentInfo]
+   *
+   * @return the first entry of the required parameter if exist.
+   * In the correct syntax, there is only one entry for all parameters except dots.
+   * If you want to find all arguments passed to dots, use [getAllDotsArguments]
+   */
+  fun getArgumentByName(call: RCallExpression, name: String): RExpression? {
+    return getArgumentByName(call, name, RPsiUtil.resolveCall(call, false).singleOrNull { it.parameterNameList.contains(name) })
+  }
+
+  /**
+   * @see [getArgumentByName]
+   */
+  fun getArgumentByName(call: RCallExpression, name: String, definition: RAssignmentStatement?): RExpression? {
+    return getArgumentInfo(call, definition)!!.getArgumentPassedToParameter(name)
+  }
+
+  fun getAllDotsArguments(call: RCallExpression): List<RExpression> {
+    return getAllDotsArguments(call, RPsiUtil.resolveCall(call).singleOrNull())
+  }
+
+  fun getAllDotsArguments(call: RCallExpression, definition: RAssignmentStatement?): List<RExpression> {
+    return getArgumentInfo(call, definition)?.allDotsArguments ?: emptyList()
+  }
+}
+
+private const val DOTS = "..."
