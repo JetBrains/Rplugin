@@ -178,6 +178,9 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
 
   private fun loadDefaultRepositories(mirrors: List<RMirror>): List<RDefaultRepository> {
     val lines = runHelper(DEFAULT_REPOSITORIES_HELPER)
+    if (lines.isEmpty()) {
+      return emptyList()
+    }
     val blankIndex = lines.indexOfFirst { it.isBlank() }
     if (blankIndex < 0) {
       LOGGER.error("Cannot find separator in helper's output:\n${lines.joinToString("\n")}")
@@ -246,7 +249,11 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
 
   private fun runHelper(helper: File, args: List<String> = emptyList()): List<String> {
     val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-    return RInterpreterUtil.runHelper(interpreterPath, helper, project.basePath, args).lines()
+    return if (interpreterPath.isNotBlank()) {
+      RInterpreterUtil.runHelper(interpreterPath, helper, project.basePath, args).lines()
+    } else {
+      emptyList()
+    }
   }
 
   companion object {

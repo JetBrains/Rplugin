@@ -12,7 +12,10 @@ import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.common.ExpiringList
+import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
@@ -44,19 +47,19 @@ class RPackageManagementService(private val project: Project,
   private val interpreterManager: RInterpreterManager  // Should be evaluated lazily otherwise it will break unit tests
     get() = RInterpreterManager.getInstance(project)
 
-  private val interpreter: RInterpreter
+  private val interpreter: RInterpreter?
     get() {
       fun getInitializedManager(): RInterpreterManager {
         return interpreterManager.apply {
           if (!hasInterpreter()) {
             initializeInterpreter()
-              .onError { LOGGER.error("Unable to initialize interpreter", it) }
-              .blockingGet(DEFAULT_TIMEOUT)
+              .onError { LOGGER.warn("Unable to initialize interpreter") }
+              .silentlyBlockingGet(DEFAULT_TIMEOUT)
           }
         }
       }
 
-      return getInitializedManager().interpreter!!
+      return getInitializedManager().interpreter
     }
 
   private val provider: RepoProvider
@@ -115,12 +118,12 @@ class RPackageManagementService(private val project: Project,
   }
 
   private fun loadInstalledPackages(): ExpiringList<RInstalledPackage> {
-    val installed = interpreter.withAutoUpdate { installedPackages }
+    val installed = interpreter?.withAutoUpdate { installedPackages } ?: emptyExpiringList()
     return installed.filter { it.isUser }.map { it }
   }
 
   fun findInstalledPackageByName(name: String): RInstalledPackage? {
-    return interpreter.getPackageByName(name)
+    return interpreter?.getPackageByName(name)
   }
 
   private fun onOperationStart() {
@@ -178,7 +181,7 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun canUninstallPackage(installedPackage: RInstalledPackage): Boolean {
-    return interpreter.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
+    return interpreter?.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
   }
 
   override fun uninstallPackages(installedPackages: List<InstalledPackage>, listener: Listener) {
@@ -252,6 +255,13 @@ class RPackageManagementService(private val project: Project,
           values
         }
       }
+    }
+
+    private fun <R> Promise<R>.silentlyBlockingGet(timeout: Int): R? {
+      val promise = AsyncPromise<R>()
+      onSuccess { promise.setResult(it) }
+      onError { promise.setResult(null) }
+      return promise.blockingGet(timeout)
     }
 
     fun convertToInstallMultiListener(listener: Listener): MultiListener {
