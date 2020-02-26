@@ -310,6 +310,11 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
                     description="Check package"
                     icon="AllIcons.General.InspectionsOK"/>
+
+          <action id="org.jetbrains.r.packages.build.ui.RTestPackageAction"
+                  class="org.jetbrains.r.packages.build.ui.RTestPackageAction"
+                  description="Test package"
+                  icon="AllIcons.RunConfigurations.TestState.Run"/>
         </group>
     </actions>
 

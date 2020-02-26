@@ -53,13 +53,11 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private fun createToolbar(): JComponent {
-    val id2Tasks = listOf(
-      Pair(INSTALL_ACTION_ID, this::installAndReloadPackageAsync),
-      Pair(CHECK_ACTION_ID, this::checkPackageAsync)
+    val actionHolders = listOf(
+      manager.createActionHolder(INSTALL_ACTION_ID, this::installAndReloadPackageAsync, requiredDevTools = false),
+      manager.createActionHolder(CHECK_ACTION_ID, this::checkPackageAsync, requiredDevTools = false),
+      manager.createActionHolder(TEST_ACTION_ID, this::testPackageAsync, requiredDevTools = true)
     )
-    val actionHolders = id2Tasks.map { (id, task) ->
-      manager.createActionHolder(id, task)
-    }
     return RToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(actionHolders))
   }
 
@@ -86,6 +84,10 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
 
   private fun checkPackageAsync(hasDevTools: Boolean): Promise<Unit> {
     return if (hasDevTools) runHelperAsync(CHECK_PACKAGE_HELPER) else runCommandAsync("check")
+  }
+
+  private fun testPackageAsync(hasDevTools: Boolean): Promise<Unit> {
+    return if (hasDevTools) runHelperAsync(TEST_PACKAGE_HELPER) else resolvedPromise()
   }
 
   private fun runCommandAsync(command: String, vararg args: String): Promise<Unit> {
@@ -152,9 +154,11 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     // Not to be moved to RBundle
     private const val INSTALL_ACTION_ID = "org.jetbrains.r.packages.build.ui.RInstallPackageAction"
     private const val CHECK_ACTION_ID = "org.jetbrains.r.packages.build.ui.RCheckPackageAction"
+    private const val TEST_ACTION_ID = "org.jetbrains.r.packages.build.ui.RTestPackageAction"
 
     private val UPDATE_EXPORTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
     private val INSTALL_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/install_package.R")
     private val CHECK_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/check_package.R")
+    private val TEST_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/test_package.R")
   }
 }

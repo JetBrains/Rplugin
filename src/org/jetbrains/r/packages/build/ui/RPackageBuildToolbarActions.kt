@@ -9,3 +9,5 @@ import org.jetbrains.r.ui.RDumbAwareActionAdapter
 class RInstallPackageAction : RDumbAwareActionAdapter()
 
 class RCheckPackageAction : RDumbAwareActionAdapter()
+
+class RTestPackageAction: RDumbAwareActionAdapter()

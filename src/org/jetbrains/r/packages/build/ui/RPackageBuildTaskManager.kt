@@ -28,7 +28,7 @@ class RPackageBuildTaskManager(
   @Volatile
   private var isRunning: Boolean = false
 
-  fun createActionHolder(id: String, task: (Boolean) -> Promise<Unit>) = object : RToolbarUtil.ActionHolder {
+  fun createActionHolder(id: String, task: (Boolean) -> Promise<Unit>, requiredDevTools: Boolean) = object : RToolbarUtil.ActionHolder {
     private val missing: List<RequiredPackage>?
       get() = RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(REQUIREMENTS)
 
@@ -37,8 +37,11 @@ class RPackageBuildTaskManager(
 
     override val id = id
 
+    private val hasDevTools
+      get() = missing?.isEmpty() == true
+
     override val canClick: Boolean
-      get() = !isRunning || isRunningMine
+      get() = (!isRunning || isRunningMine) && (!requiredDevTools || hasDevTools)
 
     override fun onClick() {
       if (!isRunning) {
@@ -75,7 +78,7 @@ class RPackageBuildTaskManager(
           saveAllDocumentsAsync()
         }
         .thenAsync {
-          task(missing?.isEmpty() == true)
+          task(hasDevTools)
         }
         .onProcessed {
           currentActionHolder = null
