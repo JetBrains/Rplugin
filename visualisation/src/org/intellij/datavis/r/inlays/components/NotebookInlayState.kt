@@ -23,6 +23,8 @@ abstract class NotebookInlayState : JLayeredPane() {
   /** Short description of inlay content. */
   abstract fun getCollapsedDescription(): String
 
+  open fun updateProgressStatus(progressStatus: InlayProgressStatus) {}
+
   open fun onViewportChange(isInViewport: Boolean) {
     // Do nothing by default
   }

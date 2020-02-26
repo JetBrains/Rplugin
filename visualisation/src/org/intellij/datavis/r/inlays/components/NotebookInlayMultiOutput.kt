@@ -50,6 +50,8 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
 
   private val project = editor.project!!
 
+  private val tabsOutput: MutableSet<NotebookInlayOutput> = mutableSetOf()
+
   @Volatile
   private var isInViewport: Boolean = false
 
@@ -101,7 +103,8 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
 
   fun onOutputs(inlayOutputs: List<InlayOutput>) {
     tabs.removeAllTabs()
-    inlayOutputs.forEach {inlayOutput ->
+    tabsOutput.clear()
+    inlayOutputs.forEach { inlayOutput ->
       if (inlayOutput.type == "TABLE") {
         runAsyncInlay {
           val data = DataFrameCSVAdapter.fromCsvString(inlayOutput.data)
@@ -117,10 +120,17 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
       else {
         NotebookInlayOutput(editor, disposable).apply {
           setupOnHeightCalculated()
-          addData(inlayOutput.type, inlayOutput.data)
+          addData(inlayOutput.type, inlayOutput.data, inlayOutput.progressStatus)
+          tabsOutput.add(this)
           addTab(inlayOutput)
         }
       }
+    }
+  }
+
+  override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
+    tabsOutput.forEach { output ->
+      output.updateProgressStatus(progressStatus)
     }
   }
 

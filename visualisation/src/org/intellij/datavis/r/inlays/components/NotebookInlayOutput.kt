@@ -87,19 +87,29 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     output?.addToolbar()
   }
 
-  fun addData(type: String, data: String) {
+  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
     val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
+    val inlayOutput: InlayOutput
     if (provider != null) {
-      (output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor, clearAction ->
+      inlayOutput = output.takeIf { it?.acceptType(type) == true } ?: createOutput { parent, editor, clearAction ->
         provider.create(parent, editor, clearAction)
-      }).addData(data, type)
-    } else {
-      when (type) {
+      }
+    }
+    else {
+      inlayOutput = when (type) {
         "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
         "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
         else -> output?.takeIf { it is InlayOutputText } ?: addTextOutput()
-      }.addData(data, type)
+      }
     }
+    progressStatus?.let {
+      inlayOutput.updateProgressStatus(it)
+    }
+    inlayOutput.addData(data, type)
+  }
+
+  override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
+    output?.updateProgressStatus(progressStatus)
   }
 
   override fun  clear() {

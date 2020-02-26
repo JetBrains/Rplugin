@@ -26,7 +26,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.ui.components.JBScrollBar
 import com.intellij.util.ui.TextTransferable
 import com.intellij.util.ui.UIUtil
 import javafx.application.Platform
@@ -79,12 +78,26 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
 
   abstract fun acceptType(type: String): Boolean
 
+  fun updateProgressStatus(progressStatus: InlayProgressStatus) {
+    val progressPanel = buildProgressStatusComponent(progressStatus)
+    toolbarPane.progressComponent = progressPanel
+  }
+
+  protected fun getProgressStatusHeight(): Int {
+    return toolbarPane.progressComponent?.height ?: 0
+  }
+
   /**
    * Inlay component can can adjust itself to fit the Output.
    * We need callback because text output can return height immediately,
    * but Html output can return height only delayed, from it's Platform.runLater.
    */
   var onHeightCalculated: ((height: Int) -> Unit)? = null
+    set(value) {
+      field = { height: Int ->
+        value?.invoke(height + getProgressStatusHeight())
+      }
+    }
 
   private val disposable: Disposable = Disposer.newDisposable()
 
@@ -352,11 +365,6 @@ class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> U
     console.editor.contentComponent.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK),
                                                  actionNameSelect)
     console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
-  }
-
-  override fun addToolbar() {
-    val toolbar = createToolbar()
-    (console.editor as EditorImpl).scrollPane.verticalScrollBar.add(JBScrollBar.LEADING, toolbar)
   }
 
   override fun clear() {

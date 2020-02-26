@@ -4,8 +4,10 @@
 
 package org.intellij.datavis.r.inlays.components
 
+import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JLayeredPane
+import javax.swing.JPanel
 
 /**
  * ToolbarPane - special component with central part which is set by
@@ -13,11 +15,19 @@ import javax.swing.JLayeredPane
  * setToolbarComponent() - preserves initial size and stays in top right corner
  */
 class ToolbarPane : JLayeredPane() {
+  private var mainPanel: JPanel? = null
 
   var centralComponent: JComponent? = null
     set(value) {
       field = value
-      add(value, PALETTE_LAYER)
+      updateMainComponent()
+      updateChildrenBounds()
+    }
+
+  var progressComponent: JComponent? = null
+    set(value) {
+      field = value
+      updateMainComponent()
       updateChildrenBounds()
     }
 
@@ -28,10 +38,27 @@ class ToolbarPane : JLayeredPane() {
       updateChildrenBounds()
     }
 
+  private fun updateMainComponent() {
+    if (mainPanel == null) {
+      mainPanel = JPanel(BorderLayout())
+      add(mainPanel, PALETTE_LAYER)
+    }
+    mainPanel?.let { main ->
+      main.removeAll()
+      progressComponent?.let { progress ->
+        main.add(progress, BorderLayout.PAGE_START)
+      }
+      centralComponent?.let { central ->
+        main.add(central, BorderLayout.CENTER)
+      }
+    }
+  }
+
   fun updateChildrenBounds() {
-    centralComponent?.setBounds(0, 0, width, height)
-    toolbarComponent?.setBounds(width - toolbarComponent!!.preferredSize.width, 0,
-                                toolbarComponent!!.preferredSize.width, toolbarComponent!!.preferredSize.height)
+    mainPanel?.setBounds(0, 0, width, height)
+    val progressBarWidth = if (progressComponent != null) PROGRESS_BAR_DEFAULT_WIDTH else 0
+    toolbarComponent?.setBounds(width - toolbarComponent!!.preferredSize.width, progressBarWidth, toolbarComponent!!.preferredSize.width,
+                                toolbarComponent!!.preferredSize.height)
   }
 
   override fun setBounds(x: Int, y: Int, width: Int, height: Int) {

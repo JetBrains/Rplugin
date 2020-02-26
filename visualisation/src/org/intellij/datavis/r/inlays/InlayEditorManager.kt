@@ -34,6 +34,7 @@ import com.intellij.util.concurrency.FutureResult
 import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.ui.InlineToolbar
 import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
@@ -129,10 +130,20 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           scrollKeeper.savePosition()
           updateInlays()
           scrollKeeper.restorePosition(true)
-        } finally {
+        }
+        finally {
           result.set(Unit)
         }
       }
+    }
+    return result
+  }
+
+  fun updateInlayProgressStatus(psi: PsiElement, progressStatus: InlayProgressStatus): Future<Unit> {
+    val result = FutureResult<Unit>()
+    ApplicationManager.getApplication().invokeLater {
+      getInlayComponent(psi)?.updateProgressStatus(progressStatus)
+      result.set(Unit)
     }
     return result
   }

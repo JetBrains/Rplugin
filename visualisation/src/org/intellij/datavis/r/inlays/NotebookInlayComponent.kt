@@ -245,6 +245,10 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
     return state as NotebookInlayOutput
   }
 
+  fun updateProgressStatus(progressStatus: InlayProgressStatus) {
+    state?.updateProgressStatus(progressStatus)
+  }
+
   private fun createOrSetInlayData(dataFrame: DataFrame): NotebookInlayData {
     if (state !is NotebookInlayData) {
       if (state != null) {
@@ -298,12 +302,12 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
    * Event from notebook with console output. This output contains intermediate data from console.
    * @param update if true than current data in output will be cleared
    */
-  private fun onOutput(data: String, type: String, cleanup: () -> Unit) {
+  private fun onOutput(data: String, type: String, progressStatus: InlayProgressStatus?, cleanup: () -> Unit) {
     state?.clear()
 
     val output = getOrCreateOutput()
     output.clearAction = cleanup
-    output.addData(type, data)
+    output.addData(type, data, progressStatus)
 
     if (size.height == InlayDimensions.smallHeight) {
       deltaSize(0, InlayDimensions.previewHeight - size.height)
@@ -336,10 +340,10 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
       onMultiOutput(inlayOutputs, cleanup)
     }
     else {
-      val (data, type) = inlayOutputs.first()
-      if (type == "TABLE") {
+      val inlay = inlayOutputs.first()
+      if (inlay.type == "TABLE") {
         runAsyncInlay {
-          val csv = DataFrameCSVAdapter.fromCsvString(data)
+          val csv = DataFrameCSVAdapter.fromCsvString(inlay.data)
           invokeLater {
             createOrSetInlayData(csv).clearAction = cleanup
             if (size.height == InlayDimensions.smallHeight) {
@@ -349,7 +353,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
         }
       }
       else {
-        onOutput(data, type, cleanup)
+        onOutput(inlay.data, inlay.type, inlay.progressStatus, cleanup)
       }
     }
   }
