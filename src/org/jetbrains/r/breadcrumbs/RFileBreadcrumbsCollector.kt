@@ -16,6 +16,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RFileBreadcrumbsCollector(private val project: Project) : CommonPsiFileBreadcrumbsCollector(project) {
   override fun handlesFile(virtualFile: VirtualFile): Boolean {
+    if (!virtualFile.isValid) return false
     val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return false
     return psiFile.language == RLanguage.INSTANCE || psiFile.language == RMarkdownLanguage
   }
