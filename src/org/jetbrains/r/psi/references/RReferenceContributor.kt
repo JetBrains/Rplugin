@@ -45,7 +45,7 @@ class RReferenceContributor : PsiReferenceContributor() {
               return mutableListOf()
             }
 
-            val result = super.getDefaultContexts()
+            val result = super.getDefaultContexts().toMutableSet()
             val workingDir = (file as? RFile)?.runtimeInfo?.workingDir
             val dir = workingDir?.let { dir ->
               LocalFileSystem.getInstance().findFileByPath(dir)?.let { PsiUtilCore.findFileSystemItem(project, it) }
