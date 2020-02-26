@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.interpreter
 
+import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.runInEdt
@@ -108,10 +109,13 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
     if (!isViable) {
       val message = createInvalidPathErrorMessage(path, e?.message)
-      val action = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
+      val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
         ShowSettingsUtil.getInstance().showSettingsDialog(project, RActiveInterpreterProjectConfigurable::class.java)
       }
-      RNotificationUtil.notifyInterpreterError(project, message, action)
+      val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
+        BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)
+      }
+      RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
     }
     return isViable
   }
@@ -212,8 +216,11 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
   companion object {
+    private const val DOWNLOAD_R_PAGE = "https://cloud.r-project.org/"
+
     private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
     private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
+    private val DOWNLOAD_R_HINT = RBundle.message("interpreter.manager.download.r.hint")
 
     private fun createInvalidPathErrorMessage(path: String, details: String?): String {
       val additional = details?.let { ":\n$it" }

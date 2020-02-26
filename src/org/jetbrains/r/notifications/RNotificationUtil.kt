@@ -26,25 +26,25 @@ object RNotificationUtil {
   private const val EXECUTION_GROUP_ID = "Console Execution"
   private val EXECUTION_FAILURE_TITLE = RBundle.message("notification.execution.failure")
 
-  fun notifyConsoleError(project: Project, message: String?, action: AnAction? = null) {
-    notifyError(project, CONSOLE_GROUP_ID, CONSOLE_FAILURE_TITLE, message, action)
+  fun notifyConsoleError(project: Project, message: String?, vararg actions: AnAction) {
+    notifyError(project, CONSOLE_GROUP_ID, CONSOLE_FAILURE_TITLE, message, *actions)
   }
 
-  fun notifyInterpreterError(project: Project, message: String?, action: AnAction? = null) {
-    notifyError(project, INTERPRETER_GROUP_ID, INTERPRETER_FAILURE_TITLE, message, action)
+  fun notifyInterpreterError(project: Project, message: String?, vararg actions: AnAction) {
+    notifyError(project, INTERPRETER_GROUP_ID, INTERPRETER_FAILURE_TITLE, message, *actions)
   }
 
-  fun notifyGraphicsError(project: Project, message: String?, action: AnAction? = null) {
-    notifyError(project, GRAPHICS_GROUP_ID, GRAPHICS_FAILURE_TITLE, message, action)
+  fun notifyGraphicsError(project: Project, message: String?, vararg actions: AnAction) {
+    notifyError(project, GRAPHICS_GROUP_ID, GRAPHICS_FAILURE_TITLE, message, *actions)
   }
 
-  fun notifyExecutionError(project: Project, message: String?, action: AnAction? = null) {
-    notifyError(project, EXECUTION_GROUP_ID, EXECUTION_FAILURE_TITLE, message, action)
+  fun notifyExecutionError(project: Project, message: String?, vararg actions: AnAction) {
+    notifyError(project, EXECUTION_GROUP_ID, EXECUTION_FAILURE_TITLE, message, *actions)
   }
 
-  private fun notifyError(project: Project, groupDisplayId: String, title: String, message: String?, action: AnAction? = null) {
+  private fun notifyError(project: Project, groupDisplayId: String, title: String, message: String?, vararg actions: AnAction) {
     val notification = Notification(groupDisplayId, title, message ?: UNKNOWN_ERROR_MESSAGE, NotificationType.ERROR)
-    if (action != null) {
+    for (action in actions) {
       notification.addAction(action)
     }
     notification.notify(project)
