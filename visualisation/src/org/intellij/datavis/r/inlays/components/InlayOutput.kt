@@ -57,7 +57,11 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
 
   protected val toolbarPane = ToolbarPane()
 
-  open val extraActions: List<NotebookInlayOutput.ActionHolder> = emptyList()
+  protected open val extraActions: List<NotebookInlayOutput.ActionHolder> = emptyList()
+
+  val actions: List<AnAction> by lazy {  // Note: eager initialization will cause runtime errors
+    createActions()
+  }
 
   fun getComponent(): Component {
     return toolbarPane
@@ -96,8 +100,8 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   protected fun createToolbar(): JComponent {
-    val actions = createActions() + listOf(createClearAction())
-    val actionGroup = DefaultActionGroup(actions)
+    val allActions = actions + listOf(createClearAction())
+    val actionGroup = DefaultActionGroup(allActions)
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true)
     return toolbar.component.apply {
       isOpaque = false

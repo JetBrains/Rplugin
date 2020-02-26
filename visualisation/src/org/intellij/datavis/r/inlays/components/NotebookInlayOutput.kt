@@ -114,5 +114,5 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     output?.onViewportChange(isInViewport)
   }
 
-  override fun createActions(): List<AnAction> = emptyList()
+  override fun createActions(): List<AnAction> = output?.actions ?: emptyList()
 }
