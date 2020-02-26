@@ -21,7 +21,11 @@ object ChunkPathManager {
     Paths.get(PathManager.getSystemPath(), "rplugin", "cache", "chunk-output", toHexString(path.hashCode())).toString()
 
   fun getImagesDirectory(psi: PsiElement): String? {
-    return Paths.get(getCacheDirectory(psi) ?: return null, "images").toString()
+    return findInCache(psi, "images")
+  }
+
+  fun getExternalImagesDirectory(psi: PsiElement): String? {
+    return findInCache(psi, "external-images")
   }
 
   fun getHtmlDirectory(psi: PsiElement): String? {
@@ -29,10 +33,16 @@ object ChunkPathManager {
   }
 
   fun getDataDirectory(psi: PsiElement): String? {
-    return Paths.get(getCacheDirectory(psi) ?: return null, "data").toString()
+    return findInCache(psi, "data")
   }
 
   fun getOutputFile(psi: PsiElement): String? {
-    return Paths.get(getCacheDirectory(psi) ?: return null, "output.json").toString()
+    return findInCache(psi, "output.json")
+  }
+
+  private fun findInCache(psi: PsiElement, name: String): String? {
+    return getCacheDirectory(psi)?.let { cacheDirectory ->
+      Paths.get(cacheDirectory, name).toString()
+    }
   }
 }

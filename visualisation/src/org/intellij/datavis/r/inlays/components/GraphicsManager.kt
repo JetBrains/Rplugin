@@ -13,6 +13,7 @@ interface GraphicsManager {
   val isBusy: Boolean
   var globalResolution: Int
   var isDarkModeEnabled: Boolean
+  fun canRescale(imagePath: String): Boolean
   fun getImageResolution(imagePath: String): Int?
 
   /**

@@ -49,12 +49,11 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       }
     }
 
-  @Volatile
-  var isAutoResizeEnabled: Boolean = true
+  var isAutoResizeEnabled: Boolean
+    get() = !graphicsPanel.isAdvancedMode
     set(value) {
-      if (field != value) {
-        field = value
-        graphicsPanel.isAdvancedMode = !isAutoResizeEnabled
+      if (isAutoResizeEnabled != value) {
+        graphicsPanel.isAdvancedMode = !value
         if (value) {
           scheduleRescalingIfNecessary()
         }
@@ -88,11 +87,12 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   fun <R> addImage(imageFile: File, immediatelyRescale: Boolean, executor: (() -> Unit) -> R): R {
     val path = imageFile.absolutePath
+    isAutoResizeEnabled = graphicsManager?.canRescale(path) ?: false
     localResolution = graphicsManager?.getImageResolution(path)
     targetResolution = localResolution  // Note: this **schedules** a rescaling as well
     imagePath = path
     return executor {
-      if (!immediatelyRescale) {
+      if (!immediatelyRescale || !isAutoResizeEnabled) {
         graphicsPanel.showImage(imageFile)
       } else {
         graphicsPanel.showMessage(WAITING_MESSAGE)

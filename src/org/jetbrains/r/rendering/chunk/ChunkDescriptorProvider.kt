@@ -33,6 +33,7 @@ import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
+import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.*
 import java.awt.event.MouseEvent
 import java.io.File
@@ -92,16 +93,35 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
 
   companion object {
     fun getImages(psi: PsiElement): List<InlayOutput> {
-      val inlays = ChunkPathManager.getImagesDirectory(psi)?.let { imagesDirectory ->
-        RGraphicsDevice.fetchLatestNormalSnapshots(File(imagesDirectory))?.map { snapshot ->
-          val bytes = FileUtil.loadFileBytes(snapshot.file)
-          val imageIcon = ImageIcon(bytes, "preview")
-          val preview = IconUtil.scale(imageIcon, null, InlayDimensions.lineHeight * 4.0f / imageIcon.iconHeight)
-          val text = snapshot.file.absolutePath
-          InlayOutput(text, "IMG", preview = preview)
+      return getImageFilesOrdered(psi).map { imageFile ->
+        val bytes = FileUtil.loadFileBytes(imageFile)
+        val imageIcon = ImageIcon(bytes, "preview")
+        val preview = IconUtil.scale(imageIcon, null, InlayDimensions.lineHeight * 4.0f / imageIcon.iconHeight)
+        val text = imageFile.absolutePath
+        InlayOutput(text, "IMG", preview = preview)
+      }
+    }
+
+    private fun getImageFilesOrdered(psi: PsiElement): List<File> {
+      val snapshots = getSnapshots(psi)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
+      val external = getExternalImages(psi) ?: emptyList()
+      val triples = snapshots + external
+      val sorted = triples.sortedWith(compareBy(ExternalImage::major, ExternalImage::minor))
+      return sorted.map { it.file }
+    }
+
+    private fun getSnapshots(psi: PsiElement): List<RSnapshot>? {
+      return ChunkPathManager.getImagesDirectory(psi)?.let { directory ->
+        RGraphicsDevice.fetchLatestNormalSnapshots(File(directory))
+      }
+    }
+
+    private fun getExternalImages(psi: PsiElement): List<ExternalImage>? {
+      return ChunkPathManager.getExternalImagesDirectory(psi)?.let { directory ->
+        File(directory).listFiles()?.mapNotNull { file ->
+          ExternalImage.from(file)
         }
       }
-      return inlays ?: emptyList()
     }
 
     private val preferredWidth
@@ -140,6 +160,26 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
       File(imagesDirectory).takeIf { it.exists() }?.listFiles { _, name ->
         name.endsWith(extension)
       }?.apply { sortBy { it.lastModified() } }
+  }
+}
+
+private data class ExternalImage(
+  val file: File,
+  val major: Int,
+  val minor: Int
+) {
+  companion object {
+    private const val IMAGE_MAGIC = "image"
+
+    fun from(file: File): ExternalImage? {
+      val parts = file.nameWithoutExtension.split('_')
+      if (parts.size != 3 || parts[0] != IMAGE_MAGIC) {
+        return null
+      }
+      val major = parts[1].toInt()
+      val minor = parts[2].toInt()
+      return ExternalImage(file, major, minor)
+    }
   }
 }
 

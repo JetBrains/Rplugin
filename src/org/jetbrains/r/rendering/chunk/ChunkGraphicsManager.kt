@@ -37,6 +37,10 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       RGraphicsSettings.setDarkMode(project, isEnabled)
     }
 
+  override fun canRescale(imagePath: String): Boolean {
+    return imagePath.toSnapshot()?.recordedFile?.takeIf { it.exists() } != null
+  }
+
   override fun getImageResolution(imagePath: String): Int? {
     return imagePath.toSnapshot()?.resolution
   }
