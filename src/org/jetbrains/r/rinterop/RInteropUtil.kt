@@ -20,6 +20,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -156,7 +157,7 @@ stderr: ${stderr}
     val result = AsyncPromise<Pair<ColoredProcessHandler, RPaths>>()
     val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
     if (StringUtil.isEmptyOrSpaces(interpreterPath)) {
-      throw RuntimeException(RBundle.message("console.runner.interpreter.not.specified"))
+      return rejectedPromise(RuntimeException(RBundle.message("console.runner.interpreter.not.specified")))
     }
     val paths = getRPaths(interpreterPath, project)
     val version = RInterpreterUtil.getVersionByPath(interpreterPath)
