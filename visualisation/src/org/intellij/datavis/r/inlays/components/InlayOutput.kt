@@ -44,9 +44,9 @@ import java.awt.Component
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
+import javax.imageio.ImageIO
+import javax.imageio.ImageTypeSpecifier
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
@@ -109,8 +109,8 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
     }
   }
 
-  protected fun saveWithFileChooser(title: String, description: String, extension: String, defaultName: String, onChoose: (File) -> Unit) {
-    val descriptor = FileSaverDescriptor(title, description, extension)
+  protected fun saveWithFileChooser(title: String, description: String, extension: Array<String>, defaultName: String, onChoose: (File) -> Unit) {
+    val descriptor = FileSaverDescriptor(title, description, *extension)
     val chooser = FileSaverDialogImpl(descriptor, project)
     val virtualBaseDir = VfsUtil.findFile(Paths.get(project.basePath!!), true)
     chooser.save(virtualBaseDir, defaultName)?.let { fileWrapper ->
@@ -292,11 +292,15 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
   }
 
   override fun saveAs() {
-    wrapper.imagePath?.let { path ->
-      val title = "Export image"
-      val description = "Save image to disk"
-      saveWithFileChooser(title, description, "png", "snapshot.png") { destination ->
-        Files.copy(Paths.get(path), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    wrapper.image?.let { image ->
+      val title = VisualizationBundle.message("inlay.output.image.export.text")
+      val description = VisualizationBundle.message("inlay.output.image.export.description")
+      val imageTypeSpecifier = ImageTypeSpecifier.createFromRenderedImage(image)
+      val extensions = arrayOf("jpeg", "png", "bmp", "gif", "tiff").filter {
+        ImageIO.getImageWriters(imageTypeSpecifier, it).asSequence().any()
+      }.toTypedArray()
+      saveWithFileChooser(title, description, extensions, defaultName = "image") { destination ->
+        ImageIO.write(image, destination.extension, destination)
       }
     }
   }
@@ -376,7 +380,7 @@ class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> U
   override fun saveAs() {
     val title = "Export as txt"
     val description = "Export console content to text file"
-    saveWithFileChooser(title, description, "txt", "output.txt") { destination ->
+    saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       destination.bufferedWriter().use { out ->
         out.write(console.text)
       }
@@ -427,7 +431,7 @@ class InlayOutputHtml(parent: Disposable, project: Project, clearAction: () -> U
   override fun saveAs() {
     val title = "Export as txt"
     val description = "Exports the selected range or whole table if nothing is selected as csv or tsv file"
-    saveWithFileChooser(title, description, "txt", "output.txt") { destination ->
+    saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
       Platform.runLater {
         val selection = webView.engine.executeScript("window.getSelection().toString()") as String
         destination.bufferedWriter().use { out ->
