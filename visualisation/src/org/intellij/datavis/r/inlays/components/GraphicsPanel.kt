@@ -240,12 +240,11 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private fun removeImageInfoLabel(editor: ImageEditor) {
-    currentFile?.extension?.let { extension ->
-      val labels = UIUtil.findComponentsOfType(editor.component, JLabel::class.java)
-      for (label in labels) {
-        if (label.text.contains(extension, ignoreCase = true)) {
-          label.parent.remove(label)
-        }
+    val labels = UIUtil.findComponentsOfType(editor.component, JLabel::class.java)
+    for (label in labels) {
+      val text = label.text
+      if (text.contains("color", ignoreCase = true) && !text.contains("<html>")) {
+        label.parent.remove(label)
       }
     }
   }
