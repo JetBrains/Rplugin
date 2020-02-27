@@ -24,6 +24,7 @@ import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.R_3_6
 import org.jetbrains.r.packages.RHelpersUtil
 import java.io.File
 import java.io.FileInputStream
@@ -165,6 +166,7 @@ stderr: ${stderr}
 
     if (!RInterpreterUtil.isSupportedVersion(version)) return result.also { result.setError("Unsupported interpreter version " + version)  }
     val wrapperPath = getWrapperPath(version)
+    LOG.info("R version is $version. RWrapper path: $wrapperPath")
     val rwrapper = File(wrapperPath)
     if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
     if (!rwrapper.canExecute()) {
@@ -213,15 +215,21 @@ stderr: ${stderr}
 
   private fun getWrapperPath(version: Version): String {
     val filename = "rwrapper-" + getSystemSuffix()
-    return if (ApplicationManager.getApplication().isInternal || ApplicationManager.getApplication().isUnitTestMode) {
-      RHelpersUtil.findFileInRHelpers(filename).takeIf { it.exists() }?.absolutePath ?: getRWrapperByRVersion(version, filename)
+    val fileByVersion = getRWrapperByRVersion(version, filename)
+    return if ((ApplicationManager.getApplication().isInternal || ApplicationManager.getApplication().isUnitTestMode) &&
+               !File(fileByVersion).exists()) {
+      RHelpersUtil.findFileInRHelpers(filename).absolutePath
     } else {
-      getRWrapperByRVersion(version, filename)
+      fileByVersion
     }
   }
 
-  private fun getRWrapperByRVersion(version: Version, relativePath: String): String =
-    Paths.get(RHelpersUtil.findFileInRHelpers("R-${version.major}.${version.minor}").absolutePath, relativePath).toString()
+  private fun getRWrapperByRVersion(version: Version, relativePath: String): String {
+    val wrapperVersion =
+      if (version.`is`(3, 4) || version.`is`(3, 5)) Version(3, 6, 0) else version
+    val directory = "R-${wrapperVersion.major}.${wrapperVersion.minor}"
+    return Paths.get(RHelpersUtil.findFileInRHelpers(directory).absolutePath, relativePath).toString()
+  }
 
   private fun getSystemSuffix(): String = when {
       SystemInfo.isLinux -> "x64-linux"
