@@ -29,7 +29,7 @@ class RLibraryWatcher(private val project: Project) {
 
   init {
     bulkFileListener = object: BulkFileListener {
-      override fun after(events: MutableList<out VFileEvent>) {
+      override fun after(events: List<VFileEvent>) {
         if (events.any { it.isLibraryEvent() }) {
           onLibraryChanged()
         }
