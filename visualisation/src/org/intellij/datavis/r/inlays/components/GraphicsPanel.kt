@@ -5,6 +5,7 @@
 package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.colors.EditorColorsListener
@@ -207,7 +208,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     closeEditor(NO_GRAPHICS)
     val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
     adjustImageZoom(editor.zoomModel)
-    removeImageInfoLabel(editor)
+    removeImageInfoLabelAndActionToolBar(editor)
     currentImageFile = file
     currentEditor = editor
     rootPanel.contentComponent = internalComponent
@@ -239,13 +240,16 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     return lastToolPanelHeight
   }
 
-  private fun removeImageInfoLabel(editor: ImageEditor) {
+  private fun removeImageInfoLabelAndActionToolBar(editor: ImageEditor) {
     val labels = UIUtil.findComponentsOfType(editor.component, JLabel::class.java)
     for (label in labels) {
       val text = label.text
       if (text.contains("color", ignoreCase = true) && !text.contains("<html>")) {
         label.parent.remove(label)
       }
+    }
+    UIUtil.findComponentOfType(editor.component, ActionToolbarImpl::class.java)?.let { toolbar ->
+      toolbar.parent.remove(toolbar)
     }
   }
 
