@@ -59,7 +59,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private fun addHtmlOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputHtml(parent, editor.project!!, clearAction) }
 
-  private fun addImgOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputImg(parent, editor.project!!, clearAction) }
+  private fun addImgOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputImg(parent, editor, clearAction) }
 
   private inline fun createOutput(constructor: (Disposable, Editor, () -> Unit) -> InlayOutput) =
     constructor(parent, editor, clearAction).apply { setupOutput(this) }

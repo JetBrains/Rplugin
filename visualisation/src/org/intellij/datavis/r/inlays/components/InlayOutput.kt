@@ -15,6 +15,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -175,7 +176,11 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 }
 
-class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Unit) : InlayOutput(parent, project, clearAction), Disposable {
+class InlayOutputImg(
+  parent: Disposable,
+  private val editor: Editor,
+  clearAction: () -> Unit)
+  : InlayOutput(parent, editor.project!!, clearAction), Disposable {
   private val wrapper = GraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
@@ -276,7 +281,18 @@ class InlayOutputImg(parent: Disposable, project: Project, clearAction: () -> Un
       }
     }.onSuccess {
       SwingUtilities.invokeLater {
-        onHeightCalculated?.invoke(wrapper.maximumHeight ?: 0)
+        val maxHeight = wrapper.maximumHeight ?: 0
+        if (UIUtil.isRetina()) {
+          val maxWidth = wrapper.maximumWidth ?: 0
+          val editorWidth = editor.contentComponent.width
+          if (maxWidth * 2 <= editorWidth) {
+            onHeightCalculated?.invoke(maxHeight * 2)
+          } else {
+            onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
+          }
+        } else {
+          onHeightCalculated?.invoke(maxHeight)
+        }
       }
     }
   }

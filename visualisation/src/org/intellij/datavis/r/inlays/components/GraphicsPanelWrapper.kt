@@ -77,6 +77,9 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   val maximumHeight: Int?
     get() = graphicsPanel.maximumSize?.height
 
+  val maximumWidth: Int?
+    get() = graphicsPanel.maximumSize?.width
+
   val component = graphicsPanel.component
 
   fun addImage(imageFile: File, immediatelyRescale: Boolean) {
