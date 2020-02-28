@@ -14,6 +14,7 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
@@ -198,8 +199,10 @@ class RPackageManagementService(private val project: Project,
   }
 
   override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<String, Exception>) {
-    val repoPackage = provider.name2AvailablePackages?.get(packageName)
-    consumer.consume(RepoUtils.formatDetails(repoPackage))
+    runAsync {
+      val repoPackage = provider.name2AvailablePackages?.get(packageName)
+      consumer.consume(RepoUtils.formatDetails(repoPackage))
+    }
   }
 
   fun fetchLatestVersion(packageName: String): String? {
