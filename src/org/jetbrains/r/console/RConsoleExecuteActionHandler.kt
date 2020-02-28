@@ -8,6 +8,7 @@ import com.intellij.codeInsight.hint.HintManager
 import com.intellij.execution.console.BaseConsoleExecuteActionHandler
 import com.intellij.execution.console.LanguageConsoleView
 import com.intellij.execution.filters.HyperlinkInfo
+import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.ApplicationManager
@@ -77,11 +78,12 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   var chunkState: ChunkExecutionState? = null
 
   internal inner class AsyncEventsListener : RInterop.AsyncEventsListener {
+    private val ansiEscapeDecoder = AnsiEscapeDecoder()
+
     override fun onText(text: String, type: ProcessOutputType) {
       runInEdt {
-        when (type) {
-          ProcessOutputType.STDOUT -> consoleView.print(text, ConsoleViewContentType.NORMAL_OUTPUT)
-          ProcessOutputType.STDERR -> consoleView.print(text, ConsoleViewContentType.ERROR_OUTPUT)
+        ansiEscapeDecoder.escapeText(text, type) { s, attributes ->
+          consoleView.print(s, ConsoleViewContentType.getConsoleViewType(attributes))
         }
       }
     }
@@ -95,7 +97,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       if (prompt.isNotBlank()) {
         runInEdt {
           val lines = prompt.lines()
-          lines.dropLast(1).forEach { consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT) }
+          lines.dropLast(1).forEach {
+            consoleView.print(it + "\n", ConsoleViewContentType.USER_INPUT)
+          }
           consolePromptDecorator.mainPrompt = lines.last()
         }
       }
@@ -125,7 +129,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onException(text: String) {
       runInEdt {
-        consoleView.print("\n" + RBundle.message("console.exception.message", text) + "\n", ConsoleViewContentType.ERROR_OUTPUT)
+        onText("\n" + RBundle.message("console.exception.message", text) + "\n", ProcessOutputType.STDERR)
         val handler = object : HyperlinkInfo {
           override fun navigate(project: Project?) {
             if (this != showStackTraceHandler) {
@@ -139,7 +143,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         }
         showStackTraceHandler = handler
         consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
-        consoleView.print("\n", ConsoleViewContentType.ERROR_OUTPUT)
+        onText("\n", ProcessOutputType.STDERR)
       }
     }
 
