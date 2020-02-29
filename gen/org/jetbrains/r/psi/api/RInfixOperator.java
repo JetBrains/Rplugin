@@ -4,7 +4,14 @@ package org.jetbrains.r.psi.api;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 
-public interface RInfixOperator extends ROperator {
+public interface RInfixOperator extends ROperator, PsiNamedElement {
+
+  @Nullable
+  String getName();
+
+  @NotNull
+  PsiElement setName(@NotNull String name);
 
 }

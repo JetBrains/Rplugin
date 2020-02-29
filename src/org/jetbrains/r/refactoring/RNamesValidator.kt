@@ -15,6 +15,8 @@ object RNamesValidator : NamesValidator {
 
   fun isIdentifier(name: String) = !isKeyword(name) && name matches IDENTIFIER_REGEX
 
+  fun isOperatorIdentifier(name: String) = name.length >= 2 && name.startsWith('%') && name.endsWith('%')
+
   fun quoteIfNeeded(name: String) = if (isIdentifier(name)) name else "`${name.replace("\\", "\\\\").replace("`", "\\`")}`"
 
   private val RESERVED_WORDS = setOf(

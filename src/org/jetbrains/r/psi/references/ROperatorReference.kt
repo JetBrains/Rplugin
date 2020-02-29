@@ -5,7 +5,11 @@
 
 package org.jetbrains.r.psi.references
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
+import com.intellij.testFramework.ReadOnlyLightVirtualFile
+import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.psi.api.RInfixOperator
 import org.jetbrains.r.psi.api.ROperator
 import java.util.*
 
@@ -21,6 +25,13 @@ class ROperatorReference(element: ROperator) : RReferenceBase<ROperator>(element
 
     RResolver.resolveInFilesOrLibrary(element, text, result)
     return result.toTypedArray()
+  }
+
+  override fun handleElementRename(newElementName: String): PsiElement? {
+    if (element is RInfixOperator) {
+      return (element as RInfixOperator).setName(newElementName)
+    }
+    return null
   }
 
   override fun getVariants(): Array<Any> {

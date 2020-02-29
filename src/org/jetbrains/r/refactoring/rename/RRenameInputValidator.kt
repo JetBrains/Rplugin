@@ -13,6 +13,7 @@ import com.intellij.util.ProcessingContext
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.refactoring.RNamesValidator
 
 
 class RRenameInputValidator : RenameInputValidator {
@@ -24,5 +25,11 @@ class RRenameInputValidator : RenameInputValidator {
     )
   }
 
-  override fun isInputValid(newName: String, element: PsiElement, context: ProcessingContext) = true
+  override fun isInputValid(newName: String, element: PsiElement, context: ProcessingContext): Boolean {
+    return if (element is RAssignmentStatement) {
+      val name = element.name
+      !RNamesValidator.isOperatorIdentifier(name) || RNamesValidator.isOperatorIdentifier(newName)
+    }
+    else true
+  }
 }

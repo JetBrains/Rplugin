@@ -95,6 +95,7 @@ public class RVisitor extends PsiElementVisitor {
 
   public void visitInfixOperator(@NotNull RInfixOperator o) {
     visitOperator(o);
+    // visitPsiNamedElement(o);
   }
 
   public void visitListSubsetOperator(@NotNull RListSubsetOperator o) {

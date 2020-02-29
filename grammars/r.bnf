@@ -72,6 +72,7 @@
   extends(".*_operator")=operator
   implements("identifier_expression")="com.intellij.psi.PsiNamedElement"
   implements("string_literal_expression")="com.intellij.psi.PsiNamedElement"
+  implements("infix_operator")="com.intellij.psi.PsiNamedElement"
   implements("parameter")="com.intellij.psi.PsiNameIdentifierOwner"
   implements("assignment_statement")="com.intellij.psi.PsiNameIdentifierOwner"
   implements("named_argument")="com.intellij.psi.PsiNameIdentifierOwner"
@@ -135,7 +136,7 @@ plusminus_operator ::= '+' | '-'
 muldiv_operator ::= '*' | '/'
 colon_operator ::= ':' // used for sequences and interactions
 exp_operator ::= '^'
-infix_operator ::= INFIX_OP
+infix_operator ::= INFIX_OP { methods = [getName setName] }
 not_operator ::= '!'
 at_operator ::= '@'
 list_subset_operator ::= '$'

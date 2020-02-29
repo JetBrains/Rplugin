@@ -182,6 +182,13 @@ internal object RPsiImplUtil {
   }
 
   @JvmStatic
+  fun setName(infixOperator: RInfixOperator, name: String): PsiElement {
+    val dummyExpression = RElementFactory.buildRFileFromText(infixOperator.project, "dummy $name dummy")
+    val newOperator = PsiTreeUtil.findChildOfType(dummyExpression, RInfixOperator::class.java) ?: return infixOperator
+    return infixOperator.replace(newOperator)
+  }
+
+  @JvmStatic
   fun getName(parameter: RParameterImpl): String {
     parameter.greenStub?.let { return it.name }
     return parameter.nameIdentifier?.name ?: UNNAMED

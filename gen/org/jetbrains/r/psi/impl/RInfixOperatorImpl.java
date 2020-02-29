@@ -25,4 +25,16 @@ public class RInfixOperatorImpl extends ROperatorImpl implements RInfixOperator 
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public String getName() {
+    return RPsiImplUtil.getName(this);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement setName(@NotNull String name) {
+    return RPsiImplUtil.setName(this, name);
+  }
+
 }
