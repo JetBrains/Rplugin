@@ -57,6 +57,7 @@ class RNamespaceAccessExpressionFilter : ElementFilter {
 class IdentifierFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
     val expression = PsiTreeUtil.getParentOfType(context, org.jetbrains.r.psi.api.RExpression::class.java, false)
+    if (expression?.parent is RNoCommaTail) return false
     return expression is RIdentifierExpression && !expression.isNamespaceAccess() && !RPsiUtil.isFieldLikeComponent(expression)
   }
 

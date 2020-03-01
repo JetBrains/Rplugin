@@ -253,6 +253,11 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     doArgTest("foo(10, my_<caret> \n  param=20)")
   }
 
+  fun testNoCommaTailCompletion() {
+    doTest("f(321<caret>)", strict = true)
+    doTest("f(\"321\"<caret>)", strict = true)
+  }
+
   fun testLookupPackageName() {
     myFixture.configureByText("foo.R", """gau<caret>""")
     val result = myFixture.completeBasic()!!.first { it.lookupString == "gaussian" }
