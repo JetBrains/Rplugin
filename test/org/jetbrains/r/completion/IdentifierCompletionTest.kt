@@ -258,6 +258,31 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("f(\"321\"<caret>)", strict = true)
   }
 
+  fun testOperatorCompletion() {
+    fun doOperatorTest(text: String, textAfterCompletion: String) {
+      val header = """
+         `%xxyyzz_operator%` <- function(x, y) x + y + x + y
+         xxyyzz_not_operator <- function(x, y) x + y - x + y
+         `%xxyyzz_one_more_operator%` <- function(x, y) 42
+      """.trimIndent()
+      val fileText = """
+        $header
+        $text
+        """.trimIndent()
+      doTest(fileText, "%xxyyzz_one_more_operator%", "%xxyyzz_operator%", strict = true)
+
+      doApplyCompletionTest(fileText, "%xxyyzz_operator%", """
+        $header
+        $textAfterCompletion
+        """.trimIndent())
+    }
+
+    doOperatorTest("1 %xxyyzz_<caret>", "1 %xxyyzz_operator%<caret>")
+    doOperatorTest("%xxyyzz_<caret>", "%xxyyzz_operator%<caret>")
+    doOperatorTest("1 %xxyyzz_<caret>%", "1 %xxyyzz_operator%<caret>")
+    doOperatorTest("%xxyyzz_<caret>%", "%xxyyzz_operator%<caret>")
+  }
+
   fun testLookupPackageName() {
     myFixture.configureByText("foo.R", """gau<caret>""")
     val result = myFixture.completeBasic()!!.first { it.lookupString == "gaussian" }

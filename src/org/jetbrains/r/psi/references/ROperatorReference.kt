@@ -35,7 +35,7 @@ class ROperatorReference(element: ROperator) : RReferenceBase<ROperator>(element
   }
 
   override fun getVariants(): Array<Any> {
-    return arrayOf(0)
+    return emptyArray()
   }
 
 }

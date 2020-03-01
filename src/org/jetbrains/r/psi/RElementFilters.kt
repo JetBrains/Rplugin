@@ -10,16 +10,16 @@ import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.NotFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.api.RArgumentList
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RStringLiteralExpression
+import com.intellij.psi.util.elementType
+import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.psi.api.*
 
 object RElementFilters {
   val IMPORT_FILTER = ImportFilter()
   val MEMBER_ACCESS_FILTER = FilterPattern(MemberFilter())
   val IMPORT_CONTEXT = FilterPattern(IMPORT_FILTER)
   val IDENTIFIER_FILTER = FilterPattern(AndFilter(IdentifierFilter(), NotFilter(IMPORT_FILTER)))
+  val OPERATOR_FILTER = FilterPattern(OperatorFilter())
   val NAMESPACE_REFERENCE_FILTER = FilterPattern(RNamespaceAccessExpressionFilter())
   val IDENTIFIER_OR_STRING_FILTER = FilterPattern(IdentifierOrStringFilter())
   val STRING_FILTER = FilterPattern(StringFilter())
@@ -59,6 +59,17 @@ class IdentifierFilter : ElementFilter {
     val expression = PsiTreeUtil.getParentOfType(context, org.jetbrains.r.psi.api.RExpression::class.java, false)
     if (expression?.parent is RNoCommaTail) return false
     return expression is RIdentifierExpression && !expression.isNamespaceAccess() && !RPsiUtil.isFieldLikeComponent(expression)
+  }
+
+  override fun isClassAcceptable(hintClass: Class<*>?) = true
+}
+
+class OperatorFilter : ElementFilter {
+  override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+    if (context.elementType == RElementTypes.R_INFIX_OP) return true
+    val expression = PsiTreeUtil.getParentOfType(context, RInfixOperator::class.java, false)
+    val prevSibling = context?.prevSibling
+    return expression != null || prevSibling != null && prevSibling.text.startsWith("%")
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?) = true

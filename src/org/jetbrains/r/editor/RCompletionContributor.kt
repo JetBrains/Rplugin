@@ -12,6 +12,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.*
@@ -42,8 +43,10 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.util.PathUtil
 import javax.swing.Icon
+import kotlin.collections.HashSet
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.math.*
 
 const val TABLE_MANIPULATION_COLUMNS_GROUPING = 110
 const val NAMED_ARGUMENT_GROUPING = 100
@@ -92,7 +95,7 @@ class RCompletionContributor : CompletionContributor() {
   private fun addIdentifierCompletion() {
     extend(CompletionType.BASIC, psiElement()
       .withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.IDENTIFIER_FILTER), IdentifierCompletionProvider())
+      .andOr(RElementFilters.IDENTIFIER_FILTER, RElementFilters.OPERATOR_FILTER), IdentifierCompletionProvider())
   }
 
   private fun addMemberAccessCompletion() {
@@ -169,8 +172,17 @@ class RCompletionContributor : CompletionContributor() {
 
   private class IdentifierCompletionProvider : CompletionProvider<CompletionParameters>() {
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-      val position = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, _result: CompletionResultSet) {
+      val probableIdentifier = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false)
+      val position = if (probableIdentifier != null) {
+        val infixOperator = PsiTreeUtil.findChildOfType(probableIdentifier, RInfixOperator::class.java)
+        if (infixOperator != null) infixOperator else probableIdentifier  // operator surrounded by % or identifier
+      }
+      else PsiTreeUtil.getParentOfType(parameters.position, RPsiElement::class.java, false) ?: return // operator with parser error
+
+      val result =
+        if (probableIdentifier == null) _result.withPrefixMatcher("%${_result.prefixMatcher.prefix}")
+        else _result
       val parent = position.parent
       val shownNames = HashSet<String>()
       val project = position.project
@@ -188,7 +200,7 @@ class RCompletionContributor : CompletionContributor() {
       addLocalsFromRuntime(originalFile, shownNames, result)
 
       // we are completing an assignee, so we don't want to suggest function names here
-      if (position.isAssignee()) {
+      if (position is RExpression && position.isAssignee()) {
         return
       }
 
@@ -214,7 +226,7 @@ class RCompletionContributor : CompletionContributor() {
       }
     }
 
-    private fun addKeywords(position: RExpression,
+    private fun addKeywords(position: RPsiElement,
                             shownNames: HashSet<String>,
                             result: CompletionResultSet,
                             isHelpFromRConsole: Boolean) {
@@ -241,7 +253,7 @@ class RCompletionContributor : CompletionContributor() {
       }
     }
 
-    private fun addLocalsFromControlFlow(position: RExpression,
+    private fun addLocalsFromControlFlow(position: RPsiElement,
                                          shownNames: HashSet<String>,
                                          result: CompletionResultSet,
                                          isHelpFromRConsole: Boolean) {
@@ -502,6 +514,7 @@ class RCompletionContributor : CompletionContributor() {
     private fun createFunctionLookupElement(functionAssignment: RAssignmentStatement,
                                             isHelpFromRConsole: Boolean,
                                             isLocal: Boolean = false): LookupElement {
+      if (functionAssignment.name.startsWith("%")) return createOperatorLookupElement(functionAssignment, isLocal)
       val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(functionAssignment.containingFile)?.name
       val icon = AllIcons.Nodes.Function
       val tailText = functionAssignment.functionParameters
@@ -551,6 +564,23 @@ class RCompletionContributor : CompletionContributor() {
             context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
           })
       }
+    }
+
+    private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {
+      val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(functionAssignment.containingFile)?.name
+      val icon = AllIcons.Nodes.Function
+      return PrioritizedLookupElement.withInsertHandler(
+        PrioritizedLookupElement.withGrouping(RLookupElement(functionAssignment.name, false, icon, packageName),
+                                              if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING),
+        InsertHandler<LookupElement> { context, _ ->
+          val document = context.document
+          val startOffset = context.tailOffset
+          val endOffset = min(context.tailOffset + 1, document.textLength)
+          if (endOffset <= startOffset) return@InsertHandler
+          if (document.getText(TextRange(startOffset, endOffset)) == "%") {
+            document.replaceString(startOffset, endOffset, "")
+          }
+        })
     }
 
     private fun createNamespaceAccess(lookupString: String): LookupElement {
