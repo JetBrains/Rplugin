@@ -19,43 +19,12 @@ import java.util.*
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
 
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
-    val result = ArrayList<ResolveResult>()
     RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
       return resolveNamedArgument(it, incompleteCode)
     }
     if (element.isDependantIdentifier) return emptyArray()
 
-    val localResolveResult = resolveLocally()
-    val controlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java)
-
-    if (controlFlowHolder?.getIncludedSources(element)?.resolveInSources(element, result, localResolveResult?.element) != true) {
-      if (localResolveResult != null) {
-        if (localResolveResult !is EmptyLocalResult) result.add(localResolveResult)
-        if (result.isEmpty()) return emptyArray()
-      }
-      else {
-        RResolver.addSortedResultsInFilesOrLibrary(element, result)
-      }
-    }
-
-    if (result.isNotEmpty()) {
-      val distinct = result.distinct()
-      return if (distinct.size > 1) {
-        distinct.map { PsiElementResolveResult(it.element!!, false) }.toTypedArray()
-      }
-      else distinct.toTypedArray()
-    }
-
-    val elementName = element.name
-    element.containingFile.runtimeInfo?.let { consoleRuntimeInfo ->
-      val variables = consoleRuntimeInfo.rInterop.globalEnvLoader.variables
-      variables.firstOrNull { it.name == elementName }?.let {
-        return arrayOf(PsiElementResolveResult(RPomTarget.createPsiElementByRValue(it)))
-      }
-    }
-
-    RResolver.resolveInFilesOrLibrary(element, elementName, result)
-    return result.toTypedArray()
+    return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
   }
 
   private fun resolveLocally(): ResolveResult? {
@@ -70,14 +39,9 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       else if (definition != null) {
         return PsiElementResolveResult(definition)
       }
-      return EmptyLocalResult
+      return RResolver.EmptyLocalResult
     }
     return null
-  }
-
-  private object EmptyLocalResult : ResolveResult {
-    override fun getElement(): PsiElement? = null
-    override fun isValidResult(): Boolean = false
   }
 
   private fun resolveNamedArgument(assignment: RNamedArgument,

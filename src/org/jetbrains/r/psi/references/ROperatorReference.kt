@@ -6,25 +6,29 @@
 package org.jetbrains.r.psi.references
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
-import com.intellij.testFramework.ReadOnlyLightVirtualFile
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RInfixOperator
-import org.jetbrains.r.psi.api.ROperator
+import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.psi.api.*
 import java.util.*
 
 class ROperatorReference(element: ROperator) : RReferenceBase<ROperator>(element) {
 
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
+    if (element is RInfixOperator) {
+        return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
+    }
+
     val result = ArrayList<ResolveResult>()
-
-    val text = element.text
-    //        String doubleQuotedText = "\"" + text + "\"";
-    //        String singleQuotedText = "'" + text + "'";
-    //        String backquotedText = "`" + text + "`";
-
-    RResolver.resolveInFilesOrLibrary(element, text, result)
+    RResolver.resolveInFilesOrLibrary(element, element.text, result)
     return result.toTypedArray()
+  }
+
+  private fun resolveLocally(): ResolveResult? {
+    val controlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java)
+    val localVariableInfo = controlFlowHolder?.getLocalVariableInfo(element)
+    val definition = localVariableInfo?.variables?.get(element.name)?.variableDescription?.firstDefinition
+    return if (definition != null && definition.parent is RAssignmentStatement) PsiElementResolveResult(definition.parent) else null
   }
 
   override fun handleElementRename(newElementName: String): PsiElement? {

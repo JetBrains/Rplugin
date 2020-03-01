@@ -248,6 +248,16 @@ function(x){
     """.trimIndent())
   }
 
+  fun testLocalInfixOperator() {
+    doTest("`%local_operator%` <- function(x, y) x + y", """
+      local <- function() {
+        `%local_operator%` <- function(x, y) x + y
+        10 %local_oper<caret>ator% 20
+      }
+    """.trimIndent())
+  }
+
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     val results = resolve()

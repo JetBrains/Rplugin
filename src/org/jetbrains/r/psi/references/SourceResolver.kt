@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.ex.temp.TempFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
@@ -28,7 +29,8 @@ sealed class IncludedSources {
   /**
    * @return true if all of  [element]'s possible definitions are in sourced files, false otherwise
    */
-  fun resolveInSources(element: RIdentifierExpression,
+  fun resolveInSources(element: RPsiElement,
+                       name: String,
                        result: MutableList<ResolveResult>,
                        localResolveResult: PsiElement?): Boolean {
     val lastConsideredSource = (localResolveResult as? RPsiElement?)?.let {
@@ -36,12 +38,13 @@ sealed class IncludedSources {
       controlFlowHolder?.getIncludedSources(it)
     }
     val innerResult = mutableListOf<ResolveResult>()
-    return resolveInSourcesInner(element, innerResult, lastConsideredSource).also {
+    return resolveInSourcesInner(element, name, innerResult, lastConsideredSource).also {
       result.addAll(innerResult.distinct())
     }
   }
 
-  protected abstract fun resolveInSourcesInner(element: RIdentifierExpression,
+  protected abstract fun resolveInSourcesInner(element: RPsiElement,
+                                               name: String,
                                                result: MutableList<ResolveResult>,
                                                lastConsideredSource: IncludedSources?): Boolean
 
@@ -63,18 +66,19 @@ sealed class IncludedSources {
       return PsiManager.getInstance(project).findFile(virtualFile ?: return null) as? RFile
     }
 
-    override fun resolveInSourcesInner(element: RIdentifierExpression,
+    override fun resolveInSourcesInner(element: RPsiElement,
+                                       name: String,
                                        result: MutableList<ResolveResult>,
                                        lastConsideredSource: IncludedSources?): Boolean {
       if (this == lastConsideredSource) return false
       val file = file
       file?.virtualFile?.let { virtualFile ->
         val tmpResult = mutableListOf<ResolveResult>()
-        RResolver.resolveInFile(element, element.name, tmpResult, virtualFile)
+        RResolver.resolveInFile(element, name, tmpResult, virtualFile)
         val resolveResult = tmpResult.singleOrNull()
         val resolveElement = resolveResult?.element
         val ret = RecursionManager.doPreventingRecursion(file, true) {
-          if (file.getAllIncludedSources().resolveInSources(element, result, resolveElement)) return@doPreventingRecursion true
+          if (file.getAllIncludedSources().resolveInSources(element, name, result, resolveElement)) return@doPreventingRecursion true
           if (resolveResult != null) {
             result.add(resolveResult)
             return@doPreventingRecursion true
@@ -83,18 +87,19 @@ sealed class IncludedSources {
         }
         if (ret == true) return true
       }
-      return prev.map { it.resolveInSourcesInner(element, result, lastConsideredSource) }.all()
+      return prev.map { it.resolveInSourcesInner(element, name, result, lastConsideredSource) }.all()
     }
   }
 
   class MultiSource(private val multiSources: IncludedSources? = null,
                     private val prev: List<IncludedSources> = emptyList()) : IncludedSources() {
-    override fun resolveInSourcesInner(element: RIdentifierExpression,
+    override fun resolveInSourcesInner(element: RPsiElement,
+                                       name: String,
                                        result: MutableList<ResolveResult>,
                                        lastConsideredSource: IncludedSources?): Boolean {
       if (this == lastConsideredSource) return false
-      return if (multiSources?.resolveInSourcesInner(element, result, lastConsideredSource) != true) {
-        prev.map { it.resolveInSourcesInner(element, result, lastConsideredSource) }.all()
+      return if (multiSources?.resolveInSourcesInner(element, name, result, lastConsideredSource) != true) {
+        prev.map { it.resolveInSourcesInner(element, name, result, lastConsideredSource) }.all()
       }
       else true
     }

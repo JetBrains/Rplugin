@@ -1,6 +1,7 @@
 [0]File:
 0(1) element: null
-1(2) element: R_NUMERIC_LITERAL_EXPRESSION
+1(2) element: R_COLON_OPERATOR
 2(3) element: R_NUMERIC_LITERAL_EXPRESSION
-3(4) element: R_OPERATOR_EXPRESSION
-4() element: null
+3(4) element: R_NUMERIC_LITERAL_EXPRESSION
+4(5) element: R_OPERATOR_EXPRESSION
+5() element: null

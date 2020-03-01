@@ -1,8 +1,9 @@
 [0]File:
 0(1) element: null
 1(2) element: R_STRING_LITERAL_EXPRESSION
-2(3) element: R_IDENTIFIER_EXPRESSION
+2(3) element: R_AT_OPERATOR
 3(4) element: R_IDENTIFIER_EXPRESSION
-4(5) element: R_OPERATOR_EXPRESSION
-5(6) element: R_ASSIGNMENT_STATEMENT
-6() element: null
+4(5) element: R_IDENTIFIER_EXPRESSION
+5(6) element: R_OPERATOR_EXPRESSION
+6(7) element: R_ASSIGNMENT_STATEMENT
+7() element: null

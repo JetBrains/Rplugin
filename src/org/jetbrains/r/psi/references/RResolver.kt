@@ -15,13 +15,14 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterManager.Companion.getInstance
+import org.jetbrains.r.psi.RPomTarget
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.getFunction
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameterList
+import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.isDependantIdentifier
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
+import java.util.ArrayList
 import java.util.function.Predicate
 
 object RResolver {
@@ -86,6 +87,43 @@ object RResolver {
     resolveBase(element, name, result, GlobalSearchScope.fileScope(element.project, file))
   }
 
+  fun resolveUsingSourcesAndRuntime(element: RPsiElement, name: String, localResolveResult: ResolveResult?):  Array<ResolveResult> {
+    val result = ArrayList<ResolveResult>()
+    val controlFlowHolder = PsiTreeUtil.getParentOfType(element, RControlFlowHolder::class.java)
+    if (controlFlowHolder?.getIncludedSources(element)?.resolveInSources(element, name, result, localResolveResult?.element) != true) {
+      if (localResolveResult != null) {
+        if (localResolveResult !is EmptyLocalResult) result.add(localResolveResult)
+        if (result.isEmpty()) return emptyArray()
+      }
+      else {
+        addSortedResultsInFilesOrLibrary(element, name, result)
+      }
+    }
+
+    if (result.isNotEmpty()) {
+      val distinct = result.distinct()
+      return if (distinct.size > 1) {
+        distinct.map { PsiElementResolveResult(it.element!!, false) }.toTypedArray()
+      }
+      else distinct.toTypedArray()
+    }
+
+    element.containingFile.runtimeInfo?.let { consoleRuntimeInfo ->
+      val variables = consoleRuntimeInfo.rInterop.globalEnvLoader.variables
+      variables.firstOrNull { it.name == name }?.let {
+        return arrayOf(PsiElementResolveResult(RPomTarget.createPsiElementByRValue(it)))
+      }
+    }
+
+    resolveInFilesOrLibrary(element, name, result)
+    return result.toTypedArray()
+  }
+
+  object EmptyLocalResult : ResolveResult {
+    override fun getElement(): PsiElement? = null
+    override fun isValidResult(): Boolean = false
+  }
+
   private fun addResolveResults(result: MutableList<ResolveResult>,
                                 statements: Collection<RAssignmentStatement>) {
     for (statement in statements) {
@@ -112,9 +150,9 @@ object RResolver {
     return resolveResults
   }
 
-  fun addSortedResultsInFilesOrLibrary(element: RIdentifierExpression, result: MutableList<ResolveResult>) {
+  fun addSortedResultsInFilesOrLibrary(element: RPsiElement, name: String, result: MutableList<ResolveResult>) {
     val libraryOrFileResult = mutableListOf<ResolveResult>()
-    resolveInFilesOrLibrary(element, element.name, libraryOrFileResult)
+    resolveInFilesOrLibrary(element, name, libraryOrFileResult)
     result.addAll(sortResolveResults(element, element.containingFile.runtimeInfo, libraryOrFileResult.toTypedArray()))
   }
 }

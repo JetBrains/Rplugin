@@ -1,0 +1,1 @@
+`%my_op%` <- function(x, y) x * y

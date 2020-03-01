@@ -70,6 +70,8 @@ class RIncludedSourcesResolveTest : RLightCodeInsightFixtureTestCase() {
 
   fun testInvalidPath() = doTest()
 
+  fun testInfixOperator() = doTest()
+
   fun testFileDeletion() {
     val files = getFiles()
     val expectedBeforeDeletion = getExpectedResult("# before deletion", files)

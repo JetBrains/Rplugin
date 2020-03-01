@@ -87,6 +87,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
           innerFunctions.add(element)
         }
       }
+      is RInfixOperator -> addRead(info, element, element.name)
     }
     return result
   }
@@ -107,7 +108,12 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
 
   private fun addRead(info: LocalVariableInfo,
                       element: RIdentifierExpression) {
-    val name = element.name
+    addRead(info, element, element.name)
+  }
+
+  private fun addRead(info: LocalVariableInfo,
+                      element: RPsiElement,
+                      name: String) {
     val variableDescription = info.variables[name]?.variableDescription
     if (variableDescription != null) {
       if (variableDescription.firstDefinition.getControlFlowContainer() != controlFlowHolder) {

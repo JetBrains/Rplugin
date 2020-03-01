@@ -146,6 +146,7 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
   }
 
   override fun visitOperatorExpression(o: ROperatorExpression) {
+    o.operator?.let { builder.startNode(it) }
     if (o.isBinary) {
       o.leftExpr?.accept(this)
       o.rightExpr?.accept(this)
