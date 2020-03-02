@@ -125,7 +125,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun doUpdateState() {
-    state = State.EMPTY
     updateEpoch.incrementAndGet()
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
