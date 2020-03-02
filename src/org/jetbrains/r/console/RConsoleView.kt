@@ -8,6 +8,7 @@ import com.intellij.codeInsight.daemon.impl.AnnotationHolderImpl
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
+import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
@@ -121,6 +122,7 @@ class RConsoleView(val rInterop: RInterop,
       runWriteAction {
         consoleEditor.document.setText(text)
       }
+      ConsoleHistoryController.addToHistory(this, text)
       prepareExecuteAction(true, false, true)
       (UndoManager.getInstance(project) as UndoManagerImpl).invalidateActionsFor(
         DocumentReferenceManager.getInstance().create(currentEditor.document))
