@@ -77,7 +77,6 @@ class RConsoleView(val rInterop: RInterop,
     Disposer.register(this, rInterop)
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
-    historyViewer.addFocusListener { consoleEditor.contentComponent.requestFocus() }
     RDebuggerUtil.createBreakpointListener(rInterop, this)
     executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
       var previousWidth = 0
