@@ -53,6 +53,8 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
   override val initProjectScriptName: String
     get() = "createPackrat"
 
+  override val willCreateDescription = false
+
   private val lastSettingsRequest = LastSettingsRequest()
   private val errorBackgroundColor = JBColor.GRAY
   private val tableModel = PackratSettingsTableModel()

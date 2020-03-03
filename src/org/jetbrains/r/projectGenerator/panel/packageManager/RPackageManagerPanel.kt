@@ -19,6 +19,7 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils
+import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.projectGenerator.panel.RPanel
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.nio.file.Paths
@@ -26,6 +27,7 @@ import java.nio.file.Paths
 abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettings) : RPanel() {
   abstract val packageManagerName: String
   protected abstract val initProjectScriptName: String
+  protected open val willCreateDescription = true
 
   open val rPackageName by lazy { packageManagerName }
   protected open val initializingTitle by lazy { RBundle.message("init.project.title", packageManagerName) }
@@ -56,6 +58,9 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
   }
 
   protected fun initializePackage(project: Project, baseDir: VirtualFile, args: List<String>) {
+    if (willCreateDescription) {
+      RPackageBuildUtil.markAsPackage(project)
+    }
     ProgressManager.getInstance().run(
       object : Task.Modal(project, initializingTitle, false) {
         override fun run(indicator: ProgressIndicator) {
