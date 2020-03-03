@@ -17,7 +17,6 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -31,7 +30,6 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.File
-import java.nio.file.Paths
 import javax.swing.JPanel
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
@@ -118,7 +116,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun getPandocLibraryPath(): String {
-    return Paths.get(PathManager.getPluginsPath(), "rplugin", "pandoc").toString().also {
+    return RHelpersUtil.findFileInRHelpers( "pandoc").toString().also {
       File(it).mkdir()
     }
   }
