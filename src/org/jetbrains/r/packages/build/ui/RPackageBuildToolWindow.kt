@@ -13,9 +13,7 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RHelpersUtil
@@ -56,7 +54,12 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     val actionHolders = listOf(
       manager.createActionHolder(INSTALL_ACTION_ID, this::installAndReloadPackageAsync, requiredDevTools = false),
       manager.createActionHolder(CHECK_ACTION_ID, this::checkPackageAsync, requiredDevTools = false),
-      manager.createActionHolder(TEST_ACTION_ID, this::testPackageAsync, requiredDevTools = true)
+      manager.createActionHolder(TEST_ACTION_ID, this::testPackageAsync, requiredDevTools = true) {
+        RPackageBuildUtil.usesTestThat(project)
+      },
+      manager.createActionHolder(SETUP_TESTS_ACTION_ID, this::setupTestThatAsync, requiredDevTools = true) {
+        !RPackageBuildUtil.usesTestThat(project)
+      }
     )
     return RToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(actionHolders))
   }
@@ -88,6 +91,10 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
 
   private fun testPackageAsync(hasDevTools: Boolean): Promise<Unit> {
     return if (hasDevTools) runHelperAsync(TEST_PACKAGE_HELPER) else resolvedPromise()
+  }
+
+  private fun setupTestThatAsync(hasDevTools: Boolean): Promise<Unit> {
+    return if (hasDevTools) runHelperAsync(SETUP_TESTS_HELPER) else resolvedPromise()
   }
 
   private fun runCommandAsync(command: String, vararg args: String): Promise<Unit> {
@@ -155,10 +162,12 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     private const val INSTALL_ACTION_ID = "org.jetbrains.r.packages.build.ui.RInstallPackageAction"
     private const val CHECK_ACTION_ID = "org.jetbrains.r.packages.build.ui.RCheckPackageAction"
     private const val TEST_ACTION_ID = "org.jetbrains.r.packages.build.ui.RTestPackageAction"
+    private const val SETUP_TESTS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RSetupTestsAction"
 
     private val UPDATE_EXPORTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
     private val INSTALL_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/install_package.R")
     private val CHECK_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/check_package.R")
     private val TEST_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/test_package.R")
+    private val SETUP_TESTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/setup_tests.R")
   }
 }

@@ -28,7 +28,12 @@ class RPackageBuildTaskManager(
   @Volatile
   private var isRunning: Boolean = false
 
-  fun createActionHolder(id: String, task: (Boolean) -> Promise<Unit>, requiredDevTools: Boolean) = object : RToolbarUtil.ActionHolder {
+  fun createActionHolder(
+    id: String,
+    task: (Boolean) -> Promise<Unit>,
+    requiredDevTools: Boolean,
+    checkVisible: () -> Boolean = { true }
+  ) = object : RToolbarUtil.ActionHolder {
     private val missing: List<RequiredPackage>?
       get() = RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(REQUIREMENTS)
 
@@ -49,6 +54,10 @@ class RPackageBuildTaskManager(
       } else {
         onInterrupted()
       }
+    }
+
+    override fun checkVisible(): Boolean {
+      return checkVisible()
     }
 
     override fun getHintForDisabled(): String? {

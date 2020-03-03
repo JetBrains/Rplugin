@@ -36,6 +36,10 @@ object RPackageBuildUtil {
     return findRcppExports(project) != null
   }
 
+  fun usesTestThat(project: Project): Boolean {
+    return findInProject(project, "tests", "testthat") != null
+  }
+
   fun getPackageName(project: Project): String? {
     return project.basePath?.let { File(it).name }
   }

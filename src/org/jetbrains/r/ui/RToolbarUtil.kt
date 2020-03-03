@@ -50,6 +50,10 @@ object RToolbarUtil {
     val canClick: Boolean
     fun onClick()
 
+    fun checkVisible(): Boolean {
+      return true
+    }
+
     fun getHintForDisabled(): String? {
       return null
     }
@@ -75,10 +79,14 @@ object RToolbarUtil {
 
     override fun update(e: AnActionEvent) {
       action.update(e)
-      val isEnabled = holder.canClick
-      e.presentation.isEnabled = isEnabled
-      e.presentation.icon = createIcon(isEnabled)
-      e.presentation.description = createDescription(isEnabled)
+      val isVisible = holder.checkVisible()
+      e.presentation.isVisible = isVisible
+      if (isVisible) {
+        val isEnabled = holder.canClick
+        e.presentation.isEnabled = isEnabled
+        e.presentation.icon = createIcon(isEnabled)
+        e.presentation.description = createDescription(isEnabled)
+      }
     }
 
     override fun displayTextInToolbar(): Boolean {
