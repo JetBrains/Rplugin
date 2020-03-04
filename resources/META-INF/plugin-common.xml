@@ -207,6 +207,12 @@ You can find the source code in the following repositories:
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
+        <action id="RConsoleNextLineAction" class="org.jetbrains.r.console.RConsoleNextLineAction"
+                text="Break a Line in the R Console">
+          <keyboard-shortcut keymap="$default" first-keystroke="shift ENTER"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="shift ENTER" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="shift ENTER" replace-all="true"/>
+        </action>
         <action id="RConsole.History.Older" class="com.intellij.openapi.actionSystem.EmptyAction"/>
     </actions>
 

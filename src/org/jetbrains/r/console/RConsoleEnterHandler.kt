@@ -60,7 +60,7 @@ object RConsoleEnterHandler {
     return false
   }
 
-  private fun executeEnterHandler(project: Project, editor:EditorEx) {
+  fun executeEnterHandler(project: Project, editor: EditorEx) {
     val enterHandler = EditorActionManager.getInstance().getActionHandler(IdeActions.ACTION_EDITOR_ENTER)
     WriteCommandAction.runWriteCommandAction(project) {
       enterHandler.execute(editor, null, DataManager.getInstance().getDataContext(editor.component))
