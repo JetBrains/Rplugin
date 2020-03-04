@@ -225,8 +225,11 @@ stderr: ${stderr}
   }
 
   private fun getRWrapperByRVersion(version: Version, relativePath: String): String {
-    val wrapperVersion =
-      if (version.`is`(3, 4) || version.`is`(3, 5)) Version(3, 6, 0) else version
+    val wrapperVersion = if ((version.`is`(3, 4) || version.`is`(3, 5)) && !SystemInfo.isMac) {
+      R_3_6
+    } else {
+      version
+    }
     val directory = "R-${wrapperVersion.major}.${wrapperVersion.minor}"
     return Paths.get(RHelpersUtil.findFileInRHelpers(directory).absolutePath, relativePath).toString()
   }
