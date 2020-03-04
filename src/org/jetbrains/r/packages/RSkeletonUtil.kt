@@ -8,6 +8,7 @@
 package org.jetbrains.r.packages
 
 import com.intellij.execution.process.ProcessOutput
+import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
@@ -104,6 +105,7 @@ object RSkeletonUtil {
         val finalProcessed = processed
         val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
         es.submit {
+          var helperStdout: String? = null
           try {
             LOG.info("building skeleton for package '$rPackage'")
             indicator?.apply {
@@ -113,26 +115,24 @@ object RSkeletonUtil {
 
             val packageName = rPackage.name
             var isError = false
-            val stdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
-                                                         RepoUtils.PACKAGE_SUMMARY,
-                                                         project.basePath,
-                                                         listOf(packageName)) { output ->
+            helperStdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
+                                                      RepoUtils.PACKAGE_SUMMARY,
+                                                      project.basePath,
+                                                      listOf(packageName)) { output ->
               reportError(rPackage, output)
               isError = true
             }
             if (isError) return@submit
-            val binPackage: RLibraryPackage = convertToBinFormat(packageName, stdout)
+            val binPackage: RLibraryPackage = convertToBinFormat(packageName, helperStdout)
 
             FileOutputStream(skeletonFile).use {
               binPackage.writeTo(it)
             }
             result = true
           }
-          catch (e: IOException) {
-            LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e)
-          }
           catch (e: Throwable) {
-            LOG.error("Unexpected error: ", e)
+            val attachments = helperStdout?.let { arrayOf(Attachment("$rPackage.RSummary", it)) } ?: emptyArray()
+            LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e, *attachments)
           }
         }
       }
@@ -207,12 +207,13 @@ object RSkeletonUtil {
     if (lines.isEmpty()) throw IOException("Empty summary")
 
     val priority = when (val it = lines[0].trim()) {
-      "NA" -> RLibraryPackage.Priority.NA
+      "", "NA" -> RLibraryPackage.Priority.NA
       "BASE" -> RLibraryPackage.Priority.BASE
       "RECOMMENDED" -> RLibraryPackage.Priority.RECOMMENDED
       "OPTIONAL" -> RLibraryPackage.Priority.OPTIONAL
       else -> {
-        LOG.error("Unknown priority: $it")
+        LOG.error("Unknown priority for package $packageName: $it",
+                  Attachment("$packageName.RSummary", packageSummary))
         RLibraryPackage.Priority.NA
       }
     }
