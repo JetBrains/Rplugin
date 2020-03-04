@@ -96,7 +96,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
 
   @Volatile
-  private var darkMode = true
+  private var darkMode = GraphicsManager.getInstance(project)?.isDarkModeEnabled ?: true
 
   init {
     val connect = project.messageBus.connect()
@@ -105,8 +105,10 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     })
     connect.subscribe(CHANGE_DARK_MODE_TOPIC, object : DarkModeNotifier {
       override fun onDarkModeChanged(isEnabled: Boolean) {
-        darkMode = isEnabled
-        currentFile?.let { showImage(it) }
+        if (darkMode != isEnabled) {
+          darkMode = isEnabled
+          currentFile?.let { showImage(it) }
+        }
       }
     })
   }
