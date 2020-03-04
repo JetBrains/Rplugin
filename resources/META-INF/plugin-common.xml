@@ -304,7 +304,7 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.packages.build.ui.RPackageBuildToolbarActions">
             <action id="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
                     class="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
-                    description="Build and reload package"
+                    description="Install and reload package"
                     icon="AllIcons.Toolwindows.ToolWindowBuild"/>
             <action id="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
                     class="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
