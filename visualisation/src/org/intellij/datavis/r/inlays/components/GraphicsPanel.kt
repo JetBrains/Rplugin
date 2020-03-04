@@ -183,7 +183,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     defaultBackground.getRGBColorComponents(rgb)
     convertRGBtoHSL(rgb, blackHSL)
 
-    val bufferedImage = ImageIO.read(ByteArrayInputStream(content))
+    val bufferedImage = ImageIO.read(ByteArrayInputStream(content)) ?: return content
     for (x in 0 until bufferedImage.getWidth()) {
       for (y in 0 until bufferedImage.getHeight()) {
         val rgba: Int = bufferedImage.getRGB(x, y)
