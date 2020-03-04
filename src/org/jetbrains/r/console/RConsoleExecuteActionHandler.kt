@@ -11,26 +11,31 @@ import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.ui.ListUtil
+import org.assertj.core.internal.bytebuddy.implementation.bytecode.Throw
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.documentation.RDocumentationUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
+import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.util.PromiseUtil
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -45,7 +50,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   enum class State {
     PROMPT, DEBUG_PROMPT, READ_LN, BUSY, TERMINATED, SUBPROCESS_INPUT
   }
-  @Volatile var state = State.BUSY
+
+  @Volatile
+  var state = State.BUSY
     internal set(newState) {
       runInEdt {
         when (newState) {
@@ -127,23 +134,29 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
 
-    override fun onException(text: String) {
+    override fun onException(message: String, details: RExceptionDetails?) {
+      executeLaterQueue.clear()
+      if (details is RInterrupted) return
       runInEdt {
-        onText("\n" + RBundle.message("console.exception.message", text) + "\n", ProcessOutputType.STDERR)
-        val handler = object : HyperlinkInfo {
-          override fun navigate(project: Project?) {
-            if (this != showStackTraceHandler) {
-              RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
-              return
+      onText("\n" + RBundle.message("console.exception.message", message) + "\n", ProcessOutputType.STDERR)
+        if (rInterop.lastErrorStack.isEmpty()) {
+          showStackTraceHandler = null
+        } else {
+          val handler = object : HyperlinkInfo {
+            override fun navigate(project: Project?) {
+              if (this != showStackTraceHandler) {
+                RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
+                return
+              }
+              consoleView.debuggerPanel?.showLastErrorStack()
             }
-            consoleView.debuggerPanel?.showLastErrorStack()
-          }
 
-          override fun includeInOccurenceNavigation() = false
+            override fun includeInOccurenceNavigation() = false
+          }
+          showStackTraceHandler = handler
+          consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
+          onText("\n", ProcessOutputType.STDERR)
         }
-        showStackTraceHandler = handler
-        consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
-        onText("\n", ProcessOutputType.STDERR)
       }
     }
 
@@ -181,17 +194,27 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   /**
    * Schedule [f] execution on RInterop Thread Pool
    */
-  fun executeLater(f: () -> Unit) {
+  fun <R> executeLater(f: () -> R): Promise<R> {
+    val promise = AsyncPromise<R>()
+    val task: () -> Unit = {
+      try {
+        promise.setResult(f())
+      }
+      catch (t: Throwable) {
+        promise.setError(t)
+      }
+    }
     rInterop.executeTask {
       while (!isRunningCommand) {
         if (executeLaterQueue.isEmpty()) {
-          f()
+          task()
           return@executeTask
         }
         executeLaterQueue.poll().invoke()
       }
-     executeLaterQueue.add(f)
+      executeLaterQueue.add(task)
     }
+    return promise
   }
 
   fun interruptTextExecution() {
@@ -207,7 +230,19 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     when (state) {
       State.PROMPT, State.DEBUG_PROMPT -> {
         if (RConsoleEnterHandler.handleEnterPressed(consoleView.consoleEditor)) {
-          super.runExecuteAction(consoleView)
+          val document = consoleView.consoleEditor.document
+          splitCodeForExecution(console.project, document.text)
+            .map { (text, _) ->
+              {
+                executeLater {
+                  fireBeforeExecution()
+                  consoleView.appendCommandText(text)
+                  fireBusy()
+                  consoleView.rInterop.replExecute(text).then { it.exception == null }
+                }.thenAsync { it }
+              }
+            }
+            .let { PromiseUtil.runChain(it) }
         }
       }
       State.READ_LN -> {
@@ -285,10 +320,24 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
 
   interface Listener {
-    fun beforeExecution() { }
-    fun onCommandExecuted() { }
-    fun onBusy() { }
-    fun onReset() { }
+    fun beforeExecution() {}
+    fun onCommandExecuted() {}
+    fun onBusy() {}
+    fun onReset() {}
+  }
+
+  companion object {
+    fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> {
+      val psiFile = RElementFactory.buildRFileFromText(project, text)
+      return psiFile.children.asSequence()
+        .filter { it.text == "\n" }
+        .map { it.textRange }
+        .let { sequenceOf(TextRange(0, 0)).plus(it) }
+        .plus(TextRange(text.length, text.length))
+        .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
+        .map { text.substring(it.startOffset, it.endOffset) to it }
+        .toList()
+    }
   }
 }
 

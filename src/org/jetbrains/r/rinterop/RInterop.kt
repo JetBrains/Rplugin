@@ -745,7 +745,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
       Service.AsyncEvent.EventCase.EXCEPTION -> {
         lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
-        fireListeners { it.onException(event.exception.text) }
+        val (text, details) = exceptionInfoFromProto(event.exception.exception)
+        fireListeners { it.onException(text, details) }
       }
       Service.AsyncEvent.EventCase.TERMINATION -> {
         fireListeners { it.onTermination() }
@@ -891,7 +892,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
     fun onPrompt(isDebug: Boolean = false) {}
-    fun onException(text: String) {}
+    fun onException(message: String, details: RExceptionDetails?) {}
     fun onTermination() {}
     fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(content: String, url: String) {}
