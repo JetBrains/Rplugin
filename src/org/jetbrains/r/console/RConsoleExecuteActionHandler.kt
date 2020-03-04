@@ -18,20 +18,18 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.ui.ListUtil
-import org.assertj.core.internal.bytebuddy.implementation.bytecode.Throw
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.documentation.RDocumentationUtil
+import org.jetbrains.r.intentions.DependencyManagementFix
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.packages.RequiredPackage
+import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPomTarget
-import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
@@ -155,6 +153,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           }
           showStackTraceHandler = handler
           consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
+          onText("\n", ProcessOutputType.STDERR)
+        }
+        if (details is RNoSuchPackageError) {
+          consoleView.printHyperlink(RBundle.message("console.install.package.message", details.packageName), object : HyperlinkInfo {
+            override fun navigate(project: Project?) {
+              RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(
+                RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false)
+                .onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
+            }
+
+            override fun includeInOccurenceNavigation() = false
+          })
           onText("\n", ProcessOutputType.STDERR)
         }
       }
