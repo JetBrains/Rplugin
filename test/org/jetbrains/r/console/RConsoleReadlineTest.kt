@@ -12,22 +12,15 @@ import org.jetbrains.r.rinterop.RInterop
 class RConsoleReadlineTest : RConsoleBaseTestCase() {
   fun testReadline() {
     val promise1 = AsyncPromise<Unit>()
-    val promise2 = AsyncPromise<Unit>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         promise1.setResult(Unit)
       }
-
-      override fun onPrompt(isDebug: Boolean) {
-        promise2.setResult(Unit)
-      }
     })
-    console.executeText("s = paste0('[', readline(), ']')\n")
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    promise1.blockingGet(DEFAULT_TIMEOUT)
+    val promise2 = console.executeText("s = paste0('[', readline(), ']')\n")
+    promise1.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     console.executeText("line\n")
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    promise2.blockingGet(DEFAULT_TIMEOUT)
+    promise2.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[line]", rInterop.executeCode("cat(s)").stdout)
   }
 }

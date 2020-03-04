@@ -8,12 +8,9 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.PsiElementProcessor
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.PlatformTestUtil
 import junit.framework.TestCase
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rinterop.RDebuggerTestHelper
@@ -164,7 +161,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
     TestCase.assertEquals("20", rInterop.executeCode("cat(x)").stdout)
 
     helper.invokeAndWait(false) { rInterop.debugCommandStepOver() }
-    promise.myBlockingGet(DEFAULT_TIMEOUT)
+    promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
   }
 
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {
@@ -178,14 +175,4 @@ class RunChunkTest : RConsoleBaseTestCase() {
     promise.blockingGet(10000)
     return RMarkdownInlayDescriptor(myFixture.file, myFixture.editor).getInlayOutputs(fenceLang)
   }
-}
-
-private fun <T> Promise<T>.myBlockingGet(timeout: Int): T? {
-  val time = System.currentTimeMillis()
-  while (System.currentTimeMillis() - time < timeout && isPending) {
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-    Thread.sleep(5)
-  }
-  TestCase.assertTrue(isSucceeded)
-  return blockingGet(1)
 }

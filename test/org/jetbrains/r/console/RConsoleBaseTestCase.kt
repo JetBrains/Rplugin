@@ -5,6 +5,7 @@
 package org.jetbrains.r.console
 
 import com.intellij.openapi.util.Disposer
+import com.intellij.testFramework.PlatformTestUtil
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
@@ -21,6 +22,7 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
     var i = 0
     while (console.isRunningCommand && i++ < 100) { Thread.sleep(20) }
     check(!console.isRunningCommand) { "Cannot get prompt from rwrapper" }
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
   }
 
   override fun tearDown() {

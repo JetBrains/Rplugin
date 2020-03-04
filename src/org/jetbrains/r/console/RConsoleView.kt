@@ -47,6 +47,8 @@ import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
 import com.intellij.util.ui.FontInfo
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.annotator.RAnnotatorVisitor
@@ -121,7 +123,9 @@ class RConsoleView(val rInterop: RInterop,
     AppUIUtil.invokeOnEdt {
       runWriteAction {
         consoleEditor.document.setText(text)
+        PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
+      annotateForHistory()
       ConsoleHistoryController.addToHistory(this, text)
       prepareExecuteAction(true, false, true)
       (UndoManager.getInstance(project) as UndoManagerImpl).invalidateActionsFor(
@@ -129,7 +133,8 @@ class RConsoleView(val rInterop: RInterop,
     }
   }
 
-  fun executeText(text: String) {
+  fun executeText(text: String): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
     invokeLater {
       runWriteAction {
         consoleEditor.document.setText(text)
@@ -138,8 +143,9 @@ class RConsoleView(val rInterop: RInterop,
       annotateForHistory()
 
       consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
-      executeActionHandler.runExecuteAction(this)
+      executeActionHandler.runExecuteActionImpl().onProcessed { promise.setResult(Unit) }
     }
+    return promise
   }
 
   fun createDebuggerPanel() {

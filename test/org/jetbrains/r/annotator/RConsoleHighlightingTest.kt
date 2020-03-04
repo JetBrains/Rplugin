@@ -16,12 +16,11 @@ import java.awt.Color
 
 class RConsoleHighlightingTest : RConsoleBaseTestCase() {
   fun testAnnotatorHighlightingFromMultilineInput() {
-    console.executeText("""
+    console.appendCommandText("""
       some_var <- list(xxx = 10,
         yyy = 10,
         zzz = list(5))
     """.trimIndent())
-    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     console.flushDeferredText()
 
     val editor = console.editor

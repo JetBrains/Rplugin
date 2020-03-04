@@ -20,6 +20,7 @@ import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.documentation.RDocumentationUtil
@@ -237,11 +238,15 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   override fun runExecuteAction(console: LanguageConsoleView) {
     if (console != this.consoleView) return
+    runExecuteActionImpl()
+  }
+
+  fun runExecuteActionImpl(): Promise<Unit> {
     when (state) {
       State.PROMPT, State.DEBUG_PROMPT -> {
         if (RConsoleEnterHandler.handleEnterPressed(consoleView.consoleEditor)) {
           val document = consoleView.consoleEditor.document
-          splitCodeForExecution(console.project, document.text)
+          return splitCodeForExecution(consoleView.project, document.text)
             .map { (text, _) ->
               {
                 executeLater {
@@ -252,7 +257,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                 }.thenAsync { it }
               }
             }
-            .let { PromiseUtil.runChain(it) }
+            .let { PromiseUtil.runChain(it).then { Unit } }
         }
       }
       State.READ_LN -> {
@@ -281,6 +286,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         HintManager.getInstance().showErrorHint(consoleView.consoleEditor, RBundle.message("console.process.terminated"))
       }
     }
+    return resolvedPromise<Unit>()
   }
 
   private fun throwExceptionInTests() {

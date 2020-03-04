@@ -15,6 +15,7 @@ import com.intellij.openapi.project.impl.ProjectImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -24,6 +25,8 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import junit.framework.TestCase
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterImpl
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -197,19 +200,29 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
     val SKELETON_LIBRARY_PATH = TEST_DATA_PATH + "/skeletons"
     private val packageNamesForTests: Set<String> = """
-  base
-  datasets
-  data.table
-  dplyr
-  graphics
-  grDevices
-  magrittr
-  methods
-  stats
-  utils
-  roxygen2
-  ggplot2
-""".trimIndent().split("\n").toSet()
+      base
+      datasets
+      data.table
+      dplyr
+      graphics
+      grDevices
+      magrittr
+      methods
+      stats
+      utils
+      roxygen2
+      ggplot2
+    """.trimIndent().split("\n").toSet()
+
+    fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int): T? {
+      val time = System.currentTimeMillis()
+      while (System.currentTimeMillis() - time < timeout && isPending) {
+        PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+        Thread.sleep(5)
+      }
+      TestCase.assertTrue(isSucceeded)
+      return blockingGet(1)
+    }
   }
 }
 
