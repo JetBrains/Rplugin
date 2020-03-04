@@ -55,7 +55,6 @@ class RRunAction : RRunActionBase() {
 
 class RDebugAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    console.rInterop.debugCommandContinue()
     console.rInterop.replSourceFile(file, debug = true)
   }
 

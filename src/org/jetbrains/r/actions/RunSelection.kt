@@ -27,7 +27,6 @@ abstract class RunSelectionBase : REditorActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
-        console.rInterop.debugCommandContinue()
         RConsoleExecuteActionHandler.splitCodeForExecution(project, selection.code)
           .map { (text, range) ->
             {
@@ -39,7 +38,7 @@ abstract class RunSelectionBase : REditorActionBase() {
                 console.appendCommandText(text.trim { it <= ' ' })
                 console.executeActionHandler.fireBusy()
                 val newRange = TextRange(range.startOffset + selection.range.startOffset, range.endOffset + selection.range.startOffset)
-                console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug)
+                console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, resetDebugCommand = false)
                   .then { it.exception == null }
               }.thenAsync { it }
             }
