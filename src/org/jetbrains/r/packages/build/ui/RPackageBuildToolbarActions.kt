@@ -13,3 +13,5 @@ class RCheckPackageAction : RDumbAwareActionAdapter()
 class RTestPackageAction: RDumbAwareActionAdapter()
 
 class RSetupTestsAction: RDumbAwareActionAdapter()
+
+class RPackageBuildSettingsAction : RDumbAwareActionAdapter()

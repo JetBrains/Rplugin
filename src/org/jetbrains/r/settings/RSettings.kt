@@ -5,64 +5,53 @@
 
 package org.jetbrains.r.settings
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
-import org.jdom.Element
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import java.io.File
 
 @State(name = "RSettings", storages = [Storage("rSettings.xml")])
-class RSettings(private val project: Project) : PersistentStateComponent<Element> {
-  private var backingPath: String? = null
-
+class RSettings(private val project: Project) : SimplePersistentStateComponent<RSettings.State>(State()) {
   var interpreterPath: String
-    get() {
-      fun getSuggestedPath(): String {
-        return runAsync { RInterpreterUtil.suggestHomePath() }.
-          onError { Logger.getInstance(RSettings::class.java).error(it) }.
-          blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: ""
-      }
-
-      return backingPath ?: getSuggestedPath().also {
-        backingPath = it
-      }
-    }
+    get() = state.interpreterPath ?: fetchInterpreterPath()
     set(value) {
-      backingPath = value
+      state.interpreterPath = value
     }
 
-  var loadWorkspace: Boolean = false
-  var saveWorkspace: Boolean = false
+  var loadWorkspace: Boolean
+    get() = state.loadWorkspace
+    set(value) {
+      state.loadWorkspace = value
+    }
 
-  override fun getState(): Element? {
-    val root = Element("rsettings")
-    root.setAttribute("path", interpreterPath)
-    root.setAttribute("loadWorkspace", loadWorkspace.toString())
-    root.setAttribute("saveWorkspace", saveWorkspace.toString())
-    return root
+  var saveWorkspace: Boolean
+    get() = state.saveWorkspace
+    set(value) {
+      state.saveWorkspace = value
+    }
+
+  @Synchronized
+  private fun fetchInterpreterPath(): String {
+    return state.interpreterPath ?: getSuggestedPath().also { path ->
+      state.interpreterPath = path
+    }
   }
 
-  override fun loadState(state: Element) {
-    val path = state.getAttributeValue("path")
-    if (!path.isNullOrBlank()) {
-      interpreterPath = path
-    }
-    loadWorkspace = state.getAttributeValue("loadWorkspace")?.toBoolean() ?: false
-    saveWorkspace = state.getAttributeValue("saveWorkspace")?.toBoolean() ?: false
+  class State : BaseState() {
+    var interpreterPath by string()
+    var loadWorkspace by property(false)
+    var saveWorkspace by property(false)
+    var packageBuildSettingsState by property<RPackageBuildSettings.State>()
   }
 
   companion object {
-    fun getInstance(project: Project): RSettings = project.getComponent(RSettings::class.java) ?: RSettings(project)
-
-
-    fun hasInterpreter(project: Project): Boolean {
-      val interpreterPath = RSettings.getInstance(project).interpreterPath
-      return !StringUtil.isEmptyOrSpaces(interpreterPath) && File(interpreterPath).canExecute()
+    private fun getSuggestedPath(): String {
+      return runAsync { RInterpreterUtil.suggestHomePath() }.
+        onError { Logger.getInstance(RSettings::class.java).error(it) }.
+        blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT) ?: ""
     }
+
+    fun getInstance(project: Project): RSettings = project.service<RSettings>()
   }
 }

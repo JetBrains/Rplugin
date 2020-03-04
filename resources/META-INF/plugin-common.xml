@@ -86,9 +86,6 @@ You can find the source code in the following repositories:
     <!--<depends optional="true">com.intellij.modules.python</depends>-->
     <project-components>
         <component>
-            <implementation-class>org.jetbrains.r.settings.RSettings</implementation-class>
-        </component>
-        <component>
             <implementation-class>org.jetbrains.r.packages.RPackageService</implementation-class>
         </component>
 
@@ -322,6 +319,10 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.packages.build.ui.RSetupTestsAction"
                     description="Setup testing infrastructure"
                     icon="AllIcons.Actions.NewFolder"/>
+            <action id="org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
+                    class="org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
+                    description="Build settings"
+                    icon="AllIcons.General.GearPlain"/>
         </group>
     </actions>
 
@@ -440,6 +441,10 @@ You can find the source code in the following repositories:
         <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.settings.RSettings"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.settings.RPackageBuildSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.RMarkdownGraphicsSettings"/>
         

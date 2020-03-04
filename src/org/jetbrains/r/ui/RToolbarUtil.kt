@@ -34,6 +34,10 @@ object RToolbarUtil {
     return JBUI.Panels.simplePanel(actionToolbar.component)
   }
 
+  fun createActionHolder(id: String, onClick: () -> Unit): ActionHolder {
+    return createActionHolder(id, { true }, onClick)
+  }
+
   fun createActionHolder(id: String, canClick: () -> Boolean, onClick: () -> Unit) = object : ActionHolder {
     override val id = id
 

@@ -20,6 +20,7 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.settings.RPackageBuildSettings
 import org.jetbrains.r.ui.RToolbarUtil
 import java.awt.BorderLayout
 import java.io.File
@@ -36,6 +37,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private val service = RPackageManagementService(project)
+  private val settings = RPackageBuildSettings.getInstance(project)
   private val packageName = RPackageBuildUtil.getPackageName(project)
   private val manager = RPackageBuildTaskManager(project, this::onReset, this::updateExportsAsync, this::onInterrupted)
 
@@ -51,7 +53,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private fun createToolbar(): JComponent {
-    val actionHolders = listOf(
+    val primaryHolders = listOf(
       manager.createActionHolder(INSTALL_ACTION_ID, this::installAndReloadPackageAsync, requiredDevTools = false),
       manager.createActionHolder(CHECK_ACTION_ID, this::checkPackageAsync, requiredDevTools = false),
       manager.createActionHolder(TEST_ACTION_ID, this::testPackageAsync, requiredDevTools = true) {
@@ -61,7 +63,14 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
         !RPackageBuildUtil.usesTestThat(project)
       }
     )
-    return RToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(actionHolders))
+    val secondaryHolders = listOf(
+      RToolbarUtil.createActionHolder(SETTINGS_ACTION_ID, this::showSettingsDialog)
+    )
+    return RToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(primaryHolders, secondaryHolders))
+  }
+
+  private fun showSettingsDialog() {
+    RPackageBuildSettingsDialog(project).show()
   }
 
   private fun updateExportsAsync(): Promise<Unit> {
@@ -82,11 +91,40 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private fun installPackageAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER) else runCommandAsync("INSTALL", "--with-keep.source")
+    val args = getInstallArguments()
+    val useDevTools = hasDevTools && settings.useDevTools
+    return if (useDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER, args) else runCommandAsync("INSTALL", args)
+  }
+
+  private fun getInstallArguments(): List<String> {
+    return mutableListOf<String>().also { args ->
+      if (settings.cleanBuild) {
+        args.add("--preclean")
+        args.add("--clean")
+      }
+      if (settings.mainArchitectureOnly) {
+        args.add("--no-multiarch")
+      }
+      if (settings.keepSources) {
+        args.add("--with-keep.source")
+      }
+      args.addAll(settings.installArgs)
+    }
   }
 
   private fun checkPackageAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(CHECK_PACKAGE_HELPER) else runCommandAsync("check")
+    val args = getCheckArguments()
+    val useDevTools = hasDevTools && settings.useDevTools
+    return if (useDevTools) runHelperAsync(CHECK_PACKAGE_HELPER, args) else runCommandAsync("check", args)
+  }
+
+  private fun getCheckArguments(): List<String> {
+    return mutableListOf<String>().also { args ->
+      if (settings.asCran) {
+        args.add("--as-cran")
+      }
+      args.addAll(settings.checkArgs)
+    }
   }
 
   private fun testPackageAsync(hasDevTools: Boolean): Promise<Unit> {
@@ -97,7 +135,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     return if (hasDevTools) runHelperAsync(SETUP_TESTS_HELPER) else resolvedPromise()
   }
 
-  private fun runCommandAsync(command: String, vararg args: String): Promise<Unit> {
+  private fun runCommandAsync(command: String, args: List<String> = emptyList()): Promise<Unit> {
     return runProcessAsync { interpreterPath ->
       val commands = mutableListOf(interpreterPath, "CMD", command, ".").apply {
         addAll(args)
@@ -106,9 +144,9 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     }
   }
 
-  private fun runHelperAsync(helper: File): Promise<Unit> {
+  private fun runHelperAsync(helper: File, args: List<String> = emptyList()): Promise<Unit> {
     return runProcessAsync { interpreterPath ->
-      RInterpreterUtil.createProcessHandlerForHelper(interpreterPath, helper, project.basePath, emptyList())
+      RInterpreterUtil.createProcessHandlerForHelper(interpreterPath, helper, project.basePath, args)
     }
   }
 
@@ -163,6 +201,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     private const val CHECK_ACTION_ID = "org.jetbrains.r.packages.build.ui.RCheckPackageAction"
     private const val TEST_ACTION_ID = "org.jetbrains.r.packages.build.ui.RTestPackageAction"
     private const val SETUP_TESTS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RSetupTestsAction"
+    private const val SETTINGS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
 
     private val UPDATE_EXPORTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
     private val INSTALL_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/install_package.R")
