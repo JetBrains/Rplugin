@@ -211,8 +211,8 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   fun testExternalLink() {
     myFixture.configureByText("foo.R", "x <- 123")
-    doLinkTest("https://www.loc.gov/marc/relators/relaterm.html", "MARC Code List for Relators")
-    doLinkTest("https://CRAN.R-project.org/package=Matrix", "Matrix: Sparse and Dense Matrix Classes and Methods")
+    doLinkTest("https://bugs.r-project.org/bugzilla/", "R bug tracking system - Main Page")
+    doLinkTest("https://cran.r-project.org/package=Matrix", "Matrix: Sparse and Dense Matrix Classes and Methods")
   }
 
   fun testNavigateLinkDoesntWork() {
@@ -223,8 +223,8 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   fun testExternalLinkDoesntWork() {
     myFixture.configureByText("foo.txt", "x <- 123")
-    testLinkNull("https://www.loc.gov/marc/relators/relaterm.html")
-    testLinkNull("https://CRAN.R-project.org/package=Matrix")
+    testLinkNull("https://bugs.r-project.org/bugzilla/")
+    testLinkNull("https://cran.r-project.org/package=Matrix")
   }
 
   // ---- END OF TESTS ---
