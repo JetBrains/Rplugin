@@ -429,33 +429,4 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(6, rInterop.debugStack.last().position?.line)
     helper.invokeAndWait(false) { rInterop.debugCommandStepInto() }
   }
-
-  fun testDebugPrint() {
-    val file = loadFileWithBreakpointsFromText("""
-      print.abacaba <- function(x) {
-        print(123) # BREAKPOINT
-      }
-      yy <- "42"
-      class(yy) <- "abacaba"
-      yy
-    """.trimIndent())
-
-    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
-    TestCase.assertEquals(listOf(5, 0, 1), rInterop.debugStack.map { it.position!!.line })
-    TestCase.assertEquals(listOf(null, "print", "print.abacaba"), rInterop.debugStack.map { it.functionName })
-    helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
-  }
-
-  fun testNoStepIntoNamespaceAccess() {
-    val file = loadFileWithBreakpointsFromText("""
-      a <- base::stderr() # BREAKPOINT
-      b <- tools:::httpd_port
-    """.trimIndent())
-
-    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
-    TestCase.assertEquals(listOf(0), rInterop.debugStack.map { it.position!!.line })
-    helper.invokeAndWait(true) { rInterop.debugCommandForceStepInto() }
-    TestCase.assertEquals(listOf(1), rInterop.debugStack.map { it.position!!.line })
-    helper.invokeAndWait(false) { rInterop.debugCommandForceStepInto() }
-  }
 }
