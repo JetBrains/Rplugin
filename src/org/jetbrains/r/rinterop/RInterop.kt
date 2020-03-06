@@ -871,7 +871,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
       executor.shutdownNow()
     } else {
-      ProgressManager.getInstance().run(object : Task.Backgroundable(project, RBundle.message("rinterop.terminating.title"), true) {
+      ProgressManager.getInstance().run(object : Task.Backgroundable(null, RBundle.message("rinterop.terminating.title"), true) {
         override fun run(indicator: ProgressIndicator) {
           try {
             indicator.isIndeterminate = true
