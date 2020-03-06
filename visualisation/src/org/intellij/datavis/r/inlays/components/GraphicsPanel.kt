@@ -245,9 +245,10 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private fun removeImageInfoLabelAndActionToolBar(editor: ImageEditor) {
     val labels = UIUtil.findComponentsOfType(editor.component, JLabel::class.java)
     for (label in labels) {
-      val text = label.text
-      if (text.contains("color", ignoreCase = true) && !text.contains("<html>")) {
-        label.parent.remove(label)
+      label.text?.let { text ->
+        if (text.contains("color", ignoreCase = true) && !text.contains("<html>")) {
+          label.parent.remove(label)
+        }
       }
     }
     UIUtil.findComponentOfType(editor.component, ActionToolbarImpl::class.java)?.let { toolbar ->
