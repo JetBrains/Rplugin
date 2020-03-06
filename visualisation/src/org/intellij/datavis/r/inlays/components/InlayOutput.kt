@@ -325,7 +325,7 @@ class InlayOutputImg(
       val title = VisualizationBundle.message("inlay.output.image.export.text")
       val description = VisualizationBundle.message("inlay.output.image.export.description")
       val imageTypeSpecifier = ImageTypeSpecifier.createFromRenderedImage(image)
-      val extensions = arrayOf("jpeg", "png", "bmp", "gif", "tiff").filter {
+      val extensions = arrayOf("png", "jpeg", "bmp", "gif", "tiff").filter {
         ImageIO.getImageWriters(imageTypeSpecifier, it).asSequence().any()
       }.toTypedArray()
       saveWithFileChooser(title, description, extensions, defaultName = "image") { destination ->
