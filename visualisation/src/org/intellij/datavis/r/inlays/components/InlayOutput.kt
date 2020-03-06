@@ -295,16 +295,13 @@ class InlayOutputImg(
     }.onSuccess {
       SwingUtilities.invokeLater {
         val maxHeight = wrapper.maximumHeight ?: 0
-        if (UIUtil.isRetina()) {
-          val maxWidth = wrapper.maximumWidth ?: 0
-          val editorWidth = editor.contentComponent.width
-          if (maxWidth * 2 <= editorWidth) {
-            onHeightCalculated?.invoke(maxHeight * 2)
-          } else {
-            onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
-          }
+        val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
+        val maxWidth = wrapper.maximumWidth ?: 0
+        val editorWidth = editor.contentComponent.width
+        if (maxWidth * scaleMultiplier <= editorWidth) {
+          onHeightCalculated?.invoke(maxHeight * scaleMultiplier)
         } else {
-          onHeightCalculated?.invoke(maxHeight)
+          onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
         }
       }
     }
