@@ -22,7 +22,7 @@ fun buildProgressStatusComponent(progressStatus: InlayProgressStatus): JComponen
   var progressBar: JProgressBar? = null
   if (progressStatus.progress != ProgressStatus.STOPPED_OK) {
     progressBar = JProgressBar(0, 100)
-    progressBar.ui = InlayProgressBarUI(progressStatus.progress)
+    progressBar.setUI(InlayProgressBarUI(progressStatus.progress))
     if (progressStatus.progress == ProgressStatus.RUNNING) {
       progressBar.isIndeterminate = true
       progressBar.foreground = ColorProgressBar.GREEN
