@@ -118,6 +118,7 @@ class RConsoleView(val rInterop: RInterop,
 
   fun appendCommandText(text: String) {
     AppUIUtil.invokeOnEdt {
+      flushDeferredText()
       runWriteAction {
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
@@ -137,7 +138,6 @@ class RConsoleView(val rInterop: RInterop,
         consoleEditor.document.setText(text)
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
-      annotateForHistory()
 
       consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
       executeActionHandler.runExecuteActionImpl().onProcessed { promise.setResult(Unit) }
