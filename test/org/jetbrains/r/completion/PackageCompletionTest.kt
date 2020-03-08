@@ -30,11 +30,11 @@ class PackageCompletionTest : RLightCodeInsightFixtureTestCase() {
     doTest("require(\"<caret>\")", "dplyr", "magrittr")
   }
 
-  fun testIdentifierPacakge() {
+  fun testIdentifierPackage() {
     doTest("dp<caret>", "dplyr", "dpois")
   }
 
-  fun testIdentifierPacakgeApply() {
+  fun testIdentifierPackageApply() {
     doApplyCompletionTest("dp<caret>", "dplyr", "dplyr::<caret>")
     doApplyCompletionTest("library(<caret>)", "dplyr", "library(dplyr<caret>)")
   }
