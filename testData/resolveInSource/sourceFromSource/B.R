@@ -1,1 +1,1 @@
-source("resolveInSource/sourceFromSource/A.R")
+source("A.R")

@@ -1,2 +1,2 @@
-source("resolveInSource/ambiguousIncludeInDeepSource/B.R")
+source("B.R")
 fu<caret>n()

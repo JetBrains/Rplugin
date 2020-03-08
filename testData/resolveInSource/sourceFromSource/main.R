@@ -1,3 +1,3 @@
-source("resolveInSource/sourceFromSource/B.R")
+source("B.R")
 
 fu<caret>n()

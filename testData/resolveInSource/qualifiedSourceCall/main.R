@@ -1,7 +1,7 @@
 new_source <- function() {
-  source("resolveInSource/qualifiedSourceCall/A.R")
+  source("A.R")
 }
 
 new_source()
-base::source("resolveInSource/qualifiedSourceCall/B.R")
+base::source("B.R")
 fu<caret>n()

@@ -1,3 +1,3 @@
-source("resolveInSource/serialIncludes/A.R")
-source("resolveInSource/serialIncludes/B.R")
+source("A.R")
+source("B.R")
 fu<caret>n()

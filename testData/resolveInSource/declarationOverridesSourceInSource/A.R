@@ -1,2 +1,2 @@
-source("resolveInSource/declarationOverridesSourceInSource/B.R")
+source("B.R")
 fun <- function() 41

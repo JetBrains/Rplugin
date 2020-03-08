@@ -1,5 +1,5 @@
 import <- function() {
-  source("resolveInSource/sourceFromFunction/A.R")
+  source("A.R")
 }
 import()
 fu<caret>n()

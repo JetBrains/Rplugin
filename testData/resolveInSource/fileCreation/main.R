@@ -1,4 +1,4 @@
-source("resolveInSource/fileCreation/A.R")
-source("resolveInSource/fileCreation/createThis.R")
+source("A.R")
+source("createThis.R")
 
 fu<caret>n()

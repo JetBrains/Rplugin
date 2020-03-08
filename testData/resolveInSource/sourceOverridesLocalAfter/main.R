@@ -1,3 +1,3 @@
 fun <- function() 42
-source("resolveInSource/sourceOverridesLocalAfter/A.R")
+source("A.R")
 fu<caret>n()

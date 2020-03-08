@@ -1,7 +1,7 @@
 if (condition) {
-  source("resolveInSource/ambiguousInclude/A.R")
+  source("A.R")
 }
 else {
-  source("resolveInSource/ambiguousInclude/B.R")
+  source("B.R")
 }
 fu<caret>n()

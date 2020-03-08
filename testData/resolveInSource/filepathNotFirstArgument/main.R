@@ -1,2 +1,2 @@
-source(echo = TRUE, "resolveInSource/filepathNotFirstArgument/A.R")
+source(echo = TRUE, "A.R")
 fu<caret>n()

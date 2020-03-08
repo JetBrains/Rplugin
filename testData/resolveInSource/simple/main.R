@@ -1,2 +1,2 @@
-source("resolveInSource/simple/A.R")
+source("A.R")
 fu<caret>n()

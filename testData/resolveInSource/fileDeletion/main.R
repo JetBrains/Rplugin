@@ -1,4 +1,4 @@
-source("resolveInSource/fileDeletion/A.R")
-source("resolveInSource/fileDeletion/deleteThis.R")
+source("A.R")
+source("deleteThis.R")
 
 fu<caret>n()

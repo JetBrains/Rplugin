@@ -1,6 +1,6 @@
 import <- function() {
   import_inner <- function() {
-    source("resolveInSource/sourceFromDeepFunction/A.R")
+    source("A.R")
   }
   import_inner()
 }

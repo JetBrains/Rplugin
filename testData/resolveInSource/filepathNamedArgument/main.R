@@ -1,2 +1,2 @@
-source(TRUE, file = "resolveInSource/filepathNamedArgument/A.R")
+source(TRUE, file = "A.R")
 fu<caret>n()

@@ -1,3 +1,3 @@
-source("resolveInSource/declarationOverridesSourceInSource/B.R")
+source("B.R")
 
 fu<caret>n()
