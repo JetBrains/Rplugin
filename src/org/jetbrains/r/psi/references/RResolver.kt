@@ -15,14 +15,14 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.interpreter.RInterpreterManager.Companion.getInstance
+import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RPsiUtil.getFunction
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.psi.isDependantIdentifier
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
-import java.util.ArrayList
+import java.util.*
 import java.util.function.Predicate
 
 object RResolver {
@@ -140,6 +140,14 @@ object RResolver {
                          runtimeInfo: RConsoleRuntimeInfo?,
                          resolveResults: Array<ResolveResult>): Array<ResolveResult> {
     resolveResults.firstOrNull { it.element?.containingFile == psiElement.containingFile }?.let { return arrayOf(it) }
+    val fileUnderProject = psiElement.containingFile.virtualFile?.let {
+      GlobalSearchScope.projectScope(psiElement.project).contains(it)
+    } ?: false
+    if (fileUnderProject && RPackageBuildUtil.isPackage(psiElement.project)) {
+      resolveResults.filterNot { RPsiUtil.isLibraryElement(it.element ?: return@filterNot true) }.toTypedArray().let {
+        if (it.isNotEmpty()) return it
+      }
+    }
     if (runtimeInfo != null) {
       val loadedPackages = runtimeInfo.loadedPackages
       val topResolveResult = resolveResults.minBy { getLoadingNumber(loadedPackages, it) } ?: return resolveResults

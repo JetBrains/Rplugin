@@ -33,13 +33,13 @@ class RequiredPackageException(val missingPackages: List<RequiredPackage>) : Run
     get() = RBundle.message("required.package.exception.message", StringUtil.join(missingPackages, ", "))
 }
 
-data class RequiredPackage(val name: String, val minimalVersion: String = "") {
+data class RequiredPackage(val name: String, val minimalVersion: String = "", val strictVersion: Boolean = false) {
   private fun isVersionSet(): Boolean {
     return minimalVersion.isNotEmpty()
   }
 
   fun toFormat(isQuoted: Boolean): String {
-    val versionString = if (!isVersionSet()) "" else " ($minimalVersion)"
+    val versionString = if (!isVersionSet()) "" else if (!strictVersion) " (>= $minimalVersion)" else " (> $minimalVersion)"
     val nameString = if (isQuoted) "'$name'" else name
     return "$nameString$versionString"
   }
@@ -96,7 +96,17 @@ class RequiredPackageInstaller(private val project: Project) {
 
   @Synchronized
   private fun findOrCreateInstallationTask(utilityName: String, packages: List<RequiredPackage>, askUser: Boolean): InstallationTask {
-    return utilityNames2installationTasks[utilityName] ?: createInstallationTask(utilityName, packages, askUser)
+    val task = utilityNames2installationTasks[utilityName] ?: return createInstallationTask(utilityName, packages, askUser)
+    if (task.requiredPackages != packages) {
+      if (!task.isStarted) {
+        task.notification?.expire()
+        utilityNames2installationTasks.remove(task.utilityName)
+        return createInstallationTask(utilityName, packages, askUser)
+      } else {
+        task.promise.onSuccess { installPackagesWithUserPermission(utilityName, packages - task.requiredPackages, askUser) }
+      }
+    }
+    return task
   }
 
   private fun createInstallationTask(utilityName: String, packages: List<RequiredPackage>, askUser: Boolean): InstallationTask {
@@ -160,7 +170,8 @@ class RequiredPackageInstaller(private val project: Project) {
 
   private fun findRequiredPackage(requiredPackage: RequiredPackage): RInstalledPackage? {
     return rPackageManagementService.findInstalledPackageByName(requiredPackage.name)?.takeIf { candidate ->
-      RPackageVersion.isNewerOrSame(candidate.version, requiredPackage.minimalVersion)
+      !requiredPackage.strictVersion && RPackageVersion.isNewerOrSame(candidate.version, requiredPackage.minimalVersion)
+      || requiredPackage.strictVersion && RPackageVersion.isNewer(candidate.version, requiredPackage.minimalVersion)
     }
   }
 
@@ -193,7 +204,9 @@ class RequiredPackageInstaller(private val project: Project) {
     return mutableListOf<RequiredPackage>().also { needInstall ->
       for (required in requiredPackages) {
         val previousVersion = installingPackages2minimalVersions[required.name]
-        if (previousVersion == null || RPackageVersion.isOlder(previousVersion, required.minimalVersion)) {
+        if (previousVersion == null
+            || !required.strictVersion && RPackageVersion.isOlder(previousVersion, required.minimalVersion)
+            || required.strictVersion && RPackageVersion.isOlderOrSame(previousVersion, required.minimalVersion)) {
           installingPackages2minimalVersions[required.name] = required.minimalVersion
         }
         if (previousVersion == null) {

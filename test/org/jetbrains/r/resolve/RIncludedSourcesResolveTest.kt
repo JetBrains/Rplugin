@@ -6,7 +6,7 @@ package org.jetbrains.r.resolve
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.psi.PsiFile
-import com.jetbrains.extensions.python.toPsi
+import com.intellij.psi.util.PsiUtilCore
 import java.io.File
 
 class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource") {
@@ -104,6 +104,6 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
   override fun getFiles(editorFileName: String, filterPredicate: (String) -> Boolean): List<PsiFile> {
     val result = super.getFiles(editorFileName, filterPredicate)
     val dummy = myFixture.copyFileToProject("$fullTestDataPath/dummy.R", "dummy.R")
-    return result.plus(dummy.toPsi(myFixture.project) as PsiFile)
+    return result.plus(PsiUtilCore.findFileSystemItem(project, dummy) as PsiFile)
   }
 }

@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.extensions.python.toPsi
+import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.psi.api.RExpression
@@ -33,7 +33,7 @@ abstract class RResolveFromFilesTestCase(testDataDirectoryRoot: String) : RLight
       myFixture.copyFileToProject(it, relativePath)
     }
     myFixture.configureFromExistingVirtualFile(virtualFiles[0])
-    return virtualFiles.map { it.toPsi(myFixture.project) as PsiFile }
+    return virtualFiles.map { PsiUtilCore.findFileSystemItem(project, it) as PsiFile }
   }
 
   private fun collectFilePaths(editorFileName: String, filterPredicate: (String) -> Boolean): List<String> {

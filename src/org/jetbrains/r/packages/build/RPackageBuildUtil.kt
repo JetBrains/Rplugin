@@ -5,9 +5,13 @@
 package org.jetbrains.r.packages.build
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.Key
-import java.io.File
-import java.nio.file.Paths
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 
 object RPackageBuildUtil {
   private val KEY = Key.create<Unit>("org.jetbrains.r.packages.build.RPackageBuildUtil")
@@ -41,7 +45,7 @@ object RPackageBuildUtil {
   }
 
   fun getPackageName(project: Project): String? {
-    return project.basePath?.let { File(it).name }
+    return project.guessProjectDir()?.name
   }
 
   private fun isMarkedAsPackage(project: Project): Boolean {
@@ -49,21 +53,23 @@ object RPackageBuildUtil {
   }
 
   private fun hasDescription(project: Project): Boolean {
-    return findDescription(project) != null
+    return CachedValuesManager.getManager(project).getCachedValue(project) {
+      CachedValueProvider.Result.create(
+        findDescription(project) != null,
+        VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS
+      )
+    }
   }
 
-  private fun findDescription(project: Project): File? {
+  private fun findDescription(project: Project): VirtualFile? {
     return findInProject(project, "DESCRIPTION")
   }
 
-  private fun findRcppExports(project: Project): File? {
+  private fun findRcppExports(project: Project): VirtualFile? {
     return findInProject(project, "R", "RcppExports.R")
   }
 
-  private fun findInProject(project: Project, vararg pathElements: String): File? {
-    return project.basePath?.let { basePath ->
-      val filePath = Paths.get(basePath, *pathElements)
-      filePath.toFile().takeIf { it.exists() }
-    }
+  private fun findInProject(project: Project, vararg pathElements: String): VirtualFile? {
+    return project.guessProjectDir()?.let { VfsUtil.findRelativeFile(it, *pathElements) }
   }
 }

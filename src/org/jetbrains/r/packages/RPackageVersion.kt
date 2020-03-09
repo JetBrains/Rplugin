@@ -12,6 +12,13 @@ object RPackageVersion {
     return difference != null && difference >= 0
   }
 
+  fun isNewer(version: String?, comparedToVersion: String?): Boolean {
+    val difference = compare(version, comparedToVersion)
+    return difference != null && difference > 0
+  }
+
+  fun isOlderOrSame(version: String?, comparedToVersion: String?): Boolean = !isNewer(version, comparedToVersion)
+
   fun isOlder(version: String?, comparedToVersion: String?) = !isNewerOrSame(version, comparedToVersion)
 
   fun isSame(version: String?, comparedToVersion: String?) = compare(version, comparedToVersion) == 0

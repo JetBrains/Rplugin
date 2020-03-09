@@ -1,0 +1,1 @@
+select <- function(.data, ...) 42

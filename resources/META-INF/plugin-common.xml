@@ -493,7 +493,9 @@ You can find the source code in the following repositories:
         <projectService serviceImplementation="org.jetbrains.r.rendering.settings.RMarkdownSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RequiredPackageInstaller"/>
-      
+
+        <projectService serviceImplementation="org.jetbrains.r.packages.RPackageProjectManager"/>
+
         <projectService serviceInterface="org.jetbrains.r.packages.remote.RepoProvider"
                         serviceImplementation="org.jetbrains.r.packages.remote.RBasicRepoProvider"/>
 

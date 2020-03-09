@@ -21,6 +21,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.settings.RSettings
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -171,6 +172,7 @@ class RConsoleManager(private val project: Project) {
             }
             toolWindow?.component?.validate()
           }
+          RPackageProjectManager.getInstance(project).loadOrSuggestToInstallMissedPackages()
         }
       } else {
         AsyncPromise<RConsoleView>().apply {
