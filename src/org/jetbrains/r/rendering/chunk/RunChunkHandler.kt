@@ -171,7 +171,7 @@ object RunChunkHandler {
         graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
       }
       val inlaysManager = InlaysManager.getEditorManager(editor)
-      inlaysManager?.updateCell(inlayElement, listOf(), alwaysCreateOutput = true)
+      inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
       inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
       executeCode(console, codeElement, isDebug) {
         inlaysManager?.addTextToInlay(inlayElement, it.text, it.kind)
@@ -224,7 +224,7 @@ object RunChunkHandler {
       else -> InlayProgressStatus(ProgressStatus.STOPPED_OK, "")
     }
     val inlaysManager = InlaysManager.getEditorManager(editor)
-    inlaysManager?.updateCell(inlayElement, alwaysCreateOutput = !success)
+    inlaysManager?.updateCell(inlayElement)
     inlaysManager?.updateInlayProgressStatus(inlayElement, status)
     cleanupOutdatedOutputs(element)
 

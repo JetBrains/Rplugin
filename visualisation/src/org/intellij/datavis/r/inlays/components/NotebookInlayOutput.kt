@@ -118,10 +118,10 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
   }
 
   override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
-    getOrAddTextOutput().updateProgressStatus(progressStatus)
+    output?.updateProgressStatus(progressStatus)
   }
 
-  override fun  clear() {
+  override fun clear() {
     output?.clear()
   }
 

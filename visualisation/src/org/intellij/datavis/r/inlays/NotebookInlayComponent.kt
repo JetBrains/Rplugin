@@ -4,6 +4,7 @@
 
 package org.intellij.datavis.r.inlays
 
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
@@ -367,7 +368,7 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
   }
 
   fun createOutputComponent() {
-    getOrCreateOutput()
+    getOrCreateOutput().addText("", ProcessOutputType.STDOUT)
   }
 
   fun onViewportChange(isInViewport: Boolean) {

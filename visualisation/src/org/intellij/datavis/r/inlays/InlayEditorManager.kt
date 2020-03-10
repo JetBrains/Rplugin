@@ -99,7 +99,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     return updateCell(psi, emptyList())
   }
 
-  fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null, alwaysCreateOutput: Boolean = false): Future<Unit> {
+  fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null, createTextOutput: Boolean = false): Future<Unit> {
     val result = FutureResult<Unit>()
     if (ApplicationManager.getApplication().isUnitTestMode) return result.apply { set(Unit) }
     ApplicationManager.getApplication().invokeLater {
@@ -124,13 +124,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           return@invokeLater
         }
         getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
-        if (outputs.isEmpty() && !alwaysCreateOutput) {
+        if (outputs.isEmpty() && !createTextOutput) {
           result.set(Unit)
           return@invokeLater
         }
         val component = addInlayComponent(psi)
         if (outputs.isNotEmpty()) addInlayOutputs(component, outputs)
-        if (alwaysCreateOutput) component.createOutputComponent()
+        if (createTextOutput) component.createOutputComponent()
         scrollKeeper.restorePosition(true)
       } catch (e: Throwable) {
         result.set(Unit)
