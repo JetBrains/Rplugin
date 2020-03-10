@@ -26,7 +26,7 @@ public class RInfixOperatorImpl extends ROperatorImpl implements RInfixOperator 
   }
 
   @Override
-  @Nullable
+  @NotNull
   public String getName() {
     return RPsiImplUtil.getName(this);
   }

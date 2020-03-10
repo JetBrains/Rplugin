@@ -8,7 +8,7 @@ import com.intellij.psi.PsiNamedElement;
 
 public interface RInfixOperator extends ROperator, PsiNamedElement {
 
-  @Nullable
+  @NotNull
   String getName();
 
   @NotNull
