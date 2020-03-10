@@ -86,6 +86,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   val globalEnvRef = RRef(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
   val globalEnvLoader = globalEnvRef.createVariableLoader()
+  val globalEnvEqualityObject = globalEnvRef.getEqualityObject()
   val currentEnvRef = RRef(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
   val currentEnvLoader = currentEnvRef.createVariableLoader()
   @Volatile var isDebug = false
@@ -755,7 +756,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         fireListeners { it.onPrompt(true) }
       }
       Service.AsyncEvent.EventCase.EXCEPTION -> {
-        lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
+        if (!event.exception.exception.hasInterrupted()) {
+          lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
+        }
         val (text, details) = exceptionInfoFromProto(event.exception.exception)
         fireListeners { it.onException(text, details) }
       }

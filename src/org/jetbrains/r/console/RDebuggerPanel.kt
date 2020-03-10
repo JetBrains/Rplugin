@@ -211,7 +211,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   private fun createRXStackFrames(stack: List<RStackFrame>): List<RXStackFrame> {
     return stack.mapIndexed { index, it ->
-      val functionName = it.functionName ?: if (index == 0 && it.equalityObject == rInterop.globalEnvRef.getEqualityObject()) {
+      val functionName = it.functionName ?: if (index == 0 && it.equalityObject == rInterop.globalEnvEqualityObject) {
         RBundle.message("debugger.global.stack.frame")
       } else {
         RBundle.message("debugger.anonymous.stack.frame")
