@@ -783,9 +783,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
         RInstalledPackage aPackage = (RInstalledPackage)myOriginalModel.getValueAt(i, PACKAGE_NAME_COLUMN);
         String title = aPackage.getDescription().get(TITLE);
         if (myText == null ||
-            aPackage.getPackageName().contains(myText) ||
-            aPackage.getVersion().contains(myText) ||
-            (title != null && title.contains(myText))) {
+            StringUtil.containsIgnoreCase(aPackage.getPackageName(), myText) ||
+            StringUtil.containsIgnoreCase(aPackage.getVersion(), myText) ||
+            (title != null && StringUtil.containsIgnoreCase(title, myText))) {
           List<Object> elements = Lists.newArrayListWithCapacity(myOriginalModel.getColumnCount());
           for (int col = 0; col < myOriginalModel.getColumnCount(); col++) {
             elements.add(myOriginalModel.getValueAt(i, col));
