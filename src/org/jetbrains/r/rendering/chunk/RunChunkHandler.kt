@@ -28,7 +28,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
+import org.intellij.datavis.r.inlays.components.ProgressStatus
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -89,10 +91,11 @@ object RunChunkHandler {
               continue
             }
             currentElement.set(element)
-            invokeAndWaitIfNeeded { execute(element, isDebug = false, isBatchMode = true) }
+            val proceed = invokeAndWaitIfNeeded { execute(element, isDebug = false, isBatchMode = true) }
               .onError { LOGGER.error("Cannot execute chunk: " + it) }
-              .blockingGet(Int.MAX_VALUE)
+              .blockingGet(Int.MAX_VALUE) ?: false
             currentElement.set(null)
+            if (!proceed) break
           }
         } finally {
           result.setResult(Unit)
@@ -103,8 +106,8 @@ object RunChunkHandler {
     return result
   }
 
-  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
+  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Boolean> {
+    return AsyncPromise<Boolean>().also { promise ->
       RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
         .onSuccess {
           runInEdt {
@@ -117,8 +120,8 @@ object RunChunkHandler {
     }
   }
 
-  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
+  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean): Promise<Boolean> {
+    return AsyncPromise<Boolean>().also { promise ->
       if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
       val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
       val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
@@ -132,8 +135,8 @@ object RunChunkHandler {
 
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunk(console: RConsoleView, element: PsiElement, editor: EditorEx,
-                                          isDebug: Boolean = false, isBatchMode: Boolean = false): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
+                                          isDebug: Boolean = false, isBatchMode: Boolean = false): Promise<Boolean> {
+    val promise = AsyncPromise<Boolean>()
     val rInterop = console.rInterop
     val parent = element.parent
     val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
@@ -167,10 +170,15 @@ object RunChunkHandler {
       ChunkPathManager.getImagesDirectory(inlayElement)?.let { imagesDirectory ->
         graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
       }
-      executeCode(console, codeElement, isDebug).onProcessed { outputs ->
+      val inlaysManager = InlaysManager.getEditorManager(editor)
+      inlaysManager?.updateCell(inlayElement, listOf(), alwaysCreateOutput = true)
+      inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
+      executeCode(console, codeElement, isDebug) {
+        inlaysManager?.addTextToInlay(inlayElement, it.text, it.kind)
+      }.onProcessed { result ->
         runAsync {
           graphicsDevice?.shutdown()
-          afterRunChunk(element, rInterop, outputs, promise, console, editor, inlayElement, isBatchMode, isDebug)
+          afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
         }
       }
     } catch (e: RDebuggerException) {
@@ -187,14 +195,14 @@ object RunChunkHandler {
 
   private fun afterRunChunk(element: PsiElement,
                             rInterop: RInterop,
-                            outputs: List<ProcessOutput>?,
-                            promise: AsyncPromise<Unit>,
+                            result: ExecutionResult?,
+                            promise: AsyncPromise<Boolean>,
                             console: RConsoleView,
                             editor: EditorEx,
                             inlayElement: PsiElement,
-                            isBatchMode: Boolean,
-                            isDebug: Boolean) {
+                            isBatchMode: Boolean) {
     logNonEmptyError(rInterop.runAfterChunk())
+    val outputs = result?.output
     if (outputs != null) {
       saveOutputs(outputs, element)
     }
@@ -204,20 +212,31 @@ object RunChunkHandler {
         RBundle.message("run.chunk.notification.stopped"), NotificationType.INFORMATION, null)
       notification.notify(element.project)
     }
-    promise.setResult(Unit)
+    val success = result != null && result.exception == null
+    promise.setResult(success)
     if (!isBatchMode) {
       console.resetHandler()
     }
     if (ApplicationManager.getApplication().isUnitTestMode) return
-    InlaysManager.getEditorManager(editor)?.updateCell(inlayElement)
+    val status = when {
+      result == null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, "")
+      result.exception != null -> InlayProgressStatus(ProgressStatus.STOPPED_ERROR, result.exception)
+      else -> InlayProgressStatus(ProgressStatus.STOPPED_OK, "")
+    }
+    val inlaysManager = InlaysManager.getEditorManager(editor)
+    inlaysManager?.updateCell(inlayElement, alwaysCreateOutput = !success)
+    inlaysManager?.updateInlayProgressStatus(inlayElement, status)
     cleanupOutdatedOutputs(element)
 
     ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
   }
 
+  private data class ExecutionResult(val output: List<ProcessOutput>, val exception: String? = null)
+
   private fun executeCode(console: RConsoleView,
                           codeElement: PsiElement,
-                          debug: Boolean = false): Promise<List<ProcessOutput>> {
+                          debug: Boolean = false,
+                          onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
     val chunkState = console.executeActionHandler.chunkState
     if (chunkState != null) {
@@ -229,11 +248,17 @@ object RunChunkHandler {
     val executePromise = console.rInterop.replSourceFile(
       codeElement.containingFile.virtualFile, debug, codeElement.textRange
     ) { s, type ->
-      result.add(ProcessOutput(s, type))
+      val output = ProcessOutput(s, type)
+      result.add(output)
+      onOutput(output)
     }
-    val promise = AsyncPromise<List<ProcessOutput>>()
+    val promise = AsyncPromise<ExecutionResult>()
     executePromise.onProcessed {
-      promise.setResult(result)
+      if (it == null) {
+        promise.setResult(ExecutionResult(result, "Interrupted"))
+      } else {
+        promise.setResult(ExecutionResult(result, it.exception))
+      }
       chunkState?.currentLineRange = null
       chunkState?.revalidateGutter()
     }

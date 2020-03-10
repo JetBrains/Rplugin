@@ -26,6 +26,7 @@ import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -94,7 +95,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayElements.clear()
   }
 
-  fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null): Future<Unit> {
+  fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null, alwaysCreateOutput: Boolean = false): Future<Unit> {
     val result = FutureResult<Unit>()
     if (ApplicationManager.getApplication().isUnitTestMode) return result.apply { set(Unit) }
     ApplicationManager.getApplication().invokeLater {
@@ -115,11 +116,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         val outputs = inlayOutputs ?: descriptor.getInlayOutputs(psi)
         scrollKeeper.savePosition()
         getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
-        if (outputs.isEmpty()) {
+        if (outputs.isEmpty() && !alwaysCreateOutput) {
           result.set(Unit)
           return@invokeLater
         }
-        addInlayOutputs(addInlayComponent(psi), outputs)
+        val component = addInlayComponent(psi)
+        if (outputs.isNotEmpty()) addInlayOutputs(component, outputs)
+        if (alwaysCreateOutput) component.createOutputComponent()
         scrollKeeper.restorePosition(true)
       } catch (e: Throwable) {
         result.set(Unit)
@@ -137,6 +140,14 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       }
     }
     return result
+  }
+
+  fun addTextToInlay(psi: PsiElement, message: String, outputType: Key<*>) {
+    invokeLater {
+      scrollKeeper.savePosition()
+      getInlayComponent(psi)?.addText(message, outputType)
+      scrollKeeper.restorePosition(true)
+    }
   }
 
   fun updateInlayProgressStatus(psi: PsiElement, progressStatus: InlayProgressStatus): Future<Unit> {

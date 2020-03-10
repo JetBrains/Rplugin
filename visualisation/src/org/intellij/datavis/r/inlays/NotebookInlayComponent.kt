@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
@@ -356,6 +357,17 @@ class NotebookInlayComponent(val cell: PsiElement, private val editor: EditorImp
         onOutput(inlay.data, inlay.type, inlay.progressStatus, cleanup)
       }
     }
+  }
+
+  fun addText(message: String, outputType: Key<*>) {
+    getOrCreateOutput().addText(message, outputType)
+    if (size.height == InlayDimensions.smallHeight) {
+      deltaSize(0, InlayDimensions.previewHeight - size.height)
+    }
+  }
+
+  fun createOutputComponent() {
+    getOrCreateOutput()
   }
 
   fun onViewportChange(isInViewport: Boolean) {

@@ -61,7 +61,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private fun addImgOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputImg(parent, editor, clearAction) }
 
-  private inline fun createOutput(constructor: (Disposable, Editor, () -> Unit) -> InlayOutput) =
+  private inline fun <T: InlayOutput> createOutput(constructor: (Disposable, Editor, () -> Unit) -> T) =
     constructor(parent, editor, clearAction).apply { setupOutput(this) }
 
   private fun setupOutput(output: InlayOutput) {
@@ -87,6 +87,11 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     output?.addToolbar()
   }
 
+  private fun getOrAddTextOutput(): InlayOutputText {
+    (output as? InlayOutputText)?.let { return it }
+    return addTextOutput()
+  }
+
   fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
     val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
     val inlayOutput: InlayOutput
@@ -99,7 +104,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
       inlayOutput = when (type) {
         "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
         "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
-        else -> output?.takeIf { it is InlayOutputText } ?: addTextOutput()
+        else -> getOrAddTextOutput()
       }
     }
     progressStatus?.let {
@@ -108,8 +113,12 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     inlayOutput.addData(data, type)
   }
 
+  fun addText(message: String, outputType: Key<*>) {
+    getOrAddTextOutput().addData(message, outputType)
+  }
+
   override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
-    output?.updateProgressStatus(progressStatus)
+    getOrAddTextOutput().updateProgressStatus(progressStatus)
   }
 
   override fun  clear() {

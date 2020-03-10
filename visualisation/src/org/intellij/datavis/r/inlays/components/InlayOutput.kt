@@ -24,6 +24,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.TextTransferable
@@ -385,6 +386,8 @@ class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> U
       }
     }
   }
+
+  fun addData(message: String, outputType: Key<*>) = console.addData(message, outputType)
 
   override fun scrollToTop() {
     console.scrollTo(0)
