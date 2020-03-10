@@ -58,6 +58,11 @@ interface InlayElementDescriptor {
    * the method is called when inlay output of [psi] is intentionally removed by a user.
    */
   fun cleanup(psi: PsiElement): Future<Void>
+
+  /**
+   * @return true if descriptor is actually used for saving inlays data
+   */
+  fun isSupported(): Boolean = true
 }
 
 interface InlayDescriptorProvider {
