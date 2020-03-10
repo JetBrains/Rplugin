@@ -207,6 +207,7 @@ You can find the source code in the following repositories:
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
+        <action id="RConsole.History.Older" class="com.intellij.openapi.actionSystem.EmptyAction"/>
     </actions>
 
 <!-- chunk anctions-->

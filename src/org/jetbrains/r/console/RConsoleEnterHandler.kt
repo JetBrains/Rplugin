@@ -29,21 +29,17 @@ object RConsoleEnterHandler {
   fun handleEnterPressed(editor: EditorEx): Boolean {
     val project = editor.project ?: throw IllegalArgumentException()
     val lineCount = editor.document.lineCount
-    if (lineCount > 0) { // move to end of line
-      editor.selectionModel.removeSelection()
-      val caretPosition = editor.caretModel.logicalPosition
-      if (caretPosition.line == lineCount - 1) {
-        // we can move caret if only it's on the last line of command
-        val lineEndOffset = editor.document.getLineEndOffset(caretPosition.line)
-        editor.caretModel.moveToOffset(lineEndOffset)
-      } else {
-        // otherwise just process enter action
-        executeEnterHandler(project, editor)
-        return false
-      }
-    }
-    else {
+    val caretPosition = editor.caretModel.logicalPosition
+
+    if (caretPosition.line != lineCount - 1) {
       return true
+    }
+
+    editor.selectionModel.removeSelection()
+    if (caretPosition.line == lineCount - 1) {
+      // we can move caret if only it's on the last line of command
+      val lineEndOffset = editor.document.getLineEndOffset(caretPosition.line)
+      editor.caretModel.moveToOffset(lineEndOffset)
     }
     val psiMgr = PsiDocumentManager.getInstance(project)
     psiMgr.commitDocument(editor.document)

@@ -13,7 +13,9 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.DataKey
+import com.intellij.openapi.actionSystem.EmptyAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
@@ -74,10 +76,15 @@ class RConsoleView(val rInterop: RInterop,
 
   private val postFlushActions = ArrayList<() -> Unit>()
 
+  private val olderCommandAction = RConsoleHistoryOlderCommandAction(this)
+
   init {
     Disposer.register(this, rInterop)
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
+    EmptyAction.setupAction(olderCommandAction, "RConsole.History.Older", null)
+    olderCommandAction.registerCustomShortcutSet(CustomShortcutSet(KeyEvent.VK_UP), consoleEditor.component)
+
     RDebuggerUtil.createBreakpointListener(rInterop, this)
     executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
       var previousWidth = 0

@@ -9,7 +9,6 @@ import com.google.common.annotations.VisibleForTesting
 import com.intellij.execution.Executor
 import com.intellij.execution.console.ConsoleExecuteAction
 import com.intellij.execution.console.ConsoleHistoryController
-import com.intellij.execution.console.ConsoleHistoryModel
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
@@ -21,7 +20,6 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CommonActionsManager
-import com.intellij.ide.IdeEventQueue
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
@@ -30,7 +28,6 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.WaitForProgressToShow
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
@@ -134,22 +131,6 @@ class RConsoleRunner(private val project: Project,
     // TODO rework in 2020.1
     val historyController = object : ConsoleHistoryController(RConsoleRootType.instance, "", consoleView) {
       val getActions = KeyProcessorContext::class.memberFunctions.find { it.name == "getActions" }!!.also { it.isAccessible = true }
-
-      override fun setConsoleText(command: ConsoleHistoryModel.Entry, storeUserText: Boolean, regularMode: Boolean) {
-        val actions = getActions.call(IdeEventQueue.getInstance().getKeyEventDispatcher().getContext()) as List<AnAction>
-        val isNext = actions.any { it.toString().contains("Next Entry in Console History") }
-        super.setConsoleText(command, storeUserText, regularMode)
-        if (isNext) {
-          val editor = consoleView.currentEditor
-          val text = command.text ?: return
-          if (StringUtil.containsLineBreak(text)) {
-            val index = StringUtil.indexOf(text, '\n')
-            if (index > 0) {
-              editor.caretModel.moveToOffset(index)
-            }
-          }
-        }
-      }
     }
     // lets trigger getComponent to create the Editor
     consoleView.getComponent()

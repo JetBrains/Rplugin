@@ -27,8 +27,10 @@ class RConsoleHistoryTest : RConsoleBaseTestCase() {
     val historyController = ConsoleHistoryController.getController(console)
     consoleOlder(historyController)
     TestCase.assertEquals(text1, document.text)
+    TestCase.assertEquals(editor.caretModel.offset, document.textLength)
     consoleNewer(historyController)
     TestCase.assertEquals(text2, document.text)
+    TestCase.assertEquals(editor.caretModel.offset, document.textLength)
   }
 
   private fun consoleOlder(historyController: ConsoleHistoryController) {
