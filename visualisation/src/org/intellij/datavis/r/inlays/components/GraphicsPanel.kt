@@ -100,6 +100,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   init {
     val connect = project.messageBus.connect()
+    Disposer.register(disposableParent, connect)
     connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
       currentFile?.let { showImage(it) }
     })
