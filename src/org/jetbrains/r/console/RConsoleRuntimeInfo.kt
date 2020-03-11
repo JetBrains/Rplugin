@@ -53,7 +53,7 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   override val variables
     get() = rInterop.currentEnvLoader.variables.map { it.name to it.value }.toMap()
   override val loadedPackages
-    get() = rInterop.loadedPackages
+    get() = rInterop.loadedPackages.getWithCheckCancel()
   override val workingDir
     get() = rInterop.workingDir
 

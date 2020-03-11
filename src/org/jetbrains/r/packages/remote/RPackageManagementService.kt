@@ -76,7 +76,7 @@ class RPackageManagementService(private val project: Project,
 
   fun isPackageLoaded(packageName: String): Boolean {
     val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
-    return currentConsoleOrNull.rInterop.loadedPackages.keys.contains(packageName)
+    return currentConsoleOrNull.rInterop.loadedPackages.value.keys.contains(packageName)
   }
 
   fun loadPackage(packageName: String) {

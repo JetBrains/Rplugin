@@ -153,10 +153,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     executeWithCheckCancel(asyncStub::getWorkingDir, Empty.getDefaultInstance()).value
   }
 
-  val loadedPackages: Map<String, Int> by Cached {
-    executeWithCheckCancel(asyncStub::loaderGetLoadedNamespaces,
-                           Empty.getDefaultInstance()).listList.mapIndexed { index, s -> s to index }.toMap().also {
-      project.messageBus.syncPublisher(LOADED_LIBRARIES_UPDATED).onLibrariesUpdated()
+  val loadedPackages = AsyncCached<Map<String, Int>>(emptyMap()) {
+    executeAsync(asyncStub::loaderGetLoadedNamespaces, Empty.getDefaultInstance()).then {
+      it.listList.mapIndexed { index, s -> s to index }.toMap().also {
+        project.messageBus.syncPublisher(LOADED_LIBRARIES_UPDATED).onLibrariesUpdated()
+      }
     }
   }
 
@@ -661,7 +662,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       while (true) {
         try {
           ProgressManager.checkCanceled()
-          promise.blockingGet(50)
+          promise.blockingGet(10)
           break
         } catch (ignored: TimeoutException) {
         } catch (e: InterruptedException) {
@@ -920,7 +921,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     private val cached = object : AtomicClearableLazyValue<T>() {
       override fun compute() = f()
     }
-    private var cacheIndex = 0
+    private var cacheIndex = -1
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
       val currentCacheIndex = this@RInterop.cacheIndex.get()
@@ -929,6 +930,30 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         cacheIndex = currentCacheIndex
       }
       return cached.value
+    }
+  }
+
+  inner class AsyncCached<T>(defaultValue: T, private val f: () -> CancellablePromise<T>) {
+    private var cached: T = defaultValue
+    private var cacheIndex = -1
+    private var currentPromise: CancellablePromise<T>? = null
+
+    val value: T
+      @Synchronized
+      get() {
+        val currentCacheIndex = this@RInterop.cacheIndex.get()
+        if (cacheIndex < currentCacheIndex) {
+          cacheIndex = currentCacheIndex
+          currentPromise?.cancel()
+          currentPromise = f().onSuccess { cached = it }
+        }
+        return cached
+      }
+
+    fun getWithCheckCancel(): T {
+      val result = value
+      currentPromise?.let { return it.getWithCheckCanceled(false) }
+      return result
     }
   }
 
@@ -952,17 +977,17 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 }
 
-internal fun <T> Future<T>.getWithCheckCanceled(): T {
+internal fun <T> Future<T>.getWithCheckCanceled(cancelOnInterrupt: Boolean = true): T {
   while (true) {
     try {
       ProgressManager.checkCanceled()
       return get(50, TimeUnit.MILLISECONDS)
     } catch (ignored: TimeoutException) {
     } catch (e: InterruptedException) {
-      cancel(true)
+      if (cancelOnInterrupt) cancel(true)
       throw e
     } catch (e: ProcessCanceledException) {
-      cancel(true)
+      if (cancelOnInterrupt) cancel(true)
       throw e
     }
   }
