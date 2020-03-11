@@ -10,7 +10,9 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.rinterop.Service.ExecuteCodeRequest.DebugCommand
 import org.jetbrains.r.util.PromiseUtil
 
 
@@ -27,6 +29,7 @@ abstract class RunSelectionBase : REditorActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
+        var debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, selection.file, selection.range)
         RConsoleExecuteActionHandler.splitCodeForExecution(project, selection.code)
           .map { (text, range) ->
             {
@@ -38,7 +41,8 @@ abstract class RunSelectionBase : REditorActionBase() {
                 console.appendCommandText(text.trim { it <= ' ' })
                 console.executeActionHandler.fireBusy()
                 val newRange = TextRange(range.startOffset + selection.range.startOffset, range.endOffset + selection.range.startOffset)
-                console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, resetDebugCommand = false)
+                console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, firstDebugCommand = debugCommand)
+                  .also { debugCommand = DebugCommand.KEEP_PREVIOUS }
                   .then { it.exception == null }
               }.thenAsync { it }
             }

@@ -244,7 +244,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null, resetDebugCommand: Boolean = true,
+  fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
+                     firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
                      consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
     var code = ""
     var lineOffset = -1
@@ -262,7 +263,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       sourceFileId = sourceFileManager.getFileId(file),
       sourceFileLineOffset = lineOffset,
       isRepl = true, isDebug = debug,
-      resetDebugCommand = resetDebugCommand,
+      firstDebugCommand = firstDebugCommand,
       outputConsumer = consumer
     )
   }
@@ -276,7 +277,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   private fun executeCodeImpl(
     code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0, isRepl: Boolean = false,
-    returnOutput: Boolean = !isRepl, isDebug: Boolean = false, resetDebugCommand: Boolean = true,
+    returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
+    firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
     CancellablePromise<RIExecutionResult> {
     val request = Service.ExecuteCodeRequest.newBuilder()
@@ -287,7 +289,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setStreamOutput(returnOutput || outputConsumer != null)
       .setIsRepl(isRepl)
       .setIsDebug(isDebug)
-      .setResetDebugCommand(resetDebugCommand && isDebug && isRepl)
+      .setFirstDebugCommand(firstDebugCommand)
       .build()
     val number = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onExecuteRequestAsync(number, RPIServiceGrpc.getExecuteCodeMethod(), request)

@@ -7,7 +7,11 @@ package org.jetbrains.r.debugger
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
@@ -16,7 +20,10 @@ import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RSourceFileManager
+import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.run.debug.RLineBreakpointType
+import kotlin.math.max
+import kotlin.math.min
 
 object RDebuggerUtil {
   fun createBreakpointListener(rInterop: RInterop, parentDisposable: Disposable? = rInterop) {
@@ -53,6 +60,29 @@ object RDebuggerUtil {
     }
     breakpointManager.addBreakpointListener(breakpointType, listener, parentDisposable)
     breakpointManager.getBreakpoints(breakpointType).forEach { listener.breakpointAdded(it) }
+  }
+
+  fun haveBreakpoints(project: Project, file: VirtualFile, range: TextRange? = null): Boolean {
+    val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
+    val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+    val breakpoints = breakpointManager.getBreakpoints(breakpointType)
+    return if (range == null) {
+      breakpoints.any { it.fileUrl == file.url }
+    } else {
+      val document = FileDocumentManager.getInstance().getDocument(file) ?: return false
+      fun toValidPosition(x: Int) = max(0, min(document.textLength, x))
+      val start = document.getLineNumber(toValidPosition(range.startOffset))
+      val end = document.getLineNumber(toValidPosition(range.endOffset - 1))
+      breakpoints.any { it.fileUrl == file.url && it.line in start..end }
+    }
+  }
+
+  fun getFirstDebugCommand(project: Project, file: VirtualFile, range: TextRange? = null): Service.ExecuteCodeRequest.DebugCommand {
+    return if (haveBreakpoints(project, file, range)) {
+      Service.ExecuteCodeRequest.DebugCommand.CONTINUE
+    } else {
+      Service.ExecuteCodeRequest.DebugCommand.STOP
+    }
   }
 
   private val BREAKPOINT_POSITION = Key<RSourcePosition>("org.jetbrains.r.debugger.RDebuggerUtil.RSourcePosition")

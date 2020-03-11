@@ -39,6 +39,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
@@ -245,8 +246,10 @@ object RunChunkHandler {
       chunkState.currentLineRange = first
       chunkState.revalidateGutter()
     }
+    val virtualFile = codeElement.containingFile.virtualFile
+    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, codeElement.textRange)
     val executePromise = console.rInterop.replSourceFile(
-      codeElement.containingFile.virtualFile, debug, codeElement.textRange
+      virtualFile, debug, codeElement.textRange, firstDebugCommand = debugCommand
     ) { s, type ->
       val output = ProcessOutput(s, type)
       result.add(output)

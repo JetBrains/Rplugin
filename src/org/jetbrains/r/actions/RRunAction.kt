@@ -12,6 +12,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
 
 abstract class RRunActionBase : REditorActionBase() {
@@ -55,7 +56,8 @@ class RRunAction : RRunActionBase() {
 
 class RDebugAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    console.rInterop.replSourceFile(file, debug = true)
+    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, file)
+    console.rInterop.replSourceFile(file, debug = true, firstDebugCommand = debugCommand)
   }
 
   override fun update(e: AnActionEvent) {
