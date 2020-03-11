@@ -19,9 +19,12 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -41,6 +44,7 @@ import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
@@ -68,7 +72,9 @@ object RunChunkHandler {
                    currentElement: AtomicReference<PsiElement>,
                    terminationRequired: AtomicBoolean,
                    start: Int = 0,
-                   end: Int = Int.MAX_VALUE): Promise<Unit> {
+                   end: Int = Int.MAX_VALUE,
+                   runSelectedCode: Boolean = false,
+                   isDebug: Boolean = false): Promise<Unit> {
     val result = AsyncPromise<Unit>()
     RConsoleManager.getInstance(psiFile.project).currentConsoleAsync.onSuccess { console ->
       runAsync {
@@ -76,11 +82,19 @@ object RunChunkHandler {
           val document = editor.document
           val ranges = ArrayList<IntRange>()
           val chunks = runReadAction {
-            val chunks = PsiTreeUtil.collectElements(psiFile) { isChunkFenceLang(it) && (it.textRange.endOffset - 1) in start..end }
-            chunks.map { it.parent }.forEach { chunk ->
-              ranges.add(IntRange(document.getLineNumber(chunk.textRange.startOffset), document.getLineNumber(chunk.textRange.endOffset)))
+            PsiTreeUtil.collectElements(psiFile) {
+              isChunkFenceLang(it) && if (runSelectedCode) {
+                it.parent?.textRange?.intersects(TextRange(start, end)) == true
+              } else {
+                (it.textRange.endOffset - 1) in start..end
+              }
             }
-            chunks
+              .also { chunks ->
+                chunks.map { it.parent }.forEach { chunk ->
+                  ranges.add(
+                    IntRange(document.getLineNumber(chunk.textRange.startOffset), document.getLineNumber(chunk.textRange.endOffset)))
+                }
+              }
           }
           editor.chunkExecutionState?.let { chunkExecutionState ->
             chunkExecutionState.pendingLineRanges.addAll(ranges)
@@ -92,7 +106,8 @@ object RunChunkHandler {
               continue
             }
             currentElement.set(element)
-            val proceed = invokeAndWaitIfNeeded { execute(element, isDebug = false, isBatchMode = true) }
+            val proceed = invokeAndWaitIfNeeded { execute(element, isDebug = isDebug, isBatchMode = true,
+                                                          textRange = if (runSelectedCode) TextRange(start, end) else null) }
               .onError { LOGGER.error("Cannot execute chunk: " + it) }
               .blockingGet(Int.MAX_VALUE) ?: false
             currentElement.set(null)
@@ -107,12 +122,22 @@ object RunChunkHandler {
     return result
   }
 
-  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false) : Promise<Boolean> {
+  fun runSelectedRange(file: PsiFile, editor: Editor, range: TextRange, isDebug: Boolean = false) {
+    ChunkExecutionState(editor).apply {
+      editor.chunkExecutionState = this
+      runAllChunks(file, editor, currentPsiElement, terminationRequired, range.startOffset, range.endOffset,
+                   runSelectedCode = true, isDebug = isDebug).onProcessed {
+        editor.chunkExecutionState = null
+      }
+    }
+  }
+
+  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, textRange: TextRange? = null) : Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
       RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
         .onSuccess {
           runInEdt {
-            executeWithKnitr(element, isDebug, isBatchMode).processed(promise)
+            executeWithKnitr(element, isDebug, isBatchMode, textRange).processed(promise)
           }
         }
         .onError {
@@ -121,14 +146,14 @@ object RunChunkHandler {
     }
   }
 
-  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean): Promise<Boolean> {
+  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, textRange: TextRange? = null): Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
       if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
       val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
       val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
       RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
         runAsync {
-          runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode) }.processed(promise)
+          runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode, textRange) }.processed(promise)
         }
       }
     }
@@ -136,7 +161,8 @@ object RunChunkHandler {
 
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunk(console: RConsoleView, element: PsiElement, editor: EditorEx,
-                                          isDebug: Boolean = false, isBatchMode: Boolean = false): Promise<Boolean> {
+                                          isDebug: Boolean = false, isBatchMode: Boolean = false,
+                                          textRange: TextRange? = null): Promise<Boolean> {
     val promise = AsyncPromise<Boolean>()
     val rInterop = console.rInterop
     val parent = element.parent
@@ -174,7 +200,7 @@ object RunChunkHandler {
       val inlaysManager = InlaysManager.getEditorManager(editor)
       inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
       inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
-      executeCode(console, codeElement, isDebug) {
+      executeCode(console, codeElement, isDebug, textRange) {
         inlaysManager?.addTextToInlay(inlayElement, it.text, it.kind)
       }.onProcessed { result ->
         runAsync {
@@ -225,7 +251,7 @@ object RunChunkHandler {
       else -> InlayProgressStatus(ProgressStatus.STOPPED_OK, "")
     }
     val inlaysManager = InlaysManager.getEditorManager(editor)
-    inlaysManager?.updateCell(inlayElement)
+    inlaysManager?.updateCell(inlayElement, createTextOutput = !success)
     inlaysManager?.updateInlayProgressStatus(inlayElement, status)
     cleanupOutdatedOutputs(element)
 
@@ -237,6 +263,7 @@ object RunChunkHandler {
   private fun executeCode(console: RConsoleView,
                           codeElement: PsiElement,
                           debug: Boolean = false,
+                          textRange: TextRange? = null,
                           onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
     val chunkState = console.executeActionHandler.chunkState
@@ -247,9 +274,14 @@ object RunChunkHandler {
       chunkState.revalidateGutter()
     }
     val virtualFile = codeElement.containingFile.virtualFile
-    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, codeElement.textRange)
+    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, textRange ?: codeElement.textRange)
+    val range = if (textRange == null) {
+      codeElement.textRange
+    } else {
+      textRange.intersection(codeElement.textRange) ?: TextRange.EMPTY_RANGE
+    }
     val executePromise = console.rInterop.replSourceFile(
-      virtualFile, debug, codeElement.textRange, firstDebugCommand = debugCommand
+      virtualFile, debug, range, firstDebugCommand = debugCommand
     ) { s, type ->
       val output = ProcessOutput(s, type)
       result.add(output)
