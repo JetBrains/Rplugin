@@ -221,29 +221,27 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun addFoldingListener() {
-    Disposer.get("ui")?.let { uiParent ->
-      data class Region(val textRange: TextRange, val isExpanded: Boolean)
-      val listener = object : FoldingListener {
-        private val regions = ArrayList<Region>()
+    data class Region(val textRange: TextRange, val isExpanded: Boolean)
+    val listener = object : FoldingListener {
+      private val regions = ArrayList<Region>()
 
-        override fun onFoldRegionStateChange(region: FoldRegion) {
-          regions.add(Region(TextRange.create(region.startOffset, region.endOffset), region.isExpanded))
-        }
-
-        override fun onFoldProcessingEnd() {
-          inlays.filter { pair -> regions.filter { !it.isExpanded }.any { pair.key.textRange.intersects(it.textRange) } }.forEach {
-            removeInlay(it.value, cleanup = false)
-          }
-          inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
-            if (it !in inlays.keys) { updateCell(it) }
-          }
-          regions.clear()
-          updateToolbarPositions()
-          updateInlays()
-        }
+      override fun onFoldRegionStateChange(region: FoldRegion) {
+        regions.add(Region(TextRange.create(region.startOffset, region.endOffset), region.isExpanded))
       }
-      editor.foldingModel.addListener(listener, uiParent)
+
+      override fun onFoldProcessingEnd() {
+        inlays.filter { pair -> regions.filter { !it.isExpanded }.any { pair.key.textRange.intersects(it.textRange) } }.forEach {
+          removeInlay(it.value, cleanup = false)
+        }
+        inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
+          if (it !in inlays.keys) { updateCell(it) }
+        }
+        regions.clear()
+        updateToolbarPositions()
+        updateInlays()
+      }
     }
+    editor.foldingModel.addListener(listener, editor.disposable)
   }
 
   private fun addDocumentListener() {

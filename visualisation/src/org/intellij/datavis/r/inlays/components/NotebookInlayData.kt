@@ -31,7 +31,7 @@ class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: Dat
     layout = BorderLayout()
     add(inlayTablePage, DEFAULT_LAYER)
     inlayTablePage.onChange = { onChange?.invoke() }
-    MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane)
+    MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane, parent)
 
     inlayTablePage.setDataFrame(dataFrame)
   }

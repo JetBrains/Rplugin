@@ -69,7 +69,7 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
     tabs.component.isOpaque = false
     tabs.component.background = Gray.TRANSPARENT
 
-    MouseWheelUtils.wrapMouseWheelListeners(tabs.component)
+    MouseWheelUtils.wrapMouseWheelListeners(tabs.component, parent)
     add(tabs.component, BorderLayout.CENTER)
 
     // To make it possible to use JLayeredPane as a parent of NotebookInlayState.

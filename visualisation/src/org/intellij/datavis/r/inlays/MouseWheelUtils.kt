@@ -5,6 +5,8 @@
 package org.intellij.datavis.r.inlays
 
 import com.intellij.ide.ui.LafManager
+import com.intellij.ide.ui.LafManagerListener
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.impl.EditorImpl
 import java.awt.Component
 import java.awt.event.MouseWheelEvent
@@ -90,13 +92,10 @@ object MouseWheelUtils {
 
     addListener(editor.scrollPane)
 
-    // ToDo need to find a way to unsubscribe!
-    LafManager.getInstance().addLafManagerListener {
-      addListener(editor.scrollPane)
-    }
+    LafManager.getInstance().addLafManagerListener( LafManagerListener { addListener(editor.scrollPane) }, editor.disposable)
   }
 
-  fun wrapMouseWheelListeners(component: Component) {
+  fun wrapMouseWheelListeners(component: Component, disposable: Disposable?) {
 
     fun addListener(component: Component) {
       val lst = component.mouseWheelListeners.toCollection(ArrayList())
@@ -112,9 +111,8 @@ object MouseWheelUtils {
 
     addListener(component)
 
-    // ToDo need to find a way to unsubscribe!
-    LafManager.getInstance().addLafManagerListener {
-      addListener(component)
+    if (disposable != null) {
+      LafManager.getInstance().addLafManagerListener(LafManagerListener { addListener(component) }, disposable)
     }
   }
 }

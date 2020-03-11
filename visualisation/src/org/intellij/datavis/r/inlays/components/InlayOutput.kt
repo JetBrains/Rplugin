@@ -194,7 +194,7 @@ class InlayOutputImg(
   parent: Disposable,
   private val editor: Editor,
   clearAction: () -> Unit)
-  : InlayOutput(parent, editor.project!!, clearAction), Disposable {
+  : InlayOutput(parent, editor.project!!, clearAction) {
   private val wrapper = GraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
@@ -267,19 +267,15 @@ class InlayOutputImg(
   override val extraActions: List<NotebookInlayOutput.ActionHolder> = listOf(copyActionHolder, zoomActionHolder, settingsActionHolder)
 
   init {
-    Disposer.register(parent, this)
     toolbarPane.centralComponent = wrapper.component
     graphicsManager?.let { manager ->
       globalResolution = manager.globalResolution
-      globalResolutionSubscription = manager.addGlobalResolutionListener { newGlobalResolution ->
+      val connection = manager.addGlobalResolutionListener { newGlobalResolution ->
         wrapper.targetResolution = newGlobalResolution
         globalResolution = newGlobalResolution
       }
+      Disposer.register(parent, connection)
     }
-  }
-
-  override fun dispose() {
-    globalResolutionSubscription?.dispose()
   }
 
   override fun addData(data: String, type: String) {
@@ -350,7 +346,7 @@ class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> U
     toolbarPane.centralComponent = console.component
     (console.editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
     (console.editor as EditorImpl).scrollPane.border = null
-    MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane)
+    MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane, parent)
 
     console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
 
@@ -447,7 +443,7 @@ class InlayOutputHtml(parent: Disposable, project: Project, clearAction: () -> U
   private lateinit var webView: WebView
 
   init {
-    MouseWheelUtils.wrapMouseWheelListeners(jfxPanel)
+    MouseWheelUtils.wrapMouseWheelListeners(jfxPanel, parent)
     toolbarPane.centralComponent = jfxPanel
     jfxPanel.putClientProperty("AuxEditorComponent", true)
   }
