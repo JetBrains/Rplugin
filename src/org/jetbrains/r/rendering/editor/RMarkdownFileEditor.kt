@@ -12,6 +12,8 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -21,6 +23,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
@@ -48,6 +51,21 @@ class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile:
   init {
     val toolbarComponent = createRMarkdownEditorToolbar(project, virtualFile, textEditor.editor).component
     mainComponent.add(toolbarComponent, BorderLayout.NORTH)
+
+    FileDocumentManager.getInstance().getDocument(virtualFile)?.let { document ->
+      val manager = PsiDocumentManager.getInstance(project)
+      fun updateIsShiny() {
+        manager.getPsiFile(document)?.let {
+          editor.putUserData(RMarkdownUtil.IS_SHINY, RMarkdownUtil.isShiny(it))
+        }
+      }
+      document.addDocumentListener(object : DocumentListener {
+        override fun documentChanged(event: DocumentEvent) {
+          manager.performForCommittedDocument(document) { updateIsShiny() }
+        }
+      }, this)
+      updateIsShiny()
+    }
   }
 
   override fun getName() = "RMarkdown Editor"
@@ -65,6 +83,7 @@ private fun createActionGroup(project: Project, report: VirtualFile, editor: Edi
       createOutputDirectoryAction(project, report),
       Separator(),
       createBuildAction(project, manager),
+      createRunShinyAction(project, manager),
       createBuildAndShowAction(project, report, manager),
       createRunAllAction(project),
       ActionManager.getInstance().getAction("org.jetbrains.r.actions.RunSelection"),
@@ -110,13 +129,17 @@ private class BuildManager(private val project: Project, private val report: Vir
         if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
           RInterpreterManager.getInstance(project).initializeInterpreter()
         }
-        val document = e.getData(CommonDataKeys.EDITOR)?.document ?: return@runAsync
+        val editor = e.editor ?: return@runAsync
+        val isShiny = editor.isShiny
+        val document = editor.document
         ApplicationManager.getApplication().invokeAndWait { FileDocumentManager.getInstance().saveDocument(document) }
         RMarkdownRenderingConsoleRunner(project).apply {
           renderingRunner = this
-          render(project, report)
+          render(project, report, isShiny)
             .onSuccess {
-              onRenderSuccess?.invoke()
+              if (!isShiny) {
+                onRenderSuccess?.invoke()
+              }
             }
             .onProcessed {
               renderingRunner = null
@@ -131,13 +154,16 @@ private class BuildManager(private val project: Project, private val report: Vir
   }
 }
 
-private fun createBuildAction(project: Project, manager: BuildManager): AnAction {
-  val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
-  val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
-  val idleIcon = RENDER
+private fun createBuildOrRunAction(
+  project: Project, manager: BuildManager, idleText: String, runningText: String, idleIcon: Icon?, isShiny: Boolean): AnAction {
   val runningIcon = AllIcons.Actions.Suspend
   return object : SameTextAction(idleText, idleIcon) {
     override fun update(e: AnActionEvent) {
+      val editor = e.editor ?: return
+      if (editor.isShiny != isShiny) {
+        e.presentation.isEnabledAndVisible = false
+        return
+      }
       val text = if (manager.isRunning) runningText else idleText
       val icon = if (manager.isRunning) runningIcon else idleIcon
       e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
@@ -152,16 +178,27 @@ private fun createBuildAction(project: Project, manager: BuildManager): AnAction
   }
 }
 
-private fun createBuildAndShowAction(project: Project, report: VirtualFile, manager: BuildManager): AnAction {
-  val idleText = RBundle.message("rmarkdown.editor.toolbar.renderAndOpenDocument")
+private fun createBuildAction(project: Project, manager: BuildManager): AnAction {
+  val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
   val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
+  val idleIcon = RENDER
+  return createBuildOrRunAction(project, manager, idleText, runningText, idleIcon, false)
+}
+
+private fun createRunShinyAction(project: Project, manager: BuildManager): AnAction {
+  val idleText = RBundle.message("rmarkdown.editor.toolbar.runShinyDocument")
+  val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRunShinyDocument")
+  val idleIcon = AllIcons.Actions.Execute
+  return createBuildOrRunAction(project, manager, idleText, runningText, idleIcon, true)
+}
+
+private fun createBuildAndShowAction(project: Project, report: VirtualFile, manager: BuildManager): AnAction {
+  val text = RBundle.message("rmarkdown.editor.toolbar.renderAndOpenDocument")
   val icon = WebBrowserManager.getInstance().firstActiveBrowser?.icon ?: AllIcons.Nodes.PpWeb
-  return object : SameTextAction(idleText, icon) {
+  return object : SameTextAction(text, icon) {
     override fun update(e: AnActionEvent) {
-      val text = if (manager.isRunning) runningText else idleText
-      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
-      e.presentation.description = text
-      e.presentation.text = text
+      val editor = e.editor ?: return
+      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project) && !manager.isRunning && !editor.isShiny
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -274,3 +311,5 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
 
 private abstract class SameTextAction(text: String, icon: Icon? = null) : DumbAwareAction(text, text, icon)
 
+private val Editor.isShiny
+  get() = getUserData(RMarkdownUtil.IS_SHINY) == true

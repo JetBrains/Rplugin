@@ -6,7 +6,13 @@ package org.jetbrains.r.rmarkdown
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
+import com.intellij.psi.PsiFile
+import com.intellij.psi.search.PsiElementProcessor
+import com.intellij.psi.util.PsiTreeUtil
+import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
@@ -53,4 +59,17 @@ object RMarkdownUtil {
   private fun makeNotificationContent(utilityName: String): String {
     return RBundle.message("rmarkdown.rendering.packages.notification.content", utilityName)
   }
+
+  fun isShiny(file: PsiFile): Boolean = runReadAction {
+    val paragraph = PsiElementProcessor.FindFilteredElement<MarkdownParagraphImpl> { it is MarkdownParagraphImpl }.also {
+      PsiTreeUtil.processElements(file, it)
+    }.foundElement ?: return@runReadAction false
+    if (paragraph.text.lines().any { RUNTIME_SHINY_REGEX.matches(it) }) {
+      return@runReadAction true
+    }
+    false
+  }
+
+  val IS_SHINY = Key<Boolean>("org.jetbrains.r.rmarkdown.IsShiny")
+  private val RUNTIME_SHINY_REGEX = Regex("\\s*runtime\\s*:\\s*shiny.*")
 }

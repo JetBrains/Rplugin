@@ -19,6 +19,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -47,12 +48,12 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     currentProcessHandler?.process?.destroy()
   }
 
-  fun render(project: Project, file: VirtualFile): Promise<Unit> {
+  fun render(project: Project, file: VirtualFile, isShiny: Boolean = false): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
       RMarkdownUtil.checkOrInstallPackages(project, RBundle.message("rmarkdown.processor.notification.utility.name"))
         .onSuccess {
           if (!isInterrupted) {
-            doRender(project, file, promise)
+            doRender(project, file, promise, isShiny)
           } else {
             promise.setError("Rendering was interrupted")
           }
@@ -79,12 +80,12 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     return consoleView
   }
 
-  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, promise: AsyncPromise<Unit>) {
+  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, promise: AsyncPromise<Unit>, isShiny: Boolean) {
     val commandLine = GeneralCommandLine(commands)
     commandLine.setWorkDirectory(renderDirectory)
     val processHandler = OSProcessHandler(commandLine)
     currentProcessHandler = processHandler
-    val knitListener = makeKnitListener(path, promise)
+    val knitListener = makeKnitListener(path, promise, isShiny)
     processHandler.addProcessListener(knitListener)
     runInEdt {
       val consoleView = createConsoleView(processHandler)
@@ -94,7 +95,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     }
   }
 
-  private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>) {
+  private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>, isShiny: Boolean) {
     val interpreter = RInterpreterManager.getInterpreter(project) ?: return
     val pathToRscript = getRScriptPath(interpreter.interpreterPath)
     val scriptPath = StringUtil.escapeBackSlashes(R_MARKDOWN_HELPER.absolutePath)
@@ -103,7 +104,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
       RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile.path))
     val libraryPath = StringUtil.escapeBackSlashes(getPandocLibraryPath())
     val script = arrayListOf<String>(pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory)
-    runRender(script, knitRootDirectory, rMarkdownFile.path, promise)
+    runRender(script, knitRootDirectory, rMarkdownFile.path, promise, isShiny)
   }
 
   private fun getRScriptPath(interpreterPath: String): String {
@@ -127,14 +128,16 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     notification.notify(project)
   }
 
-  private fun makeKnitListener(renderFilePath: String, promise: AsyncPromise<Unit>): ProcessListener {
+  private fun makeKnitListener(renderFilePath: String, promise: AsyncPromise<Unit>, isShiny: Boolean): ProcessListener {
     return object : ProcessAdapter() {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
-        if (!isInterrupted) {
+        if (!isInterrupted && currentConsoleView?.let { Disposer.isDisposing(it) || Disposer.isDisposed(it) } == false) {
           if (exitCode == 0) {
-            val outputPath = replaceExtension(renderFilePath)
-            RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath,  outputPath)
+            if (!isShiny) {
+              val outputPath = replaceExtension(renderFilePath)
+              RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath, outputPath)
+            }
             promise.setResult(Unit)
           } else {
             renderingErrorNotification()
