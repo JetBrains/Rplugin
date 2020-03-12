@@ -229,8 +229,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  fun setOutputWidth(width: Int) {
-    executeWithCheckCancel(asyncStub::setOutputWidth, Int32Value.of(width))
+  fun setOutputWidth(width: Int) = executeTask {
+    execute(stub::setOutputWidth, Int32Value.of(width))
   }
 
   fun replExecute(code: String): CancellablePromise<RIExecutionResult> {

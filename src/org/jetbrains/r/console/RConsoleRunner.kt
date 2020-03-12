@@ -82,25 +82,30 @@ class RConsoleRunner(private val project: Project,
             }
           })
 
-          // Setup console listener for graphics device
-          val screenParameters = RGraphicsSettings.getScreenParameters(project)
-          val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
-            configuration = configuration.copy(screenParameters = screenParameters)
-            addListener(RGraphicsToolWindowListener(project))
-          }
-          consoleView.addOnSelectListener {
-            RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
-          }
+          runAsync {
+            // Setup console listener for graphics device
+            val screenParameters = RGraphicsSettings.getScreenParameters(project)
+            val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
+              configuration = configuration.copy(screenParameters = screenParameters)
+              addListener(RGraphicsToolWindowListener(project))
+            }
+            consoleView.addOnSelectListener {
+              RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
+            }
 
-          createContentDescriptorAndActions()
-          consoleView.createDebuggerPanel()
-          // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
-          runAsync { promise.setResult(consoleView) }
+            UIUtil.invokeLaterIfNeeded {
+              createContentDescriptorAndActions()
+              consoleView.createDebuggerPanel()
 
-          // Setup custom graphical device (it's more time consuming so it should be the last one)
-          runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-            val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
-            consoleView.executeActionHandler.addListener(graphicsHandler)
+              // Setup custom graphical device (it's more time consuming so it should be the last one)
+              runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
+                val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
+                consoleView.executeActionHandler.addListener(graphicsHandler)
+              }
+
+              // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
+              runAsync { promise.setResult(consoleView) }
+            }
           }
         }
       }.onError {
