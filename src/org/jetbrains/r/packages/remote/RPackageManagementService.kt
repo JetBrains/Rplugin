@@ -14,6 +14,7 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
@@ -79,12 +80,14 @@ class RPackageManagementService(private val project: Project,
     return currentConsoleOrNull.rInterop.loadedPackages.value.keys.contains(packageName)
   }
 
-  fun loadPackage(packageName: String) {
-    RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.loadLibrary(packageName)
+  fun loadPackage(packageName: String): Promise<Unit> {
+    return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.loadLibrary(packageName)
+           ?: resolvedPromise()
   }
 
-  fun unloadPackage(packageName: String, withDynamicLibrary: Boolean) {
-    RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.unloadLibrary(packageName, withDynamicLibrary)
+  fun unloadPackage(packageName: String, withDynamicLibrary: Boolean): Promise<Unit> {
+    return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.unloadLibrary(packageName, withDynamicLibrary)
+           ?: resolvedPromise()
   }
 
   override fun getAllRepositories(): List<String> {

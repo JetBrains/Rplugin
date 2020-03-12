@@ -13,6 +13,7 @@ import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValue
+import org.jetbrains.r.rinterop.getWithCheckCanceled
 
 interface RConsoleRuntimeInfo {
   val variables: Map<String, RValue>
@@ -58,7 +59,7 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     get() = rInterop.workingDir
 
   override fun loadPackage(name: String) {
-    rInterop.loadLibrary(name)
+    rInterop.loadLibrary(name).getWithCheckCanceled()
   }
 
   override fun loadDistinctStrings(expression: String): List<String> {

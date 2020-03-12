@@ -5,6 +5,7 @@
 package org.jetbrains.r.intentions
 
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleRuntimeInfo
@@ -17,6 +18,8 @@ class LoadPackageFix(override val packageName: String,
   }
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-    runtimeInfo.loadPackage(packageName)
+    runBackgroundableTask(name, project, true) {
+      runtimeInfo.loadPackage(packageName)
+    }
   }
 }

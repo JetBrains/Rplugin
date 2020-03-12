@@ -393,8 +393,8 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
     val promise = AsyncPromise<String>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onException(message: String, details: RExceptionDetails?) {
-        promise.setResult(message)
+      override fun onException(exception: RExceptionInfo) {
+        promise.setResult(exception.message)
       }
     })
     helper.invokeAndWait(false) { rInterop.replSourceFile(myFixture.file.virtualFile) }

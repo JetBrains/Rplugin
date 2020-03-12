@@ -213,18 +213,20 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
-  fun loadLibrary(name: String) {
-    executeWithCheckCancel(asyncStub::loadLibrary, StringValue.of(name))
-    invalidateCaches()
+  fun loadLibrary(name: String): CancellablePromise<Unit> {
+    return executeAsync(asyncStub::loadLibrary, StringValue.of(name)).then {
+      invalidateCaches()
+    }
   }
 
-  fun unloadLibrary(name: String, withDynamicLibrary: Boolean) {
+  fun unloadLibrary(name: String, withDynamicLibrary: Boolean): CancellablePromise<Unit> {
     val request = Service.UnloadLibraryRequest.newBuilder()
       .setWithDynamicLibrary(withDynamicLibrary)
       .setPackageName(name)
       .build()
-    executeWithCheckCancel(asyncStub::unloadLibrary, request)
-    invalidateCaches()
+    return executeAsync(asyncStub::unloadLibrary, request).then {
+      invalidateCaches()
+    }
   }
 
   fun setOutputWidth(width: Int) {
@@ -762,8 +764,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         if (!event.exception.exception.hasInterrupted()) {
           lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
         }
-        val (text, details) = exceptionInfoFromProto(event.exception.exception)
-        fireListeners { it.onException(text, details) }
+        val info = exceptionInfoFromProto(event.exception.exception)
+        fireListeners { it.onException(info) }
       }
       Service.AsyncEvent.EventCase.TERMINATION -> {
         fireListeners { it.onTermination() }
@@ -962,7 +964,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
     fun onPrompt(isDebug: Boolean = false) {}
-    fun onException(message: String, details: RExceptionDetails?) {}
+    fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(content: String, url: String) {}

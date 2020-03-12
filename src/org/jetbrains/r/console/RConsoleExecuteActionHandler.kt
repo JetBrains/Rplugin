@@ -18,6 +18,7 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
+import com.intellij.xdebugger.XSourcePosition
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -35,6 +36,7 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.util.PromiseUtil
+import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -133,11 +135,25 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
 
-    override fun onException(message: String, details: RExceptionDetails?) {
+    override fun onException(exception: RExceptionInfo) {
       executeLaterQueue.clear()
-      if (details is RInterrupted) return
+      if (exception.details is RInterrupted) return
       runInEdt {
-      onText("\n" + RBundle.message("console.exception.message", message) + "\n", ProcessOutputType.STDERR)
+        onText("\n", ProcessOutputType.STDERR)
+        if (exception.call == null) {
+          onText(RBundle.message("console.exception.message"), ProcessOutputType.STDERR)
+        } else {
+          onText(RBundle.message("console.exception.message.with.call", exception.call.lines().first()), ProcessOutputType.STDERR)
+        }
+        rInterop.lastErrorStack
+          .lastOrNull { it.position?.file?.let { file -> RSourceFileManager.isTemporary(file) } == false }
+          ?.position
+          ?.let {
+            onText(" (", ProcessOutputType.STDERR)
+            consoleView.printHyperlink("${it.file.name}#${it.line + 1}", SourcePositionHyperlink(it.xSourcePosition))
+            onText(")", ProcessOutputType.STDERR)
+          }
+        onText(": ${exception.message}\n", ProcessOutputType.STDERR)
         if (rInterop.lastErrorStack.isEmpty()) {
           showStackTraceHandler = null
         } else {
@@ -156,17 +172,19 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           consoleView.printHyperlink(RBundle.message("console.show.stack.trace"), handler)
           onText("\n", ProcessOutputType.STDERR)
         }
-        if (details is RNoSuchPackageError) {
-          consoleView.printHyperlink(RBundle.message("console.install.package.message", details.packageName), object : HyperlinkInfo {
-            override fun navigate(project: Project?) {
-              RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(
-                RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false)
-                .onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
-            }
+        when (val details = exception.details) {
+          is RNoSuchPackageError -> {
+            consoleView.printHyperlink(RBundle.message("console.install.package.message", details.packageName), object : HyperlinkInfo {
+              override fun navigate(project: Project?) {
+                RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(
+                  RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false)
+                  .onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
+              }
 
-            override fun includeInOccurenceNavigation() = false
-          })
-          onText("\n", ProcessOutputType.STDERR)
+              override fun includeInOccurenceNavigation() = false
+            })
+            onText("\n", ProcessOutputType.STDERR)
+          }
         }
       }
     }
@@ -353,6 +371,15 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
         .map { text.substring(it.startOffset, it.endOffset) to it }
         .toList()
+    }
+
+    private class SourcePositionHyperlink(private val position: XSourcePosition) : HyperlinkInfo {
+      override fun navigate(project: Project?) {
+        if (project == null) return
+        position.createNavigatable(project).navigate(true)
+      }
+
+      override fun includeInOccurenceNavigation() = false
     }
   }
 }

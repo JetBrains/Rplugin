@@ -188,7 +188,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       actionToolbar.component.isVisible = false
       val stackFrame = RXStackFrame(
         RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.showHiddenVariables,
-        rInterop.globalEnvRef.getEqualityObject())
+        rInterop.globalEnvEqualityObject)
       updateStack(listOf(stackFrame))
     }
   }
