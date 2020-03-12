@@ -147,7 +147,7 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   private fun notifyExportError(content: String) {
-    val notification = Notification("NotebookInlayOutput",
+    val notification = Notification(VisualizationBundle.message("inlay.output.notification.group.name"),
                                     VisualizationBundle.message("inlay.output.export.failure"),
                                     content,
                                     NotificationType.ERROR)
