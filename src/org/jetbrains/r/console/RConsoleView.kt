@@ -8,7 +8,6 @@ import com.intellij.codeInsight.daemon.impl.AnnotationHolderImpl
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
-import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
@@ -124,7 +123,6 @@ class RConsoleView(val rInterop: RInterop,
         PsiDocumentManager.getInstance(project).commitDocument(consoleEditor.document)
       }
       annotateForHistory()
-      ConsoleHistoryController.addToHistory(this, text)
       prepareExecuteAction(true, false, true)
       (UndoManager.getInstance(project) as UndoManagerImpl).invalidateActionsFor(
         DocumentReferenceManager.getInstance().create(currentEditor.document))
@@ -241,7 +239,7 @@ class RConsoleView(val rInterop: RInterop,
     scheduleAnnotationsForHistory(to, input, infos, textRange)
   }
 
-  private fun annotateForHistory() {
+  fun annotateForHistory() {
     val annotationSession = AnnotationSession(file)
     val annotationHolder = AnnotationHolderImpl(annotationSession)
     val annotator = RAnnotatorVisitor(annotationHolder)

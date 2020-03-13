@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.actions
 
+import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
@@ -38,6 +39,7 @@ abstract class RunSelectionBase : REditorActionBase() {
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
     RConsoleManager.getInstance(project).currentConsoleAsync
       .onSuccess { console ->
+        ConsoleHistoryController.addToHistory(console, selection.code)
         when (selection.file.fileType) {
           RFileType -> executeForRFile(console, selection)
           RMarkdownFileType -> executeForRMarkdownFile(project, selection.file, editor, selection.range)

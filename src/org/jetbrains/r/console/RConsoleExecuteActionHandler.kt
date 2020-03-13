@@ -6,12 +6,16 @@ package org.jetbrains.r.console
 
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.execution.console.BaseConsoleExecuteActionHandler
+import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.execution.console.LanguageConsoleView
 import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
@@ -264,6 +268,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       State.PROMPT, State.DEBUG_PROMPT -> {
         if (RConsoleEnterHandler.handleEnterPressed(consoleView.consoleEditor)) {
           val document = consoleView.consoleEditor.document
+          ConsoleHistoryController.addToHistory(consoleView, document.text)
           return splitCodeForExecution(consoleView.project, document.text)
             .map { (text, _) ->
               {
