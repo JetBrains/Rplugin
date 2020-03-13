@@ -24,6 +24,7 @@ import com.intellij.ide.CommonActionsManager
 import com.intellij.ide.IdeEventQueue
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.keymap.impl.KeyProcessorContext
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
@@ -41,6 +42,7 @@ import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsRepository
@@ -67,53 +69,65 @@ class RConsoleRunner(private val project: Project,
     UIUtil.invokeLaterIfNeeded {
       val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
       RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
-        UIUtil.invokeLaterIfNeeded {
-          consoleView = RConsoleView(rInterop, interpreterPath, consoleTitle)
-          ProcessTerminatedListener.attach(rInterop.processHandler)
-          rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
-            override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-              if (outputType == ProcessOutputType.SYSTEM) {
-                consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
-              }
-            }
-
-            override fun processTerminated(event: ProcessEvent) {
-              finishConsole()
-            }
-          })
-
-          runAsync {
-            // Setup console listener for graphics device
-            val screenParameters = RGraphicsSettings.getScreenParameters(project)
-            val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
-              configuration = configuration.copy(screenParameters = screenParameters)
-              addListener(RGraphicsToolWindowListener(project))
-            }
-            consoleView.addOnSelectListener {
-              RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
-            }
-
-            UIUtil.invokeLaterIfNeeded {
-              createContentDescriptorAndActions()
-              consoleView.createDebuggerPanel()
-
-              // Setup custom graphical device (it's more time consuming so it should be the last one)
-              runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-                val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
-                consoleView.executeActionHandler.addListener(graphicsHandler)
-              }
-
-              // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
-              runAsync { promise.setResult(consoleView) }
-            }
-          }
-        }
+        initByInterop(rInterop, interpreterPath, promise)
       }.onError {
         showErrorMessage(project,  it.message ?: "Cannot find suitable rwrapper",  "Cannot run console")
         promise.setError(it)
       }
     }
     return promise
+  }
+
+  fun initByInterop(rInterop: RInterop, interpreterPath: String): AsyncPromise<RConsoleView> {
+    val promise = AsyncPromise<RConsoleView>()
+    initByInterop(rInterop, interpreterPath, promise)
+    return promise
+  }
+
+  private fun initByInterop(rInterop: RInterop,
+                            interpreterPath: String,
+                            promise: AsyncPromise<RConsoleView>) {
+    UIUtil.invokeLaterIfNeeded {
+      consoleView = RConsoleView(rInterop, interpreterPath, consoleTitle)
+      ProcessTerminatedListener.attach(rInterop.processHandler)
+      rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
+        override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+          if (outputType == ProcessOutputType.SYSTEM) {
+            consoleView.print(event.text, ConsoleViewContentType.SYSTEM_OUTPUT)
+          }
+        }
+
+        override fun processTerminated(event: ProcessEvent) {
+          finishConsole()
+        }
+      })
+
+      runAsync {
+        // Setup console listener for graphics device
+        val screenParameters = RGraphicsSettings.getScreenParameters(project)
+        val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
+          configuration = configuration.copy(screenParameters = screenParameters)
+          addListener(RGraphicsToolWindowListener(project))
+        }
+        consoleView.addOnSelectListener {
+          RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
+        }
+
+        UIUtil.invokeLaterIfNeeded {
+          createContentDescriptorAndActions()
+          consoleView.createDebuggerPanel()
+
+          // Setup custom graphical device (it's more time consuming so it should be the last one)
+          runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
+            val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
+            consoleView.executeActionHandler.addListener(graphicsHandler)
+          }
+
+          // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
+          runAsync { promise.setResult(consoleView) }
+        }
+      }
+    }
   }
 
   private fun createContentDescriptorAndActions() {
@@ -181,7 +195,9 @@ class RConsoleRunner(private val project: Project,
 
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
-    RConsoleToolWindowFactory.addContent(project, contentDescriptor, contentIndex)
+    if (!ApplicationManager.getApplication().isUnitTestMode) {
+      RConsoleToolWindowFactory.addContent(project, contentDescriptor, contentIndex)
+    }
   }
 
   private fun createSetCurrentDirectory(): AnAction {

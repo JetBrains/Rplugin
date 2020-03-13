@@ -14,8 +14,10 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
 
   override fun setUp() {
     super.setUp()
-    console = RConsoleView(rInterop, "dummyPath", "Test R Console")
-    console.createDebuggerPanel()
+    val rConsoleRunner = RConsoleRunner(project, project.basePath!!, "Test R Console")
+    val promise = rConsoleRunner.initByInterop(rInterop, "dummyPath")
+
+    console = promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT) ?: error("Cannot initialize test console")
     console.component // initialize editor and more...
     RConsoleManager.getInstance(project).setCurrentConsoleForTests(console)
     // console is not running command, it just haven't received the first prompt from rwrapper
