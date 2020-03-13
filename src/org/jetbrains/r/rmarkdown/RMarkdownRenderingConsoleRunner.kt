@@ -17,10 +17,12 @@ import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.AsyncPromise
@@ -31,6 +33,7 @@ import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.File
+import java.io.IOException
 import javax.swing.JPanel
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
@@ -80,17 +83,20 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     return consoleView
   }
 
-  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, promise: AsyncPromise<Unit>, isShiny: Boolean) {
+  private fun runRender(commands: ArrayList<String>, renderDirectory: String, path: String, promise: AsyncPromise<Unit>,
+                        resultTmpFile: File, isShiny: Boolean) {
     val commandLine = GeneralCommandLine(commands)
     commandLine.setWorkDirectory(renderDirectory)
     val processHandler = OSProcessHandler(commandLine)
     currentProcessHandler = processHandler
-    val knitListener = makeKnitListener(path, promise, isShiny)
+    val knitListener = makeKnitListener(path, promise, resultTmpFile, isShiny)
     processHandler.addProcessListener(knitListener)
     runInEdt {
-      val consoleView = createConsoleView(processHandler)
-      consoleView.attachToProcess(processHandler)
-      consoleView.scrollToEnd()
+      if (!ApplicationManager.getApplication().isUnitTestMode) {
+        val consoleView = createConsoleView(processHandler)
+        consoleView.attachToProcess(processHandler)
+        consoleView.scrollToEnd()
+      }
       processHandler.startNotify()
     }
   }
@@ -103,8 +109,10 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     val knitRootDirectory = StringUtil.escapeBackSlashes(
       RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile.path))
     val libraryPath = StringUtil.escapeBackSlashes(getPandocLibraryPath())
-    val script = arrayListOf<String>(pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory)
-    runRender(script, knitRootDirectory, rMarkdownFile.path, promise, isShiny)
+    val resultTmpFile = FileUtil.createTempFile("rmd-output-path", ".txt", true)
+    val script = arrayListOf<String>(
+      pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory, resultTmpFile.absolutePath)
+    runRender(script, knitRootDirectory, rMarkdownFile.path, promise, resultTmpFile, isShiny)
   }
 
   private fun getRScriptPath(interpreterPath: String): String {
@@ -128,31 +136,30 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     notification.notify(project)
   }
 
-  private fun makeKnitListener(renderFilePath: String, promise: AsyncPromise<Unit>, isShiny: Boolean): ProcessListener {
+  private fun makeKnitListener(renderFilePath: String, promise: AsyncPromise<Unit>, resultTmpFile: File, isShiny: Boolean): ProcessListener {
     return object : ProcessAdapter() {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
-        if (!isInterrupted && currentConsoleView?.let { Disposer.isDisposing(it) || Disposer.isDisposed(it) } == false) {
+        if (isInterrupted || currentConsoleView?.let { Disposer.isDisposing(it) || Disposer.isDisposed(it) } == true) {
+          isInterrupted = false
+          promise.setError("Rendering was interrupted")
+        } else {
           if (exitCode == 0) {
-            if (!isShiny) {
-              val outputPath = replaceExtension(renderFilePath)
-              RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath, outputPath)
+            try {
+              if (!isShiny) {
+                val outputPath = resultTmpFile.readText().trim()
+                RMarkdownSettings.getInstance(project).state.setProfileLastOutput(renderFilePath, outputPath)
+              }
+              promise.setResult(Unit)
+            } catch (e: IOException) {
+              promise.setError(e)
             }
-            promise.setResult(Unit)
           } else {
             renderingErrorNotification()
             promise.setError("Rendering has non-zero exit code")
           }
-        } else {
-          isInterrupted = false
-          promise.setError("Rendering was interrupted")
         }
-      }
-
-      private fun replaceExtension(path: String): String {
-        val extensionIndex = path.lastIndexOf('.')
-        val withoutExtension = path.substring(0, extensionIndex)
-        return "$withoutExtension.html"
+        resultTmpFile.delete()
       }
     }
   }
