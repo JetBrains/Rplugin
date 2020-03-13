@@ -73,10 +73,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       Disposer.dispose(console.rInterop)
       console.rInterop.executeOnTermination {
         invokeLater {
-          toolWindow.contentManager.removeContent(content, true)
           RConsoleRunner(console.project, console.workingDirectory, title, index).initAndRun().then {
-            getConsoleContent(it)?.let { newContent ->
-              invokeLater {
+            invokeLater {
+              toolWindow.contentManager.removeContent(content, true)
+              getConsoleContent(it)?.let { newContent ->
                 toolWindow.show {
                   toolWindow.contentManager.setSelectedContent(newContent)
                 }
