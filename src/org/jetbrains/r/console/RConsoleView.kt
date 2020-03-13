@@ -54,7 +54,6 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
-import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.BorderLayout
 import java.awt.Font
@@ -370,7 +369,7 @@ class RConsoleView(val rInterop: RInterop,
     }
 
     private fun getVirtualFile(project: Project): VirtualFile? =
-      (FileEditorManager.getInstance(project).selectedEditor as? AdvancedTextEditor)?.virtualFile
+      FileEditorManager.getInstance(project).selectedEditor?.file
   }
 
   class RestartRAction : DumbAwareAction() {

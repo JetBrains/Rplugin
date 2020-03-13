@@ -19,7 +19,9 @@ import com.intellij.pom.Navigatable
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-abstract class AdvancedTextEditor(val project: Project, val textEditor: TextEditor, val virtualFile: VirtualFile) : FileEditorBase(), TextEditor {
+abstract class AdvancedTextEditor(val project: Project,
+                                  val textEditor: TextEditor,
+                                  private val virtualFile: VirtualFile) : FileEditorBase(), TextEditor {
   protected val mainComponent = JPanel(BorderLayout())
 
   init {
@@ -43,4 +45,5 @@ abstract class AdvancedTextEditor(val project: Project, val textEditor: TextEdit
   override fun getEditor(): Editor = textEditor.editor
   override fun navigateTo(navigatable: Navigatable) = textEditor.navigateTo(navigatable)
   override fun canNavigateTo(navigatable: Navigatable): Boolean = textEditor.canNavigateTo(navigatable)
+  override fun getFile(): VirtualFile = virtualFile
 }
