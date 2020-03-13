@@ -119,7 +119,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         }
         val outputs = inlayOutputs ?: descriptor.getInlayOutputs(psi)
         scrollKeeper.savePosition()
-        if (!descriptor.isSupported() && inlayOutputs == null) {
+        if (!descriptor.isGettingInlayOutputsSupported() && inlayOutputs == null) {
           result.set(Unit)
           return@invokeLater
         }

@@ -60,9 +60,9 @@ interface InlayElementDescriptor {
   fun cleanup(psi: PsiElement): Future<Void>
 
   /**
-   * @return true if descriptor is actually used for saving inlays data
+   * @return true if descriptor stores inlay output data for each psi element
    */
-  fun isSupported(): Boolean = true
+  fun isGettingInlayOutputsSupported(): Boolean = true
 }
 
 interface InlayDescriptorProvider {
