@@ -14,7 +14,7 @@ import com.intellij.openapi.editor.Editor
 class RConsoleHistoryOlderCommandAction(private val console: RConsoleView) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val controller = ConsoleHistoryController.getController(console)
-    controller.historyNext.actionPerformed(e)
+    controller?.historyNext?.actionPerformed(e)
   }
 
   override fun update(e: AnActionEvent) {
