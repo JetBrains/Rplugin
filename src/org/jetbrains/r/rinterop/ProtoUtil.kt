@@ -23,7 +23,7 @@ object ProtoUtil {
     return Service.RRef.newBuilder().setMember(Service.RRef.Member.newBuilder().setEnv(env).setName(name)).build()
   }
 
-  fun listElementRefProto(list: Service.RRef, index: Int): Service.RRef {
+  fun listElementRefProto(list: Service.RRef, index: Long): Service.RRef {
     return Service.RRef.newBuilder().setListElement(Service.RRef.ListElement.newBuilder().setList(list).setIndex(index)).build()
   }
 
@@ -43,7 +43,7 @@ object ProtoUtil {
     return Service.RRef.newBuilder().setErrorStackSysFrameIndex(index).build()
   }
 
-  fun getVariablesRequestProto(obj: Service.RRef, start: Int, end: Int): Service.GetVariablesRequest {
+  fun getVariablesRequestProto(obj: Service.RRef, start: Long, end: Long): Service.GetVariablesRequest {
     return Service.GetVariablesRequest.newBuilder().setObj(obj).setStart(start).setEnd(end).build()
   }
 

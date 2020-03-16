@@ -19,7 +19,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return RRef(ProtoUtil.envMemberRefProto(proto, name), rInterop)
   }
 
-  fun getListElementRef(index: Int): RRef {
+  fun getListElementRef(index: Long): RRef {
     return RRef(ProtoUtil.listElementRefProto(proto, index), rInterop)
   }
 

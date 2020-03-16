@@ -17,16 +17,16 @@ class RVariableLoader internal constructor(val obj: RRef) {
     loadVariablesPartially(0, -1).vars
   }
 
-  data class VariablesPart(val vars: List<RVar>, val totalCount: Int)
+  data class VariablesPart(val vars: List<RVar>, val totalCount: Long)
 
-  fun loadVariablesPartially(start: Int, end: Int): VariablesPart {
+  fun loadVariablesPartially(start: Long, end: Long): VariablesPart {
     val response = rInterop.executeWithCheckCancel(rInterop.asyncStub::loaderGetVariables,
                                                    ProtoUtil.getVariablesRequestProto(obj.proto, start, end))
     val vars = if (response.isEnv) {
       response.varsList.map { RVar(it.name, obj.getMemberRef(it.name), ProtoUtil.rValueFromProto(it.value)) }
     } else {
       response.varsList.mapIndexed { index, it ->
-        RVar(it.name, obj.getListElementRef(start + index), ProtoUtil.rValueFromProto(it.value))
+        RVar(it.name, obj.getListElementRef(start + index.toLong()), ProtoUtil.rValueFromProto(it.value))
       }
     }
     return VariablesPart(vars, response.totalCount)

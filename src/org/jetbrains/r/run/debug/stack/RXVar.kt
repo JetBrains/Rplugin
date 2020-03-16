@@ -18,7 +18,7 @@ import java.util.concurrent.CancellationException
 import kotlin.math.min
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
-  private var offset = 0
+  private var offset = 0L
   private val loader by lazy { rVar.ref.createVariableLoader() }
   val executor get() = stackFrame.executor
 
@@ -42,7 +42,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
         node.addChildren(result, true)
         offset = min(endOffset, totalCount)
         if (offset != totalCount) {
-          node.tooManyChildren(totalCount - offset)
+          node.tooManyChildren((totalCount - offset).let { if (it > Int.MAX_VALUE) -1 else it.toInt() })
         }
       } catch (e: RDebuggerException) {
         node.setErrorMessage(e.message.orEmpty())

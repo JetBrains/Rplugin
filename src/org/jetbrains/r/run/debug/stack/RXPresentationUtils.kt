@@ -146,7 +146,7 @@ internal object RXPresentationUtils {
   }
 
   private fun setListPresentation(node: XValueNode, rValue: RValueList, rxVar: RXVar) {
-    val text = if (rValue.length == 0) {
+    val text = if (rValue.length == 0L) {
       RBundle.message("rx.presentation.utils.empty.list.text")
     } else {
       RBundle.message("rx.presentation.utils.list.text", rValue.length)
