@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RArgumentList extends RPsiElement {
+public interface RArgumentList extends RArgumentHolder {
 
   @NotNull
   List<RExpression> getExpressionList();

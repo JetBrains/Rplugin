@@ -4,11 +4,14 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
-import org.jetbrains.r.psi.RDplyrUtil
+import com.intellij.openapi.util.Key
+import com.intellij.psi.util.CachedValue
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
-class RArgumentInfo(argumentList: RArgumentList, val parameterNames: List<String>) {
+class RArgumentInfo private constructor(argumentList: RArgumentHolder, val parameterNames: List<String>) {
   private val pipeArgument: RExpression? = findPipeArgument(argumentList)
   val argumentPermutationIndWithPipeExpression: List<Int>
   val notPassedParameterInd: List<Int>
@@ -104,11 +107,32 @@ class RArgumentInfo(argumentList: RArgumentList, val parameterNames: List<String
   private fun <T> dropPipeValue(list: List<T>): List<T> = if (pipeArgument != null) list.drop(1) else list
 
   companion object {
-    private const val PIPE_OPERATOR = "%>%"
 
-    private fun findPipeArgument(argumentList: RArgumentList): RExpression? {
-      val callParent = argumentList.parent.parent
-      return if (callParent is ROperatorExpression && callParent.operator?.name == PIPE_OPERATOR) callParent.leftExpr
+    @JvmStatic
+    fun getParameterInfo(argumentHolder: RArgumentHolder, parameterNames: List<String>): RArgumentInfo {
+      val info = argumentHolder.getUserData(ARGUMENT_INFO_KEY)?.upToDateOrNull?.get()
+      val result: RArgumentInfo
+      if (info == null || info.parameterNames != parameterNames) {
+        result = RArgumentInfo(argumentHolder, parameterNames)
+        val cachedValue = CachedValuesManager.getManager(argumentHolder.project).createCachedValue{
+          CachedValueProvider.Result.create(result, argumentHolder)
+        }
+        argumentHolder.putUserData(ARGUMENT_INFO_KEY, cachedValue)
+      }
+      else {
+        result = info
+      }
+      return result
+    }
+
+    private const val PIPE_OPERATOR = "%>%"
+    private val ARGUMENT_INFO_KEY =
+      Key.create<CachedValue<RArgumentInfo>>("org.jetbrains.r.hints.parameterInfo.RArgumentInfo")
+
+    private fun findPipeArgument(argumentHolder: RArgumentHolder): RExpression? {
+      val call = if (argumentHolder is RArgumentList) argumentHolder.parent else argumentHolder
+      val callParent = call.parent as? ROperatorExpression ?: return null
+      return if (callParent.operator?.name == PIPE_OPERATOR && callParent.rightExpr == call) callParent.leftExpr
       else null
     }
   }
@@ -123,7 +147,7 @@ object RParameterInfoUtil {
 
   fun getArgumentInfo(call: RCallExpression, definition: RAssignmentStatement?): RArgumentInfo? {
     if (definition == null) return null
-    return RArgumentInfo(call.argumentList, definition.parameterNameList)
+    return RArgumentInfo.getParameterInfo(call.argumentList, definition.parameterNameList)
   }
 
   /**

@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RSubscriptionExpression extends RExpression {
+public interface RSubscriptionExpression extends RExpression, RArgumentHolder {
 
   @NotNull
   List<RExpression> getExpressionList();

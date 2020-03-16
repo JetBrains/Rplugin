@@ -303,6 +303,16 @@ class RArgumentInfoTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent())
   }
 
+  fun testInfoForLeftPipeExpr() {
+    val info = argumentPermutationInfoForCall("""
+      foo <- function(a) a
+      bar <- function(a, b) a + b
+      fo<caret>o(-42) %>% bar(42)
+    """.trimIndent())
+    assertNotNull(info)
+    assertEquals(1, info!!.expressionListWithPipeExpression.size)
+  }
+
   private fun argumentPermutationInfoForCall(text: String, call: RCallExpression = findCallAtCaret(text)): RArgumentInfo? {
     return RParameterInfoUtil.getArgumentInfo(call)
   }

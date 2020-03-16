@@ -55,7 +55,7 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
       it.currentArgumentIndex = 0
       it.isDisabled = false
 
-      val argumentPermutationInfo = RArgumentInfo(parameterOwner, names)
+      val argumentPermutationInfo = RArgumentInfo.getParameterInfo(parameterOwner, names)
       val expressions = argumentPermutationInfo.expressionListWithPipeExpression
       val permutation = argumentPermutationInfo.argumentPermutationIndWithPipeExpression
       val notPassedParameters = argumentPermutationInfo.notPassedParameterInd

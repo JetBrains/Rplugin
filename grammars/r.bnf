@@ -85,6 +85,7 @@
   implements("function_expression")="org.jetbrains.r.psi.api.RControlFlowHolder"
   implements("function_expression")="org.jetbrains.r.psi.api.RExpression"
   implements("named_argument")="org.jetbrains.r.psi.api.RExpression"
+  implements("argument_list|subscription_expression")="org.jetbrains.r.psi.api.RArgumentHolder"
 
   generateTokenAccessors=false
 }

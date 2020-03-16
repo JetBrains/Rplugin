@@ -13,7 +13,7 @@ public class RVisitor extends PsiElementVisitor {
   }
 
   public void visitArgumentList(@NotNull RArgumentList o) {
-    visitPsiElement(o);
+    visitArgumentHolder(o);
   }
 
   public void visitAssignOperator(@NotNull RAssignOperator o) {
@@ -212,6 +212,10 @@ public class RVisitor extends PsiElementVisitor {
 
   public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {
     visitElement(o);
+  }
+
+  public void visitArgumentHolder(@NotNull RArgumentHolder o) {
+    visitPsiElement(o);
   }
 
   public void visitPsiElement(@NotNull RPsiElement o) {
