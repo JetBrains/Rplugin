@@ -140,6 +140,6 @@ internal fun setObjectSizes(rxVars: List<RXVar>, stackFrame: RXStackFrame) {
   val filtered = rxVars.filter { it.rVar.value !is RValueError && it.rVar.value !is RValueUnevaluated }
   if (filtered.isEmpty()) return
   val sizes = stackFrame.loader.rInterop.getObjectSizes(filtered.map { it.rVar.ref })
-  filtered.zip(sizes).forEach { (rxVar, size) -> rxVar.objectSize = size }
+  filtered.zip(sizes).forEach { (rxVar, size) -> rxVar.objectSize = size.takeIf { it >= 0 } }
 }
 
