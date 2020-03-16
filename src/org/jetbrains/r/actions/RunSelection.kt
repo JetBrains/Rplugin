@@ -62,7 +62,8 @@ abstract class RunSelectionBase : REditorActionBase() {
             console.appendCommandText(text.trim { it <= ' ' })
             console.executeActionHandler.fireBusy()
             val newRange = TextRange(range.startOffset + selection.range.startOffset, range.endOffset + selection.range.startOffset)
-            console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, firstDebugCommand = debugCommand)
+            console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, firstDebugCommand = debugCommand,
+                                            setLastValue = true)
               .also { debugCommand = DebugCommand.KEEP_PREVIOUS }
               .then { it.exception == null }
           }.thenAsync { it }

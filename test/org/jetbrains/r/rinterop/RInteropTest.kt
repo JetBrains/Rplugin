@@ -230,4 +230,11 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("[1] 2", rInterop.executeCode("s1[2]").stdout.trim())
     TestCase.assertEquals("[1] 321", rInterop.executeCode("s2[2]").stdout.trim())
   }
+
+  fun testLastValue() {
+    rInterop.executeCodeAsync("10 * 20 * 30", setLastValue = true, withEcho = true).blockingGet(DEFAULT_TIMEOUT)
+    rInterop.executeCodeAsync("'no'", setLastValue = false, withEcho = true).blockingGet(DEFAULT_TIMEOUT)
+    val result = rInterop.executeCode("cat(.Last.value)")
+    TestCase.assertEquals("6000", result.stdout)
+  }
 }

@@ -233,8 +233,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(stub::setOutputWidth, Int32Value.of(width))
   }
 
-  fun replExecute(code: String): CancellablePromise<RIExecutionResult> {
-    return executeCodeImpl(code, isRepl = true)
+  fun replExecute(code: String, setLastValue: Boolean = false): CancellablePromise<RIExecutionResult> {
+    return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue)
   }
 
   fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
@@ -249,6 +249,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
                      firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
+                     setLastValue: Boolean = false,
                      consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
     var code = ""
     var lineOffset = -1
@@ -267,21 +268,30 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       sourceFileLineOffset = lineOffset,
       isRepl = true, isDebug = debug,
       firstDebugCommand = firstDebugCommand,
+      setLastValue = setLastValue,
       outputConsumer = consumer
     )
   }
 
   fun executeCodeAsync(
     code: String, withEcho: Boolean = true, isRepl: Boolean = false, returnOutput: Boolean = !isRepl,
-    isDebug: Boolean = false, outputConsumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
-    return executeCodeImpl(code, withEcho = withEcho, isRepl = isRepl, returnOutput = returnOutput, isDebug = isDebug,
-                           outputConsumer = outputConsumer)
+    isDebug: Boolean = false, setLastValue: Boolean = false,
+    outputConsumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+    return executeCodeImpl(
+      code,
+      withEcho = withEcho,
+      isRepl = isRepl,
+      returnOutput = returnOutput,
+      isDebug = isDebug,
+      setLastValue = setLastValue,
+      outputConsumer = outputConsumer)
   }
 
   private fun executeCodeImpl(
     code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0, isRepl: Boolean = false,
     returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
     firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
+    setLastValue: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
     CancellablePromise<RIExecutionResult> {
     val request = Service.ExecuteCodeRequest.newBuilder()
@@ -292,6 +302,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setStreamOutput(returnOutput || outputConsumer != null)
       .setIsRepl(isRepl)
       .setIsDebug(isDebug)
+      .setSetLastValue(setLastValue)
       .setFirstDebugCommand(firstDebugCommand)
       .build()
     val number = rInteropGrpcLogger.nextStubNumber()

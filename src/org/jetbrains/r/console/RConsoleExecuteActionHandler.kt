@@ -276,7 +276,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                   fireBeforeExecution()
                   consoleView.appendCommandText(text)
                   fireBusy()
-                  consoleView.rInterop.replExecute(text).then { it.exception == null }
+                  consoleView.rInterop.replExecute(text, setLastValue = true).then { it.exception == null }
                 }.thenAsync { it }
               }
             }
@@ -320,7 +320,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     if (console != consoleView) return
     fireBeforeExecution()
     state = State.BUSY
-    rInterop.executeCodeAsync(text, isRepl = true)
+    rInterop.executeCodeAsync(text, isRepl = true, setLastValue = true)
   }
 
   @Synchronized
