@@ -14,22 +14,22 @@ import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValueEnvironment
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.RVar
-import org.jetbrains.r.run.debug.stack.RXPresentationUtils
-import org.jetbrains.r.run.debug.stack.RXStackFrame
-import org.jetbrains.r.run.debug.stack.addEnvironmentContents
 import java.util.concurrent.CancellationException
 import kotlin.math.min
 
-internal class RXVar internal constructor(private val rVar: RVar, private val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
+internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
   private var offset = 0
   private val loader by lazy { rVar.ref.createVariableLoader() }
+  val executor get() = stackFrame.executor
+
+  var objectSize: Long? = null
 
   override fun computePresentation(node: XValueNode, place: XValuePlace) {
-    RXPresentationUtils.setPresentation(rVar, node, stackFrame.executor)
+    RXPresentationUtils.setPresentation(node, this)
   }
 
   override fun computeChildren(node: XCompositeNode) {
-    stackFrame.executor.execute {
+    executor.execute {
       try {
         val result = XValueChildrenList()
         val endOffset = offset + MAX_ITEMS
@@ -78,14 +78,17 @@ internal class RXVar internal constructor(private val rVar: RVar, private val st
 
   private fun addListContents(result: XValueChildrenList, vars: List<RVar>) {
     val isVector = rVar.value is RValueSimple
+    val rxVars = mutableListOf<RXVar>()
     vars.forEachIndexed { index, it ->
       if (it.name.isEmpty()) {
         val message = if (isVector) "rx.presentation.utils.vector.element.name" else "rx.presentation.utils.list.element.name"
-        result.add(RXVar(it.copy(name = RBundle.message(message, offset + index + 1)), stackFrame))
+        rxVars.add(RXVar(it.copy(name = RBundle.message(message, offset + index + 1)), stackFrame))
       } else {
-        result.add(RXVar(it, stackFrame))
+        rxVars.add(RXVar(it, stackFrame))
       }
     }
+    rxVars.forEach { result.add(it) }
+    if (!isVector) setObjectSizes(rxVars, stackFrame)
   }
 
   companion object {

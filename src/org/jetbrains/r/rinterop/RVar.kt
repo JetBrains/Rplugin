@@ -12,12 +12,12 @@ data class RVar(val name: String, val ref: RRef, val value: RValue) {
     get() = ref.rInterop.project
 }
 
-sealed class RValue
-class RValueUnevaluated(val code: String): RValue()
-class RValueSimple(val text: String, val isComplete: Boolean = true, val isVector: Boolean = false): RValue()
-class RValueDataFrame(val rows: Int, val cols: Int): RValue()
-class RValueList(val length: Int) : RValue()
-class RValueFunction(val header: String): RValue()
-class RValueEnvironment(val envName: String): RValue()
-class RValueError(val text: String): RValue()
-object RValueGraph : RValue()
+sealed class RValue(val cls: List<String>)
+class RValueUnevaluated(cls: List<String>, val code: String): RValue(cls)
+class RValueSimple(cls: List<String>, val text: String, val isComplete: Boolean = true, val isVector: Boolean = false): RValue(cls)
+class RValueDataFrame(cls: List<String>, val rows: Int, val cols: Int): RValue(cls)
+class RValueList(cls: List<String>, val length: Int) : RValue(cls)
+class RValueFunction(cls: List<String>, val header: String): RValue(cls)
+class RValueEnvironment(cls: List<String>, val envName: String): RValue(cls)
+class RValueError(cls: List<String>, val text: String): RValue(cls)
+class RValueGraph(cls: List<String>) : RValue(cls)

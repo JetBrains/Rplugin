@@ -23,7 +23,7 @@ class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var pare
       })
     }
     resultPromise.onSuccess {
-      callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), stackFrame))
+      callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), stackFrame).also { setObjectSizes(listOf(it), stackFrame) })
     }.onError {
       if (it is RDebuggerException) {
         callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { msg -> msg.isNotBlank() } ?: "Error")

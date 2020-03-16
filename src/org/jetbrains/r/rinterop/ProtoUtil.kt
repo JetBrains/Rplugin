@@ -7,15 +7,15 @@ package org.jetbrains.r.rinterop
 object ProtoUtil {
   fun rValueFromProto(proto: Service.ValueInfo): RValue {
     return when {
-      proto.hasValue() -> RValueSimple(proto.value.textValue.trimEnd(), proto.value.isComplete, proto.value.isVector)
-      proto.hasList() -> RValueList(proto.list.length)
-      proto.hasDataFrame() -> RValueDataFrame(proto.dataFrame.rows, proto.dataFrame.cols)
-      proto.hasUnevaluated() -> RValueUnevaluated(proto.unevaluated.code.trimEnd())
-      proto.hasFunction() -> RValueFunction(proto.function.header.trimEnd())
-      proto.hasEnvironment() -> RValueEnvironment(proto.environment.name)
-      proto.hasGraph() -> RValueGraph
-      proto.hasError() -> RValueError(proto.error.text.trimEnd())
-      else -> RValueSimple("")
+      proto.hasValue() -> RValueSimple(proto.clsList, proto.value.textValue.trimEnd(), proto.value.isComplete, proto.value.isVector)
+      proto.hasList() -> RValueList(proto.clsList, proto.list.length)
+      proto.hasDataFrame() -> RValueDataFrame(proto.clsList, proto.dataFrame.rows, proto.dataFrame.cols)
+      proto.hasUnevaluated() -> RValueUnevaluated(proto.clsList, proto.unevaluated.code.trimEnd())
+      proto.hasFunction() -> RValueFunction(proto.clsList, proto.function.header.trimEnd())
+      proto.hasEnvironment() -> RValueEnvironment(proto.clsList, proto.environment.name)
+      proto.hasGraph() -> RValueGraph(proto.clsList)
+      proto.hasError() -> RValueError(proto.clsList, proto.error.text.trimEnd())
+      else -> RValueSimple(listOf(), "")
     }
   }
 

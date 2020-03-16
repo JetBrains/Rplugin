@@ -28,6 +28,7 @@ import org.jetbrains.r.debugger.RXVariablesView
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
+import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import java.awt.BorderLayout
 import javax.swing.Icon
 import javax.swing.JComponent
@@ -187,7 +188,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       isFrameViewShown = false
       actionToolbar.component.isVisible = false
       val stackFrame = RXStackFrame(
-        RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.showHiddenVariables,
+        RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.settings,
         rInterop.globalEnvEqualityObject)
       updateStack(listOf(stackFrame))
     }
@@ -205,7 +206,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   fun refreshStackFrames() {
     updateStack(currentRXStackFrames.map {
       RXStackFrame(it.functionName, it.sourcePosition, it.loader,
-                   it.grayAttributes, variablesView.showHiddenVariables, it.equalityObject)
+                   it.grayAttributes, variablesView.settings, it.equalityObject)
     })
   }
 
@@ -218,7 +219,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       }
       RXStackFrame(functionName, it.position?.xSourcePosition, it.environment.createVariableLoader(),
                    it.position == null || RSourceFileManager.isTemporary(it.position.file),
-                   variablesView.showHiddenVariables, it.equalityObject)
+                   variablesView.settings, it.equalityObject)
     }.reversed()
   }
 

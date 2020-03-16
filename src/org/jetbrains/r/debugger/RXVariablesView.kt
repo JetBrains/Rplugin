@@ -43,6 +43,7 @@ import org.jetbrains.r.console.RDebuggerPanel
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
+import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import java.awt.BorderLayout
 import java.awt.event.*
 import javax.swing.SwingUtilities
@@ -64,13 +65,8 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     }
 
   private var rootNode: WatchesRootNode? = null
-  var showHiddenVariables = false
-    private set(value) {
-      if (field != value) {
-        field = value
-        debuggerPanel.refreshStackFrames()
-      }
-    }
+
+  val settings = RXVariableViewSettings()
 
   init {
     DataManager.registerDataProvider(panel, this)
@@ -250,14 +246,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         e.presentation.isEnabled = !console.isRunningCommand
       }
     })
-    actions.addAction(object : DumbAwareToggleAction(RBundle.message("variable.view.show.hidden.variables.action.text"), null,
-                                                     AllIcons.Actions.ShowHiddens) {
-      override fun isSelected(e: AnActionEvent) = showHiddenVariables
-
-      override fun setSelected(e: AnActionEvent, state: Boolean) {
-        showHiddenVariables = state
-      }
-    })
+    actions.addAction(createSettingsActionGroup())
     actions.addAction(object : DumbAwareAction(ActionsBundle.message("action.EvaluateExpression.text"), null,
                                                AllIcons.Debugger.EvaluateExpression) {
       override fun actionPerformed(e: AnActionEvent) {
@@ -267,6 +256,44 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
     toolbar.setTargetComponent(tree)
     getPanel().add(toolbar.getComponent(), BorderLayout.WEST)
+  }
+
+  private fun createSettingsActionGroup(): ActionGroup {
+    return DefaultActionGroup(RBundle.message("variable.view.settings.text"), listOf(
+      object : DumbAwareToggleAction(RBundle.message("variable.view.show.hidden.variables.action.text")) {
+        override fun isSelected(e: AnActionEvent) = settings.showHiddenVariables
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+          if (state != settings.showHiddenVariables) {
+            settings.showHiddenVariables = state
+            debuggerPanel.refreshStackFrames()
+          }
+        }
+      },
+      object : DumbAwareToggleAction(RBundle.message("variable.view.show.classes.action.text")) {
+        override fun isSelected(e: AnActionEvent) = settings.showClasses
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+          if (state != settings.showClasses) {
+            settings.showClasses = state
+            debuggerPanel.refreshStackFrames()
+          }
+        }
+      },
+      object : DumbAwareToggleAction(RBundle.message("variable.view.show.size.action.text")) {
+        override fun isSelected(e: AnActionEvent) = settings.showSize
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+          if (state != settings.showSize) {
+            settings.showSize = state
+            debuggerPanel.refreshStackFrames()
+          }
+        }
+      }
+    )).also {
+      it.templatePresentation.icon = AllIcons.Actions.Show
+      it.isPopup = true
+    }
   }
 
   override fun getData(dataId: String): Any? {

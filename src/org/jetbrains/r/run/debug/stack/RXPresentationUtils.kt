@@ -7,7 +7,7 @@ package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
@@ -18,45 +18,69 @@ import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
+private abstract class RXValuePresentationBase(val v: RXVar) : XValuePresentation() {
+  abstract fun renderValueImpl(renderer: XValueTextRenderer)
+
+  override fun renderValue(renderer: XValueTextRenderer) {
+    if (v.stackFrame.variableViewSettings.showSize) {
+      v.objectSize?.let { renderer.renderComment("(${StringUtil.formatFileSize(it)}) ") }
+    }
+    renderValueImpl(renderer)
+  }
+
+  override fun getType(): String? {
+    return if (v.stackFrame.variableViewSettings.showClasses && v.rVar.value.cls.isNotEmpty()) {
+      v.rVar.value.cls.joinToString(", ")
+    } else {
+      null
+    }
+  }
+}
+
+private open class RXValuePresentation(v: RXVar, val text: String) : RXValuePresentationBase(v) {
+  override fun renderValueImpl(renderer: XValueTextRenderer) {
+    renderer.renderValue(text)
+  }
+}
+
 internal object RXPresentationUtils {
-  fun setPresentation(rVar: RVar, node: XValueNode, executor: ExecutorService) {
-    when (val value = rVar.value) {
-      is RValueUnevaluated -> setPromisePresentation(value, rVar.ref, node, executor)
-      is RValueSimple -> setVarPresentation(value, rVar.ref, node, executor)
-      is RValueDataFrame -> setDataFramePresentation(value, rVar.name, rVar.ref, node)
-      is RValueList -> setListPresentation(value, node)
-      is RValueFunction -> setFunctionPresentation(value, rVar.ref, node, executor)
-      is RValueEnvironment -> setEnvironmentPresentation(node, rValue = value)
-      is RValueGraph -> setGraphPresentation(rVar.ref, node, executor)
-      is RValueError -> setErrorPresentation(value.text, node)
+  fun setPresentation(node: XValueNode, rxVar: RXVar) {
+    when (val value = rxVar.rVar.value) {
+      is RValueUnevaluated -> setPromisePresentation(node, value, rxVar)
+      is RValueSimple -> setVarPresentation(node, value, rxVar)
+      is RValueDataFrame -> setDataFramePresentation(node, value, rxVar)
+      is RValueList -> setListPresentation(node, value, rxVar)
+      is RValueFunction -> setFunctionPresentation(node, value, rxVar)
+      is RValueEnvironment -> setEnvironmentPresentation(node, value, rxVar)
+      is RValueGraph -> setGraphPresentation(node, value, rxVar)
+      is RValueError -> setErrorPresentation(node, value, rxVar)
     }
   }
 
-  fun setEnvironmentPresentation(node: XValueNode, rValue: RValueEnvironment? = null) {
-    node.setPresentation(AllIcons.Debugger.Value, object : XValuePresentation() {
-      override fun renderValue(renderer: XValueTextRenderer) {
-        if (rValue != null) {
-          val name = rValue.envName.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")
-          renderer.renderValue(name)
-        }
-      }
-
-      override fun getSeparator() = if (rValue != null) super.getSeparator() else ""
-    }, true)
+  fun setEnvironmentPresentation(node: XValueNode, rValue: RValueEnvironment? = null, rxVar: RXVar? = null) {
+    if (rxVar == null) {
+      node.setPresentation(AllIcons.Debugger.Value, object : XValuePresentation() {
+        override fun renderValue(renderer: XValueTextRenderer) {}
+        override fun getSeparator() = ""
+      }, true)
+    } else {
+      val name = rValue?.envName?.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")
+      node.setPresentation(AllIcons.Debugger.Value, RXValuePresentation(rxVar, name), true)
+    }
   }
 
-  private fun setPromisePresentation(rValue: RValueUnevaluated, ref: RRef, node: XValueNode, executor: ExecutorService) {
-    node.setPresentation(AllIcons.Nodes.Unknown, object : XValuePresentation() {
-      override fun renderValue(renderer: XValueTextRenderer) {
+  private fun setPromisePresentation(node: XValueNode, rValue: RValueUnevaluated, rxVar: RXVar) {
+    node.setPresentation(AllIcons.Nodes.Unknown, object : RXValuePresentationBase(rxVar) {
+      override fun renderValueImpl(renderer: XValueTextRenderer) {
         renderer.renderComment(rValue.code)
       }
     }, false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.evaluate.link.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+        val ref = rxVar.rVar.ref
         val promise = ref.getValueInfoAsync()
         while (true) {
           try {
@@ -78,13 +102,14 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setFunctionPresentation(rValue: RValueFunction, rRef: RRef, node: XValueNode, executor: ExecutorService) {
-    node.setPresentation(AllIcons.Nodes.Function, null, rValue.header.firstLine(), false)
+  private fun setFunctionPresentation(node: XValueNode, rValue: RValueFunction, rxVar: RXVar) {
+    node.setPresentation(AllIcons.Nodes.Function, RXValuePresentation(rxVar, rValue.header.firstLine()), false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.code.link.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
-        rRef.functionSourcePosition()?.xSourcePosition.let {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+        val ref = rxVar.rVar.ref
+        ref.functionSourcePosition()?.xSourcePosition.let {
           ApplicationManager.getApplication().invokeLater {
-            it?.createNavigatable(rRef.rInterop.project)?.navigate(true)
+            it?.createNavigatable(ref.rInterop.project)?.navigate(true)
             callback.evaluated("")
           }
         }
@@ -94,13 +119,15 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setDataFramePresentation(rValue: RValueDataFrame, name: String, ref: RRef, node: XValueNode) {
-    node.setPresentation(AllIcons.Nodes.DataTables, null,
-                         RBundle.message("rx.presentation.utils.data.frame.text", rValue.rows, rValue.cols), true)
+  private fun setDataFramePresentation(node: XValueNode, rValue: RValueDataFrame, rxVar: RXVar) {
+    node.setPresentation(AllIcons.Nodes.DataTables,
+                         RXValuePresentation(rxVar, RBundle.message("rx.presentation.utils.data.frame.text", rValue.rows, rValue.cols)),
+                         true)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.table.link.text")) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
+        val ref = rxVar.rVar.ref
         ref.rInterop.dataFrameGetViewer(ref).onSuccess {
-          RVisualizeTableUtil.showTable(ref.rInterop.project, it, name)
+          RVisualizeTableUtil.showTable(ref.rInterop.project, it, rxVar.name)
         }.onError {
           when (it) {
             is RDataFrameException -> callback.errorOccurred(it.message.orEmpty())
@@ -118,11 +145,16 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setListPresentation(value: RValueList, node: XValueNode) {
-    node.setPresentation(AllIcons.Debugger.Db_array, null, RBundle.message("rx.presentation.utils.list.text", value.length), true)
+  private fun setListPresentation(node: XValueNode, rValue: RValueList, rxVar: RXVar) {
+    val text = if (rValue.length == 0) {
+      RBundle.message("rx.presentation.utils.empty.list.text")
+    } else {
+      RBundle.message("rx.presentation.utils.list.text", rValue.length)
+    }
+    node.setPresentation(AllIcons.Debugger.Db_array, RXValuePresentation(rxVar, text), rValue.length > 0)
   }
 
-  private fun setVarPresentation(rValue: RValueSimple, rRef: RRef, node: XValueNode, executor: ExecutorService) {
+  private fun setVarPresentation(node: XValueNode, rValue: RValueSimple, rxVar: RXVar) {
     var line = rValue.text.firstLine()
     if (!rValue.isComplete && rValue.text == line) {
       line += " ..."
@@ -130,11 +162,7 @@ internal object RXPresentationUtils {
     if (line.startsWith("[1]")) {
       line = line.drop(3).trimStart()
     }
-    node.setPresentation(AllIcons.Debugger.Db_primitive, object : XValuePresentation() {
-      override fun renderValue(renderer: XValueTextRenderer) {
-        renderer.renderValue(line)
-      }
-
+    node.setPresentation(AllIcons.Debugger.Db_primitive, object : RXValuePresentation(rxVar, line) {
       override fun getSeparator() = if (line.isNotEmpty()) super.getSeparator() else ""
     }, rValue.isVector)
     if (rValue.text.contains('\n') || !rValue.isComplete) {
@@ -143,8 +171,8 @@ internal object RXPresentationUtils {
           if (rValue.isComplete) {
             callback.evaluated(rValue.text)
           } else {
-            executor.execute {
-              callback.evaluated(rRef.evaluateAsText())
+            rxVar.executor.execute {
+              callback.evaluated(rxVar.rVar.ref.evaluateAsText())
             }
           }
         }
@@ -152,10 +180,11 @@ internal object RXPresentationUtils {
     }
   }
 
-  private fun setGraphPresentation(ref: RRef, node: XValueNode, executor: ExecutorService) {
-    node.setPresentation(AllIcons.Nodes.PpLib, null, RBundle.message("rx.presentation.utils.graph.text"), true)
+  private fun setGraphPresentation(node: XValueNode, rValue: RValueGraph, rxVar: RXVar) {
+    node.setPresentation(AllIcons.Nodes.PpLib, RXValuePresentation(rxVar, RBundle.message("rx.presentation.utils.graph.text")), true)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.show.graph.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = executor.execute {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+        val ref = rxVar.rVar.ref
         ref.evaluateAsText()
         RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
         callback.evaluated("")
@@ -165,10 +194,11 @@ internal object RXPresentationUtils {
     })
   }
 
-  private fun setErrorPresentation(text: String, node: XValueNode) {
-    node.setPresentation(AllIcons.Debugger.Db_obsolete, object : XValuePresentation() {
-      override fun renderValue(renderer: XValueTextRenderer) {
-        renderer.renderError(text.lines().first())
+  private fun setErrorPresentation(node: XValueNode, rValue: RValueError, rxVar: RXVar) {
+    val text = rValue.text
+    node.setPresentation(AllIcons.Debugger.Db_obsolete, object : RXValuePresentationBase(rxVar) {
+      override fun renderValueImpl(renderer: XValueTextRenderer) {
+        renderer.renderError(text.firstLine())
       }
     }, false)
     if (text.lines().size > 1) {

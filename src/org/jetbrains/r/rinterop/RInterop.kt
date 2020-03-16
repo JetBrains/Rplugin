@@ -658,6 +658,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
+  fun getObjectSizes(refs: List<RRef>): List<Long> {
+    return execute(stub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
+  }
+
   private fun <TRequest : GeneratedMessageV3> executeRequest(
     methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
     request: TRequest,
