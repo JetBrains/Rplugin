@@ -154,8 +154,8 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
 
   private class DummyRuntimeInfo : RConsoleRuntimeInfo {
     override val variables = mapOf(
-      "xx" to RValueSimple(""),
-      "xxx" to RValueSimple("")
+      "xx" to RValueSimple("", ""),
+      "xxx" to RValueSimple("", "")
     )
     override val loadedPackages: Map<String, Int> = emptyMap()
     override val rMarkdownChunkOptions: List<String> = emptyList()
