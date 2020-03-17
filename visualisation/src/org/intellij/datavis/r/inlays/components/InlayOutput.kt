@@ -11,22 +11,17 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.fileChooser.FileSaverDescriptor
-import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.ui.TextTransferable
 import com.intellij.util.ui.UIUtil
 import javafx.application.Platform
@@ -45,9 +40,6 @@ import java.awt.Component
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.io.File
-import java.nio.file.Paths
-import javax.imageio.ImageIO
-import javax.imageio.ImageTypeSpecifier
 import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
@@ -125,33 +117,7 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   protected fun saveWithFileChooser(title: String, description: String, extension: Array<String>, defaultName: String, onChoose: (File) -> Unit) {
-    val descriptor = FileSaverDescriptor(title, description, *extension)
-    val chooser = FileSaverDialogImpl(descriptor, project)
-    val virtualBaseDir = VfsUtil.findFile(Paths.get(project.basePath!!), true)
-    chooser.save(virtualBaseDir, defaultName)?.let { fileWrapper ->
-      val destination = fileWrapper.file
-      try {
-        createDestinationFile(destination)
-        onChoose(destination)
-      } catch (e: Exception) {
-        val details = e.message?.let { ":\n$it" }
-        notifyExportError("Cannot save to selected destination$details")
-      }
-    }
-  }
-
-  private fun createDestinationFile(file: File) {
-    if (!file.exists() && !file.createNewFile()) {
-      throw RuntimeException("Cannot create requested file")
-    }
-  }
-
-  private fun notifyExportError(content: String) {
-    val notification = Notification(VisualizationBundle.message("inlay.output.notification.group.name"),
-                                    VisualizationBundle.message("inlay.output.export.failure"),
-                                    content,
-                                    NotificationType.ERROR)
-    notification.notify(project)
+    InlayOutputUtil.saveWithFileChooser(project, title, description, extension, defaultName, onChoose)
   }
 
   private fun createActions(): List<AnAction> {
@@ -334,15 +300,7 @@ class InlayOutputImg(
 
   override fun saveAs() {
     wrapper.image?.let { image ->
-      val title = VisualizationBundle.message("inlay.output.image.export.text")
-      val description = VisualizationBundle.message("inlay.output.image.export.description")
-      val imageTypeSpecifier = ImageTypeSpecifier.createFromRenderedImage(image)
-      val extensions = arrayOf("png", "jpeg", "bmp", "gif", "tiff").filter {
-        ImageIO.getImageWriters(imageTypeSpecifier, it).asSequence().any()
-      }.toTypedArray()
-      saveWithFileChooser(title, description, extensions, defaultName = "image") { destination ->
-        ImageIO.write(image, destination.extension, destination)
-      }
+      InlayOutputUtil.saveImageWithFileChooser(project, image)
     }
   }
 
