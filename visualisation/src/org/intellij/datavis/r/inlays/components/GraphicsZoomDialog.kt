@@ -31,7 +31,7 @@ class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String
     title = TITLE
     removeMarginsIfPossible()
     graphicsManager?.createImageGroup(imagePath)?.let { pair ->
-      wrapper.addImage(pair.first, true)
+      wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second
     }

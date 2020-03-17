@@ -268,5 +268,9 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     fun calculateImageSizeForRegion(region: Dimension, topOffset: Int = 0): Dimension {
       return Dimension(region.width - imageInsets * 2, region.height - imageInsets * 2 - topOffset)
     }
+
+    fun calculateRegionForImageSize(imageSize: Dimension, topOffset: Int = 0): Dimension {
+      return Dimension(imageSize.width + imageInsets * 2, imageSize.height + imageInsets * 2 + topOffset)
+    }
   }
 }

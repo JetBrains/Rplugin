@@ -161,7 +161,7 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
 }
 
 class InlayOutputImg(
-  parent: Disposable,
+  private val parent: Disposable,
   private val editor: Editor,
   clearAction: () -> Unit)
   : InlayOutput(parent, editor.project!!, clearAction) {
@@ -264,7 +264,7 @@ class InlayOutputImg(
 
   override fun addData(data: String, type: String) {
     if (type == "IMG") {
-      wrapper.addImage(File(data), false, ::runAsyncInlay)
+      wrapper.addImage(File(data), GraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE, ::runAsyncInlay)
     } else {
       runAsyncInlay {
         when (type) {
@@ -299,8 +299,13 @@ class InlayOutputImg(
   }
 
   override fun saveAs() {
-    wrapper.image?.let { image ->
-      InlayOutputUtil.saveImageWithFileChooser(project, image)
+    val imagePath = wrapper.imagePath
+    if (imagePath != null && graphicsManager?.canRescale(imagePath) == true) {
+      GraphicsExportDialog(project, parent, imagePath, wrapper.preferredImageSize).show()
+    } else {
+      wrapper.image?.let { image ->
+        InlayOutputUtil.saveImageWithFileChooser(project, image)
+      }
     }
   }
 

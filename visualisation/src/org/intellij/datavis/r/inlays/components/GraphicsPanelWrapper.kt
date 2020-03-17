@@ -27,7 +27,7 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     })
   }
 
-  private val preferredImageSize: Dimension?
+  val preferredImageSize: Dimension?
     get() = graphicsPanel.imageComponentSize.takeIf { it.isValid } ?: component.parent?.let { panelParent ->
       GraphicsPanel.calculateImageSizeForRegion(panelParent.preferredSize)
     }
@@ -82,20 +82,22 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   val component = graphicsPanel.component
 
-  fun addImage(imageFile: File, immediatelyRescale: Boolean) {
-    addImage(imageFile, immediatelyRescale) { task ->
+  fun addImage(imageFile: File, rescaleMode: RescaleMode) {
+    addImage(imageFile, rescaleMode) { task ->
       task()
     }
   }
 
-  fun <R> addImage(imageFile: File, immediatelyRescale: Boolean, executor: (() -> Unit) -> R): R {
+  fun <R> addImage(imageFile: File, rescaleMode: RescaleMode, executor: (() -> Unit) -> R): R {
     val path = imageFile.absolutePath
-    isAutoResizeEnabled = graphicsManager?.canRescale(path) ?: false
+    if (rescaleMode != RescaleMode.LEFT_AS_IS) {
+      isAutoResizeEnabled = graphicsManager?.canRescale(path) ?: false
+    }
     localResolution = graphicsManager?.getImageResolution(path)
     targetResolution = localResolution  // Note: this **schedules** a rescaling as well
     imagePath = path
     return executor {
-      if (!immediatelyRescale || !isAutoResizeEnabled) {
+      if (rescaleMode != RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE || !isAutoResizeEnabled) {
         graphicsPanel.showImage(imageFile)
       } else {
         graphicsPanel.showMessage(WAITING_MESSAGE)
@@ -126,9 +128,10 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     graphicsPanel.showImageBase64(data)
   }
 
-  private fun rescaleIfNecessary() {
-    preferredImageSize?.let { newSize ->
-      val oldSize = graphicsPanel.imageSize
+  fun rescaleIfNecessary(preferredSize: Dimension? = null) {
+    val oldSize = graphicsPanel.imageSize
+    val newSize = preferredSize ?: preferredImageSize?.takeIf { isAutoResizeEnabled } ?: oldSize
+    if (newSize != null) {
       if (oldSize != newSize || localResolution != targetResolution) {
         // Note: there might be lots of attempts to resize image on IDE startup
         // but most of them will fail (and throw an exception)
@@ -145,13 +148,19 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       graphicsManager?.let { manager ->
         if (!manager.isBusy) {
           manager.rescaleImage(path, newSize, newResolution) { imageFile ->
-            addImage(imageFile, false)
+            addImage(imageFile, RescaleMode.LEFT_AS_IS)
           }
         } else {
           scheduleRescaling()  // Out of luck: try again in 500 ms
         }
       }
     }
+  }
+
+  enum class RescaleMode {
+    IMMEDIATELY_RESCALE_IF_POSSIBLE,
+    SCHEDULE_RESCALE_IF_POSSIBLE,
+    LEFT_AS_IS,
   }
 
   companion object {
