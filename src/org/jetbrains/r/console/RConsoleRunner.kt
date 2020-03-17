@@ -101,13 +101,16 @@ class RConsoleRunner(private val project: Project,
 
       runAsync {
         // Setup console listener for graphics device
-        val screenParameters = RGraphicsSettings.getScreenParameters(project)
-        val graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
-          configuration = configuration.copy(screenParameters = screenParameters)
-          addListener(RGraphicsToolWindowListener(project))
-        }
-        consoleView.addOnSelectListener {
-          RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
+        val graphicsDevice = if (ApplicationManager.getApplication().isUnitTestMode) {
+          null
+        } else {
+          val screenParameters = RGraphicsSettings.getScreenParameters(project)
+          RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
+            configuration = configuration.copy(screenParameters = screenParameters)
+            addListener(RGraphicsToolWindowListener(project))
+          }.also {
+            consoleView.addOnSelectListener { RGraphicsRepository.getInstance(project).setActiveDevice(it) }
+          }
         }
 
         UIUtil.invokeLaterIfNeeded {
@@ -115,9 +118,11 @@ class RConsoleRunner(private val project: Project,
           consoleView.createDebuggerPanel()
 
           // Setup custom graphical device (it's more time consuming so it should be the last one)
-          runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
-            val graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
-            consoleView.executeActionHandler.addListener(graphicsHandler)
+          graphicsDevice?.let { device ->
+            runBackgroundableTask(RBundle.message("graphics.device.initializing.title"), project, false) {
+              val graphicsHandler = UpdateGraphicsHandler(device)
+              consoleView.executeActionHandler.addListener(graphicsHandler)
+            }
           }
 
           // setResult also will trigger onSuccess handlers, but we don't wont to run them on EDT
