@@ -24,7 +24,8 @@ class RConsoleHistoryTest : RConsoleBaseTestCase() {
       document.setText(text2)
       PsiDocumentManager.getInstance(project).commitDocument(document)
     }
-    val historyController = ConsoleHistoryController.getController(console)
+    val historyController: ConsoleHistoryController? = ConsoleHistoryController.getController(console)
+    check(historyController != null)
     consoleOlder(historyController)
     TestCase.assertEquals(text1, document.text)
     TestCase.assertEquals(editor.caretModel.offset, document.textLength)
