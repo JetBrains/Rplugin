@@ -117,7 +117,7 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   protected fun saveWithFileChooser(title: String, description: String, extension: Array<String>, defaultName: String, onChoose: (File) -> Unit) {
-    InlayOutputUtil.saveWithFileChooser(project, title, description, extension, defaultName, onChoose)
+    InlayOutputUtil.saveWithFileChooser(project, title, description, extension, defaultName, true, onChoose)
   }
 
   private fun createActions(): List<AnAction> {

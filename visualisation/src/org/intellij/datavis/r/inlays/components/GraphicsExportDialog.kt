@@ -41,7 +41,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     wrapper.image?.let { image ->
       InlayOutputUtil.chooseImageSaveLocation(project, image) { location ->
         outputPath = location.absolutePath
-        location.delete()
       }
     }
   }

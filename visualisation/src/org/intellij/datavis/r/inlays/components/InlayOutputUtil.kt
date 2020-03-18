@@ -32,7 +32,7 @@ object InlayOutputUtil {
 
   fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
     val extensions = getAvailableFormats(image).toTypedArray()
-    saveWithFileChooser(project, EXPORT_IMAGE_TITLE, EXPORT_IMAGE_DESCRIPTION, extensions, "image", onChoose)
+    saveWithFileChooser(project, EXPORT_IMAGE_TITLE, EXPORT_IMAGE_DESCRIPTION, extensions, "image", false, onChoose)
   }
 
   private fun getAvailableFormats(image: BufferedImage): List<String> {
@@ -50,17 +50,18 @@ object InlayOutputUtil {
     project: Project,
     title: String,
     description: String,
-    extension: Array<String>,
+    extensions: Array<String>,
     defaultName: String,
+    createIfMissing: Boolean,
     onChoose: (File) -> Unit
   ) {
-    val descriptor = FileSaverDescriptor(title, description, *extension)
+    val descriptor = FileSaverDescriptor(title, description, *extensions)
     val chooser = FileSaverDialogImpl(descriptor, project)
     val virtualBaseDir = VfsUtil.findFile(Paths.get(project.basePath!!), true)
     chooser.save(virtualBaseDir, defaultName)?.let { fileWrapper ->
       val destination = fileWrapper.file
       try {
-        createDestinationFile(destination)
+        checkOrCreateDestinationFile(destination, createIfMissing)
         onChoose(destination)
       } catch (e: Exception) {
         notifyExportError(e)
@@ -68,9 +69,14 @@ object InlayOutputUtil {
     }
   }
 
-  private fun createDestinationFile(file: File) {
-    if (!file.exists() && !file.createNewFile()) {
-      throw RuntimeException(EXPORT_FAILURE_DETAILS)
+  private fun checkOrCreateDestinationFile(file: File, createIfMissing: Boolean) {
+    if (!file.exists()) {
+      if (!file.createNewFile()) {
+        throw RuntimeException(EXPORT_FAILURE_DETAILS)
+      }
+      if (!createIfMissing && !file.delete()) {
+        throw RuntimeException(EXPORT_FAILURE_DETAILS)
+      }
     }
   }
 
