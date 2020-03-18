@@ -184,6 +184,19 @@ class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
                     expected = emptyList())
   }
 
+  fun testPipe() {
+    checkCompletion("table %>% setkey(yyyy_a<caret>)",
+      initial = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add", "yyyy_bbc"),
+      expected = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add"),
+      notExpected = listOf("yyyy_bbc"))
+  }
+
+  fun testDataTableNotHaveTableArgument() {
+    checkCompletion("data.table(table, yyyy_ax = 0, yyyy_ay = 1, yyyy_ac = yyyy_a<caret>)",
+                    initial = listOf("yyyy_aa", "yyyy_ab"),
+                    notExpected = listOf("yyyy_aa", "yyyy_ab", "yyyy_ax", "yyyy_ay"))
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,

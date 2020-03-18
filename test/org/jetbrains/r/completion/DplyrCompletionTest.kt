@@ -10,6 +10,13 @@ import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
+
+  override fun setUp() {
+    super.setUp()
+    addLibraries()
+    rInterop.executeCode("library(dplyr)", true)
+  }
+
   fun testLoader() {
     checkCompletion("table %>% filter(yyyy_a<caret>)",
                     initial = listOf("yyyy_aba", "yyyy_aca", "yyyy_add", "yyyy_bbc"),
@@ -135,8 +142,29 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     checkCompletion("t[yyyy_<caret>]", expected = listOf("\"yyyy_aaa\"", "\"yyyy_aab\""))
   }
 
+  fun testNamedTableArgument() {
+    checkCompletion("filter(yyyy_a<caret>, .data = table)",
+      initial = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add", "yyyy_bbc"),
+      expected = listOf("yyyy_aaa", "yyyy_aac", "yyyy_add"))
+  }
+
+  fun testTwoTableArguments() {
+    rInterop.executeCode("x <- tibble(yyyy_aba = 1:5, yyyy_ada = 6:10)", true)
+    rInterop.executeCode("y <- tibble(yyyy_aca = -1:-5, yyyy_ara = -6:-10)", true)
+
+    checkCompletion("full_join(x, y, by=c(yyyy_a<caret>))",
+                    expected = listOf("\"yyyy_aba\"", "\"yyyy_aca\"", "\"yyyy_ada\"", "\"yyyy_ara\""))
+  }
+
+  fun testTwoTableArgumentsWithSameColumns() {
+    rInterop.executeCode("x <- tibble(yyyy_aba = 1:5, yyyy_ada = 6:10)", true)
+    rInterop.executeCode("y <- tibble(yyyy_aba = -1:-5, yyyy_ara = -6:-10)", true)
+
+    checkCompletion("full_join(x, y, by=c(yyyy_a<caret>))",
+                    expected = listOf("\"yyyy_aba\"", "\"yyyy_ada\"", "\"yyyy_ara\""))
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: List<String>? = null, initialGroups: List<String>? = null) {
-    rInterop.executeCode("library(dplyr)", true)
     if (initial != null) {
       rInterop.executeCode("table <- dplyr::tibble(${initial.joinToString(", ") { "$it = NA" }})", false)
       if (initialGroups != null) {

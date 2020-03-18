@@ -8,6 +8,7 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.RDplyrAnalyzer
 import org.jetbrains.r.psi.RElementFactory
@@ -34,7 +35,9 @@ class DplyrBooleanOperatorsInspection : RInspection() {
     override fun visitOperator(o: ROperator) {
       val name = o.name
       if (name != "&&" && name != "||") return
-      if (RDplyrAnalyzer.getContextInfo(o) == null) return
+      val runtimeInfo = o.containingFile.runtimeInfo
+      val dplyrContextInfo = RDplyrAnalyzer.getContextInfo(o, runtimeInfo) ?: return
+      if (dplyrContextInfo.currentArgumentIsTable) return
       myProblemHolder.registerProblem(o, "Non-vector logical operator used in dplyr expression",
                                       ProblemHighlightType.WARNING, MyQuickFix(name))
     }

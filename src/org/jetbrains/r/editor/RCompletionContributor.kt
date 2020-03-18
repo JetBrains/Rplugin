@@ -26,6 +26,7 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.AES_PARAMETER_FILTER
@@ -34,7 +35,6 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
-import org.jetbrains.r.psi.TableType
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
@@ -79,8 +79,7 @@ class RCompletionContributor : CompletionContributor() {
     addIdentifierCompletion()
     addMemberAccessCompletion()
     addNamespaceAccessExpression()
-    addDplyrContextCompletion()
-    addDataTableContextCompletion()
+    addTableContextCompletion()
     addStringLiteralCompletion()
     addGGPlotAesColumnCompletionProvider()
   }
@@ -107,14 +106,9 @@ class RCompletionContributor : CompletionContributor() {
       .and(RElementFilters.IMPORT_CONTEXT), InstalledPackageCompletionProvider())
   }
 
-  private fun addDplyrContextCompletion() {
+  private fun addTableContextCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), DplyrContextCompletionProvider())
-  }
-
-  private fun addDataTableContextCompletion() {
-    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), DataTableContextCompletionProvider())
+      .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), TableContextCompletionProvider())
   }
 
   private fun addStringLiteralCompletion() {
@@ -340,89 +334,18 @@ class RCompletionContributor : CompletionContributor() {
     }
   }
 
-  private class DplyrContextCompletionProvider : CompletionProvider<CompletionParameters>() {
+  private class TableContextCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val (dplyrCallInfo, currentArgument) = RDplyrAnalyzer.getContextInfo(position) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      val tableInfo = RDplyrAnalyzer.getTableColumns(dplyrCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
-      var columns = if (dplyrCallInfo.function.contextType != TableManipulationContextType.SUBSCRIPTION &&
-                        dplyrCallInfo.function.tableArguments > 0) {
-        tableInfo.columns
-      }
-      else {
-        emptyList()
-      }
-      val expression = PsiTreeUtil.getParentOfType(position, RExpression::class.java, false)
-      when (dplyrCallInfo.function.contextType) {
-        TableManipulationContextType.NORMAL -> {
-          if (expression is RStringLiteralExpression) return
-          columns = RDplyrAnalyzer.addCurrentColumns(columns, dplyrCallInfo, currentArgument.index)
-        }
-        TableManipulationContextType.SUBSCRIPTION -> {
-          if (expression is RIdentifierExpression) {
-            columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
-          }
-        }
-        TableManipulationContextType.JOIN -> {
-          val currentArg = dplyrCallInfo.arguments[currentArgument.index]
-          if (currentArg !is RNamedArgument || currentArg.name != "by") return
-          val firstColumns = columns.map { it.name }.toSet()
-          val columns2 = RDplyrAnalyzer.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo).columns
-            .filter { it.name !in firstColumns }
-          columns = columns + columns2
-          if (expression is RIdentifierExpression) {
-            columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
-          }
-        }
-        null -> return
-      }
-
-      result.addAllElements(columns.map {
-        PrioritizedLookupElement.withGrouping(RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
-                                              TABLE_MANIPULATION_COLUMNS_GROUPING)
-      })
-    }
-  }
-
-  private class DataTableContextCompletionProvider : CompletionProvider<CompletionParameters>() {
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-      val position = parameters.position
-      val (dataTableCallInfo, currentArgument) = RDataTableAnalyzer.getContextInfo(position) ?: return
-      val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      val tableArguments = dataTableCallInfo.function.tablesArguments
-      val isDataTable: Boolean
-      var columns = if (tableArguments.isNotEmpty()) {
-        val tableInfos = dataTableCallInfo.function.getTableArguments(dataTableCallInfo.psiCall, dataTableCallInfo.arguments, runtimeInfo).map {
-          RDataTableAnalyzer.getTableColumns(it, runtimeInfo)
-        }
-        isDataTable = tableInfos.all { it.type == TableType.DATA_TABLE }
-        tableInfos.map { it.columns }.flatten()
-          .groupBy { it.name }
-          .map { (name, list) ->
-            TableManipulationColumn(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
-          }
-      }
-      else {
-        // If signature like my_fun <- function(...) {}
-        val tableInfo = RDataTableAnalyzer.getTableColumns(dataTableCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
-        isDataTable = tableInfo.type == TableType.DATA_TABLE
-        tableInfo.columns
-      }
-
-      val isQuotesNeeded = position.parent !is RStringLiteralExpression &&
-                           (dataTableCallInfo.function.isQuotesNeeded(dataTableCallInfo.psiCall,
-                                                                      dataTableCallInfo.arguments,
-                                                                      currentArgument, runtimeInfo) ||
-                           (!isDataTable && dataTableCallInfo.function.contextType == TableManipulationContextType.SUBSCRIPTION))
-
-      if (isQuotesNeeded) {
-        columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
-      }
-
-      result.addAllElements(columns.map {
-        PrioritizedLookupElement.withGrouping(RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
-                                              TABLE_MANIPULATION_COLUMNS_GROUPING)
+      val columns = mutableListOf<TableManipulationColumn>()
+      addTableCompletion(RDplyrAnalyzer, position, runtimeInfo, columns)
+      addTableCompletion(RDataTableAnalyzer, position, runtimeInfo, columns)
+      result.addAllElements(columns.distinct().map {
+        PrioritizedLookupElement.withGrouping(
+          RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
+          TABLE_MANIPULATION_COLUMNS_GROUPING
+        )
       })
     }
   }
@@ -437,24 +360,10 @@ class RCompletionContributor : CompletionContributor() {
       val other = (if (parent.leftExpr == stringLiteral) parent.rightExpr else parent.leftExpr) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
 
-      val dplyrContextInfo = RDplyrAnalyzer.getContextInfo(stringLiteral)
-      val text = if (dplyrContextInfo != null) {
-        val dplyrCallInfo = dplyrContextInfo.callInfo
-        val name = other.name
-        if (dplyrCallInfo.function.contextType != TableManipulationContextType.NORMAL) return
-        val table = dplyrCallInfo.arguments[0]
-        val command = StringBuilder()
-        command.append("(")
-        RDplyrAnalyzer.transformExpression(table, command, runtimeInfo, true)
-        command.append(")$$name")
-        command.toString()
-      }
-      else {
-        if (!RDplyrAnalyzer.isSafe(other, runtimeInfo)) return
-        "(${other.text})"
-      }
-      val values = runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() }
-      result.addAllElements(values.map {
+      val values = mutableListOf<String>()
+      addColumnStringValues(RDplyrAnalyzer, stringLiteral, other, runtimeInfo, values)
+      addColumnStringValues(RDataTableAnalyzer, stringLiteral, other, runtimeInfo, values)
+      result.addAllElements(values.distinct().map {
         PrioritizedLookupElement.withInsertHandler(
           RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
           InsertHandler<LookupElement> { context, _ ->
@@ -466,10 +375,63 @@ class RCompletionContributor : CompletionContributor() {
       })
     }
 
+    private fun <T : TableManipulationFunction> addColumnStringValues(tableAnalyser: TableManipulationAnalyzer<T>,
+                                                                      stringLiteral: RStringLiteralExpression,
+                                                                      columnNameIdentifier: RExpression,
+                                                                      runtimeInfo: RConsoleRuntimeInfo,
+                                                                      result: MutableList<String>) {
+      val contextInfo = tableAnalyser.getContextInfo(stringLiteral, runtimeInfo)
+      val text = if (contextInfo != null) {
+        val columnName =
+          if (columnNameIdentifier is RMemberExpression) columnNameIdentifier.rightExpr?.name
+          else columnNameIdentifier.name
+        val command = StringBuilder()
+        command.append("unlist(list(")
+        contextInfo.callInfo.passedTableArguments.forEachIndexed { ind, table ->
+          if (ind != 0) command.append(", ")
+          command.append("(")
+          tableAnalyser.transformExpression(table, command, runtimeInfo, true)
+          command.append(")$$columnName")
+        }
+        command.append("))")
+        command.toString()
+      } else {
+        if (!tableAnalyser.isSafe(columnNameIdentifier, runtimeInfo)) return
+        "(${columnNameIdentifier.text})"
+      }
+      result.addAll(runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() })
+    }
+
     private val escape = StringUtil.escaper(true, "\"")::`fun`
   }
 
   companion object {
+    private fun <T : TableManipulationFunction> addTableCompletion(tableAnalyser: TableManipulationAnalyzer<T>,
+                                                                   position: PsiElement,
+                                                                   runtimeInfo: RConsoleRuntimeInfo,
+                                                                   result: MutableList<TableManipulationColumn>) {
+      val (tableCallInfo, currentArgument) = tableAnalyser.getContextInfo(position, runtimeInfo) ?: return
+      val tableInfos = tableCallInfo.passedTableArguments.map { tableAnalyser.getTableColumns(it, runtimeInfo) }
+      val isCorrectTableType = tableInfos.all { it.type == tableAnalyser.tableColumnType }
+      val isQuotesNeeded = !isCorrectTableType && tableAnalyser.isSubscription(tableCallInfo.function)
+                           || tableCallInfo.function.isQuotesNeeded(tableCallInfo.argumentInfo, currentArgument)
+      if (!isQuotesNeeded && position.parent is RStringLiteralExpression) return
+
+      var columns = tableInfos.map { it.columns }.flatten()
+        .groupBy { it.name }
+        .map { (name, list) ->
+          TableManipulationColumn(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
+        }
+
+      if (tableAnalyser is RDplyrAnalyzer)
+        columns = tableAnalyser.addCurrentColumns(columns, tableCallInfo, currentArgument)
+
+      if (isQuotesNeeded && position.parent !is RStringLiteralExpression) {
+        columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
+      }
+      result.addAll(columns)
+    }
+
     private fun addFilePathCompletion(parameters: CompletionParameters,
                                       stringLiteral: RStringLiteralExpression,
                                       _result: CompletionResultSet) {

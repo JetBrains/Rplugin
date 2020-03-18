@@ -212,6 +212,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       utils
       roxygen2
       ggplot2
+      tibble
     """.trimIndent().split("\n").toSet()
 
     fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int): T? {

@@ -95,9 +95,9 @@ class DplyrCallToPipeInspection : RInspection() {
 
     private fun isDplyrCallWithTable(expr: RExpression): Boolean {
       if (expr !is RCallExpression) return false
-      val call = RDplyrAnalyzer.getCallInfo(expr) ?: return false
       val runtimeInfo = expr.containingFile.runtimeInfo
-      return call.function.haveTableArguments(call.psiCall, call.arguments, runtimeInfo) && call.function.tableArguments != 0
+      val call = RDplyrAnalyzer.getCallInfo(expr, runtimeInfo) ?: return false
+      return call.function.tableArguments.isNotEmpty() && call.havePassedTableArguments
     }
   }
 }

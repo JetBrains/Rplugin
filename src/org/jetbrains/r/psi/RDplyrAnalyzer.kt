@@ -5,6 +5,7 @@
 package org.jetbrains.r.psi
 
 import org.jetbrains.r.console.RConsoleRuntimeInfo
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.api.*
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
@@ -17,7 +18,7 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   override val packageName = "dplyr"
   override val subscriptionOperator = DplyrFunction.SUBSCRIPTION_OPERATOR
   override val doubleSubscriptionOperator = DplyrFunction.DOUBLE_SUBSCRIPTION_OPERATOR
-  override val defaultTransformValue = "NA"
+  override val tableColumnType = TableType.DPLYR
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")
@@ -30,45 +31,11 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
     ) + nameToFunction.keys
   )
 
-  override fun getContextInfoFromArgumentList(expression: RArgumentList,
-                                              argument: RPsiElement,
-                                              argumentList: MutableList<RExpression>): TableManipulationContextInfo<DplyrFunction>? {
-    val callParent = (expression.parent as RCallExpression).parent
-    if (callParent is ROperatorExpression && callParent.isBinary && callParent.operator?.name == PIPE_OPERATOR) {
-      argumentList.add(0, callParent.leftExpr ?: return null)
-    }
-
-    return super.getContextInfoFromArgumentList(expression, argument, argumentList)
-  }
-
-  override fun getCustomCallInfo(expression: RExpression?): TableManipulationCallInfo<DplyrFunction>? {
-    when (expression) {
-      is ROperatorExpression -> {
-        if (!expression.isBinary) return null
-        if (expression.operator?.name != PIPE_OPERATOR) return null
-        val function: DplyrFunction
-        val argList: List<RExpression>
-        val call = expression.rightExpr ?: return null
-        if (call is RCallExpression) {
-          function = getTableManipulationFunctionByExpressionName(call.expression) ?: return null
-          argList = call.argumentList.expressionList
-        }
-        else {
-          function = getTableManipulationFunctionByExpressionName(call) ?: return null
-          argList = listOf()
-        }
-        if (argList.size + 1 < function.tableArguments) return null
-        return TableManipulationCallInfo(call, function, listOf(expression.leftExpr ?: return null) + argList)
-      }
-      else -> return null
-    }
-  }
-
   override fun transformNotCall(expr: RExpression, command: StringBuilder, runtimeInfo: RConsoleRuntimeInfo, preserveRows: Boolean) {
     if (isSafe(expr, runtimeInfo)) {
-      if (!preserveRows) command.append("dplyr::filter((")
-      command.append(expr.text)
-      if (!preserveRows) command.append("),FALSE)")
+      if (!preserveRows) command.append("dplyr::filter(")
+      command.append("(").append(expr.text).append(")")
+      if (!preserveRows) command.append(",FALSE)")
     }
     else {
       command.append("(dplyr::tibble())")
@@ -81,132 +48,127 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   }
 
   fun addCurrentColumns(columns: List<TableManipulationColumn>,
-                        dplyrCall: TableManipulationCallInfo<DplyrFunction>,
-                        currentArgIndex: Int): List<TableManipulationColumn> {
-    val function = dplyrCall.function
-    if (currentArgIndex <= function.tableArguments) return columns
-    return columns + dplyrCall.arguments.subList(function.tableArguments, currentArgIndex).mapNotNull {
-      when (it) {
-        is RIdentifierExpression -> TableManipulationColumn(it.name)
-        is RNamedArgument -> {
+                        callInfo: TableManipulationCallInfo<*>,
+                        currentArg: RExpression): List<TableManipulationColumn> {
+    val arguments = callInfo.argumentInfo.expressionListWithPipeExpression
+    val currentArgIndex = arguments.indexOf(currentArg)
+    return columns + arguments.subList(0, currentArgIndex)
+      .filter { !callInfo.isTableArgument(it) }
+      .mapNotNull {
+        when (it) {
+          is RIdentifierExpression -> TableManipulationColumn(it.name)
+          is RNamedArgument -> {
             val name = it.name
             if (name.startsWith(".")) return@mapNotNull null
             TableManipulationColumn(name)
+          }
+          else -> null
         }
-        else -> null
       }
-    }
   }
 }
 
 @Suppress("SpellCheckingInspection")
 enum class DplyrFunction(
   override val functionName: String? = null,
-  override val contextType: TableManipulationContextType? = TableManipulationContextType.NORMAL,
   override val returnsTable: Boolean = true,
   override val ignoreInTransform: Boolean = false,
-  val varargTables: Boolean = false,
-  val tableArguments: Int = 1
+  override val rowsOmittingUnavailable: Boolean = false,
+  override val tableArguments: List<String> = listOf(".tbl"),
+  override val inheritedFunction: Boolean = false,
+  override val fullSuperFunctionName: String? = null,
+  override val s3Function: Boolean = false
 ) : TableManipulationFunction {
-  ADD_COUNT("add_count"),
-  ADD_ROW("add_row"),
-  ADD_TALLY("add_tally"),
-  ARRANGE("arrange"),
+  ADD_COUNT("add_count", tableArguments = listOf("x")),
+  ADD_ROW("add_row", tableArguments = listOf(".data")),
+  ADD_TALLY("add_tally", tableArguments = listOf("x")),
+  ARRANGE("arrange", tableArguments = listOf(".data")),
   ARRANGE_ALL("arrange_all"),
   ARRANGE_AT("arrange_at"),
   ARRANGE_IF("arrange_if"),
-  COUNT("count"),
-  DISTINCT("distinct"),
+  COUNT("count", tableArguments = listOf("x")),
+  DISTINCT("distinct", tableArguments = listOf(".data")),
   DISTINCT_ALL("distinct_all"),
   DISTINCT_AT("distinct_at"),
   DISTINCT_IF("distinct_if"),
-  FILTER("filter"),
-  GROUP_BY("group_by"),
+  FILTER("filter", tableArguments = listOf(".data")),
+  GROUP_BY("group_by", tableArguments = listOf(".data")),
   GROUP_BY_ALL("group_by_all"),
   GROUP_BY_AT("group_by_at"),
   GROUP_BY_IF("group_by_if"),
-  MUTATE("mutate"),
+  MUTATE("mutate", tableArguments = listOf(".data")),
   MUTATE_ALL("mutate_all"),
   MUTATE_AT("mutate_at"),
   MUTATE_IF("mutate_if"),
-  PULL("pull", returnsTable = false),
-  RENAME("rename"),
+  PULL("pull", returnsTable = false, tableArguments = listOf(".data")),
+  RENAME("rename", tableArguments = listOf(".data")),
   RENAME_ALL("rename_all"),
   RENAME_AT("rename_at"),
   RENAME_IF("rename_if"),
-  SAMPLE_FRAC("sample_frac", ignoreInTransform = true),
-  SAMPLE_N("sample_n", ignoreInTransform = true),
-  SELECT("select"),
+  SAMPLE_FRAC("sample_frac", ignoreInTransform = true, tableArguments = listOf("tbl")),
+  SAMPLE_N("sample_n", ignoreInTransform = true, tableArguments = listOf("tbl")),
+  SELECT("select", tableArguments = listOf(".data")),
   SELECT_ALL("select_all"),
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),
-  SLICE("slice"),
-  SUMMARISE("summarise"),
+  SLICE("slice", tableArguments = listOf(".data")),
+  SUMMARISE("summarise", tableArguments = listOf(".data")),
   SUMMARISE_ALL("summarise_all"),
   SUMMARISE_AT("summarise_at"),
   SUMMARISE_IF("summarise_if"),
-  SUMMARIZE("summarize"),
+  SUMMARIZE("summarize", tableArguments = listOf(".data")),
   SUMMARIZE_ALL("summarize_all"),
   SUMMARIZE_AT("summarize_at"),
   SUMMARIZE_IF("summarize_if"),
-  TALLY("tally"),
-  TIBBLE("tibble", tableArguments = 0),
-  TOP_FRAC("top_frac"),
-  TOP_N("top_n"),
-  TRANSMUTE("transmute"),
+  TALLY("tally", tableArguments = listOf("x")),
+  TIBBLE("tibble", tableArguments = listOf()),
+  TOP_FRAC("top_frac", tableArguments = listOf("x")),
+  TOP_N("top_n", tableArguments = listOf("x")),
+  TRANSMUTE("transmute", tableArguments = listOf(".data")),
   TRANSMUTE_ALL("transmute_all"),
   TRANSMUTE_AT("transmute_at"),
   TRANSMUTE_IF("transmute_if"),
-  UNGROUP("ungroup"),
+  UNGROUP("ungroup", tableArguments = listOf("x")),
 
-  DOUBLE_SUBSCRIPTION_OPERATOR(contextType = TableManipulationContextType.SUBSCRIPTION, returnsTable = false) {
-    override fun isNeedCompletionInsideArgument(argumentList: List<RExpression>, currentArgument: TableManipulationArgument): Boolean {
-      return isNeedCompletionInsideSubscription(argumentList, currentArgument)
+  DOUBLE_SUBSCRIPTION_OPERATOR(
+    tableArguments = listOf("x"), functionName = "`[[.tbl_df`",
+    returnsTable = false, s3Function = true,
+    inheritedFunction = true, fullSuperFunctionName = "tibble:::`[[.tbl_df`"),
+  SUBSCRIPTION_OPERATOR(
+    tableArguments = listOf("x"), functionName = "`[.tbl_df`", s3Function = true,
+    inheritedFunction = true, fullSuperFunctionName = "tibble:::`[.tbl_df`"),
+
+  BIND_COLS("bind_cols", tableArguments = listOf("...")),
+  BIND_ROWS("bind_rows", tableArguments = listOf("...")),
+
+  INTERSECT("intersect", tableArguments = listOf("x", "y")),
+  SETDIFF("setdiff", tableArguments = listOf("x", "y")),
+  UNION("union", tableArguments = listOf("x", "y")),
+  UNION_ALL("union_all", tableArguments = listOf("x", "y")),
+
+  ANTI_JOIN("anti_join", tableArguments = listOf("x", "y")),
+  FULL_JOIN("full_join", tableArguments = listOf("x", "y")),
+  INNER_JOIN("inner_join", tableArguments = listOf("x", "y")),
+  LEFT_JOIN("left_join", tableArguments = listOf("x", "y")),
+  NEST_JOIN("nest_join", tableArguments = listOf("x", "y")),
+  RIGHT_JOIN("right_join", tableArguments = listOf("x", "y")),
+  SEMI_JOIN("semi_join", tableArguments = listOf("x", "y"));
+
+  override fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean {
+    return when (this) {
+      SUBSCRIPTION_OPERATOR, DOUBLE_SUBSCRIPTION_OPERATOR,
+      ANTI_JOIN, FULL_JOIN, INNER_JOIN, LEFT_JOIN, NEST_JOIN,
+      RIGHT_JOIN, SEMI_JOIN -> true
+      else -> false
     }
-  },
-  SUBSCRIPTION_OPERATOR(contextType = TableManipulationContextType.SUBSCRIPTION) {
-    override fun isNeedCompletionInsideArgument(argumentList: List<RExpression>, currentArgument: TableManipulationArgument): Boolean {
-      return isNeedCompletionInsideSubscription(argumentList, currentArgument)
-    }
-  },
-
-  BIND_COLS("bind_cols", tableArguments = 0, varargTables = true, contextType = null),
-  BIND_ROWS("bind_rows", tableArguments = 0, varargTables = true, contextType = null),
-
-  INTERSECT("intersect", tableArguments = 2, contextType = null),
-  SETDIFF("setdiff", tableArguments = 2, contextType = null),
-  UNION("union", tableArguments = 2),
-  UNION_ALL("union_all", tableArguments = 2, contextType = null),
-
-  ANTI_JOIN("anti_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  FULL_JOIN("full_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  INNER_JOIN("inner_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  LEFT_JOIN("left_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  NEST_JOIN("nest_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  RIGHT_JOIN("right_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN),
-  SEMI_JOIN("semi_join", tableArguments = 2, contextType = TableManipulationContextType.JOIN);
-
-  override fun haveTableArguments(psiCall: RExpression, argumentList: List<RExpression>, runtimeInfo: RConsoleRuntimeInfo?): Boolean {
-    return argumentList.size >= tableArguments
   }
 
-  override fun isNeedCompletionInsideArgument(argumentList: List<RExpression>, currentArgument: TableManipulationArgument): Boolean {
-    return currentArgument.index >= tableArguments
-  }
-
-  override fun isTableArgument(psiCall: RExpression,
-                               argumentList: List<RExpression>,
-                               currentArgument: TableManipulationArgument,
-                               runtimeInfo: RConsoleRuntimeInfo?): Boolean {
-    return !isNeedCompletionInsideArgument(argumentList, currentArgument) || (varargTables && currentArgument.name != null)
-  }
-
-  protected fun isNeedCompletionInsideSubscription(argumentList: List<RExpression>, currentArgument: TableManipulationArgument): Boolean {
+  protected fun isNeedCompletionInsideSubscription(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean {
     // table[1:3] - select columns
     // table[,1:3] - select columns
     // table[1:3,] - select rows
-    val size = argumentList.size
-    val argIndex = currentArgument.index
+    val size = argumentInfo.expressionListWithPipeExpression.size
+    val argIndex = argumentInfo.expressionListWithPipeExpression.indexOf(currentArgument)
     return !(argIndex == 0 || size > 3 || (size == 3 && argIndex == 1))
   }
 }

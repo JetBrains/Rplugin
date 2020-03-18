@@ -7,6 +7,12 @@ package org.jetbrains.r.inspections
 import org.jetbrains.r.inspections.dplyr.DplyrBooleanOperatorsInspection
 
 class DplyrBooleanOperatorsInspectionTest : RInspectionTest() {
+
+  override fun setUp() {
+    super.setUp()
+    addLibraries()
+  }
+
   fun testReplace() {
     doReplacementTest("filter(table, a && b)", "filter(table, a & b)")
     doReplacementTest("filter(table, a || b)", "filter(table, a | b)")

@@ -7,48 +7,60 @@ package org.jetbrains.r.psi
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfo
+import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.rinterop.Service
 
-enum class TableManipulationContextType {
-  NORMAL, SUBSCRIPTION, JOIN
-}
-
 interface TableManipulationFunction {
   val functionName: String?
-  val contextType: TableManipulationContextType?
   val returnsTable: Boolean
   val ignoreInTransform: Boolean
+  val rowsOmittingUnavailable: Boolean
+  val s3Function: Boolean
+  val inheritedFunction: Boolean
+  val fullSuperFunctionName: String?
+  val tableArguments: List<String>
 
-  fun isNeedCompletionInsideArgument(argumentList: List<RExpression>, currentArgument: TableManipulationArgument): Boolean
-  fun haveTableArguments(psiCall: RExpression, argumentList: List<RExpression>, runtimeInfo: RConsoleRuntimeInfo?): Boolean
-  fun isTableArgument(psiCall: RExpression,
-                      argumentList: List<RExpression>,
-                      currentArgument: TableManipulationArgument,
-                      runtimeInfo: RConsoleRuntimeInfo?): Boolean
+  fun havePassedTableArguments(argumentInfo: RArgumentInfo): Boolean {
+    return argumentInfo.argumentNamesWithPipeExpression.any { it in tableArguments }
+  }
+
+  fun isTableArgument(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean {
+    return argumentInfo.getParameterNameForArgument(currentArgument) in tableArguments
+  }
+
+  fun getPassedTableArguments(argumentInfo: RArgumentInfo): List<RExpression> {
+    return tableArguments
+      .flatMap { if (it != "...") listOf(argumentInfo.getArgumentPassedToParameter(it)) else argumentInfo.allDotsArguments }
+      .filterNotNull()
+  }
+
+  fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean
 }
 
-data class TableManipulationArgument(val index: Int, val name: String?) {
-  constructor(index: Int) : this(index, null)
-}
+data class TableManipulationCallInfo<T : TableManipulationFunction>(
+  val function: T,
+  val argumentInfo: RArgumentInfo
+) {
+  val passedTableArguments by lazy { function.getPassedTableArguments(argumentInfo) }
+  val havePassedTableArguments by lazy { function.havePassedTableArguments(argumentInfo) }
 
-data class TableManipulationCallInfo<T : TableManipulationFunction>(val psiCall: RExpression,
-                                                                    val function: T,
-                                                                    val arguments: List<RExpression>) {
-  init {
-    require(psiCall is RCallExpression || psiCall is RSubscriptionExpression) {
-      "PsiCall should be RCallExpression or RSubscriptionExpression"
-    }
+  fun isTableArgument(currentArgument: RExpression): Boolean {
+    return function.isTableArgument(argumentInfo, currentArgument)
   }
 }
 
 data class TableManipulationContextInfo<T : TableManipulationFunction>(val callInfo: TableManipulationCallInfo<T>,
-                                                                       val currentTableArgument: TableManipulationArgument)
+                                                                       val currentTableArgument: RExpression) {
+  val currentArgumentIsTable by lazy { callInfo.isTableArgument(currentTableArgument) }
+}
 
 
 enum class TableType {
   UNKNOWN, DPLYR, DATA_FRAME, DATA_TABLE;
-  companion object  {
+
+  companion object {
     fun toTableType(type: Service.TableColumnsInfo.TableType): TableType = when (type) {
       Service.TableColumnsInfo.TableType.DATA_FRAME -> DATA_FRAME
       Service.TableColumnsInfo.TableType.DATA_TABLE -> DATA_TABLE
@@ -68,34 +80,56 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   protected abstract val packageName: String
   protected abstract val subscriptionOperator: T
   protected abstract val doubleSubscriptionOperator: T
-  protected abstract val defaultTransformValue: String
+  abstract val tableColumnType: TableType
 
-  protected open fun getCallInfoFromCallExpression(expression: RCallExpression): TableManipulationCallInfo<T>? {
-    val function = getTableManipulationFunctionByExpressionName(expression.expression) ?: return null
-    val argumentList = expression.argumentList.expressionList
-    return TableManipulationCallInfo(expression, function, argumentList)
+  fun isSubscription(function: T): Boolean {
+    return function == subscriptionOperator || function == doubleSubscriptionOperator
   }
 
-  protected open fun getCallInfoFromSubscriptionExpression(expression: RSubscriptionExpression): TableManipulationCallInfo<T>? {
-    val arguments = expression.expressionList
-    return if (expression.isSingle) {
-      TableManipulationCallInfo(expression, subscriptionOperator, arguments)
-    }
-    else {
-      TableManipulationCallInfo(expression, doubleSubscriptionOperator, arguments)
-    }
-  }
-
-  protected open fun getCustomCallInfo(expression: RExpression?): TableManipulationCallInfo<T>? {
-    return null
-  }
-
-  fun getCallInfo(expression: RExpression?): TableManipulationCallInfo<T>? {
+  fun getCallInfo(expression: RExpression?, runtimeInfo: RConsoleRuntimeInfo?): TableManipulationCallInfo<T>? {
     return when (expression) {
-      is RCallExpression -> getCallInfoFromCallExpression(expression)
-      is RSubscriptionExpression -> getCallInfoFromSubscriptionExpression(expression)
-      else -> getCustomCallInfo(expression)
+      is RCallExpression -> getCallInfoFromCallExpression(expression, runtimeInfo)
+      is RSubscriptionExpression -> getCallInfoFromSubscriptionExpression(expression, runtimeInfo)
+      is ROperatorExpression -> {
+        if (!expression.isBinary) return null
+        if (expression.operator?.name != PIPE_OPERATOR) return null
+
+        val function: T
+        val argList: RArgumentHolder
+        val call = expression.rightExpr ?: return null
+        when (call) {
+          is RCallExpression -> {
+            function = getTableManipulationFunctionByExpressionName(call.expression) ?: return null
+            argList = call.argumentList
+          }
+          is RSubscriptionExpression -> {
+            function = getTableManipulationFunctionByExpressionName(call) ?: return null
+            argList = call
+          }
+          else -> return null
+        }
+        val info = getArgumentInfo(function, call, argList, runtimeInfo) ?: return null
+        return TableManipulationCallInfo(function, info)
+      }
+      else -> return null
     }
+  }
+
+  fun getContextInfo(element: PsiElement, runtimeInfo: RConsoleRuntimeInfo?): TableManipulationContextInfo<T>? {
+    val ancestor =
+      PsiTreeUtil.getParentOfType(element, RArgumentList::class.java, RSubscriptionExpression::class.java) ?: return null
+    val argument = PsiTreeUtil.findPrevParent(ancestor, element) as? RExpression ?: return null
+    return when (ancestor) {
+      is RArgumentList -> getContextInfoFromArgumentList(ancestor, argument, runtimeInfo)
+      is RSubscriptionExpression -> getContextInfoFromSubscriptionExpression(ancestor, argument, runtimeInfo)
+      else -> null
+    }
+  }
+
+  fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
+    val expression = StringBuilder()
+    transformExpression(table, expression, runtimeInfo)
+    return runtimeInfo.loadTableColumns(expression.toString())
   }
 
   protected open fun getTableManipulationFunctionByExpressionName(expression: RExpression): T? {
@@ -108,48 +142,56 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     return nameToFunction[name]
   }
 
-  protected open fun getContextInfoFromArgumentList(expression: RArgumentList,
-                                                    argument: RPsiElement,
-                                                    argumentList: MutableList<RExpression>): TableManipulationContextInfo<T>? {
-    val index = argumentList.indexOf(argument)
-    if (index == -1) return null
-
-    val call = expression.parent as RCallExpression
-    val function = getTableManipulationFunctionByExpressionName(call.expression) ?: return getContextInfo(call)
-    if (function.contextType == null) return null
-
-    val tableArgument = TableManipulationArgument(index, (argument as? RNamedArgument)?.name)
-
-    return if (!function.isNeedCompletionInsideArgument(argumentList, tableArgument)) null
-    else TableManipulationContextInfo(TableManipulationCallInfo(call, function, argumentList), tableArgument)
+  private fun getCallInfoFromCallExpression(expression: RCallExpression,
+                                            runtimeInfo: RConsoleRuntimeInfo?): TableManipulationCallInfo<T>? {
+    val function = getTableManipulationFunctionByExpressionName(expression.expression) ?: return null
+    val argumentInfo = getArgumentInfo(function, expression, expression.argumentList, runtimeInfo) ?: return null
+    return TableManipulationCallInfo(function, argumentInfo)
   }
 
-  protected open fun getContextInfoFromSubscriptionExpression(expression: RSubscriptionExpression,
-                                                              argument: RPsiElement,
-                                                              argumentList: MutableList<RExpression>): TableManipulationContextInfo<T>? {
-    val index = argumentList.indexOf(argument)
-    if (index == -1) return null
+  private fun getCallInfoFromSubscriptionExpression(expression: RSubscriptionExpression,
+                                                    runtimeInfo: RConsoleRuntimeInfo?): TableManipulationCallInfo<T>? {
+    val subscription = if (expression.isSingle) subscriptionOperator else doubleSubscriptionOperator
+    val argumentInfo = getArgumentInfo(subscription, expression, expression, runtimeInfo) ?: return null
+    return TableManipulationCallInfo(subscription, argumentInfo)
+  }
+
+  private fun getContextInfoFromArgumentList(argumentList: RArgumentList,
+                                             argument: RExpression,
+                                             runtimeInfo: RConsoleRuntimeInfo?): TableManipulationContextInfo<T>? {
+    val call = argumentList.parent as RCallExpression
+    val function = getTableManipulationFunctionByExpressionName(call.expression) ?: return getContextInfo(call, runtimeInfo)
+    val info = getArgumentInfo(function, call, argumentList, runtimeInfo) ?: return null
+    return TableManipulationContextInfo(TableManipulationCallInfo(function, info), argument)
+  }
+
+  private fun getContextInfoFromSubscriptionExpression(expression: RSubscriptionExpression,
+                                                       argument: RExpression,
+                                                       runtimeInfo: RConsoleRuntimeInfo?): TableManipulationContextInfo<T>? {
     val function = if (expression.isSingle) subscriptionOperator else doubleSubscriptionOperator
-    val tableArgument = TableManipulationArgument(index, (argument as? RNamedArgument)?.name)
-
-    return if (!function.isNeedCompletionInsideArgument(argumentList, tableArgument)) null
-    else TableManipulationContextInfo(TableManipulationCallInfo(expression, function, argumentList), tableArgument)
+    val info = getArgumentInfo(function, expression, expression, runtimeInfo) ?: return null
+    return TableManipulationContextInfo(TableManipulationCallInfo(function, info), argument)
   }
 
-  fun getContextInfo(element: PsiElement): TableManipulationContextInfo<T>? {
-    val ancestor = PsiTreeUtil.getParentOfType(element, RArgumentList::class.java, RSubscriptionExpression::class.java) ?: return null
-    val argument = PsiTreeUtil.findPrevParent(ancestor, element) as RPsiElement
-    return when (ancestor) {
-      is RArgumentList -> getContextInfoFromArgumentList(ancestor, argument, ancestor.expressionList)
-      is RSubscriptionExpression -> getContextInfoFromSubscriptionExpression(ancestor, argument, ancestor.expressionList)
-      else -> null
+  private fun getArgumentInfo(function: T,
+                              call: RExpression,
+                              argumentHolder: RArgumentHolder,
+                              runtimeInfo: RConsoleRuntimeInfo?): RArgumentInfo? {
+    val allArgumentNames = if (function.s3Function) {
+      if (runtimeInfo == null) return null
+      val fullFunctionName = when {
+        function.inheritedFunction -> function.fullSuperFunctionName ?: return null
+        isSubscription(function) -> "$packageName:::${function.functionName}"
+        else -> "$packageName:::${function.functionName}.$packageName"
+      }
+      runtimeInfo.getFormalArguments(fullFunctionName)
     }
-  }
-
-  fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
-    val expression = StringBuilder()
-    transformExpression(table, expression, runtimeInfo)
-    return runtimeInfo.loadTableColumns(expression.toString())
+    else {
+      RPsiUtil.resolveCall((call as? RCallExpression) ?: return null)
+        .maxBy { RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(it.containingFile.name)?.first == packageName }
+        ?.parameterNameList?.map { it }
+    }
+    return RArgumentInfo.getParameterInfo(argumentHolder, allArgumentNames ?: return null)
   }
 
   protected abstract fun transformNotCall(expr: RExpression,
@@ -161,48 +203,47 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
                           command: StringBuilder,
                           runtimeInfo: RConsoleRuntimeInfo,
                           preserveRows: Boolean = false) {
-    val callInfo = getCallInfo(expression)
-    if (callInfo != null && callInfo.function.haveTableArguments(callInfo.psiCall, callInfo.arguments, runtimeInfo)) {
+    val callInfo = getCallInfo(expression, runtimeInfo)
+    if (callInfo != null && callInfo.function.havePassedTableArguments(callInfo.argumentInfo)) {
       val function = callInfo.function
       if (function.ignoreInTransform) {
-        transformExpression(callInfo.arguments[0], command, runtimeInfo, preserveRows) // TODO
+        callInfo.passedTableArguments.firstOrNull()?.let { transformExpression(it, command, runtimeInfo, preserveRows) }
         return
       }
 
-      val transformArguments = { arguments: List<RExpression>, offset: Int ->
+      val preserveRowsInArgs = if (function.rowsOmittingUnavailable) true else preserveRows
+      val transformArguments = { arguments: List<RExpression> ->
         arguments.forEachIndexed { index, argument ->
           if (index != 0) command.append(",")
-          if (function.isTableArgument(callInfo.psiCall, callInfo.arguments,
-                                       TableManipulationArgument(index + offset, (argument as? RNamedArgument)?.name), runtimeInfo)) {
-            transformExpression(argument, command, runtimeInfo, preserveRows)
+          if (callInfo.isTableArgument(argument)) {
+            transformExpression(argument, command, runtimeInfo, preserveRowsInArgs)
           }
           else {
-            val argumentValue = if (argument is RNamedArgument) argument.assignedValue else argument
-
-            val appendArgument = { it: String ->
-              if (it.isNotEmpty() && argument is RNamedArgument) {
-                command.append(argument.identifyingElement?.text)
-                command.append("=")
-              }
-              command.append(it)
+            if (argument is RNamedArgument) {
+              val argumentValue = argument.assignedValue
+              val argumentText =
+                if (argumentValue != null && isSafe(argumentValue, runtimeInfo)) argumentValue.text
+                else "NA"
+              command.append(argument.identifyingElement?.text).append("=").append(argumentText)
             }
-
-            appendArgument(if (argumentValue != null && isSafe(argumentValue, runtimeInfo)) argumentValue.text else defaultTransformValue)
+            else {
+              command.append(if (isSafe(argument, runtimeInfo)) argument.text else "")
+            }
           }
         }
       }
 
       if (function == subscriptionOperator || function == doubleSubscriptionOperator) {
-        transformExpression(callInfo.arguments[0], command, runtimeInfo, preserveRows)
+        transformExpression(callInfo.argumentInfo.expressionListWithPipeExpression[0], command, runtimeInfo, preserveRowsInArgs)
         command.append(if (function == subscriptionOperator) "[" else "[[")
-        transformArguments(callInfo.arguments.drop(1), 1)
+        transformArguments(callInfo.argumentInfo.expressionListWithPipeExpression.drop(1))
         command.append(if (function == subscriptionOperator) "]" else "]]")
       }
       else {
         command.append("$packageName::")
         command.append(function.functionName)
         command.append("(")
-        transformArguments(callInfo.arguments, 0)
+        transformArguments(callInfo.argumentInfo.expressionListWithPipeExpression)
         command.append(")")
       }
     }
@@ -266,4 +307,8 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       "sqrt", "tan", "tanpi", "trunc"
     )
   )
+
+  companion object {
+    private const val PIPE_OPERATOR = "%>%"
+  }
 }

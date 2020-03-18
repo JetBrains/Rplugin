@@ -7,6 +7,12 @@ package org.jetbrains.r.inspections
 import org.jetbrains.r.inspections.dplyr.DplyrCallToPipeInspection
 
 class DplyrCallToPipeInspectionTest : RInspectionTest() {
+
+  override fun setUp() {
+    super.setUp()
+    addLibraries()
+  }
+
   fun test() {
     doReplacementTest(
       "filter(summarise(group_by(table, y, z), x = sum(x)), a > 0)",

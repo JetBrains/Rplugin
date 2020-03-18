@@ -29,9 +29,12 @@ class StringCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testDplyrMemberAccess() {
-    checkCompletion("a\$name == \"X<caret>\")",
+    checkCompletion("a\$name == \"X<caret>\"",
                     listOf("Xaaa", "Xbcd", "Xxyz"),
-                    "a <- tibble(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), i = c(1, 3, 7))")
+                    "a <- tibble(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), not_name = c(\"Xxaa\", \"Xxbc\", \"Xxbd\"))")
+    checkCompletion("a %>% filter(a\$name == \"X<caret>\")",
+                    listOf("Xaaa", "Xbcd", "Xxyz"),
+                    "a <- tibble(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), not_name = c(\"Xxaa\", \"Xxbc\", \"Xxbd\"))")
   }
 
   fun testFactor() {
@@ -46,8 +49,23 @@ class StringCompletionTest : RProcessHandlerBaseTestCase() {
                     listOf("Good", "Very Good"))
   }
 
+  fun testDataTable() {
+    checkCompletion("a[name == \"X<caret>\"]",
+                    listOf("Xaaa", "Xbcd", "Xxyz"),
+                    "a <- data.table(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), not_name = c(\"Xxaa\", \"Xxbc\", \"Xxbd\"))")
+  }
+
+  fun testDataTableMemberAccess() {
+    checkCompletion("a\$name == \"X<caret>\"",
+                    listOf("Xaaa", "Xbcd", "Xxyz"),
+                    "a <- data.table(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), not_name = c(\"Xxaa\", \"Xxbc\", \"Xxbd\"))")
+    checkCompletion("a[a\$name == \"X<caret>\"]",
+                    listOf("Xaaa", "Xbcd", "Xxyz"),
+                    "a <- data.table(name = c(\"Xaaa\", \"Xbcd\", \"Xxyz\"), not_name = c(\"Xxaa\", \"Xxbc\", \"Xxbd\"))")
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: String? = null) {
-    rInterop.executeCode("library(dplyr)", false)
+    rInterop.executeCode("library(dplyr); library(data.table)", false)
     if (initial != null) {
       rInterop.executeCode(initial, false)
     }
