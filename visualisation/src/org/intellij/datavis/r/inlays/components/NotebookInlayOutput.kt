@@ -51,6 +51,10 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     val text: String
     val description: String
     fun onClick()
+
+    fun canClick(): Boolean {
+      return true
+    }
   }
 
   private var output: InlayOutput? = null

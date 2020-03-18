@@ -165,6 +165,10 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
         override fun actionPerformed(e: AnActionEvent) {
           holder.onClick()
         }
+
+        override fun update(e: AnActionEvent) {
+          e.presentation.isEnabled = holder.canClick()
+        }
       }
     }
   }
@@ -212,6 +216,8 @@ class InlayOutputImg(
   }
 
   private val zoomActionHolder = object : NotebookInlayOutput.ActionHolder {
+    private val path2Checks = mutableMapOf<String, Boolean>()
+
     override val icon = AllIcons.Actions.Preview
     override val text = VisualizationBundle.message("inlay.output.image.zoom.text")
     override val description = VisualizationBundle.message("inlay.output.image.zoom.description")
@@ -219,6 +225,18 @@ class InlayOutputImg(
     override fun onClick() {
       wrapper.imagePath?.let { path ->
         GraphicsZoomDialog(project, parent, path).show()
+      }
+    }
+
+    override fun canClick(): Boolean {
+      return canClickOrNull() == true
+    }
+
+    private fun canClickOrNull(): Boolean? {
+      return wrapper.imagePath?.let { path ->
+        path2Checks.getOrPut(path) {  // Note: speedup FS operations caused by `canRescale(path)`
+          graphicsManager?.canRescale(path) ?: false
+        }
       }
     }
   }
