@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.util.ui.JBUI
 import javax.swing.Icon
 import javax.swing.JPanel
@@ -72,17 +73,20 @@ object RToolbarUtil {
   }
 
   private class ToolbarAction(private val holder: ActionHolder) : AnAction() {
-    private val action = ActionManager.getInstance().getAction(holder.id).also { copyFrom(it) }
-    private val fallbackDescription = action.templatePresentation.description
-    private val fallbackIcon = action.templatePresentation.icon
+    private val fallbackDescription: String
+    private val fallbackIcon: Icon
+
+    init {
+      ActionUtil.copyFrom(this, holder.id)
+      fallbackDescription = templatePresentation.description
+      fallbackIcon = templatePresentation.icon
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
-      action.actionPerformed(e)
       holder.onClick()
     }
 
     override fun update(e: AnActionEvent) {
-      action.update(e)
       val isVisible = holder.checkVisible()
       e.presentation.isVisible = isVisible
       if (isVisible) {
