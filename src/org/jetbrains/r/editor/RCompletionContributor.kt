@@ -43,10 +43,9 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.util.PathUtil
 import javax.swing.Icon
-import kotlin.collections.HashSet
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.math.*
+import kotlin.math.min
 
 const val TABLE_MANIPULATION_COLUMNS_GROUPING = 110
 const val NAMED_ARGUMENT_GROUPING = 100
@@ -344,9 +343,9 @@ class RCompletionContributor : CompletionContributor() {
   private class DplyrContextCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val (dplyrCallInfo, currentArgument) = RDplyrUtil.getContextInfo(position) ?: return
+      val (dplyrCallInfo, currentArgument) = RDplyrAnalyzer.getContextInfo(position) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      val tableInfo = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+      val tableInfo = RDplyrAnalyzer.getTableColumns(dplyrCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
       var columns = if (dplyrCallInfo.function.contextType != TableManipulationContextType.SUBSCRIPTION &&
                         dplyrCallInfo.function.tableArguments > 0) {
         tableInfo.columns
@@ -358,7 +357,7 @@ class RCompletionContributor : CompletionContributor() {
       when (dplyrCallInfo.function.contextType) {
         TableManipulationContextType.NORMAL -> {
           if (expression is RStringLiteralExpression) return
-          columns = RDplyrUtil.addCurrentColumns(columns, dplyrCallInfo, currentArgument.index)
+          columns = RDplyrAnalyzer.addCurrentColumns(columns, dplyrCallInfo, currentArgument.index)
         }
         TableManipulationContextType.SUBSCRIPTION -> {
           if (expression is RIdentifierExpression) {
@@ -369,7 +368,7 @@ class RCompletionContributor : CompletionContributor() {
           val currentArg = dplyrCallInfo.arguments[currentArgument.index]
           if (currentArg !is RNamedArgument || currentArg.name != "by") return
           val firstColumns = columns.map { it.name }.toSet()
-          val columns2 = RDplyrUtil.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo).columns
+          val columns2 = RDplyrAnalyzer.getTableColumns(dplyrCallInfo.arguments.getOrNull(1) ?: return, runtimeInfo).columns
             .filter { it.name !in firstColumns }
           columns = columns + columns2
           if (expression is RIdentifierExpression) {
@@ -389,13 +388,13 @@ class RCompletionContributor : CompletionContributor() {
   private class DataTableContextCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val (dataTableCallInfo, currentArgument) = RDataTableUtil.getContextInfo(position) ?: return
+      val (dataTableCallInfo, currentArgument) = RDataTableAnalyzer.getContextInfo(position) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
       val tableArguments = dataTableCallInfo.function.tablesArguments
       val isDataTable: Boolean
       var columns = if (tableArguments.isNotEmpty()) {
         val tableInfos = dataTableCallInfo.function.getTableArguments(dataTableCallInfo.psiCall, dataTableCallInfo.arguments, runtimeInfo).map {
-          RDataTableUtil.getTableColumns(it, runtimeInfo)
+          RDataTableAnalyzer.getTableColumns(it, runtimeInfo)
         }
         isDataTable = tableInfos.all { it.type == TableType.DATA_TABLE }
         tableInfos.map { it.columns }.flatten()
@@ -406,7 +405,7 @@ class RCompletionContributor : CompletionContributor() {
       }
       else {
         // If signature like my_fun <- function(...) {}
-        val tableInfo = RDataTableUtil.getTableColumns(dataTableCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
+        val tableInfo = RDataTableAnalyzer.getTableColumns(dataTableCallInfo.arguments.firstOrNull() ?: return, runtimeInfo)
         isDataTable = tableInfo.type == TableType.DATA_TABLE
         tableInfo.columns
       }
@@ -438,7 +437,7 @@ class RCompletionContributor : CompletionContributor() {
       val other = (if (parent.leftExpr == stringLiteral) parent.rightExpr else parent.leftExpr) ?: return
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
 
-      val dplyrContextInfo = RDplyrUtil.getContextInfo(stringLiteral)
+      val dplyrContextInfo = RDplyrAnalyzer.getContextInfo(stringLiteral)
       val text = if (dplyrContextInfo != null) {
         val dplyrCallInfo = dplyrContextInfo.callInfo
         val name = other.name
@@ -446,12 +445,12 @@ class RCompletionContributor : CompletionContributor() {
         val table = dplyrCallInfo.arguments[0]
         val command = StringBuilder()
         command.append("(")
-        RDplyrUtil.transformExpression(table, command, runtimeInfo, true)
+        RDplyrAnalyzer.transformExpression(table, command, runtimeInfo, true)
         command.append(")$$name")
         command.toString()
       }
       else {
-        if (!RDplyrUtil.isSafe(other, runtimeInfo)) return
+        if (!RDplyrAnalyzer.isSafe(other, runtimeInfo)) return
         "(${other.text})"
       }
       val values = runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() }

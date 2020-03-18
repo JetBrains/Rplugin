@@ -7,7 +7,7 @@ package org.jetbrains.r.psi
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.psi.api.*
 
-object RDplyrUtil : AbstractTableManipulation<DplyrFunction>() {
+object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   const val PIPE_OPERATOR = "%>%"
 
   override val nameToFunction = DplyrFunction.values()

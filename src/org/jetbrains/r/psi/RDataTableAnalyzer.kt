@@ -9,7 +9,7 @@ import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 
-object RDataTableUtil : AbstractTableManipulation<DataTableFunction>() {
+object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
   override val nameToFunction = DataTableFunction.values()
     .mapNotNull { function ->
       listOf((function.functionName ?: return@mapNotNull null) to function) + function.extraFunctionNames.map { it to function }
@@ -34,7 +34,7 @@ object RDataTableUtil : AbstractTableManipulation<DataTableFunction>() {
   )
 
   override fun transformNotCall(expr: RExpression, command: StringBuilder, runtimeInfo: RConsoleRuntimeInfo, preserveRows: Boolean) {
-    if (RDplyrUtil.isSafe(expr, runtimeInfo)) {
+    if (RDplyrAnalyzer.isSafe(expr, runtimeInfo)) {
       command.append(expr.text)
     }
     else {

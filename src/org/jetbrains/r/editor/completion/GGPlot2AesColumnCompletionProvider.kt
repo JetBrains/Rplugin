@@ -20,7 +20,7 @@ import org.jetbrains.r.editor.RLookupElement
 import org.jetbrains.r.editor.TABLE_MANIPULATION_COLUMNS_GROUPING
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
-import org.jetbrains.r.psi.RDataTableUtil
+import org.jetbrains.r.psi.RDataTableAnalyzer
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.*
 
@@ -69,7 +69,7 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
                                           result: CompletionResultSet) {
     val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
     val dataParameter = RParameterInfoUtil.getArgumentByName(ggplotCall, "data") ?: return // data argument
-    val tableInfo = RDataTableUtil.getTableColumns(dataParameter, runtimeInfo)
+    val tableInfo = RDataTableAnalyzer.getTableColumns(dataParameter, runtimeInfo)
     addCompletionResults(result, tableInfo)
   }
 

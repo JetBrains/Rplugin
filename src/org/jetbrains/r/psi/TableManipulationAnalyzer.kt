@@ -62,7 +62,7 @@ data class TableInfo(val columns: List<TableManipulationColumn>, val type: Table
 
 data class TableManipulationColumn(val name: String, val type: String? = null)
 
-abstract class AbstractTableManipulation<T : TableManipulationFunction> {
+abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 
   protected abstract val nameToFunction: Map<String, T>
   protected abstract val packageName: String

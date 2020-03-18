@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.RDplyrUtil
+import org.jetbrains.r.psi.RDplyrAnalyzer
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.RPrecedenceUtil
 import org.jetbrains.r.psi.api.*
@@ -33,12 +33,12 @@ class DplyrCallToPipeInspection : RInspection() {
   private inner class Visitor(private val myProblemHolder: ProblemsHolder) : RVisitor() {
     override fun visitCallExpression(o: RCallExpression) {
       val depth = getDepth(o)
-      if (depth < MINIMAL_DEPTH_FOR_WARNING || RDplyrUtil.isPipeCall(o)) return
+      if (depth < MINIMAL_DEPTH_FOR_WARNING || RDplyrAnalyzer.isPipeCall(o)) return
 
       val parent = o.parent
       if (parent is RArgumentList && o == parent.expressionList[0]) {
         val parentCall = parent.parent as RCallExpression
-        if (isDplyrCallWithTable(parentCall) && !RDplyrUtil.isPipeCall(parentCall)) {
+        if (isDplyrCallWithTable(parentCall) && !RDplyrAnalyzer.isPipeCall(parentCall)) {
           return
         }
       }
@@ -65,7 +65,7 @@ class DplyrCallToPipeInspection : RInspection() {
         if (args.size == 0) {
           break
         }
-        val replacementText = "t ${RDplyrUtil.PIPE_OPERATOR} f(${generateSequence { "x" }.take(args.size - 1).joinToString(", ")})"
+        val replacementText = "t ${RDplyrAnalyzer.PIPE_OPERATOR} f(${generateSequence { "x" }.take(args.size - 1).joinToString(", ")})"
         val replacement = RElementFactory.createRPsiElementFromText(project, replacementText) as ROperatorExpression
         replacement.leftExpr!!.replace(args[0])
         val replacementCall = replacement.rightExpr as RCallExpression
@@ -95,7 +95,7 @@ class DplyrCallToPipeInspection : RInspection() {
 
     private fun isDplyrCallWithTable(expr: RExpression): Boolean {
       if (expr !is RCallExpression) return false
-      val call = RDplyrUtil.getCallInfo(expr) ?: return false
+      val call = RDplyrAnalyzer.getCallInfo(expr) ?: return false
       val runtimeInfo = expr.containingFile.runtimeInfo
       return call.function.haveTableArguments(call.psiCall, call.arguments, runtimeInfo) && call.function.tableArguments != 0
     }

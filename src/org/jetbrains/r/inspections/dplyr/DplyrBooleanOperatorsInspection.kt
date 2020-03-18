@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.inspections.RInspection
-import org.jetbrains.r.psi.RDplyrUtil
+import org.jetbrains.r.psi.RDplyrAnalyzer
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.ROperator
 import org.jetbrains.r.psi.api.ROperatorExpression
@@ -34,7 +34,7 @@ class DplyrBooleanOperatorsInspection : RInspection() {
     override fun visitOperator(o: ROperator) {
       val name = o.name
       if (name != "&&" && name != "||") return
-      if (RDplyrUtil.getContextInfo(o) == null) return
+      if (RDplyrAnalyzer.getContextInfo(o) == null) return
       myProblemHolder.registerProblem(o, "Non-vector logical operator used in dplyr expression",
                                       ProblemHighlightType.WARNING, MyQuickFix(name))
     }
