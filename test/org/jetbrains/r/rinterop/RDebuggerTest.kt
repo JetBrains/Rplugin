@@ -449,7 +449,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
   fun testNoStepIntoNamespaceAccess() {
     val file = loadFileWithBreakpointsFromText("""
       a <- base::stderr() # BREAKPOINT
-      b <- tools:::httpd_port
+      b <- tools:::httpdPort
     """.trimIndent())
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }

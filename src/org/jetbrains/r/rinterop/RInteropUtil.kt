@@ -184,7 +184,6 @@ stderr: ${stderr}
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
-      .withEnvironment("R_DISABLE_BYTECODE", "1")
 
     SessionUtil.getWorkspaceFile(project)?.let {
       command = command.withParameters("--workspace-file", it)

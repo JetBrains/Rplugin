@@ -56,6 +56,8 @@ class SaveSessionTest : RUsefulTestCase() {
     """.trimIndent()).virtualFile
     withRInterop { rInterop ->
       rInterop.replSourceFile(file).blockingGet(DEFAULT_TIMEOUT)
+      rInterop.executeCode("func()")
+      rInterop.executeCode("func()")
     }
 
     withRInterop { rInterop ->
