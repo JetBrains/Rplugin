@@ -25,7 +25,10 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.*;
+import com.intellij.ui.AnActionButton;
+import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.SearchTextField;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
@@ -111,8 +114,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
       }
     };
     myPackagesTable.setShowVerticalLines(false);
+    myPackagesTable.setShowHorizontalLines(false);
+    myPackagesTable.setTableHeader(null);
     myPackagesTable.setPreferredScrollableViewportSize(null);
-    myPackagesTable.getTableHeader().setReorderingAllowed(false);
     myPackagesTable.setCellSelectionEnabled(false);
     myPackagesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     initColumnWidth();
@@ -128,16 +132,18 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     myUpgradeButton = RToolbarUtil.INSTANCE.createAnActionButton(UPGRADE_ACTION_ID, this::upgradeAction);
     myInstallButton = RToolbarUtil.INSTANCE.createAnActionButton(INSTALL_ACTION_ID, this::installAction);
+    MyTextSearchField textSearchFieldAction = new MyTextSearchField();
     myInstallButton.setShortcut(CommonShortcuts.getNew());
     ToolbarDecorator decorator =
       ToolbarDecorator.createDecorator(myPackagesTable).disableUpDownActions().disableAddAction().disableRemoveAction()
+        .addExtraAction(textSearchFieldAction)
         .addExtraAction(myInstallButton);
     decorator.setToolbarPosition(ActionToolbarPosition.TOP);
-    MyTextActionButton action = new MyTextActionButton();
+
     DocumentAdapter listener = new DocumentAdapter() {
       @Override
       protected void textChanged(@NotNull DocumentEvent e) {
-        String text = action.myField.getText();
+        String text = textSearchFieldAction.myField.getText();
         if (StringUtil.isEmpty(text)) {
           myPackageFilteringModel.setFilter(null);
           return;
@@ -147,11 +153,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
         myPackageFilteringModel.setFilter(text);
       }
     };
-    action.myField.getTextEditor().getDocument().addDocumentListener(listener);
+    textSearchFieldAction.myField.getTextEditor().getDocument().addDocumentListener(listener);
 
     decorator.addExtraActions(getExtraActions());
-
-    decorator.addExtraAction(action);
     add(decorator.createPanel());
     myInstallButton.setEnabled(false);
     myUpgradeButton.setEnabled(false);
@@ -255,18 +259,18 @@ public class RInstalledPackagesPanelBase extends JPanel {
     int packageMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "ggplot2");
     int packageMaxWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "veryVeryLongPackageName");
     int descriptionMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "very short package description");
-    model.getColumn(IS_LOADED_COLUMN).setMinWidth(singleIconWidth);
-    model.getColumn(IS_LOADED_COLUMN).setMaxWidth(singleIconWidth);
+    model.getColumn(IS_LOADED_COLUMN).setMinWidth(singleIconWidth * 3 / 2);
+    model.getColumn(IS_LOADED_COLUMN).setMaxWidth(singleIconWidth * 3 / 2);
     model.getColumn(PACKAGE_NAME_COLUMN).setMinWidth(packageMinWidth);
     model.getColumn(PACKAGE_NAME_COLUMN).setMaxWidth(packageMaxWidth);
     model.getColumn(DESCRIPTION_COLUMN).setMinWidth(descriptionMinWidth);
     model.getColumn(DESCRIPTION_COLUMN).setMaxWidth(descriptionMinWidth * 10);
     model.getColumn(VERSION_COLUMN).setMinWidth(versionMinWidth);
     model.getColumn(VERSION_COLUMN).setMaxWidth(versionMaxWidth);
-    model.getColumn(BROWSE_COLUMN).setMinWidth(singleIconWidth);
-    model.getColumn(BROWSE_COLUMN).setMaxWidth(singleIconWidth);
-    model.getColumn(UNINSTALL_COLUMN).setMinWidth(singleIconWidth);
-    model.getColumn(UNINSTALL_COLUMN).setMaxWidth(singleIconWidth);
+    model.getColumn(BROWSE_COLUMN).setMinWidth(singleIconWidth * 3 / 2);
+    model.getColumn(BROWSE_COLUMN).setMaxWidth(singleIconWidth * 3 / 2);
+    model.getColumn(UNINSTALL_COLUMN).setMinWidth(singleIconWidth * 3 / 2);
+    model.getColumn(UNINSTALL_COLUMN).setMaxWidth(singleIconWidth * 3 / 2);
   }
 
   @NotNull
@@ -684,6 +688,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       }
       if (column == IS_LOADED_COLUMN) {
         myIsLoadedCheckBox.setText("");
+        myIsLoadedCheckBox.setBackground(myPackagesTable.getBackground());
         myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage.getPackageName()));
         return myIsLoadedCheckBox;
       }
@@ -717,7 +722,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     }
   }
 
-  private static final class MyTextActionButton extends AnActionButton implements CustomComponentAction, DumbAware {
+  private static final class MyTextSearchField extends AnActionButton implements CustomComponentAction, DumbAware {
     private final SearchTextField myField;
 
     @Override
@@ -729,7 +734,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
     public void actionPerformed(@NotNull AnActionEvent e) {
     }
 
-    public MyTextActionButton() {
+    public MyTextSearchField() {
       super("", "", null);
       myField = new SearchTextField();
     }
