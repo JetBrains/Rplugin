@@ -5,6 +5,7 @@
 package org.intellij.datavis.r.inlays
 
 import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import org.intellij.datavis.r.VisualizationBundle
@@ -26,7 +27,7 @@ object ClipboardUtils {
 
   private fun copyAllToString(table: JTable) : String {
     if (table.rowCount == 0 || table.columnCount == 0) {
-      Notifications.Bus.notify(Notification(VisualizationBundle.message("inlay.output.table.notification.group.name"),
+      Notifications.Bus.notify(Notification(NotificationGroup.createIdWithTitle("Notebook Table", VisualizationBundle.message("inlay.output.table.notification.group.name")),
                                             VisualizationBundle.message("clipboard.utils.error"),
                                             VisualizationBundle.message("clipboard.utils.no.columns.or.rows"),
                                             NotificationType.ERROR))
