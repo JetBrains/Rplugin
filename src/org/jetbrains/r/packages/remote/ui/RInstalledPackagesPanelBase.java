@@ -294,7 +294,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
                                       @Override
                                       public void operationStarted(String packageName) {
                                         myNotificationArea.hide();
-                                        myPackagesTable.setPaintBusy(true);
                                       }
 
                                       @Override
@@ -368,10 +367,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
           final PackageManagementService.Listener listener = new PackageManagementService.Listener() {
             @Override
             public void operationStarted(final String packageName) {
-              ApplicationManager.getApplication().invokeLater(() -> {
-                myPackagesTable.setPaintBusy(true);
-                myCurrentlyInstalling.add(packageName);
-              }, modalityState);
+              ApplicationManager.getApplication().invokeLater(() -> myCurrentlyInstalling.add(packageName), modalityState);
             }
 
             @Override
@@ -381,7 +377,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
                 myPackagesTable.clearSelection();
                 updatePackages(selectedPackageManagementService);
                 myCurrentlyInstalling.remove(packageName);
-                myPackagesTable.setPaintBusy(!myCurrentlyInstalling.isEmpty());
                 if (errorDescription == null) {
                   myNotificationArea.showSuccess("Package " + packageName + " successfully upgraded");
                 }
@@ -478,10 +473,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
       RPackageManagementService.Listener listener = new PackageManagementService.Listener() {
         @Override
         public void operationStarted(String packageName) {
-          ApplicationManager.getApplication().invokeLater(
-            () -> myPackagesTable.setPaintBusy(true),
-            modalityState
-          );
         }
 
         @Override
@@ -490,7 +481,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
           ApplicationManager.getApplication().invokeLater(() -> {
             myPackagesTable.clearSelection();
             updatePackages(selectedPackageManagementService);
-            myPackagesTable.setPaintBusy(!myCurrentlyInstalling.isEmpty());
             if (errorDescription == null) {
               if (packageName != null) {
                 myNotificationArea.showSuccess("Package '" + packageName + "' successfully uninstalled");
@@ -521,12 +511,10 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private void onUpdateStarted() {
-    myPackagesTable.setPaintBusy(true);
     myPackagesTable.getEmptyText().setText("Loading...");
   }
 
   private void onUpdateFinished() {
-    myPackagesTable.setPaintBusy(!myCurrentlyInstalling.isEmpty());
     myPackagesTable.getEmptyText().setText(StatusText.DEFAULT_EMPTY_TEXT);
     updateUninstallUpgrade();
     // Action button presentations won't be updated if no events occur (e.g. mouse isn't moving, keys aren't being pressed).

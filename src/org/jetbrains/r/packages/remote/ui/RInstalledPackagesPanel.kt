@@ -32,7 +32,6 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
   private val listener = object : PackageManagementService.Listener {
     override fun operationStarted(packageName: String?) {
-      myPackagesTable.setPaintBusy(true)
     }
 
     override fun operationFinished(packageName: String?, errorDescription: PackageManagementService.ErrorDescription?) {
