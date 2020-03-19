@@ -4,11 +4,10 @@
 
 package org.jetbrains.r.ui
 
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.ui.AnActionButton
+import com.intellij.ui.DumbAwareActionButton
 import com.intellij.util.ui.JBUI
 import javax.swing.Icon
 import javax.swing.JPanel
@@ -21,7 +20,7 @@ object RToolbarUtil {
           addSeparator()
         }
         for (holder in actionHoldersGroup) {
-          add(ToolbarAction(holder))
+          add(ToolbarActionButton(holder))
         }
       }
     }
@@ -33,6 +32,17 @@ object RToolbarUtil {
     }
     val actionToolbar = ActionManager.getInstance().createActionToolbar(place, actionGroup, true)
     return JBUI.Panels.simplePanel(actionToolbar.component)
+  }
+
+  fun createAnActionButton(id: String, onClick: Runnable): AnActionButton {
+    return createAnActionButton(id, { true }) {
+      onClick.run()
+    }
+  }
+
+  fun createAnActionButton(id: String, canClick: () -> Boolean, onClick: () -> Unit): AnActionButton {
+    val holder = createActionHolder(id, canClick, onClick)
+    return ToolbarActionButton(holder)
   }
 
   fun createActionHolder(id: String, onClick: () -> Unit): ActionHolder {
@@ -72,9 +82,9 @@ object RToolbarUtil {
     }
   }
 
-  private class ToolbarAction(private val holder: ActionHolder) : AnAction() {
-    private val fallbackDescription: String
-    private val fallbackIcon: Icon
+  private class ToolbarActionButton(private val holder: ActionHolder) : DumbAwareActionButton() {
+    private val fallbackDescription: String?
+    private val fallbackIcon: Icon?
 
     init {
       ActionUtil.copyFrom(this, holder.id)
@@ -86,7 +96,7 @@ object RToolbarUtil {
       holder.onClick()
     }
 
-    override fun update(e: AnActionEvent) {
+    override fun updateButton(e: AnActionEvent) {
       val isVisible = holder.checkVisible()
       e.presentation.isVisible = isVisible
       if (isVisible) {
@@ -98,23 +108,28 @@ object RToolbarUtil {
     }
 
     override fun displayTextInToolbar(): Boolean {
-      return true
+      // Note: not a typo. Effectively this means "use description instead of text if the latest is null"
+      return templateText.isNullOrBlank()
     }
 
-    private fun createIcon(isEnabled: Boolean): Icon {
+    private fun createIcon(isEnabled: Boolean): Icon? {
       return holder.getAlternativeEnabledIcon()?.takeIf { isEnabled } ?: fallbackIcon
     }
 
-    private fun createDescription(isEnabled: Boolean): String {
+    private fun createDescription(isEnabled: Boolean): String? {
       return if (isEnabled) createEnabledDescription() else createDisabledDescription()
     }
 
-    private fun createEnabledDescription(): String {
+    private fun createEnabledDescription(): String? {
       return holder.getAlternativeEnabledDescription() ?: fallbackDescription
     }
 
-    private fun createDisabledDescription(): String {
-      return holder.getHintForDisabled()?.let { "$fallbackDescription ($it)" } ?: fallbackDescription
+    private fun createDisabledDescription(): String? {
+      return holder.getHintForDisabled()?.let { createDescriptionWithHint(it) } ?: fallbackDescription
+    }
+
+    private fun createDescriptionWithHint(hint: String): String? {
+      return fallbackDescription?.let { "$it ($hint)" }
     }
   }
 }

@@ -5,12 +5,10 @@
 
 package org.jetbrains.r.packages.remote.ui
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.showInfoMessage
 import com.intellij.ui.AnActionButton
-import com.intellij.ui.DumbAwareActionButton
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.intellij.webcore.packaging.ManagePackagesDialog
@@ -24,6 +22,7 @@ import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
+import org.jetbrains.r.ui.RToolbarUtil
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
@@ -70,45 +69,40 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   private fun makeUpgradeAllButton(): AnActionButton {
-    return object : DumbAwareActionButton(UPGRADE_ALL_TEXT, UPGRADE_ALL_ICON) {
-      override fun actionPerformed(e: AnActionEvent) {
-        rPackageManagementService?.let { service ->
-          val outdated = findOutdatedPackages(service)
-          if (outdated.isNotEmpty()) {
-            RUpdateAllConfirmDialog(outdated) {
-              val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
-              val multiListener = RPackageManagementService.convertToInstallMultiListener(listener)
-              service.installPackages(packages, true, multiListener)
-            }.show()
-          } else {
-            showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)
-          }
-        }
-      }
+    ActionManager.getInstance().getAction(UPGRADE_ALL_ACTION_ID).templatePresentation.icon = UPGRADE_ALL
+    return RToolbarUtil.createAnActionButton(UPGRADE_ALL_ACTION_ID, this::canUpgradeAllPackages, this::upgradeAllPackages)
+  }
 
-      override fun updateButton(e: AnActionEvent) {
-        e.presentation.isEnabled = isReady && rPackageManagementService?.arePackageDetailsLoaded == true
+  private fun upgradeAllPackages() {
+    rPackageManagementService?.let { service ->
+      val outdated = findOutdatedPackages(service)
+      if (outdated.isNotEmpty()) {
+        RUpdateAllConfirmDialog(outdated) {
+          val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
+          val multiListener = RPackageManagementService.convertToInstallMultiListener(listener)
+          service.installPackages(packages, true, multiListener)
+        }.show()
+      } else {
+        showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)
       }
+    }
+  }
 
-      private fun findOutdatedPackages(service: RPackageManagementService): List<RPackageUpdateInfo> {
-        return service.installedPackages.mapNotNull { installed ->
-          service.fetchLatestVersion(installed.packageName)?.let { latestVersion ->
-            if (RPackageVersion.isOlder(installed.packageVersion, latestVersion)) RPackageUpdateInfo(installed, latestVersion) else null
-          }
-        }
+  private fun canUpgradeAllPackages(): Boolean {
+    return isReady && rPackageManagementService?.arePackageDetailsLoaded == true
+  }
+
+  private fun findOutdatedPackages(service: RPackageManagementService): List<RPackageUpdateInfo> {
+    return service.installedPackages.mapNotNull { installed ->
+      service.fetchLatestVersion(installed.packageName)?.let { latestVersion ->
+        if (RPackageVersion.isOlder(installed.packageVersion, latestVersion)) RPackageUpdateInfo(installed, latestVersion) else null
       }
     }
   }
 
   private fun makeRefreshButton(): AnActionButton {
-    return object : DumbAwareActionButton(REFRESH_TEXT, REFRESH_ICON) {
-      override fun actionPerformed(e: AnActionEvent) {
-        immediatelyUpdatePackages(myPackageManagementService)
-      }
-
-      override fun updateButton(e: AnActionEvent) {
-        e.presentation.isEnabled = !isTaskRunning
-      }
+    return RToolbarUtil.createAnActionButton(REFRESH_ACTION_ID, { !isTaskRunning }) {
+      immediatelyUpdatePackages(myPackageManagementService)
     }
   }
 
@@ -147,13 +141,12 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   companion object {
+    private const val UPGRADE_ALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"
+    private const val REFRESH_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RRefreshAction"
     private const val REFRESH_TIME_SPAN = 500
-    private val UPGRADE_ALL_TEXT = RBundle.message("packages.panel.upgrade.all.text")
-    private val UPGRADE_ALL_ICON = UPGRADE_ALL
+
     private val NOTHING_TO_UPGRADE_TITLE = RBundle.message("packages.panel.nothing.to.upgrade.title")
     private val NOTHING_TO_UPGRADE_MESSAGE = RBundle.message("packages.panel.nothing.to.upgrade.message")
-    private val REFRESH_TEXT = RBundle.message("packages.panel.refresh.text")
-    private val REFRESH_ICON = AllIcons.Actions.Refresh
     private val REFRESH_TASK_IDENTITY = RBundle.message("packages.panel.refresh.task.identity")
     private val REFRESH_TASK_NAME = RBundle.message("packages.panel.refresh.task.name")
   }

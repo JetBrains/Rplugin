@@ -33,7 +33,6 @@ import com.intellij.ui.scale.JBUIScale;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.CatchingConsumer;
 import com.intellij.util.IJSwingUtilities;
-import com.intellij.util.IconUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.StatusText;
@@ -45,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
 import org.jetbrains.r.rinterop.RInteropKt;
+import org.jetbrains.r.ui.RToolbarUtil;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -62,6 +62,9 @@ public class RInstalledPackagesPanelBase extends JPanel {
   private static final Logger LOG = Logger.getInstance(com.intellij.webcore.packaging.InstalledPackagesPanel.class);
 
   private static final String LOADING_PACKAGES_LIST_TITLE = "Loading Packages List";
+
+  private static final String INSTALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RInstallAction";
+  private static final String UPGRADE_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUpgradeAction";
 
   public static int IS_LOADED_COLUMN = 0;
   public static int PACKAGE_NAME_COLUMN = 1;
@@ -123,22 +126,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
 
-    myUpgradeButton = new DumbAwareActionButton("Upgrade", IconUtil.getMoveUpIcon()) {
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e) {
-        upgradeAction();
-      }
-    };
-    myInstallButton = new DumbAwareActionButton("Install", IconUtil.getAddIcon()) {
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e) {
-        //PackageManagementUsageCollector.triggerBrowseAvailablePackagesPerformed(myProject, myPackageManagementService);
-        if (myPackageManagementService != null) {
-          ManagePackagesDialog dialog = createManagePackagesDialog();
-          dialog.show();
-        }
-      }
-    };
+    myUpgradeButton = RToolbarUtil.INSTANCE.createAnActionButton(UPGRADE_ACTION_ID, this::upgradeAction);
+    myInstallButton = RToolbarUtil.INSTANCE.createAnActionButton(INSTALL_ACTION_ID, this::installAction);
     myInstallButton.setShortcut(CommonShortcuts.getNew());
     ToolbarDecorator decorator =
       ToolbarDecorator.createDecorator(myPackagesTable).disableUpDownActions().disableAddAction().disableRemoveAction()
@@ -312,6 +301,13 @@ public class RInstalledPackagesPanelBase extends JPanel {
                                         doUpdatePackages(myPackageManagementService);
                                       }
                                     });
+  }
+
+  private void installAction() {
+    if (myPackageManagementService != null) {
+      ManagePackagesDialog dialog = createManagePackagesDialog();
+      dialog.show();
+    }
   }
 
   private void upgradeAction() {
