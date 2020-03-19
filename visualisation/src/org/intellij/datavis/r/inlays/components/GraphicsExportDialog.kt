@@ -17,6 +17,7 @@ import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.VisualizationBundle
+import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
 import org.intellij.datavis.r.inlays.components.forms.GraphicsExportDialogForm
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -54,7 +55,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
 
   private val keepAspectRatioAction =
-    object : BasicToggleAction(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, AllIcons.Graph.SnapToGrid, false) {
+    object : BasicToggleAction(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false) {
       override fun update(e: AnActionEvent) {
         val isEnabled = !isAutoResizeEnabled && checkSizeInputs()
         e.presentation.isEnabled = isEnabled

@@ -19,4 +19,7 @@ object VisualizationIcons {
 
   // Table.
   val TABLE_PAGINATION = IconLoader.getIcon("/icons/table/pagination.svg")
+
+  // Graphics.
+  val CONSTRAIN_IMAGE_PROPORTIONS = IconLoader.getIcon("/icons/graphics/constraintProportions.svg")
 }
