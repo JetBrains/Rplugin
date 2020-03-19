@@ -325,6 +325,14 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.packages.remote.ui.RRefreshAction"
                     text="Refresh"
                     icon="AllIcons.Actions.Refresh"/>
+            <action id="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"
+                    class="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"/>
+            <action id="org.jetbrains.r.packages.remote.ui.RNavigateToDocumentationAction"
+                    class="org.jetbrains.r.packages.remote.ui.RNavigateToDocumentationAction"/>
+            <action id="org.jetbrains.r.packages.remote.ui.ROpenLinkAction"
+                    class="org.jetbrains.r.packages.remote.ui.ROpenLinkAction"/>
+            <action id="org.jetbrains.r.packages.remote.ui.RUninstallAction"
+                    class="org.jetbrains.r.packages.remote.ui.RUninstallAction"/>
         </group>
     </actions>
 

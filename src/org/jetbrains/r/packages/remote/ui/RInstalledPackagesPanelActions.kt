@@ -13,3 +13,11 @@ class RUpgradeAction : RDumbAwareActionAdapter()
 class RUpgradeAllAction : RDumbAwareActionAdapter()
 
 class RRefreshAction : RDumbAwareActionAdapter()
+
+class RLoadUnloadAction : RDumbAwareActionAdapter()
+
+class RNavigateToDocumentationAction : RDumbAwareActionAdapter()
+
+class ROpenLinkAction : RDumbAwareActionAdapter()
+
+class RUninstallAction : RDumbAwareActionAdapter()

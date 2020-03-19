@@ -8,10 +8,8 @@ import com.google.common.collect.Lists;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.browsers.BrowserLauncher;
-import com.intellij.openapi.actionSystem.ActionToolbarPosition;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonShortcuts;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -68,6 +66,10 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
   private static final String INSTALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RInstallAction";
   private static final String UPGRADE_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUpgradeAction";
+  private static final String LOAD_UNLOAD_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RLoadUnloadAction";
+  private static final String NAVIGATE_TO_DOCUMENTATION_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RNavigateToDocumentationAction";
+  private static final String OPEN_LINK_ACTION_ID = "org.jetbrains.r.packages.remote.ui.ROpenLinkAction";
+  private static final String UNINSTALL_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUninstallAction";
 
   public static int IS_LOADED_COLUMN = 0;
   public static int PACKAGE_NAME_COLUMN = 1;
@@ -184,16 +186,17 @@ public class RInstalledPackagesPanelBase extends JPanel {
       public void mouseClicked(MouseEvent e) {
         Point columnRow = getMouseColumnRow(e.getLocationOnScreen(), myPackagesTable);
         if (columnRow.x == IS_LOADED_COLUMN) {
-          loadUnloadPackage(columnRow);
+          doRecorded(LOAD_UNLOAD_ACTION_ID, e, () -> loadUnloadPackage(columnRow));
         }
         if (columnRow.x == PACKAGE_NAME_COLUMN) {
-          navigateToDocumentation(columnRow);
+          doRecorded(NAVIGATE_TO_DOCUMENTATION_ACTION_ID, e, () -> navigateToDocumentation(columnRow));
         }
         if (columnRow.x == BROWSE_COLUMN) {
-          openLink(columnRow);
+          doRecorded(OPEN_LINK_ACTION_ID, e, () -> openLink(columnRow));
         }
         if (columnRow.x == UNINSTALL_COLUMN) {
-          uninstallPackage(columnRow);
+          // Note: recorded inside `uninstallPackage()`
+          uninstallPackage(e, columnRow);
         }
       }
 
@@ -216,7 +219,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
         }
       }
 
-      private void uninstallPackage(Point columnRow) {
+      private void uninstallPackage(MouseEvent e, Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
         if (aPackage != null && myPackageManagementService.canUninstallPackage(aPackage)) {
           int yesNo = Messages.showYesNoDialog(myPackagesTable,
@@ -224,7 +227,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
                                                "Uninstall " + aPackage.getPackageName(),
                                                AllIcons.Diff.Remove);
           if (yesNo == Messages.YES) {
-            uninstallAction(Collections.singletonList(aPackage));
+            doRecorded(UNINSTALL_ACTION_ID, e, () -> uninstallAction(Collections.singletonList(aPackage)));
           }
         }
       }
@@ -647,6 +650,11 @@ public class RInstalledPackagesPanelBase extends JPanel {
       packageMap.put(aPackage.getName(), aPackage);
     }
     return packageMap;
+  }
+
+  private static void doRecorded(@NotNull String actionId, @NotNull MouseEvent event, @NotNull Runnable runnable) {
+    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(actionId, event);
+    runnable.run();
   }
 
   private final class MyTableCellRenderer extends DefaultTableCellRenderer {
