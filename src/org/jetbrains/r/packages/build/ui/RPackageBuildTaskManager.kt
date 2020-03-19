@@ -13,7 +13,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.ui.RToolbarUtil
+import org.intellij.datavis.r.ui.ToolbarUtil
 import javax.swing.Icon
 
 class RPackageBuildTaskManager(
@@ -23,7 +23,7 @@ class RPackageBuildTaskManager(
   private val onInterrupted: () -> Unit
 ) {
   @Volatile
-  private var currentActionHolder: RToolbarUtil.ActionHolder? = null
+  private var currentActionHolder: ToolbarUtil.ActionHolder? = null
 
   @Volatile
   private var isRunning: Boolean = false
@@ -33,7 +33,7 @@ class RPackageBuildTaskManager(
     task: (Boolean) -> Promise<Unit>,
     requiredDevTools: Boolean,
     checkVisible: () -> Boolean = { true }
-  ) = object : RToolbarUtil.ActionHolder {
+  ) = object : ToolbarUtil.ActionHolder {
     private val missing: List<RequiredPackage>?
       get() = RequiredPackageInstaller.getInstance(project).getMissingPackagesOrNull(REQUIREMENTS)
 

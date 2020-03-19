@@ -2,7 +2,7 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.jetbrains.r.ui
+package org.intellij.datavis.r.ui
 
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
@@ -12,7 +12,7 @@ import com.intellij.util.ui.JBUI
 import javax.swing.Icon
 import javax.swing.JPanel
 
-object RToolbarUtil {
+object ToolbarUtil {
   fun createToolbar(place: String, actionHolderGroups: List<List<ActionHolder>>, vararg additionalActions: AnAction): JPanel {
     val actionGroup = DefaultActionGroup().apply {
       for ((index, actionHoldersGroup) in actionHolderGroups.withIndex()) {

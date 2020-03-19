@@ -22,7 +22,7 @@ import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
-import org.jetbrains.r.ui.RToolbarUtil
+import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -109,10 +109,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun createToolbar(project: Project): JComponent {
-    return RToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), DarkModeCheckBox(project))
+    return ToolbarUtil.createToolbar(RToolWindowFactory.PLOTS, createActionHolderGroups(), DarkModeCheckBox(project))
   }
 
-  private fun createActionHolderGroups(): List<List<RToolbarUtil.ActionHolder>> {
+  private fun createActionHolderGroups(): List<List<ToolbarUtil.ActionHolder>> {
     val hasSnapshots = { lastNormal.isNotEmpty() }
     val groups = listOf(
       listOf(
@@ -134,7 +134,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     )
     return groups.map { group ->
       group.map { (id, canClick, onClick) ->
-        RToolbarUtil.createActionHolder(id, canClick, onClick)
+        ToolbarUtil.createActionHolder(id, canClick, onClick)
       }
     }
   }

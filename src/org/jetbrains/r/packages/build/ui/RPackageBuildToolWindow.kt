@@ -21,7 +21,7 @@ import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RPackageBuildSettings
-import org.jetbrains.r.ui.RToolbarUtil
+import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.io.File
 import javax.swing.JComponent
@@ -64,9 +64,9 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
       }
     )
     val secondaryHolders = listOf(
-      RToolbarUtil.createActionHolder(SETTINGS_ACTION_ID, this::showSettingsDialog)
+      ToolbarUtil.createActionHolder(SETTINGS_ACTION_ID, this::showSettingsDialog)
     )
-    return RToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(primaryHolders, secondaryHolders))
+    return ToolbarUtil.createToolbar(RToolWindowFactory.BUILD, listOf(primaryHolders, secondaryHolders))
   }
 
   private fun showSettingsDialog() {

@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
 import org.jetbrains.r.rinterop.RInteropKt;
-import org.jetbrains.r.ui.RToolbarUtil;
+import org.intellij.datavis.r.ui.ToolbarUtil;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -132,8 +132,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     connect.subscribe(RInteropKt.getLOADED_LIBRARIES_UPDATED(), myPackagesTable::repaint);
 
-    myUpgradeButton = RToolbarUtil.INSTANCE.createAnActionButton(UPGRADE_ACTION_ID, this::upgradeAction);
-    myInstallButton = RToolbarUtil.INSTANCE.createAnActionButton(INSTALL_ACTION_ID, this::installAction);
+    myUpgradeButton = ToolbarUtil.INSTANCE.createAnActionButton(UPGRADE_ACTION_ID, this::upgradeAction);
+    myInstallButton = ToolbarUtil.INSTANCE.createAnActionButton(INSTALL_ACTION_ID, this::installAction);
     MyTextSearchField textSearchFieldAction = new MyTextSearchField();
     myInstallButton.setShortcut(CommonShortcuts.getNew());
     ToolbarDecorator decorator =

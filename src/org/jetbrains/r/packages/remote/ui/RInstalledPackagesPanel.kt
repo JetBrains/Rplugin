@@ -22,7 +22,7 @@ import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.jetbrains.r.ui.RToolbarUtil
+import org.intellij.datavis.r.ui.ToolbarUtil
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
@@ -69,7 +69,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
 
   private fun makeUpgradeAllButton(): AnActionButton {
     ActionManager.getInstance().getAction(UPGRADE_ALL_ACTION_ID).templatePresentation.icon = UPGRADE_ALL
-    return RToolbarUtil.createAnActionButton(UPGRADE_ALL_ACTION_ID, this::canUpgradeAllPackages, this::upgradeAllPackages)
+    return ToolbarUtil.createAnActionButton(UPGRADE_ALL_ACTION_ID, this::canUpgradeAllPackages, this::upgradeAllPackages)
   }
 
   private fun upgradeAllPackages() {
@@ -100,7 +100,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   private fun makeRefreshButton(): AnActionButton {
-    return RToolbarUtil.createAnActionButton(REFRESH_ACTION_ID, { !isTaskRunning }) {
+    return ToolbarUtil.createAnActionButton(REFRESH_ACTION_ID, { !isTaskRunning }) {
       immediatelyUpdatePackages(myPackageManagementService)
     }
   }
