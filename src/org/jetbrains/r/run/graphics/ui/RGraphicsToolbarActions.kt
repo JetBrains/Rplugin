@@ -4,20 +4,20 @@
 
 package org.jetbrains.r.run.graphics.ui
 
-import org.jetbrains.r.ui.RDumbAwareActionAdapter
+import org.intellij.datavis.r.ui.DumbAwareActionAdapter
 
-class RPreviousGraphicsAction : RDumbAwareActionAdapter()
+class RPreviousGraphicsAction : DumbAwareActionAdapter()
 
-class RNextGraphicsAction : RDumbAwareActionAdapter()
+class RNextGraphicsAction : DumbAwareActionAdapter()
 
-class RExportGraphicsAction : RDumbAwareActionAdapter()
+class RExportGraphicsAction : DumbAwareActionAdapter()
 
-class RCopyGraphicsAction : RDumbAwareActionAdapter()
+class RCopyGraphicsAction : DumbAwareActionAdapter()
 
-class RZoomGraphicsAction : RDumbAwareActionAdapter()
+class RZoomGraphicsAction : DumbAwareActionAdapter()
 
-class RClearGraphicsAction : RDumbAwareActionAdapter()
+class RClearGraphicsAction : DumbAwareActionAdapter()
 
-class RClearAllGraphicsAction : RDumbAwareActionAdapter()
+class RClearAllGraphicsAction : DumbAwareActionAdapter()
 
-class RTuneGraphicsDeviceAction : RDumbAwareActionAdapter()
+class RTuneGraphicsDeviceAction : DumbAwareActionAdapter()

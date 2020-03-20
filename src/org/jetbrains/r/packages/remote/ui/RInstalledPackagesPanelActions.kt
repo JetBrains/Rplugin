@@ -4,20 +4,20 @@
 
 package org.jetbrains.r.packages.remote.ui
 
-import org.jetbrains.r.ui.RDumbAwareActionAdapter
+import org.intellij.datavis.r.ui.DumbAwareActionAdapter
 
-class RInstallAction : RDumbAwareActionAdapter()
+class RInstallAction : DumbAwareActionAdapter()
 
-class RUpgradeAction : RDumbAwareActionAdapter()
+class RUpgradeAction : DumbAwareActionAdapter()
 
-class RUpgradeAllAction : RDumbAwareActionAdapter()
+class RUpgradeAllAction : DumbAwareActionAdapter()
 
-class RRefreshAction : RDumbAwareActionAdapter()
+class RRefreshAction : DumbAwareActionAdapter()
 
-class RLoadUnloadAction : RDumbAwareActionAdapter()
+class RLoadUnloadAction : DumbAwareActionAdapter()
 
-class RNavigateToDocumentationAction : RDumbAwareActionAdapter()
+class RNavigateToDocumentationAction : DumbAwareActionAdapter()
 
-class ROpenLinkAction : RDumbAwareActionAdapter()
+class ROpenLinkAction : DumbAwareActionAdapter()
 
-class RUninstallAction : RDumbAwareActionAdapter()
+class RUninstallAction : DumbAwareActionAdapter()

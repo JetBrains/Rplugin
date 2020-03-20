@@ -4,14 +4,14 @@
 
 package org.jetbrains.r.packages.build.ui
 
-import org.jetbrains.r.ui.RDumbAwareActionAdapter
+import org.intellij.datavis.r.ui.DumbAwareActionAdapter
 
-class RInstallPackageAction : RDumbAwareActionAdapter()
+class RInstallPackageAction : DumbAwareActionAdapter()
 
-class RCheckPackageAction : RDumbAwareActionAdapter()
+class RCheckPackageAction : DumbAwareActionAdapter()
 
-class RTestPackageAction: RDumbAwareActionAdapter()
+class RTestPackageAction: DumbAwareActionAdapter()
 
-class RSetupTestsAction: RDumbAwareActionAdapter()
+class RSetupTestsAction: DumbAwareActionAdapter()
 
-class RPackageBuildSettingsAction : RDumbAwareActionAdapter()
+class RPackageBuildSettingsAction : DumbAwareActionAdapter()
