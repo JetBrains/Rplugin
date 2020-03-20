@@ -19,6 +19,7 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.references.RReferenceBase
+import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RVar
 
@@ -90,7 +91,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
                            ?: throw IllegalStateException("bad filename")
 
     val accessOperator = if (stub.exported) "::" else ":::"
-    val expressionRef = RRef.expressionRef("$packageName$accessOperator`${getName()}`", consoleView.rInterop)
+    val expressionRef = RRef.expressionRef("$packageName$accessOperator${RNamesValidator.quoteIfNeeded(getName())}", consoleView.rInterop)
     return RVar(name, expressionRef, expressionRef.getValueInfo())
   }
 }

@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.UsefulTestCase
 import junit.framework.TestCase
@@ -11,8 +12,7 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.rinterop.RValue
-import org.jetbrains.r.rinterop.RValueDataFrame
+import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
 class RSkeletonResolveTest : RConsoleBaseTestCase() {
@@ -21,28 +21,29 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     addLibraries()
   }
 
-  //fun testResolveDplyrFilter() {
-    //val rValue = runTest("dplyr::fil<caret>ter()")
-    //UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
-    //TestCase.assertTrue((rValue as RValueFunction).code.contains("UseMethod(\"filter\")"))
-  //}
+  fun testResolveDplyrFilter() {
+    val rVar = runTest("dplyr::fil<caret>ter()")
+    val text = FileDocumentManager.getInstance().getDocument(rVar.ref.functionSourcePosition()!!.file)!!.text
+    UsefulTestCase.assertInstanceOf(rVar.value, RValueFunction::class.java)
+    TestCase.assertTrue(text.contains("UseMethod(\"filter\")"))
+  }
 
   fun testResolveDataset() {
-    val rValue = runTest("iri<caret>s")
+    val rValue = runTest("iri<caret>s").value
     UsefulTestCase.assertInstanceOf(rValue, RValueDataFrame::class.java)
     TestCase.assertEquals(5, (rValue as RValueDataFrame).cols)
   }
 
-  // TODO: Rewrite test using new mechanisms for getting function code
-  /*fun testResolveDplyrInternal() {
+  fun testResolveDplyrInternal() {
     val resolveResult = resolve("dplyr::any_<caret>exprs")
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
     val assignment = resolveResult as RSkeletonAssignmentStatement
     TestCase.assertFalse(assignment.stub.exported)
-    val rValue = assignment.createRVar(console).value
-    UsefulTestCase.assertInstanceOf(rValue, RValueFunction::class.java)
-    TestCase.assertTrue((rValue as RValueFunction).code.contains("quote(`||`)"))
-  }*/
+    val rVar = assignment.createRVar(console)
+    val text = FileDocumentManager.getInstance().getDocument(rVar.ref.functionSourcePosition()!!.file)!!.text
+    UsefulTestCase.assertInstanceOf(rVar.value, RValueFunction::class.java)
+    TestCase.assertTrue(text.contains("quote(`||`)"))
+  }
 
   fun testResolveFilter() {
     val filterStats = resolve("fil<caret>ter()")
@@ -52,6 +53,10 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     val filterDplyr = resolve("fil<caret>ter()")
     TestCase.assertNotNull(filterDplyr)
     TestCase.assertEquals("dplyr", RPackage.getOrCreateRPackageBySkeletonFile(filterDplyr!!.containingFile)?.name)
+    myFixture.file.runtimeInfo?.rInterop?.unloadLibrary("dplyr", false)?.getWithCheckCanceled()
+    val filterStats2 = resolve("fil<caret>ter()")
+    TestCase.assertNotNull(filterStats2)
+    TestCase.assertEquals("stats", RPackage.getOrCreateRPackageBySkeletonFile(filterStats2!!.containingFile)?.name)
   }
 
   fun testDoNotResolveToSkeletons() {
@@ -63,10 +68,10 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(myFixture.file, resolveResult?.containingFile)
   }
 
-  private fun runTest(expression: String): RValue {
+  private fun runTest(expression: String): RVar {
     val resolveResult = resolve(expression)
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)
-    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console).value
+    return (resolveResult as RSkeletonAssignmentStatement).createRVar(console)
   }
 
   private fun resolve(expression: String): PsiElement? {
@@ -75,5 +80,4 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(1, resolve.size)
     return resolve[0].element
   }
-
 }

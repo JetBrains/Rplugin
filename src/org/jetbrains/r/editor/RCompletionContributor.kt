@@ -14,6 +14,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
@@ -126,7 +127,7 @@ class RCompletionContributor : CompletionContributor() {
       val position = parameters.position
       val file = parameters.originalFile
       val info = file.runtimeInfo ?: return
-      val memberAccess = PsiTreeUtil.getParentOfType(position, org.jetbrains.r.psi.api.RMemberExpression::class.java) ?: return
+      val memberAccess = PsiTreeUtil.getParentOfType(position, RMemberExpression::class.java) ?: return
       val leftExpr = memberAccess.leftExpr ?: return
       val noCalls = PsiTreeUtil.processElements(leftExpr) { it !is RCallExpression }
       if (noCalls) {
@@ -562,46 +563,47 @@ class RCompletionContributor : CompletionContributor() {
                                          shownNames: HashSet<String>,
                                          result: CompletionResultSet,
                                          isHelpFromRConsole: Boolean = false, isInternalAccess: Boolean = false) {
-      val runtimeScope = computeRuntimeScope(originFile)
+      val runtimeInfo = originFile.runtimeInfo
+      val interpreter = RInterpreterManager.getInterpreter(originFile.project)
       var hasElementsWithPrefix = false
-
-      if (runtimeScope != null) {
-        processElementsFromIndex(project, runtimeScope.intersectWith(scope), shownNames, Consumer<LookupElement> {
-          if (it.lookupString.startsWith(prefix)) {
+      if (runtimeInfo != null && interpreter != null) {
+        val loadedPackages = runtimeInfo.loadedPackages
+          .mapNotNull { interpreter.getSkeletonFileByPackageName(it.key)?.virtualFile?.to(it.value) }
+          .toMap()
+        val runtimeScope = GlobalSearchScope.filesScope(originFile.project, loadedPackages.keys).intersectWith(scope)
+        val lookupElements = mutableMapOf<String, Pair<LookupElement, Int?>>()
+        processElementsFromIndex(project, runtimeScope, isHelpFromRConsole, isInternalAccess) { element, file ->
+          if (shownNames.contains(element.lookupString)) return@processElementsFromIndex
+          if (element.lookupString.startsWith(prefix)) {
             hasElementsWithPrefix = true
           }
-          result.consume(it)
-        }, isHelpFromRConsole, isInternalAccess)
+          val previousPriority = lookupElements[element.lookupString]?.second
+          val currentPriority = loadedPackages[file]
+          if (previousPriority == null || (currentPriority != null && currentPriority < previousPriority)) {
+            lookupElements[element.lookupString] = element to currentPriority
+          }
+        }
+        result.addAllElements(lookupElements.values.map { it.first })
+        shownNames.addAll(lookupElements.keys)
       }
       if (!hasElementsWithPrefix) {
-        processElementsFromIndex(project, scope, shownNames, result, isHelpFromRConsole, isInternalAccess)
+        processElementsFromIndex(project, scope, isHelpFromRConsole, isInternalAccess) { it, _ ->
+          if (shownNames.add(it.lookupString)) result.consume(it)
+        }
       }
     }
 
     private fun processElementsFromIndex(project: Project,
                                          scope: GlobalSearchScope,
-                                         shownNames: HashSet<String>,
-                                         result: Consumer<LookupElement>,
                                          isHelpFromRConsole: Boolean,
-                                         isInternalAccess: Boolean) {
+                                         isInternalAccess: Boolean,
+                                         consumer: (LookupElement, VirtualFile) -> Unit) {
 
       val indexAccessor = if (isInternalAccess) RInternalAssignmentCompletionIndex else RAssignmentCompletionIndex
-
       indexAccessor.process("", project, scope, Processor { assignment ->
-        if (!shownNames.add(assignment.name)) {
-          return@Processor true
-        }
-        result.consume(createGlobalLookupElement(assignment, isHelpFromRConsole))
+        consumer(createGlobalLookupElement(assignment, isHelpFromRConsole), assignment.containingFile.virtualFile)
         return@Processor true
       })
-    }
-
-    private fun computeRuntimeScope(originFile: PsiFile): GlobalSearchScope? {
-      return originFile.runtimeInfo?.let { runtimeInfo ->
-        val interpreter = RInterpreterManager.getInterpreter(originFile.project) ?: return null
-        val loadedPackages = runtimeInfo.loadedPackages.keys.mapNotNull { interpreter.getSkeletonFileByPackageName(it)?.virtualFile }
-        GlobalSearchScope.filesScope(originFile.project, loadedPackages)
-      }
     }
   }
 }

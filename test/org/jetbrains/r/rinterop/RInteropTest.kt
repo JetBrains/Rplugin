@@ -237,4 +237,22 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     val result = rInterop.executeCode("cat(.Last.value)")
     TestCase.assertEquals("6000", result.stdout)
   }
+
+  fun testLoadedPackages() {
+    var packages = rInterop.loadedPackages.getWithCheckCancel()
+    TestCase.assertFalse("compiler" in packages)
+    TestCase.assertFalse("tools" in packages)
+
+    rInterop.executeCode("library(compiler); library(tools)")
+    rInterop.invalidateCaches()
+    packages = rInterop.loadedPackages.getWithCheckCancel()
+    TestCase.assertTrue("compiler" in packages)
+    TestCase.assertTrue("tools" in packages)
+
+    rInterop.executeCode("detach('package:compiler'); detach('package:tools')")
+    rInterop.invalidateCaches()
+    packages = rInterop.loadedPackages.getWithCheckCancel()
+    TestCase.assertFalse("compiler" in packages)
+    TestCase.assertFalse("tools" in packages)
+  }
 }

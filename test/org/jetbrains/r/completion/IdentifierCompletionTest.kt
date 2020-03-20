@@ -291,6 +291,25 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("stats", presentation.typeText)
   }
 
+  fun testInLoadedPackage() {
+    fun doTest(expectedPackage: String) {
+      myFixture.configureByText("foo.R", """fil<caret>""")
+      myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+      val result = myFixture.completeBasic()!!.first { it.lookupString == "filter" }
+      val presentation = LookupElementPresentation()
+      result.renderElement(presentation)
+      TestCase.assertEquals(expectedPackage, presentation.typeText)
+    }
+
+    doTest("stats")
+    rInterop.executeCode("library(dplyr)")
+    rInterop.invalidateCaches()
+    doTest("dplyr")
+    rInterop.executeCode("detach('package:dplyr')")
+    rInterop.invalidateCaches()
+    doTest("stats")
+  }
+
   private fun doWrongVariantsTest(text: String, vararg variants: String) {
     myFixture.configureByText("foo.R", text)
     val result = myFixture.completeBasic()
