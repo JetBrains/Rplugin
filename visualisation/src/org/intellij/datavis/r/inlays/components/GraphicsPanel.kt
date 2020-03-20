@@ -40,6 +40,7 @@ interface DarkModeNotifier {
 }
 
 class GraphicsPanel(private val project: Project, private val disposableParent: Disposable) {
+  private val graphicsManager = GraphicsManager.getInstance(project)
   private val label = JLabel(NO_GRAPHICS, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
   @Volatile
@@ -96,7 +97,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
 
   @Volatile
-  private var darkMode = GraphicsManager.getInstance(project)?.isDarkModeEnabled ?: true
+  private var darkMode = graphicsManager?.isDarkModeEnabled ?: true
 
   init {
     val connect = project.messageBus.connect()
@@ -151,10 +152,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private fun tryShowImage(imageFile: File): Boolean {
     try {
       if (!imageFile.exists()) return false
-      val editorColorsManager = EditorColorsManager.getInstance()
-      val content = if (editorColorsManager.isDarkEditor && darkMode)
-        createInvertedImage(imageFile.readBytes(), editorColorsManager.globalScheme)
-      else imageFile.readBytes()
+      val content = readImageContent(imageFile)
       currentFile = imageFile
       var result = true
       invokeAndWaitIfNeeded {
@@ -170,6 +168,19 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
     return false
   }
+
+  private fun readImageContent(imageFile: File): ByteArray {
+    val bytes = imageFile.readBytes()
+    val editorColorsManager = EditorColorsManager.getInstance()
+    return if (editorColorsManager.isDarkEditor && darkMode && imageFile.isInvertible) {
+      createInvertedImage(bytes, editorColorsManager.globalScheme)
+    } else {
+      bytes
+    }
+  }
+
+  private val File.isInvertible: Boolean
+    get() = graphicsManager?.canRescale(absolutePath) ?: false
 
   private fun createInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
     val defaultForeground = globalScheme.defaultForeground
