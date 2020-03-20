@@ -14,4 +14,39 @@
     </component>
   </project-components>
 
+  <actions>
+    <group id="org.intellij.datavis.r.inlays.components.InlayOutputToolbarActions">
+      <action id="org.intellij.datavis.r.inlays.components.ClearOutputAction"
+              class="org.intellij.datavis.r.inlays.components.ClearOutputAction"
+              description="Clear output"
+              text="Clear"
+              icon="AllIcons.Actions.GC"/>
+      <action id="org.intellij.datavis.r.inlays.components.SaveOutputAction"
+              class="org.intellij.datavis.r.inlays.components.SaveOutputAction"
+              description="Save as"
+              text="Save As"
+              icon="AllIcons.Actions.Menu_saveall"/>
+      <action id="org.intellij.datavis.r.inlays.components.ExportImageAction"
+              class="org.intellij.datavis.r.inlays.components.ExportImageAction"
+              description="Save image to disk"
+              text="Export"
+              icon="AllIcons.ToolbarDecorator.Export"/>
+      <action id="org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction"
+              class="org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction"
+              description="Copy image to clipboard"
+              text="Copy to Clipboard"
+              icon="AllIcons.Actions.Copy"/>
+      <action id="org.intellij.datavis.r.inlays.components.ZoomImageAction"
+              class="org.intellij.datavis.r.inlays.components.ZoomImageAction"
+              description="Preview this image in a new window"
+              text="Open in a New Window"
+              icon="AllIcons.Actions.Preview"/>
+      <action id="org.intellij.datavis.r.inlays.components.ImageSettingsAction"
+              class="org.intellij.datavis.r.inlays.components.ImageSettingsAction"
+              description="Graphics settings"
+              text="Settings"
+              icon="AllIcons.General.GearPlain"/>
+    </group>
+  </actions>
+
 </idea-plugin>

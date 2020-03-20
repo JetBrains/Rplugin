@@ -8,19 +8,29 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
-import com.intellij.util.ui.JBUI
 import javax.swing.Icon
-import javax.swing.JPanel
+import javax.swing.JComponent
 
 object ToolbarUtil {
-  fun createToolbar(place: String, actionHolderGroups: List<List<ActionHolder>>, vararg additionalActions: AnAction): JPanel {
+  fun createActionToolbar(actionGroups: List<List<AnAction>>): JComponent {
+    return createActionToolbar(ActionPlaces.UNKNOWN, actionGroups)
+  }
+
+  fun createToolbar(place: String, actionHolderGroups: List<List<ActionHolder>>, vararg additionalActions: AnAction): JComponent {
+    val actionGroups = actionHolderGroups.map { group ->
+      group.map { ToolbarActionButton(it) }
+    }
+    return createActionToolbar(place, actionGroups, *additionalActions)
+  }
+
+  private fun createActionToolbar(place: String, actionGroups: List<List<AnAction>>, vararg additionalActions: AnAction): JComponent {
     val actionGroup = DefaultActionGroup().apply {
-      for ((index, actionHoldersGroup) in actionHolderGroups.withIndex()) {
+      for ((index, actionGroup) in actionGroups.withIndex()) {
         if (index > 0) {
           addSeparator()
         }
-        for (holder in actionHoldersGroup) {
-          add(ToolbarActionButton(holder))
+        for (action in actionGroup) {
+          add(action)
         }
       }
     }
@@ -31,13 +41,17 @@ object ToolbarUtil {
       }
     }
     val actionToolbar = ActionManager.getInstance().createActionToolbar(place, actionGroup, true)
-    return JBUI.Panels.simplePanel(actionToolbar.component)
+    return actionToolbar.component
   }
 
   fun createAnActionButton(id: String, onClick: Runnable): AnActionButton {
-    return createAnActionButton(id, { true }) {
+    return createAnActionButton(id) {
       onClick.run()
     }
+  }
+
+  fun createAnActionButton(id: String, onClick: () -> Unit): AnActionButton {
+    return createAnActionButton(id, { true }, onClick)
   }
 
   fun createAnActionButton(id: String, canClick: () -> Boolean, onClick: () -> Unit): AnActionButton {

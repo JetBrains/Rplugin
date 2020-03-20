@@ -16,7 +16,6 @@ import java.awt.Font
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.Icon
 
 class ProcessOutput(val text: String, kind: Key<*>) {
   private val kindValue: Int = when(kind) {
@@ -44,17 +43,6 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
     private val monospacedFont = RelativeFont.NORMAL.family(Font.MONOSPACED)
     private val outputFont = monospacedFont.derive(UIUtil.getLabelFont().deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL)))
-  }
-
-  interface ActionHolder {
-    val icon: Icon
-    val text: String
-    val description: String
-    fun onClick()
-
-    fun canClick(): Boolean {
-      return true
-    }
   }
 
   private var output: InlayOutput? = null

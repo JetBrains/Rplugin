@@ -4,29 +4,28 @@
 
 package org.intellij.datavis.r.inlays.components
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.Gray
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
-import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
 import org.intellij.datavis.r.inlays.runAsyncInlay
+import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 /** Page control with table and chart pages. */
@@ -85,20 +84,6 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
     if(tabToSelect != null) {
       tabs.select(tabToSelect, false)
     }
-  }
-
-  private fun createClearAction(): DumbAwareAction {
-    return object : DumbAwareAction(VisualizationBundle.message("notebook.inlay.clear.text"),
-                                    VisualizationBundle.message("notebook.inlay.clear.description"),
-                                    AllIcons.Actions.GC) {
-      override fun actionPerformed(e: AnActionEvent) {
-        clearAction.invoke()
-      }
-    }
-  }
-
-  private fun createActionButton(action: AnAction) :ActionButton {
-    return ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
   }
 
   fun onOutputs(inlayOutputs: List<InlayOutput>) {
@@ -182,26 +167,36 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
   private fun addTab(tabInfo: TabInfo, select: Boolean = false): TabInfo {
     // We need to set empty DefaultActionGroup to move sideComponent to the right.
     tabInfo.setActions(DefaultActionGroup(), ActionPlaces.UNKNOWN)
-
-    val toolBarProvider = tabInfo.component as? ToolBarProvider
-
-    val panel = JPanel()
-
-    if (toolBarProvider != null) {
-      for(action in toolBarProvider.createActions()) {
-        panel.add(createActionButton(action))
-      }
-    }
-
-    panel.add(createActionButton(createClearAction()))
-
-    tabInfo.sideComponent = panel
-
+    tabInfo.sideComponent = createTabToolbar(tabInfo)
     tabs.addTab(tabInfo)
     if (select) {
       tabs.select(tabInfo, false)
     }
     return tabInfo
+  }
+
+  private fun createTabToolbar(tabInfo: TabInfo): JComponent {
+    val actionGroups = createTabActionGroups(tabInfo)
+    val toolbar = ToolbarUtil.createActionToolbar(actionGroups)
+    if (toolbar is ActionToolbarImpl) {
+      toolbar.setForceMinimumSize(true)
+    }
+    return JPanel().apply {  // Align toolbar to top
+      add(toolbar)
+    }
+  }
+
+  private fun createTabActionGroups(tabInfo: TabInfo): List<List<AnAction>> {
+    return mutableListOf<List<AnAction>>().also { groups ->
+      (tabInfo.component as? ToolBarProvider)?.let { provider ->
+        groups.add(provider.createActions())
+      }
+      groups.add(listOf(createClearAction()))
+    }
+  }
+
+  private fun createClearAction(): AnAction {
+    return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ClearOutputAction", clearAction::invoke)
   }
 
   private fun updateMaxHeight(height: Int) {

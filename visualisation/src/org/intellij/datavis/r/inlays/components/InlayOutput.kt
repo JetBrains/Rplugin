@@ -7,7 +7,6 @@ package org.intellij.datavis.r.inlays.components
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
@@ -17,7 +16,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.ide.CopyPasteManager
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -29,10 +27,10 @@ import javafx.concurrent.Worker
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.web.WebView
-import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
+import org.intellij.datavis.r.ui.ToolbarUtil
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.html.HTMLAnchorElement
 import java.awt.Color
@@ -50,7 +48,8 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
 
   protected val toolbarPane = ToolbarPane()
 
-  protected open val extraActions: List<NotebookInlayOutput.ActionHolder> = emptyList()
+  protected open val useDefaultSaveAction: Boolean = true
+  protected open val extraActions: List<AnAction> = emptyList()
 
   val actions: List<AnAction> by lazy {  // Note: eager initialization will cause runtime errors
     createActions()
@@ -76,7 +75,7 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
     toolbarPane.progressComponent = progressPanel
   }
 
-  protected fun getProgressStatusHeight(): Int {
+  private fun getProgressStatusHeight(): Int {
     return toolbarPane.progressComponent?.height ?: 0
   }
 
@@ -106,11 +105,10 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
     toolbarPane.toolbarComponent = createToolbar()
   }
 
-  protected fun createToolbar(): JComponent {
-    val allActions = actions + listOf(createClearAction())
-    val actionGroup = DefaultActionGroup(allActions)
-    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actionGroup, true)
-    return toolbar.component.apply {
+  private fun createToolbar(): JComponent {
+    val groups = listOf(actions, listOf(createClearAction()))
+    val toolbar = ToolbarUtil.createActionToolbar(groups)
+    return toolbar.apply {
       isOpaque = false
       background = Color(0, 0, 0, 0)
     }
@@ -121,42 +119,19 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   }
 
   private fun createActions(): List<AnAction> {
-    val extraActions = createExtraActions() ?: emptyList()
-    return extraActions + listOf(createSaveAsAction())
-  }
-
-  private fun createExtraActions(): List<AnAction>? {
-    return extraActions.map { holder ->
-      object : DumbAwareAction(holder.text, holder.description, holder.icon) {
-        override fun actionPerformed(e: AnActionEvent) {
-          holder.onClick()
-        }
-
-        override fun update(e: AnActionEvent) {
-          e.presentation.isEnabled = holder.canClick()
-        }
+    return extraActions.toMutableList().apply {
+      if (useDefaultSaveAction) {
+        add(createSaveAsAction())
       }
     }
   }
 
   private fun createClearAction(): AnAction {
-    return object : DumbAwareAction(VisualizationBundle.message("inlay.output.clear.text"),
-                                    VisualizationBundle.message("inlay.output.clear.description"),
-                                    AllIcons.Actions.GC) {
-      override fun actionPerformed(e: AnActionEvent) {
-        clearAction.invoke()
-      }
-    }
+    return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ClearOutputAction", clearAction::invoke)
   }
 
   private fun createSaveAsAction(): AnAction {
-    return object : DumbAwareAction(VisualizationBundle.message("inlay.output.save.as.text"),
-                                    VisualizationBundle.message("inlay.output.save.as.description"),
-                                    AllIcons.Actions.Menu_saveall) {
-      override fun actionPerformed(e: AnActionEvent) {
-        saveAs()
-      }
-    }
+    return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.SaveOutputAction", this::saveAs)
   }
 }
 
@@ -169,76 +144,7 @@ class InlayOutputImg(
     isVisible = false
   }
 
-  private val copyActionHolder = object : NotebookInlayOutput.ActionHolder {
-    override val icon = AllIcons.Actions.Copy
-    override val text = "Copy plot to clipboard"
-    override val description = "Copy this plot to the clipboard"
-
-    override fun onClick() {
-      wrapper.image?.let { image ->
-        ClipboardUtils.copyImageToClipboard(image)
-      }
-    }
-  }
-
-  private val zoomActionHolder = object : NotebookInlayOutput.ActionHolder {
-    private val path2Checks = mutableMapOf<String, Boolean>()
-
-    override val icon = AllIcons.Actions.Preview
-    override val text = VisualizationBundle.message("inlay.output.image.zoom.text")
-    override val description = VisualizationBundle.message("inlay.output.image.zoom.description")
-
-    override fun onClick() {
-      wrapper.imagePath?.let { path ->
-        GraphicsZoomDialog(project, parent, path).show()
-      }
-    }
-
-    override fun canClick(): Boolean {
-      return canClickOrNull() == true
-    }
-
-    private fun canClickOrNull(): Boolean? {
-      return wrapper.imagePath?.let { path ->
-        path2Checks.getOrPut(path) {  // Note: speedup FS operations caused by `canRescale(path)`
-          graphicsManager?.canRescale(path) ?: false
-        }
-      }
-    }
-  }
-
-  private val settingsActionHolder = object : NotebookInlayOutput.ActionHolder {
-    override val icon = AllIcons.General.GearPlain
-    override val text = VisualizationBundle.message("inlay.output.image.settings.text")
-    override val description = VisualizationBundle.message("inlay.output.image.settings.description")
-
-    override fun onClick() {
-      val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
-      val isDarkModeEnabled = if (isDarkEditor) graphicsManager?.isDarkModeEnabled else null
-      val initialSettings = getInitialSettings(isDarkModeEnabled)
-      val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
-        wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
-        wrapper.targetResolution = newSettings.localResolution
-        graphicsManager?.let { manager ->
-          if (newSettings.isDarkModeEnabled != null && newSettings.isDarkModeEnabled != isDarkModeEnabled) {
-            manager.isDarkModeEnabled = newSettings.isDarkModeEnabled
-          }
-          if (newSettings.globalResolution != null && newSettings.globalResolution != globalResolution) {
-            // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
-            manager.globalResolution = newSettings.globalResolution
-          }
-        }
-      }
-      dialog.show()
-    }
-
-    private fun getInitialSettings(isDarkModeEnabled: Boolean?) = GraphicsSettingsDialog.Settings(
-      wrapper.isAutoResizeEnabled,
-      isDarkModeEnabled,
-      globalResolution,
-      wrapper.localResolution
-    )
-  }
+  private val path2Checks = mutableMapOf<String, Boolean>()
 
   private val graphicsManager: GraphicsManager?
     get() = GraphicsManager.getInstance(project)
@@ -248,7 +154,8 @@ class InlayOutputImg(
   @Volatile
   private var globalResolution: Int? = null
 
-  override val extraActions: List<NotebookInlayOutput.ActionHolder> = listOf(copyActionHolder, zoomActionHolder, settingsActionHolder)
+  override val useDefaultSaveAction = false
+  override val extraActions = createExtraActions()
 
   init {
     toolbarPane.centralComponent = wrapper.component
@@ -316,6 +223,66 @@ class InlayOutputImg(
   override fun onViewportChange(isInViewport: Boolean) {
     wrapper.isVisible = isInViewport
   }
+
+  private fun createExtraActions(): List<AnAction> {
+    return listOf(
+      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ExportImageAction", this::saveAs),
+      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction", this::copyImageToClipboard),
+      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ZoomImageAction", this::canZoomImage, this::zoomImage),
+      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ImageSettingsAction", this::openImageSettings)
+    )
+  }
+
+  private fun copyImageToClipboard() {
+    wrapper.image?.let { image ->
+      ClipboardUtils.copyImageToClipboard(image)
+    }
+  }
+
+  private fun zoomImage() {
+    wrapper.imagePath?.let { path ->
+      GraphicsZoomDialog(project, parent, path).show()
+    }
+  }
+
+  private fun canZoomImage(): Boolean {
+    return canZoomImageOrNull() == true
+  }
+
+  private fun canZoomImageOrNull(): Boolean? {
+    return wrapper.imagePath?.let { path ->
+      path2Checks.getOrPut(path) {  // Note: speedup FS operations caused by `canRescale(path)`
+        graphicsManager?.canRescale(path) ?: false
+      }
+    }
+  }
+
+  private fun openImageSettings() {
+    val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
+    val isDarkModeEnabled = if (isDarkEditor) graphicsManager?.isDarkModeEnabled else null
+    val initialSettings = getInitialSettings(isDarkModeEnabled)
+    val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
+      wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
+      wrapper.targetResolution = newSettings.localResolution
+      graphicsManager?.let { manager ->
+        if (newSettings.isDarkModeEnabled != null && newSettings.isDarkModeEnabled != isDarkModeEnabled) {
+          manager.isDarkModeEnabled = newSettings.isDarkModeEnabled
+        }
+        if (newSettings.globalResolution != null && newSettings.globalResolution != globalResolution) {
+          // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
+          manager.globalResolution = newSettings.globalResolution
+        }
+      }
+    }
+    dialog.show()
+  }
+
+  private fun getInitialSettings(isDarkModeEnabled: Boolean?) = GraphicsSettingsDialog.Settings(
+    wrapper.isAutoResizeEnabled,
+    isDarkModeEnabled,
+    globalResolution,
+    wrapper.localResolution
+  )
 }
 
 class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> Unit) : InlayOutput(parent, project, clearAction) {
