@@ -6,6 +6,7 @@
 package org.jetbrains.r.debugger
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
@@ -62,18 +63,20 @@ object RDebuggerUtil {
     breakpointManager.getBreakpoints(breakpointType).forEach { listener.breakpointAdded(it) }
   }
 
-  fun haveBreakpoints(project: Project, file: VirtualFile, range: TextRange? = null): Boolean {
-    val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-    val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
-    val breakpoints = breakpointManager.getBreakpoints(breakpointType)
-    return if (range == null) {
-      breakpoints.any { it.fileUrl == file.url }
-    } else {
-      val document = FileDocumentManager.getInstance().getDocument(file) ?: return false
-      fun toValidPosition(x: Int) = max(0, min(document.textLength, x))
-      val start = document.getLineNumber(toValidPosition(range.startOffset))
-      val end = document.getLineNumber(toValidPosition(range.endOffset - 1))
-      breakpoints.any { it.fileUrl == file.url && it.line in start..end }
+  private fun haveBreakpoints(project: Project, file: VirtualFile, range: TextRange? = null): Boolean {
+    return runReadAction {
+      val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
+      val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+      val breakpoints = breakpointManager.getBreakpoints(breakpointType)
+      if (range == null) {
+        breakpoints.any { it.fileUrl == file.url }
+      } else {
+        val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction false
+        fun toValidPosition(x: Int) = max(0, min(document.textLength, x))
+        val start = document.getLineNumber(toValidPosition(range.startOffset))
+        val end = document.getLineNumber(toValidPosition(range.endOffset - 1))
+        breakpoints.any { it.fileUrl == file.url && it.line in start..end }
+      }
     }
   }
 
