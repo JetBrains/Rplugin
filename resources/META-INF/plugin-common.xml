@@ -133,7 +133,7 @@ You can find the source code in the following repositories:
 
         <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
                   class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor" text="Set Current Directory From Editor"
-                  icon="AllIcons.Nodes.ExtractedFolder"
+                  icon="/icons/changeWorkingDirectory.svg"
                   description="Set current directory in the R Console to the directory of an opened file in the editor"/>
 
         <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction" text="Rename Console">

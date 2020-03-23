@@ -20,4 +20,11 @@ val R_GRAPH = load("toolWindow/RGraph.svg")
 
 val R_HTML = load("toolWindow/RHtml.svg")
 
+val R_CHANGE_WORKING_DIRECTORY = load("changeWorkingDirectory.svg")
+
+val R_RMARKDOWN_HTML_NOTEBOOK = load("fileTypes/htmlNotebook.svg")
+val R_RMARKDOWN_PRESENTATION = load("fileTypes/presentation.svg")
+val R_RMARKDOWN_DOCUMENT = load("fileTypes/rMarkdown.svg")
+val R_RMARKDOWN_SHINY = load("fileTypes/shiny.svg")
+
 private fun load(path: String) = IconLoader.findIcon("/icons/" + path)
