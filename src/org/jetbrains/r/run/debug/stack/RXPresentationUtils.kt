@@ -163,7 +163,7 @@ internal object RXPresentationUtils {
       line = line.drop(3).trimStart()
     }
     node.setPresentation(AllIcons.Debugger.Db_primitive, object : RXValuePresentation(rxVar, line) {
-      override fun getSeparator() = if (line.isNotEmpty()) super.getSeparator() else ""
+      override fun getSeparator() = if (line.isNotEmpty() || type != null) super.getSeparator() else ""
     }, rValue.isVector)
     if (rValue.text.contains('\n') || !rValue.isComplete) {
       node.setFullValueEvaluator(object : XFullValueEvaluator() {
