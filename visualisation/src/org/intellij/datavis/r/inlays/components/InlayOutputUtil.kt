@@ -24,13 +24,14 @@ object InlayOutputUtil {
   private val EXPORT_FAILURE_DETAILS = VisualizationBundle.message("inlay.output.export.failure.details")
   private val EXPORT_FAILURE_DESCRIPTION = VisualizationBundle.message("inlay.output.export.failure.description")
 
-  fun saveImageWithFileChooser(project: Project, image: BufferedImage) {
+  fun saveImageWithFileChooser(project: Project, image: BufferedImage, onSave: ((File) -> Unit)? = null) {
     chooseImageSaveLocation(project, image) { location ->
       ImageIO.write(image, location.extension, location)
+      onSave?.invoke(location)
     }
   }
 
-  fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
+  private fun chooseImageSaveLocation(project: Project, image: BufferedImage, onChoose: (File) -> Unit) {
     val extensions = getAvailableFormats(image).toTypedArray()
     saveWithFileChooser(project, EXPORT_IMAGE_TITLE, EXPORT_IMAGE_DESCRIPTION, extensions, "image", false, onChoose)
   }

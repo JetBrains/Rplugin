@@ -19,13 +19,12 @@ import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
 import org.intellij.datavis.r.inlays.components.forms.GraphicsExportDialogForm
+import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
-import java.io.File
-import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import kotlin.math.round
@@ -37,14 +36,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   private val graphicsManager = GraphicsManager.getInstance(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
   private val form = GraphicsExportDialogForm()
-
-  private val outputPathInput = TextFieldWithBrowseButton {
-    wrapper.image?.let { image ->
-      InlayOutputUtil.chooseImageSaveLocation(project, image) { location ->
-        outputPath = location.absolutePath
-      }
-    }
-  }
 
   private val autoResizeAction =
     object : BasicToggleAction(AUTO_RESIZE_ACTIVE_TEXT, AUTO_RESIZE_IDLE_TEXT, AllIcons.General.FitContent, true) {
@@ -91,13 +82,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   private var imageHeight: Int? by IntFieldDelegate(form.heightTextField)
   private var imageResolution: Int? by IntFieldDelegate(form.resolutionTextField)
 
-  private var outputPath: String
-    get() = outputPathInput.text
-    set(value) {
-      outputPathInput.text = value
-      updateOkAction()
-    }
-
   private var zoomGroup: Disposable? = null
   private var aspectRatio: Double? = null
 
@@ -123,11 +107,14 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   override fun doOKAction() {
-    super.doOKAction()
-    zoomGroup?.dispose()
     wrapper.image?.let { image ->
-      val destination = File(outputPath)
-      ImageIO.write(image, destination.extension, destination)
+      InlayOutputUtil.saveImageWithFileChooser(project, image) { location ->
+        super.doOKAction()
+        zoomGroup?.dispose()
+        if (form.openAfterSavingCheckBox.isSelected) {
+          Desktop.getDesktop().open(location)
+        }
+      }
     }
   }
 
@@ -179,8 +166,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
   private fun fillSouthPanel() {
     form.okCancelButtonsPanel.add(createOkCancelPanel())
-    form.outputPathTextFieldPanel.add(outputPathInput)
-    outputPathInput.textField.hint = OUTPUT_PATH_HINT
   }
 
   private fun createOkCancelPanel(): JComponent {
@@ -189,7 +174,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private fun updateOkAction() {
-    isOKActionEnabled = outputPath.isNotBlank() && checkSizeInputs() && checkResolutionInput()
+    isOKActionEnabled = checkSizeInputs() && checkResolutionInput()
   }
 
   private fun checkSizeInputs(): Boolean {
@@ -326,7 +311,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     private val AUTO_RESIZE_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.auto.resize.idle")
     private val REFRESH_PREVIEW_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.refresh.preview")
 
-    private val OUTPUT_PATH_HINT = VisualizationBundle.message("inlay.output.image.export.dialog.output.path")
     private val SAVE_BUTTON_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.save")
     private val TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.title")
 

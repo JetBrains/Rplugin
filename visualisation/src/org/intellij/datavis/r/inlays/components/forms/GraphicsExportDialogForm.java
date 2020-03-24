@@ -19,10 +19,10 @@ public class GraphicsExportDialogForm extends JDialog {
   private JTextField resolutionTextField;
   private JPanel southPanel;
   private JPanel okCancelButtonsPanel;
-  private JPanel outputPathTextFieldPanel;
   private JPanel autoResizeButtonPanel;
   private JPanel keepAspectRatioButtonPanel;
   private JPanel refreshButtonPanel;
+  private JCheckBox openAfterSavingCheckBox;
 
   @Override
   public JPanel getContentPane() {
@@ -49,10 +49,6 @@ public class GraphicsExportDialogForm extends JDialog {
     return okCancelButtonsPanel;
   }
 
-  public JPanel getOutputPathTextFieldPanel() {
-    return outputPathTextFieldPanel;
-  }
-
   public JPanel getAutoResizeButtonPanel() {
     return autoResizeButtonPanel;
   }
@@ -63,6 +59,10 @@ public class GraphicsExportDialogForm extends JDialog {
 
   public JPanel getRefreshButtonPanel() {
     return refreshButtonPanel;
+  }
+
+  public JCheckBox getOpenAfterSavingCheckBox() {
+    return openAfterSavingCheckBox;
   }
 
   public GraphicsExportDialogForm() {
@@ -177,27 +177,26 @@ public class GraphicsExportDialogForm extends JDialog {
     southPanel = new JPanel();
     southPanel.setLayout(new GridBagLayout());
     panel3.add(southPanel, BorderLayout.SOUTH);
-    outputPathTextFieldPanel = new JPanel();
-    outputPathTextFieldPanel.setLayout(new BorderLayout(0, 0));
-    gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.weightx = 0.75;
-    gbc.weighty = 1.0;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.insets = new Insets(8, 8, 8, 8);
-    southPanel.add(outputPathTextFieldPanel, gbc);
     okCancelButtonsPanel = new JPanel();
     okCancelButtonsPanel.setLayout(new BorderLayout(0, 0));
     gbc = new GridBagConstraints();
     gbc.gridx = 1;
     gbc.gridy = 0;
-    gbc.weightx = 0.25;
+    gbc.weightx = 1.0;
     gbc.weighty = 1.0;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.VERTICAL;
     gbc.insets = new Insets(8, 8, 8, 8);
     southPanel.add(okCancelButtonsPanel, gbc);
+    openAfterSavingCheckBox = new JCheckBox();
+    this.$$$loadButtonText$$$(openAfterSavingCheckBox, ResourceBundle.getBundle("messages/VisualizationBundle")
+      .getString("inlay.output.image.export.dialog.open.image"));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(8, 8, 8, 8);
+    southPanel.add(openAfterSavingCheckBox, gbc);
     graphicsContentPanel = new JPanel();
     graphicsContentPanel.setLayout(new BorderLayout(0, 0));
     panel3.add(graphicsContentPanel, BorderLayout.CENTER);
@@ -226,6 +225,33 @@ public class GraphicsExportDialogForm extends JDialog {
     component.setText(result.toString());
     if (haveMnemonic) {
       component.setDisplayedMnemonic(mnemonic);
+      component.setDisplayedMnemonicIndex(mnemonicIndex);
+    }
+  }
+
+  /**
+   * @noinspection ALL
+   */
+  private void $$$loadButtonText$$$(AbstractButton component, String text) {
+    StringBuffer result = new StringBuffer();
+    boolean haveMnemonic = false;
+    char mnemonic = '\0';
+    int mnemonicIndex = -1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '&') {
+        i++;
+        if (i == text.length()) break;
+        if (!haveMnemonic && text.charAt(i) != '&') {
+          haveMnemonic = true;
+          mnemonic = text.charAt(i);
+          mnemonicIndex = result.length();
+        }
+      }
+      result.append(text.charAt(i));
+    }
+    component.setText(result.toString());
+    if (haveMnemonic) {
+      component.setMnemonic(mnemonic);
       component.setDisplayedMnemonicIndex(mnemonicIndex);
     }
   }

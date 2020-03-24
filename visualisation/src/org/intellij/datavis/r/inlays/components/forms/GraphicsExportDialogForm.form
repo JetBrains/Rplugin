@@ -119,24 +119,24 @@
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="749a1" binding="outputPathTextFieldPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                  <gridbag top="8" left="8" bottom="8" right="8" weightx="0.75" weighty="1.0"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children/>
-              </grid>
               <grid id="325b3" binding="okCancelButtonsPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
-                  <gridbag top="8" left="8" bottom="8" right="8" weightx="0.25" weighty="1.0"/>
+                  <gridbag top="8" left="8" bottom="8" right="8" weightx="1.0" weighty="1.0"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children/>
               </grid>
+              <component id="fd94" class="javax.swing.JCheckBox" binding="openAfterSavingCheckBox">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag top="8" left="8" bottom="8" right="8" weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.open.image"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <grid id="a3cb2" binding="graphicsContentPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
