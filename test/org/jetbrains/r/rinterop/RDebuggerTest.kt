@@ -365,14 +365,15 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
   fun testStopRunning() {
     val file = loadFileWithBreakpointsFromText("""
-      aa <- 3
+      aa <- 3 # BREAKPOINT
       while (TRUE) {
         aa <- aa + 1
       }
     """.trimIndent())
 
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
     helper.invokeAndWait(false) {
-      rInterop.replSourceFile(file, true)
+      rInterop.debugCommandContinue()
       Thread.sleep(300)
       rInterop.debugCommandStop()
     }
