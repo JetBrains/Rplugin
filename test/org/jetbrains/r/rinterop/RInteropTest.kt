@@ -255,4 +255,13 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     TestCase.assertFalse("compiler" in packages)
     TestCase.assertFalse("tools" in packages)
   }
+
+  fun testToplevelHandlers() {
+    rInterop.replExecute("""
+      addTaskCallback(function(...) {
+        result <<- "Toplevel handler was called!"
+      })
+    """.trimIndent()).blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("Toplevel handler was called!", rInterop.executeCode("cat(result)").stdout)
+  }
 }
