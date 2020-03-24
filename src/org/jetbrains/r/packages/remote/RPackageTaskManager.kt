@@ -33,16 +33,16 @@ class RPackageTaskManager(
   private val packagesInProgress: ConcurrentSkipListSet<String>
     get() = project.getUserData(KEY) ?: ConcurrentSkipListSet<String>().also { project.putUserData(KEY, it) }
 
-  fun install(packages: List<RepoPackage>) {
+  fun install(packages: List<RepoPackage>, repoUrls: List<String>) {
     val installPackages = packages.filter { !packagesInProgress.contains(it.name) }
     packagesInProgress.addAll(installPackages.map { it.name })
-    runTask(RBundle.message("package.task.manager.install.title"), installPackages.map { InstallTaskAction(interpreter, project, it) })
+    runTask(RBundle.message("package.task.manager.install.title"), installPackages.map { InstallTaskAction(interpreter, project, it, repoUrls) })
   }
 
-  fun update(packages: List<RepoPackage>) {
+  fun update(packages: List<RepoPackage>, repoUrls: List<String>) {
     val updatePackages = packages.filter { !packagesInProgress.contains(it.name) }
     packagesInProgress.addAll(updatePackages.map { it.name })
-    runTask(RBundle.message("package.task.manager.update.title"), updatePackages.map { UpdateTaskAction(interpreter, project, it) })
+    runTask(RBundle.message("package.task.manager.update.title"), updatePackages.map { UpdateTaskAction(interpreter, project, it, repoUrls) })
   }
 
   fun uninstall(packages: List<RInstalledPackage>) {
@@ -167,7 +167,8 @@ class RPackageTaskManager(
   private class InstallTaskAction(
     private val interpreter: RInterpreter?,
     private val project: Project,
-    private val repoPackage: RepoPackage
+    private val repoPackage: RepoPackage,
+    private val repoUrls: List<String>
   ) : PackagingTaskAction {
 
     override val name = RBundle.message("install.task.action.name", repoPackage.name)
@@ -178,7 +179,7 @@ class RPackageTaskManager(
 
     override fun doAction() {
       try {
-        RepoUtils.installPackage(interpreter, project, repoPackage)
+        RepoUtils.installPackage(interpreter, project, repoPackage, repoUrls)
       }
       finally {
         project.getUserData(KEY)!!.remove(repoPackage.name)
@@ -189,7 +190,8 @@ class RPackageTaskManager(
   private class UpdateTaskAction(
     private val interpreter: RInterpreter?,
     private val project: Project,
-    private val repoPackage: RepoPackage
+    private val repoPackage: RepoPackage,
+    private val repoUrls: List<String>
   ) : PackagingTaskAction {
 
     override val name = RBundle.message("update.task.action.name", repoPackage.name)
@@ -200,7 +202,7 @@ class RPackageTaskManager(
 
     override fun doAction() {
       try {
-        RepoUtils.updatePackage(interpreter, project, repoPackage)
+        RepoUtils.updatePackage(interpreter, project, repoPackage, repoUrls)
       }
       finally {
         project.getUserData(KEY)!!.remove(repoPackage.name)

@@ -50,6 +50,18 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     }
   }
 
+  override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
+    get() = cranMirrorsAsync.thenAsync { cranMirrors ->
+      if (cranMirrors.isNotEmpty()) {
+        enabledRepositoryUrlsAsync.then { enabledRepositoryUrls ->
+          mapRepositoryUrls(enabledRepositoryUrls, cranMirrors)
+        }
+      } else {
+        LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. Cannot map URLs of enabled repos")
+        resolvedPromise(emptyList())
+      }
+    }
+
   override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
     get() = defaultRepositoriesAsync.thenAsync { defaultRepositories ->
       enabledRepositoryUrlsAsync.then { enabledRepositoriesUrls ->
@@ -67,19 +79,18 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     }
 
   override fun loadAllPackagesAsync(): Promise<List<RRepoPackage>> {
-    return cranMirrorsAsync.thenAsync { cranMirrors ->
-      if (cranMirrors.isNotEmpty()) {
+    return mappedEnabledRepositoryUrlsAsync.thenAsync { mappedUrls ->
+      if (mappedUrls.isNotEmpty()) {
         enabledRepositoryUrlsAsync.thenAsync { enabledRepositoryUrls ->
           runAsync {
             // Note: copy of repos URLs list is intentional.
             // Downloading of packages will take a long time so we must ensure that the list will stay unchanged
             val repoUrls = enabledRepositoryUrls.toList()
-            val mappedUrls = mapRepositoryUrls(repoUrls, cranMirrors)
             loadAllPackagesWithCaching(repoUrls, mappedUrls)
           }
         }
       } else {
-        LOGGER.warn("Interpreter has returned an empty list of CRAN mirrors. No packages can be loaded")
+        LOGGER.warn("List of enabled repos is empty. No packages can be loaded")
         resolvedPromise(emptyList())
       }
     }

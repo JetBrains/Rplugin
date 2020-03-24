@@ -11,6 +11,7 @@ import org.jetbrains.concurrency.Promise
 interface RepoProvider {
   var selectedCranMirrorIndex: Int
   val cranMirrorsAsync: Promise<List<RMirror>>
+  val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
   val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
   val name2AvailablePackages: Map<String, RRepoPackage>?
   val allPackagesCachedAsync: Promise<List<RRepoPackage>>

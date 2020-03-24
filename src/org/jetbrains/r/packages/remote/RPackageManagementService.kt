@@ -156,15 +156,17 @@ class RPackageManagementService(private val project: Project,
 
   @Throws(PackageDetailsException::class)
   fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
-    val packageNames = packages.map { it.name }
-    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
-    onOperationStart()
-    packages.map { resolvePackage(it) }.let { them ->
-      if (forceUpgrade) {
-        manager.update(them)
-      }
-      else {
-        manager.install(them)
+    provider.mappedEnabledRepositoryUrlsAsync.onSuccess { repoUrls ->
+      val packageNames = packages.map { it.name }
+      val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
+      onOperationStart()
+      packages.map { resolvePackage(it) }.let { them ->
+        if (forceUpgrade) {
+          manager.update(them, repoUrls)
+        }
+        else {
+          manager.install(them, repoUrls)
+        }
       }
     }
   }

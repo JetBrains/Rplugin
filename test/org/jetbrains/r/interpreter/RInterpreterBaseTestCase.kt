@@ -99,6 +99,9 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     override val name2AvailablePackages: Map<String, RRepoPackage>?
       get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
 
+    override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
+      get() = resolvedPromise(listOf(LOCAL_REPO_URL))
+
     override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
       get() = resolvedPromise(listOf(RDefaultRepository(LOCAL_REPO_URL, false) to true))
 

@@ -188,20 +188,22 @@ object RepoUtils {
     }
   }
 
-  fun installPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage) {
-    updatePackage(rInterpreter, project, repoPackage)
+  fun installPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
+    updatePackage(rInterpreter, project, repoPackage, repoUrls)
   }
 
-  fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage) {
+  fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
     val interpreter = getInterpreter(rInterpreter, project)
     val rInterop = interpreter.interop
-    val repoUrl = repoPackage.repoUrl ?: throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
-    val url = trimRepoUrlSuffix(repoUrl)
+    if (repoUrls.isEmpty()) {
+      throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
+    }
+    val urls = repoUrls.map { trimRepoUrlSuffix(it) }
 
     // Ensure writable library path exists => interpreter won't ask during package installation
     val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter)
 
-    val arguments = getInstallArguments(url, libraryPath)
+    val arguments = getInstallArguments(urls, libraryPath)
     rInterop.repoInstallPackage(repoPackage.name, arguments)
 
     if (isUserDirectoryCreated) {
@@ -263,16 +265,22 @@ object RepoUtils {
     return Pair(path, File(path).mkdirs())
   }
 
-  private fun getInstallArguments(url: String, libraryPath: String): Map<String, String> {
+  private fun getInstallArguments(urls: List<String>, libraryPath: String): Map<String, String> {
     return mutableMapOf<String, String>().also {
       if (ApplicationManager.getApplication().isUnitTestMode) {
         it["type"] = "'source'"
       }
-      it["repos"] = "\"${StringUtil.escapeStringCharacters(url)}\""
+      it["repos"] = getInstallReposArgument(urls)
       it["dependencies"] = "TRUE"
       //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
       it["verbose"] = "FALSE"
       it["lib"] = "\"${StringUtil.escapeStringCharacters(libraryPath)}\""
+    }
+  }
+
+  private fun getInstallReposArgument(urls: List<String>): String {
+    return urls.joinToString(", ", "c(", ")") { url ->
+      "\"${StringUtil.escapeStringCharacters(url)}\""
     }
   }
 

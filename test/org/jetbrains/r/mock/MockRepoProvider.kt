@@ -20,6 +20,9 @@ class MockRepoProvider : RepoProvider {
   override val cranMirrorsAsync: Promise<List<RMirror>>
     get() = throw NotImplementedError()
 
+  override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
+    get() = throw NotImplementedError()
+
   override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
     get() = throw NotImplementedError()
 
