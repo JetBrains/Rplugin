@@ -884,15 +884,18 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     heartbeatTimer.cancel()
     executeAsync(asyncStub::quit, Empty.getDefaultInstance())
     if (isUnitTestMode) {
-      if (!processHandler.isProcessTerminated) {
-        terminationPromise.blockingGet(20000)
-      }
-      channel.shutdownNow()
-      channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
-      if (!processHandler.waitFor(5000)) {
+      try {
+        if (!processHandler.isProcessTerminated) {
+          terminationPromise.blockingGet(20000)
+        }
+        channel.shutdownNow()
+        channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
+        processHandler.waitFor(5000)
+        executor.shutdownNow()
+      } catch (ignored: TimeoutException) {
+      } finally {
         processHandler.destroyProcess()
       }
-      executor.shutdownNow()
     } else {
       ProgressManager.getInstance().run(object : Task.Backgroundable(null, RBundle.message("rinterop.terminating.title"), true) {
         override fun run(indicator: ProgressIndicator) {

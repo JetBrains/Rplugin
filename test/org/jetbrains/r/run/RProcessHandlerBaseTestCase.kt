@@ -17,7 +17,6 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RBooleanLiteral
 import org.jetbrains.r.psi.api.RCallExpression
@@ -25,6 +24,7 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType
+import java.util.concurrent.TimeoutException
 
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected lateinit var rInterop: RInterop
@@ -37,7 +37,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   }
 
   override fun tearDown() {
-    if (!Disposer.isDisposed(rInterop)) {
+    if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
       Disposer.dispose(rInterop)
     }
     super.tearDown()
