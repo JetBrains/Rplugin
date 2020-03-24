@@ -5,6 +5,7 @@
 package org.jetbrains.r.configuration
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
@@ -72,9 +73,12 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     val previousPath = settings.interpreterPath
     if (path != previousPath) {
       settings.interpreterPath = path
-      RConsoleManager.closeMismatchingConsoles(project, path)
       restartInterpreter()
-      RConsoleManager.runConsole(project)
+      RConsoleManager.runConsole(project).onSuccess {
+        runInEdt {
+          RConsoleManager.closeMismatchingConsoles(project, path)
+        }
+      }
     }
     settings.loadWorkspace = loadWorkspaceCheckBox.isSelected
     if (settings.saveWorkspace != saveWorkspaceCheckBox.isSelected) {
