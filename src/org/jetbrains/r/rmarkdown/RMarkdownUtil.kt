@@ -10,8 +10,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.SyntaxTraverser
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
@@ -61,14 +60,15 @@ object RMarkdownUtil {
   }
 
   fun isShiny(file: PsiFile): Boolean = runReadAction {
-    val paragraph = PsiElementProcessor.FindFilteredElement<MarkdownParagraphImpl> { it is MarkdownParagraphImpl }.also {
-      PsiTreeUtil.processElements(file, it)
-    }.foundElement ?: return@runReadAction false
+    val paragraph = findMarkdownParagraph(file) ?: return@runReadAction false
     if (paragraph.text.lines().any { RUNTIME_SHINY_REGEX.matches(it) }) {
       return@runReadAction true
     }
     false
   }
+
+  fun findMarkdownParagraph(file: PsiFile): MarkdownParagraphImpl? =
+    SyntaxTraverser.psiTraverser(file).firstOrNull { it is MarkdownParagraphImpl } as MarkdownParagraphImpl?
 
   val IS_SHINY = Key<Boolean>("org.jetbrains.r.rmarkdown.IsShiny")
   private val RUNTIME_SHINY_REGEX = Regex("\\s*runtime\\s*:\\s*shiny.*")

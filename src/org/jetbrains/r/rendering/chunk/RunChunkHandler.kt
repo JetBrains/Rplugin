@@ -21,20 +21,18 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
+import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.PsiElementProcessor.FindFilteredElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownParagraphImpl
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -167,16 +165,12 @@ object RunChunkHandler {
     val rInterop = console.rInterop
     val parent = element.parent
     val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
-    val codeElement = FindFilteredElement<LeafPsiElement> {
-      (it as? LeafPsiElement)?.elementType == R_FENCE_ELEMENT_TYPE
-    }.apply { PsiTreeUtil.processElements(parent, this) }.foundElement
-      ?: return promise.apply { setError("cannot find code fence") }
+    val codeElement = SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType == R_FENCE_ELEMENT_TYPE }
+                      ?: return promise.apply { setError("cannot find code fence") }
     val project = element.project
     val file = element.containingFile
     val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
-    val paragraph = FindFilteredElement<MarkdownParagraphImpl> { it is MarkdownParagraphImpl }.also {
-      PsiTreeUtil.processElements(file, it)
-    }.foundElement
+    val paragraph = RMarkdownUtil.findMarkdownParagraph(file)
     val rmarkdownParameters = "---${System.lineSeparator()}${paragraph?.text ?: ""}${System.lineSeparator()}---"
     val cacheDirectory = ChunkPathManager.getCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
     FileUtil.delete(File(cacheDirectory))
