@@ -7,6 +7,7 @@ package org.intellij.datavis.r.inlays.components
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -219,14 +220,16 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private fun openEditor(file: VirtualFile) {
-    closeEditor(NO_GRAPHICS)
-    val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
-    adjustImageZoom(editor.zoomModel)
-    removeImageInfoLabelAndActionToolBar(editor)
-    currentImageFile = file
-    currentEditor = editor
-    rootPanel.contentComponent = internalComponent
-    Disposer.register(disposableParent, editor)
+    runInEdt {
+      closeEditor(NO_GRAPHICS)
+      val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
+      adjustImageZoom(editor.zoomModel)
+      removeImageInfoLabelAndActionToolBar(editor)
+      currentImageFile = file
+      currentEditor = editor
+      rootPanel.contentComponent = internalComponent
+      Disposer.register(disposableParent, editor)
+    }
   }
 
   private fun closeEditor(message: String) {
