@@ -6,6 +6,11 @@
 package org.jetbrains.r.packages.remote
 
 import com.intellij.execution.ExecutionException
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.CatchingConsumer
@@ -151,7 +156,16 @@ class RPackageManagementService(private val project: Project,
     installToUser: Boolean
   ) {
     val multiListener = convertToInstallMultiListener(listener)
+    fireBeforeInstallAction(forceUpgrade)
     installPackages(listOf(repoPackage), forceUpgrade, multiListener)
+  }
+
+  private fun fireBeforeInstallAction(forceUpgrade: Boolean) {
+    val actionManager = ActionManagerEx.getInstanceEx()
+    val id = if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID
+    val action: AnAction = actionManager.getAction(id)
+    val e = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, DataManager.getInstance().dataContext)
+    actionManager.fireBeforeActionPerformed(action, DataManager.getInstance().getDataContext(), e)
   }
 
   @Throws(PackageDetailsException::class)
@@ -297,3 +311,6 @@ class RPackageManagementService(private val project: Project,
     }
   }
 }
+
+private const val INSTALL_PACKAGE_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RInstallPackageAction"
+private const val UPGRADE_PACKAGE_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RUpgradePackageAction"

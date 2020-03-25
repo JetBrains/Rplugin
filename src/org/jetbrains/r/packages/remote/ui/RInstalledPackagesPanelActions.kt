@@ -21,3 +21,7 @@ class RNavigateToDocumentationAction : DumbAwareActionAdapter()
 class ROpenLinkAction : DumbAwareActionAdapter()
 
 class RUninstallAction : DumbAwareActionAdapter()
+
+class RInstallPackageAction: DumbAwareActionAdapter()
+
+class RUpdatePackageAction: DumbAwareActionAdapter()

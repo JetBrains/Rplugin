@@ -333,6 +333,10 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.packages.remote.ui.ROpenLinkAction"/>
             <action id="org.jetbrains.r.packages.remote.ui.RUninstallAction"
                     class="org.jetbrains.r.packages.remote.ui.RUninstallAction"/>
+            <action id="org.jetbrains.r.packages.remote.ui.RInstallPackageAction"
+                    class="org.jetbrains.r.packages.remote.ui.RInstallPackageAction"/>
+            <action id="org.jetbrains.r.packages.remote.ui.RUpdatePackageAction"
+                    class="org.jetbrains.r.packages.remote.ui.RUpdatePackageAction"/>
         </group>
     </actions>
 
