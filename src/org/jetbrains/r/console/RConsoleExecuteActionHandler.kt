@@ -40,7 +40,6 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.util.PromiseUtil
-import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -268,6 +267,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       State.PROMPT, State.DEBUG_PROMPT -> {
         if (RConsoleEnterHandler.handleEnterPressed(consoleView.consoleEditor)) {
           val document = consoleView.consoleEditor.document
+          RConsoleEnterHandler.analyzePrompt(consoleView)
+
           ConsoleHistoryController.addToHistory(consoleView, document.text)
           return splitCodeForExecution(consoleView.project, document.text)
             .map { (text, _) ->

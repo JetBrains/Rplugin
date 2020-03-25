@@ -13,22 +13,32 @@ import org.jetbrains.r.rinterop.RCondaUtil
 import java.io.File
 
 enum class RStatisticsEvent(val id: String) {
-  SETUP_INTERPRETER("setup.interpreter")
+  SETUP_INTERPRETER("setup.interpreter"),
+  CALL_METHOD_FROM_CONSOLE("call.method.from.console")
 }
 
 object RStatistics {
-  const val GROUP_ID = "r.interpreters"
+  private const val INTERPRETERS_ID = "r.interpreters"
+  private const val WORKFLOW_ID = "r.workflow"
 
-  fun logEvent(eventId: RStatisticsEvent, dataInitializer: FeatureUsageData.() -> Unit = { }) {
+  private fun logEvent(groupId: String,
+                       eventId: RStatisticsEvent,
+                       dataInitializer: FeatureUsageData.() -> Unit = { }) {
     val data = FeatureUsageData()
     dataInitializer(data)
-    FUCounterUsageLogger.getInstance().logEvent(GROUP_ID, eventId.id, data)
+    FUCounterUsageLogger.getInstance().logEvent(groupId, eventId.id, data)
+  }
+
+  fun logConsoleMethodCall(name: String) {
+    logEvent(WORKFLOW_ID, RStatisticsEvent.CALL_METHOD_FROM_CONSOLE) {
+      addData("name", name)
+    }
   }
 
   fun logSetupInterpreter(interpreter: RInterpreter) {
     val suggestedInterpreters = collectFoundInterpreters(interpreter)
     val isConda = isConda(interpreter.interpreterPath)
-    logEvent(RStatisticsEvent.SETUP_INTERPRETER) {
+    logEvent(INTERPRETERS_ID, RStatisticsEvent.SETUP_INTERPRETER) {
       addData("version", interpreter.version.toCompactString())
       addData("is.conda", isConda)
       addData("suggested", suggestedInterpreters)

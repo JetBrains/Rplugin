@@ -17,7 +17,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.psi.RRecursiveElementVisitor
+import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.isComplete
+import org.jetbrains.r.statistics.RStatistics
 
 object RConsoleEnterHandler {
 
@@ -66,6 +69,22 @@ object RConsoleEnterHandler {
       enterHandler.execute(editor, null, DataManager.getInstance().getDataContext(editor.component))
     }
   }
+
+  private val reportCallsFromConsole = setOf("install.packages", "install_github")
+
+  fun analyzePrompt(consoleView: RConsoleView) {
+    val file = consoleView.file
+    file.accept(object : RRecursiveElementVisitor() {
+      override fun visitCallExpression(call: RCallExpression) {
+        super.visitCallExpression(call)
+        val name = call.expression.text
+        if (reportCallsFromConsole.contains(name)) {
+          RStatistics.logConsoleMethodCall(name)
+        }
+      }
+    })
+  }
+
   private fun checkComplete(el: PsiElement): Boolean {
     val file = el.containingFile
     val parentStringLiteral = PsiTreeUtil.getParentOfType(el, org.jetbrains.r.psi.api.RStringLiteralExpression::class.java, false)
