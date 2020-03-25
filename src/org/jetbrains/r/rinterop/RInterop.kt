@@ -523,8 +523,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeRequest(RPIServiceGrpc.getRepoGetPackageVersionMethod(), StringValue.of(packageName))
   }
 
-  fun repoInstallPackage(packageName: String, arguments: Map<String, String>) {
+  fun repoInstallPackage(packageName: String, fallbackMethod: String?, arguments: Map<String, String>) {
     val request = Service.RepoInstallPackageRequest.newBuilder()
+      .setFallbackMethod(fallbackMethod ?: "")
       .setPackageName(packageName)
       .putAllArguments(arguments)
       .build()

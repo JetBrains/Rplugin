@@ -10,6 +10,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -194,8 +195,9 @@ object RepoUtils {
     // Ensure writable library path exists => interpreter won't ask during package installation
     val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter)
 
+    val fallbackMethod = getFallbackDownloadMethod()
     val arguments = getInstallArguments(urls, libraryPath)
-    rInterop.repoInstallPackage(repoPackage.name, arguments)
+    rInterop.repoInstallPackage(repoPackage.name, fallbackMethod, arguments)
 
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
@@ -254,6 +256,14 @@ object RepoUtils {
   private fun tryCreateUserLibraryPath(interpreter: RInterpreter): Pair<String, Boolean> {
     val path = FileUtil.toSystemIndependentName(interpreter.userLibraryPath)
     return Pair(path, File(path).mkdirs())
+  }
+
+  private fun getFallbackDownloadMethod(): String? {
+    return when {
+      SystemInfo.isLinux -> "wget"
+      SystemInfo.isMac -> "curl"
+      else -> null
+    }
   }
 
   private fun getInstallArguments(urls: List<String>, libraryPath: String): Map<String, String> {
