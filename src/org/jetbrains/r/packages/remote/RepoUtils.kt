@@ -41,20 +41,11 @@ object RepoUtils {
 
   private const val AVAILABLE_PACKAGES_REFRESH_INTERVAL = 7 * 24 * 60 * 60 * 1000L // Update every week
   private const val PACKAGE_DESCRIPTIONS_REFRESH_INTERVAL = AVAILABLE_PACKAGES_REFRESH_INTERVAL
-  private const val CRAN_MIRRORS_REFRESH_INTERVAL = AVAILABLE_PACKAGES_REFRESH_INTERVAL
 
   val PACKAGE_SUMMARY = RHelpersUtil.findFileInRHelpers("R/package_summary.R")
   val DECOMPILER_SCRIPT = RHelpersUtil.findFileInRHelpers("R/extract_symbol.R")
 
   const val CRAN_URL_PLACEHOLDER = "@CRAN@"
-
-  var cachedMirrors: List<RMirror>?
-    get() {
-      return getCachedValues(RMirrorCache.getInstance(), CRAN_MIRRORS_REFRESH_INTERVAL)
-    }
-    set(newMirrors) {
-      RMirrorCache.getInstance().values = newMirrors ?: emptyList()
-    }
 
   fun setPackageDetails(project: Project, repoPackages: List<RRepoPackage>, repoUrls: List<String>) {
     RAvailablePackageCache.getInstance(project).apply {
