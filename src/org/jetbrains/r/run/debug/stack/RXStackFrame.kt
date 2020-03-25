@@ -25,7 +25,6 @@ class RXStackFrame(val functionName: String,
                    val grayAttributes: Boolean,
                    val variableViewSettings: RXVariableViewSettings,
                    private val equalityObject: Any? = null) : XStackFrame(), Disposable {
-  val executor = loader.rInterop.executor
   private val evaluator = RXDebuggerEvaluator(this, this)
   val environment get() = loader.obj
 
@@ -46,34 +45,28 @@ class RXStackFrame(val functionName: String,
   }
 
   override fun computeChildren(node: XCompositeNode) {
-    executor.execute {
-      try {
-        val result = XValueChildrenList()
-        addEnvironmentsGroup(result)
-        addEnvironmentContents(result, loader.variables, this, true)
-        node.addChildren(result, true)
-      }
-      catch (e: RDebuggerException) {
-        node.setErrorMessage(e.message.orEmpty())
-      }
+    loader.variablesAsync.getAsync().then {
+      val result = XValueChildrenList()
+      addEnvironmentsGroup(result)
+      addEnvironmentContents(result, it, this, true)
+      node.addChildren(result, true)
+    }.onError {
+      node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
     }
   }
 
   private fun addEnvironmentsGroup(result: XValueChildrenList) {
     val environments = object : XValueGroup(RBundle.message("variable.view.parent.environments")) {
       override fun computeChildren(node: XCompositeNode) {
-        executor.execute {
-          try {
-            val children = XValueChildrenList()
-            for (env in loader.parentEnvironments) {
-              val environment = RXEnvironment(env.name, env.ref.createVariableLoader(), executor)
-              children.add(environment)
-            }
-            node.addChildren(children, true)
+        loader.parentEnvironments.getAsync().then {
+          val children = XValueChildrenList()
+          for (env in it) {
+            val environment = RXEnvironment(env.name, env.ref.createVariableLoader())
+            children.add(environment)
           }
-          catch (e: RDebuggerException) {
-            node.setErrorMessage(e.message.orEmpty())
-          }
+          node.addChildren(children, true)
+        }.onError {
+          node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
         }
       }
     }
@@ -83,8 +76,7 @@ class RXStackFrame(val functionName: String,
   override fun dispose() {
   }
 
-  private inner class RXEnvironment internal constructor(name: String, private val loader: RVariableLoader,
-                                                         private val executor: ExecutorService)
+  private inner class RXEnvironment internal constructor(name: String, private val loader: RVariableLoader)
     : XNamedValue(name.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")) {
 
     override fun computePresentation(node: XValueNode, place: XValuePlace) {
@@ -92,18 +84,16 @@ class RXStackFrame(val functionName: String,
     }
 
     override fun computeChildren(node: XCompositeNode) {
-      executor.execute {
-        try {
-          val result = XValueChildrenList()
-          addEnvironmentContents(result, loader.variables, this@RXStackFrame)
-          node.addChildren(result, true)
-        } catch (e: RDebuggerException) {
-          node.setErrorMessage(e.message.orEmpty())
-        }
+      loader.variablesAsync.getAsync().then {
+        val result = XValueChildrenList()
+        addEnvironmentContents(result, it, this@RXStackFrame)
+        node.addChildren(result, true)
+      }.onError {
+        node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
       }
-    }
+  }
 
-    override fun calculateEvaluationExpression(): Promise<XExpression> {
+  override fun calculateEvaluationExpression(): Promise<XExpression> {
       return rejectedPromise()
     }
   }

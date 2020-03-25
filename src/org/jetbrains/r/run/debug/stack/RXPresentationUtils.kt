@@ -6,6 +6,7 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.frame.XFullValueEvaluator
@@ -18,8 +19,7 @@ import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import org.jetbrains.r.util.tryRegisterDisposable
 
 private abstract class RXValuePresentationBase(val v: RXVar) : XValuePresentation() {
   abstract fun renderValueImpl(renderer: XValueTextRenderer)
@@ -79,23 +79,15 @@ internal object RXPresentationUtils {
       }
     }, false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.evaluate.link.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
-        val promise = ref.getValueInfoAsync()
-        while (true) {
-          try {
-            promise.get(50, TimeUnit.MILLISECONDS)
-            break
-          } catch (e: TimeoutException) {
-            if (callback.isObsolete) {
-              promise.cancel()
-              return@execute
-            }
+        ref.getValueInfoAsync()
+          .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
+          .then {
+            ref.rInterop.invalidateCaches()
+            RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            callback.evaluated("")
           }
-        }
-        ref.rInterop.invalidateCaches()
-        RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
-        callback.evaluated("")
       }
 
       override fun isShowValuePopup() = false
@@ -105,11 +97,11 @@ internal object RXPresentationUtils {
   private fun setFunctionPresentation(node: XValueNode, rValue: RValueFunction, rxVar: RXVar) {
     node.setPresentation(AllIcons.Nodes.Function, RXValuePresentation(rxVar, rValue.header.firstLine()), false)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.code.link.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
-        ref.functionSourcePosition()?.xSourcePosition.let {
+        ref.functionSourcePositionAsync().then {
           ApplicationManager.getApplication().invokeLater {
-            it?.createNavigatable(ref.rInterop.project)?.navigate(true)
+            it?.xSourcePosition?.createNavigatable(ref.rInterop.project)?.navigate(true)
             callback.evaluated("")
           }
         }
@@ -171,9 +163,9 @@ internal object RXPresentationUtils {
           if (rValue.isComplete) {
             callback.evaluated(rValue.text)
           } else {
-            rxVar.executor.execute {
-              callback.evaluated(rxVar.rVar.ref.evaluateAsText())
-            }
+            rxVar.rVar.ref.evaluateAsTextAsync()
+              .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
+              .then { callback.evaluated(it) }
           }
         }
       })
@@ -183,11 +175,14 @@ internal object RXPresentationUtils {
   private fun setGraphPresentation(node: XValueNode, rValue: RValueGraph, rxVar: RXVar) {
     node.setPresentation(AllIcons.Nodes.PpLib, RXValuePresentation(rxVar, RBundle.message("rx.presentation.utils.graph.text")), true)
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.show.graph.text")) {
-      override fun startEvaluation(callback: XFullValueEvaluationCallback) = rxVar.executor.execute {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
-        ref.evaluateAsText()
-        RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
-        callback.evaluated("")
+        ref.evaluateAsTextAsync()
+          .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
+          .then {
+            RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            callback.evaluated("")
+          }
       }
 
       override fun isShowValuePopup() = false

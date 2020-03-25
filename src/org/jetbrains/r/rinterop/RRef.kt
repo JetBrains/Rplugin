@@ -5,10 +5,11 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.CancellablePromise
+import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.util.tryRegisterDisposable
 
 open class RRef internal constructor(internal val proto: Service.RRef, internal val rInterop: RInterop) {
   fun createVariableLoader(): RVariableLoader {
@@ -24,12 +25,14 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   }
 
   fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
-    return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto).then {
-      if (it.responseCase == Service.CopyToPersistentRefResponse.ResponseCase.PERSISTENTINDEX) {
-        return@then RPersistentRef(it.persistentIndex, rInterop, disposableParent)
+    return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto)
+      .then {
+        if (it.responseCase == Service.CopyToPersistentRefResponse.ResponseCase.PERSISTENTINDEX) {
+          return@then RPersistentRef(it.persistentIndex, rInterop, disposableParent)
+        }
+        throw RDebuggerException(it.error)
       }
-      throw RDebuggerException(it.error)
-    }
+      .also { disposableParent?.tryRegisterDisposable(Disposable { if (it.isPending) it.cancel() }) }
   }
 
   fun getValueInfo(): RValue {
@@ -46,6 +49,10 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsText, proto).value
   }
 
+  fun evaluateAsTextAsync(): CancellablePromise<String> {
+    return rInterop.executeAsync(rInterop.asyncStub::evaluateAsText, proto).then { it.value }
+  }
+
   fun evaluateAsBoolean(): Boolean {
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsBoolean, proto).value
   }
@@ -59,6 +66,10 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   }
 
   fun functionSourcePosition(): RSourcePosition? {
+    return functionSourcePositionAsync().getWithCheckCanceled()
+  }
+
+  fun functionSourcePositionAsync(): CancellablePromise<RSourcePosition?> {
     return rInterop.sourceFileManager.getFunctionPosition(this)
   }
 
@@ -92,7 +103,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
 class RPersistentRef internal constructor(index: Int, rInterop: RInterop, disposableParent: Disposable? = null):
   RRef(Service.RRef.newBuilder().setPersistentIndex(index).build(), rInterop), Disposable {
   init {
-    disposableParent?.let { Disposer.register(it, this) }
+    disposableParent?.tryRegisterDisposable(this)
   }
 
   override fun dispose() {

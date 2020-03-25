@@ -4,8 +4,7 @@
 
 package org.jetbrains.r.util
 
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.*
 
 object PromiseUtil {
   fun runChain(tasks: List<() -> Promise<Boolean>>): Promise<Boolean> {
@@ -22,4 +21,16 @@ object PromiseUtil {
     return promise
   }
 
+}
+
+fun <T, R> CancellablePromise<T>.thenCancellable(f: (T) -> R): CancellablePromise<R> {
+  val result = AsyncPromise<R>()
+  this.onSuccess {
+    try {
+      result.setResult(f(it))
+    } catch (e: Throwable) {
+      result.setError(e)
+    }
+  }.onError { result.setError(it) }
+  return result.onError { if (this.isPending) this.cancel() }
 }

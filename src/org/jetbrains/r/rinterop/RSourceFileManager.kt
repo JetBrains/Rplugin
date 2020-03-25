@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.*
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.jetbrains.rd.util.AtomicInteger
 import com.jetbrains.rd.util.concurrentMapOf
+import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
 import java.util.*
@@ -47,11 +48,13 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
     return file
   }
 
-  fun getFunctionPosition(rRef: RRef): RSourcePosition? {
-    return cachedFunctionPositions.getOrPut(rRef.proto) {
-      val position = rInterop.execute(rInterop.stub::getFunctionSourcePosition, rRef.proto)
-      rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }.let { Optional.ofNullable(it) }
-    }.orElse(null)
+  fun getFunctionPosition(rRef: RRef): CancellablePromise<RSourcePosition?> {
+    val map = cachedFunctionPositions
+    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).then { position ->
+      map.getOrPut(rRef.proto) {
+        rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }.let { Optional.ofNullable(it) }
+      }.orElse(null)
+    }
   }
 
   override fun dispose() {

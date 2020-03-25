@@ -6,10 +6,8 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.util.Disposer
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
-import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RVar
@@ -17,11 +15,6 @@ import org.jetbrains.r.rinterop.RVar
 class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var parentDisposable: Disposable? = null) : XDebuggerEvaluator() {
   override fun evaluate(expression: String, callback: XEvaluationCallback, expressionPosition: XSourcePosition?) {
     val resultPromise = RRef.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable)
-    parentDisposable?.let {
-      Disposer.register(it, Disposable {
-        if (resultPromise.isPending) resultPromise.cancel()
-      })
-    }
     resultPromise.onSuccess {
       callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), stackFrame).also { setObjectSizes(listOf(it), stackFrame) })
     }.onError {

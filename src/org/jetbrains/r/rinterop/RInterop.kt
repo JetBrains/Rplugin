@@ -128,6 +128,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
           rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, get())
         } catch (e: ExecutionException) {
           reportIfCrash(e.cause)
+        } catch (ignored: CancellationException) {
         }
       }, executor)
     }
@@ -969,6 +970,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         }
         return cached
       }
+
+    fun getAsync(): Promise<T> {
+      value
+      return currentPromise ?: resolvedPromise(cached)
+    }
 
     fun getWithCheckCancel(): T {
       val result = value

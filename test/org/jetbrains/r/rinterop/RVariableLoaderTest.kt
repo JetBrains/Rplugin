@@ -56,7 +56,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       a = list(aa = 11, bb = 22, cc = 33, dd = 44)
     """.trimIndent())
     val (vars, total) = rInterop.globalEnvLoader.variables.find { it.name == "a" }!!
-      .ref.createVariableLoader().loadVariablesPartially(1, 3)
+      .ref.createVariableLoader().loadVariablesPartially(1, 3).blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals(4, total)
     TestCase.assertEquals(listOf("bb", "cc"), vars.map { it.name })
     TestCase.assertEquals(listOf("[1] 22", "[1] 33"), vars.map { (it.value as RValueSimple).text })

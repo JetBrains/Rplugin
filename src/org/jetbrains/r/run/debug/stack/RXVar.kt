@@ -20,7 +20,6 @@ import kotlin.math.min
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
   private var offset = 0L
   private val loader by lazy { rVar.ref.createVariableLoader() }
-  val executor get() = stackFrame.executor
 
   var objectSize: Long? = null
 
@@ -29,11 +28,10 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
   }
 
   override fun computeChildren(node: XCompositeNode) {
-    executor.execute {
+    val result = XValueChildrenList()
+    val endOffset = offset + MAX_ITEMS
+    loader.loadVariablesPartially(offset, endOffset).then { (vars, totalCount) ->
       try {
-        val result = XValueChildrenList()
-        val endOffset = offset + MAX_ITEMS
-        val (vars, totalCount) = loader.loadVariablesPartially(offset, endOffset)
         if (rVar.value is RValueEnvironment) {
           addEnvironmentContents(result, vars, stackFrame)
         } else {
@@ -47,7 +45,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
       } catch (e: RDebuggerException) {
         node.setErrorMessage(e.message.orEmpty())
       }
-    }
+    }.onError { node.setErrorMessage(it.message.orEmpty()) }
   }
 
   override fun getModifier(): XValueModifier? {

@@ -4,31 +4,39 @@
 
 package org.jetbrains.r.rinterop
 
+import org.jetbrains.concurrency.CancellablePromise
+import org.jetbrains.r.util.thenCancellable
+
 class RVariableLoader internal constructor(val obj: RRef) {
   val rInterop = obj.rInterop
 
-  val parentEnvironments: List<REnvironmentRef> by rInterop.Cached {
-    rInterop.executeWithCheckCancel(rInterop.asyncStub::loaderGetParentEnvs, obj.proto).envsList.mapIndexed { index, it ->
-      REnvironmentRef(it.name, RRef(ProtoUtil.parentEnvRefProto(obj.proto, index + 1), rInterop))
+  val parentEnvironments = rInterop.AsyncCached(emptyList()) {
+    rInterop.executeAsync(rInterop.asyncStub::loaderGetParentEnvs, obj.proto).then { response ->
+      response.envsList.mapIndexed { index, it ->
+        REnvironmentRef(it.name, RRef(ProtoUtil.parentEnvRefProto(obj.proto, index + 1), rInterop))
+      }
     }
   }
 
-  val variables: List<RVar> by rInterop.Cached {
-    loadVariablesPartially(0, -1).vars
+  val variablesAsync = rInterop.AsyncCached<List<RVar>>(emptyList()) {
+    loadVariablesPartially(0, -1).thenCancellable { it.vars }
   }
+  val variables get() = variablesAsync.getWithCheckCancel()
 
   data class VariablesPart(val vars: List<RVar>, val totalCount: Long)
 
-  fun loadVariablesPartially(start: Long, end: Long): VariablesPart {
-    val response = rInterop.executeWithCheckCancel(rInterop.asyncStub::loaderGetVariables,
-                                                   ProtoUtil.getVariablesRequestProto(obj.proto, start, end))
-    val vars = if (response.isEnv) {
-      response.varsList.map { RVar(it.name, obj.getMemberRef(it.name), ProtoUtil.rValueFromProto(it.value)) }
-    } else {
-      response.varsList.mapIndexed { index, it ->
-        RVar(it.name, obj.getListElementRef(start + index.toLong()), ProtoUtil.rValueFromProto(it.value))
+  fun loadVariablesPartially(start: Long, end: Long): CancellablePromise<VariablesPart> {
+    return rInterop.executeAsync(rInterop.asyncStub::loaderGetVariables,
+                                 ProtoUtil.getVariablesRequestProto(obj.proto, start, end))
+      .then(rInterop.executor) { response ->
+        val vars = if (response.isEnv) {
+          response.varsList.map { RVar(it.name, obj.getMemberRef(it.name), ProtoUtil.rValueFromProto(it.value)) }
+        } else {
+          response.varsList.mapIndexed { index, it ->
+            RVar(it.name, obj.getListElementRef(start + index.toLong()), ProtoUtil.rValueFromProto(it.value))
+          }
+        }
+        VariablesPart(vars, response.totalCount)
       }
-    }
-    return VariablesPart(vars, response.totalCount)
   }
 }
