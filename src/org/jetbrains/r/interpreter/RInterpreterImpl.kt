@@ -140,7 +140,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private fun <E>makeExpiring(values: List<E>): ExpiringList<E> {
     val usedUpdateEpoch = updateEpoch.get()
     return ExpiringList(values) {
-      usedUpdateEpoch < updateEpoch.get()
+      usedUpdateEpoch < updateEpoch.get() || interpreterPath != RInterpreterManager.getInstance(project).interpreterPath
     }
   }
 
