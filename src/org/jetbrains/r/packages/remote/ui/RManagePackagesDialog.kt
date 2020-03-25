@@ -22,6 +22,7 @@ class RManagePackagesDialog(
 ) : ManagePackagesDialog(project, packageManagementService, packageListener) {
 
   init {
+    isModal = false
     createCenterPanel()?.let { panel ->
       traverseComponents(panel, panel.components)
     }
