@@ -25,6 +25,7 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
@@ -77,7 +78,7 @@ object RInterpreterUtil {
     fun parseVersion(line: String?): Version? {
       return if (line?.startsWith("R version") == true) {
         val items = line.split(' ')
-        Version.parseVersion(items[2])
+        items.getOrNull(2)?.let { Version.parseVersion(it) }
       } else {
         null
       }
@@ -89,18 +90,23 @@ object RInterpreterUtil {
         parseVersion(line)
       }
     }
-    if (SystemInfo.isWindows) {
+    val version = if (SystemInfo.isWindows) {
       val result = runRInterpreter(interpreterPath, listOf(interpreterPath, "--version"), null)
-      return parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
-    }
-    // that's fine just to run R normally on Unix because it's a script
-    val commandLine = GeneralCommandLine().withExePath(interpreterPath).withParameters("--version")
-    val process = commandLine.createProcess()
-    return if (process.waitFor(RWRAPPER_INITIALIZED_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)) {
-      checkOutput(process.inputStream) ?: checkOutput(process.errorStream)
+      parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
     } else {
-      null
+      // that's fine just to run R normally on Unix because it's a script
+      val commandLine = GeneralCommandLine().withExePath(interpreterPath).withParameters("--version")
+      val process = commandLine.createProcess()
+      if (process.waitFor(RWRAPPER_INITIALIZED_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)) {
+        checkOutput(process.inputStream) ?: checkOutput(process.errorStream)
+      } else {
+        null
+      }
     }
+    if (version != null) return version
+    val script = RHelpersUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
+    val output = runHelper(interpreterPath, script, null, emptyList())
+    return parseVersion(output.lineSequence().firstOrNull())
   }
 
   fun isSupportedVersion(version: Version?): Boolean {

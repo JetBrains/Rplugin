@@ -235,7 +235,7 @@ stderr: ${stderr}
   }
 
   private fun getRWrapperByRVersion(version: Version, relativePath: String): String {
-    val wrapperVersion = if ((version.`is`(3, 4) || version.`is`(3, 5)) && !SystemInfo.isMac) {
+    val wrapperVersion = if (version.isOrGreaterThan(3, 4) && !SystemInfo.isMac) {
       R_3_6
     } else {
       version
