@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import com.intellij.xml.breadcrumbs.BreadcrumbsXmlWrapper
 import com.intellij.xml.breadcrumbs.CrumbPresentation
-import org.jetbrains.r.actions.REditorActionUtil
+import org.jetbrains.r.actions.RActionUtil
 
 class RPsiCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation: CrumbPresentation?) :
   CommonPsiCrumb(element, provider, presentation) {
@@ -18,7 +18,7 @@ class RPsiCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation
 
   override fun navigate(editor: Editor, withSelection: Boolean) {
     unmuteCaretChangeUpdate(editor)
-    REditorActionUtil.executeActionById("FileStructurePopup", file.project)
+    RActionUtil.executeActionById("FileStructurePopup", file.project)
   }
 
   private fun unmuteCaretChangeUpdate(editor: Editor) {

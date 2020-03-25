@@ -6,11 +6,6 @@
 package org.jetbrains.r.packages.remote
 
 import com.intellij.execution.ExecutionException
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.CatchingConsumer
@@ -21,6 +16,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
@@ -156,17 +152,10 @@ class RPackageManagementService(private val project: Project,
     installToUser: Boolean
   ) {
     val multiListener = convertToInstallMultiListener(listener)
-    fireBeforeInstallAction(forceUpgrade)
+    RActionUtil.fireBeforeActionById(if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID)
     installPackages(listOf(repoPackage), forceUpgrade, multiListener)
   }
 
-  private fun fireBeforeInstallAction(forceUpgrade: Boolean) {
-    val actionManager = ActionManagerEx.getInstanceEx()
-    val id = if (forceUpgrade) UPGRADE_PACKAGE_ACTION_ID else INSTALL_PACKAGE_ACTION_ID
-    val action: AnAction = actionManager.getAction(id)
-    val e = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, DataManager.getInstance().dataContext)
-    actionManager.fireBeforeActionPerformed(action, DataManager.getInstance().getDataContext(), e)
-  }
 
   @Throws(PackageDetailsException::class)
   fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
