@@ -247,6 +247,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   private fun addDocumentListener() {
     editor.document.addDocumentListener(object : DocumentListener {
       override fun documentChanged(event: DocumentEvent) {
+        if (Disposer.isDisposed(project)) return
         if (!toolbarUpdateScheduled) {
           toolbarUpdateScheduled = true
           PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
