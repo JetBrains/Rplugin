@@ -7,7 +7,8 @@ package org.jetbrains.r.rinterop
 object ProtoUtil {
   fun rValueFromProto(proto: Service.ValueInfo): RValue {
     return when {
-      proto.hasValue() -> RValueSimple(proto.clsList, proto.value.textValue.trimEnd(), proto.value.isComplete, proto.value.isVector)
+      proto.hasValue() -> RValueSimple(proto.clsList, proto.value.textValue.trimEnd(),
+                                       proto.value.isComplete, proto.value.isVector, proto.value.isS4)
       proto.hasList() -> RValueList(proto.clsList, proto.list.length)
       proto.hasDataFrame() -> RValueDataFrame(proto.clsList, proto.dataFrame.rows, proto.dataFrame.cols)
       proto.hasUnevaluated() -> RValueUnevaluated(proto.clsList, proto.unevaluated.code.trimEnd())
@@ -25,6 +26,10 @@ object ProtoUtil {
 
   fun listElementRefProto(list: Service.RRef, index: Long): Service.RRef {
     return Service.RRef.newBuilder().setListElement(Service.RRef.ListElement.newBuilder().setList(list).setIndex(index)).build()
+  }
+
+  fun attributesRefProto(x: Service.RRef): Service.RRef {
+    return Service.RRef.newBuilder().setAttributes(x).build()
   }
 
   fun parentEnvRefProto(env: Service.RRef, index: Int): Service.RRef {
@@ -50,6 +55,7 @@ object ProtoUtil {
   fun canSetValue(ref: Service.RRef): Boolean = when (ref.refCase) {
     Service.RRef.RefCase.MEMBER -> true
     Service.RRef.RefCase.LISTELEMENT -> canSetValue(ref.listElement.list)
+    Service.RRef.RefCase.ATTRIBUTES -> canSetValue(ref.attributes)
     else -> false
   }
 }

@@ -110,4 +110,18 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       (RRef.expressionRef("show", rInterop).getValueInfo() as RValueFunction).header
     ))
   }
+
+  fun testAttributes() {
+    rInterop.executeCode("""
+      xyz <- 55
+      attr(xyz, "A1") <- 10
+      attr(xyz, "A2") <- 20
+    """.trimIndent())
+    val attributes = RRef.expressionRef("xyz", rInterop).getAttributesRef()
+      .createVariableLoader().variables
+      .map { it.name to it.ref }
+      .toMap()
+    TestCase.assertEquals("[1] 10", attributes["A1"]?.evaluateAsText()?.trim())
+    TestCase.assertEquals("[1] 20", attributes["A2"]?.evaluateAsText()?.trim())
+  }
 }

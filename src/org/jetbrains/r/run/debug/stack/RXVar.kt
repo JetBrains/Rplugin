@@ -19,7 +19,13 @@ import kotlin.math.min
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
   private var offset = 0L
-  private val loader by lazy { rVar.ref.createVariableLoader() }
+  private val loader by lazy {
+    if ((rVar.value as? RValueSimple)?.isS4 == true) {
+      rVar.ref.getAttributesRef().createVariableLoader()
+    } else {
+      rVar.ref.createVariableLoader()
+    }
+  }
 
   var objectSize: Long? = null
 

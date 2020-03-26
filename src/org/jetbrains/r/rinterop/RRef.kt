@@ -24,6 +24,10 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return RRef(ProtoUtil.listElementRefProto(proto, index), rInterop)
   }
 
+  fun getAttributesRef(): RRef {
+    return RRef(ProtoUtil.attributesRefProto(proto), rInterop)
+  }
+
   fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
     return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto)
       .then {

@@ -14,7 +14,8 @@ data class RVar(val name: String, val ref: RRef, val value: RValue) {
 
 sealed class RValue(val cls: List<String>)
 class RValueUnevaluated(cls: List<String>, val code: String): RValue(cls)
-class RValueSimple(cls: List<String>, val text: String, val isComplete: Boolean = true, val isVector: Boolean = false): RValue(cls)
+class RValueSimple(cls: List<String>, val text: String, val isComplete: Boolean = true,
+                   val isVector: Boolean = false, val isS4: Boolean = false): RValue(cls)
 class RValueDataFrame(cls: List<String>, val rows: Int, val cols: Int): RValue(cls)
 class RValueList(cls: List<String>, val length: Long) : RValue(cls)
 class RValueFunction(cls: List<String>, val header: String): RValue(cls)

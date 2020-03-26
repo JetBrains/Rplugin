@@ -22,6 +22,8 @@ import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import org.jetbrains.r.util.tryRegisterDisposable
 
 private abstract class RXValuePresentationBase(val v: RXVar) : XValuePresentation() {
+  open val forceShowClasses: Boolean = false
+
   abstract fun renderValueImpl(renderer: XValueTextRenderer)
 
   override fun renderValue(renderer: XValueTextRenderer) {
@@ -32,7 +34,7 @@ private abstract class RXValuePresentationBase(val v: RXVar) : XValuePresentatio
   }
 
   override fun getType(): String? {
-    return if (v.stackFrame.variableViewSettings.showClasses && v.rVar.value.cls.isNotEmpty()) {
+    return if ((forceShowClasses || v.stackFrame.variableViewSettings.showClasses) && v.rVar.value.cls.isNotEmpty()) {
       v.rVar.value.cls.joinToString(", ")
     } else {
       null
@@ -148,15 +150,14 @@ internal object RXPresentationUtils {
 
   private fun setVarPresentation(node: XValueNode, rValue: RValueSimple, rxVar: RXVar) {
     var line = rValue.text.firstLine()
-    if (!rValue.isComplete && rValue.text == line) {
-      line += " ..."
-    }
     if (line.startsWith("[1]")) {
       line = line.drop(3).trimStart()
     }
     node.setPresentation(AllIcons.Debugger.Db_primitive, object : RXValuePresentation(rxVar, line) {
+      override val forceShowClasses = rValue.isS4
+
       override fun getSeparator() = if (line.isNotEmpty() || type != null) super.getSeparator() else ""
-    }, rValue.isVector)
+    }, rValue.isVector || rValue.isS4)
     if (rValue.text.contains('\n') || !rValue.isComplete) {
       node.setFullValueEvaluator(object : XFullValueEvaluator() {
         override fun startEvaluation(callback: XFullValueEvaluationCallback) {
