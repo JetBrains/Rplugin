@@ -13,5 +13,7 @@
       <implementation-class>org.intellij.datavis.r.inlays.InlaysManager</implementation-class>
     </component>
   </project-components>
-
+  <extensions defaultExtensionNs="com.intellij">
+    <notificationWhitelist groupIds="InlayTable;Notebook Table"/>
+  </extensions>
 </idea-plugin>
