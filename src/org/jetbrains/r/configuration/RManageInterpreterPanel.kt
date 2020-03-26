@@ -116,7 +116,13 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
 
   private fun refreshComboBox() {
     val interpreters = listOf(null, RInterpreterListCellRenderer.SEPARATOR) + currentInterpreters
-    comboBox.model = CollectionComboBoxModel(interpreters, currentSelection)
+    comboBox.model = object : CollectionComboBoxModel<RInterpreterInfo>(interpreters, currentSelection) {
+      override fun setSelectedItem(item: Any?) {
+        if (item !== RInterpreterListCellRenderer.SEPARATOR) {
+          super.setSelectedItem(item)
+        }
+      }
+    }
   }
 
   fun isModified(): Boolean {
