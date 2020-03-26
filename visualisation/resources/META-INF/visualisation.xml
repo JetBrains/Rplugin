@@ -49,4 +49,8 @@
     </group>
   </actions>
 
+  <extensions defaultExtensionNs="com.intellij">
+    <notificationWhitelist groupIds="InlayTable;Notebook Table"/>
+  </extensions>
+
 </idea-plugin>
