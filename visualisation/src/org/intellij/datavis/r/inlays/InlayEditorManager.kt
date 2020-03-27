@@ -234,7 +234,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           removeInlay(it.value, cleanup = false)
         }
         inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
-          if (it !in inlays.keys) { updateCell(it) }
+          updateCell(it)
         }
         regions.clear()
         updateToolbarPositions()
