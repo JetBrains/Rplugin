@@ -19,6 +19,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownFileType
 internal object RLineBreakpointUtils {
   fun canPutAt(project: Project, file: VirtualFile, line: Int): Boolean {
     return (file.fileType == RFileType || file.fileType == RMarkdownFileType) &&
+           !RSourceFileManager.isInvalid(file.url) &&
            isStoppable(project, file, line, !RSourceFileManager.isTemporary(file))
   }
 

@@ -6,15 +6,20 @@ package org.jetbrains.r.rinterop
 
 import com.google.protobuf.StringValue
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.*
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
+import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.XDebuggerUtil
 import com.jetbrains.rd.util.AtomicInteger
 import com.jetbrains.rd.util.concurrentMapOf
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
+import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.util.*
 
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
@@ -58,8 +63,16 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   override fun dispose() {
-    for (file in files.keys) {
-      filesystem.removeFile(file)
+    val temporaryFileUrls = files.values.filter { isTemporary(it) }.map { it.url }.toSet()
+    files.values.forEach { filesystem.removeFile(it.path) }
+    runInEdt {
+      runWriteAction {
+        val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
+        val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+        breakpointManager.getBreakpoints(breakpointType)
+          .filter { it.fileUrl in temporaryFileUrls }
+          .forEach { breakpointManager.removeBreakpoint(it) }
+      }
     }
   }
 
