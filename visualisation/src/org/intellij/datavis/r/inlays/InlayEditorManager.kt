@@ -190,7 +190,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     val endLine = editor.xyToLogicalPosition(Point(0, viewportRange.last + 1)).line
     val startOffset = editor.document.getLineStartOffset(max(startLine - VIEWPORT_INLAY_RANGE, 0))
     val endOffset = editor.document.getLineStartOffset(max(min(endLine + VIEWPORT_INLAY_RANGE, editor.document.lineCount - 1), 0))
-    return startOffset until endOffset
+    return startOffset..endOffset
   }
 
   private fun updateInlayForViewport(element: PsiElement, viewportRange: IntRange, expansionRange: IntRange) {
