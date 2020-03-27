@@ -204,7 +204,13 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testWarning() {
-    TestCase.assertTrue("my message" in rInterop.executeCode("warning('my message')").stderr)
+    TestCase.assertTrue("Warning: msg1" in rInterop.executeCode("warning('msg1')").stderr)
+    TestCase.assertTrue("Warning in foobar() : msg2" in rInterop.executeCode("""
+      foobar <- function() {
+        warning("msg2")
+      }
+      foobar()
+    """.trimIndent()).stderr)
   }
 
   fun testSetValue() {
