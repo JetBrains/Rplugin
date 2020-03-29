@@ -39,6 +39,40 @@ class MissingPackageInspectionTest : org.jetbrains.r.inspections.RInspectionTest
     doExprTest("<error descr=\"'foobar' is not yet installed\">foobar</error>:::myFun()")
   }
 
+  fun testNamedArgument() {
+    doExprTest("""
+      library(quietly = T, package = dplyr)
+      library(quietly = T, package = <error descr="'foobar' is not yet installed">foobar</error>)
+    """.trimIndent())
+  }
+
+  fun testCharacterOnly() {
+    doExprTest("""
+       pkg <- "myname"
+       library(pkg, character.only = TRUE)
+       library(pkg, character.only = T)
+    """.trimIndent())
+
+    doExprTest("""
+       pkg <- "myname"
+       library(<error descr="'pkg' is not yet installed">pkg</error>, character.only = FALSE)
+       library(<error descr="'pkg' is not yet installed">pkg</error>, character.only = F)
+    """.trimIndent())
+
+    doExprTest("""
+       pkg <- "myname"
+       library(<error descr="'pkg' is not yet installed">"pkg"</error>, character.only = FALSE)
+       library(<error descr="'pkg' is not yet installed">"pkg"</error>, character.only = TRUE)
+    """.trimIndent())
+
+    doExprTest("""
+       pkg <- "myname"
+       character_only = T
+       library(pkg, character.only = character_only)
+       library(pkg, character.only = foobar())
+    """.trimIndent())
+  }
+
   override val inspection: Class<out RInspection>
     get() = MissingPackageInspection::class.java
 }

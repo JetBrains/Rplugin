@@ -12,6 +12,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.intentions.InstallAllFileLibraryFix
 import org.jetbrains.r.intentions.InstallLibraryFix
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -37,20 +38,24 @@ class MissingPackageInspection : RInspection() {
 
     file.accept(object : RRecursiveElementVisitor() {
       override fun visitNamespaceAccessExpression(o: RNamespaceAccessExpression) {
-        checkPackage(o, problemsHolder)
+        checkPackage(o, false, problemsHolder)
       }
 
       override fun visitCallExpression(psiElement: RCallExpression) {
-        if (RPsiUtil.isImportStatement(psiElement) && psiElement.argumentList.expressionList.isNotEmpty()) {
-          val packageExpression = psiElement.argumentList.expressionList[0]
-          checkPackage(packageExpression, problemsHolder)
+        if (RPsiUtil.isImportStatement(psiElement)) {
+          val info = RParameterInfoUtil.getArgumentInfo(psiElement)
+          val packageArg = info?.getArgumentPassedToParameter("package")
+          val characterOnlyArg = info?.getArgumentPassedToParameter("character.only")
+          if (packageArg != null) {
+            checkPackage(packageArg, isCharacterOnly(characterOnlyArg), problemsHolder)
+          }
         }
         psiElement.acceptChildren(this)
       }
     })
   }
 
-  private fun checkPackage(packageExpression: RExpression, problemsHolder: ProblemsHolder) {
+  private fun checkPackage(packageExpression: RExpression, isCharacterOnly: Boolean, problemsHolder: ProblemsHolder) {
     // support quoted and unquoted method names here
     val packageName: String?
     val elementForReporting: PsiElement
@@ -60,10 +65,12 @@ class MissingPackageInspection : RInspection() {
         elementForReporting = packageExpression
       }
       is RIdentifierExpression -> {
+        if (isCharacterOnly) return
         packageName = packageExpression.getText()
         elementForReporting = packageExpression
       }
       is RNamespaceAccessExpression -> {
+        if (isCharacterOnly) return
         packageName = packageExpression.namespaceName
         elementForReporting = packageExpression.namespace
       }
@@ -81,6 +88,28 @@ class MissingPackageInspection : RInspection() {
       val descriptionTemplate = RBundle.message("inspection.missingPackage.description", packageName)
       problemsHolder.registerProblem(elementForReporting, descriptionTemplate,
                                      InstallLibraryFix(packageName), InstallAllFileLibraryFix())
+    }
+  }
+
+  private fun isCharacterOnly(characterOnlyArg: RExpression?): Boolean {
+    if (characterOnlyArg == null) return false // False by default
+    interpretAsBoolean(characterOnlyArg)?.let { return it }
+    if (characterOnlyArg is RIdentifierExpression || characterOnlyArg is RNamespaceAccessExpression) {
+      val value = (characterOnlyArg.reference?.multiResolve(false)?.firstOrNull()?.element as? RAssignmentStatement)?.assignedValue
+      value?.let { interpretAsBoolean(it)?.let { return it } }
+    }
+    return true // If the calculation failed, it is better to assume that true
+  }
+
+  private fun interpretAsBoolean(expression: RExpression): Boolean? {
+    return when (expression) {
+      is RBooleanLiteral -> expression.isTrue
+      is RIdentifierExpression -> when (expression.text) {
+        "T" -> true
+        "F" -> false
+        else -> null
+      }
+      else -> null
     }
   }
 
