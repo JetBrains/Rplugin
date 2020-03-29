@@ -17,16 +17,20 @@ internal fun buildControlFlow(controlFlowHolder: RControlFlowHolder): RControlFl
 
 private class RControlFlowBuilder: RRecursiveElementVisitor() {
   val builder = ControlFlowBuilder()
+  var isInsideCall = false
 
   override fun visitPsiElement(element: RPsiElement) {
     element.acceptChildren(this)
   }
 
   override fun visitArgumentList(argumentList: RArgumentList) {
+    val wasInsideCall = isInsideCall
+    isInsideCall = true
     argumentList.expressionList.forEach {
       it.accept(this)
     }
     builder.startNode(argumentList)
+    isInsideCall = wasInsideCall
   }
 
   override fun visitAssignmentStatement(rAssignmentStatement: RAssignmentStatement) {
@@ -63,7 +67,9 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
   }
 
   override fun visitCallExpression(o: RCallExpression) {
-    if (RPsiUtil.isReturn(o)) {
+    // If return inside call expression - skip it,
+    // cause we don't actually know when it will be calculated and whether it will be
+    if (RPsiUtil.isReturn(o) && !isInsideCall) {
       o.argumentList.accept(this)
       builder.startNode(o)
       builder.addPendingEdge(null, builder.prevInstruction)
