@@ -26,12 +26,23 @@ private val NON_INDENT_PARTS = TokenSet.create(
   RElementTypes.R_ELSE
 )
 
+private val SPACE_TOKENS = TokenSet.create(
+  TokenType.WHITE_SPACE,
+  RElementTypes.R_NL,
+  RParserDefinition.FORMFEED,
+  RParserDefinition.SPACE,
+  RParserDefinition.TAB,
+  RParserDefinition.END_OF_LINE_COMMENT
+)
+
 class RFormattingContext(private val settings: CodeStyleSettings) {
   private val spacingBuilder = createSpacingBuilder(settings)
 
   private val childIndentAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment() }
+
   /** Use argument list as anchor */
   private val assignInParametersAlignments: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
+
   /** Use first element in row as anchor */
   private val alignmentByAnchor: MutableMap<ASTNode, Alignment> = FactoryMap.create { Alignment.createAlignment(true) }
 
@@ -40,22 +51,27 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     val custom = settings.getCustomSettings(RCodeStyleSettings::class.java)
 
     val nodeParent = node.treeParent ?: return null
-    if ((common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS &&
-         nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
-         (node.firstChildNode != null || isCommentAtEmptyLine(node))) ||
-        (common.ALIGN_MULTILINE_PARAMETERS &&
-         nodeParent.elementType == RElementTypes.R_PARAMETER_LIST &&
-         (node.elementType == RElementTypes.R_PARAMETER || node.elementType == RElementTypes.R_COMMA || isCommentAtEmptyLine(node)))) {
+
+    val alignParameters = common.ALIGN_MULTILINE_PARAMETERS && nodeParent.elementType == RElementTypes.R_PARAMETER_LIST &&
+                          (node.elementType == RElementTypes.R_PARAMETER ||
+                           node.elementType == RElementTypes.R_COMMA ||
+                           isCommentAtEmptyLine(node))
+
+    val alignArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
+                         (node.firstChildNode != null || isCommentAtEmptyLine(node))
+
+    if (alignArguments || alignParameters) {
       return childIndentAlignments[nodeParent]
     }
 
-    if (custom.ALIGN_COMMENTS && node.elementType == RParserDefinition.END_OF_LINE_COMMENT) {
-      if (nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
-          (findPrevNonSpaceNode(node)?.elementType == RElementTypes.R_COMMA || findNextMeaningSibling(
-            node)?.elementType == RElementTypes.R_RPAR)) {
-        findFirstCommentAfterComma(nodeParent.firstChildNode)?.let {
-          return alignmentByAnchor[it]
-        }
+    if (custom.ALIGN_COMMENTS &&
+        node.elementType == RParserDefinition.END_OF_LINE_COMMENT &&
+        nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
+        (findPrevNonSpaceNode(node)?.elementType == RElementTypes.R_COMMA ||
+         findNextMeaningSibling(node)?.elementType == RElementTypes.R_RPAR)
+    ) {
+      findFirstCommentAfterComma(nodeParent.firstChildNode)?.let {
+        return alignmentByAnchor[it]
       }
     }
 
@@ -66,8 +82,8 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
       if (nodeGrandParent.elementType == RElementTypes.R_ARGUMENT_LIST) {
         return assignInParametersAlignments[nodeGrandParent]
       }
-      if (!isFunctionDeclarationNode(nodeParent) &&
-          nodeGrandParent.elementType == RElementTypes.R_BLOCK_EXPRESSION || nodeGrandParent.elementType == RParserDefinition.FILE) {
+      if (!isFunctionDeclarationNode(nodeParent) && nodeGrandParent.elementType == RElementTypes.R_BLOCK_EXPRESSION ||
+          nodeGrandParent.elementType == RParserDefinition.FILE) {
         val anchor = findFirstAssignmentInTable(nodeParent)
         return alignmentByAnchor[anchor]
       }
@@ -89,8 +105,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
         if (current?.elementType == RParserDefinition.END_OF_LINE_COMMENT) {
           return current
         }
-      }
-      else {
+      } else {
         current = current.treeNext
       }
     }
@@ -100,8 +115,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   private fun findNextMeaningSibling(start: ASTNode): ASTNode? {
     var current: ASTNode? = start
     while (current != null) {
-      if (!TokenSet.create(TokenType.WHITE_SPACE, RElementTypes.R_NL, RParserDefinition.END_OF_LINE_COMMENT).contains(
-          current.elementType)) {
+      if (!SPACE_TOKENS.contains(current.elementType)) {
         return current
       }
       current = current.treeNext
@@ -132,8 +146,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
         nlSeen = false
         if (current.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT && !isFunctionDeclarationNode(current)) {
           answer = current
-        }
-        else {
+        } else {
           return answer
         }
       }
