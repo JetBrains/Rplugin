@@ -90,7 +90,7 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     forStatement.target?.accept(this)
     val entry = builder.prevInstruction
     forStatement.body?.accept(this)
-    val last = builder.prevInstruction
+    val last = builder.instructions.last() // After flowAbrupted prevInstruction == null
     val exit = builder.startNode(forStatement)
     handleLoop(entry, last, exit, forStatement)
   }
@@ -174,7 +174,7 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     val entry = builder.prevInstruction
     val oldSuccessors = SmartList(entry.allSucc())
     repeatStatement.body?.accept(this)
-    val last = builder.prevInstruction
+    val last = builder.instructions.last() // After flowAbrupted prevInstruction == null
     val exit = builder.startNode(repeatStatement)
     handleLoop(entry.allSucc().first { !oldSuccessors.contains(it) }, last, exit, repeatStatement)
   }
@@ -206,7 +206,7 @@ private class RControlFlowBuilder: RRecursiveElementVisitor() {
     val oldSuccessors = SmartList(entry.allSucc())
     whileStatement.condition?.accept(this)
     whileStatement.body?.accept(this)
-    val last = builder.prevInstruction
+    val last = builder.instructions.last() // After flowAbrupted prevInstruction == null
     val exit = builder.startNode(whileStatement)
     handleLoop(entry.allSucc().first { !oldSuccessors.contains(it) }, last, exit, whileStatement)
   }
