@@ -11,6 +11,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RPsiUtil
@@ -98,13 +99,12 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
       // See https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Function-calls
 
       // check if it can be resolved it into an accessor function
-      val reference = assignee.expression.reference ?: return false
-      val accessorMethodName = "`" + reference.canonicalText + "<-`()"
+      val name = assignee.expression.let { (it as? PsiNamedElement)?.name ?: it.text } ?: return false
+      val accessorMethodName = "`" + name + "<-`()"
 
       val accessorResolvant = org.jetbrains.r.psi.RElementFactory
         .createFuncallFromText(assignee.getProject(), accessorMethodName)
         .expression.reference?.resolve()
-
       return accessorResolvant != null
     }
   }

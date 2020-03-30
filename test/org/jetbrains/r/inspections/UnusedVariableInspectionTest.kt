@@ -153,6 +153,10 @@ class UnusedVariableInspectionTest : org.jetbrains.r.inspections.RInspectionTest
     )
   }
 
+  fun testQuotedCallAssignment() {
+    assertAllUsed("`@`(.Object, name) <- name")
+  }
+
   override val inspection: Class<out RInspection>
     get() = UnusedVariableInspection::class.java
 
