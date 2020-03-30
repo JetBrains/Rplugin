@@ -95,7 +95,7 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
       // Check if we can resolve it into a accessor setter
 
       // See https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Attributes
-      // See https://cran.r -project.org/doc/manuals/r-release/R-lang.html#Function-calls
+      // See https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Function-calls
 
       // check if it can be resolved it into an accessor function
       val reference = assignee.expression.reference ?: return false
@@ -103,7 +103,7 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
 
       val accessorResolvant = org.jetbrains.r.psi.RElementFactory
         .createFuncallFromText(assignee.getProject(), accessorMethodName)
-        .expression.reference!!.resolve()
+        .expression.reference?.resolve()
 
       return accessorResolvant != null
     }
