@@ -28,7 +28,6 @@ import org.jetbrains.r.debugger.RXVariablesView
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
-import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import java.awt.BorderLayout
 import javax.swing.Icon
 import javax.swing.JComponent
@@ -94,45 +93,86 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   private fun createDebugActions(): ActionGroup {
-    val actions = DefaultActionGroup()
-    actions.add(createAction(ActionsBundle.message("action.Resume.text"), AllIcons.Actions.Resume, "Resume") {
-      console.executeActionHandler.fireBusy()
-      console.rInterop.debugCommandContinue()
-    })
-    actions.add(createAction(
-      ActionsBundle.message("action.Pause.text"), AllIcons.Actions.Pause, "Pause",
-      isActive = { rInterop.isDebug && console.executeActionHandler.state == RConsoleExecuteActionHandler.State.BUSY }) {
-      console.rInterop.debugCommandPause()
-    })
-    actions.add(createAction(ActionsBundle.message("action.Stop.text"), AllIcons.Actions.Suspend, "Stop",
-                             isActive = { rInterop.isDebug }) {
-      console.rInterop.debugCommandStop()
-    })
-    actions.addSeparator()
-    actions.add(createAction(ActionsBundle.message("action.StepOver.text"), AllIcons.Actions.TraceOver, "StepOver") {
-      console.executeActionHandler.fireBusy()
-      console.rInterop.debugCommandStepOver()
-    })
-    actions.add(createAction(ActionsBundle.message("action.StepInto.text"), AllIcons.Actions.TraceInto, "StepInto") {
-      console.executeActionHandler.fireBusy()
-      console.rInterop.debugCommandStepInto()
-    })
-    actions.add(createAction(ActionsBundle.message("action.ForceStepInto.text"), PlatformDebuggerImplIcons.Actions.Force_step_into,
-                             "ForceStepInto") {
-      console.executeActionHandler.fireBusy()
-      console.rInterop.debugCommandForceStepInto()
-    })
-    actions.add(createAction(ActionsBundle.message("action.StepOut.text"), AllIcons.Actions.StepOut, "StepOut") {
-      console.executeActionHandler.fireBusy()
-      console.rInterop.debugCommandStepOut()
-    })
-    actions.add(createAction(ActionsBundle.message("action.RunToCursor.text"), AllIcons.Actions.RunToCursor, "RunToCursor") {
-      val position = XDebuggerUtilImpl.getCaretPosition(console.project, it.dataContext)
-      if (position != null) {
+    class ResumeAction : RBaseDebuggerAction(
+      ActionsBundle.message("action.Resume.text"),
+      AllIcons.Actions.Resume,
+      "Resume",
+      callback = {
         console.executeActionHandler.fireBusy()
-        console.rInterop.debugCommandRunToPosition(RSourcePosition(position.file, position.line))
+        console.rInterop.debugCommandContinue()
+      })
+    class PauseAction : RBaseDebuggerAction(
+      ActionsBundle.message("action.Pause.text"),
+      AllIcons.Actions.Pause,
+      "Pause",
+      isActive = { rInterop.isDebug && console.executeActionHandler.state == RConsoleExecuteActionHandler.State.BUSY },
+      callback = { console.rInterop.debugCommandPause() })
+    class StopAction : RBaseDebuggerAction(
+      ActionsBundle.message("action.Stop.text"),
+      AllIcons.Actions.Suspend,
+      "Stop",
+      isActive = { rInterop.isDebug },
+      callback = { console.rInterop.debugCommandStop() }
+    )
+    class StepOverAction : RBaseDebuggerAction(
+      ActionsBundle.message("action.StepOver.text"),
+      AllIcons.Actions.TraceOver,
+    "StepOver",
+      callback = {
+        console.executeActionHandler.fireBusy()
+        console.rInterop.debugCommandStepOver()
       }
-    })
+    )
+    class StepInto : RBaseDebuggerAction(
+      ActionsBundle.message("action.StepInto.text"),
+      AllIcons.Actions.TraceInto,
+      "StepInto",
+      callback = {
+        console.executeActionHandler.fireBusy()
+        console.rInterop.debugCommandStepInto()
+      }
+    )
+    class ForceStepInto : RBaseDebuggerAction(
+      ActionsBundle.message("action.ForceStepInto.text"),
+      PlatformDebuggerImplIcons.Actions.Force_step_into,
+      "ForceStepInto",
+      callback = {
+        console.executeActionHandler.fireBusy()
+        console.rInterop.debugCommandForceStepInto()
+      }
+    )
+    class StepOut : RBaseDebuggerAction(
+      ActionsBundle.message("action.StepOut.text"),
+      AllIcons.Actions.StepOut,
+      "StepOut",
+      callback = {
+        console.executeActionHandler.fireBusy()
+        console.rInterop.debugCommandStepOut()
+      }
+    )
+    class RunToCursor : RBaseDebuggerAction(
+      ActionsBundle.message("action.RunToCursor.text"),
+      AllIcons.Actions.RunToCursor,
+      "RunToCursor",
+      callback = {
+        val position = XDebuggerUtilImpl.getCaretPosition(console.project, it.dataContext)
+        if (position != null) {
+          console.executeActionHandler.fireBusy()
+          console.rInterop.debugCommandRunToPosition(RSourcePosition(position.file, position.line))
+        }
+      }
+    )
+
+    val actions = DefaultActionGroup()
+    actions.add(ResumeAction())
+    actions.add(PauseAction())
+    actions.add(PauseAction())
+    actions.addSeparator()
+    actions.add(StepOverAction())
+    actions.add(StepInto())
+    actions.add(ForceStepInto())
+    actions.add(StepOut())
+    actions.add(RunToCursor())
     actions.addSeparator()
     actions.add(ActionManager.getInstance().getAction("ViewBreakpoints"))
     actions.add(createMuteBreakpointsAction())
@@ -261,6 +301,29 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       bottomComponent = it
       it.add(JBLabel(RBundle.message("debugger.panel.stack.trace.is.shown")), BorderLayout.WEST)
       add(it, BorderLayout.SOUTH)
+    }
+  }
+
+  abstract inner class RBaseDebuggerAction(
+    text: String,
+    icon: Icon,
+    actionId: String? = null,
+    private val isActive: (() -> Boolean)? = null,
+    private val callback: (AnActionEvent) -> Unit
+  ): AnAction(text, null, icon) {
+    init {
+      if (actionId != null) {
+        registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(actionId) },
+                                                WindowManager.getInstance().getFrame(console.project)?.rootPane,
+                                  this@RDebuggerPanel)
+      }
+    }
+    override fun actionPerformed(e: AnActionEvent) = callback(e)
+
+    override fun update(e: AnActionEvent) {
+      val toolWindow: ToolWindow? = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
+      e.presentation.isEnabled = toolWindow?.isVisible == true &&
+                                 (isActive?.invoke() ?: console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT)
     }
   }
 }

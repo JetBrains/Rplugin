@@ -35,6 +35,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
@@ -208,7 +209,7 @@ class RConsoleRunner(private val project: Project,
       }
 
       override fun actionPerformed(e: AnActionEvent) {
-        addConsoleAction.actionPerformed(e)
+        RActionUtil.performDelegatedAction(addConsoleAction, e)
       }
     }
 
@@ -238,7 +239,7 @@ class RConsoleRunner(private val project: Project,
       private val action = ActionManager.getInstance().getAction(RConsoleView.INTERRUPT_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
-        action.actionPerformed(createEvent(e))
+        RActionUtil.performDelegatedAction(action, e)
       }
 
       override fun update(e: AnActionEvent) {
@@ -256,7 +257,7 @@ class RConsoleRunner(private val project: Project,
       private val action = ActionManager.getInstance().getAction(RConsoleView.EOF_ACTION_ID).also { copyFrom(it) }
 
       override fun actionPerformed(e: AnActionEvent) {
-        action.actionPerformed(createEvent(e))
+        RActionUtil.performDelegatedAction(action, e)
       }
 
       override fun update(e: AnActionEvent) {
@@ -272,7 +273,14 @@ class RConsoleRunner(private val project: Project,
 
   private fun createConsoleExecAction(): AnAction {
     val emptyAction = consoleView.executeActionHandler.emptyExecuteAction
-    return ConsoleExecuteAction(consoleView, consoleView.executeActionHandler, emptyAction, consoleView.executeActionHandler)
+
+    // use unique name for statistics
+    class RConsoleExecuteActionHandler : ConsoleExecuteAction(consoleView,
+                                                              consoleView.executeActionHandler,
+                                                              emptyAction,
+                                                              consoleView.executeActionHandler)
+
+    return RConsoleExecuteActionHandler()
   }
 
 

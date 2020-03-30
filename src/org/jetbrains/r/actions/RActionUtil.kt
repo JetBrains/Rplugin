@@ -19,7 +19,7 @@ import com.intellij.util.ui.SwingHelper
 object RActionUtil {
 
   /**
-   * used for triggering statistic recording on understandable action id
+   * used for triggering statistic recording on non-action events which should be treated as actions
    */
   fun fireBeforeActionById(id: String, place: String = ActionPlaces.UNKNOWN) {
     val actionManager = ActionManagerEx.getInstanceEx()
@@ -39,5 +39,13 @@ object RActionUtil {
         })
       }
     }
+  }
+
+  /**
+   * fire before action performed event for statistics and perform [action]
+   */
+  fun performDelegatedAction(anAction: AnAction, actionEvent: AnActionEvent) {
+    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(anAction, actionEvent.dataContext, actionEvent)
+    anAction.actionPerformed(actionEvent)
   }
 }

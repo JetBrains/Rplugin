@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.psi.PsiElement
+import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.editor
 import java.awt.event.MouseEvent
 
@@ -48,7 +49,7 @@ internal class ChunkAction(private val element: PsiElement, private val action: 
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    action.actionPerformed(createActionEvent(e, element))
+    RActionUtil.performDelegatedAction(action, createActionEvent(e, element))
   }
 
 

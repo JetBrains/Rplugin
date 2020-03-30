@@ -12,6 +12,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
+import org.jetbrains.r.actions.RActionUtil
 import java.awt.BorderLayout
 
 class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
@@ -40,7 +41,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }
 
     override fun actionPerformed(e: AnActionEvent) {
-      action.actionPerformed(createEvent(e))
+      RActionUtil.performDelegatedAction(action, createEvent(e))
     }
 
     override fun update(e: AnActionEvent) {
