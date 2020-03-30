@@ -166,7 +166,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     val actions = DefaultActionGroup()
     actions.add(ResumeAction())
     actions.add(PauseAction())
-    actions.add(PauseAction())
+    actions.add(StopAction())
     actions.addSeparator()
     actions.add(StepOverAction())
     actions.add(StepInto())
