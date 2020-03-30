@@ -6,10 +6,7 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.tasks.PublishTask
-import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.text.SimpleDateFormat
-import java.util.*
 
 val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
 
@@ -219,7 +216,7 @@ project(":") {
     }
 
     tasks.prepareTestingSandbox {
-        prepareSandbox(this, this@project)
+        prepareSandbox(this, this@project, isTestingSandbox = true)
     }
 
     tasks.runIde {
@@ -265,20 +262,9 @@ fun prop(name: String): String =
     extra.properties[name] as? String
         ?: error("Property `$name` is not defined in gradle.properties")
 
-fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project) {
-    createBuildDateStamp(prepareSandboxTask)
+fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project, isTestingSandbox: Boolean = false) {
     buildRWrapper(project)
     doCopyRWrapperTask(prepareSandboxTask, project)
-}
-
-fun createBuildDateStamp(prepareSandboxTask: PrepareSandboxTask) {
-    val timestamp = SimpleDateFormat("yyyy-MM-dd").format(Date())
-    val file = File(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName + "/" + "timestamp")
-    if (!file.exists()) {
-        file.ensureParentDirsCreated()
-        file.createNewFile()
-    }
-    file.writeText(timestamp)
 }
 
 fun buildRWrapper(project: Project) {
