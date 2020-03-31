@@ -41,6 +41,10 @@ import org.jetbrains.r.statistics.RStatistics
 interface RInterpreterManager {
   val interpreter: RInterpreter?
   val interpreterPath: String
+  /**
+   *  true if skeletons update was performed at least once.
+   */
+  val isSkeletonInitialized: Boolean
 
   fun hasInterpreter(): Boolean {
     return interpreter != null
@@ -55,6 +59,10 @@ interface RInterpreterManager {
 }
 
 class RInterpreterManagerImpl(private val project: Project): RInterpreterManager {
+  @Volatile
+  override var isSkeletonInitialized: Boolean = false
+    private set
+
   @Volatile
   override var interpreterPath: String = fetchInterpreterPath()
     private set
@@ -200,6 +208,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         if (RSkeletonUtil.updateSkeletons(interpreter, project, indicator)) {
           runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
         }
+        isSkeletonInitialized = true
         RInterpreterUtil.updateIndexableSet(project)
       }
     }

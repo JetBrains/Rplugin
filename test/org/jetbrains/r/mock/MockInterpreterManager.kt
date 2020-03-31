@@ -11,6 +11,8 @@ import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
+  override val isSkeletonInitialized: Boolean = true
+
   override fun initializeInterpreter(force: Boolean): Promise<Unit> {
     return AsyncPromise<Unit>().apply {
       setResult(Unit)

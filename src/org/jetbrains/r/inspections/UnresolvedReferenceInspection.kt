@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.intentions.LoadPackageFix
+import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.ROperator
 import org.jetbrains.r.psi.api.RPsiElement
@@ -35,7 +36,6 @@ class UnresolvedReferenceInspection : RInspection() {
 
     override fun visitOperator(element: ROperator) {
       if (!element.text.startsWith("%")) return
-
       handleResolveResult(element, element.reference)
     }
 
@@ -44,6 +44,8 @@ class UnresolvedReferenceInspection : RInspection() {
     }
 
     private fun handleResolveResult(element: RPsiElement, reference: RReferenceBase<*>) {
+      // do not try to resolve functions until we have skeletons
+      if (!RInterpreterManager.getInstance(element.project).isSkeletonInitialized) return
       val targets = reference.multiResolve(false)
       if (targets.isEmpty()) {
         myProblemHolder.registerProblem(element, UNRESOLVED_MSG, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
