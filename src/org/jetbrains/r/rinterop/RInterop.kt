@@ -666,9 +666,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
     methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
-    request: TRequest,
-    withCheckCancelled: Boolean = false
+    request: TRequest
   ) : RIExecutionResult {
+    val isEdt = !ApplicationManager.getApplication().isUnitTestMode && ApplicationManager.getApplication().isDispatchThread
+    check(!isEdt) { "Waiting on dispatch thread is not allowed" }
+    val withCheckCancelled = ApplicationManager.getApplication().isReadAccessAllowed
     val stdoutBuffer = StringBuilder()
     val stderrBuffer = StringBuilder()
     val promise = executeRequestAsync(methodDescriptor, request) { text, type ->
