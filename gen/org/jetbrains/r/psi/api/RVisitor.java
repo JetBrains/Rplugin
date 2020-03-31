@@ -183,6 +183,7 @@ public class RVisitor extends PsiElementVisitor {
 
   public void visitSubscriptionExpression(@NotNull RSubscriptionExpression o) {
     visitExpression(o);
+    // visitArgumentHolder(o);
   }
 
   public void visitTildeExpression(@NotNull RTildeExpression o) {

@@ -29,8 +29,9 @@ class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfo
   override fun findElementForParameterInfo(context: CreateParameterInfoContext): RArgumentList? {
     val argumentList = findArgumentList(context) ?: return null
     context.itemsToShow = RPsiUtil.resolveCall(argumentList.parent as RCallExpression).map { assignment ->
-      val args = (RElementFactory.createRPsiElementFromText(context.project,
-                                                            "function${assignment.functionParameters}") as RFunctionExpression).parameterList.parameterList
+      val rFunctionExpression = RElementFactory.createRPsiElementFromText(context.project,
+                                                                          "function${assignment.functionParameters}") as RFunctionExpression
+      val args = rFunctionExpression.parameterList?.parameterList ?: emptyList()
       val names = args.map { it.name }
       val values = args.map { it.defaultValue?.text }
       RParameterInfoArgumentList(names, values, names.indices.toList())

@@ -12,7 +12,7 @@ public interface RFunctionExpression extends RExpression, RControlFlowHolder {
   @Nullable
   RExpression getExpression();
 
-  @NotNull
+  @Nullable
   RParameterList getParameterList();
 
   @Nullable

@@ -20,18 +20,17 @@ class RIntroduceParameterHandler : RIntroduceLocalHandler() {
 
   override fun isValidIntroduceVariant(element: PsiElement?): Boolean {
     if (!super.isValidIntroduceVariant(element)) return false
-    if (PsiTreeUtil.getParentOfType(element, RFunctionExpression::class.java) == null) return false
-    return true
+    return PsiTreeUtil.getParentOfType(element, RFunctionExpression::class.java)?.parameterList != null
   }
 
   override fun performReplace(operation: IntroduceOperation): RIdentifierExpression {
     val suggestedName = operation.suggestedNames[0]
     val text = "$suggestedName = expr"
     var declaration = (RElementFactory.createRPsiElementFromText(operation.project, "function($text)") as RFunctionExpression).
-      parameterList.parameterList[0]
+      parameterList!!.parameterList[0]
     val replacedOccurrences = mutableListOf<RIdentifierExpression>()
     val function = PsiTreeUtil.getParentOfType(operation.expression, RFunctionExpression::class.java)!!
-    val parameterList = function.parameterList
+    val parameterList = function.parameterList ?: error("Function ${function.text} has no parameter list")
 
     WriteCommandAction.runWriteCommandAction(operation.project) {
       declaration.defaultValue!!.replace(operation.expression)

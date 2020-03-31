@@ -222,8 +222,9 @@ subscription_expression ::= expression ('[' nl* ']' | '[' nl* subscription_expr_
 // This expression is needed to better error handling and better completion
 no_comma_tail ::= nl* ((named_argument | expression) nl* )+
 
-private arg ::= ( (named_argument | expression ) (no_comma_tail?) ) | external_empty_expression
-argument_list ::= '(' nl* ')' | '(' nl* arg nl* (',' nl* arg nl*)* ')'
+private non_empty_arg ::= (named_argument | expression ) (no_comma_tail?)
+private arg ::= non_empty_arg | external_empty_expression
+argument_list ::= '(' nl* ( non_empty_arg nl* (',' nl* arg nl*)* )? ')' { pin(".*")=1 }
 call_expression ::= expression argument_list
 
 parameter ::= (identifier_expression ('=' expression)?)  {
@@ -231,9 +232,10 @@ parameter ::= (identifier_expression ('=' expression)?)  {
   extends = "org.jetbrains.r.psi.impl.RParameterBase"
   stubClass = "org.jetbrains.r.psi.stubs.RParameterStub"
 }
-parameter_list ::= ('(' ')') | ('(' nl* parameter nl* (',' nl* parameter nl*)* ')')
+parameter_list ::= '(' nl* (parameter nl* (',' nl* parameter nl*)*)? ')' { pin(".*")=1 }
 function_expression ::= function parameter_list nl* expression {
-methods = [ getDocStringValue getControlFlow getReference ]
+  pin=1
+  methods = [ getDocStringValue getControlFlow getReference ]
 }
 
 private semicolon ::= ';' | nl

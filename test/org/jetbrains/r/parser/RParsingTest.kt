@@ -139,6 +139,26 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testErrorIf() = doTest()
 
+  fun testErrorMethod1() = doTest()
+
+  fun testErrorMethod2() = doTest()
+
+  fun testErrorMethod3() = doTest()
+
+  fun testErrorMethod4() = doTest()
+
+  fun testErrorMethod5() = doTest()
+
+  fun testErrorMethod6() = doTest()
+
+  fun testErrorMethod7() = doTest()
+
+  fun testErrorCall1() = doTest()
+
+  fun testErrorCall2() = doTest()
+
+  fun testErrorCall3() = doTest()
+
   fun testArgumentsWithoutComma() = doTest()
 
   //---------------------------------------

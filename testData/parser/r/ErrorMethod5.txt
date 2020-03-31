@@ -1,0 +1,20 @@
+RFile:ErrorMethod5.r
+  PsiElement(nl)('\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('func')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_FUNCTION_EXPRESSION
+      PsiElement(function)('function')
+      R_PARAMETER_LIST
+        PsiElement(()('(')
+        R_PARAMETER
+          R_IDENTIFIER_EXPRESSION
+            PsiElement(identifier)('x')
+        PsiElement())(')')
+      PsiElement(nl)('\n')
+      PsiErrorElement:<expression> expected
+        <empty list>

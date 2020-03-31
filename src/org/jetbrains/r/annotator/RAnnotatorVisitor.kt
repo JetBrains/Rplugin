@@ -63,7 +63,8 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     var current: RPsiElement = element
     while (true) {
       val rFunctionExpression = PsiTreeUtil.getParentOfType(current, RFunctionExpression::class.java) ?: return false
-      for (parameter in rFunctionExpression.parameterList.parameterList) {
+      val parameterList = rFunctionExpression.parameterList ?: return false
+      for (parameter in parameterList.parameterList) {
         if (parameter.variable?.name == "...") {
           return true
         }

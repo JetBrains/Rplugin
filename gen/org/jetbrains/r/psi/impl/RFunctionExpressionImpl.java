@@ -34,9 +34,9 @@ public class RFunctionExpressionImpl extends RControlFlowHolderImpl implements R
   }
 
   @Override
-  @NotNull
+  @Nullable
   public RParameterList getParameterList() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, RParameterList.class));
+    return PsiTreeUtil.getChildOfType(this, RParameterList.class);
   }
 
   @Override

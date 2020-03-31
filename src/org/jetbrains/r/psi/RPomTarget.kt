@@ -110,7 +110,7 @@ internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssi
         val psiFile = PsiManager.getInstance(assignment.project).findFile(virtualFile)
         if (psiFile !is RFile) return@runReadAction
         val rFunctionExpression = PsiTreeUtil.findChildOfAnyType(psiFile, RFunctionExpression::class.java) ?: return@runReadAction
-        val parameter = rFunctionExpression.parameterList.parameterList.firstOrNull { it.name == name } ?: return@runReadAction
+        val parameter = rFunctionExpression.parameterList?.parameterList?.firstOrNull { it.name == name } ?: return@runReadAction
         invokeLater {
           parameter.navigate(true)
         }
