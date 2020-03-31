@@ -464,8 +464,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testSource() {
-    val secondFile = FileUtil.createTempFile("b", ".R")
-    val secondVirtualFile = LocalFileSystem.getInstance().findFileByIoFile(secondFile)
+    val secondFile = FileUtil.createTempFile("b", ".R", true)
     val firstFile = loadFileWithBreakpointsFromText("""
       foo <- function() {
         1
@@ -483,6 +482,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
       foo()
       4
     """.trimIndent())
+    val secondVirtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(secondFile)
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(firstFile, true) }
     val stack = rInterop.debugStack.mapNotNull { it.position }
