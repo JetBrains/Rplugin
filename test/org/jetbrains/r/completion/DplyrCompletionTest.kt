@@ -164,6 +164,16 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
                     expected = listOf("\"yyyy_aba\"", "\"yyyy_ada\"", "\"yyyy_ara\""))
   }
 
+  fun testNamedArgumentIsNotColumn() {
+    rInterop.executeCode("table <- dplyr::tibble()")
+    myFixture.configureByText("a.R", "table %>% count(name = 'someName', nam<caret>)")
+    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    val result = myFixture.completeBasic()
+    TestCase.assertNotNull(result)
+    val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
+    assertEquals(1, lookupStrings.count { it == "name" })
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: List<String>? = null, initialGroups: List<String>? = null) {
     if (initial != null) {
       rInterop.executeCode("table <- dplyr::tibble(${initial.joinToString(", ") { "$it = NA" }})", false)

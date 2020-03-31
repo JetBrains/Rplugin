@@ -50,10 +50,11 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   fun addCurrentColumns(columns: List<TableManipulationColumn>,
                         callInfo: TableManipulationCallInfo<*>,
                         currentArg: RExpression): List<TableManipulationColumn> {
+    if (callInfo.function.tableArguments.contains("...")) return columns
     val arguments = callInfo.argumentInfo.expressionListWithPipeExpression
     val currentArgIndex = arguments.indexOf(currentArg)
-    return columns + arguments.subList(0, currentArgIndex)
-      .filter { !callInfo.isTableArgument(it) }
+    return columns + callInfo.argumentInfo.allDotsArguments
+      .takeWhile { arguments.indexOf(it) < currentArgIndex }
       .mapNotNull {
         when (it) {
           is RIdentifierExpression -> TableManipulationColumn(it.name)
