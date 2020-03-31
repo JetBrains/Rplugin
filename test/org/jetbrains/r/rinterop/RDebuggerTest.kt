@@ -6,6 +6,9 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.xdebugger.XDebuggerManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -458,5 +461,34 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     helper.invokeAndWait(true) { rInterop.debugCommandForceStepInto() }
     TestCase.assertEquals(listOf(1), rInterop.debugStack.map { it.position!!.line })
     helper.invokeAndWait(false) { rInterop.debugCommandForceStepInto() }
+  }
+
+  fun testSource() {
+    val secondFile = FileUtil.createTempFile("b", ".R")
+    val secondVirtualFile = LocalFileSystem.getInstance().findFileByIoFile(secondFile)
+    val firstFile = loadFileWithBreakpointsFromText("""
+      foo <- function() {
+        1
+        2 # BREAKPOINT
+        3
+      }
+      5
+      source("${StringUtil.escapeStringCharacters(secondFile.absolutePath)}")
+      7
+    """.trimIndent())
+    secondFile.writeText("""
+      0
+      1
+      2
+      foo()
+      4
+    """.trimIndent())
+
+    helper.invokeAndWait(true) { rInterop.replSourceFile(firstFile, true) }
+    val stack = rInterop.debugStack.mapNotNull { it.position }
+    TestCase.assertEquals(1, stack.count { it.file == firstFile && it.line == 6 })
+    TestCase.assertEquals(1, stack.count { it.file == secondVirtualFile && it.line == 3 })
+    TestCase.assertEquals(1, stack.count { it.file == firstFile && it.line == 2 })
+    helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
   }
 }
