@@ -31,6 +31,7 @@ import com.jetbrains.rd.util.getOrCreate
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
@@ -238,6 +239,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue)
   }
 
+  /**
+   * Do not use in production code
+   */
+  @TestOnly
   fun executeCode(code: String, withCheckCancelled: Boolean = false): RIExecutionResult {
     val promise = executeCodeImpl(code)
     return if (withCheckCancelled) {
