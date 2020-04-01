@@ -323,7 +323,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     override fun update(e: AnActionEvent) {
       val toolWindow: ToolWindow? = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
       e.presentation.isEnabled = toolWindow?.isVisible == true &&
-                                 (isActive?.invoke() ?: console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT)
+                                 (isActive?.invoke() ?:
+                                  (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT))
     }
   }
 }
