@@ -12,7 +12,10 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.rinterop.RValueDataFrame
+import org.jetbrains.r.rinterop.RValueFunction
+import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.rinterop.getWithCheckCanceled
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 
 class RSkeletonResolveTest : RConsoleBaseTestCase() {
@@ -66,6 +69,15 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
           conf<caret>licts('pkg')
     """.trimIndent())
     TestCase.assertEquals(myFixture.file, resolveResult?.containingFile)
+  }
+  
+  fun testDplyrPipeOperatorIsResolved() {
+    rInterop.executeCode("library(dplyr)")
+    val resolveResult = resolve("""
+      starwars %><caret>% count(birth_year)
+    """.trimIndent())
+    val rPackage = RPackage.getOrCreateRPackageBySkeletonFile(resolveResult!!.containingFile)
+    TestCase.assertEquals("dplyr", rPackage?.name)
   }
 
   private fun runTest(expression: String): RVar {
