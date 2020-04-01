@@ -11,6 +11,7 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ScriptRunnerUtil
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
@@ -48,7 +49,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   fun interruptRendering() {
     isInterrupted = true
     currentConsoleView?.print("\nInterrupted\n", ConsoleViewContentType.ERROR_OUTPUT)
-    currentProcessHandler?.process?.destroy()
+    currentProcessHandler?.let { ScriptRunnerUtil.terminateProcessHandler(it, 2000, null) }
   }
 
   fun render(project: Project, file: VirtualFile, isShiny: Boolean = false): Promise<Unit> {
