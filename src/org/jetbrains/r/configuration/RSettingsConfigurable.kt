@@ -19,8 +19,11 @@ import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
-import java.awt.*
-import javax.swing.*
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import javax.swing.JCheckBox
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable {
   private val settings = RSettings.getInstance(project)
@@ -73,25 +76,35 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     val previousPath = settings.interpreterPath
     if (path != previousPath) {
       settings.interpreterPath = path
-      restartInterpreter()
-      RConsoleManager.runConsole(project).onSuccess {
-        runInEdt {
-          RConsoleManager.closeMismatchingConsoles(project, path)
-        }
-      }
+      onInterpreterPathChanged(path)
     }
     settings.loadWorkspace = loadWorkspaceCheckBox.isSelected
     if (settings.saveWorkspace != saveWorkspaceCheckBox.isSelected) {
       settings.saveWorkspace = saveWorkspaceCheckBox.isSelected
-      RConsoleManager.getInstance(project).consoles.forEach {
-        it.rInterop.saveOnExit = settings.saveWorkspace
-      }
+      onSaveWorkspaceChanged()
     }
     reset()
   }
 
   override fun createComponent(): JComponent {
     return component
+  }
+
+  private fun onSaveWorkspaceChanged() {
+    if (project.isDefault) return
+    RConsoleManager.getInstance(project).consoles.forEach {
+      it.rInterop.saveOnExit = settings.saveWorkspace
+    }
+  }
+
+  private fun onInterpreterPathChanged(path: String) {
+    if (project.isDefault) return
+    restartInterpreter()
+    RConsoleManager.runConsole(project).onSuccess {
+      runInEdt {
+        RConsoleManager.closeMismatchingConsoles(project, path)
+      }
+    }
   }
 
   private fun restartInterpreter() {
