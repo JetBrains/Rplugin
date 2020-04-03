@@ -12,7 +12,6 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 
 /**
@@ -27,7 +26,7 @@ class NewRScriptAction : TestableCreateFileFromTemplateAction("R Script",
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
       .setTitle("New R Script file")
-      .addKind("R Script file", RMarkdownFileType.icon, NEW_R_SCRIPT_TEMPLATE_NAME)
+      .addKind("R Script file", RFileType.icon, NEW_R_SCRIPT_TEMPLATE_NAME)
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {
