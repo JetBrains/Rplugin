@@ -26,7 +26,7 @@ private val NON_INDENT_PARTS = TokenSet.create(
   RElementTypes.R_ELSE
 )
 
-private val SPACE_TOKENS = TokenSet.create(
+val R_SPACE_TOKENS = TokenSet.create(
   TokenType.WHITE_SPACE,
   RElementTypes.R_NL,
   RParserDefinition.FORMFEED,
@@ -118,7 +118,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   private fun findNextMeaningSibling(start: ASTNode): ASTNode? {
     var current: ASTNode? = start
     while (current != null) {
-      if (!SPACE_TOKENS.contains(current.elementType)) {
+      if (!R_SPACE_TOKENS.contains(current.elementType)) {
         return current
       }
       current = current.treeNext

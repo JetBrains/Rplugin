@@ -78,6 +78,32 @@ class TypingTest : RUsefulTestCase() {
     """)
   }
 
+  fun testEnterInParametersAfterCommaWithoutCloseParenthesis() {
+    doTest("""
+      yyy <- function (x,<caret>
+
+      
+    """, """
+      yyy <- function (x,
+                       <caret>
+    
+      
+    """)
+  }
+
+  fun testEnterInArgumentsAfterCommaWithoutCloseParenthesis() {
+    doTest("""
+      y <- c(10, 20,<caret>
+
+      
+    """, """
+      y <- c(10, 20,
+             <caret>
+
+      
+    """)
+  }
+
   // This behavior does not work in the end of file, see DS-208
   fun testEnterInExpression() {
     doTest("""

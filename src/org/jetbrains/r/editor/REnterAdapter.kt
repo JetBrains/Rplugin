@@ -13,6 +13,7 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.editor.formatting.R_SPACE_TOKENS
 import org.jetbrains.r.parsing.RElementTypes
 
 private val R_CLOSE_PAIRS = TokenSet.create(
@@ -40,16 +41,31 @@ class REnterAdapter : EnterHandlerDelegateAdapter() {
 
   private fun adjustAlignmentAfterEnter(editor: Editor, file: PsiFile): Boolean {
     val offset = editor.caretModel.offset
-    val bracket = file.findElementAt(offset) ?: return false
-    if (!R_CLOSE_PAIRS.contains(bracket.elementType)) return false
-    val prevElementType = bracket.prevSibling?.elementType
-    if (prevElementType != RElementTypes.R_EMPTY_EXPRESSION && prevElementType != TokenType.ERROR_ELEMENT) return false
-    val brackets = bracket.parent ?: return false
+    val element = file.findElementAt(offset) ?: return false
+    val brackets = element.parent ?: return false
     val content = brackets.node.findChildByType(R_OPEN_PAIRS)?.psi?.nextSibling ?: return false
+    if (R_CLOSE_PAIRS.contains(element.elementType)) {
+      val prevElementType = element.prevSibling?.elementType
+      if (prevElementType != RElementTypes.R_EMPTY_EXPRESSION && prevElementType != TokenType.ERROR_ELEMENT) return false
+    } else {
+      val noBracketNadErrorInTheEnd = element.elementType == RElementTypes.R_NL &&
+                                      brackets.lastChild?.elementType == TokenType.ERROR_ELEMENT &&
+                                      brackets.lastChild?.textOffset == file.textLength
+      if (!noBracketNadErrorInTheEnd) return false
+      var cur: PsiElement? = element
+      while (cur != null) {
+        if (!R_SPACE_TOKENS.contains(cur.elementType) &&
+            cur.elementType != TokenType.ERROR_ELEMENT &&
+            cur.elementType != RElementTypes.R_EMPTY_EXPRESSION)
+          return false
+        cur = cur.nextSibling
+      }
+    }
     val contentIndent = calculateIndent(content, editor)
-    val bracketIndent = calculateIndent(bracket, editor)
-    if (bracketIndent < contentIndent) {
-      editor.document.insertString(offset, " ".repeat(contentIndent - bracketIndent))
+
+    val elementIndent = calculateIndent(element, editor)
+    if (elementIndent < contentIndent) {
+      editor.document.insertString(offset, " ".repeat(contentIndent - elementIndent))
     }
     return true
   }
