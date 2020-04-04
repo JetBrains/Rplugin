@@ -238,6 +238,26 @@ class FormatterTest : RUsefulTestCase() {
     """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
   }
 
+  fun testSubscriptionArgumentsAlignment() {
+    doOptTest("""
+      xxx <- foo[10,
+          20]
+    """, """
+      xxx <- foo[10,
+                 20]
+    """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
+  }
+
+  fun testSubscriptionArgumentsAlignment2() {
+    doOptTest("""
+      xxx <- foo[[10,
+          20]]
+    """, """
+      xxx <- foo[[10,
+                  20]]
+    """) { common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = it }
+  }
+
   fun testAssignmentAlignmentInParameters() {
     doOptTest("""
       foo(a = 1,

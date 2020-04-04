@@ -57,10 +57,13 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
                            node.elementType == RElementTypes.R_COMMA ||
                            isCommentAtEmptyLine(node))
 
-    val alignArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
+    val alignCallArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
                          (node.firstChildNode != null || isCommentAtEmptyLine(node))
 
-    if (alignArguments || alignParameters) {
+    val alignSubscriptionArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_SUBSCRIPTION_EXPRESSION &&
+                             (node != nodeParent.firstChildNode && node.firstChildNode != null || isCommentAtEmptyLine(node))
+
+    if (alignCallArguments || alignParameters || alignSubscriptionArguments) {
       return childIndentAlignments[nodeParent]
     }
 

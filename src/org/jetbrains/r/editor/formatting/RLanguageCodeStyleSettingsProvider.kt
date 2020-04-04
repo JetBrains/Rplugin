@@ -146,7 +146,9 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
       foo(some@oh)
     }
     
-    
+    some_value = df[num < 0,
+    "campaign.id"
+    ]
 
     #' some roxygen style function documentaiton
     #' @param a arggument one
