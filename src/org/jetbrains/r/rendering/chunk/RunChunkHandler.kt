@@ -262,10 +262,11 @@ object RunChunkHandler {
     val result = mutableListOf<ProcessOutput>()
     val chunkState = console.executeActionHandler.chunkState
     if (chunkState != null) {
-      val first = chunkState.pendingLineRanges.first()
-      chunkState.pendingLineRanges.remove(first)
-      chunkState.currentLineRange = first
-      chunkState.revalidateGutter()
+      chunkState.pendingLineRanges.firstOrNull()?.let { first ->
+        chunkState.pendingLineRanges.remove(first)
+        chunkState.currentLineRange = first
+        chunkState.revalidateGutter()
+      }
     }
     val virtualFile = codeElement.containingFile.virtualFile
     val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, textRange ?: codeElement.textRange)
