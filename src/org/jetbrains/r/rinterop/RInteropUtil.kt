@@ -114,16 +114,6 @@ stderr: ${stderr}
                    ?: throw RuntimeException("Invalid RWrapper output")
         val rInterop = RInterop(process, "127.0.0.1", port, project)
         rInteropForReport = rInterop
-        val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
-                           ?: throw RuntimeException("R Scripts not found")
-        val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
-        val init = rInterop.init(rScriptsPath, projectDir)
-        if (init.stdout.isNotBlank()) {
-          LOG.warn(init.stdout)
-        }
-        if (init.stderr.isNotBlank()) {
-          LOG.warn(init.stderr)
-        }
         promise.setResult(rInterop)
       } catch (e: Throwable) {
         promise.setError(e)
@@ -184,15 +174,6 @@ stderr: ${stderr}
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
-
-    SessionUtil.getWorkspaceFile(project)?.let {
-      command = command.withParameters("--workspace-file", it)
-      if (!ApplicationManager.getApplication().isUnitTestMode) {
-        val settings = RSettings.getInstance(project)
-        if (!settings.loadWorkspace) command = command.withParameters("--no-restore")
-        if (!settings.saveWorkspace) command = command.withParameters("--no-save")
-      }
-    }
 
     if (crashpadHandler.exists()) {
       if (!crashpadHandler.canExecute()) {

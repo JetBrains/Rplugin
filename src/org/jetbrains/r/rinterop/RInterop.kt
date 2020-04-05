@@ -37,6 +37,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableManipulationColumn
@@ -45,6 +46,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
+import org.jetbrains.r.settings.RSettings
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -169,12 +171,14 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   private val getInfoResponse = execute(stub::getInfo, Empty.getDefaultInstance())
   val rVersion = RVersion.forceParse(getInfoResponse.rVersion)
-  val workspaceFile = getInfoResponse.workspaceFile.takeIf { it.isNotEmpty() }
-  var saveOnExit = getInfoResponse.saveOnExit
+  val workspaceFile: String?
+  private var saveOnExitValue = false
+  var saveOnExit: Boolean
+    get() = saveOnExitValue
     set(value) {
-      if (field != value && workspaceFile != null) {
+      if (saveOnExitValue != value && workspaceFile != null) {
         executeAsync(asyncStub::setSaveOnExit, BoolValue.of(value))
-        field = value
+        saveOnExitValue = value
       }
     }
 
@@ -186,6 +190,33 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
           executeAsync(asyncStub::isBusy, Empty.getDefaultInstance())
         }
       }, 0L, HEARTBEAT_PERIOD.toLong())
+    }
+
+    val initRequest = Service.Init.newBuilder()
+
+    workspaceFile = SessionUtil.getWorkspaceFile(project)?.also {
+      val loadWorkspace: Boolean
+      if (!ApplicationManager.getApplication().isUnitTestMode) {
+        val settings = RSettings.getInstance(project)
+        loadWorkspace = settings.loadWorkspace
+        saveOnExitValue = settings.saveWorkspace
+      } else {
+        loadWorkspace = true
+        saveOnExitValue = true
+      }
+      initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
+    }
+
+    val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
+                       ?: throw RuntimeException("R Scripts not found")
+    val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
+    initRequest.setRScriptsPath(rScriptsPath).setProjectDir(projectDir)
+    val initOutput = executeRequest(RPIServiceGrpc.getInitMethod(), initRequest.build())
+    if (initOutput.stdout.isNotBlank()) {
+      LOG.warn(initOutput.stdout)
+    }
+    if (initOutput.stderr.isNotBlank()) {
+      LOG.warn(initOutput.stderr)
     }
   }
 
@@ -199,11 +230,6 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
     }
     return promise
-  }
-
-  fun init(rScriptsPath: String, projectDir: String): RIExecutionResult {
-    val request = Service.Init.newBuilder().setRScriptsPath(rScriptsPath).setProjectDir(projectDir).build()
-    return executeRequest(RPIServiceGrpc.getInitMethod(), request)
   }
 
   fun isBusy(): Boolean {
