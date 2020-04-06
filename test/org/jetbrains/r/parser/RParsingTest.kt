@@ -13,41 +13,23 @@ private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/r/"
 @TestDataPath("/testData/parser/r")
 class RParsingTest : RUsefulTestCase() {
 
-  override fun getTestDataPath(): String {
-    return DATA_PATH
-  }
+  override fun getTestDataPath(): String = DATA_PATH
 
-  fun testTrue() {
-    doTest()
-  }
+  fun testTrue() = doTest()
 
-  fun testSlice() {
-    doTest()
-  }
+  fun testSlice() = doTest()
 
-  fun testAssignment() {
-    doTest()
-  }
+  fun testAssignment() = doTest()
 
-  fun testBinary() {
-    doTest()
-  }
+  fun testBinary() = doTest()
 
-  fun testBinarySlice() {
-    doTest()
-  }
+  fun testBinarySlice() = doTest()
 
-  fun testBooleanExpressions() {
-    doTest()
-  }
+  fun testBooleanExpressions() = doTest()
 
-  fun testFunctionCall() {
-    doTest()
-  }
+  fun testFunctionCall() = doTest()
 
-  fun testFunctionDefinition() {
-    doTest()
-  }
+  fun testFunctionDefinition() = doTest()
 
   /**
    * note: it may look wrong to parse the tailing () into a call on the block, but R does so as well.
@@ -56,210 +38,108 @@ class RParsingTest : RUsefulTestCase() {
    * To call an anonymously defined function in place additional brackets are requires:
    * `(function(){1})()`
    */
-  fun testInPlaceFunctionDefCall() {
-    doTest()
-  }
+  fun testInPlaceFunctionDefCall() = doTest()
 
-  fun testIfStatement() {
-    doTest()
-  }
+  fun testIfStatement() = doTest()
 
-  fun testForStatement() {
-    doTest()
-  }
+  fun testForStatement() = doTest()
 
-  fun testRepeatStatement() {
-    doTest()
-  }
+  fun testRepeatStatement() = doTest()
 
-  fun testRepeatBlockStatement() {
-    doTest()
-  }
+  fun testRepeatBlockStatement() = doTest()
 
-  fun testWhileStatement() {
-    doTest()
-  }
+  fun testWhileStatement() = doTest()
 
-  fun testHelpStatement() {
-    doTest()
-  }
+  fun testHelpStatement() = doTest()
 
-  fun testSubscription() {
-    doTest()
-  }
+  fun testSubscription() = doTest()
 
-  fun testStatementBreak() {
-    doTest()
-  }
+  fun testStatementBreak() = doTest()
 
-  fun testStatementBreakAssignment() {
-    doTest()
-  }
+  fun testStatementBreakAssignment() = doTest()
 
-  fun testHelpOnKeyword() {
-    doTest()
-  }
+  fun testHelpOnKeyword() = doTest()
 
-  fun testBreak() {
-    doTest()
-  }
+  fun testBreak() = doTest()
 
-  fun testOperator() {
-    doTest()
-  }
+  fun testOperator() = doTest()
 
-  fun testOperatorsPriority() {
-    doTest()
-  }
+  fun testOperatorsPriority() = doTest()
 
-  fun testParenthesized() {
-    doTest()
-  }
+  fun testParenthesized() = doTest()
 
-  fun testSemicolon() {
-    doTest()
-  }
+  fun testSemicolon() = doTest()
 
-  fun testPrecedence() {
-    doTest()
-  }
+  fun testPrecedence() = doTest()
 
-  fun testStringKeywordArg() {
-    doTest()
-  }
+  fun testStringKeywordArg() = doTest()
 
-  fun testKeywordArg() {
-    doTest()
-  }
+  fun testKeywordArg() = doTest()
 
-  fun testBlockAsArgument() {
-    doTest()
-  }
+  fun testBlockAsArgument() = doTest()
 
-  fun testFormulae() {
-    doTest()
-  }
+  fun testFormulae() = doTest()
 
-  fun testFunctionBodyAsExpression() {
-    doTest()
-  }
+  fun testFunctionBodyAsExpression() = doTest()
 
-  fun testFunctionAsCallArgument() {
-    doTest()
-  }
+  fun testFunctionAsCallArgument() = doTest()
 
-  fun testIfShortForm() {
-    doTest()
-  }
+  fun testIfShortForm() = doTest()
 
-  fun testAssignmentInSubscription() {
-    doTest()
-  }
+  fun testAssignmentInSubscription() = doTest()
 
-  fun testEmptyKeywordArgument() {
-    doTest()
-  }
+  fun testEmptyKeywordArgument() = doTest()
 
-  fun testIfInKeywordArgument() {
-    doTest()
-  }
+  fun testIfInKeywordArgument() = doTest()
 
-  fun testIfStatementAsArgument() {
-    doTest()
-  }
+  fun testIfStatementAsArgument() = doTest()
 
-  fun testReferenceWithAt() {
-    doTest()
-  }
+  fun testReferenceWithAt() = doTest()
 
-  fun testDotAsReference() {
-    doTest()
-  }
+  fun testDotAsReference() = doTest()
 
-  fun testReprAsKeywordArgument() {
-    doTest()
-  }
+  fun testReprAsKeywordArgument() = doTest()
 
-  fun testEmptyExpressionInSubscription() {
-    doTest()
-  }
+  fun testEmptyExpressionInSubscription() = doTest()
 
-  fun testReprInFunctionDef() {
-    doTest()
-  }
+  fun testReprInFunctionDef() = doTest()
 
-  fun testStatementAsDefaultValue() {
-    doTest()
-  }
+  fun testStatementAsDefaultValue() = doTest()
 
-  fun testDoubleDoubleBracket() {
-    doTest()
-  }
+  fun testDoubleDoubleBracket() = doTest()
 
-  fun testDotAsFunctionParameter() {
-    doTest()
-  }
+  fun testDotAsFunctionParameter() = doTest()
 
-  fun testExpressionAsBinaryExpressionPart() {
-    doTest()
-  }
+  fun testExpressionAsBinaryExpressionPart() = doTest()
 
-  fun testDotsInSublist() {
-    doTest()
-  }
+  fun testDotsInSublist() = doTest()
 
-  fun testNewLineAfterKeywordArgument() {
-    doTest()
-  }
+  fun testNewLineAfterKeywordArgument() = doTest()
 
-  fun testDotAsKeywordArgument() {
-    doTest()
-  }
+  fun testDotAsKeywordArgument() = doTest()
 
-  fun testReprInSublist() {
-    doTest()
-  }
+  fun testReprInSublist() = doTest()
 
-  fun testBinaryExpressionNewLine() {
-    doTest()
-  }
+  fun testBinaryExpressionNewLine() = doTest()
 
-  fun testMemberAccess() {
-    doTest()
-  }
+  fun testMemberAccess() = doTest()
 
-  fun testChainedCalls() {
-    doTest()
-  }
+  fun testChainedCalls() = doTest()
 
-  fun testWhileInsideIf() {
-    doTest()
-  }
+  fun testWhileInsideIf() = doTest()
 
-  fun testDoubleStarts() {
-    doTest()
-  }
+  fun testDoubleStarts() = doTest()
 
   //----------Syntax error tests-----------
-  fun testErrorFor() {
-    doTest()
-  }
+  fun testErrorFor() = doTest()
 
-  fun testErrorWhile() {
-    doTest()
-  }
+  fun testErrorWhile() = doTest()
 
-  fun testErrorRepeat() {
-    doTest()
-  }
+  fun testErrorRepeat() = doTest()
 
-  fun testErrorIf() {
-    doTest()
-  }
+  fun testErrorIf() = doTest()
 
-  fun testArgumentsWithoutComma() {
-    doTest()
-  }
+  fun testArgumentsWithoutComma() = doTest()
 
   //---------------------------------------
   private fun doTest() {
