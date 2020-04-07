@@ -17,7 +17,7 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.RLookupElement
-import org.jetbrains.r.editor.TABLE_MANIPULATION_COLUMNS_GROUPING
+import org.jetbrains.r.editor.TABLE_MANIPULATION_PRIORITY
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RDataTableAnalyzer
@@ -76,8 +76,8 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
   private fun addCompletionResults(result: CompletionResultSet,
                                    tableInfo: TableInfo) {
     result.addAllElements(tableInfo.columns.map {
-      PrioritizedLookupElement.withGrouping(RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
-                                            TABLE_MANIPULATION_COLUMNS_GROUPING)
+      PrioritizedLookupElement.withPriority(RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
+                                            TABLE_MANIPULATION_PRIORITY)
     })
   }
 }

@@ -45,7 +45,7 @@ class RMarkdownCompletionContributor : CompletionContributor() {
       private fun createChunkOptionLookupElement(lookupString: String): LookupElement {
         val icon = AllIcons.Nodes.Parameter
         return PrioritizedLookupElement.withInsertHandler(
-          PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, icon, tailText = " = "), NAMED_ARGUMENT_GROUPING),
+          PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, icon, tailText = " = "), NAMED_ARGUMENT_PRIORITY),
           InsertHandler<LookupElement> { context, _ ->
             val document = context.document
             val startOffset = context.startOffset

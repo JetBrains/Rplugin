@@ -25,6 +25,7 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.apache.commons.lang.StringUtils
+import org.jetbrains.annotations.Nullable
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
@@ -47,10 +48,11 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.math.min
 
-const val TABLE_MANIPULATION_COLUMNS_GROUPING = 110
-const val NAMED_ARGUMENT_GROUPING = 100
+const val TABLE_MANIPULATION_PRIORITY = 110.0
+const val IMPORT_PACKAGE_PRIORITY = 110.0
+const val NAMED_ARGUMENT_PRIORITY = 100.0
 const val VARIABLE_GROUPING = 90
-const val PACKAGE_GROUPING = -1
+const val PACKAGE_PRIORITY = -1.0
 const val GLOBAL_GROUPING = 0
 const val NAMESPACE_NAME_GROUPING = -1
 
@@ -75,13 +77,13 @@ class RLookupElement(private val lookup: String,
 class RCompletionContributor : CompletionContributor() {
 
   init {
-    addInstalledPackageCompletion()
-    addIdentifierCompletion()
-    addMemberAccessCompletion()
-    addNamespaceAccessExpression()
     addTableContextCompletion()
-    addStringLiteralCompletion()
     addGGPlotAesColumnCompletionProvider()
+    addStringLiteralCompletion()
+    addInstalledPackageCompletion()
+    addNamespaceAccessExpression()
+    addMemberAccessCompletion()
+    addIdentifierCompletion()
   }
 
   private fun addNamespaceAccessExpression() {
@@ -241,7 +243,9 @@ class RCompletionContributor : CompletionContributor() {
             context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
           }
         }
-        result.addElement(createLookupElement(RLookupElement(stringValue, true, tailText = " (...)"), insertHandler, GLOBAL_GROUPING))
+        result.addElement(createLookupElementWithGrouping(RLookupElement(stringValue, true, tailText = " (...)"),
+                                                          insertHandler,
+                                                          GLOBAL_GROUPING))
       }
     }
 
@@ -341,9 +345,9 @@ class RCompletionContributor : CompletionContributor() {
       addTableCompletion(RDplyrAnalyzer, position, runtimeInfo, columns)
       addTableCompletion(RDataTableAnalyzer, position, runtimeInfo, columns)
       result.addAllElements(columns.distinct().map {
-        PrioritizedLookupElement.withGrouping(
+        PrioritizedLookupElement.withPriority(
           RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
-          TABLE_MANIPULATION_COLUMNS_GROUPING
+          TABLE_MANIPULATION_PRIORITY
         )
       })
     }
@@ -352,8 +356,13 @@ class RCompletionContributor : CompletionContributor() {
   private class StringLiteralCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
+      addTableLiterals(stringLiteral, parameters, result)
       addFilePathCompletion(parameters, stringLiteral, result)
+    }
 
+    private fun addTableLiterals(stringLiteral: @Nullable RStringLiteralExpression,
+                                 parameters: CompletionParameters,
+                                 result: CompletionResultSet) {
       val parent = stringLiteral.parent as? ROperatorExpression ?: return
       if (!parent.isBinary || (parent.operator?.name != "==" && parent.operator?.name != "!=")) return
       val other = (if (parent.leftExpr == stringLiteral) parent.rightExpr else parent.leftExpr) ?: return
@@ -368,9 +377,9 @@ class RCompletionContributor : CompletionContributor() {
         }
       }
       result.addAllElements(values.distinct().map {
-        createLookupElement(RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
-                            insertHandler,
-                            TABLE_MANIPULATION_COLUMNS_GROUPING)
+        createLookupElementWithPriority(RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
+                                        insertHandler,
+                                        TABLE_MANIPULATION_PRIORITY)
       })
     }
 
@@ -486,9 +495,9 @@ class RCompletionContributor : CompletionContributor() {
           context.editor.caretModel.moveCaretRelatively(if (noArgs) 2 else 1, 0, false, false, false)
         }
       }
-      return createLookupElement(RLookupElement(functionAssignment.name, false, icon, packageName, tailText),
-                                 insertHandler,
-                                 if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
+      return  createLookupElementWithGrouping(RLookupElement(functionAssignment.name, false, icon, packageName, tailText),
+                                              insertHandler,
+                                              if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
     }
 
     private fun createLocalVariableLookupElement(lookupString: String, isParameter: Boolean): LookupElement {
@@ -503,12 +512,14 @@ class RCompletionContributor : CompletionContributor() {
         document.insertString(context.tailOffset, " = ")
         context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
       }
-      return createLookupElement(RLookupElement(lookupString, true, icon, tailText = " = "), insertHandler, NAMED_ARGUMENT_GROUPING)
+      return createLookupElementWithPriority(RLookupElement(lookupString, true, icon, tailText = " = "),
+                                             insertHandler,
+                                             NAMED_ARGUMENT_PRIORITY)
     }
 
     private fun createPackageLookupElement(lookupString: String, inImport: Boolean): LookupElement {
       return if (inImport) {
-        PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, AllIcons.Nodes.Package), PACKAGE_GROUPING)
+        PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Package), IMPORT_PACKAGE_PRIORITY)
       }
       else {
         val insertHandler = InsertHandler<LookupElement> { context, _ ->
@@ -517,7 +528,9 @@ class RCompletionContributor : CompletionContributor() {
           AutoPopupController.getInstance(context.project).scheduleAutoPopup(context.editor)
           context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
         }
-        createLookupElement(RLookupElement(lookupString, true, AllIcons.Nodes.Package, tailText = "::"), insertHandler, PACKAGE_GROUPING)
+        createLookupElementWithPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Package, tailText = "::"),
+                                        insertHandler,
+                                        PACKAGE_PRIORITY)
       }
     }
 
@@ -533,9 +546,9 @@ class RCompletionContributor : CompletionContributor() {
           document.replaceString(startOffset, endOffset, "")
         }
       }
-      return createLookupElement(RLookupElement(functionAssignment.name, false, icon, packageName),
-                                 insertHandler,
-                                 if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
+      return createLookupElementWithGrouping(RLookupElement(functionAssignment.name, false, icon, packageName),
+                                             insertHandler,
+                                             if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
     }
 
     private fun createNamespaceAccess(lookupString: String): LookupElement {
@@ -544,7 +557,9 @@ class RCompletionContributor : CompletionContributor() {
         document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
         context.editor.caretModel.moveToOffset(context.tailOffset)
       }
-      return createLookupElement(RLookupElement(lookupString, false, AllIcons.Nodes.Package), insertHandler, NAMESPACE_NAME_GROUPING)
+      return createLookupElementWithGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Package),
+                                             insertHandler,
+                                             NAMESPACE_NAME_GROUPING)
     }
 
     private fun addCompletionFromIndices(project: Project,
@@ -599,9 +614,16 @@ class RCompletionContributor : CompletionContributor() {
   }
 }
 
-private fun createLookupElement(lookupElement: LookupElement,
-                                insertHandler: InsertHandler<LookupElement>,
-                                grouping: Int): LookupElement {
+private fun createLookupElementWithGrouping(lookupElement: LookupElement,
+                                            insertHandler: InsertHandler<LookupElement>,
+                                            grouping: Int): LookupElement {
   val lookupElementWithInsertHandler = PrioritizedLookupElement.withInsertHandler(lookupElement, insertHandler)
   return PrioritizedLookupElement.withGrouping(lookupElementWithInsertHandler, grouping)
+}
+
+private fun createLookupElementWithPriority(lookupElement: LookupElement,
+                                            insertHandler: InsertHandler<LookupElement>,
+                                            priority: Double): LookupElement {
+  val lookupElementWithInsertHandler = PrioritizedLookupElement.withInsertHandler(lookupElement, insertHandler)
+  return PrioritizedLookupElement.withPriority(lookupElementWithInsertHandler, priority)
 }

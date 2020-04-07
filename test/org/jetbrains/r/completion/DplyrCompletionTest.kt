@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.completion
 
+import com.intellij.testFramework.UsefulTestCase
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
@@ -164,10 +165,20 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
                     expected = listOf("\"yyyy_aba\"", "\"yyyy_ada\"", "\"yyyy_ara\""))
   }
 
+  fun testStarwarsColumnsFirst() {
+    myFixture.configureByText("a.R", "starwars %>% filter(<caret>)")
+    addRuntimeInfo()
+    val columns = arrayOf("birth_year", "eye_color", "films", "gender", "hair_color",
+                          "height", "homeworld", "mass", "name", "n", "skin_color",
+                          "species", "starships", "stars", "vehicles")
+    val completeBasic = myFixture.completeBasic()
+    UsefulTestCase.assertContainsElements(completeBasic.take(columns.size).map { it.toString() }, *columns)
+  }
+
   fun testNamedArgumentIsNotColumn() {
     rInterop.executeCode("table <- dplyr::tibble()")
     myFixture.configureByText("a.R", "table %>% count(name = 'someName', nam<caret>)")
-    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    addRuntimeInfo()
     val result = myFixture.completeBasic()
     TestCase.assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
@@ -184,10 +195,14 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
       rInterop.executeCode("table <- NULL", false)
     }
     myFixture.configureByText("a.R", text)
-    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    addRuntimeInfo()
     val result = myFixture.completeBasic()
     TestCase.assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
     TestCase.assertEquals(expected, lookupStrings)
+  }
+
+  private fun addRuntimeInfo() {
+    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
   }
 }
