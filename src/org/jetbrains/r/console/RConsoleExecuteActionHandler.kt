@@ -22,6 +22,7 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.xdebugger.XSourcePosition
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -281,7 +282,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                 }.thenAsync { it }
               }
             }
-            .let { PromiseUtil.runChain(it).then { Unit } }
+            .let { PromiseUtil.runChain(it).then {
+              refreshLocalFileSystem()
+              Unit
+            } }
         }
       }
       State.READ_LN -> {
@@ -387,6 +391,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
       override fun includeInOccurenceNavigation() = false
     }
+  }
+
+  private fun refreshLocalFileSystem() {
+    VirtualFileManager.getInstance().asyncRefresh(null)
   }
 }
 
