@@ -22,7 +22,6 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import com.intellij.util.Consumer
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.apache.commons.lang.StringUtils
@@ -235,15 +234,14 @@ class RCompletionContributor : CompletionContributor() {
       for (keyword in KEYWORDS_WITH_BRACKETS) {
         val stringValue = keyword.toString()
         shownNames.add(stringValue)
-        result.addElement(PrioritizedLookupElement.withInsertHandler(
-          PrioritizedLookupElement.withGrouping(RLookupElement(stringValue, true, tailText = " (...)"), GLOBAL_GROUPING),
-          InsertHandler<LookupElement> { context, _ ->
-            if (!isHelpFromRConsole) {
-              val document = context.document
-              document.insertString(context.tailOffset, " ()")
-              context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
-            }
-          }))
+        val insertHandler = InsertHandler<LookupElement> { context, _ ->
+          if (!isHelpFromRConsole) {
+            val document = context.document
+            document.insertString(context.tailOffset, " ()")
+            context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
+          }
+        }
+        result.addElement(createLookupElement(RLookupElement(stringValue, true, tailText = " (...)"), insertHandler, GLOBAL_GROUPING))
       }
     }
 
@@ -364,15 +362,15 @@ class RCompletionContributor : CompletionContributor() {
       val values = mutableListOf<String>()
       addColumnStringValues(RDplyrAnalyzer, stringLiteral, other, runtimeInfo, values)
       addColumnStringValues(RDataTableAnalyzer, stringLiteral, other, runtimeInfo, values)
+      val insertHandler = InsertHandler<LookupElement> { insertHandlerContext, _ ->
+        insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
+          insertHandlerContext.editor.caretModel.moveToOffset(element.textRange.endOffset)
+        }
+      }
       result.addAllElements(values.distinct().map {
-        PrioritizedLookupElement.withInsertHandler(
-          RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
-          InsertHandler<LookupElement> { context, _ ->
-            context.file.findElementAt(context.editor.caretModel.offset)?.let { element ->
-              context.editor.caretModel.moveToOffset(element.textRange.endOffset)
-            }
-          }
-        )
+        createLookupElement(RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
+                            insertHandler,
+                            TABLE_MANIPULATION_COLUMNS_GROUPING)
       })
     }
 
@@ -481,17 +479,16 @@ class RCompletionContributor : CompletionContributor() {
       val icon = AllIcons.Nodes.Function
       val tailText = functionAssignment.functionParameters
       val noArgs = tailText == "()"
-      return PrioritizedLookupElement.withInsertHandler(
-        PrioritizedLookupElement.withGrouping(RLookupElement(functionAssignment.name, false, icon, packageName, tailText),
-                                              if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING),
-        InsertHandler<LookupElement> { context, _ ->
-          if (!isHelpFromRConsole) {
-            val document = context.document
-            document.insertString(context.tailOffset, "()")
-            context.editor.caretModel.moveCaretRelatively(if (noArgs) 2 else 1, 0, false, false, false)
-          }
+      val insertHandler = InsertHandler<LookupElement> { context, _ ->
+        if (!isHelpFromRConsole) {
+          val document = context.document
+          document.insertString(context.tailOffset, "()")
+          context.editor.caretModel.moveCaretRelatively(if (noArgs) 2 else 1, 0, false, false, false)
         }
-      )
+      }
+      return createLookupElement(RLookupElement(functionAssignment.name, false, icon, packageName, tailText),
+                                 insertHandler,
+                                 if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
     }
 
     private fun createLocalVariableLookupElement(lookupString: String, isParameter: Boolean): LookupElement {
@@ -501,14 +498,12 @@ class RCompletionContributor : CompletionContributor() {
 
     private fun createNamedArgumentLookupElement(lookupString: String): LookupElement {
       val icon = AllIcons.Nodes.Parameter
-      return PrioritizedLookupElement.withInsertHandler(
-        PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, icon, tailText = " = "), NAMED_ARGUMENT_GROUPING),
-        InsertHandler<LookupElement> { context, _ ->
-          val document = context.document
-          document.insertString(context.tailOffset, " = ")
-          context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
-        }
-      )
+      val insertHandler = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        document.insertString(context.tailOffset, " = ")
+        context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
+      }
+      return createLookupElement(RLookupElement(lookupString, true, icon, tailText = " = "), insertHandler, NAMED_ARGUMENT_GROUPING)
     }
 
     private fun createPackageLookupElement(lookupString: String, inImport: Boolean): LookupElement {
@@ -516,45 +511,41 @@ class RCompletionContributor : CompletionContributor() {
         PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, AllIcons.Nodes.Package), PACKAGE_GROUPING)
       }
       else {
-        PrioritizedLookupElement.withInsertHandler(
-          PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, AllIcons.Nodes.Package,
-                                                               tailText = "::"), PACKAGE_GROUPING),
-          InsertHandler<LookupElement> { context, _ ->
-            val document = context.document
-            document.insertString(context.tailOffset, "::")
-            AutoPopupController.getInstance(context.project).scheduleAutoPopup(context.editor)
-            context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
-          })
+        val insertHandler = InsertHandler<LookupElement> { context, _ ->
+          val document = context.document
+          document.insertString(context.tailOffset, "::")
+          AutoPopupController.getInstance(context.project).scheduleAutoPopup(context.editor)
+          context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
+        }
+        createLookupElement(RLookupElement(lookupString, true, AllIcons.Nodes.Package, tailText = "::"), insertHandler, PACKAGE_GROUPING)
       }
     }
 
     private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {
       val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(functionAssignment.containingFile)?.name
       val icon = AllIcons.Nodes.Function
-      return PrioritizedLookupElement.withInsertHandler(
-        PrioritizedLookupElement.withGrouping(RLookupElement(functionAssignment.name, false, icon, packageName),
-                                              if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING),
-        InsertHandler<LookupElement> { context, _ ->
-          val document = context.document
-          val startOffset = context.tailOffset
-          val endOffset = min(context.tailOffset + 1, document.textLength)
-          if (endOffset <= startOffset) return@InsertHandler
-          if (document.getText(TextRange(startOffset, endOffset)) == "%") {
-            document.replaceString(startOffset, endOffset, "")
-          }
-        })
+      val insertHandler = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        val startOffset = context.tailOffset
+        val endOffset = min(context.tailOffset + 1, document.textLength)
+        if (endOffset <= startOffset) return@InsertHandler
+        if (document.getText(TextRange(startOffset, endOffset)) == "%") {
+          document.replaceString(startOffset, endOffset, "")
+        }
+      }
+      return createLookupElement(RLookupElement(functionAssignment.name, false, icon, packageName),
+                                 insertHandler,
+                                 if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
     }
 
     private fun createNamespaceAccess(lookupString: String): LookupElement {
-      return PrioritizedLookupElement.withInsertHandler(
-        PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Package), NAMESPACE_NAME_GROUPING),
-        InsertHandler<LookupElement> { context, _ ->
-          val document = context.document
-          document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
-          context.editor.caretModel.moveToOffset(context.tailOffset)
-        })
+      val insertHandler = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
+        context.editor.caretModel.moveToOffset(context.tailOffset)
+      }
+      return createLookupElement(RLookupElement(lookupString, false, AllIcons.Nodes.Package), insertHandler, NAMESPACE_NAME_GROUPING)
     }
-
 
     private fun addCompletionFromIndices(project: Project,
                                          scope: GlobalSearchScope,
@@ -606,4 +597,11 @@ class RCompletionContributor : CompletionContributor() {
       })
     }
   }
+}
+
+private fun createLookupElement(lookupElement: LookupElement,
+                                insertHandler: InsertHandler<LookupElement>,
+                                grouping: Int): LookupElement {
+  val lookupElementWithInsertHandler = PrioritizedLookupElement.withInsertHandler(lookupElement, insertHandler)
+  return PrioritizedLookupElement.withGrouping(lookupElementWithInsertHandler, grouping)
 }
