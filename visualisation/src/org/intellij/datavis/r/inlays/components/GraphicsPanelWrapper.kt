@@ -25,6 +25,7 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         scheduleRescalingIfNecessary()
       }
     })
+    showLoadingMessage()
   }
 
   val preferredImageSize: Dimension?
@@ -100,7 +101,7 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       if (rescaleMode != RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE || !isAutoResizeEnabled) {
         graphicsPanel.showImage(imageFile)
       } else {
-        graphicsPanel.showMessage(WAITING_MESSAGE)
+        graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
         rescaleIfNecessary()
       }
     }

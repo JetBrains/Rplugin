@@ -18,12 +18,15 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.testFramework.LightVirtualFile
+import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
+import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -44,6 +47,11 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private val graphicsManager = GraphicsManager.getInstance(project)
   private val label = JLabel(NO_GRAPHICS, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
+
+  private val loadingPanel = JBLoadingPanel(BorderLayout(), disposableParent).apply {
+    startLoading()
+  }
+
   @Volatile
   private var currentFile: File? = null
 
@@ -144,6 +152,12 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun showMessage(message: String) {
     closeEditor(message)
+  }
+
+  fun showLoadingMessage(message: String? = null) {
+    closeEditor("")
+    rootPanel.contentComponent = loadingPanel
+    loadingPanel.setLoadingText(message ?: LOADING_MESSAGE)
   }
 
   fun reset() {
@@ -278,6 +292,8 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     private const val imageInsets = ImageComponent.IMAGE_INSETS
     private const val NO_GRAPHICS = "No graphics available"
     private const val GRAPHICS_COULD_NOT_BE_LOADED = "Graphics couldn't be loaded"
+
+    private val LOADING_MESSAGE = VisualizationBundle.message("graphics.loading")
 
     fun calculateImageSizeForRegion(region: Dimension, topOffset: Int = 0): Dimension {
       return Dimension(region.width - imageInsets * 2, region.height - imageInsets * 2 - topOffset)
