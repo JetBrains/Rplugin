@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.util.ui.JBUI
 import java.awt.Dimension
 import java.awt.Font
+import kotlin.math.max
 
 object InlayDimensions {
 
@@ -105,8 +106,8 @@ object InlayDimensions {
 
   fun calculateInlayContentSize(editor: EditorEx, inlayHeight: Int = defaultHeight): Dimension {
     val inlayWidth = calculateInlayWidth(editor)
-    val contentWidth = inlayWidth - JBUI.scale(rightBorderUnscaled)- JBUI.scale(leftBorderUnscaled)
-    val contentHeight = inlayHeight - topBorder - bottomBorder
+    val contentWidth = max(inlayWidth - JBUI.scale(rightBorderUnscaled)- JBUI.scale(leftBorderUnscaled), 0)
+    val contentHeight = max(inlayHeight - topBorder - topOffset - bottomBorder - bottomOffset, 0)
     return Dimension(contentWidth, contentHeight)
   }
 }
