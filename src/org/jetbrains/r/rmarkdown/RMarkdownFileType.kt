@@ -13,7 +13,7 @@ import javax.swing.Icon
 object RMarkdownFileType : LanguageFileType(RMarkdownLanguage) {
   override fun getName() = "RMarkdown"
   override fun getDescription() = "R Markdown"
-  override fun getDefaultExtension() = "rmd"
+  override fun getDefaultExtension() = "Rmd"
   override fun getIcon(): Icon? = R_MARKDOWN
   override fun isReadOnly() = false
   override fun getCharset(file: VirtualFile, content: ByteArray): String? = CharsetToolkit.UTF8

@@ -154,7 +154,7 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
   }
 
   private fun getDotExtension(isRmd: Boolean): String {
-    val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension else DOT_R_EXTENSION.drop(1)
+    val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension.toLowerCase() else DOT_R_EXTENSION.drop(1)
     return ".$fileExtension"
   }
 
