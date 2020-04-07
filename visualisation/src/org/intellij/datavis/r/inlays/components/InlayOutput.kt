@@ -171,7 +171,8 @@ class InlayOutputImg(
 
   override fun addData(data: String, type: String) {
     if (type == "IMG") {
-      wrapper.addImage(File(data), GraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE, ::runAsyncInlay)
+      wrapper.isAutoResizeEnabled = false
+      wrapper.addImage(File(data), GraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay)
     } else {
       runAsyncInlay {
         when (type) {
@@ -190,6 +191,9 @@ class InlayOutputImg(
           onHeightCalculated?.invoke(maxHeight * scaleMultiplier)
         } else {
           onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
+        }
+        if (type == "IMG") {
+          wrapper.isAutoResizeEnabled = graphicsManager?.canRescale(data) ?: false
         }
       }
     }
