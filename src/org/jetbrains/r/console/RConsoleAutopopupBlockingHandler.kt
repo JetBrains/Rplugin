@@ -21,6 +21,6 @@ class RConsoleAutopopupBlockingHandler : TypedHandlerDelegate() {
   }
 
   companion object {
-    val REPL_KEY: Key<RConsoleView> = Key("python.repl.console.editor")
+    val REPL_KEY: Key<RConsoleView> = Key("r.repl.console.editor")
   }
 }
