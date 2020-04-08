@@ -26,7 +26,6 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.R_3_6
 import org.jetbrains.r.packages.RHelpersUtil
-import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -56,9 +55,17 @@ object RInteropUtil {
                              paths: RPaths) {
     val linePromise = AsyncPromise<String>()
     var rInteropForReport: RInterop? = null
+    val stdout = StringBuilder()
+    val stderr = StringBuffer()
+
+    fun generateErrorReport(): String =
+      """
+      rpath: ${paths}${System.lineSeparator()}
+      stdout: ${stdout}
+      stderr: ${stderr}
+      """
+
     process.addProcessListener(object : ProcessListener {
-      val stdout = StringBuilder()
-      val stderr = StringBuffer()
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
         when (outputType) {
@@ -87,11 +94,9 @@ object RInteropUtil {
         }
         if (linePromise.state == Promise.State.PENDING) {
           linePromise.setError(RuntimeException(
-"""RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
-rpath: ${paths}${System.lineSeparator()}
-stdout: ${stdout}
-stderr: ${stderr}
-""".trimIndent()))
+                                """RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
+                                ${generateErrorReport()}
+                                """.trimIndent()))
         }
       }
 
@@ -108,7 +113,9 @@ stderr: ${stderr}
         val line = try {
           linePromise.blockingGet(RInterpreterUtil.RWRAPPER_INITIALIZED_TIMEOUT) ?: ""
         } catch (e: TimeoutException) {
-          throw RuntimeException("RWrapper does not produce output")
+          throw RuntimeException("""RWrapper does not produce output
+          ${generateErrorReport()}
+          """.trimMargin())
         }
         val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull()
                    ?: throw RuntimeException("Invalid RWrapper output")
