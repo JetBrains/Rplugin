@@ -130,6 +130,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testDoubleStarts() = doTest()
 
+  fun testEmptyArguments() = doTest()
+
   //----------Syntax error tests-----------
   fun testErrorFor() = doTest()
 

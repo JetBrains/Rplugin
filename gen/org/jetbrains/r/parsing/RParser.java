@@ -76,7 +76,55 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // '(' nl* ( non_empty_arg nl* (',' nl* arg nl*)* )? ')'
+  // (',' nl* arg nl*)*
+  static boolean args_tail(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "args_tail")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!args_tail_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "args_tail", c)) break;
+    }
+    return true;
+  }
+
+  // ',' nl* arg nl*
+  private static boolean args_tail_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "args_tail_0")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeToken(b, R_COMMA);
+    p = r; // pin = 1
+    r = r && report_error_(b, args_tail_0_1(b, l + 1));
+    r = p && report_error_(b, arg(b, l + 1)) && r;
+    r = p && args_tail_0_3(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // nl*
+  private static boolean args_tail_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "args_tail_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "args_tail_0_1", c)) break;
+    }
+    return true;
+  }
+
+  // nl*
+  private static boolean args_tail_0_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "args_tail_0_3")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "args_tail_0_3", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // '(' nl* ( non_empty_first_arg | empty_first_arg )? ')'
   public static boolean argument_list(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argument_list")) return false;
     if (!nextTokenIs(b, R_LPAR)) return false;
@@ -102,82 +150,20 @@ public class RParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ( non_empty_arg nl* (',' nl* arg nl*)* )?
+  // ( non_empty_first_arg | empty_first_arg )?
   private static boolean argument_list_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argument_list_2")) return false;
     argument_list_2_0(b, l + 1);
     return true;
   }
 
-  // non_empty_arg nl* (',' nl* arg nl*)*
+  // non_empty_first_arg | empty_first_arg
   private static boolean argument_list_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argument_list_2_0")) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
-    r = non_empty_arg(b, l + 1);
-    p = r; // pin = 1
-    r = r && report_error_(b, argument_list_2_0_1(b, l + 1));
-    r = p && argument_list_2_0_2(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // nl*
-  private static boolean argument_list_2_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument_list_2_0_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, R_NL)) break;
-      if (!empty_element_parsed_guard_(b, "argument_list_2_0_1", c)) break;
-    }
-    return true;
-  }
-
-  // (',' nl* arg nl*)*
-  private static boolean argument_list_2_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument_list_2_0_2")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!argument_list_2_0_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "argument_list_2_0_2", c)) break;
-    }
-    return true;
-  }
-
-  // ',' nl* arg nl*
-  private static boolean argument_list_2_0_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument_list_2_0_2_0")) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
-    r = consumeToken(b, R_COMMA);
-    p = r; // pin = 1
-    r = r && report_error_(b, argument_list_2_0_2_0_1(b, l + 1));
-    r = p && report_error_(b, arg(b, l + 1)) && r;
-    r = p && argument_list_2_0_2_0_3(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // nl*
-  private static boolean argument_list_2_0_2_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument_list_2_0_2_0_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, R_NL)) break;
-      if (!empty_element_parsed_guard_(b, "argument_list_2_0_2_0_1", c)) break;
-    }
-    return true;
-  }
-
-  // nl*
-  private static boolean argument_list_2_0_2_0_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "argument_list_2_0_2_0_3")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, R_NL)) break;
-      if (!empty_element_parsed_guard_(b, "argument_list_2_0_2_0_3", c)) break;
-    }
-    return true;
+    boolean r;
+    r = non_empty_first_arg(b, l + 1);
+    if (!r) r = empty_first_arg(b, l + 1);
+    return r;
   }
 
   /* ********************************************************** */
@@ -218,6 +204,45 @@ public class RParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, R_NOTEQ);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  /* ********************************************************** */
+  // external_empty_expression nl* ',' nl* arg args_tail
+  static boolean empty_first_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "empty_first_arg")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = parseEmptyExpression(b, l + 1);
+    r = r && empty_first_arg_1(b, l + 1);
+    r = r && consumeToken(b, R_COMMA);
+    p = r; // pin = 3
+    r = r && report_error_(b, empty_first_arg_3(b, l + 1));
+    r = p && report_error_(b, arg(b, l + 1)) && r;
+    r = p && args_tail(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // nl*
+  private static boolean empty_first_arg_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "empty_first_arg_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "empty_first_arg_1", c)) break;
+    }
+    return true;
+  }
+
+  // nl*
+  private static boolean empty_first_arg_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "empty_first_arg_3")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "empty_first_arg_3", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */
@@ -571,6 +596,31 @@ public class RParser implements PsiParser, LightPsiParser {
   private static boolean non_empty_arg_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "non_empty_arg_1")) return false;
     no_comma_tail(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // non_empty_arg nl* args_tail
+  static boolean non_empty_first_arg(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "non_empty_first_arg")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = non_empty_arg(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, non_empty_first_arg_1(b, l + 1));
+    r = p && args_tail(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // nl*
+  private static boolean non_empty_first_arg_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "non_empty_first_arg_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, R_NL)) break;
+      if (!empty_element_parsed_guard_(b, "non_empty_first_arg_1", c)) break;
+    }
     return true;
   }
 

@@ -224,7 +224,10 @@ no_comma_tail ::= nl* ((named_argument | expression) nl* )+
 
 private non_empty_arg ::= (named_argument | expression ) (no_comma_tail?)
 private arg ::= non_empty_arg | external_empty_expression
-argument_list ::= '(' nl* ( non_empty_arg nl* (',' nl* arg nl*)* )? ')' { pin(".*")=1 }
+private args_tail ::= (',' nl* arg nl*)* { pin(".*")=1 }
+private non_empty_first_arg ::= non_empty_arg nl* args_tail { pin=1 }
+private empty_first_arg ::= external_empty_expression nl* ',' nl* arg args_tail  { pin=3 }
+argument_list ::= '(' nl* ( non_empty_first_arg | empty_first_arg )? ')' { pin(".*")=1 }
 call_expression ::= expression argument_list
 
 parameter ::= (identifier_expression ('=' expression)?)  {

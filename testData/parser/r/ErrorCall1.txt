@@ -6,5 +6,5 @@ RFile:ErrorCall1.r
     R_ARGUMENT_LIST
       PsiElement(()('(')
       PsiElement(nl)('\n')
-      PsiErrorElement:')', <expression> or nl expected
+      PsiErrorElement:')', ',', <expression> or nl expected
         <empty list>
