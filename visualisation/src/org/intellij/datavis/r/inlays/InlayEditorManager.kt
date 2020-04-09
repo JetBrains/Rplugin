@@ -470,7 +470,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
-    return editor.inlayModel.addBlockElement(offset, true, false, 0, inlayComponent)!!
+    return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)!!
   }
 
   private fun addInlayComponent(cell: PsiElement): NotebookInlayComponent {
@@ -517,6 +517,8 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     private const val VIEWPORT_TASK_NAME = "On viewport change"
     private const val VIEWPORT_TASK_IDENTITY = "On viewport change task"
     private const val VIEWPORT_TIME_SPAN = 50
+
+    const val INLAY_PRIORITY = 0
   }
 }
 
