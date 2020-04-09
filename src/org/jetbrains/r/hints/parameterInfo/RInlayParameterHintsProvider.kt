@@ -101,7 +101,7 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
   }
 
   companion object {
-    private val WRAP_DOTS_OPTION = Option("R_HINT_OPTION_WRAP_DOTS", RBundle.message("inlay.hints.wrap.dots.option.description"), true)
+    private val WRAP_DOTS_OPTION = Option("R_HINT_OPTION_WRAP_DOTS", RBundle.message("inlay.hints.wrap.dots.option.description"), false)
 
     private const val DOTS = "..."
 
