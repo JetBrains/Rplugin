@@ -25,7 +25,6 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.apache.commons.lang.StringUtils
-import org.jetbrains.annotations.Nullable
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
@@ -360,7 +359,7 @@ class RCompletionContributor : CompletionContributor() {
       addFilePathCompletion(parameters, stringLiteral, result)
     }
 
-    private fun addTableLiterals(stringLiteral: @Nullable RStringLiteralExpression,
+    private fun addTableLiterals(stringLiteral: RStringLiteralExpression,
                                  parameters: CompletionParameters,
                                  result: CompletionResultSet) {
       val parent = stringLiteral.parent as? ROperatorExpression ?: return
