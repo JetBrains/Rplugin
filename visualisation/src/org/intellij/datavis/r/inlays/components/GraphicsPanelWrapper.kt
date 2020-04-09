@@ -14,6 +14,7 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.image.BufferedImage
 import java.io.File
+import javax.swing.JComponent
 
 class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
@@ -70,6 +71,12 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
           scheduleRescalingIfNecessary()
         }
       }
+    }
+
+  var overlayComponent: JComponent?
+    get() = graphicsPanel.overlayComponent
+    set(component) {
+      graphicsPanel.overlayComponent = component
     }
 
   val image: BufferedImage?

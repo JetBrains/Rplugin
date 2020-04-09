@@ -169,6 +169,11 @@ class InlayOutputImg(
     }
   }
 
+  override fun addToolbar() {
+    super.addToolbar()
+    wrapper.overlayComponent = toolbarPane.toolbarComponent
+  }
+
   override fun addData(data: String, type: String) {
     if (type == "IMG") {
       wrapper.isAutoResizeEnabled = false

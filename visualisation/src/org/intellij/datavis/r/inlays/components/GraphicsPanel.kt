@@ -106,6 +106,9 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
 
   @Volatile
+  var overlayComponent: JComponent? = null
+
+  @Volatile
   private var darkMode = graphicsManager?.isDarkModeEnabled ?: true
 
   init {
@@ -241,8 +244,21 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       removeImageInfoLabelAndActionToolBar(editor)
       currentImageFile = file
       currentEditor = editor
-      rootPanel.contentComponent = internalComponent
+      withOverlayComponentPreserved {
+        rootPanel.contentComponent = internalComponent
+      }
       Disposer.register(disposableParent, editor)
+    }
+  }
+
+  private fun withOverlayComponentPreserved(task: () -> Unit) {
+    val component = overlayComponent
+    if (component != null && component.isVisible) {
+      component.isVisible = false
+      task()
+      component.isVisible = true
+    } else {
+      task()
     }
   }
 
