@@ -22,9 +22,9 @@ import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.VisualizationBundle
+import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
-import org.intellij.images.editor.impl.ImageEditorImpl
 import org.intellij.images.ui.ImageComponent
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -239,7 +239,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private fun openEditor(file: VirtualFile) {
     runInEdt {
       closeEditor(NO_GRAPHICS)
-      val editor: ImageEditor = ImageEditorImpl(project, file)  // Note: explicit cast prevents compiler warnings
+      val editor = UiCustomizer.instance.createImageEditor(project, file, this)
       adjustImageZoom(editor.zoomModel)
       removeImageInfoLabelAndActionToolBar(editor)
       currentImageFile = file

@@ -37,6 +37,7 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.ui.InlineToolbar
+import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
 import java.awt.event.ComponentAdapter
@@ -483,7 +484,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     InlayDimensions.init(editor)
 
     val offset = getInlayOffset(cell)
-    val inlayComponent = NotebookInlayComponent(cell, editor)
+    val inlayComponent = UiCustomizer.instance.createNotebookInlayComponent(cell, editor)
 
     // On editor creation it has 0 width
     val gutterWidth = (editor.gutter as EditorGutterComponentEx).width

@@ -14,6 +14,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
@@ -44,9 +45,20 @@ import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
 import kotlin.math.min
 
-abstract class InlayOutput(parent: Disposable, protected val project: Project, private val clearAction: () -> Unit) {
+abstract class InlayOutput(
+  parent: Disposable,
+  protected val project: Project,
+  private val clearAction: () -> Unit,
+  private val parentDataContext: DataContext = DataContext.EMPTY_CONTEXT
+) {
+  val dataContext: DataContext = DataContext { dataId ->
+    when {
+      KEY.`is`(dataId) -> this
+      else -> parentDataContext
+    }
+  }
 
-  protected val toolbarPane = ToolbarPane()
+  protected val toolbarPane = ToolbarPane(dataContext)
 
   protected open val useDefaultSaveAction: Boolean = true
   protected open val extraActions: List<AnAction> = emptyList()
@@ -133,13 +145,18 @@ abstract class InlayOutput(parent: Disposable, protected val project: Project, p
   private fun createSaveAsAction(): AnAction {
     return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.SaveOutputAction", this::saveAs)
   }
+
+  companion object {
+    @JvmField
+    val KEY: DataKey<out InlayOutput> = DataKey.create(InlayOutput::class.java.canonicalName)
+  }
 }
 
 class InlayOutputImg(
   private val parent: Disposable,
   private val editor: Editor,
   clearAction: () -> Unit)
-  : InlayOutput(parent, editor.project!!, clearAction) {
+  : InlayOutput(parent, editor.project!!, clearAction, (editor as? EditorEx)?.dataContext ?: DataContext.EMPTY_CONTEXT) {
   private val wrapper = GraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }

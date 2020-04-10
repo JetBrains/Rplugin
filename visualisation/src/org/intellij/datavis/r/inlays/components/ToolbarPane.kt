@@ -4,6 +4,8 @@
 
 package org.intellij.datavis.r.inlays.components
 
+import com.intellij.openapi.actionSystem.DataContext
+import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JLayeredPane
@@ -14,7 +16,7 @@ import javax.swing.JPanel
  * setCentralComponent() - this component fill the entire ToolbarPane
  * setToolbarComponent() - preserves initial size and stays in top right corner
  */
-class ToolbarPane : JLayeredPane() {
+class ToolbarPane(dataContext: DataContext) : JLayeredPane(), DataContext by dataContext {
   private var mainPanel: JPanel? = null
 
   var centralComponent: JComponent? = null
@@ -29,6 +31,7 @@ class ToolbarPane : JLayeredPane() {
       field = value
       updateMainComponent()
       updateChildrenBounds()
+      UiCustomizer.instance.toolbarPaneProgressComponentChanged(this, value)
     }
 
   var toolbarComponent: JComponent? = null
@@ -36,11 +39,13 @@ class ToolbarPane : JLayeredPane() {
       field = value
       add(value, DEFAULT_LAYER)
       updateChildrenBounds()
+      UiCustomizer.instance.toolbarPaneToolbarComponentChanged(this, value)
     }
 
   private fun updateMainComponent() {
     if (mainPanel == null) {
       mainPanel = JPanel(BorderLayout())
+      UiCustomizer.instance.toolbarPaneMainPanelCreated(this, mainPanel)
       add(mainPanel, PALETTE_LAYER)
     }
     mainPanel?.let { main ->

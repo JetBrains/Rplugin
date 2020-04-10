@@ -6,6 +6,8 @@
                     interface="org.intellij.datavis.r.inlays.components.GraphicsManagerProvider"/>
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.inlayOutputProvider"
                     interface="org.intellij.datavis.r.inlays.components.InlayOutputProvider"/>
+    <extensionPoint qualifiedName="org.intellij.datavis.r.inlays.visualisation.uiCustomizer"
+                    interface="org.intellij.datavis.r.ui.UiCustomizer"/>
   </extensionPoints>
 
   <project-components>
@@ -51,6 +53,10 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <notificationWhitelist groupIds="InlayTable;Notebook Table"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="org.intellij.datavis.r.inlays.visualisation">
+    <uiCustomizer implementation="org.intellij.datavis.r.ui.DefaultUiCustomizer"/>
   </extensions>
 
 </idea-plugin>
