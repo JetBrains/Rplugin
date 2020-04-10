@@ -27,7 +27,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.messages.Topic
-import com.jetbrains.rd.util.getOrCreate
 import io.grpc.*
 import io.grpc.stub.ClientCalls
 import io.grpc.stub.StreamObserver
@@ -590,7 +589,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       if (index == -1) {
         throw RDataFrameException("Invalid data frame")
       }
-      dataFrameViewerCache.getOrCreate(index) {
+      dataFrameViewerCache.getOrPut(index) {
         val persistentRef = RPersistentRef(index, this)
         Disposer.register(persistentRef, Disposable {
           dataFrameViewerCache.remove(index)

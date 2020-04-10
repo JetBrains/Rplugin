@@ -14,17 +14,17 @@ import com.intellij.openapi.vfs.*
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
-import com.jetbrains.rd.util.AtomicInteger
-import com.jetbrains.rd.util.concurrentMapOf
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
-  private val files = concurrentMapOf<String, VirtualFile>()
-  private val cachedFunctionPositions by rInterop.Cached { concurrentMapOf<Service.RRef, Optional<RSourcePosition>>() }
+  private val files = ConcurrentHashMap<String, VirtualFile>()
+  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<Service.RRef, Optional<RSourcePosition>>() }
 
   init {
     Disposer.register(rInterop, this)
@@ -77,7 +77,7 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   class MyVirtualFileSystem : DeprecatedVirtualFileSystem(), NonPhysicalFileSystem {
-    private val files = concurrentMapOf<String, VirtualFile>()
+    private val files = ConcurrentHashMap<String, VirtualFile>()
     private val fileIndex = AtomicInteger(0)
 
     init {

@@ -5,9 +5,7 @@
 package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.PsiElementProcessor
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.SyntaxTraverser
 import junit.framework.TestCase
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
@@ -143,10 +141,10 @@ class RunChunkTest : RConsoleBaseTestCase() {
       ```
     """.trimIndent()
     loadFileWithBreakpointsFromText(text, name = "foo.Rmd")
-    val fenceLang = PsiElementProcessor.FindFilteredElement<LeafPsiElement> {
+    val fenceLang = SyntaxTraverser.psiTraverser(myFixture.file).traverse().filter {
       it.node.elementType == FENCE_LANG &&
       it.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
-    }.apply { PsiTreeUtil.processElements(myFixture.file, this) }.foundElement
+    }.first()
     TestCase.assertNotNull(fenceLang)
 
     val promise = helper.invokeAndWait(true) {
@@ -166,10 +164,10 @@ class RunChunkTest : RConsoleBaseTestCase() {
 
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {
     loadFileWithBreakpointsFromText(text, name = "foo.Rmd")
-    val fenceLang = PsiElementProcessor.FindFilteredElement<LeafPsiElement> {
+    val fenceLang = SyntaxTraverser.psiTraverser(myFixture.file).traverse().filter {
       it.node.elementType == FENCE_LANG &&
       it.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
-    }.apply { PsiTreeUtil.processElements(myFixture.file, this) }.foundElement
+    }.first()
     TestCase.assertNotNull(fenceLang)
     val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
     promise.blockingGet(10000)
