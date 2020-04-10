@@ -4,7 +4,6 @@
 
 package org.intellij.datavis.r.inlays.components
 
-import com.intellij.openapi.actionSystem.DataContext
 import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -16,7 +15,7 @@ import javax.swing.JPanel
  * setCentralComponent() - this component fill the entire ToolbarPane
  * setToolbarComponent() - preserves initial size and stays in top right corner
  */
-class ToolbarPane(dataContext: DataContext) : JLayeredPane(), DataContext by dataContext {
+class ToolbarPane(val inlayOutput: InlayOutput) : JLayeredPane() {
   private var mainPanel: JPanel? = null
 
   var centralComponent: JComponent? = null

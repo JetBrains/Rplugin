@@ -14,7 +14,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
@@ -45,20 +44,16 @@ import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
 import kotlin.math.min
 
-abstract class InlayOutput(
-  parent: Disposable,
-  protected val project: Project,
-  private val clearAction: () -> Unit,
-  private val parentDataContext: DataContext = DataContext.EMPTY_CONTEXT
-) {
-  val dataContext: DataContext = DataContext { dataId ->
-    when {
-      KEY.`is`(dataId) -> this
-      else -> parentDataContext
-    }
-  }
+abstract class InlayOutput(parent: Disposable, val editor: Editor, private val clearAction: () -> Unit) {
+  // Transferring `this` from the constructor to another class violates JMM and leads to undefined behaviour
+  //  when accessing `toolbarPane` inside constructor and when `toolbarPane` accesses `this`. So, be careful.
+  //  Since this is an abstract class with many inheritors, the only way to get rid of this issue is to convert
+  //  the class to the interface (or make the constructor private) and initialize `toolbarPane` inside some
+  //  factory method.
+  @Suppress("LeakingThis")
+  protected val toolbarPane = ToolbarPane(this)
 
-  protected val toolbarPane = ToolbarPane(dataContext)
+  protected val project: Project = editor.project ?: error("Editor should have a project")
 
   protected open val useDefaultSaveAction: Boolean = true
   protected open val extraActions: List<AnAction> = emptyList()
@@ -145,18 +140,13 @@ abstract class InlayOutput(
   private fun createSaveAsAction(): AnAction {
     return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.SaveOutputAction", this::saveAs)
   }
-
-  companion object {
-    @JvmField
-    val KEY: DataKey<out InlayOutput> = DataKey.create(InlayOutput::class.java.canonicalName)
-  }
 }
 
 class InlayOutputImg(
   private val parent: Disposable,
-  private val editor: Editor,
+  editor: Editor,
   clearAction: () -> Unit)
-  : InlayOutput(parent, editor.project!!, clearAction, (editor as? EditorEx)?.dataContext ?: DataContext.EMPTY_CONTEXT) {
+  : InlayOutput(parent, editor, clearAction) {
   private val wrapper = GraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
@@ -311,7 +301,7 @@ class InlayOutputImg(
   )
 }
 
-class InlayOutputText(parent: Disposable, project: Project, clearAction: () -> Unit) : InlayOutput(parent, project, clearAction) {
+class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
 
   private val console = ColoredTextConsole(project, viewer = true)
 
@@ -411,7 +401,7 @@ class WebViewCopyProvider(private val webView: WebView) : CopyProvider {
 // when trying to load "<img src=\"data:image/png;base64,$img\">"
 //
 // The only way to display embedded images - use JRE 11.
-class InlayOutputHtml(parent: Disposable, project: Project, clearAction: () -> Unit) : InlayOutput(parent, project, clearAction) {
+class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
 
   private val jfxPanel = JFXPanel()
   private lateinit var webView: WebView
