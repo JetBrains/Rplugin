@@ -58,6 +58,7 @@ internal object RXPresentationUtils {
       is RValueFunction -> setFunctionPresentation(node, value, rxVar)
       is RValueEnvironment -> setEnvironmentPresentation(node, value, rxVar)
       is RValueGraph -> setGraphPresentation(node, value, rxVar)
+      is RValueMatrix -> setMatrixPresentation(node, value, rxVar)
       is RValueError -> setErrorPresentation(node, value, rxVar)
     }
   }
@@ -117,7 +118,25 @@ internal object RXPresentationUtils {
     node.setPresentation(AllIcons.Nodes.DataTables,
                          RXValuePresentation(rxVar, RBundle.message("rx.presentation.utils.data.frame.text", rValue.rows, rValue.cols)),
                          true)
-    node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.table.link.text")) {
+    addShowTableButton(node, rxVar, RBundle.message("rx.presentation.utils.view.table.link.text"))
+  }
+
+  private fun setMatrixPresentation(node: XValueNode, rValue: RValueMatrix, rxVar: RXVar) {
+    node.setPresentation(
+      AllIcons.Nodes.DataTables,
+      RXValuePresentation(rxVar, RBundle.message("rx.presentation.utils.matrix.text", rValue.dim.joinToString(" x "))),
+      true)
+    if (rValue.dim.size == 2) {
+      addShowTableButton(node, rxVar, RBundle.message("rx.presentation.utils.view.matrix.link.text"))
+    } else {
+      addShowTextButton(node, rxVar)
+    }
+  }
+
+  private fun addShowTableButton(node: XValueNode,
+                                 rxVar: RXVar,
+                                 text: String) {
+    node.setFullValueEvaluator(object : XFullValueEvaluator(text) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
         ref.rInterop.dataFrameGetViewer(ref).onSuccess {
@@ -159,18 +178,22 @@ internal object RXPresentationUtils {
       override fun getSeparator() = if (line.isNotEmpty() || type != null) super.getSeparator() else ""
     }, rValue.isVector || rValue.isS4)
     if (rValue.text.contains('\n') || !rValue.isComplete) {
-      node.setFullValueEvaluator(object : XFullValueEvaluator() {
-        override fun startEvaluation(callback: XFullValueEvaluationCallback) {
-          if (rValue.isComplete) {
-            callback.evaluated(rValue.text)
-          } else {
-            rxVar.rVar.ref.evaluateAsTextAsync()
-              .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
-              .then { callback.evaluated(it) }
-          }
-        }
-      })
+      addShowTextButton(node, rxVar, rValue.text.takeIf { rValue.isComplete })
     }
+  }
+
+  private fun addShowTextButton(node: XValueNode, rxVar: RXVar, text: String? = null) {
+    node.setFullValueEvaluator(object : XFullValueEvaluator() {
+      override fun startEvaluation(callback: XFullValueEvaluationCallback) {
+        if (text != null) {
+          callback.evaluated(text)
+        } else {
+          rxVar.rVar.ref.evaluateAsTextAsync()
+            .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
+            .then { callback.evaluated(it) }
+        }
+      }
+    })
   }
 
   private fun setGraphPresentation(node: XValueNode, rValue: RValueGraph, rxVar: RXVar) {

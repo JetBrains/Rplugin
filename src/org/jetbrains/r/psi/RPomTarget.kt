@@ -48,6 +48,13 @@ abstract class RPomTarget: PomTarget {
       is RValueFunction -> createFunctionPomTarget(rVar)
       is RValueDataFrame -> createDataFramePomTarget(rVar)
       is RValueGraph -> createGraphPomTarget(rVar)
+      is RValueMatrix -> {
+        if (value.dim.size == 2) {
+          createDataFramePomTarget(rVar)
+        } else {
+          createVariablePomTarget(rVar)
+        }
+      }
       is RValueError -> throw IllegalStateException("Error: ${value.text}")
       else -> createVariablePomTarget(rVar)
     }

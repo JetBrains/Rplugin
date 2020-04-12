@@ -78,6 +78,15 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(listOf("[1] 10", "[1] 20", "[1] 30", "[1] 40"), varsB.map { (it.value as RValueSimple).text })
   }
 
+  fun testMatrix() {
+    rInterop.executeCode("""
+      a <- array(1:20, c(4, 5))
+      b <- array(1:48, c(2, 3, 4, 2))
+    """.trimIndent())
+    TestCase.assertEquals(listOf(4, 5), (RRef.expressionRef("a", rInterop).getValueInfo() as RValueMatrix).dim)
+    TestCase.assertEquals(listOf(2, 3, 4, 2), (RRef.expressionRef("b", rInterop).getValueInfo() as RValueMatrix).dim)
+  }
+
   fun testInvalidateCaches() {
     rInterop.executeCode("a = 1")
     TestCase.assertEquals("[1] 1", (rInterop.globalEnvLoader.variables.first { it.name == "a" }.value as RValueSimple).text.trim())

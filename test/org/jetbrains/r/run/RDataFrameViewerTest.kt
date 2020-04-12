@@ -159,6 +159,19 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
     }
   }
 
+  fun testMatrix() {
+    val viewer = createViewer("array(as.integer((1:20) ^ 2), c(4, 5))")
+    TestCase.assertEquals(4, viewer.nRows)
+    TestCase.assertEquals(6, viewer.nColumns)
+    for (i in 1..5) {
+      TestCase.assertTrue(i.toString() in viewer.getColumnName(i))
+      TestCase.assertEquals(Integer::class, viewer.getColumnType(i))
+    }
+    for (i in 0 until 20) {
+      TestCase.assertEquals((i + 1) * (i + 1), viewer.getValueAt(i % 4, i / 4 + 1))
+    }
+  }
+
   private fun createViewer(expr: String): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(RRef.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
   }
