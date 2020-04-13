@@ -78,11 +78,6 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
     </extensionPoints>
 
-    <application-components>
-        <component>
-            <implementation-class>org.jetbrains.r.settings.RUpdateComponent</implementation-class>
-        </component>
-    </application-components>
     <!--<depends optional="true">com.intellij.modules.python</depends>-->
     <project-components>
 
@@ -457,6 +452,7 @@ You can find the source code in the following repositories:
         <codeInsight.inlayProvider language="R" implementationClass="org.jetbrains.r.hints.RReturnHintInlayProvider"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
+        <editorFactoryListener implementation="org.jetbrains.r.settings.RUpdateComponent"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"

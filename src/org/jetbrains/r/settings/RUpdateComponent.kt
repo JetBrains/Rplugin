@@ -6,12 +6,9 @@ package org.jetbrains.r.settings
 
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PermanentInstallationID
-import com.intellij.openapi.components.BaseComponent
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.extensions.PluginId
@@ -29,35 +26,15 @@ import java.util.concurrent.TimeUnit
 private const val KEY = "r.last.update.timestamp"
 private const val PLUGIN_ID = "R4Intellij"
 
-class RUpdateComponent : BaseComponent, Disposable{
+class RUpdateComponent : EditorFactoryListener {
+  override fun editorCreated(event: EditorFactoryEvent) {
+    if (ApplicationManager.getApplication().isUnitTestMode) return
+    val document = event.editor.document
 
-  private val myListener = object : EditorFactoryListener {
-    override fun editorCreated(event: EditorFactoryEvent) {
-      val document = event.editor.document
-
-      val file = FileDocumentManager.getInstance().getFile(document)
-      if (file != null && (file.fileType is RFileType || file.extension?.toLowerCase() == "rmd")) {
-        checkForUpdates()
-      }
+    val file = FileDocumentManager.getInstance().getFile(document)
+    if (file != null && (file.fileType is RFileType || file.extension?.toLowerCase() == "rmd")) {
+      checkForUpdates()
     }
-  }
-
-  override fun initComponent() {
-    if (!ApplicationManager.getApplication().isUnitTestMode) {
-      EditorFactory.getInstance().addEditorFactoryListener(myListener, this)
-    }
-  }
-
-  override fun disposeComponent() {
-
-  }
-
-  override fun getComponentName(): String {
-    return javaClass.name
-  }
-
-  override fun dispose() {
-    disposeComponent()
   }
 
   private fun checkForUpdates() {
