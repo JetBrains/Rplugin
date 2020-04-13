@@ -75,7 +75,7 @@ You can find the source code in the following repositories:
 
     <extensionPoints>
       <extensionPoint qualifiedName="com.intellij.rmdFenceProvider"
-                      interface="org.jetbrains.r.rmarkdown.RmdFenceProvider"/>
+                      interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
     </extensionPoints>
 
     <application-components>

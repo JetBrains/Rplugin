@@ -1,13 +1,17 @@
 <idea-plugin allow-bundled-update="true">
   <extensionPoints>
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.inlayDescriptorProvider"
-                    interface="org.intellij.datavis.r.inlays.InlayDescriptorProvider"/>
+                    interface="org.intellij.datavis.r.inlays.InlayDescriptorProvider"
+                    dynamic="true"/>
     <extensionPoint qualifiedName="com.intellij.datavis.r.inlays.components.graphicsManagerProvider"
-                    interface="org.intellij.datavis.r.inlays.components.GraphicsManagerProvider"/>
+                    interface="org.intellij.datavis.r.inlays.components.GraphicsManagerProvider"
+                    dynamic="true"/>
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.inlayOutputProvider"
-                    interface="org.intellij.datavis.r.inlays.components.InlayOutputProvider"/>
+                    interface="org.intellij.datavis.r.inlays.components.InlayOutputProvider"
+                    dynamic="true"/>
     <extensionPoint qualifiedName="org.intellij.datavis.r.inlays.visualisation.uiCustomizer"
-                    interface="org.intellij.datavis.r.ui.UiCustomizer"/>
+                    interface="org.intellij.datavis.r.ui.UiCustomizer"
+                    dynamic="true"/>
   </extensionPoints>
 
   <project-components>
