@@ -85,9 +85,6 @@ You can find the source code in the following repositories:
     </application-components>
     <!--<depends optional="true">com.intellij.modules.python</depends>-->
     <project-components>
-        <component>
-            <implementation-class>org.jetbrains.r.packages.RPackageService</implementation-class>
-        </component>
 
         <component>
           <implementation-class>org.jetbrains.r.hints.RReturnHintPass$Companion$Factory</implementation-class>
@@ -481,6 +478,8 @@ You can find the source code in the following repositories:
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.RSettings"/>
+
+        <projectService serviceImplementation="org.jetbrains.r.packages.RPackageService"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.RPackageBuildSettings"/>
 
