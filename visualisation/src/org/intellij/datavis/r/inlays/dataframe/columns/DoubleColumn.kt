@@ -39,7 +39,7 @@ class DoubleColumn(name: String, data: ArrayList<Double>) : Column<Double>(name,
 
       for (i in 0 until data.size) {
 
-        if(data[i] == Double.NaN) {
+        if(data[i].isNaN()) {
           continue
         }
 
