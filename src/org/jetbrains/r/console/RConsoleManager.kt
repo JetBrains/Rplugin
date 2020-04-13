@@ -10,6 +10,8 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
@@ -161,7 +163,9 @@ class RConsoleManager(private val project: Project) {
 
     private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
       return if (RSettings.getInstance(project).interpreterPath.isNotBlank()) {
-        RConsoleRunner(project, project.basePath!!).initAndRun().onSuccess { console ->
+        val workingDir = project.basePath!!
+        val consoleTitle = "[ " + FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDir)) + " ]"
+        RConsoleRunner(project, workingDir, consoleTitle).initAndRun().onSuccess { console ->
           invokeLater {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
             if (requestFocus) {
