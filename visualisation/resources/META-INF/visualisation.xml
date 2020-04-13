@@ -14,12 +14,6 @@
                     dynamic="true"/>
   </extensionPoints>
 
-  <project-components>
-    <component>
-      <implementation-class>org.intellij.datavis.r.inlays.InlaysManager</implementation-class>
-    </component>
-  </project-components>
-
   <actions>
     <group id="org.intellij.datavis.r.inlays.components.InlayOutputToolbarActions">
       <action id="org.intellij.datavis.r.inlays.components.ClearOutputAction"
@@ -57,6 +51,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <notificationWhitelist groupIds="InlayTable;Notebook Table"/>
+    <editorFactoryListener implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
   </extensions>
 
   <extensions defaultExtensionNs="org.intellij.datavis.r.inlays.visualisation">

@@ -4,14 +4,11 @@
 
 package org.intellij.datavis.r.inlays
 
-import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 
 /**
@@ -30,13 +27,10 @@ import com.intellij.openapi.util.Key
 
 private val logger = Logger.getInstance(InlaysManager::class.java)
 
-class InlaysManager(val project: Project) : ProjectComponent {
+class InlaysManager : EditorFactoryListener {
 
   companion object {
     private val KEY = Key.create<EditorInlaysManager>("org.intellij.datavis.r.inlays.editorInlaysManager")
-
-    @JvmStatic
-    fun getInstance(project: Project): InlaysManager = project.getComponent(InlaysManager::class.java)
 
     fun getEditorManager(editor: Editor): EditorInlaysManager? = editor.getUserData(KEY)
 
@@ -48,23 +42,18 @@ class InlaysManager(val project: Project) : ProjectComponent {
     }
   }
 
-  override fun projectOpened() {
-    EditorFactory.getInstance().addEditorFactoryListener(object : EditorFactoryListener {
-      override fun editorCreated(event: EditorFactoryEvent) {
-        val editor = event.editor
-        if (project != editor.project) return
-        val descriptor = getDescriptor(editor) ?: return
-        InlayDimensions.init(editor as EditorImpl)
-        editor.putUserData(KEY, EditorInlaysManager(project, editor, descriptor))
-      }
+  override fun editorCreated(event: EditorFactoryEvent) {
+    val editor = event.editor
+    val project = editor.project ?: return
+    val descriptor = getDescriptor(editor) ?: return
+    InlayDimensions.init(editor as EditorImpl)
+    editor.putUserData(KEY, EditorInlaysManager(project, editor, descriptor))
+  }
 
-      override fun editorReleased(event: EditorFactoryEvent) {
-        if (event.editor.project != project) return
-        event.editor.getUserData(KEY)?.let { manager ->
-          manager.dispose()
-          event.editor.putUserData(KEY, null)
-        }
-      }
-    }, project)
+  override fun editorReleased(event: EditorFactoryEvent) {
+    event.editor.getUserData(KEY)?.let { manager ->
+      manager.dispose()
+      event.editor.putUserData(KEY, null)
+    }
   }
 }
