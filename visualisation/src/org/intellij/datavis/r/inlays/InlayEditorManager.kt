@@ -454,7 +454,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   /** It could be that user started to type below inlay. In this case we will detect new position and perform inlay repositioning. */
   private fun updateInlayPosition(inlayComponent: NotebookInlayComponent) {
     // editedCell here contains old text. This event will be processed by PSI later.
-    val offset = getInlayOffset(inlayComponent.cell)
+    val offset = descriptor.getInlayOffset(inlayComponent.cell)
     if (inlayComponent.inlay!!.offset != offset) {
       inlayComponent.disposeInlay()
       val inlay = addBlockElement(offset, inlayComponent)
@@ -483,7 +483,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
     InlayDimensions.init(editor)
 
-    val offset = getInlayOffset(cell)
+    val offset = descriptor.getInlayOffset(cell)
     val inlayComponent = UiCustomizer.instance.createNotebookInlayComponent(cell, editor)
 
     // On editor creation it has 0 width
@@ -503,11 +503,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     setupInlayComponent(inlayComponent)
 
     return inlayComponent
-  }
-
-  /** Gets the offset to the last non-whitespace character in psiCell text. */
-  private fun getInlayOffset(psiElement: PsiElement): Int {
-    return psiElement.textRange.endOffset - 1
   }
 
   private fun getInlayComponent(cell: PsiElement): NotebookInlayComponent? {

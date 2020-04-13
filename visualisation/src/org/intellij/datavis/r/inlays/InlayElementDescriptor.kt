@@ -63,6 +63,14 @@ interface InlayElementDescriptor {
    * @return true if descriptor stores inlay output data for each psi element
    */
   fun isGettingInlayOutputsSupported(): Boolean = true
+
+  /**
+   * Returns offset in the document, to which an output inlay should be appended.
+   */
+  @JvmDefault
+  fun getInlayOffset(psiElement: PsiElement): Int =
+    // By default returns the offset to the last non-whitespace character in psiCell text.
+    psiElement.textRange.endOffset - 1
 }
 
 interface InlayDescriptorProvider {
