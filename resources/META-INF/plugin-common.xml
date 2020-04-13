@@ -90,11 +90,6 @@ You can find the source code in the following repositories:
         </component>
 
         <component>
-            <interface-class>org.jetbrains.r.interpreter.RInterpreterManager</interface-class>
-            <implementation-class>org.jetbrains.r.interpreter.RInterpreterManagerImpl</implementation-class>
-        </component>
-
-        <component>
           <implementation-class>org.jetbrains.r.hints.RReturnHintPass$Companion$Factory</implementation-class>
         </component>
 
@@ -464,6 +459,7 @@ You can find the source code in the following repositories:
         <codeInsight.parameterNameHints language="R" implementationClass="org.jetbrains.r.hints.parameterInfo.RInlayParameterHintsProvider"/>
         <codeInsight.inlayProvider language="R" implementationClass="org.jetbrains.r.hints.RReturnHintInlayProvider"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
+        <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"
@@ -476,6 +472,9 @@ You can find the source code in the following repositories:
         <applicationService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
+
+        <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
+                        serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
 

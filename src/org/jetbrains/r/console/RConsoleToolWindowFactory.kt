@@ -4,8 +4,12 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.execution.impl.ConsoleViewImpl
+import com.intellij.execution.ui.ConsoleView
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -18,24 +22,31 @@ import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.r.RBundle
+import org.jetbrains.r.configuration.RSettingsProjectConfigurable
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterManagerImpl
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import java.util.concurrent.atomic.AtomicBoolean
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val rConsoleManager = RConsoleManager.getInstance(project)
     rConsoleManager.registerContentManager(toolWindow.contentManager)
+    toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
     toolWindow.setToHideOnEmptyContent(true)
-    setAvailableForRToolWindows(project, true)
     project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
+      val previousVisibility = AtomicBoolean()
       override fun stateChanged() {
-        if (toolWindow.isVisible) {
-          rConsoleManager.currentConsoleAsync
+        val visible = toolWindow.isVisible
+        if (!previousVisibility.get() && visible) {
+          tryAddContent(toolWindow, project)
         }
+        previousVisibility.set(visible)
       }
     })
-    ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.show {  }
-    rConsoleManager.currentConsoleAsync
+    tryAddContent(toolWindow, project)
   }
 
   companion object {
@@ -51,13 +62,20 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
     fun addContent(project: Project, contentDescriptor: RunContentDescriptor, contentIndex: Int? = null) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
-      toolWindow.component.putClientProperty(ToolWindowContentUi.HIDE_ID_LABEL, "true")
-      toolWindow.setToHideOnEmptyContent(true)
+      val contentManager = toolWindow.contentManager
+      contentManager.contents.firstOrNull { it.displayName == NO_INTERPRETER_FOUND_DISPLAY_NAME }?.let {
+        contentManager.removeContent(it, true)
+      }
+      val contentCount = contentManager.contentCount
       val content = createContent(contentDescriptor)
       if (contentIndex == null) {
-        toolWindow.contentManager.addContent(content)
+        contentManager.addContent(content)
       } else {
-        toolWindow.contentManager.addContent(content, contentIndex)
+        contentManager.addContent(content, contentIndex)
+      }
+      if (contentCount == 0) {
+        setAvailableForRToolWindows(project, true)
+        ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.show { }
       }
     }
 
@@ -94,6 +112,30 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
+    private fun createNoInterpreterConsoleView(project: Project): ConsoleView =
+      ConsoleViewImpl(project, true).apply {
+       print(RBundle.message("console.no.interpreter.error") + "\n", ConsoleViewContentType.ERROR_OUTPUT)
+       printHyperlink(RBundle.message("console.no.interpreter.setup.interpreter") + "\n") {
+          ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
+        }
+        printHyperlink(RBundle.message("console.no.interpreter.download.interpreter") + "\n") {
+          RInterpreterManagerImpl.openDownloadRPage()
+        }
+      }
+
+    private fun tryAddContent(toolWindow: ToolWindow, project: Project) {
+      if (toolWindow.contentManager.contentCount == 0) {
+        if (RInterpreterManager.getInstance(project).interpreterPath.isBlank()) {
+          val contentFactory = ContentFactory.SERVICE.getInstance()
+          val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component, NO_INTERPRETER_FOUND_DISPLAY_NAME, true)
+          console.isCloseable = false
+          toolWindow.contentManager.addContent(console)
+        } else {
+          RConsoleManager.getInstance(project).currentConsoleAsync
+        }
+      }
+    }
+
     private fun createContent(contentDescriptor: RunContentDescriptor): Content {
       val panel = SimpleToolWindowPanel(false, true)
 
@@ -117,3 +159,5 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     }
   }
 }
+
+private val NO_INTERPRETER_FOUND_DISPLAY_NAME = RBundle.message("console.no.interpreter.error")
