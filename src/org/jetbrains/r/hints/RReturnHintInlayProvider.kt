@@ -51,7 +51,7 @@ class RReturnHintInlayProvider : InlayHintsProvider<RReturnHintInlayProvider.Set
 
           val allDocuments = RReturnHintsModel.getInstance(element.project).activeDocuments(document)
           val project = element.project
-          val passDocuments = RReturnHintPass.Companion.Factory.getInstance(project)
+          val passDocuments = RReturnHintPass.FactoryService.getInstance(project)
             .filterAndUpdateDocumentsToForceRepaint(allDocuments, project)
           documentsToForceRepaint.addAll(allDocuments - passDocuments)
         }

@@ -78,18 +78,6 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
     </extensionPoints>
 
-    <!--<depends optional="true">com.intellij.modules.python</depends>-->
-    <project-components>
-
-        <component>
-          <implementation-class>org.jetbrains.r.hints.RReturnHintPass$Companion$Factory</implementation-class>
-        </component>
-
-        <component>
-          <implementation-class>org.jetbrains.r.hints.RReturnHintsModel</implementation-class>
-        </component>
-    </project-components>
-
     <actions>
         <action id="org.jetbrains.r.console.RConsoleAction"
                 class="org.jetbrains.r.console.RConsoleAction"
@@ -453,6 +441,8 @@ You can find the source code in the following repositories:
         <highlightingPassFactory implementation="org.jetbrains.r.hints.parameterInfo.RMarkdownParameterHintsPassFactory"/>
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.settings.RUpdateComponent"/>
+        <editorFactoryListener implementation="org.jetbrains.r.hints.RReturnHintEditorFactoryListener"/>
+        <highlightingPassFactory implementation="org.jetbrains.r.hints.RReturnHintPass$Factory"/>
 
         <!-- Settings -->
         <projectConfigurable groupId="project"
@@ -476,6 +466,10 @@ You can find the source code in the following repositories:
         <projectService serviceImplementation="org.jetbrains.r.settings.RSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.packages.RPackageService"/>
+      
+        <projectService serviceImplementation="org.jetbrains.r.hints.RReturnHintsModel"/>
+      
+        <projectService serviceImplementation="org.jetbrains.r.hints.RReturnHintPass$FactoryService"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.RPackageBuildSettings"/>
 

@@ -3,7 +3,10 @@ package org.jetbrains.r.hints
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.editor.*
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.LineExtensionInfo
+import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
@@ -19,26 +22,25 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 import java.util.concurrent.ConcurrentHashMap
 
-@Suppress("UnstableApiUsage")
-class RReturnHintsModel(private val project: Project) : EditorFactoryListener {
-
-  private val documentModels = ConcurrentHashMap<Document, DocumentReturnExtensionInfo>()
-  private val hintsSetting = InlayHintsSettings.instance()
-
-  init {
-    EditorFactory.getInstance().addEditorFactoryListener(this, project)
-  }
-
+class RReturnHintEditorFactoryListener : EditorFactoryListener {
   override fun editorCreated(event: EditorFactoryEvent) {
     val editorEx = event.editor as? EditorEx ?: return
+    val project = editorEx.project ?: return
     val virtualFile = FileDocumentManager.getInstance().getFile(editorEx.document)
     if (PsiUtilCore.findFileSystemItem(project, virtualFile)?.language !in listOf(RLanguage.INSTANCE, RMarkdownLanguage)) return
     editorEx.registerLineExtensionPainter(RReturnHintLineExtensionPainter(project, editorEx.document)::getLineExtensions)
   }
 
   override fun editorReleased(event: EditorFactoryEvent) {
-    clearDocumentInfo(event.editor.document)
+    val project = event.editor.project ?: return
+    RReturnHintsModel.getInstance(project).clearDocumentInfo(event.editor.document)
   }
+}
+
+class RReturnHintsModel(private val project: Project) {
+
+  private val documentModels = ConcurrentHashMap<Document, DocumentReturnExtensionInfo>()
+  private val hintsSetting = InlayHintsSettings.instance()
 
   fun getExtensionInfo(document: Document, offset: Int): List<RReturnHint>? {
     if (!hintsSetting.hintsEnabled(RReturnHintInlayProvider.settingsKey, RLanguage.INSTANCE)) {

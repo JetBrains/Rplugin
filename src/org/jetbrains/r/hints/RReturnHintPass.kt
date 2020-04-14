@@ -4,14 +4,10 @@
 
 package org.jetbrains.r.hints
 
-import com.intellij.codeHighlighting.EditorBoundHighlightingPass
-import com.intellij.codeHighlighting.TextEditorHighlightingPass
-import com.intellij.codeHighlighting.TextEditorHighlightingPassFactory
-import com.intellij.codeHighlighting.TextEditorHighlightingPassRegistrar
+import com.intellij.codeHighlighting.*
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension
 import com.intellij.diff.util.DiffUtil
-import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LineExtensionInfo
@@ -105,42 +101,44 @@ class RReturnHintPass(private val file: PsiFile,
     }
   }
 
-  companion object {
-    class Factory(registrar: TextEditorHighlightingPassRegistrar) : ProjectComponent, TextEditorHighlightingPassFactory {
-      private val documentsToForceRepaint = mutableSetOf<Document>()
+  class FactoryService {
+    val documentsToForceRepaint = mutableSetOf<Document>()
 
-      init {
-        registrar.registerTextEditorHighlightingPass(this, null, null, false, -1)
-      }
-
-      fun filterAndUpdateDocumentsToForceRepaint(documents: List<Document>, project: Project): List<Document> {
-        val fileDocumentManager = FileDocumentManager.getInstance()
-        return documents.filter { PsiUtilCore.findFileSystemItem(project, fileDocumentManager.getFile(it))?.language == RMarkdownLanguage }.also {
-          documentsToForceRepaint.addAll(it)
-        }
-      }
-
-      override fun createHighlightingPass(file: PsiFile, editor: Editor): TextEditorHighlightingPass? {
-        // For RFile information collect by org.jetbrains.r.hints.RReturnHintInlayProvider
-        if (file.language != RMarkdownLanguage) return null
-
-        val document = editor.document
-        val settings = InlayHintsSettings.instance().findSettings(RReturnHintInlayProvider.settingsKey, RLanguage.INSTANCE) {
-          RReturnHintInlayProvider.Settings()
-        }
-
-        return RReturnHintPass(file, editor, document in documentsToForceRepaint, settings).also {
-          documentsToForceRepaint.remove(document)
-        }
-      }
-
-      companion object {
-        fun getInstance(project: Project): Factory {
-          return project.getComponent(Factory::class.java)
-        }
+    fun filterAndUpdateDocumentsToForceRepaint(documents: List<Document>, project: Project): List<Document> {
+      val fileDocumentManager = FileDocumentManager.getInstance()
+      return documents.filter { PsiUtilCore.findFileSystemItem(project, fileDocumentManager.getFile(it))?.language == RMarkdownLanguage }.also {
+        documentsToForceRepaint.addAll(it)
       }
     }
 
-    private val SPACE_LINE_EXTENSION_INFO = LineExtensionInfo(" ", TextAttributes())
+    companion object {
+      fun getInstance(project: Project): FactoryService {
+        return project.getService(FactoryService::class.java)
+      }
+    }
   }
+
+  class Factory : TextEditorHighlightingPassFactory, TextEditorHighlightingPassFactoryRegistrar {
+
+    override fun createHighlightingPass(file: PsiFile, editor: Editor): TextEditorHighlightingPass? {
+      // For RFile information collect by org.jetbrains.r.hints.RReturnHintInlayProvider
+      if (file.language != RMarkdownLanguage) return null
+
+      val document = editor.document
+      val settings = InlayHintsSettings.instance().findSettings(RReturnHintInlayProvider.settingsKey, RLanguage.INSTANCE) {
+        RReturnHintInlayProvider.Settings()
+      }
+      val documentsToForceRepaint = FactoryService.getInstance(file.project).documentsToForceRepaint
+
+      return RReturnHintPass(file, editor, document in documentsToForceRepaint, settings).also {
+        documentsToForceRepaint.remove(document)
+      }
+    }
+
+    override fun registerHighlightingPassFactory(registrar: TextEditorHighlightingPassRegistrar, project: Project) {
+      registrar.registerTextEditorHighlightingPass(this, null, null, false, -1)
+    }
+  }
+
+  private val SPACE_LINE_EXTENSION_INFO = LineExtensionInfo(" ", TextAttributes())
 }
