@@ -11,7 +11,6 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.impl.ProjectImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
@@ -125,13 +124,11 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   private fun setupMockInterpreterManager() {
-    project.apply {
-      prepareTestSkeletons(this)
-      (this as ProjectImpl).registerComponentImplementation(RInterpreterManager::class.java, MockInterpreterManager::class.java, true)
-      val dumbService = DumbServiceImpl.getInstance(this)
-      if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-        dumbService.queueTask(UnindexedFilesUpdater(this))
-      }
+    prepareTestSkeletons(project)
+    project.registerServiceInstance(RInterpreterManager::class.java, MockInterpreterManager(project))
+    val dumbService = DumbServiceImpl.getInstance(project)
+    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
+      dumbService.queueTask(UnindexedFilesUpdater(project))
     }
   }
 
