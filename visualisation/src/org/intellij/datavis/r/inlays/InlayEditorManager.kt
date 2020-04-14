@@ -261,7 +261,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
             }
           }
         }
-        if (!event.oldFragment.contains("\n") && !event.newFragment.contains("\n")) return
+        if (!descriptor.shouldUpdateInlays(event)) return
         PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
           updateInlays()
           updateToolbarPositions()

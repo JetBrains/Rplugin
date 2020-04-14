@@ -51,7 +51,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <notificationWhitelist groupIds="InlayTable;Notebook Table"/>
-    <editorFactoryListener implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
+    <editorFactoryListener id="org.intellij.datavis.r.inlays.InlaysManager" implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
   </extensions>
 
   <extensions defaultExtensionNs="org.intellij.datavis.r.inlays.visualisation">

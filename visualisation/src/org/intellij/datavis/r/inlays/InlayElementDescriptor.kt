@@ -6,6 +6,7 @@ package org.intellij.datavis.r.inlays
 
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -71,6 +72,10 @@ interface InlayElementDescriptor {
   fun getInlayOffset(psiElement: PsiElement): Int =
     // By default returns the offset to the last non-whitespace character in psiCell text.
     psiElement.textRange.endOffset - 1
+
+  @JvmDefault
+  fun shouldUpdateInlays(event: DocumentEvent): Boolean =
+    event.oldFragment.contains("\n") || event.newFragment.contains("\n")
 }
 
 interface InlayDescriptorProvider {
