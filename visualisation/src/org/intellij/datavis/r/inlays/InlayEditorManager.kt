@@ -38,6 +38,7 @@ import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.ui.InlineToolbar
 import org.intellij.datavis.r.ui.UiCustomizer
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.CancellablePromise
 import java.awt.Point
 import java.awt.event.ComponentAdapter
@@ -102,7 +103,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null, createTextOutput: Boolean = false): Future<Unit> {
     val result = FutureResult<Unit>()
-    if (ApplicationManager.getApplication().isUnitTestMode) return result.apply { set(Unit) }
+    if (ApplicationManager.getApplication().isUnitTestMode && !isEnabledInTests) return result.apply { set(Unit) }
     ApplicationManager.getApplication().invokeLater {
       try {
         if (Disposer.isDisposed(editor.disposable)) {
@@ -515,6 +516,9 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     private const val VIEWPORT_TIME_SPAN = 50
 
     const val INLAY_PRIORITY = 0
+
+    @TestOnly
+    var isEnabledInTests: Boolean = false
   }
 }
 
