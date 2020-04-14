@@ -18,6 +18,7 @@ import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
+import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.Graphics
@@ -121,6 +122,9 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
    * Draw separator line below cell. Also fills cell background
    */
   private fun updateCellSeparator() {
+    if (!UiCustomizer.instance.showUpdateCellSeparator) {
+      return
+    }
 
     if (separatorHighlighter != null &&
         separatorHighlighter!!.startOffset == cell.textRange.startOffset &&

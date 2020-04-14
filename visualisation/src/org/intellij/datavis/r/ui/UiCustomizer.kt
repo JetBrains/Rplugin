@@ -25,6 +25,8 @@ interface UiCustomizer {
 
   fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent
 
+  val showUpdateCellSeparator: Boolean
+
   companion object {
     val EP_NAME: ExtensionPointName<UiCustomizer> = ExtensionPointName("org.intellij.datavis.r.inlays.visualisation.uiCustomizer")
 

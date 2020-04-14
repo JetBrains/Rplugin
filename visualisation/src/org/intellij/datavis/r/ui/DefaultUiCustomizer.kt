@@ -25,4 +25,6 @@ class DefaultUiCustomizer : UiCustomizer {
 
   override fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent =
     NotebookInlayComponentImpl(cell, editor)
+
+  override val showUpdateCellSeparator: Boolean = true
 }
