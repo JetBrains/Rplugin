@@ -50,11 +50,17 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   }
 
   fun evaluateAsText(): String {
-    return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsText, proto).value
+    return evaluateAsTextAsync().get()
   }
 
   fun evaluateAsTextAsync(): CancellablePromise<String> {
-    return rInterop.executeAsync(rInterop.asyncStub::evaluateAsText, proto).then { it.value }
+    return rInterop.executeAsync(rInterop.asyncStub::evaluateAsText, proto).then {
+      if (it.resultCase == Service.StringOrError.ResultCase.VALUE) {
+        it.value
+      } else {
+        throw RDebuggerException(it.error)
+      }
+    }
   }
 
   fun evaluateAsBoolean(): Boolean {

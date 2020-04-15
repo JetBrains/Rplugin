@@ -102,7 +102,7 @@ internal class DataFramePomTarget(private val rVar: RVar) : RPomTarget() {
 
 internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
-    return rVar.ref.rInterop.executeTask<Unit> { rVar.ref.evaluateAsText() }
+    return rVar.ref.evaluateAsTextAsync().then { Unit }
   }
 }
 

@@ -14,6 +14,7 @@ import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.*
@@ -89,7 +90,11 @@ internal object RXPresentationUtils {
           .then {
             ref.rInterop.invalidateCaches()
             RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
-            callback.evaluated("")
+            if (it is RValueError) {
+              callback.errorOccurred(it.text)
+            } else {
+              callback.evaluated("")
+            }
           }
       }
 
@@ -190,7 +195,8 @@ internal object RXPresentationUtils {
         } else {
           rxVar.rVar.ref.evaluateAsTextAsync()
             .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
-            .then { callback.evaluated(it) }
+            .onSuccess { callback.evaluated(it) }
+            .onError { callback.errorOccurred((it as? RDebuggerException)?.message.orEmpty()) }
         }
       }
     })
@@ -203,10 +209,11 @@ internal object RXPresentationUtils {
         val ref = rxVar.rVar.ref
         ref.evaluateAsTextAsync()
           .also { rxVar.stackFrame.tryRegisterDisposable(Disposable { it.cancel() }) }
-          .then {
+          .onSuccess {
             RConsoleManager.getInstance(ref.rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
             callback.evaluated("")
           }
+          .onError { callback.errorOccurred((it as? RDebuggerException)?.message.orEmpty()) }
       }
 
       override fun isShowValuePopup() = false
