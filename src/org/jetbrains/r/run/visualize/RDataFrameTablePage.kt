@@ -11,6 +11,7 @@ import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.FileSaverDialog
@@ -85,7 +86,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       loadedPromise = loadedPromise.thenAsync { viewer.ensureLoaded(i, 0) }
     }
     loadedPromise.then {
-      MaterialTableUtils.fitColumnsWidth(table, maxRows = FIT_WIDTH_MAX_ROWS)
+      invokeLater {
+        MaterialTableUtils.fitColumnsWidth(table, maxRows = FIT_WIDTH_MAX_ROWS)
+      }
     }
   }
 
