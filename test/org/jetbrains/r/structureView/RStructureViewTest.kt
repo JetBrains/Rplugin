@@ -77,6 +77,24 @@ class RStructureViewTest : RUsefulTestCase() {
     """, true)
   }
 
+  fun testCodeSectionsCornerCases() {
+    doTest("""
+      f1 <- function() {}
+      # Test -1 -------
+      f2 <- function() {}
+      # Test åß∂ç√  ------
+      f3 <- function() {}
+    """, """
+      -test.R
+       [f1]
+       -Test -1
+        f2
+       -Test åß∂ç√
+        f3
+    """, true)
+  }
+
+
   fun testCurrentStructureElement() {
     myFixture.configureByText("test.R", """
       #<caret> Header 1 ----

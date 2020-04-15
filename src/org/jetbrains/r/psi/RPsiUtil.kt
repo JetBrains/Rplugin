@@ -134,10 +134,11 @@ object RPsiUtil {
 
   }
 
-  private val EXTRACT_NAME_FROM_COMMENT_SECTION = Pattern.compile("(#\\s*)+(\\w(\\s*\\w)*)\\s*(-+|=+|#+)", Pattern.DOTALL)
-
   fun extractNameFromSectionComment(element: PsiComment): String {
-    return EXTRACT_NAME_FROM_COMMENT_SECTION.matcher(element.text).takeIf { it.matches() }?.group(2) ?: "Untitled"
+    val comment = element.text
+    val start = comment.indexOfFirst { it != '#' }.takeIf { it != -1 } ?: return "Untitled"
+    val end = comment.indexOfLast { it != '-' && it != '=' && it != '#' }.takeIf { it != -1 } ?: return "Untitled"
+    return comment.substring(start, end + 1).trim()
   }
 }
 
