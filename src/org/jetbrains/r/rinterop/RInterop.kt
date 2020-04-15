@@ -593,7 +593,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         val persistentRef = RPersistentRef(index, this)
         Disposer.register(persistentRef, Disposable {
           dataFrameViewerCache.remove(index)
-          execute(stub::dataFrameDispose, Int32Value.of(index))
+          if (isAlive) execute(stub::dataFrameDispose, Int32Value.of(index))
         })
         val viewer = RDataFrameViewerImpl(persistentRef)
         viewer

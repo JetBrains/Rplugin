@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.rinterop.Service
 import javax.swing.RowSorter
@@ -14,6 +15,8 @@ interface RDataFrameViewer : Disposable {
   val nColumns: Int
 
   val nRows: Int
+  
+  val project: Project
 
   fun getColumnName(index: Int): String
 

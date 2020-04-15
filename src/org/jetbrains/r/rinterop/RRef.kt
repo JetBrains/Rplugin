@@ -117,6 +117,7 @@ class RPersistentRef internal constructor(index: Int, rInterop: RInterop, dispos
   }
 
   override fun dispose() {
+    if (!rInterop.isAlive) return
     rInterop.executeAsync(rInterop.asyncStub::disposePersistentRefs, Service.PersistentRefList.newBuilder().addIndices(proto.persistentIndex).build())
   }
 }

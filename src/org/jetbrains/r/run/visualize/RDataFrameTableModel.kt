@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.run.visualize
 
+import org.jetbrains.concurrency.isRejected
 import javax.swing.table.AbstractTableModel
 
 class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() {
@@ -17,14 +18,16 @@ class RDataFrameTableModel(var viewer: RDataFrameViewer) : AbstractTableModel() 
 
   override fun getValueAt(row: Int, col: Int): Any? {
     val promise = viewer.ensureLoaded(row, col) { fireTableDataChanged() }
-    return if (promise.isSucceeded) {
-      when (val value = viewer.getValueAt(row, col)) {
-        is Float -> "%g".format(value)
-        is Double -> "%g".format(value)
-        else -> value
+    return when {
+      promise.isSucceeded -> {
+        when (val value = viewer.getValueAt(row, col)) {
+          is Float -> "%g".format(value)
+          is Double -> "%g".format(value)
+          else -> value
+        }
       }
-    } else {
-      "<loading>"
+      promise.isRejected -> "<error>"
+      else -> "<loading>"
     }
   }
 

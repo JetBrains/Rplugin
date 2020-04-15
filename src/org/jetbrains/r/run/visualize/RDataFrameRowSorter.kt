@@ -4,9 +4,11 @@
 
 package org.jetbrains.r.run.visualize
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Disposer
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rinterop.getWithCheckCanceled
 import java.util.concurrent.Future
@@ -38,6 +40,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
       update()
     }
   private var currentUpdateTask: Future<Unit>? = null
+  private var errorWasReported = false
 
   override fun getModel() = model
 
@@ -86,28 +89,29 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
     val toWait = currentUpdateTask
     currentUpdateTask = ApplicationManager.getApplication().executeOnPooledThread<Unit> {
       toWait?.getWithCheckCanceled()
-      if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
-      currentViewer = initialViewer
-      rowFilter?.let {
-        try {
+      try {
+        if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
+        currentViewer = initialViewer
+        rowFilter?.let {
           currentViewer = currentViewer.filter(it)
-        } catch (e: RDataFrameException) {
-          LOG.warn(e.message)
         }
-      }
-      if (sortKeys.isNotEmpty()) {
-        try {
+        if (sortKeys.isNotEmpty()) {
           val newViewer = currentViewer.sortBy(sortKeys)
           if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
           currentViewer = newViewer
-        } catch (e: RDataFrameException) {
-          LOG.warn(e.message)
+        }
+        model.fireTableDataChanged()
+      } catch (e: RDataFrameException) {
+        if (!errorWasReported) {
+          errorWasReported = true
+          Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"),
+                       e.message.orEmpty(), NotificationType.ERROR, null)
+            .notify(initialViewer.project)
         }
       }
       model.viewer = currentViewer
       jTable.clearSelection()
       fireRowSorterChanged(null)
-      model.fireTableDataChanged()
     }
   }
 
@@ -120,7 +124,6 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
 
   companion object {
     private const val MAX_SORT_KEYS = 3
-    private val LOG = Logger.getInstance(RDataFrameRowSorter::class.java)
   }
 }
 

@@ -9,7 +9,9 @@ import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -25,6 +27,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   private val rInterop: RInterop = ref.rInterop
   override val nColumns: Int get() = columns.size
   override val nRows: Int
+  override val project get() = rInterop.project
   private val columns: Array<ColumnInfo>
   private val chunks: Array<Array<Array<Any?>>?>
   private val promises: Array<Promise<Unit>?>
@@ -77,6 +80,9 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
         Promise.State.REJECTED -> Unit
       }
     }
+    if (!rInterop.isAlive) {
+      return rejectedPromise("RInterop is not alive")
+    }
     val start = chunkIndex * CHUNK_SIZE
     val end = min((chunkIndex + 1) * CHUNK_SIZE, nRows)
     val promise: Promise<Unit> = rInterop.dataFrameGetData(ref, start, end).then { response ->
@@ -92,12 +98,14 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   }
 
   override fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer {
+    if (!rInterop.isAlive) throw RDataFrameException(RBundle.message("console.process.terminated"))
     return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
       disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
     }
   }
 
   override fun filter(f: Service.DataFrameFilterRequest.Filter): RDataFrameViewer {
+    if (!rInterop.isAlive) throw RDataFrameException(RBundle.message("console.process.terminated"))
     return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
       disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
     }
