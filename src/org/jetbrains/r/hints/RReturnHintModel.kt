@@ -124,7 +124,7 @@ class RReturnHintsModel(private val project: Project) {
 
   companion object {
     fun getInstance(project: Project): RReturnHintsModel =
-      project.getComponent(RReturnHintsModel::class.java) ?: error("Component 'RReturnHintsModel' is expected to be registered")
+      project.getService(RReturnHintsModel::class.java) ?: error("Component 'RReturnHintsModel' is expected to be registered")
   }
 }
 
