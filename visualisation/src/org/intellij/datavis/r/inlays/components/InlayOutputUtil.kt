@@ -4,11 +4,14 @@
 
 package org.intellij.datavis.r.inlays.components
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
+import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import org.intellij.datavis.r.VisualizationBundle
 import java.awt.image.BufferedImage
 import java.io.File
@@ -38,13 +41,27 @@ object InlayOutputUtil {
 
   private fun getAvailableFormats(image: BufferedImage): List<String> {
     val imageTypeSpecifier = ImageTypeSpecifier.createFromRenderedImage(image)
-    return arrayOf("png", "jpeg", "bmp", "gif", "tiff").filter { format ->
+    return getAvailableFormats().filter { format ->
       imageTypeSpecifier.hasWritersFor(format)
     }
   }
 
+  fun getAvailableFormats(): List<String> {
+    return listOf("png", "jpeg", "bmp", "gif", "tiff")
+  }
+
   private fun ImageTypeSpecifier.hasWritersFor(format: String): Boolean {
     return ImageIO.getImageWriters(this, format).asSequence().any()
+  }
+
+  fun chooseDirectory(project: Project, title: String, description: String): VirtualFile? {
+    val descriptor = FileChooserDescriptor(false, true, false, false, false, false)
+      .withDescription(description)
+      .withTitle(title)
+    val chooser = FileChooserDialogImpl(descriptor, project)
+    val toSelect = project.virtualBaseDir?.let { arrayOf(it) } ?: emptyArray()
+    val choice = chooser.choose(project, *toSelect)
+    return choice.firstOrNull()
   }
 
   fun saveWithFileChooser(
@@ -58,8 +75,7 @@ object InlayOutputUtil {
   ) {
     val descriptor = FileSaverDescriptor(title, description, *extensions)
     val chooser = FileSaverDialogImpl(descriptor, project)
-    val virtualBaseDir = VfsUtil.findFile(Paths.get(project.basePath!!), true)
-    chooser.save(virtualBaseDir, defaultName)?.let { fileWrapper ->
+    chooser.save(project.virtualBaseDir, defaultName)?.let { fileWrapper ->
       val destination = fileWrapper.file
       try {
         checkOrCreateDestinationFile(destination, createIfMissing)
@@ -69,6 +85,9 @@ object InlayOutputUtil {
       }
     }
   }
+
+  private val Project.virtualBaseDir: VirtualFile?
+    get() = VfsUtil.findFile(Paths.get(basePath!!), true)
 
   private fun checkOrCreateDestinationFile(file: File, createIfMissing: Boolean) {
     if (!file.exists()) {

@@ -18,15 +18,22 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
-import org.intellij.datavis.r.inlays.components.forms.GraphicsExportDialogForm
-import java.awt.Desktop
-import java.awt.Dimension
+import org.intellij.datavis.r.inlays.components.forms.GraphicsAdvancedExportDialogForm
+import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
+import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.event.DocumentEvent
+import javax.swing.text.AbstractDocument
+import javax.swing.text.AttributeSet
+import javax.swing.text.DocumentFilter
+import kotlin.math.max
 import kotlin.math.round
 import kotlin.reflect.KProperty
 
@@ -35,12 +42,23 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 {
   private val graphicsManager = GraphicsManager.getInstance(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
-  private val form = GraphicsExportDialogForm()
+  private val form = GraphicsAdvancedExportDialogForm()
+
+  private val resizablePanel = ResizablePanel(wrapper.component, initialSize, this::onImageResize).apply {
+    wrapper.overlayComponent = manipulator
+  }
+
+  private val directoryTextField = TextFieldWithBrowseButton {
+    InlayOutputUtil.chooseDirectory(project, CHOOSE_DIRECTORY_TITLE, CHOOSE_DIRECTORY_DESCRIPTION)?.let { directory ->
+      outputDirectory = directory.path
+    }
+  }
 
   private val autoResizeAction =
     object : BasicToggleAction(AUTO_RESIZE_ACTIVE_TEXT, AUTO_RESIZE_IDLE_TEXT, AllIcons.General.FitContent, true) {
       override fun onClick() {
         wrapper.isAutoResizeEnabled = state
+        resizablePanel.isEnabled = state
         updateSize(null)
       }
     }
@@ -48,7 +66,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   private val keepAspectRatioAction =
     object : BasicToggleAction(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false) {
       override fun update(e: AnActionEvent) {
-        val isEnabled = !isAutoResizeEnabled && checkSizeInputs()
+        val isEnabled = checkSizeInputs()
         e.presentation.isEnabled = isEnabled
         state = state && isEnabled
         super.update(e)  // Note: late call of super method is intentional (as it must see latest value of `state`)
@@ -56,7 +74,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
       }
 
       override fun onClick() {
-        updateHeightEnabled()
         updateAspectRatio()
       }
     }
@@ -78,17 +95,48 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   private val keepAspectRatio: Boolean
     get() = keepAspectRatioAction.state
 
-  private var imageWidth: Int? by IntFieldDelegate(form.widthTextField)
-  private var imageHeight: Int? by IntFieldDelegate(form.heightTextField)
-  private var imageResolution: Int? by IntFieldDelegate(form.resolutionTextField)
+  private val imageDimension: Dimension?
+    get() = imageWidth?.let { width ->
+      imageHeight?.let { height ->
+        Dimension(width, height)
+      }
+    }
+
+  private val widthTextField = createUnitTextField(form.widthInputPanel, PX_TEXT, PX_MAX_CHARACTERS)
+  private val heightTextField = createUnitTextField(form.heightInputPanel, PX_TEXT, PX_MAX_CHARACTERS)
+  private val resolutionTextField = createUnitTextField(form.resolutionInputPanel, DPI_TEXT, DPI_MAX_CHARACTERS)
+
+  private var imageWidth: Int? by IntFieldDelegate(widthTextField, InputKind.WIDTH)
+  private var imageHeight: Int? by IntFieldDelegate(heightTextField, InputKind.HEIGHT)
+  private var imageResolution: Int? by IntFieldDelegate(resolutionTextField, null)
 
   private var zoomGroup: Disposable? = null
+
   private var aspectRatio: Double? = null
+    set(ratio) {
+      field = ratio
+      resizablePanel.aspectRatio = ratio
+    }
+
+  private var outputDirectory: String? = null
+    set(directory) {
+      field = directory
+      directoryTextField.text = directory?.beautifyPath() ?: ""
+      updateOkAction()
+    }
+
+  private var fileName: String?
+    get() = form.fileNameTextField.text.takeIf { it.isNotBlank() }
+    set(name) {
+      form.fileNameTextField.text = name ?: ""
+      updateOkAction()
+    }
 
   init {
     setupGraphicsContentPanel(initialSize)
     createImageGroup(parent, imagePath)
     setOKButtonText(SAVE_BUTTON_TEXT)
+    setupInputControls()
     fillSouthPanel()
     title = TITLE
     init()
@@ -102,18 +150,16 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
       form.keepAspectRatioButtonPanel.add(createButton(keepAspectRatioAction))
       form.autoResizeButtonPanel.add(createButton(autoResizeAction))
       form.refreshButtonPanel.add(createButton(refreshAction))
-      form.graphicsContentPanel.add(wrapper.component)
+      form.graphicsContentPanel.add(resizablePanel)
     }
   }
 
   override fun doOKAction() {
-    wrapper.image?.let { image ->
-      InlayOutputUtil.saveImageWithFileChooser(project, image) { location ->
-        super.doOKAction()
-        zoomGroup?.dispose()
-        if (form.openAfterSavingCheckBox.isSelected) {
-          Desktop.getDesktop().open(location)
-        }
+    trySaveImage()?.let { location ->
+      super.doOKAction()
+      zoomGroup?.dispose()
+      if (form.openAfterSavingCheckBox.isSelected) {
+        Desktop.getDesktop().open(location)
       }
     }
   }
@@ -123,16 +169,83 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     zoomGroup?.dispose()
   }
 
+  private fun trySaveImage(): File? {
+    return wrapper.image?.let { image ->
+      outputDirectory?.let { directory ->
+        fileName?.let { name ->
+          val format = form.formatComboBox.selectedItem as String
+          val location = Paths.get(directory, "$name.$format").toFile()
+          location.takeIf { checkLocation(it) }?.also {
+            ImageIO.write(image, format, location)
+          }
+        }
+      }
+    }
+  }
+
+  private fun checkLocation(location: File): Boolean {
+    if (!location.exists()) {
+      return true
+    }
+    val description = createConfirmReplaceDescription(location)
+    val choice = Messages.showYesNoDialog(description, CONFIRM_REPLACE_TITLE, AllIcons.General.WarningDialog)
+    return choice == Messages.YES
+  }
+
+  private fun onImageResize(targetWidth: Int, targetHeight: Int, dx: Int, dy: Int) {
+    val previous = size
+    val width = previous.width
+    val height = previous.height
+    val xPadding = width - form.graphicsContentPanel.width
+    val yPadding = height - form.graphicsContentPanel.height
+    val actualDx = if (dx > 0) max(targetWidth + xPadding - width, 0) else dx
+    val actualDy = if (dy > 0) max(targetHeight + yPadding - height, 0) else dy
+    setSize(width + actualDx, height + actualDy)
+    if (size == previous) {
+      form.graphicsContentPanel.revalidate()
+    }
+  }
+
+  private fun synchronizeSizeInputs(lastKind: InputKind) {
+    aspectRatio?.let { ratio ->
+      when (lastKind) {
+        InputKind.WIDTH -> runWithDisabled(heightTextField) {
+          imageHeight = imageWidth?.let { round(it / ratio).toInt() }
+        }
+        InputKind.HEIGHT -> runWithDisabled(widthTextField) {
+          imageWidth = imageHeight?.let { round(it * ratio).toInt() }
+        }
+      }
+    }
+  }
+
+  private fun runWithDisabled(field: JTextField, task: () -> Unit) {
+    field.isEnabled = false
+    task()
+    field.isEnabled = true
+  }
+
+  private fun setupInputControls() {
+    form.fileNameTextField.addBlankTextValidator()
+    form.directoryFieldPanel.add(directoryTextField)
+    directoryTextField.textField.isFocusable = false
+    outputDirectory = project.basePath!!
+    form.formatComboBox.apply {
+      for (format in InlayOutputUtil.getAvailableFormats()) {
+        addItem(format)
+      }
+      prototypeDisplayValue = "XXXX"  // Note: setup preferred width
+    }
+  }
+
   private fun setupGraphicsContentPanel(imageSize: Dimension?) {
     val region = imageSize?.let { GraphicsPanel.calculateRegionForImageSize(it) } ?: defaultImageRegion
-    form.graphicsContentPanel.apply {
-      form.graphicsContentPanel.addComponentListener(object : ComponentAdapter() {
-        override fun componentResized(e: ComponentEvent?) {
-          updateSizeInput(null)
-        }
-      })
-      preferredSize = region
-    }
+    form.graphicsContentPanel.preferredSize = region
+    wrapper.component.addComponentListener(object : ComponentAdapter() {
+      override fun componentResized(e: ComponentEvent?) {
+        updateSizeInput(null)
+      }
+    })
   }
 
   private fun createImageGroup(parent: Disposable, imagePath: String) {
@@ -174,7 +287,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private fun updateOkAction() {
-    isOKActionEnabled = checkSizeInputs() && checkResolutionInput()
+    isOKActionEnabled = checkSizeInputs() && checkResolutionInput() && !outputDirectory.isNullOrBlank() && !fileName.isNullOrBlank()
   }
 
   private fun checkSizeInputs(): Boolean {
@@ -186,18 +299,13 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private fun rescaleIfNecessary() {
-    imageWidth?.let { width ->
-      if (!isAutoResizeEnabled) {
-        aspectRatio?.let { ratio ->
-          imageHeight = round(width / ratio).toInt()
-        }
-      }
-      imageHeight?.let { height ->
-        imageResolution?.let { resolution ->
-          wrapper.targetResolution = resolution
-          val size = Dimension(width, height)
-          wrapper.rescaleIfNecessary(size)
-        }
+    if (Disposer.isDisposed(disposable)) {
+      return
+    }
+    imageDimension?.let { size ->
+      imageResolution?.let { resolution ->
+        wrapper.targetResolution = resolution
+        wrapper.rescaleIfNecessary(size)
       }
     }
   }
@@ -205,10 +313,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   private fun updateAspectRatio() {
     if (keepAspectRatio) {
       if (aspectRatio == null) {
-        aspectRatio = imageWidth?.let { width ->
-          imageHeight?.let { height ->
-            width.toDouble() / height.toDouble()
-          }
+        aspectRatio = imageDimension?.let { size ->
+          size.width.toDouble() / size.height.toDouble()
         }
       }
     } else {
@@ -226,19 +332,41 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
   private fun updateSizeInput(imageSize: Dimension?) {
     if (isAutoResizeEnabled) {
-      val size = imageSize ?: GraphicsPanel.calculateImageSizeForRegion(form.graphicsContentPanel.size)
+      val size = imageSize ?: GraphicsPanel.calculateImageSizeForRegion(wrapper.component.size)
       imageHeight = size.height
       imageWidth = size.width
     }
   }
 
   private fun updateSizeEnabled() {
-    form.widthTextField.isEnabled = !isAutoResizeEnabled
-    updateHeightEnabled()
+    widthTextField.isEnabled = !isAutoResizeEnabled
+    heightTextField.isEnabled = !isAutoResizeEnabled
   }
 
-  private fun updateHeightEnabled() {
-    form.heightTextField.isEnabled = !isAutoResizeEnabled && !keepAspectRatio
+  private fun createUnitTextField(parent: JComponent, unitText: String, maxCharacters: Int): JTextField {
+    return UnitTextField(unitText, maxCharacters).apply {
+      columns = TEXT_FIELD_NUM_COLUMNS
+      minimumSize = preferredSize
+      parent.add(this)
+    }
+  }
+
+  private fun JTextField.addBlankTextValidator() {
+    addTextChangedListener {
+      val errorText = BLANK_TEXT_INPUT_MESSAGE.takeIf { text.isBlank() }
+      setErrorText(errorText, this)
+      updateOkAction()
+    }
+  }
+
+  private fun String.beautifyPath(): String {
+    val path = Paths.get(this).beautify()
+    return path.takeIf { it.toString().isNotEmpty() }?.toString() ?: PROJECT_DIRECTORY_HINT
+  }
+
+  private fun Path.beautify(): Path {
+    val basePath = Paths.get(project.basePath!!)
+    return if (startsWith(basePath)) basePath.relativize(this) else this
   }
 
   private open class BasicToggleAction(private val activeText: String, private val idleText: String, icon: Icon, isActive: Boolean)
@@ -268,15 +396,23 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
   }
 
-  private inner class IntFieldDelegate(private val field: JTextField) {
+  private enum class InputKind {
+    WIDTH,
+    HEIGHT,
+  }
+
+  private inner class IntFieldDelegate(private val field: JTextField, private val kind: InputKind?) {
     init {
-      field.document.addDocumentListener(object : DocumentAdapter() {
-        override fun textChanged(e: DocumentEvent) {
+      field.addTextChangedListener {
+        if (field.isEnabled) {
           val (_, errorText) = tryParseInput()
           setErrorText(errorText, field)
+          if (kind != null) {
+            synchronizeSizeInputs(kind)
+          }
           updateOkAction()
         }
-      })
+      }
       field.addFocusListener(object : FocusAdapter() {
         override fun focusLost(e: FocusEvent?) {
           rescaleIfNecessary()
@@ -302,8 +438,44 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
   }
 
+  private class UnitTextField(private val unitText: String, maxCharacters: Int) : JTextField() {
+    init {
+      (document as? AbstractDocument)?.apply {
+        documentFilter = LimitedDocumentFilter(maxCharacters)
+      }
+    }
+
+    override fun paint(g: Graphics) {
+      super.paint(g)
+      if (g is Graphics2D) {
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+      }
+      val fontMetrics = g.getFontMetrics()
+      val unitWidth = fontMetrics.stringWidth("${unitText}X")
+      g.color = JBUI.CurrentTheme.Label.disabledForeground()
+      g.drawString(unitText, width - unitWidth, height / 2 + fontMetrics.ascent / 2 - 2)
+    }
+  }
+
+  private class LimitedDocumentFilter(private val maxCharacters: Int) : DocumentFilter() {
+    private val maxText = "9".repeat(maxCharacters)
+
+    override fun replace(fb: FilterBypass, offset: Int, length: Int, text: String, attrs: AttributeSet?) {
+      if (fb.document.length + text.length - length <= maxCharacters) {
+        super.replace(fb, offset, length, text, attrs)
+      } else {
+        super.replace(fb, 0, fb.document.length, maxText, attrs)
+      }
+    }
+  }
+
   companion object {
+    private const val TEXT_FIELD_NUM_COLUMNS = 5
+    private const val DPI_MAX_CHARACTERS = 3
+    private const val PX_MAX_CHARACTERS = 4
+
     private val INVALID_INTEGER_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.invalid.input")
+    private val BLANK_TEXT_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.blank.input")
 
     private val KEEP_ASPECT_RATIO_ACTIVE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.active")
     private val KEEP_ASPECT_RATIO_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.idle")
@@ -311,8 +483,16 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     private val AUTO_RESIZE_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.auto.resize.idle")
     private val REFRESH_PREVIEW_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.refresh.preview")
 
+    private val CHOOSE_DIRECTORY_DESCRIPTION = VisualizationBundle.message("inlay.output.image.export.dialog.choose.directory.description")
+    private val CHOOSE_DIRECTORY_TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.choose.directory.title")
+    private val PROJECT_DIRECTORY_HINT = VisualizationBundle.message("inlay.output.image.export.dialog.project.directory.hint")
+
+    private val CONFIRM_REPLACE_TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.confirm.replace.title")
     private val SAVE_BUTTON_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.save")
     private val TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.title")
+
+    private val DPI_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.dpi.text")
+    private val PX_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.px.text")
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)
@@ -324,5 +504,17 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
           emptyText.text = value
         }
       }
+
+    private fun JTextField.addTextChangedListener(listener: (DocumentEvent) -> Unit) {
+      document.addDocumentListener(object : DocumentAdapter() {
+        override fun textChanged(e: DocumentEvent) {
+          listener(e)
+        }
+      })
+    }
+
+    private fun createConfirmReplaceDescription(location: File): String {
+      return VisualizationBundle.message("inlay.output.image.export.dialog.confirm.replace.description", location.name)
+    }
   }
 }
