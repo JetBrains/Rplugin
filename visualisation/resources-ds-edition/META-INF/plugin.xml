@@ -2,5 +2,6 @@
   <name>Inlay Visualisation</name>
   <id>org.intellij.datavis.r.inlays.visualisation</id>
   <vendor>JetBrains</vendor>
+  <depends>com.intellij.modules.pycharm.ds</depends>
   <xi:include href="/META-INF/visualisation-201.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>
