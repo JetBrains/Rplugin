@@ -115,7 +115,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           result.set(Unit)
           return@invokeLater
         }
-        if (editor.foldingModel.isOffsetCollapsed(psi.textRange.startOffset)) {
+        if (isOutputPositionCollapsed(psi)) {
           result.set(Unit)
           return@invokeLater
         }
@@ -150,6 +150,12 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       }
     }
     return result
+  }
+
+  private fun isOutputPositionCollapsed(psiCell: PsiElement): Boolean {
+    return InlaysManager.getDescriptor(editor)?.getInlayOffset(psiCell)?.let {
+      editor.foldingModel.isOffsetCollapsed(it)
+    } ?: false
   }
 
   fun addTextToInlay(psi: PsiElement, message: String, outputType: Key<*>) {
