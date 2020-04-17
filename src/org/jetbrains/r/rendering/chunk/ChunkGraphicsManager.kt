@@ -25,10 +25,22 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
   override val isBusy: Boolean
     get() = project.chunkExecutionState != null
 
+  override var imageNumber: Int
+    get() = RGraphicsSettings.getImageNumber(project)
+    set(number) {
+      RGraphicsSettings.setImageNumber(project, number)
+    }
+
   override var globalResolution: Int
     get() = settings.globalResolution
     set(newResolution) {
       settings.globalResolution = newResolution
+    }
+
+  override var outputDirectory: String?
+    get() = RGraphicsSettings.getOutputDirectory(project)
+    set(directory) {
+      RGraphicsSettings.setOutputDirectory(project, directory)
     }
 
   override var isDarkModeEnabled: Boolean
@@ -43,6 +55,11 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
 
   override fun getImageResolution(imagePath: String): Int? {
     return imagePath.toSnapshot()?.resolution
+  }
+
+  override fun suggestImageName(imageNumber: Int?): String {
+    val number = imageNumber ?: (this.imageNumber + 1)
+    return "Rplot%02d".format(number)
   }
 
   override fun createImageGroup(imagePath: String): Pair<File, Disposable>? {

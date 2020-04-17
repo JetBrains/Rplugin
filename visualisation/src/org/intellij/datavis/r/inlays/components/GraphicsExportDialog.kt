@@ -177,6 +177,12 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
           val location = Paths.get(directory, "$name.$format").toFile()
           location.takeIf { checkLocation(it) }?.also {
             ImageIO.write(image, format, location)
+            graphicsManager?.apply {
+              extractImageNumber(name)?.let { number ->
+                imageNumber = number
+              }
+              outputDirectory = directory
+            }
           }
         }
       }
@@ -229,7 +235,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     form.fileNameTextField.addBlankTextValidator()
     form.directoryFieldPanel.add(directoryTextField)
     directoryTextField.textField.isFocusable = false
-    outputDirectory = project.basePath!!
+    fileName = graphicsManager?.suggestImageName() ?: DEFAULT_IMAGE_NAME
+    outputDirectory = graphicsManager?.outputDirectory ?: project.basePath!!
     form.formatComboBox.apply {
       for (format in InlayOutputUtil.getAvailableFormats()) {
         addItem(format)
@@ -474,6 +481,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     private const val DPI_MAX_CHARACTERS = 3
     private const val PX_MAX_CHARACTERS = 4
 
+    private const val DEFAULT_IMAGE_NAME = "image"
+
     private val INVALID_INTEGER_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.invalid.input")
     private val BLANK_TEXT_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.blank.input")
 
@@ -511,6 +520,24 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
           listener(e)
         }
       })
+    }
+
+    private fun extractImageNumber(imageName: String): Int? {
+      return findLastNumberIndex(imageName)?.let { index ->
+        imageName.substring(index).toIntOrNull()
+      }
+    }
+
+    private fun findLastNumberIndex(s: String): Int? {
+      if (s.isEmpty()) {
+        return null
+      }
+      for (i in s.length - 1 downTo 0) {
+        if (!s[i].isDigit()) {
+          return (i + 1).takeIf { it < s.length }
+        }
+      }
+      return 0
     }
 
     private fun createConfirmReplaceDescription(location: File): String {

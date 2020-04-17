@@ -11,10 +11,18 @@ import java.io.File
 
 interface GraphicsManager {
   val isBusy: Boolean
+  var imageNumber: Int
   var globalResolution: Int
+  var outputDirectory: String?
   var isDarkModeEnabled: Boolean
   fun canRescale(imagePath: String): Boolean
   fun getImageResolution(imagePath: String): Int?
+
+  /**
+   * Suggest a name for image which can be used to save it (without an extension).
+   * **Example:** R Plugin uses "Rplot%02d" pattern for this purpose
+   */
+  fun suggestImageName(imageNumber: Int? = null): String
 
   /**
    * Create the group of isolated transformations of reference image.

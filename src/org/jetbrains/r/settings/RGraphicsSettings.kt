@@ -44,6 +44,22 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       getInstance(project).state.darkMode = isEnabled
       project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
     }
+
+    fun getImageNumber(project: Project): Int {
+      return getInstance(project).state.imageNumber
+    }
+
+    fun setImageNumber(project: Project, number: Int) {
+      getInstance(project).state.imageNumber = number
+    }
+
+    fun getOutputDirectory(project: Project): String? {
+      return getInstance(project).state.outputDirectory
+    }
+
+    fun setOutputDirectory(project: Project, directory: String?) {
+      getInstance(project).state.outputDirectory = directory
+    }
     
     private fun setScreenParameters(project: Project, dimension: Dimension, resolutionMaybe: Int?) {
       getInstance(project).state.apply {
@@ -63,5 +79,7 @@ class RGraphicsSettingsState : BaseState() {
   var height: Int by property(0)
   var resolution: Int by property(0)
   var version: Int by property(0)
+  var imageNumber: Int by property(0)
+  var outputDirectory: String? by string()
   var darkMode: Boolean by property(true)
 }
