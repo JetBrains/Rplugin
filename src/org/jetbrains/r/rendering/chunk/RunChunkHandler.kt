@@ -208,7 +208,6 @@ object RunChunkHandler {
         e.message?.takeIf { it.isNotEmpty() } ?: RBundle.message("run.chunk.notification.failed"),
         NotificationType.WARNING, null)
       notification.notify(project)
-      ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
       promise.setError(e.message.orEmpty())
     }
     return promise
