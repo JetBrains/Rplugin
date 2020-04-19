@@ -34,7 +34,7 @@ class InlaysManager : EditorFactoryListener {
 
     fun getEditorManager(editor: Editor): EditorInlaysManager? = editor.getUserData(KEY)
 
-    fun getDescriptor(editor: Editor): InlayElementDescriptor? {
+    private fun getDescriptor(editor: Editor): InlayElementDescriptor? {
       return InlayDescriptorProvider.EP.extensionList
         .asSequence()
         .mapNotNull { it.getInlayDescriptor(editor) }
