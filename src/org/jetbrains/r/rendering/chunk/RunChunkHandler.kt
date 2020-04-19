@@ -21,6 +21,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
@@ -33,6 +34,7 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -41,11 +43,11 @@ import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
-import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -135,7 +137,7 @@ object RunChunkHandler {
       RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
         .onSuccess {
           runInEdt {
-            executeWithKnitr(element, isDebug, isBatchMode, textRange).processed(promise)
+            executeAsync(element, isDebug, isBatchMode, textRange).processed(promise)
           }
         }
         .onError {
@@ -144,7 +146,7 @@ object RunChunkHandler {
     }
   }
 
-  private fun executeWithKnitr(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, textRange: TextRange? = null): Promise<Boolean> {
+  private fun executeAsync(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, textRange: TextRange? = null): Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
       if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
       val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
@@ -165,16 +167,60 @@ object RunChunkHandler {
     val rInterop = console.rInterop
     val parent = element.parent
     val chunkText = parent?.text ?: return promise.apply { setError("parent is null") }
-    val codeElement = SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType == R_FENCE_ELEMENT_TYPE }
-                      ?: return promise.apply { setError("cannot find code fence") }
+    val codeElement = findCodeElement(parent) ?: return promise.apply { setError("cannot find code fence") }
     val project = element.project
     val file = element.containingFile
     val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
-    val paragraph = RMarkdownUtil.findMarkdownParagraph(file)
-    val rmarkdownParameters = "---${System.lineSeparator()}${paragraph?.text ?: ""}${System.lineSeparator()}---"
-    val cacheDirectory = ChunkPathManager.getCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
-    FileUtil.delete(File(cacheDirectory))
-    val screenParameters = if (ApplicationManager.getApplication().isHeadlessEnvironment) {
+    val rMarkdownParameters = createRMarkdownParameters(file)
+    val cacheDirectory = createCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
+    val screenParameters = createScreenParameters(editor, project)
+    val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
+    val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
+
+    if (!ensureConsoleIsReady(console, project, promise)) return promise
+
+    // run before chunk handler without read action
+    val beforeChunkPromise = runAsync {
+      graphicsDeviceRef.set(beforeRunChunk(rInterop, rMarkdownParameters, chunkText, cacheDirectory, screenParameters, imagesDirectory))
+    }
+
+    updateProgressBar(editor, inlayElement)
+    executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
+      InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
+    }.onProcessed { result ->
+      runAsync {
+        graphicsDeviceRef.get()?.shutdown()
+        afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+      }
+    }
+
+    return promise
+  }
+
+  private fun createRMarkdownParameters(file: PsiFile) =
+    "---${System.lineSeparator()}${RMarkdownUtil.findMarkdownParagraph(file)?.text ?: ""}${System.lineSeparator()}---"
+
+  private fun createCacheDirectory(inlayElement: PsiElement) =
+    ChunkPathManager.getCacheDirectory(inlayElement)?.also { FileUtil.delete(File(it)) }
+
+  private fun findCodeElement(parent: PsiElement?) =
+    SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType == R_FENCE_ELEMENT_TYPE }
+
+  private fun beforeRunChunk(rInterop: RInterop,
+                             rmarkdownParameters: String,
+                             chunkText: String,
+                             cacheDirectory: String,
+                             screenParameters: RGraphicsUtils.ScreenParameters,
+                             imagesDirectory: String?): RGraphicsDevice? {
+    logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
+    return if (imagesDirectory != null) {
+      RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
+    } else null
+  }
+
+  private fun createScreenParameters(editor: EditorEx,
+                                     project: @NotNull Project): RGraphicsUtils.ScreenParameters {
+    return if (ApplicationManager.getApplication().isHeadlessEnvironment) {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
       val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
@@ -182,39 +228,28 @@ object RunChunkHandler {
       val resolution = RMarkdownGraphicsSettings.getInstance(project).globalResolution
       RGraphicsUtils.ScreenParameters(imageSize, resolution)
     }
-    try {
-      if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
-        throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
-      }
-      var graphicsDevice: RGraphicsDevice? = null
-      val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
-      // run before chunk handler without read action
-      val beforeChunkPromise = runAsync {
-        logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
-        if (imagesDirectory != null) {
-          graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
-        }
-      }
-      val inlaysManager = InlaysManager.getEditorManager(editor)
-      inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
-      inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
-      executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
-        inlaysManager?.addTextToInlay(inlayElement, it.text, it.kind)
-      }.onProcessed { result ->
-        runAsync {
-          graphicsDevice?.shutdown()
-          afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
-        }
-      }
-    } catch (e: RDebuggerException) {
+  }
+
+  private fun ensureConsoleIsReady(console: RConsoleView,
+                                   project: @NotNull Project,
+                                   promise: AsyncPromise<Boolean>): Boolean {
+    if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
       val notification = Notification(
-        "RMarkdownRunChunkStatus", RBundle.message("run.chunk.notification.title"),
-        e.message?.takeIf { it.isNotEmpty() } ?: RBundle.message("run.chunk.notification.failed"),
+        "RMarkdownRunChunkStatus",
+        RBundle.message("run.chunk.notification.title"),
+        RBundle.message("console.previous.command.still.running"),
         NotificationType.WARNING, null)
       notification.notify(project)
-      promise.setError(e.message.orEmpty())
+      promise.setError(RBundle.message("console.previous.command.still.running"))
+      return false
     }
-    return promise
+    return true
+  }
+
+  private fun updateProgressBar(editor: EditorEx, inlayElement: PsiElement) {
+    val inlaysManager = InlaysManager.getEditorManager(editor)
+    inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
+    inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
   }
 
   private fun afterRunChunk(element: PsiElement,
@@ -281,23 +316,36 @@ object RunChunkHandler {
     }
     val promise = AsyncPromise<ExecutionResult>()
     beforeChunkPromise.onProcessed {
-      val executePromise = console.rInterop.replSourceFile(virtualFile, debug, range, firstDebugCommand = debugCommand) { s, type ->
-        val output = ProcessOutput(s, type)
-        result.add(output)
-        onOutput(output)
-      }
-      executePromise.onProcessed {
-        if (it == null) {
-          promise.setResult(ExecutionResult(result, "Interrupted"))
-        } else {
-          promise.setResult(ExecutionResult(result, it.exception))
-        }
-        chunkState?.currentLineRange = null
-        chunkState?.revalidateGutter()
-      }
-      codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
+      executeInConsole(console, virtualFile, debug, range, debugCommand, result, onOutput, promise, chunkState, codeElement)
     }
     return promise
+  }
+
+  private fun executeInConsole(console: RConsoleView,
+                               virtualFile: VirtualFile,
+                               debug: Boolean,
+                               range: TextRange?,
+                               debugCommand: Service.ExecuteCodeRequest.DebugCommand,
+                               result: MutableList<ProcessOutput>,
+                               onOutput: (ProcessOutput) -> Unit,
+                               promise: AsyncPromise<ExecutionResult>,
+                               chunkState: ChunkExecutionState?,
+                               codeElement: PsiElement) {
+    val executePromise = console.rInterop.replSourceFile(virtualFile, debug, range, firstDebugCommand = debugCommand) { s, type ->
+      val output = ProcessOutput(s, type)
+      result.add(output)
+      onOutput(output)
+    }
+    executePromise.onProcessed {
+      if (it == null) {
+        promise.setResult(ExecutionResult(result, "Interrupted"))
+      } else {
+        promise.setResult(ExecutionResult(result, it.exception))
+      }
+      chunkState?.currentLineRange = null
+      chunkState?.revalidateGutter()
+    }
+    codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
   }
 
   private fun logNonEmptyError(result: RIExecutionResult) {
