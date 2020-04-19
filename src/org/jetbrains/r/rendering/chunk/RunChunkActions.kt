@@ -145,14 +145,8 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
   val element = getCodeFenceByEvent(e)!!
-  val parent = element.parent ?: return
   val editor = e.editor as? EditorEx ?: return
-  val document = editor.document
   val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
-  val range = IntRange(document.getLineNumber(parent.textRange.startOffset), document.getLineNumber(parent.textRange.endOffset))
-  chunkExecutionState.pendingLineRanges.add(range)
-  chunkExecutionState.currentLineRange = null
-  chunkExecutionState.revalidateGutter()
   element.project.chunkExecutionState = chunkExecutionState
   RunChunkHandler.execute(element, isDebug = isDebug).onProcessed {
     element.project.chunkExecutionState = null

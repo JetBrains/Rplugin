@@ -96,11 +96,6 @@ object RunChunkHandler {
                 }
               }
           }
-          editor.chunkExecutionState?.let { chunkExecutionState ->
-            chunkExecutionState.pendingLineRanges.addAll(ranges)
-            chunkExecutionState.currentLineRange = null
-            chunkExecutionState.revalidateGutter()
-          }
           for (element in chunks) {
             if (terminationRequired.get()) {
               continue
@@ -299,14 +294,6 @@ object RunChunkHandler {
                           beforeChunkPromise: Promise<Unit>,
                           onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
-    val chunkState = console.executeActionHandler.chunkState
-    if (chunkState != null) {
-      chunkState.pendingLineRanges.firstOrNull()?.let { first ->
-        chunkState.pendingLineRanges.remove(first)
-        chunkState.currentLineRange = first
-        chunkState.revalidateGutter()
-      }
-    }
     val virtualFile = codeElement.containingFile.virtualFile
     val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, textRange ?: codeElement.textRange)
     val range = if (textRange == null) {
@@ -316,7 +303,7 @@ object RunChunkHandler {
     }
     val promise = AsyncPromise<ExecutionResult>()
     beforeChunkPromise.onProcessed {
-      executeInConsole(console, virtualFile, debug, range, debugCommand, result, onOutput, promise, chunkState, codeElement)
+      executeInConsole(console, virtualFile, debug, range, debugCommand, result, onOutput, promise, codeElement)
     }
     return promise
   }
@@ -329,7 +316,6 @@ object RunChunkHandler {
                                result: MutableList<ProcessOutput>,
                                onOutput: (ProcessOutput) -> Unit,
                                promise: AsyncPromise<ExecutionResult>,
-                               chunkState: ChunkExecutionState?,
                                codeElement: PsiElement) {
     val executePromise = console.rInterop.replSourceFile(virtualFile, debug, range, firstDebugCommand = debugCommand) { s, type ->
       val output = ProcessOutput(s, type)
@@ -342,8 +328,6 @@ object RunChunkHandler {
       } else {
         promise.setResult(ExecutionResult(result, it.exception))
       }
-      chunkState?.currentLineRange = null
-      chunkState?.revalidateGutter()
     }
     codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
   }

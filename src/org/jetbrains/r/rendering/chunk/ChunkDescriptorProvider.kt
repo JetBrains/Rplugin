@@ -4,14 +4,10 @@
 
 package org.jetbrains.r.rendering.chunk
 
-import com.intellij.diff.util.IntPair
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.ex.EditorGutterComponentEx
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
@@ -19,23 +15,19 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.IconUtil
-import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.InlayDescriptorProvider
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlayElementDescriptor
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator.createRunChunkActionGroup
-import org.jetbrains.r.rendering.editor.ChunkExecutionState
-import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RSnapshot
-import java.awt.*
-import java.awt.event.MouseEvent
+import java.awt.Color
+import java.awt.Font
 import java.io.File
 import java.util.concurrent.Future
 import javax.swing.ImageIcon
@@ -182,92 +174,5 @@ private data class ExternalImage(
     }
   }
 }
-
-private object ChunkProgressRenderer : LineMarkerRenderer {
-  private fun paint(editor: Editor, g: Graphics) {
-    val chunkExecutionState = editor.chunkExecutionState ?: return
-    val clipBounds = g.clipBounds
-
-    val visibleLineStart = editor.xyToLogicalPosition(Point(0, clipBounds.y)).line
-    val visibleLineEnd = editor.xyToLogicalPosition(Point(0, clipBounds.y + clipBounds.height)).line
-    val visualLineRange = IntRange(visibleLineStart, visibleLineEnd)
-
-    chunkExecutionState.pendingLineRanges.mapNotNull { it.intersect(visualLineRange) }.forEach {
-      paintIntRange((g as Graphics2D), editor, it, Color(180, 250 , 180))
-    }
-    chunkExecutionState.currentLineRange?.intersect(visualLineRange)?.let {
-      paintIntRange((g as Graphics2D), editor, it, Color(100, 240, 100))
-    }
-  }
-
-  private fun paintIntRange(g: Graphics2D,
-                            editor: Editor,
-                            block: IntRange,
-                            gutterColor: Color) {
-    val editorImpl = editor as EditorImpl
-    val area = getGutterArea(editor)
-    val x = area.val1
-    val endX = area.val2
-    val start = editorImpl.visualLineToY(block.first + 1)
-    val end = editorImpl.visualLineToY(block.last)
-    paintRect(g, gutterColor, null, x, start, endX, end)
-  }
-
-  override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-    paint(editor, g)
-  }
-
-  private fun isInPendingLineRange(line: Int, chunkExecutionState: ChunkExecutionState): Boolean {
-    val pendingLineRanges = chunkExecutionState.pendingLineRanges
-    val index = pendingLineRanges.binarySearch {
-      when {
-        it.first > line -> 1
-        it.last < line -> -1
-        else -> 0
-      }
-    }
-    return (index >= 0 && index <= pendingLineRanges.size && pendingLineRanges[index].contains(line))
-  }
-
-  private fun isInCurrentLineRange(line: Int, chunkExecutionState: ChunkExecutionState) =
-    chunkExecutionState.currentLineRange?.contains(line) == true
-
-  private fun getGutterArea(editor: Editor): IntPair {
-    val gutter = (editor as EditorEx).gutterComponentEx
-    val x = gutter.lineMarkerFreePaintersAreaOffset + 1 // leave 1px for brace highlighters
-    val endX = gutter.whitespaceSeparatorOffset
-    return IntPair(x, endX)
-  }
-
-  fun isInsideMarkerArea(e: MouseEvent): Boolean {
-    val gutter = e.component as EditorGutterComponentEx
-    return e.x > gutter.lineMarkerFreePaintersAreaOffset
-  }
-
-  private fun paintRect(g: Graphics2D,
-                        color: Color?,
-                        borderColor: Color?,
-                        x1: Int,
-                        y1: Int,
-                        x2: Int,
-                        y2: Int) {
-    if (color != null) {
-      g.color = color
-      g.fillRect(x1, y1, x2 - x1, y2 - y1)
-    }
-    if (borderColor != null) {
-      val oldStroke = g.stroke
-      g.stroke = BasicStroke(JBUIScale.scale(1).toFloat())
-      g.color = borderColor
-      UIUtil.drawLine(g, x1, y1, x2 - 1, y1)
-      UIUtil.drawLine(g, x1, y1, x1, y2 - 1)
-      UIUtil.drawLine(g, x1, y2 - 1, x2 - 1, y2 - 1)
-      g.stroke = oldStroke
-    }
-  }
-}
-
-private fun IntRange.intersect(another: IntRange): IntRange? =
-  IntRange(kotlin.math.max(first, another.first), kotlin.math.min(last, another.last)).takeIf { it.last >= it.first }
 
 private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")

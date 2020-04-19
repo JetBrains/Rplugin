@@ -10,11 +10,9 @@ import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -221,11 +219,7 @@ class ChunkExecutionState(private val editor: Editor,
                           val terminationRequired: AtomicBoolean = AtomicBoolean(),
                           val isDebug: Boolean = false,
                           val currentPsiElement: AtomicReference<PsiElement> = AtomicReference(),
-                          val pendingLineRanges: MutableList<IntRange> = ArrayList<IntRange>(),
-                          @Volatile var currentLineRange: IntRange? = null,
-                          val interrupt: AtomicReference<() -> Unit> = AtomicReference()) {
-  fun revalidateGutter() = invokeLater { (editor as EditorEx).gutterComponentEx.revalidateMarkup() }
-}
+                          val interrupt: AtomicReference<() -> Unit> = AtomicReference())
 
 var Editor.chunkExecutionState: ChunkExecutionState?
   get() = project?.chunkExecutionState
