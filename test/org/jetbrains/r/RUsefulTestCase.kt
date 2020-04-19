@@ -9,6 +9,7 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.TransactionGuard
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -212,10 +213,16 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       tibble
     """.trimIndent().split("\n").toSet()
 
-    fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int): T? {
+    fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 300): T? {
       val time = System.currentTimeMillis()
       while (System.currentTimeMillis() - time < timeout && isPending) {
         PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+        var writeActionTime = System.currentTimeMillis()
+        runWriteAction {
+          writeActionTime = System.currentTimeMillis() - writeActionTime
+        }
+        // No UI Freezes
+        TestCase.assertTrue("Timeout: $writeActionTime > $edtTimeout", writeActionTime < edtTimeout)
         Thread.sleep(5)
       }
       TestCase.assertTrue(isSucceeded)

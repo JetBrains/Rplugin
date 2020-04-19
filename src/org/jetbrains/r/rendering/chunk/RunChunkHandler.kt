@@ -187,14 +187,18 @@ object RunChunkHandler {
         throw RDebuggerException(RBundle.message("console.previous.command.still.running"))
       }
       var graphicsDevice: RGraphicsDevice? = null
-      logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
-      ChunkPathManager.getImagesDirectory(inlayElement)?.let { imagesDirectory ->
-        graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
+      val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
+      // run before chunk handler without read action
+      val beforeChunkPromise = runAsync {
+        logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
+        if (imagesDirectory != null) {
+          graphicsDevice = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
+        }
       }
       val inlaysManager = InlaysManager.getEditorManager(editor)
       inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
       inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
-      executeCode(console, codeElement, isDebug, textRange) {
+      executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
         inlaysManager?.addTextToInlay(inlayElement, it.text, it.kind)
       }.onProcessed { result ->
         runAsync {
@@ -257,6 +261,7 @@ object RunChunkHandler {
                           codeElement: PsiElement,
                           debug: Boolean = false,
                           textRange: TextRange? = null,
+                          beforeChunkPromise: Promise<Unit>,
                           onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
     val chunkState = console.executeActionHandler.chunkState
@@ -274,24 +279,24 @@ object RunChunkHandler {
     } else {
       textRange.intersection(codeElement.textRange) ?: TextRange.EMPTY_RANGE
     }
-    val executePromise = console.rInterop.replSourceFile(
-      virtualFile, debug, range, firstDebugCommand = debugCommand
-    ) { s, type ->
-      val output = ProcessOutput(s, type)
-      result.add(output)
-      onOutput(output)
-    }
     val promise = AsyncPromise<ExecutionResult>()
-    executePromise.onProcessed {
-      if (it == null) {
-        promise.setResult(ExecutionResult(result, "Interrupted"))
-      } else {
-        promise.setResult(ExecutionResult(result, it.exception))
+    beforeChunkPromise.onProcessed {
+      val executePromise = console.rInterop.replSourceFile(virtualFile, debug, range, firstDebugCommand = debugCommand) { s, type ->
+        val output = ProcessOutput(s, type)
+        result.add(output)
+        onOutput(output)
       }
-      chunkState?.currentLineRange = null
-      chunkState?.revalidateGutter()
+      executePromise.onProcessed {
+        if (it == null) {
+          promise.setResult(ExecutionResult(result, "Interrupted"))
+        } else {
+          promise.setResult(ExecutionResult(result, it.exception))
+        }
+        chunkState?.currentLineRange = null
+        chunkState?.revalidateGutter()
+      }
+      codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
     }
-    codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
     return promise
   }
 

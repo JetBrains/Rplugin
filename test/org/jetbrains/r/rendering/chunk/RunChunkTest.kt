@@ -4,11 +4,13 @@
 
 package org.jetbrains.r.rendering.chunk
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.psi.SyntaxTraverser
 import junit.framework.TestCase
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rinterop.RDebuggerTestHelper
@@ -162,6 +164,17 @@ class RunChunkTest : RConsoleBaseTestCase() {
     promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
   }
 
+  fun testReadLockIsNotAcquired() {
+    rInterop.executeCodeAsync("Sys.sleep(2)")
+    val runChunk = doRunChunk("""
+      ```{r}
+        cars
+      ```
+    """.trimIndent())
+    assertTrue(runChunk.size == 1)
+    assertTrue(runChunk.first().type == "TABLE")
+  }
+
   private fun doRunChunk(text: String, debug: Boolean = false): List<InlayOutput> {
     loadFileWithBreakpointsFromText(text, name = "foo.Rmd")
     val fenceLang = SyntaxTraverser.psiTraverser(myFixture.file).traverse().filter {
@@ -169,8 +182,14 @@ class RunChunkTest : RConsoleBaseTestCase() {
       it.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
     }.first()
     TestCase.assertNotNull(fenceLang)
-    val promise = RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
-    promise.blockingGet(10000)
-    return RMarkdownInlayDescriptor(myFixture.file, myFixture.editor).getInlayOutputs(fenceLang)
+    val result = runAsync {
+      runReadAction {
+        RunChunkHandler.runHandlersAndExecuteChunk(console, fenceLang!!, myFixture.editor as EditorEx, debug)
+      }
+    }
+    val firstPromise = result.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertNotNull(firstPromise)
+    firstPromise?.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    return RMarkdownInlayDescriptor(myFixture.file, myFixture.editor).getInlayOutputs(fenceLang!!)
   }
 }
