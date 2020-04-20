@@ -9,7 +9,6 @@ import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
@@ -59,10 +58,8 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
   }
 
   private fun createHelp(project: Project): JComponent {
-    val manager = DocumentationManager.getInstance(project)
-    val component = DocumentationComponent(manager)
+    val component = RDocumentationComponent(project)
     component.setText(HELP_DEFAULT_TEXT, null, null)
-    Disposer.register(project, component)
     return component
   }
 
