@@ -1,97 +1,69 @@
 // Copyright (c) 2017, Holger Brandl, Ekaterina Tuzova
-
-
 /*
  * Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
+package org.jetbrains.r.editor
 
-package org.jetbrains.r.editor;
-
-
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.folding.FoldingBuilder;
-import com.intellij.lang.folding.FoldingDescriptor;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.util.TextRange;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.r.parsing.RElementTypes;
-import org.jetbrains.r.psi.api.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.intellij.lang.ASTNode
+import com.intellij.lang.folding.FoldingBuilder
+import com.intellij.lang.folding.FoldingDescriptor
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.util.TextRange
+import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.psi.api.RBlockExpression
+import org.jetbrains.r.psi.api.RForStatement
+import org.jetbrains.r.psi.api.RFunctionExpression
+import org.jetbrains.r.psi.api.RIfStatement
+import java.util.*
 
 /**
  * Defines how code folding should behave for R files
- * <p>
  * For details see http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support/folding_builder.html
  */
-public class RFoldingBuilder implements FoldingBuilder {
-
-    public String getPlaceholderText(@NotNull ASTNode node) {
-        if (node.getElementType() == RElementTypes.R_BLOCK_EXPRESSION) {
-
-            return "{...}";
-        }
-        if (node.getElementType() == RElementTypes.R_FUNCTION_EXPRESSION) {
-            RFunctionExpression def = (RFunctionExpression) node.getPsi();
-            RParameterList funargs = def.getParameterList();
-
-//            if (funargs != null) {
-            return "function" + funargs.getText() + " ...";
-        }
-
-        if (node.getElementType() == RElementTypes.R_IF_STATEMENT) {
-            RIfStatement def = (RIfStatement) node.getPsi();
-            return "if (" + def.getExpressionList().get(0).getText() + ")} ...";
-        }
-
-        if (node.getElementType() == RElementTypes.R_ELSE) {
-//            RIfStatement def = (RIfStatement) node.getPsi();
-            return "else { ... } ";
-        }
-        if (node.getElementType() == RElementTypes.R_FOR_STATEMENT) {
-            RForStatement def = (RForStatement) node.getPsi();
-            return "for (" + def.getExpressionList().get(0).getText() + " in " + def.getExpressionList().get(1).getText() + ") ...";
-        }
-
-        return null;
+class RFoldingBuilder : FoldingBuilder {
+  override fun getPlaceholderText(node: ASTNode): String? {
+    return when (node.elementType) {
+      RElementTypes.R_BLOCK_EXPRESSION -> "{...}"
+      RElementTypes.R_FUNCTION_EXPRESSION -> {
+        val def = node.psi as RFunctionExpression
+        val funargs = def.parameterList ?: return null
+        return "function ${funargs.text} ..."
+      }
+      RElementTypes.R_IF_STATEMENT -> {
+        val def = node.psi as RIfStatement
+        return "if (${def.expressionList[0].text})} ..."
+      }
+      RElementTypes.R_ELSE -> {
+        // RIfStatement def = (RIfStatement) node.getPsi();
+        return "else { ... } "
+      }
+      RElementTypes.R_FOR_STATEMENT -> {
+        val def = node.psi as RForStatement
+        return "for (${def.expressionList[0].text} in ${def.expressionList[1].text}) ..."
+      }
+      else -> null
     }
+  }
 
+  override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 
-    public boolean isCollapsedByDefault(@NotNull ASTNode node) {
-        return false;
+  override fun buildFoldRegions(node: ASTNode, document: Document): Array<FoldingDescriptor> {
+    val descriptors: MutableList<FoldingDescriptor> = ArrayList()
+    appendDescriptors(node, descriptors)
+    return descriptors.toTypedArray()
+  }
+
+  private fun appendDescriptors(node: ASTNode, descriptors: MutableList<FoldingDescriptor>) {
+    if (node.elementType === RElementTypes.R_BLOCK_EXPRESSION) {
+      val blockExpr = node.psi as RBlockExpression
+      val lbraceStart = blockExpr.textRange.startOffset
+      val rbraceStart = blockExpr.textRange.endOffset
+      descriptors.add(FoldingDescriptor(node, TextRange(lbraceStart, rbraceStart)))
     }
-
-
-    @NotNull
-    public FoldingDescriptor[] buildFoldRegions(@NotNull ASTNode node, @NotNull Document document) {
-        List<FoldingDescriptor> descriptors = new ArrayList<FoldingDescriptor>();
-        appendDescriptors(node, descriptors);
-        return descriptors.toArray(new FoldingDescriptor[descriptors.size()]);
+    var child = node.firstChildNode
+    while (child != null) {
+      appendDescriptors(child, descriptors)
+      child = child.treeNext
     }
-
-
-    private void appendDescriptors(final ASTNode node, final List<FoldingDescriptor> descriptors) {
-
-        if (node.getElementType() == RElementTypes.R_BLOCK_EXPRESSION) {
-            RBlockExpression blockExpr = (RBlockExpression) node.getPsi();
-
-
-            int lbraceStart = blockExpr.getTextRange().getStartOffset();
-            int rbraceStart = blockExpr.getTextRange().getEndOffset();
-
-            descriptors.add(new FoldingDescriptor(node, new TextRange(lbraceStart, rbraceStart)));
-        }
-
-
-        ASTNode child = node.getFirstChildNode();
-        while (child != null)
-
-
-        {
-            appendDescriptors(child, descriptors);
-            child = child.getTreeNext();
-        }
-    }
+  }
 }
