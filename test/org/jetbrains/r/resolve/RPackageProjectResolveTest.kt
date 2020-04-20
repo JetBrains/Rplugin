@@ -17,6 +17,8 @@ class RPackageProjectResolveTest : RResolveFromFilesTestCase("resolveInPackagePr
 
   fun testTestFunFromSrcFile() = doTest()
 
+  fun testProjectPackageAlsoInLibraryDocumentationLink() = doTest()
+
   private fun doTest() {
     myFixture.copyFileToProject("$fullTestDataPath/DESCRIPTION", "DESCRIPTION") // Fake dplyr
     val expected = getExpectedResult("# this")

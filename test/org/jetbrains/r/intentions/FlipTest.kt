@@ -20,4 +20,12 @@ class FlipTest : AbstractRIntentionTest() {
           parameter1)      
     """)
   }
+
+  fun testDocumentationParam() {
+    doExprTest("""
+      #' @param x<caret>,y A Params
+    """, """
+      #' @param y<caret>,x A Params
+    """)
+  }
 }

@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.refactoring.rename
 
+import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
@@ -57,6 +58,8 @@ class RMemberInplaceRenamer : MemberInplaceRenamer {
 
   private fun sameFile(containingFile: PsiFile): Boolean {
     val currentFile = PsiDocumentManager.getInstance(myProject).getPsiFile(myEditor.document) ?: return true
-    return TemplateLanguageUtil.getBaseFile(containingFile) == TemplateLanguageUtil.getBaseFile(currentFile)
+    val injectedLanguageManager = InjectedLanguageManager.getInstance(containingFile.project)
+    val getTopFile = { file: PsiFile -> TemplateLanguageUtil.getBaseFile(injectedLanguageManager.getTopLevelFile(file)) }
+    return getTopFile(containingFile) == getTopFile(currentFile)
   }
 }

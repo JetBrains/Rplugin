@@ -257,6 +257,23 @@ function(x){
     """.trimIndent())
   }
 
+  fun testLocalDocumentationLink() {
+    doTest("filter <- function() {}", """
+      #' [fil<caret>ter()]
+      NULL
+      
+      filter <- function() {}
+    """.trimIndent())
+  }
+
+  fun testDocumentationParameter() {
+    doTest("select = 10", """
+      #' @param sele<caret>ct,y Params
+      fun <- function(select = 10, y = 15) {}
+      
+      select <- function(y, select = 42) {}
+    """.trimIndent())
+  }
 
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }

@@ -63,14 +63,9 @@ abstract class RReferenceBase<T : RPsiElement>(protected val psiElement: T) : Ps
 
   private class Resolver<T : RPsiElement> : ResolveCache.PolyVariantResolver<RReferenceBase<T>> {
     override fun resolve(reference: RReferenceBase<T>, incompleteCode: Boolean): Array<ResolveResult> {
-      val resolveResults = reference.multiResolveInner(incompleteCode).toList()
-      val valid = resolveResults.filter { it.isValidResult }.toTypedArray()
-      val invalid = resolveResults - valid
-      if (valid.size > 1) {
-        val runtimeInfo = reference.psiElement.containingFile.runtimeInfo
-        return RResolver.sortResolveResults(reference.psiElement, runtimeInfo, valid) + invalid
-      }
-      return resolveResults.toTypedArray()
+      val resolveResults = reference.multiResolveInner(incompleteCode)
+      val element = reference.psiElement
+      return RResolver.sortValidResolveResults(element, element.containingFile.runtimeInfo, resolveResults)
     }
   }
 

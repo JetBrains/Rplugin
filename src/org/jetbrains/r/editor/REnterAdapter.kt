@@ -8,8 +8,9 @@ import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
-import com.intellij.psi.*
-import com.intellij.psi.impl.source.tree.TreeUtil
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.RLanguage
@@ -30,12 +31,7 @@ private val R_OPEN_PAIRS = TokenSet.create(
 
 class REnterAdapter : EnterHandlerDelegateAdapter() {
   override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): Result {
-    if (file.language == RLanguage.INSTANCE) {
-      when {
-        adjustAlignmentAfterEnter(editor, file) -> return Result.Continue
-        adjustDocumentComment(editor, file) -> return Result.Continue
-      }
-    }
+    if (file.language == RLanguage.INSTANCE) adjustAlignmentAfterEnter(editor, file)
     return Result.Continue
   }
 
@@ -75,35 +71,5 @@ class REnterAdapter : EnterHandlerDelegateAdapter() {
     val contentLine = editor.document.getLineNumber(contentOffset)
     val contentLineOffset = editor.document.getLineStartOffset(contentLine)
     return contentOffset - contentLineOffset
-  }
-
-  /**
-   * This method relay on existing of [org.jetbrains.r.editor.RCommenter]
-   * and standard logic in [com.intellij.codeInsight.editorActions.enter.EnterInLineCommentHandler]
-   */
-  private fun adjustDocumentComment(editor: Editor, file: PsiFile): Boolean {
-    val offset = editor.caretModel.offset
-    val elementAt = file.findElementAt(offset)
-
-    var prevSibling = if (elementAt == null && offset == editor.document.textLength) {
-      TreeUtil.findLastLeaf(file.node)?.psi
-    }
-    else {
-      elementAt?.prevSibling
-    } as? PsiWhiteSpace ?: return false
-
-    if (prevSibling.elementType == TokenType.WHITE_SPACE)
-      prevSibling = prevSibling.prevSibling as? PsiWhiteSpace ?: return false
-    if (prevSibling.elementType != RElementTypes.R_NL) return false
-    val prevCommentText = (prevSibling.prevSibling as? PsiComment)?.text ?: return false
-    if (!prevCommentText.startsWith("#'")) return false
-    if (elementAt is PsiComment) {
-      editor.document.insertString(offset - 1, "'")
-    }
-    else {
-      editor.document.insertString(offset, "#' ")
-      editor.caretModel.moveCaretRelatively(3, 0, false, true, true)
-    }
-    return true
   }
 }

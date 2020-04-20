@@ -9,10 +9,11 @@ import com.intellij.codeInsight.generation.IndentedCommenter
 import com.intellij.lang.CodeDocumentationAwareCommenter
 import com.intellij.psi.PsiComment
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.elementType
 import org.jetbrains.r.parsing.RParserDefinition
 
 class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
-  override fun getLineCommentPrefix(): String? = "# "
+  override fun getLineCommentPrefix(): String? = "#"
 
   override fun getBlockCommentPrefix(): String? = null
 
@@ -26,15 +27,15 @@ class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
 
   override fun getBlockCommentTokenType(): IElementType? = null
 
-  override fun getDocumentationCommentTokenType(): IElementType? = null
+  override fun getDocumentationCommentTokenType(): IElementType? = RParserDefinition.ROXYGEN_COMMENT
 
-  override fun getDocumentationCommentPrefix(): String? = null
+  override fun getDocumentationCommentPrefix(): String? = "#'"
 
-  override fun getDocumentationCommentLinePrefix(): String? = null
+  override fun getDocumentationCommentLinePrefix(): String? = "#'"
 
-  override fun getDocumentationCommentSuffix(): String? = null
+  override fun getDocumentationCommentSuffix(): String? = ""
 
-  override fun isDocumentationComment(element: PsiComment): Boolean = false
+  override fun isDocumentationComment(element: PsiComment): Boolean = element.elementType == documentationCommentTokenType
 
   override fun forceIndentedLineComment(): Boolean? = true
 }

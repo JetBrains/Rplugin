@@ -87,6 +87,10 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
 
   fun testRenameOperator() = doTestWithProject("%sum%")
 
+  fun testRenameDocumentationParam() = doTestWithProject("aaaa")
+
+  fun testRenameDocumentationFunctionLink() = doTestWithProject("baz")
+
   private fun doTestWithProject(newName: String, isInlineAvailable: Boolean = true, isRmd: Boolean = false, isSourceTest: Boolean = false) {
     val dotFileExtension = getDotExtension(isRmd)
     lateinit var startFiles: List<String>

@@ -99,6 +99,66 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
      """)
   }
 
+  fun testRoxygenParameter() {
+    doTest("""
+      #' Title
+      #' 
+      #' Description
+      #'
+      #' @param x, y X and y
+      #' @param z Z
+      #' @example
+      #' #' @param x,y,z Params
+      func <- function(x<caret>, y, z) {
+        x + y + z
+      }
+    """, """
+      Usage (2 usages)
+       Variable
+        x
+       Found usages (2 usages)
+        Unclassified usage (1 usage)
+         light_idea_test_case (1 usage)
+           (1 usage)
+           10x + y + z
+        Usage in roxygen2 documentation (1 usage)
+         light_idea_test_case (1 usage)
+           (1 usage)
+           5#' @param x, y X and y
+     """)
+  }
+
+  fun testRoxygenHelpPageLink() {
+    doTest("""
+      #' Title
+      #' 
+      #' Description
+      #'
+      #' @see [bar]
+      #' [bar][baz]
+      #' [bar](baz)
+      #' <bar:bar>
+      func <- function(x, y, z) {
+        bar(x) + y + z
+      }
+      
+      ba<caret>r <- function(x) { x + 42 }
+    """, """
+      Usage (2 usages)
+       Variable
+        bar
+       Found usages (2 usages)
+        Unclassified usage (1 usage)
+         light_idea_test_case (1 usage)
+           (1 usage)
+           10bar(x) + y + z
+        Usage in roxygen2 documentation (1 usage)
+         light_idea_test_case (1 usage)
+           (1 usage)
+           5#' @see [bar]
+     """)
+  }
+
   private fun doTest(@Language("R") code: String, expected: String) {
     myFixture.configureByText("test.R", code.trimIndent())
     val element = myFixture.elementAtCaret

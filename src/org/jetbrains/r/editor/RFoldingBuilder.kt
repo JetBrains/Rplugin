@@ -10,6 +10,7 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.psi.api.RBlockExpression
 import org.jetbrains.r.psi.api.RForStatement
 import org.jetbrains.r.psi.api.RFunctionExpression
@@ -24,6 +25,7 @@ class RFoldingBuilder : FoldingBuilder {
   override fun getPlaceholderText(node: ASTNode): String? {
     return when (node.elementType) {
       RElementTypes.R_BLOCK_EXPRESSION -> "{...}"
+      RParserDefinition.ROXYGEN_COMMENT -> "#' ..."
       RElementTypes.R_FUNCTION_EXPRESSION -> {
         val def = node.psi as RFunctionExpression
         val funargs = def.parameterList ?: return null
@@ -59,6 +61,11 @@ class RFoldingBuilder : FoldingBuilder {
       val lbraceStart = blockExpr.textRange.startOffset
       val rbraceStart = blockExpr.textRange.endOffset
       descriptors.add(FoldingDescriptor(node, TextRange(lbraceStart, rbraceStart)))
+    }
+    if (node.elementType === RParserDefinition.ROXYGEN_COMMENT) {
+      val leadingWhiteSpaces = node.text.indexOfFirst { it.isWhitespace() && it !in listOf('\n', '\r') }
+      val textRange = node.textRange
+      descriptors.add(FoldingDescriptor(node, TextRange(textRange.startOffset + leadingWhiteSpaces, textRange.endOffset)))
     }
     var child = node.firstChildNode
     while (child != null) {

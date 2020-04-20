@@ -1,0 +1,34 @@
+/*
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+package org.jetbrains.r.roxygen.psi
+
+import com.intellij.psi.PsiElement
+import com.intellij.psi.filters.ElementFilter
+import com.intellij.psi.filters.position.FilterPattern
+import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.r.roxygen.psi.api.RoxygenParameter
+import org.jetbrains.r.roxygen.psi.api.RoxygenTag
+
+object RoxygenElementFilters {
+  val TAG_NAME_FILTER = FilterPattern(TagNameFilter())
+  val PARAMETER_FILTER = FilterPattern(ParameterFilter())
+}
+
+class TagNameFilter : ElementFilter {
+  override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+    val tag = PsiTreeUtil.getParentOfType(context, RoxygenTag::class.java, false) ?: return false
+    return PsiTreeUtil.isAncestor(tag.firstChild, context ?: return false, false)
+  }
+
+  override fun isClassAcceptable(hintClass: Class<*>?) = true
+}
+
+class ParameterFilter : ElementFilter {
+  override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+    return PsiTreeUtil.getParentOfType(context, RoxygenParameter::class.java, false) != null
+  }
+
+  override fun isClassAcceptable(hintClass: Class<*>?) = true
+}
+

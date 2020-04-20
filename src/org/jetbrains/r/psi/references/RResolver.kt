@@ -136,6 +136,18 @@ object RResolver {
     return loadedNamespaces[name] ?: Int.MAX_VALUE
   }
 
+  fun sortValidResolveResults(psiElement: PsiElement,
+                              runtimeInfo: RConsoleRuntimeInfo?,
+                              resolveResults: Array<ResolveResult>): Array<ResolveResult> {
+    val resolveResultList = resolveResults.toList()
+    val valid = resolveResults.filter { it.isValidResult }.toTypedArray()
+    val invalid = resolveResultList - valid
+    if (valid.size > 1) {
+      return sortResolveResults(psiElement, runtimeInfo, valid) + invalid
+    }
+    return resolveResults
+  }
+
   fun sortResolveResults(psiElement: PsiElement,
                          runtimeInfo: RConsoleRuntimeInfo?,
                          resolveResults: Array<ResolveResult>): Array<ResolveResult> {

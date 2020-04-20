@@ -80,6 +80,30 @@ class RSkeletonResolveTest : RConsoleBaseTestCase() {
     TestCase.assertEquals("dplyr", rPackage?.name)
   }
 
+  fun testDocumentationLink() {
+    rInterop.executeCode("library(dplyr)")
+    val resolveResult = resolve("""
+      #' [coun<caret>t()]
+      NULL
+    """.trimIndent())
+    val rPackage = RPackage.getOrCreateRPackageBySkeletonFile(resolveResult!!.containingFile)
+    TestCase.assertEquals("dplyr", rPackage?.name)
+  }
+
+  fun testQualifiedDocumentationLink() {
+    val filterStats = resolve("""
+      #' [filte<caret>r()]
+      NULL
+    """.trimIndent())
+    TestCase.assertNotNull(filterStats)
+    TestCase.assertEquals("stats", RPackage.getOrCreateRPackageBySkeletonFile(filterStats!!.containingFile)?.name)
+    val filterDplyr = resolve("""
+      #' [dplyr::filte<caret>r()]
+      NULL
+    """.trimIndent())
+    TestCase.assertNotNull(filterDplyr)
+  }
+
   private fun runTest(expression: String): RVar {
     val resolveResult = resolve(expression)
     TestCase.assertTrue(resolveResult is RSkeletonAssignmentStatement)

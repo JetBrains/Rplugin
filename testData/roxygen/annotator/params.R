@@ -1,0 +1,7 @@
+<inject>#' @title Title
+#' @param <info descr="ROXYGEN_PARAMETER">a</info>,<info descr="ROXYGEN_PARAMETER">b</info> Params
+#' @example
+#'  #' @title T
+#'  #' @description D
+#'  #' @param x,y Params
+#' @md</inject>

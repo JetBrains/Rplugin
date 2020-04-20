@@ -43,6 +43,13 @@ class RMultiResolveTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent())
   }
 
+  fun testMultiResolveInDocumentation() {
+    doTest(2, """
+      #' [filt<caret>er()]
+      NULL
+    """.trimIndent())
+  }
+
   private fun doTest(count: Int,  text: String) {
     myFixture.configureByText("test.R", text)
     val results = resolve()

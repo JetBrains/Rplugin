@@ -363,6 +363,7 @@ You can find the source code in the following repositories:
         <lang.syntaxHighlighterFactory language="R"
                                        implementationClass="org.jetbrains.r.highlighting.RSyntaxHighlighterFactory"/>
         <highlightVisitor implementation="org.jetbrains.r.highlighting.RRainbowVisitor"/>
+        <lang.syntaxHighlighter language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenSyntaxHighlighter"/>
 
         <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
 
@@ -374,10 +375,12 @@ You can find the source code in the following repositories:
         <colorSettingsPage implementation="org.jetbrains.r.highlighting.RMarkdownColorSettingsPage"/>
         <lang.formatter language="R" implementationClass="org.jetbrains.r.editor.formatting.RFormattingModelBuilder"/>
         <lang.braceMatcher language="R" implementationClass="org.jetbrains.r.editor.RBraceMatcher"/>
+        <lang.braceMatcher language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenBraceMatcher"/>
         <quoteHandler className="org.jetbrains.r.editor.RQuoteHandler" fileType="R"/>
 
         <lang.foldingBuilder language="R" implementationClass="org.jetbrains.r.editor.RFoldingBuilder"/>
         <annotator language="R" implementationClass="org.jetbrains.r.annotator.RAnnotator"/>
+        <annotator language="Roxygen" implementationClass="org.jetbrains.r.roxygen.annotator.RoxygenAnnotator"/>
         <lang.namesValidator language="R" implementationClass="org.jetbrains.r.refactoring.RNamesValidator"/>
 
         <!-- Codeinsight -->
@@ -406,14 +409,20 @@ You can find the source code in the following repositories:
         <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
+        <lang.commenter language="Roxygen" implementationClass="org.jetbrains.r.roxygen.usage.RoxygenCommenter"/>
         <enterHandlerDelegate implementation="org.jetbrains.r.editor.REnterAdapter"/>
+        <enterHandlerDelegate implementation="org.jetbrains.r.roxygen.RoxygenEnterInLineCommentHandler"/>
+        <enterHandlerDelegate implementation="org.jetbrains.r.roxygen.RoxygenEnterDelegateToHostHandler" order="last"/>
         <backspaceHandlerDelegate implementation="org.jetbrains.r.editor.RBackspaceHandler"/>
 
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.RStringManipulator"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
+        <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
+        <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
 
         <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RCompletionContributor"/>
+        <completion.contributor language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenCompletionContributor"/>
         <completion.contributor language="Markdown" implementationClass="org.jetbrains.r.editor.RMarkdownCompletionContributor"/>
         <typedHandler implementation="org.jetbrains.r.console.RConsoleAutopopupBlockingHandler" id="rBlockAutoPopup"
                       order="first, before completionAutoPopup"/>
@@ -430,6 +439,7 @@ You can find the source code in the following repositories:
         <psi.referenceContributor language="R" implementation="org.jetbrains.r.psi.references.RReferenceContributor"/>
 
         <typedHandler implementation="org.jetbrains.r.editor.RCompletionAutoPopupHandler" order="first, before completionAutoPopup"/>
+        <typedHandler implementation="org.jetbrains.r.roxygen.RoxygenTypedHandler"/>
         <lookup.charFilter implementation="org.jetbrains.r.editor.RCharFilter" order="first"/>
         <!--<targetElementEvaluator language="R" implementationClass="org.jetbrains.r.editor.RTargetElementEvaluator"/>-->
         <editorSmartKeysConfigurable instance="org.jetbrains.r.editor.RSmartKeys"
@@ -522,6 +532,7 @@ You can find the source code in the following repositories:
 
         <!-- refactorings -->
         <lang.refactoringSupport language="R" implementationClass="org.jetbrains.r.refactoring.RRefactoringProvider"/>
+        <lang.refactoringSupport language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenRefactoringProvider"/>
         <renameInputValidator implementation="org.jetbrains.r.refactoring.rename.RRenameInputValidator"/>
         <nameSuggestionProvider implementation="org.jetbrains.r.refactoring.rename.RNameSuggestionProvider"/>
         <renameHandler implementation="org.jetbrains.r.refactoring.rename.RMemberInplaceRenameHandler"/>

@@ -13,6 +13,8 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.PlatformTestUtil
@@ -37,7 +39,6 @@ import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.packages.remote.RepoProvider
-import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.IOException
@@ -116,8 +117,12 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   protected fun resolve(): Array<ResolveResult> {
     val reference = myFixture.file.findReferenceAt(myFixture.caretOffset) ?: return emptyArray()
-    val rReferenceBase = reference as RReferenceBase<*>
-    return rReferenceBase.multiResolve(false)
+    return if (reference is PsiPolyVariantReference) {
+      reference.multiResolve(false)
+    } else {
+      val result = reference.resolve() ?: return emptyArray()
+      arrayOf(PsiElementResolveResult(result))
+    }
   }
 
   protected fun <T : PsiElement> findElementAtCaret(aClass: Class<T>): T? {

@@ -1,0 +1,8 @@
+<inject>#' <info descr="ROXYGEN_HELP_PAGE_LINK">[foo]</info>
+#' <info descr="ROXYGEN_HELP_PAGE_LINK">[foo()]</info>
+#' <info descr="ROXYGEN_HELP_PAGE_LINK">[pkg::foo()]</info>
+#' [text]<info descr="ROXYGEN_HELP_PAGE_LINK">[foo]</info>
+#' Text [text]<info descr="ROXYGEN_HELP_PAGE_LINK">[foo]</info> text
+#' Text [text1][text2]<info descr="ROXYGEN_HELP_PAGE_LINK">[foo()]</info> text
+#' Text [text<info descr="ROXYGEN_HELP_PAGE_LINK">[foo]</info>text1]<info descr="ROXYGEN_HELP_PAGE_LINK">[bar::baz()]</info> text
+#' <info descr="ROXYGEN_HELP_PAGE_LINK">[foo]</info> <info descr="ROXYGEN_HELP_PAGE_LINK">[bar]</info></inject>

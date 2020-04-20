@@ -12,6 +12,7 @@ import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.rename.NameSuggestionProvider
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.refactoring.RRefactoringUtil
 
 class RNameSuggestionProvider : NameSuggestionProvider {
@@ -25,6 +26,7 @@ class RNameSuggestionProvider : NameSuggestionProvider {
 
     val scopes = mutableSetOf(RRefactoringUtil.getRScope(element))
     for (ref in refs) {
+      if (ref !is RReferenceBase<*>) continue
       scopes += RRefactoringUtil.getRScope(ref.element)
     }
 
