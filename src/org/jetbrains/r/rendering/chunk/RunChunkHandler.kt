@@ -34,7 +34,6 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -214,7 +213,7 @@ object RunChunkHandler {
   }
 
   private fun createScreenParameters(editor: EditorEx,
-                                     project: @NotNull Project): RGraphicsUtils.ScreenParameters {
+                                     project: Project): RGraphicsUtils.ScreenParameters {
     return if (ApplicationManager.getApplication().isHeadlessEnvironment) {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
@@ -226,7 +225,7 @@ object RunChunkHandler {
   }
 
   private fun ensureConsoleIsReady(console: RConsoleView,
-                                   project: @NotNull Project,
+                                   project: Project,
                                    promise: AsyncPromise<Boolean>): Boolean {
     if (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.PROMPT) {
       val notification = Notification(
