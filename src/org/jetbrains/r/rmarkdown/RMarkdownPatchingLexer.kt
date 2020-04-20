@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.rmarkdown
 
-import com.intellij.lexer.DelegateLexer
 import com.intellij.psi.tree.IElementType
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.MarkdownElementType
 import org.intellij.plugins.markdown.lang.lexer.MarkdownToplevelLexer
+import org.jetbrains.r.lexer.PatchingLexerWithQueue
 import java.util.*
 
 val R_FENCE_ELEMENT_TYPE = IElementType("R Fence", RMarkdownLanguage)
@@ -20,25 +20,13 @@ private val FenceEndType = MarkdownElementType.platformType(MarkdownTokenTypes.C
 private val WhiteSpaceType = MarkdownElementType.platformType(MarkdownTokenTypes.WHITE_SPACE)
 
 
-class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer(RMarkdownFlavourDescriptor)) {
-  private val queue: Queue<TokenData> = ArrayDeque<TokenData>()
-
-  override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
-    super.start(buffer, startOffset, endOffset, initialState)
-    queue.clear()
-  }
-
-  override fun advance() {
-    if (!queue.isEmpty()) {
-      queue.remove()
-      return
-    }
-    super.advance()
+class RMarkdownPatchingLexer : PatchingLexerWithQueue(MarkdownToplevelLexer(RMarkdownFlavourDescriptor)) {
+  override fun processToken() {
     if (delegate.tokenType === FenceLangType) {
       val fenceType: IElementType = RmdFenceProvider.matchHeader(tokenSequence)?.fenceElementType ?: return
       queue.add(getTokenData())
 
-      super.advance()
+      delegate.advance()
       if (delegate.tokenType != MARKDOWN_EOL) {
         return
       }
@@ -50,7 +38,7 @@ class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer(RMarkdownFlav
       var eol: TokenData? = null
       val restore = ArrayList<TokenData>()
       while(true) {
-        super.advance()
+        delegate.advance()
         val cur = getTokenData()
         when(cur.type) {
           null -> {
@@ -80,24 +68,4 @@ class RMarkdownPatchingLexer : DelegateLexer(MarkdownToplevelLexer(RMarkdownFlav
       }
     }
   }
-
-  override fun getTokenType(): IElementType? {
-    return if (!queue.isEmpty()) queue.peek().type else delegate.tokenType
-  }
-
-  override fun getTokenEnd(): Int {
-    return if (!queue.isEmpty()) queue.peek().end else delegate.tokenEnd
-  }
-
-  override fun getTokenStart(): Int {
-    return if (!queue.isEmpty()) queue.peek().start else delegate.tokenStart
-  }
-
-  override fun getState(): Int {
-    return if (!queue.isEmpty()) queue.peek().state else delegate.state
-  }
-
-  private fun getTokenData() = TokenData(delegate.tokenType, delegate.tokenStart, delegate.tokenEnd, delegate.state)
-
-  private data class TokenData(val type : IElementType?, val start: Int, val end: Int, val state: Int)
 }

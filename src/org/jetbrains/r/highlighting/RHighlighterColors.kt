@@ -15,6 +15,7 @@ private val descriptors = ArrayList<AttributesDescriptor>()
 val DESCRIPTORS: Array<AttributesDescriptor> by lazy { descriptors.toTypedArray().also { descriptors.clear() } }
 
 val LINE_COMMENT         = create("R_LINE_COMMENT", Colors.LINE_COMMENT, "Line Comment")
+val DOC_COMMENT          = create("R_DOCUMENT_COMMENT", Colors.DOC_COMMENT, "Document Comment")
 val KEYWORD              = create("R_KEYWORD", Colors.KEYWORD, "Keyword")
 val NUMBER               = create("R_NUMBER", Colors.NUMBER, "Number")
 val STRING               = create("R_STRING", Colors.STRING, "String")

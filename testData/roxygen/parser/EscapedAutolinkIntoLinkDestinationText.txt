@@ -1,0 +1,8 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[my\<sheme:path\>text]')
+  ROXYGEN_LINK_DESTINATION
+    PsiElement(()('(')
+    PsiElement(TEXT)('some destination')
+    PsiElement())(')')

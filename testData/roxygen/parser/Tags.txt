@@ -1,0 +1,19 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_PARAM_TAG
+    PsiElement(TAG_NAME)('@title')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('Title')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_PARAM_TAG
+    PsiElement(TAG_NAME)('@description')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('Description')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_PARAM_TAG
+    PsiElement(TAG_NAME)('@export')

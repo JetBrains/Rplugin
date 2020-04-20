@@ -6,7 +6,7 @@
     <property name="lexer.file" value="${out.dir}/_RLexer.java"/>
     <property name="lexer.log" value="${jflex.dir}/jflex.log"/>
     <property name="lexer.source" value="./R.flex"/>
-    <property name="lexer.skeleton" value="./idea-flex.skeleton"/>
+    <property name="lexer.skeleton" value="../../../../../grammars/idea-flex.skeleton"/>
     <property name="compiler.max.memory" value="256m"/>
     <property name="jflex.file" value="${jflex.dir}/jflex-${jflex-version}.jar"/>
 

@@ -1,0 +1,74 @@
+/*
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+{
+   parserClass="org.jetbrains.r.roxygen.parsing.RoxygenParser"
+   implements="org.jetbrains.r.roxygen.psi.api.RoxygenPsiElement"
+   extends="org.jetbrains.r.roxygen.psi.RoxygenElementImpl"
+
+   elementTypeHolderClass="org.jetbrains.r.roxygen.parsing.RoxygenElementTypes"
+   elementTypePrefix="ROXYGEN_"
+   elementTypeClass="org.jetbrains.r.roxygen.psi.RoxygenElementType"
+   tokenTypeClass="org.jetbrains.r.roxygen.psi.RoxygenElementType"
+
+   psiImplUtilClass="org.jetbrains.r.roxygen.psi.impl.RoxygenPsiImplUtil"
+
+   psiClassPrefix="Roxygen"
+   psiImplClassSuffix="Impl"
+   psiPackage="org.jetbrains.r.roxygen.psi.api"
+   psiImplPackage="org.jetbrains.r.roxygen.psi.impl"
+
+   tokens=[
+     COMMA=","
+     DOUBLECOLON="::"
+     LPAR="("
+     RPAR=")"
+     RBRACKET="]"
+     LBRACKET="["
+     DOC_PREFIX="#'"
+     LANGLE="<"
+     RANGLE=">"
+   ]
+
+   extends(".*expression|parameter")=expression
+}
+
+root ::= comment_line (nl comment_line)*
+
+private comment_line ::= ws* "#'" (content)*
+
+private content ::= param_tag | tag | help_page_link | link_destination | autolink | text
+
+tag ::= TAG_NAME { methods = [ getName ] }
+
+param_tag ::= TAG_NAME (ws+ parameter ("," parameter)*)?
+{
+  methods = [ Parameters="parameter" ]
+  extends=tag
+}
+
+parameter ::= IDENTIFIER
+{
+  implements="com.intellij.psi.PsiNamedElement"
+  methods=[ getName setName getReference ]
+}
+
+help_page_link ::="[" expression ("(" ")")? "]"
+
+link_destination ::= "(" text* ")"
+
+autolink ::= "<" AUTOLINK_URI ">"
+
+expression ::= namespace_access_expression | identifier_expression { methods=[ getReference ] }
+
+namespace_access_expression ::= IDENTIFIER "::" identifier_expression {
+    methods = [ Namespace="IDENTIFIER" Identifier="identifier_expression" getNamespaceName ]
+}
+
+identifier_expression ::= IDENTIFIER
+{
+  implements="com.intellij.psi.PsiNamedElement"
+  methods = [ getName setName getReference ]
+}
+
+private text ::= TEXT | ws

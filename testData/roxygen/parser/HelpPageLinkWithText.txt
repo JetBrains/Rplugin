@@ -1,0 +1,9 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[Some text ]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('foo')
+    PsiElement(])(']')

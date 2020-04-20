@@ -1,0 +1,9 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[my')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('sheme:path')
+    PsiElement(>)('>')
+  PsiElement(TEXT)('text](some destination)')

@@ -1,0 +1,8 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('Some another')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('text')

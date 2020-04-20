@@ -1,0 +1,104 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('This is a')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('link')
+    PsiElement(])(']')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('with [this]')
+  ROXYGEN_LINK_DESTINATION
+    PsiElement(()('(')
+    PsiElement(TEXT)('after')
+    PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('www:www')
+    PsiElement(>)('>')
+  PsiElement(TEXT)('(this is just text after link) [and ')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('this:is')
+    PsiElement(>)('>')
+  PsiElement(TEXT)('](unfortunately too)')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('5 < 9 --- ')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('http:\\see-more.com')
+    PsiElement(>)('>')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('`[<-` [all]')
+  ROXYGEN_LINK_DESTINATION
+    PsiElement(()('(')
+    PsiElement(TEXT)('ok')
+    PsiElement())(')')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('after this')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[bad identifier][^heeere] and this a destination link [bad identifier][^heeere]')
+  ROXYGEN_LINK_DESTINATION
+    PsiElement(()('(')
+    PsiElement(TEXT)('/a/b/c/file.ext')
+    PsiElement())(')')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('Link [[[')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('foo')
+    PsiElement(])(']')
+  PsiElement(TEXT)(']]] and [[[[link]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('foo')
+    PsiElement(])(']')
+  PsiElement(TEXT)(']] and')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('link')
+    PsiElement(])(']')
+  PsiElement(TEXT)(']')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_NAMESPACE_ACCESS_EXPRESSION
+      PsiElement(IDENTIFIER)('pkg')
+      PsiElement(::)('::')
+      ROXYGEN_IDENTIFIER_EXPRESSION
+        PsiElement(IDENTIFIER)('fooo')
+    PsiElement(()('(')
+    PsiElement())(')')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('<5 < 6 ')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('mailto:garold@gug.com')
+    PsiElement(>)('>')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('&& 6 > -9')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('proof')
+    PsiElement(])(']')

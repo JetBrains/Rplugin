@@ -1,0 +1,8 @@
+#' [obj]
+#' [fun()]
+#' [pkg::obj]
+#' [pkg::fun()]
+#' [text][obj]
+#' [text][fun()]
+#' [text][pkg::obj]
+#' [text][pkg::fun()]

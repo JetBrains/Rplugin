@@ -5,18 +5,47 @@
 package org.jetbrains.r.parsing
 
 import com.intellij.lang.DefaultASTFactoryImpl
+import com.intellij.psi.LiteralTextEscaper
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.psi.impl.source.tree.PsiCommentImpl
+import com.intellij.psi.impl.source.tree.injected.CommentLiteralEscaper
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.parsing.RElementTypes.R_NL
+import org.jetbrains.r.psi.api.RExpression
+import org.jetbrains.r.roxygen.RoxygenCommentPlaceholder
 
 class RAstFactory : DefaultASTFactoryImpl() {
+
+  private class PsiCommentPlaceholder(type: IElementType, text: CharSequence) : PsiCommentImpl(type, text), RoxygenCommentPlaceholder {
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<PsiCommentImpl> {
+      return object : CommentLiteralEscaper(this) {
+        override fun isOneLine(): Boolean {
+          return false // that is need to receive EnterAction action in editor
+        }
+      }
+    }
+
+    override fun getOwner(): PsiElement? {
+      return PsiTreeUtil.getNextSiblingOfType(this, RExpression::class.java)
+    }
+  }
+
   override fun createLeaf(type: IElementType, text: CharSequence): LeafElement {
     if (type == R_NL) {
       return RNextLinePsiWhiteSpace(type, text)
     }
     return super.createLeaf(type, text)
+  }
+
+  override fun createComment(type: IElementType, text: CharSequence): LeafElement {
+    if (type === RParserDefinition.ROXYGEN_COMMENT) {
+        return PsiCommentPlaceholder(type, text)
+    }
+    return super.createComment(type, text)
   }
 }
 

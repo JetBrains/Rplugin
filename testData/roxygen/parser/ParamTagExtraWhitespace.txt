@@ -1,0 +1,12 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_PARAM_TAG
+    PsiElement(TAG_NAME)('@param')
+    PsiElement(ws)(' ')
+    ROXYGEN_PARAMETER
+      PsiElement(IDENTIFIER)('x')
+  PsiElement(,)(',')
+  PsiErrorElement:IDENTIFIER expected
+    PsiElement(ws)(' ')
+  PsiElement(TEXT)('y A params')

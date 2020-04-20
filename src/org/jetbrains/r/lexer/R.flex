@@ -33,7 +33,9 @@ IDENT_CONTINUE = {LETTER}|[0-9_"."]
 QUOTED_IDENTIFIER = "`" ([^\\\`]|{ANY_ESCAPE_SEQUENCE})* "`"
 IDENTIFIER = {IDENT_START}{IDENT_CONTINUE}** | {QUOTED_IDENTIFIER} | "."
 
-END_OF_LINE_COMMENT="#"[^\r\n]*
+ROXYGEN_LINE_COMMENT=[\ \t]* "#'" [^\r\n\f]*
+ROXYGEN_COMMENT = {ROXYGEN_LINE_COMMENT} ([\r\n] {ROXYGEN_LINE_COMMENT})*
+END_OF_LINE_COMMENT="#"[^\r\n\f]*
 
 
 // numeric constants
@@ -78,6 +80,7 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 
 <YYINITIAL> {
 [\n]                        { return R_NL; }
+{ROXYGEN_COMMENT}           { return ROXYGEN_COMMENT; }
 {END_OF_LINE_COMMENT}       { return END_OF_LINE_COMMENT; }
 [\ ]                        { return SPACE; }
 [\t]                        { return TAB; }

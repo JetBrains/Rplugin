@@ -1,0 +1,88 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('obj')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('fun')
+    PsiElement(()('(')
+    PsiElement())(')')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_NAMESPACE_ACCESS_EXPRESSION
+      PsiElement(IDENTIFIER)('pkg')
+      PsiElement(::)('::')
+      ROXYGEN_IDENTIFIER_EXPRESSION
+        PsiElement(IDENTIFIER)('obj')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_NAMESPACE_ACCESS_EXPRESSION
+      PsiElement(IDENTIFIER)('pkg')
+      PsiElement(::)('::')
+      ROXYGEN_IDENTIFIER_EXPRESSION
+        PsiElement(IDENTIFIER)('fun')
+    PsiElement(()('(')
+    PsiElement())(')')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[text]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('obj')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[text]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_IDENTIFIER_EXPRESSION
+      PsiElement(IDENTIFIER)('fun')
+    PsiElement(()('(')
+    PsiElement())(')')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[text]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_NAMESPACE_ACCESS_EXPRESSION
+      PsiElement(IDENTIFIER)('pkg')
+      PsiElement(::)('::')
+      ROXYGEN_IDENTIFIER_EXPRESSION
+        PsiElement(IDENTIFIER)('obj')
+    PsiElement(])(']')
+  PsiElement(nl)('\n')
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('[text]')
+  ROXYGEN_HELP_PAGE_LINK
+    PsiElement([)('[')
+    ROXYGEN_NAMESPACE_ACCESS_EXPRESSION
+      PsiElement(IDENTIFIER)('pkg')
+      PsiElement(::)('::')
+      ROXYGEN_IDENTIFIER_EXPRESSION
+        PsiElement(IDENTIFIER)('fun')
+    PsiElement(()('(')
+    PsiElement())(')')
+    PsiElement(])(']')

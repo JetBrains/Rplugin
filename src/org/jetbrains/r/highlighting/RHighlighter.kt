@@ -52,6 +52,7 @@ class RHighlighter : SyntaxHighlighterBase() {
       ATTRIBUTES[RElementTypes.R_SEMI] = SEMICOLON
 
       ATTRIBUTES[RParserDefinition.END_OF_LINE_COMMENT] = LINE_COMMENT
+      ATTRIBUTES[RParserDefinition.ROXYGEN_COMMENT] = DOC_COMMENT
 
       ATTRIBUTES[RParserDefinition.BAD_CHARACTER] = BAD_CHARACTER
     }

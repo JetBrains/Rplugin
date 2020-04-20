@@ -1,0 +1,9 @@
+Roxygen File
+  PsiElement(#')('#'')
+  PsiElement(ws)(' ')
+  PsiElement(TEXT)('One <autolink:')
+  ROXYGEN_AUTOLINK
+    PsiElement(<)('<')
+    PsiElement(AUTOLINK_URI)('into:second')
+    PsiElement(>)('>')
+  PsiElement(TEXT)('autolink> text')

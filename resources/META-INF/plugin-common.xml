@@ -354,6 +354,8 @@ You can find the source code in the following repositories:
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
+        <fileType name="Roxygen file" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE"
+                  language="Roxygen" extensions="R"/>
 
         <lang.fileViewProviderFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory"/>
@@ -381,9 +383,13 @@ You can find the source code in the following repositories:
         <!-- Codeinsight -->
 
         <lang.ast.factory language="R" implementationClass="org.jetbrains.r.parsing.RAstFactory"/>
+        <lang.ast.factory language="Roxygen" implementationClass="org.jetbrains.r.roxygen.parsing.RoxygenAstFactory"/>
 
         <lang.parserDefinition language="R" implementationClass="org.jetbrains.r.parsing.RParserDefinition"/>
         <lang.parserDefinition language="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownParserDefinition"/>
+        <lang.parserDefinition language="Roxygen" implementationClass="org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition"/>
+
+        <languageInjector implementation="org.jetbrains.r.roxygen.RoxygenLanguageInjector"/>
 
         <lang.formatter language="RMarkdown" implementationClass="org.jetbrains.r.editor.formatting.RMarkdownFormattingModelBuilder"/>
 

@@ -29,6 +29,7 @@ public class RParserDefinition implements ParserDefinition {
 
     public static RFileElementType FILE = new RFileElementType();
     public static IElementType END_OF_LINE_COMMENT = new RElementType("END_OF_LINE_COMMENT");
+    public static IElementType ROXYGEN_COMMENT = new RElementType("ROXYGEN_COMMENT");
     public static IElementType BAD_CHARACTER = new RElementType("BAD_CHARACTER");
     public static IElementType SPACE = new RElementType("SPACE");
     public static IElementType TAB = new RElementType("TAB");
@@ -37,7 +38,7 @@ public class RParserDefinition implements ParserDefinition {
 
     public RParserDefinition() {
         myWhitespaceTokens = TokenSet.create(SPACE, TAB, FORMFEED);
-        myCommentTokens = TokenSet.create(END_OF_LINE_COMMENT);
+        myCommentTokens = TokenSet.create(END_OF_LINE_COMMENT, ROXYGEN_COMMENT);
         myStringLiteralTokens = TokenSet.create(RElementTypes.R_STRING);
     }
 

@@ -1,0 +1,1 @@
+#' [my\<sheme:path\>text](some destination)
