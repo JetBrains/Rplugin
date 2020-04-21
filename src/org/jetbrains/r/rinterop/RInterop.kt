@@ -240,6 +240,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     invalidateCaches()
   }
 
+  fun isLibraryLoaded(name: String): Boolean {
+    return loadedPackages.value.keys.contains(name)
+  }
+
   fun loadLibrary(name: String): CancellablePromise<Unit> {
     return executeAsync(asyncStub::loadLibrary, StringValue.of(name)).then {
       invalidateCaches()

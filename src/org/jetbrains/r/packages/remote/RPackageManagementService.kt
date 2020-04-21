@@ -29,6 +29,7 @@ import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.rinterop.RInterop
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class PackageDetailsException(message: String) : RuntimeException(message)
@@ -65,6 +66,9 @@ class RPackageManagementService(private val project: Project,
       return getInitializedManager().interpreter
     }
 
+  private val interop: RInterop?
+    get() = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+
   private val provider: RepoProvider
     get() = RepoProvider.getInstance(project)
 
@@ -77,18 +81,15 @@ class RPackageManagementService(private val project: Project,
     get() = provider.name2AvailablePackages != null
 
   fun isPackageLoaded(packageName: String): Boolean {
-    val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return false
-    return currentConsoleOrNull.rInterop.loadedPackages.value.keys.contains(packageName)
+    return interop?.isLibraryLoaded(packageName) ?: false
   }
 
   fun loadPackage(packageName: String): Promise<Unit> {
-    return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.loadLibrary(packageName)
-           ?: resolvedPromise()
+    return interop?.loadLibrary(packageName) ?: resolvedPromise()
   }
 
   fun unloadPackage(packageName: String, withDynamicLibrary: Boolean): Promise<Unit> {
-    return RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.unloadLibrary(packageName, withDynamicLibrary)
-           ?: resolvedPromise()
+    return interop?.unloadLibrary(packageName, withDynamicLibrary) ?: resolvedPromise()
   }
 
   override fun getAllRepositories(): List<String> {

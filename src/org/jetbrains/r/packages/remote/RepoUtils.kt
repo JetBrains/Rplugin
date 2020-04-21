@@ -197,7 +197,9 @@ object RepoUtils {
 
     val fallbackMethod = getFallbackDownloadMethod()
     val arguments = getInstallArguments(urls, libraryPath)
-    rInterop.repoInstallPackage(repoPackage.name, fallbackMethod, arguments)
+    rInterop.runWithPackageUnloaded(repoPackage.name) {
+      repoInstallPackage(repoPackage.name, fallbackMethod, arguments)
+    }
 
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
@@ -220,6 +222,16 @@ object RepoUtils {
       }
     }
     throw ExecutionException("Cannot install package '${repoPackage.name}'. Check console for process output")
+  }
+
+  private fun RInterop.runWithPackageUnloaded(packageName: String, task: RInterop.() -> Unit) {
+    if (isLibraryLoaded(packageName)) {
+      unloadLibrary(packageName, false).blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
+      task()
+      loadLibrary(packageName).blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
+    } else {
+      task()
+    }
   }
 
   private fun trimRepoUrlSuffix(repoUrl: String): String {
