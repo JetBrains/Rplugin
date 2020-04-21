@@ -352,8 +352,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
   private fun createUnitTextField(parent: JComponent, unitText: String, maxCharacters: Int): JTextField {
     return UnitTextField(unitText, maxCharacters).apply {
-      columns = TEXT_FIELD_NUM_COLUMNS
-      minimumSize = preferredSize
       parent.add(this)
     }
   }
@@ -446,10 +444,27 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private class UnitTextField(private val unitText: String, maxCharacters: Int) : JTextField() {
+    private val fixedSize = calculateSize(unitText, maxCharacters)
+
     init {
       (document as? AbstractDocument)?.apply {
         documentFilter = LimitedDocumentFilter(maxCharacters)
       }
+    }
+
+    private fun calculateSize(unitText: String, maxCharacters: Int): Dimension {
+      text = "9".repeat(maxCharacters) + " " + unitText
+      return super.getPreferredSize().also {
+        text = ""
+      }
+    }
+
+    override fun getPreferredSize(): Dimension {
+      return fixedSize
+    }
+
+    override fun getMinimumSize(): Dimension {
+      return fixedSize
     }
 
     override fun paint(g: Graphics) {
@@ -477,7 +492,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   companion object {
-    private const val TEXT_FIELD_NUM_COLUMNS = 5
     private const val DPI_MAX_CHARACTERS = 3
     private const val PX_MAX_CHARACTERS = 4
 
