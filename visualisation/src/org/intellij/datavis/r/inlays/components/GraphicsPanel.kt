@@ -26,6 +26,7 @@ import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.ui.ImageComponent
+import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.image.BufferedImage
@@ -115,16 +116,22 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     val connect = project.messageBus.connect()
     Disposer.register(disposableParent, connect)
     connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
-      currentFile?.let { showImage(it) }
+      currentFile?.let { showImageAsync(it) }
     })
     connect.subscribe(CHANGE_DARK_MODE_TOPIC, object : DarkModeNotifier {
       override fun onDarkModeChanged(isEnabled: Boolean) {
         if (darkMode != isEnabled) {
           darkMode = isEnabled
-          currentFile?.let { showImage(it) }
+          currentFile?.let { showImageAsync(it) }
         }
       }
     })
+  }
+
+  private fun showImageAsync(imageFile: File) {
+    runAsync {
+      showImage(imageFile)
+    }
   }
 
   fun showImage(imageFile: File) {
