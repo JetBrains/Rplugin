@@ -97,8 +97,7 @@ class HtmlHandler {
 				&& (s.charAt(1) == 'h' || s.charAt(1) == 'H')
 				&& (s.charAt(2) == 't' || s.charAt(2) == 'T')
 				&& (s.charAt(3) == 'm' || s.charAt(3) == 'M')
-				&& (s.charAt(4) == 'l' || s.charAt(4) == 'L')
-				&& (s.charAt(0) == '<')) {
+				&& (s.charAt(4) == 'l' || s.charAt(4) == 'L')) {
 			// it is enough if the string starts with <html>, ending not
 			// important
 			if (l >= 13 && (s.charAt(l - 1) == '>') && (s.charAt(l - 7) == '<')
