@@ -191,7 +191,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     val bytes = imageFile.readBytes()
     val editorColorsManager = EditorColorsManager.getInstance()
     return if (editorColorsManager.isDarkEditor && darkMode && imageFile.isInvertible) {
-      createInvertedImage(bytes, editorColorsManager.globalScheme)
+      tryCreateInvertedImage(bytes, editorColorsManager.globalScheme)
     } else {
       bytes
     }
@@ -199,6 +199,15 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   private val File.isInvertible: Boolean
     get() = graphicsManager?.canRescale(absolutePath) ?: false
+
+  private fun tryCreateInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
+    return try {
+      createInvertedImage(content, globalScheme)
+    } catch (e: Exception) {
+      LOGGER.warn("Failed to invert image", e)
+      content
+    }
+  }
 
   private fun createInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
     val defaultForeground = globalScheme.defaultForeground
