@@ -235,7 +235,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       }
 
       override fun onFoldProcessingEnd() {
-        inlays.filter { pair -> regions.filter { !it.isExpanded }.any { pair.key.textRange.intersects(it.textRange) } }.forEach {
+        inlays.filter { pair -> isOutputPositionCollapsed(pair.key) }.forEach {
           removeInlay(it.value, cleanup = false)
         }
         inlayElements.filter { key -> regions.filter { it.isExpanded }.any { key.textRange.intersects(it.textRange) } }.forEach {
