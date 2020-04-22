@@ -34,7 +34,7 @@ class RPackageService : PersistentStateComponent<RPackageService> {
     val LOG = Logger.getInstance("#" + RPackageService::class.java.name)
 
     fun getInstance(project: Project): RPackageService {
-      return project.getComponent(RPackageService::class.java)
+      return project.getService(RPackageService::class.java)
     }
   }
 }
