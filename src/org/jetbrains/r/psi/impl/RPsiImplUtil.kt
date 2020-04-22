@@ -388,7 +388,7 @@ internal object RPsiImplUtil {
   }
 
   private fun getRoxygenComment(functionExpression: RFunctionExpression): String {
-    val detectObjectDocs = Lists.newArrayList<String>()
+    val detectObjectDocs = ArrayList<String>()
 
     // traverse back before the function def and collect roxygen comment lines
     var newLineCounter = 0
