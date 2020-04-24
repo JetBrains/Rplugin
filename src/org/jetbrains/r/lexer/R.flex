@@ -72,6 +72,8 @@ STRING=({QUOTED_LITERAL} | {DOUBLE_QUOTED_LITERAL})
 private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 %}
 
+%xstate RAW_STRING_STATE
+
 %%
 
 <YYINITIAL> {
@@ -100,6 +102,8 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 
 // string constants
 {STRING}                    { return R_STRING; }
+
+r\"\(                       { yybegin(RAW_STRING_STATE); }
 
 // special constants
 "NULL"                      { return R_NULL; }
@@ -207,4 +211,10 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 "?"                         { return R_HELP; }
 .                           { return BAD_CHARACTER; }
 
+}
+
+<RAW_STRING_STATE> {
+\)\"                        { yybegin(YYINITIAL); return R_STRING; }
+[^]                         {}
+<<EOF>>                     { yybegin(YYINITIAL); return R_INVALID_STRING; }
 }

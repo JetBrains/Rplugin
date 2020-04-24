@@ -66,6 +66,7 @@
   LDBRACKET="[["
   RBRACKET="]"
   LBRACKET="["
+  INVALID_STRING="invalid string"
   ]
 
   extends(".*statement|.*expression|.*literal")=expression
@@ -95,10 +96,11 @@ private expression_list ::= expression? (semicolon+ expression?)*
 
 
 private constant ::=  string_literal_expression | numeric_literal_expression |
-                      boolean_literal  | na_literal | null_literal | boundary_literal
+                      boolean_literal  | na_literal | null_literal | boundary_literal | invalid_literal
 
 numeric_literal_expression ::= INTEGER | NUMERIC | COMPLEX
 string_literal_expression ::= STRING { methods = [getName setName] }
+invalid_literal ::= INVALID_STRING
 
 boolean_literal ::= TRUE | FALSE { methods = [isTrue isFalse]}
 

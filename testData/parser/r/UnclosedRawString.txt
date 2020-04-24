@@ -1,0 +1,10 @@
+RFile:UnclosedRawString.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('x')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_INVALID_LITERAL
+      PsiElement(invalid string)('r"(hello\n"world")\n')

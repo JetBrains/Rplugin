@@ -132,6 +132,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testEmptyArguments() = doTest()
 
+  fun testRawString() = doTest()
+
   //----------Syntax error tests-----------
   fun testErrorFor() = doTest()
 
@@ -162,6 +164,8 @@ class RParsingTest : RUsefulTestCase() {
   fun testErrorCall3() = doTest()
 
   fun testArgumentsWithoutComma() = doTest()
+
+  fun testUnclosedRawString() = doTest()
 
   //---------------------------------------
   private fun doTest() {

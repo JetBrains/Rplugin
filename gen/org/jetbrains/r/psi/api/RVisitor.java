@@ -98,6 +98,10 @@ public class RVisitor extends PsiElementVisitor {
     // visitPsiNamedElement(o);
   }
 
+  public void visitInvalidLiteral(@NotNull RInvalidLiteral o) {
+    visitExpression(o);
+  }
+
   public void visitListSubsetOperator(@NotNull RListSubsetOperator o) {
     visitOperator(o);
   }

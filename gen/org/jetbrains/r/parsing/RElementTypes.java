@@ -31,6 +31,7 @@ public interface RElementTypes {
   IElementType R_IDENTIFIER_EXPRESSION = new RElementType("R_IDENTIFIER_EXPRESSION");
   IElementType R_IF_STATEMENT = new RElementType("R_IF_STATEMENT");
   IElementType R_INFIX_OPERATOR = new RElementType("R_INFIX_OPERATOR");
+  IElementType R_INVALID_LITERAL = new RElementType("R_INVALID_LITERAL");
   IElementType R_LIST_SUBSET_OPERATOR = new RElementType("R_LIST_SUBSET_OPERATOR");
   IElementType R_MEMBER_EXPRESSION = new RElementType("R_MEMBER_EXPRESSION");
   IElementType R_MULDIV_OPERATOR = new RElementType("R_MULDIV_OPERATOR");
@@ -83,6 +84,7 @@ public interface RElementTypes {
   IElementType R_INF = new RElementType("Inf");
   IElementType R_INFIX_OP = new RElementType("INFIX_OP");
   IElementType R_INTEGER = new RElementType("INTEGER");
+  IElementType R_INVALID_STRING = new RElementType("invalid string");
   IElementType R_LBRACE = new RElementType("{");
   IElementType R_LBRACKET = new RElementType("[");
   IElementType R_LDBRACKET = new RElementType("[[");
@@ -189,6 +191,9 @@ public interface RElementTypes {
       }
       else if (type == R_INFIX_OPERATOR) {
         return new RInfixOperatorImpl(node);
+      }
+      else if (type == R_INVALID_LITERAL) {
+        return new RInvalidLiteralImpl(node);
       }
       else if (type == R_LIST_SUBSET_OPERATOR) {
         return new RListSubsetOperatorImpl(node);

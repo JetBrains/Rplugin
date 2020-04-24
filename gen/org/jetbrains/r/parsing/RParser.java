@@ -43,11 +43,11 @@ public class RParser implements PsiParser, LightPsiParser {
     create_token_set_(R_ASSIGNMENT_STATEMENT, R_BLOCK_EXPRESSION, R_BOOLEAN_LITERAL, R_BOUNDARY_LITERAL,
       R_BREAK_STATEMENT, R_CALL_EXPRESSION, R_EMPTY_EXPRESSION, R_EXPRESSION,
       R_FOR_STATEMENT, R_FUNCTION_EXPRESSION, R_HELP_EXPRESSION, R_IDENTIFIER_EXPRESSION,
-      R_IF_STATEMENT, R_MEMBER_EXPRESSION, R_NAMESPACE_ACCESS_EXPRESSION, R_NA_LITERAL,
-      R_NEXT_STATEMENT, R_NULL_LITERAL, R_NUMERIC_LITERAL_EXPRESSION, R_OPERATOR_EXPRESSION,
-      R_PARENTHESIZED_EXPRESSION, R_REPEAT_STATEMENT, R_STRING_LITERAL_EXPRESSION, R_SUBSCRIPTION_EXPRESSION,
-      R_TILDE_EXPRESSION, R_UNARY_NOT_EXPRESSION, R_UNARY_PLUSMINUS_EXPRESSION, R_UNARY_TILDE_EXPRESSION,
-      R_WHILE_STATEMENT),
+      R_IF_STATEMENT, R_INVALID_LITERAL, R_MEMBER_EXPRESSION, R_NAMESPACE_ACCESS_EXPRESSION,
+      R_NA_LITERAL, R_NEXT_STATEMENT, R_NULL_LITERAL, R_NUMERIC_LITERAL_EXPRESSION,
+      R_OPERATOR_EXPRESSION, R_PARENTHESIZED_EXPRESSION, R_REPEAT_STATEMENT, R_STRING_LITERAL_EXPRESSION,
+      R_SUBSCRIPTION_EXPRESSION, R_TILDE_EXPRESSION, R_UNARY_NOT_EXPRESSION, R_UNARY_PLUSMINUS_EXPRESSION,
+      R_UNARY_TILDE_EXPRESSION, R_WHILE_STATEMENT),
   };
 
   /* ********************************************************** */
@@ -959,7 +959,7 @@ public class RParser implements PsiParser, LightPsiParser {
   // 28: BINARY(at_expression)
   // 29: PREFIX(namespace_access_expression)
   // 30: ATOM(string_literal_expression) ATOM(numeric_literal_expression) ATOM(boolean_literal) ATOM(na_literal)
-  //    ATOM(null_literal) ATOM(boundary_literal) ATOM(identifier_expression)
+  //    ATOM(null_literal) ATOM(boundary_literal) ATOM(invalid_literal) ATOM(identifier_expression)
   public static boolean expression(PsiBuilder b, int l, int g) {
     if (!recursion_guard_(b, l, "expression")) return false;
     addVariant(b, "<expression>");
@@ -985,6 +985,7 @@ public class RParser implements PsiParser, LightPsiParser {
     if (!r) r = na_literal(b, l + 1);
     if (!r) r = null_literal(b, l + 1);
     if (!r) r = boundary_literal(b, l + 1);
+    if (!r) r = invalid_literal(b, l + 1);
     if (!r) r = identifier_expression(b, l + 1);
     p = r;
     r = r && expression_0(b, l + 1, g);
@@ -2176,6 +2177,17 @@ public class RParser implements PsiParser, LightPsiParser {
     r = consumeTokenSmart(b, R_INF);
     if (!r) r = consumeTokenSmart(b, R_NAN);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // INVALID_STRING
+  public static boolean invalid_literal(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "invalid_literal")) return false;
+    if (!nextTokenIsSmart(b, R_INVALID_STRING)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokenSmart(b, R_INVALID_STRING);
+    exit_section_(b, m, R_INVALID_LITERAL, r);
     return r;
   }
 

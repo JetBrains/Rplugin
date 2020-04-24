@@ -141,10 +141,13 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getName(stringLiteral: RStringLiteralExpressionImpl): String? {
     val text = stringLiteral.text
-    if (text.length < 2) {
-      return null
+    if (text.startsWith("""r"(""")) {
+      return text.substring(3, text.length - 2)
     }
-    return text.substring(1, text.length - 1)
+    if (text.length >= 2) {
+      return text.substring(1, text.length - 1)
+    }
+    return null
   }
 
   @JvmStatic
@@ -154,7 +157,8 @@ internal object RPsiImplUtil {
       throw IncorrectOperationException("incorrect string literal: " + text)
     }
     val quote = text[0]
-    val replacement = RElementFactory.createRPsiElementFromText(stringLiteral.project, quote + name + quote)
+    val result = if (text.startsWith("""r"(""")) """r"($name)"""" else quote + name + quote
+    val replacement = RElementFactory.createRPsiElementFromText(stringLiteral.project, result)
     return stringLiteral.replace(replacement)
   }
 
