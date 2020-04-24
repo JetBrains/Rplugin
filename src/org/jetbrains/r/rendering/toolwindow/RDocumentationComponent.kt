@@ -17,15 +17,9 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.AnActionButton
-import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.LightColors
-import com.intellij.ui.SearchTextField
+import com.intellij.ui.*
 import com.intellij.util.ui.UIUtil
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.Shape
+import java.awt.*
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import javax.swing.JComponent
@@ -34,7 +28,6 @@ import javax.swing.JScrollPane
 import javax.swing.event.DocumentEvent
 import javax.swing.text.Highlighter
 import javax.swing.text.JTextComponent
-import javax.swing.text.Position
 
 class RDocumentationComponent(project: Project) : DocumentationComponent(DocumentationManager.getInstance(project)) {
   override fun needsToolbar(): Boolean = true
@@ -190,47 +183,99 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       for (it in tags) {
         highlighter.removeHighlight(it)
       }
-      if (indices.isEmpty()) {
-        // get rid of possible visual artifacts
-        editorPane.invalidate()
-        editorPane.repaint()
-      }
+      editorPane.invalidate()
+      editorPane.repaint()
       for (index in indices) {
         tags.add(highlighter.addHighlight(index, index + pattern.length, searchHighlighterPainter))
       }
     }
 
-    inner class SearchHighlighterPainter : Highlighter.HighlightPainter {
+    private inner class SearchHighlighterPainter : Highlighter.HighlightPainter {
       override fun paint(g: Graphics, p0: Int, p1: Int, bounds: Shape, c: JTextComponent) {
         val currentMatch = indices[currentSelection] == p0
-        val target = c.ui.getRootView(c).modelToView(p0, Position.Bias.Forward, p1, Position.Bias.Backward, bounds).bounds
-        val borderColor = getBorderColor(currentMatch)
+        val mapper = c.ui
+
+
+        val rec0: Rectangle = mapper.modelToView(c, p0)
+        val rec1: Rectangle = mapper.modelToView(c, p1)
+
+        val borderColor = getBorderColor()
         val backgroundColor = getBackgroundColor(currentMatch)
         val g2d = g.create() as Graphics2D
         try {
-          g2d.color = backgroundColor
-          g2d.fillRect(target.x, target.y, target.width, target.height - 1)
-          g2d.color = borderColor
-          g2d.drawRect(target.x, target.y, target.width, target.height - 1)
+          // one line selection
+          if (rec0.y == rec1.y) {
+            val target = rec0.union(rec1)
+            drawRectangle(g2d, target, backgroundColor, borderColor)
+          } else {
+            drawMultilinesRectangles(bounds, rec0, rec1, g2d, backgroundColor, borderColor)
+          }
         }
         finally {
           g2d.dispose()
         }
       }
 
-      private fun getBorderColor(current: Boolean): Color {
-        return if (current) {
-          EditorColorsManager.getInstance().globalScheme.defaultForeground
+      private fun drawMultilinesRectangles(bounds: Shape,
+                                           rec0: Rectangle,
+                                           rec1: Rectangle,
+                                           g2d: Graphics2D,
+                                           backgroundColor: Color,
+                                           borderColor: Color) {
+        val area = bounds.bounds
+        val rec0ToMarginWidth = area.x + area.width - rec0.x
+        val secondLineY = rec0.y + rec0.height
+        val firstLineRectangle = Rectangle(rec0.x, rec0.y, rec0ToMarginWidth, rec0.height)
+        val lastLineRectangle = Rectangle(area.x, rec1.y, (rec1.x - area.x), rec1.height)
+        // draw first line
+        drawRectangle(g2d, firstLineRectangle, backgroundColor, borderColor)
+        // draw middle lines
+        val multiline = secondLineY != rec1.y
+        if (multiline) {
+          drawRectangle(g2d, Rectangle(area.x, secondLineY, area.width, rec1.y - secondLineY), backgroundColor, borderColor)
+          // clear border between the first and the middle
+          g2d.color = backgroundColor
+          g2d.fillRect(firstLineRectangle.x, firstLineRectangle.y + firstLineRectangle.height - 2, firstLineRectangle.width - 1, 5)
+        }
+        // draw last line
+        drawRectangle(g2d, lastLineRectangle, backgroundColor, borderColor)
+        g2d.color = backgroundColor
+        if (multiline) {
+          // clear border between the middle and the last
+          g2d.fillRect(lastLineRectangle.x + 1, lastLineRectangle.y - 2, lastLineRectangle.width - 1, 5)
         } else {
-          EditorColorsManager.getInstance().globalScheme.getAttributes(SEARCH_RESULT_ATTRIBUTES).backgroundColor
+          val lastMaxX = lastLineRectangle.x + lastLineRectangle.width
+          // clear border between the first and the last
+          if (firstLineRectangle.x + 1 <= lastMaxX - 1) {
+            g2d.fillRect(firstLineRectangle.x  + 1, lastLineRectangle.y - 2, lastMaxX - firstLineRectangle.x - 1, 5)
+          }
         }
       }
 
+      private fun drawRectangle(g2d: Graphics2D,
+                                target: Rectangle,
+                                backgroundColor: Color,
+                                borderColor: Color) {
+        g2d.color = backgroundColor
+        g2d.fillRect(target.x, target.y, target.width, target.height - 1)
+        g2d.color = borderColor
+        g2d.drawRect(target.x, target.y, target.width, target.height - 1)
+      }
+
+      private fun getBorderColor(): Color {
+        return EditorColorsManager.getInstance().globalScheme.defaultForeground
+      }
+
       private fun getBackgroundColor(current: Boolean): Color {
+        val globalScheme = EditorColorsManager.getInstance().globalScheme
         return if (current) {
-          EditorColorsManager.getInstance().globalScheme.getColor(SELECTION_BACKGROUND_COLOR)!!
+          if (ColorUtil.isDark(globalScheme.defaultBackground)) {
+            EditorColorsManager.getInstance().globalScheme.getColor(SELECTION_BACKGROUND_COLOR)!!
+          } else {
+            globalScheme.getAttributes(SEARCH_RESULT_ATTRIBUTES).backgroundColor
+          }
         } else {
-          EditorColorsManager.getInstance().globalScheme.getAttributes(TEXT_SEARCH_RESULT_ATTRIBUTES).backgroundColor
+          globalScheme.getAttributes(TEXT_SEARCH_RESULT_ATTRIBUTES).backgroundColor
         }
       }
     }
