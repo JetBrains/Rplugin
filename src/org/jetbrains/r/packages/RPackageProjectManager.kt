@@ -104,8 +104,9 @@ class RPackageProjectManager(private val project: Project) {
     }
     if (!lastReceivedInfo.compareAndSet(lastValue, packageInfo)) return
 
-    val missingPackages = loadMissingPackagesToConsoles(consoles, packageInfo).map {
-      RequiredPackage(it.name, it.lowerBound?.version ?: "", it.lowerBound?.strict ?: false)
+    val missingPackages = loadMissingPackagesToConsoles(consoles, packageInfo).mapNotNull {
+      if (it.name == "R") null
+      else RequiredPackage(it.name, it.lowerBound?.version ?: "", it.lowerBound?.strict ?: false)
     }
     if (ApplicationManager.getApplication().isUnitTestMode) return
     if (missingPackages.isNotEmpty()) {
