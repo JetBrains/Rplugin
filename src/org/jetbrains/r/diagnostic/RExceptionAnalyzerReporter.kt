@@ -5,15 +5,14 @@
 package org.jetbrains.r.diagnostic
 
 import com.intellij.diagnostic.ITNReporter
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
-import com.intellij.openapi.extensions.PluginId
+import org.jetbrains.r.RPluginUtil
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
 
 class RExceptionAnalyzerReporter : ITNReporter() {
-  private val pluginDescriptor =  PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
+  private val pluginDescriptor = RPluginUtil.getPlugin()
 
   private val expired =
     Duration.between(Instant.now(), SimpleDateFormat("yyyy-MM-dd").parse(EXPIRING_DATE).toInstant()).toDays() <= 0
@@ -22,7 +21,5 @@ class RExceptionAnalyzerReporter : ITNReporter() {
 
   override fun getPluginDescriptor() = pluginDescriptor
 }
-
-private const val PLUGIN_ID = "R4Intellij"
 
 private const val EXPIRING_DATE = "2020-04-30"

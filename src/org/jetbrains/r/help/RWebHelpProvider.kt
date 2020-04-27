@@ -5,6 +5,7 @@
 package org.jetbrains.r.help
 
 import com.intellij.openapi.help.WebHelpProvider
+import org.jetbrains.r.RPluginUtil
 
 class RWebHelpProvider : WebHelpProvider() {
   override fun getHelpPageUrl(helpTopicId: String): String? =
@@ -14,6 +15,6 @@ class RWebHelpProvider : WebHelpProvider() {
     }
 
   companion object {
-    const val R_CONSOLE_ID = "R4Intellij.RConsoleHelp"
+    const val R_CONSOLE_ID = "${RPluginUtil.PLUGIN_ID}.RConsoleHelp"
   }
 }
