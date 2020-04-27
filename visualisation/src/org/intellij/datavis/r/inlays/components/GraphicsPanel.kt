@@ -297,7 +297,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private fun getAdvancedModeToolPanelHeight(): Int {
     if (lastToolPanelHeight == 0) {
       currentEditor?.let { editor ->
-        lastToolPanelHeight = editor.component.components[0].preferredSize.height
+        lastToolPanelHeight = editor.component.components[0]?.preferredSize?.height ?: 0
       }
     }
     return lastToolPanelHeight
