@@ -11,8 +11,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.ThrowableComputable
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.packages.RHelpersUtil
 import java.nio.file.Paths
 
 object ExecuteExpressionUtils {
@@ -55,7 +55,7 @@ object ExecuteExpressionUtils {
                     relativeScriptPath: String,
                     args: List<String>,
                     timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
-    val scriptPath = RHelpersUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString()).absolutePath
+    val scriptPath = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString()).absolutePath
     val generalCommandLine = GeneralCommandLine(rScriptPath, scriptPath, *args.toTypedArray())
     return CapturingProcessHandler(generalCommandLine).runProcess(timeout)
   }

@@ -7,7 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.protobuf.GeneratedMessageV3
 import com.intellij.openapi.util.io.FileUtil
 import junit.framework.TestCase
-import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RInteropJsonTest : RProcessHandlerBaseTestCase() {
@@ -18,7 +18,7 @@ class RInteropJsonTest : RProcessHandlerBaseTestCase() {
 
   override fun setUp() {
     super.setUp()
-    val initPathReplacer = InitPathReplacer(myFixture.project, RHelpersUtil.findFileInRHelpers("R").absolutePath)
+    val initPathReplacer = InitPathReplacer(myFixture.project, RPluginUtil.findFileInRHelpers("R").absolutePath)
     val graphicsPathReplacer = GraphicsPathReplacer(myFixture.project, myFixture.tempDirPath)
     val htmlPathReplacer = HtmlPathReplacer(myFixture.project, FileUtil.createTempFile("", "urls.txt", true).absolutePath)
     pathReplacers.add(initPathReplacer)

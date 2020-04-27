@@ -20,12 +20,16 @@ import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.packages.*
+import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.packages.RPackagePriority
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -95,7 +99,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getHelpersRoot(): File {
-    @NonNls val jarPath = PathUtil.getJarPathForClass(RHelpersUtil::class.java)
+    @NonNls val jarPath = PathUtil.getJarPathForClass(RPluginUtil::class.java)
     if (jarPath.endsWith(".jar")) {
       val jarFile = File(jarPath)
 
@@ -229,9 +233,9 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   companion object {
     val LOG = Logger.getInstance(RInterpreterImpl::class.java)
 
-    private val GET_ENV_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/get_env.R")
-    private val LIBRARY_PATHS_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/library_paths.R")
-    private val INSTALLED_PACKAGES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/installed_packages.R")
+    private val GET_ENV_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/get_env.R")
+    private val LIBRARY_PATHS_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/library_paths.R")
+    private val INSTALLED_PACKAGES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/installed_packages.R")
 
     // TODO: run via helper
     fun loadInterpreterVersionInfo(interpreterPath: String, workingDirectory: String): Map<String, String> {

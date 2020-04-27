@@ -13,17 +13,17 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
+import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RPackageBuildSettings
-import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.io.File
 import javax.swing.JComponent
@@ -206,10 +206,10 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     private const val SETUP_TESTS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RSetupTestsAction"
     private const val SETTINGS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
 
-    private val UPDATE_EXPORTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
-    private val INSTALL_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/install_package.R")
-    private val CHECK_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/check_package.R")
-    private val TEST_PACKAGE_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/test_package.R")
-    private val SETUP_TESTS_HELPER = RHelpersUtil.findFileInRHelpers("R/packages/setup_tests.R")
+    private val UPDATE_EXPORTS_HELPER = RPluginUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
+    private val INSTALL_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/install_package.R")
+    private val CHECK_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/check_package.R")
+    private val TEST_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/test_package.R")
+    private val SETUP_TESTS_HELPER = RPluginUtil.findFileInRHelpers("R/packages/setup_tests.R")
   }
 }

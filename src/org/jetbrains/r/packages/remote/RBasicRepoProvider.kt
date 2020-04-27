@@ -9,9 +9,9 @@ import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.io.File
@@ -273,9 +273,9 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     private const val HTTPS_SUFFIX = "[https]"
 
     private val LOGGER = Logger.getInstance(RBasicRepoProvider::class.java)
-    private val CRAN_MIRRORS_HELPER = RHelpersUtil.findFileInRHelpers("R/repos/local_cran_mirrors.txt")
-    private val AVAILABLE_PACKAGES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/available_packages.R")
-    private val DEFAULT_REPOSITORIES_HELPER = RHelpersUtil.findFileInRHelpers("R/interpreter/default_repositories.R")
+    private val CRAN_MIRRORS_HELPER = RPluginUtil.findFileInRHelpers("R/repos/local_cran_mirrors.txt")
+    private val AVAILABLE_PACKAGES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/available_packages.R")
+    private val DEFAULT_REPOSITORIES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/default_repositories.R")
 
     private fun String.trimSlash(): String {
       return if (endsWith("/")) dropLast(1) else this

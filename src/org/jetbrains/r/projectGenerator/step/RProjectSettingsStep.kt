@@ -20,9 +20,9 @@ import com.intellij.ui.HideableDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RInterpreterPanel
@@ -224,7 +224,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   }
 
   companion object {
-    private val SCRIPT_PATH = RHelpersUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R")
+    private val SCRIPT_PATH = RPluginUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R")
     private val MISSING_RSCRIPT = RBundle.message("project.settings.missing.rscript")
   }
 }

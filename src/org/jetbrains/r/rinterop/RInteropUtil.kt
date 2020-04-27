@@ -22,10 +22,10 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.R_3_6
-import org.jetbrains.r.packages.RHelpersUtil
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -203,20 +203,20 @@ object RInteropUtil {
     } else {
       command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
     }
-    command = command.withEnvironment("R_HELPERS_PATH", RHelpersUtil.helpersPath)
+    command = command.withEnvironment("R_HELPERS_PATH", RPluginUtil.helpersPath)
     return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) } to paths) }
   }
 
   private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
 
-  private fun getCrashpadHandler(): File = RHelpersUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix())
+  private fun getCrashpadHandler(): File = RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix())
 
   private fun getWrapperPath(version: Version): String {
     val filename = "rwrapper-" + getSystemSuffix()
     val fileByVersion = getRWrapperByRVersion(version, filename)
     return if ((ApplicationManager.getApplication().isInternal || ApplicationManager.getApplication().isUnitTestMode) &&
                !File(fileByVersion).exists()) {
-      RHelpersUtil.findFileInRHelpers(filename).absolutePath
+      RPluginUtil.findFileInRHelpers(filename).absolutePath
     } else {
       fileByVersion
     }
@@ -229,7 +229,7 @@ object RInteropUtil {
       version
     }
     val directory = "R-${wrapperVersion.major}.${wrapperVersion.minor}"
-    return Paths.get(RHelpersUtil.findFileInRHelpers(directory).absolutePath, relativePath).toString()
+    return Paths.get(RPluginUtil.findFileInRHelpers(directory).absolutePath, relativePath).toString()
   }
 
   private fun getSystemSuffix(): String = when {
@@ -248,8 +248,8 @@ object RInteropUtil {
 
   private fun getRPaths(interpreter: String, project: Project): RPaths {
 
-    val script = RHelpersUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
-                       ?: throw RuntimeException("GetEnvVars.R not found")
+    val script = RPluginUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
+                 ?: throw RuntimeException("GetEnvVars.R not found")
     
     val output = RInterpreterUtil.runHelper(interpreter, script, project.basePath, emptyList())
     val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }

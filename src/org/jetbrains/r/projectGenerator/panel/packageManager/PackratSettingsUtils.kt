@@ -4,12 +4,12 @@
 
 package org.jetbrains.r.projectGenerator.panel.packageManager
 
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.RHelpersUtil
 import java.util.*
 import javax.xml.bind.ValidationException
 
-private val SCRIPT_PATH = RHelpersUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
+private val SCRIPT_PATH = RPluginUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
 
 fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
