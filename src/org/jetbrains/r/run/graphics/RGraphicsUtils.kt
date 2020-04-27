@@ -11,7 +11,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.ui.UIUtil
-import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -63,7 +63,7 @@ object RGraphicsUtils {
   private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
 
   private fun getAvailableVersions(): List<Version> {
-    val binariesDirectory = RHelpersUtil.findFileInRHelpers(BINARIES_DIR_NAME)
+    val binariesDirectory = RPluginUtil.findFileInRHelpers(BINARIES_DIR_NAME)
     val directories = binariesDirectory.listFiles()
     val versions = mutableListOf<Version>()
     if (directories != null) {
@@ -107,7 +107,7 @@ object RGraphicsUtils {
 
   private fun getPackageFile(version: Version?): File {
     val packagePath = calculatePackageRelativePath(version)
-    val packageFile = RHelpersUtil.findFileInRHelpers(packagePath)
+    val packageFile = RPluginUtil.findFileInRHelpers(packagePath)
     return if (packageFile.exists()) {
       packageFile
     } else {

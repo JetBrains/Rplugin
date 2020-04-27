@@ -25,7 +25,7 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.packages.RHelpersUtil
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
@@ -104,7 +104,7 @@ object RInterpreterUtil {
       }
     }
     if (version != null) return version
-    val script = RHelpersUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
+    val script = RPluginUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
     val output = runHelper(interpreterPath, script, null, emptyList())
     return parseVersion(output.lineSequence().firstOrNull())
   }

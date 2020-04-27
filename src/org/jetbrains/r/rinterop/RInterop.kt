@@ -33,10 +33,10 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.interpreter.RVersion
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableManipulationColumn
@@ -206,7 +206,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
 
-    val rScriptsPath = RHelpersUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
+    val rScriptsPath = RPluginUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
                        ?: throw RuntimeException("R Scripts not found")
     val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
     initRequest.setRScriptsPath(rScriptsPath).setProjectDir(projectDir)

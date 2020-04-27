@@ -7,11 +7,7 @@ package org.jetbrains.r.rmarkdown
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.process.ScriptRunnerUtil
+import com.intellij.execution.process.*
 import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
@@ -29,8 +25,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.File
@@ -126,7 +122,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun getPandocLibraryPath(): String {
-    return RHelpersUtil.findFileInRHelpers( "pandoc").toString().also {
+    return RPluginUtil.findFileInRHelpers("pandoc").toString().also {
       File(it).mkdir()
     }
   }
@@ -166,6 +162,6 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   companion object {
-    private val R_MARKDOWN_HELPER = RHelpersUtil.findFileInRHelpers("R/render_markdown.R")
+    private val R_MARKDOWN_HELPER = RPluginUtil.findFileInRHelpers("R/render_markdown.R")
   }
 }

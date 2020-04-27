@@ -15,11 +15,11 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
-import org.jetbrains.r.packages.RHelpersUtil
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.rinterop.RInterop
@@ -43,8 +43,8 @@ object RepoUtils {
   private const val AVAILABLE_PACKAGES_REFRESH_INTERVAL = 7 * 24 * 60 * 60 * 1000L // Update every week
   private const val PACKAGE_DESCRIPTIONS_REFRESH_INTERVAL = AVAILABLE_PACKAGES_REFRESH_INTERVAL
 
-  val PACKAGE_SUMMARY = RHelpersUtil.findFileInRHelpers("R/package_summary.R")
-  val DECOMPILER_SCRIPT = RHelpersUtil.findFileInRHelpers("R/extract_symbol.R")
+  val PACKAGE_SUMMARY = RPluginUtil.findFileInRHelpers("R/package_summary.R")
+  val DECOMPILER_SCRIPT = RPluginUtil.findFileInRHelpers("R/extract_symbol.R")
 
   const val CRAN_URL_PLACEHOLDER = "@CRAN@"
 
