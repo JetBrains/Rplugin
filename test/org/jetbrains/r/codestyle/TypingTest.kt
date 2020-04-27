@@ -177,6 +177,30 @@ class TypingTest : RUsefulTestCase() {
     """, "(")
   }
 
+  fun testAddQuote() {
+    doTest("""
+      hello <- <caret>
+    """, """
+      hello <- "<caret>"
+    """, "\"")
+  }
+
+  fun testAdd2Quotes() {
+    doTest("""
+      hello <- <caret>
+    """, """
+      hello <- ""<caret>
+    """, "\"\"")
+  }
+
+  fun testRawString() {
+    doTest("""
+      hello <- r<caret>
+    """, """
+      hello <- r"(<caret>)"
+    """, "\"")
+  }
+
   fun testParenthesisInTheEndOfRFence() {
     doRmdTest("""
       ```{r}
