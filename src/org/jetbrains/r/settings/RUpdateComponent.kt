@@ -4,14 +4,12 @@
 
 package org.jetbrains.r.settings
 
-import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PermanentInstallationID
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.JDOMUtil
 import com.intellij.openapi.util.SystemInfo
@@ -19,12 +17,13 @@ import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.util.io.HttpRequests
 import org.jdom.JDOMException
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.RPluginUtil
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 
 private const val KEY = "r.last.update.timestamp"
-private const val PLUGIN_ID = "R4Intellij"
+
 
 class RUpdateComponent : EditorFactoryListener {
   override fun editorCreated(event: EditorFactoryEvent) {
@@ -44,7 +43,7 @@ class RUpdateComponent : EditorFactoryListener {
       ApplicationManager.getApplication().executeOnPooledThread {
         try {
           val buildNumber = ApplicationInfo.getInstance().build.asString()
-          val plugin = PluginManager.getPlugin(PluginId.getId(PLUGIN_ID))!!
+          val plugin = RPluginUtil.getPlugin()
           val pluginVersion = plugin.getVersion()
           val pluginId = plugin.getPluginId().getIdString()
           val os = URLEncoder.encode(SystemInfo.OS_NAME + " " + SystemInfo.OS_VERSION, CharsetToolkit.UTF8)
