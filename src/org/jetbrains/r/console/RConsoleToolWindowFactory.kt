@@ -75,7 +75,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
       if (contentCount == 0) {
         setAvailableForRToolWindows(project, true, Runnable {
-          ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.show { }
+          val rTools = ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)
+          rTools?.activate {
+            rTools.show { }
+          }
         })
 
       }
