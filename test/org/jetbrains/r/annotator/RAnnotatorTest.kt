@@ -41,6 +41,8 @@ class RAnnotatorTest : RLightCodeInsightFixtureTestCase() {
 
   fun testLambdaCall() = doTest()
 
+  fun testListUnclosedString() = doTest()
+
   fun testSourceAndLinks() {
     addLibraries()
 

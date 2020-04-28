@@ -80,15 +80,15 @@ class _RLexer implements FlexLexer {
     "\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27"+
     "\1\30\1\31\1\32\1\33\1\34\1\35\1\36\1\37"+
     "\1\40\1\41\2\42\1\4\2\0\1\43\1\44\1\0"+
-    "\1\3\3\0\1\6\1\45\1\0\1\7\1\3\1\46"+
-    "\1\47\1\0\3\3\1\0\1\3\1\50\7\3\1\0"+
-    "\1\51\1\52\1\53\1\54\1\55\1\56\1\57\1\0"+
-    "\1\60\1\61\1\62\1\63\1\64\1\65\1\66\2\4"+
-    "\1\0\4\3\1\67\2\3\1\70\1\71\1\3\1\72"+
-    "\3\3\1\73\1\74\1\75\1\0\1\76\1\77\2\3"+
-    "\1\100\3\3\1\101\3\3\1\0\1\102\6\3\1\103"+
-    "\1\104\1\105\13\3\1\106\2\3\1\107\6\3\1\110"+
-    "\1\111\2\3\1\112";
+    "\1\3\3\0\1\6\1\45\1\0\1\46\1\3\1\47"+
+    "\1\50\1\0\3\3\1\0\1\3\1\51\7\3\1\0"+
+    "\1\52\1\53\1\54\1\55\1\56\1\57\1\60\1\0"+
+    "\1\61\1\62\1\63\1\64\1\65\1\66\1\67\2\4"+
+    "\1\0\4\3\1\70\2\3\1\71\1\72\1\3\1\73"+
+    "\3\3\1\74\1\75\1\76\1\0\1\77\1\100\2\3"+
+    "\1\101\3\3\1\102\3\3\1\0\1\103\6\3\1\104"+
+    "\1\105\1\106\13\3\1\107\2\3\1\110\6\3\1\111"+
+    "\1\112\2\3\1\113";
 
   private static int [] zzUnpackAction() {
     int [] result = new int[170];
@@ -665,265 +665,270 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
             { return BAD_CHARACTER;
             } 
             // fall through
-          case 75: break;
+          case 76: break;
           case 2: 
             { return FORMFEED;
             } 
             // fall through
-          case 76: break;
+          case 77: break;
           case 3: 
             { return R_IDENTIFIER;
             } 
             // fall through
-          case 77: break;
+          case 78: break;
           case 4: 
             { return R_NUMERIC;
             } 
             // fall through
-          case 78: break;
+          case 79: break;
           case 5: 
             { return TAB;
             } 
             // fall through
-          case 79: break;
+          case 80: break;
           case 6: 
             { return END_OF_LINE_COMMENT;
             } 
             // fall through
-          case 80: break;
+          case 81: break;
           case 7: 
-            { return R_STRING;
+            { return R_INVALID_STRING;
             } 
             // fall through
-          case 81: break;
+          case 82: break;
           case 8: 
             { return R_PLUS;
             } 
             // fall through
-          case 82: break;
+          case 83: break;
           case 9: 
             { return R_NL;
             } 
             // fall through
-          case 83: break;
+          case 84: break;
           case 10: 
             { return SPACE;
             } 
             // fall through
-          case 84: break;
+          case 85: break;
           case 11: 
             { return R_LPAR;
             } 
             // fall through
-          case 85: break;
+          case 86: break;
           case 12: 
             { return R_COLON;
             } 
             // fall through
-          case 86: break;
+          case 87: break;
           case 13: 
             { return R_AT;
             } 
             // fall through
-          case 87: break;
+          case 88: break;
           case 14: 
             { return R_AND;
             } 
             // fall through
-          case 88: break;
+          case 89: break;
           case 15: 
             { return R_OR;
             } 
             // fall through
-          case 89: break;
+          case 90: break;
           case 16: 
             { return R_MINUS;
             } 
             // fall through
-          case 90: break;
+          case 91: break;
           case 17: 
             { return R_MULT;
             } 
             // fall through
-          case 91: break;
+          case 92: break;
           case 18: 
             { return R_DIV;
             } 
             // fall through
-          case 92: break;
+          case 93: break;
           case 19: 
             { return R_EXP;
             } 
             // fall through
-          case 93: break;
+          case 94: break;
           case 20: 
             { return R_LT;
             } 
             // fall through
-          case 94: break;
+          case 95: break;
           case 21: 
             { return R_GT;
             } 
             // fall through
-          case 95: break;
+          case 96: break;
           case 22: 
             { return R_EQ;
             } 
             // fall through
-          case 96: break;
+          case 97: break;
           case 23: 
             { return R_NOT;
             } 
             // fall through
-          case 97: break;
+          case 98: break;
           case 24: 
             { return R_TILDE;
             } 
             // fall through
-          case 98: break;
+          case 99: break;
           case 25: 
             { return R_LIST_SUBSET;
             } 
             // fall through
-          case 99: break;
+          case 100: break;
           case 26: 
             { return R_RPAR;
             } 
             // fall through
-          case 100: break;
+          case 101: break;
           case 27: 
             { return R_LBRACE;
             } 
             // fall through
-          case 101: break;
+          case 102: break;
           case 28: 
             { return R_RBRACE;
             } 
             // fall through
-          case 102: break;
+          case 103: break;
           case 29: 
             { myExpectedBracketsStack.add(R_RBRACKET); return R_LBRACKET;
             } 
             // fall through
-          case 103: break;
+          case 104: break;
           case 30: 
             { if (myExpectedBracketsStack.isEmpty()) return R_RBRACKET;
                               myExpectedBracketsStack.pop();
                               return R_RBRACKET;
             } 
             // fall through
-          case 104: break;
+          case 105: break;
           case 31: 
             { return R_COMMA;
             } 
             // fall through
-          case 105: break;
+          case 106: break;
           case 32: 
             { return R_SEMI;
             } 
             // fall through
-          case 106: break;
+          case 107: break;
           case 33: 
             { return R_HELP;
             } 
             // fall through
-          case 107: break;
+          case 108: break;
           case 34: 
             { 
             } 
             // fall through
-          case 108: break;
+          case 109: break;
           case 35: 
             { return R_INTEGER;
             } 
             // fall through
-          case 109: break;
+          case 110: break;
           case 36: 
             { return R_COMPLEX;
             } 
             // fall through
-          case 110: break;
+          case 111: break;
           case 37: 
             { return ROXYGEN_COMMENT;
             } 
             // fall through
-          case 111: break;
-          case 38: 
-            { return R_IN;
-            } 
-            // fall through
           case 112: break;
-          case 39: 
-            { return R_IF;
+          case 38: 
+            { return R_STRING;
             } 
             // fall through
           case 113: break;
-          case 40: 
-            { return R_NA;
+          case 39: 
+            { return R_IN;
             } 
             // fall through
           case 114: break;
-          case 41: 
-            { return R_INFIX_OP;
+          case 40: 
+            { return R_IF;
             } 
             // fall through
           case 115: break;
-          case 42: 
-            { return R_DOUBLECOLON;
+          case 41: 
+            { return R_NA;
             } 
             // fall through
           case 116: break;
-          case 43: 
-            { return R_LEFT_ASSIGN_OLD;
+          case 42: 
+            { return R_INFIX_OP;
             } 
             // fall through
           case 117: break;
-          case 44: 
-            { return R_ANDAND;
+          case 43: 
+            { return R_DOUBLECOLON;
             } 
             // fall through
           case 118: break;
-          case 45: 
-            { return R_OROR;
+          case 44: 
+            { return R_LEFT_ASSIGN_OLD;
             } 
             // fall through
           case 119: break;
-          case 46: 
-            { return R_RIGHT_ASSIGN;
+          case 45: 
+            { return R_ANDAND;
             } 
             // fall through
           case 120: break;
-          case 47: 
-            { return R_LEFT_ASSIGN;
+          case 46: 
+            { return R_OROR;
             } 
             // fall through
           case 121: break;
-          case 48: 
-            { return R_LE;
+          case 47: 
+            { return R_RIGHT_ASSIGN;
             } 
             // fall through
           case 122: break;
-          case 49: 
-            { return R_GE;
+          case 48: 
+            { return R_LEFT_ASSIGN;
             } 
             // fall through
           case 123: break;
-          case 50: 
-            { return R_EQEQ;
+          case 49: 
+            { return R_LE;
             } 
             // fall through
           case 124: break;
-          case 51: 
-            { return R_NOTEQ;
+          case 50: 
+            { return R_GE;
             } 
             // fall through
           case 125: break;
-          case 52: 
-            { myExpectedBracketsStack.add(R_RDBRACKET); return R_LDBRACKET;
+          case 51: 
+            { return R_EQEQ;
             } 
             // fall through
           case 126: break;
+          case 52: 
+            { return R_NOTEQ;
+            } 
+            // fall through
+          case 127: break;
           case 53: 
+            { myExpectedBracketsStack.add(R_RDBRACKET); return R_LDBRACKET;
+            } 
+            // fall through
+          case 128: break;
+          case 54: 
             { if (myExpectedBracketsStack.isEmpty()) return R_RDBRACKET;
                               final IElementType expectedBracket = myExpectedBracketsStack.pop();
                               if (expectedBracket == R_RDBRACKET) {
@@ -935,112 +940,112 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
                               }
             } 
             // fall through
-          case 127: break;
-          case 54: 
+          case 129: break;
+          case 55: 
             { yybegin(YYINITIAL); return R_STRING;
             } 
             // fall through
-          case 128: break;
-          case 55: 
+          case 130: break;
+          case 56: 
             { yybegin(RAW_STRING_STATE);
             } 
             // fall through
-          case 129: break;
-          case 56: 
+          case 131: break;
+          case 57: 
             { return R_NAN;
             } 
             // fall through
-          case 130: break;
-          case 57: 
+          case 132: break;
+          case 58: 
             { return R_INF;
             } 
             // fall through
-          case 131: break;
-          case 58: 
+          case 133: break;
+          case 59: 
             { return R_FOR;
             } 
             // fall through
-          case 132: break;
-          case 59: 
+          case 134: break;
+          case 60: 
             { return R_TRIPLECOLON;
             } 
             // fall through
-          case 133: break;
-          case 60: 
+          case 135: break;
+          case 61: 
             { return R_RIGHT_COMPLEX_ASSIGN;
             } 
             // fall through
-          case 134: break;
-          case 61: 
+          case 136: break;
+          case 62: 
             { return R_LEFT_COMPLEX_ASSIGN;
             } 
             // fall through
-          case 135: break;
-          case 62: 
+          case 137: break;
+          case 63: 
             { return R_ELSE;
             } 
             // fall through
-          case 136: break;
-          case 63: 
+          case 138: break;
+          case 64: 
             { return R_TRUE;
             } 
             // fall through
-          case 137: break;
-          case 64: 
+          case 139: break;
+          case 65: 
             { return R_NULL;
             } 
             // fall through
-          case 138: break;
-          case 65: 
+          case 140: break;
+          case 66: 
             { return R_NEXT;
             } 
             // fall through
-          case 139: break;
-          case 66: 
+          case 141: break;
+          case 67: 
             { return R_FALSE;
             } 
             // fall through
-          case 140: break;
-          case 67: 
+          case 142: break;
+          case 68: 
             { return R_WHILE;
             } 
             // fall through
-          case 141: break;
-          case 68: 
+          case 143: break;
+          case 69: 
             { return R_BREAK;
             } 
             // fall through
-          case 142: break;
-          case 69: 
+          case 144: break;
+          case 70: 
             { return R_REPEAT;
             } 
             // fall through
-          case 143: break;
-          case 70: 
+          case 145: break;
+          case 71: 
             { return R_NA_REAL_;
             } 
             // fall through
-          case 144: break;
-          case 71: 
+          case 146: break;
+          case 72: 
             { return R_FUNCTION;
             } 
             // fall through
-          case 145: break;
-          case 72: 
+          case 147: break;
+          case 73: 
             { return R_NA_INTEGER_;
             } 
             // fall through
-          case 146: break;
-          case 73: 
+          case 148: break;
+          case 74: 
             { return R_NA_COMPLEX_;
             } 
             // fall through
-          case 147: break;
-          case 74: 
+          case 149: break;
+          case 75: 
             { return R_NA_CHARACTER_;
             } 
             // fall through
-          case 148: break;
+          case 150: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

@@ -167,6 +167,10 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testUnclosedRawString() = doTest()
 
+  fun testUnclosedSingleQuotedString() = doTest()
+
+  fun testUnclosedDoubleQuotedString() = doTest()
+
   //---------------------------------------
   private fun doTest() {
     val testName = getTestName(false)

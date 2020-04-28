@@ -112,6 +112,10 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     annotation.textAttributes = CodeInsightColors.INACTIVE_HYPERLINK_ATTRIBUTES
   }
 
+  override fun visitInvalidLiteral(invalid: RInvalidLiteral) {
+    holder.createErrorAnnotation(invalid, "unclosed string literal")
+  }
+
   private fun highlight(element: PsiElement, colorKey: TextAttributesKey) {
     val annotationText = if (ApplicationManager.getApplication().isUnitTestMode) colorKey.externalName else null
     holder.createInfoAnnotation(element, annotationText).textAttributes = colorKey

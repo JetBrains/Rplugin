@@ -33,6 +33,7 @@ class RHighlighter : SyntaxHighlighterBase() {
       fillMap(ATTRIBUTES, RPsiUtil.OPERATORS, OPERATION_SIGN)
 
       ATTRIBUTES[RElementTypes.R_STRING] = STRING
+      ATTRIBUTES[RElementTypes.R_INVALID_STRING] = STRING
       ATTRIBUTES[RElementTypes.R_NUMERIC] = NUMBER
       ATTRIBUTES[RElementTypes.R_COMPLEX] = NUMBER
       ATTRIBUTES[RElementTypes.R_INTEGER] = NUMBER

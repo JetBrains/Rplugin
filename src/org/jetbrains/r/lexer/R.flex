@@ -64,10 +64,13 @@ LONG_INTEGER = ({INTEGER} | {FLOAT_NUMBER})[Ll]                                 
 COMPLEX_NUMBER=(({FLOAT_NUMBER})|({INT_PART}))[i]             // essential
 
 // string constants
-QUOTED_LITERAL="'"([^\\\']|{ANY_ESCAPE_SEQUENCE})*?("'")?
-DOUBLE_QUOTED_LITERAL=\"([^\\\"]|{ANY_ESCAPE_SEQUENCE})*?(\")?
+QUOTED_LITERAL_WITHOUT_END="'"([^\\\']|{ANY_ESCAPE_SEQUENCE})*
+QUOTED_LITERAL={QUOTED_LITERAL_WITHOUT_END}("'")
+DOUBLE_QUOTED_LITERAL_WITHOUT_END=\"([^\\\"]|{ANY_ESCAPE_SEQUENCE})*
+DOUBLE_QUOTED_LITERAL={DOUBLE_QUOTED_LITERAL_WITHOUT_END}(\")
 ANY_ESCAPE_SEQUENCE = \\[^]
 STRING=({QUOTED_LITERAL} | {DOUBLE_QUOTED_LITERAL})
+STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOUT_END})
 //ESCAPE_SEQUENCE=\\([rntbafv\'\"\\]|{NONZERO_OCT_DIGIT}|{OCT_DIGIT}{2,3}|"x"{HEX_DIGIT}{1,2}|"u"{HEX_DIGIT}{1,4}|"u{"{HEX_DIGIT}{1,4}"}"|"U"{HEX_DIGIT}{1,8}|"U{"{HEX_DIGIT}{1,8}"}")
 
 %{
@@ -105,6 +108,7 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 
 // string constants
 {STRING}                    { return R_STRING; }
+{STRING_WITHOUT_END}        { return R_INVALID_STRING; }
 
 r\"\(                       { yybegin(RAW_STRING_STATE); }
 
