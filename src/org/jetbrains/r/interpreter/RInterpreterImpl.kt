@@ -244,7 +244,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     }
 
     private fun runScript(scriptText: String, interpreterPath: String, workingDirectory: String): ProcessOutput? {
-      val commandLine = arrayOf<String>(interpreterPath,  "--quiet", "--slave", "-e", scriptText)
+      val commandLine = arrayOf<String>(interpreterPath,  "--quiet", "--no-restore", "--slave", "-e", scriptText)
 
       try {
         val processHandler = CapturingProcessHandler(GeneralCommandLine(*commandLine).withWorkDirectory(workingDirectory))
