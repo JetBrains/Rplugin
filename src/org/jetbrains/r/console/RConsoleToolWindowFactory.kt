@@ -85,7 +85,9 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     fun setAvailableForRToolWindows(project: Project, isAvailable: Boolean, runnable: Runnable? = null) {
-      ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.setAvailable(isAvailable, runnable)
+      invokeLater {
+        ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)?.setAvailable(isAvailable, runnable)
+      }
     }
 
     fun restartConsole(console: RConsoleView) {
