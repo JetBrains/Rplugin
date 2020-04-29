@@ -57,7 +57,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   private val pathToDocumentation = makePath(PathManager.getSystemPath(), "documentation")
 
-  private val getFirstResult = { str: String -> Regex("\"(.*)\"").find(str)?.groupValues?.get(1) }
+  private val getFirstResult = { str: String -> Regex("\"(.*?)\"").find(str)?.groupValues?.get(1) }
 
   private val localFunctionRequiredPackage = listOf(RequiredPackage("roxygen2"))
 
