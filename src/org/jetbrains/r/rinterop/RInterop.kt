@@ -582,6 +582,17 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(stub::repoRemovePackage, request)
   }
 
+  fun previewDataImport(options: Map<String, String>): RIExecutionResult {
+    val request = Service.PreviewDataImportRequest.newBuilder()
+      .putAllOptions(options)
+      .build()
+    return executeRequest(RPIServiceGrpc.getPreviewDataImportMethod(), request)
+  }
+
+  fun commitDataImport(variableName: String) {
+    execute(stub::commitDataImport, StringValue.of(variableName))
+  }
+
   fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)

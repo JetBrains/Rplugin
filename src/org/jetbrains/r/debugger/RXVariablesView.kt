@@ -37,13 +37,17 @@ import com.intellij.xdebugger.impl.frame.actions.XWatchesTreeActionBase
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.intellij.xdebugger.impl.ui.tree.XDebuggerTree
 import com.intellij.xdebugger.impl.ui.tree.nodes.*
+import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.RDebuggerPanel
+import org.jetbrains.r.packages.RequiredPackage
+import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
+import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import java.awt.BorderLayout
 import java.awt.event.*
 import javax.swing.SwingUtilities
@@ -253,9 +257,42 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         RDebuggerEvaluateHandler.perform(console.project, RXDebuggerEvaluator(stackFrame ?: return), e.dataContext)
       }
     })
+    actions.addAction(createPackageDependentAction<RImportCsvDataAction>(IMPORT_CSV_REQUIREMENTS) {
+      RImportCsvDataDialog(console.project, console.rInterop, console.project).show()
+    })
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
     toolbar.setTargetComponent(tree)
     getPanel().add(toolbar.getComponent(), BorderLayout.WEST)
+  }
+
+  private inline fun <reified A : AnAction>createPackageDependentAction(packageNames: List<String>, noinline onClick: () -> Unit): AnAction {
+    val requirements = packageNames.map { RequiredPackage(it) }
+    val holder = object : ToolbarUtil.ActionHolder {
+      private val missing: List<RequiredPackage>?
+        get() {
+          val installer = RequiredPackageInstaller.getInstance(console.project)
+          return installer.getMissingPackagesOrNull(requirements)
+        }
+
+      override val id = A::class.qualifiedName ?: ""
+
+      override val canClick: Boolean
+        get() = missing?.isEmpty() == true
+
+      override fun onClick() {
+        onClick()
+      }
+
+      override fun getHintForDisabled(): String? {
+        return missing?.let { createMissingPackageMessage(it) }
+      }
+
+      private fun createMissingPackageMessage(missing: List<RequiredPackage>): String {
+        val packageString = missing.joinToString { it.toFormat(false) }
+        return RBundle.message("required.package.exception.message", packageString)
+      }
+    }
+    return ToolbarUtil.createAnActionButton(holder)
   }
 
   private fun createSettingsActionGroup(): ActionGroup {
@@ -309,6 +346,8 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   companion object {
+    private val IMPORT_CSV_REQUIREMENTS = listOf("readr")
+
     private fun isAboveSelectedItem(event: MouseEvent, watchTree: XDebuggerTree, fullWidth: Boolean): Boolean {
       val bounds = watchTree.getRowBounds(watchTree.leadSelectionRow) ?: return false
       if (fullWidth) {

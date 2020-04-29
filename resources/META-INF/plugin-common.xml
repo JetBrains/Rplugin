@@ -244,6 +244,16 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
+    <!-- Variable view actions -->
+    <actions>
+        <group id="org.jetbrains.r.debugger.RXVariablesViewActions">
+            <action id="org.jetbrains.r.debugger.RImportCsvDataAction"
+                    class="org.jetbrains.r.debugger.RImportCsvDataAction"
+                    description="Import dataset from text using readr"
+                    icon="AllIcons.ToolbarDecorator.Import"/>
+        </group>
+    </actions>
+
     <!-- Graphics panel actions -->
     <actions>
         <group id="org.jetbrains.r.run.graphics.ui.RGraphicsToolbarActions">

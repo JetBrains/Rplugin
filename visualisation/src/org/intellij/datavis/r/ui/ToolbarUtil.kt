@@ -59,6 +59,10 @@ object ToolbarUtil {
     return ToolbarActionButton(holder)
   }
 
+  fun createAnActionButton(holder: ActionHolder): AnActionButton {
+    return ToolbarActionButton(holder)
+  }
+
   fun createActionHolder(id: String, onClick: () -> Unit): ActionHolder {
     return createActionHolder(id, { true }, onClick)
   }
