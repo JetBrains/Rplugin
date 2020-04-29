@@ -61,10 +61,10 @@ public class Parser implements IParser {
   Comparator<String> stringComparator;
   int modelIndex;
   static HtmlHandler htmlHandler = new HtmlHandler();
-  private static Map<String, IOperand> operands;
-  private static IOperand wildcardOperand;
-  private static WildcardOperand instantOperand;
-  private static Pattern expressionMatcher;
+  private static final Map<String, IOperand> operands;
+  private static final IOperand wildcardOperand;
+  private static final WildcardOperand instantOperand;
+  private static final Pattern expressionMatcher;
   private static StringBuilder escapeBuffer = new StringBuilder();
 
   public Parser(Format format,
@@ -167,14 +167,14 @@ public class Parser implements IParser {
       for (int i = 0; i < total; i++) {
         char ch = expression.charAt(i);
         if ((ch == '*') || (ch == '?')) {
-          escapeBuffer.append(expression.substring(lastAdded, i));
+          escapeBuffer.append(expression, lastAdded, i);
           escapeBuffer.append('\\').append(ch);
           lastAdded = i + 1;
         }
       }
 
       if (escapeBuffer.length() > 0) {
-        escapeBuffer.append(expression.substring(lastAdded, total));
+        escapeBuffer.append(expression, lastAdded, total);
         expression = escapeBuffer.toString();
         escapeBuffer.delete(0, escapeBuffer.length());
       }
@@ -572,7 +572,7 @@ public class Parser implements IParser {
     expressionMatcher = Pattern.compile(
       "^\\s*(>=|<=|<>|!~|~~|>|<|=|~|!)?(\\s*(.*))$", Pattern.DOTALL);
 
-    operands = new HashMap<String, IOperand>();
+    operands = new HashMap<>();
     operands.put("~~", new REOperand(true));
     operands.put("!~", new WildcardOperand(false));
     operands.put("!", new EqualOperand(false));
