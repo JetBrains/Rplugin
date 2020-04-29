@@ -16,8 +16,11 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.rinterop.*
-import java.util.concurrent.ExecutorService
+import org.jetbrains.r.rinterop.RValueError
+import org.jetbrains.r.rinterop.RValueUnevaluated
+import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.rinterop.RVariableLoader
+import kotlin.math.min
 
 class RXStackFrame(val functionName: String,
                    private val position: XSourcePosition?,
@@ -26,7 +29,13 @@ class RXStackFrame(val functionName: String,
                    val variableViewSettings: RXVariableViewSettings,
                    private val equalityObject: Any? = null) : XStackFrame(), Disposable {
   private val evaluator = RXDebuggerEvaluator(this, this)
-  val environment get() = loader.obj
+  internal val environment get() = loader.obj
+  private val listBuilder = object : PartialChildrenListBuilder(this, loader, noFunctions = true) {
+    override fun addTopChildren(result: XValueChildrenList) {
+      addEnvironmentsGroup(result)
+      result.addTopGroup(FunctionsGroup())
+    }
+  }
 
   override fun getEqualityObject() = equalityObject
 
@@ -45,14 +54,7 @@ class RXStackFrame(val functionName: String,
   }
 
   override fun computeChildren(node: XCompositeNode) {
-    loader.variablesAsync.getAsync().then {
-      val result = XValueChildrenList()
-      addEnvironmentsGroup(result)
-      addEnvironmentContents(result, it, this, true)
-      node.addChildren(result, true)
-    }.onError {
-      node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
-    }
+    listBuilder.computeChildren(node)
   }
 
   private fun addEnvironmentsGroup(result: XValueChildrenList) {
@@ -76,52 +78,71 @@ class RXStackFrame(val functionName: String,
   override fun dispose() {
   }
 
-  private inner class RXEnvironment internal constructor(name: String, private val loader: RVariableLoader)
+  private inner class RXEnvironment internal constructor(name: String, loader: RVariableLoader)
     : XNamedValue(name.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")) {
+    private val listBuilder = PartialChildrenListBuilder(this@RXStackFrame, loader)
 
     override fun computePresentation(node: XValueNode, place: XValuePlace) {
       RXPresentationUtils.setEnvironmentPresentation(node)
     }
 
     override fun computeChildren(node: XCompositeNode) {
-      loader.variablesAsync.getAsync().then {
-        val result = XValueChildrenList()
-        addEnvironmentContents(result, it, this@RXStackFrame)
-        node.addChildren(result, true)
-      }.onError {
-        node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
-      }
+      listBuilder.computeChildren(node)
+    }
+
+    override fun calculateEvaluationExpression(): Promise<XExpression> {
+      return rejectedPromise()
+    }
   }
 
-  override fun calculateEvaluationExpression(): Promise<XExpression> {
-      return rejectedPromise()
+  private inner class FunctionsGroup : XValueGroup(RBundle.message("variable.view.functions")) {
+    private val listBuilder = PartialChildrenListBuilder(this@RXStackFrame, loader, onlyFunctions = true)
+
+    override fun computeChildren(node: XCompositeNode) {
+      listBuilder.computeChildren(node)
     }
   }
 }
 
-internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, stackFrame: RXStackFrame,
-                                    hideFunctions: Boolean = false) {
-  val filteredVars = if (stackFrame.variableViewSettings.showHiddenVariables) {
-    vars
-  } else {
-    vars.filter { !it.name.startsWith('.') || it.name == "..." }
-  }
-  val rxVars = filteredVars.map { RXVar(it, stackFrame) }
-  if (hideFunctions) {
-    val functions = rxVars.filter { it.rVar.value is RValueFunction }
-    if (functions.isNotEmpty()) {
-      result.addTopGroup(object : XValueGroup(RBundle.message("variable.view.functions")) {
-        override fun computeChildren(node: XCompositeNode) {
-          val children = XValueChildrenList()
-          functions.forEach { children.add(it) }
-          node.addChildren(children, true)
-        }
-      })
+internal open class PartialChildrenListBuilder(
+  private val stackFrame: RXStackFrame, private val loader: RVariableLoader,
+  private val noFunctions: Boolean = false, private val onlyFunctions: Boolean = false) {
+  private var offset = 0L
+  private var firstCall = true
+
+  fun computeChildren(node: XCompositeNode) {
+    val result = XValueChildrenList()
+    if (firstCall) {
+      addTopChildren(result)
+      firstCall = false
     }
-    rxVars.filter { it.rVar.value !is RValueFunction }.forEach { result.add(it) }
-  } else {
-    rxVars.forEach { result.add(it) }
+    val endOffset = offset + MAX_ITEMS
+    val withHidden = stackFrame.variableViewSettings.showHiddenVariables
+    loader.loadVariablesPartially(offset, endOffset,withHidden = withHidden,
+                                  noFunctions = noFunctions, onlyFunctions = onlyFunctions).then { (vars, totalCount) ->
+      addContents(result, vars, offset)
+      node.addChildren(result, true)
+      offset = min(endOffset, totalCount)
+      if (offset != totalCount) {
+        node.tooManyChildren((totalCount - offset).let { if (it > Int.MAX_VALUE) -1 else it.toInt() })
+      }
+    }.onError {
+      node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
+    }
   }
+
+  protected open fun addTopChildren(result: XValueChildrenList) {
+  }
+
+  protected open fun addContents(result: XValueChildrenList, vars: List<RVar>, offset: Long) {
+    addEnvironmentContents(result, vars, stackFrame)
+  }
+}
+
+
+internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, stackFrame: RXStackFrame) {
+  val rxVars = vars.map { RXVar(it, stackFrame) }
+  rxVars.forEach { result.add(it) }
   setObjectSizes(rxVars, stackFrame)
 }
 
@@ -133,3 +154,4 @@ internal fun setObjectSizes(rxVars: List<RXVar>, stackFrame: RXStackFrame) {
   filtered.zip(sizes).forEach { (rxVar, size) -> rxVar.objectSize = size.takeIf { it >= 0 } }
 }
 
+internal const val MAX_ITEMS = 250

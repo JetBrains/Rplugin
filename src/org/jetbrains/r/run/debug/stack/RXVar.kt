@@ -9,21 +9,27 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValueEnvironment
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.RVar
 import java.util.concurrent.CancellationException
-import kotlin.math.min
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
-  private var offset = 0L
-  private val loader by lazy {
-    if ((rVar.value as? RValueSimple)?.isS4 == true) {
+  private val listBuilder by lazy {
+    val loader = if ((rVar.value as? RValueSimple)?.isS4 == true) {
       rVar.ref.getAttributesRef().createVariableLoader()
     } else {
       rVar.ref.createVariableLoader()
+    }
+    object : PartialChildrenListBuilder(stackFrame, loader) {
+      override fun addContents(result: XValueChildrenList, vars: List<RVar>, offset: Long) {
+        if (rVar.value is RValueEnvironment) {
+          addEnvironmentContents(result, vars, stackFrame)
+        } else {
+          addListContents(result, vars, offset)
+        }
+      }
     }
   }
 
@@ -34,24 +40,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
   }
 
   override fun computeChildren(node: XCompositeNode) {
-    val result = XValueChildrenList()
-    val endOffset = offset + MAX_ITEMS
-    loader.loadVariablesPartially(offset, endOffset).then { (vars, totalCount) ->
-      try {
-        if (rVar.value is RValueEnvironment) {
-          addEnvironmentContents(result, vars, stackFrame)
-        } else {
-          addListContents(result, vars)
-        }
-        node.addChildren(result, true)
-        offset = min(endOffset, totalCount)
-        if (offset != totalCount) {
-          node.tooManyChildren((totalCount - offset).let { if (it > Int.MAX_VALUE) -1 else it.toInt() })
-        }
-      } catch (e: RDebuggerException) {
-        node.setErrorMessage(e.message.orEmpty())
-      }
-    }.onError { node.setErrorMessage(it.message.orEmpty()) }
+    listBuilder.computeChildren(node)
   }
 
   override fun getModifier(): XValueModifier? {
@@ -80,7 +69,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
     }
   }
 
-  private fun addListContents(result: XValueChildrenList, vars: List<RVar>) {
+  private fun addListContents(result: XValueChildrenList, vars: List<RVar>, offset: Long) {
     val isVector = rVar.value is RValueSimple
     val rxVars = mutableListOf<RXVar>()
     vars.forEachIndexed { index, it ->

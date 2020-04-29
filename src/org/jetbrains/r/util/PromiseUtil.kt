@@ -5,6 +5,7 @@
 package org.jetbrains.r.util
 
 import org.jetbrains.concurrency.*
+import java.util.concurrent.atomic.AtomicReference
 
 object PromiseUtil {
   fun runChain(tasks: List<() -> Promise<Boolean>>): Promise<Boolean> {
@@ -33,4 +34,30 @@ fun <T, R> CancellablePromise<T>.thenCancellable(f: (T) -> R): CancellablePromis
     }
   }.onError { result.setError(it) }
   return result.onError { if (this.isPending) this.cancel() }
+}
+
+fun <T, R> CancellablePromise<T>.thenAsyncCancellable(f: (T) -> CancellablePromise<R>): CancellablePromise<R> {
+  val result = AsyncPromise<R>()
+  val secondPromise = AtomicReference<CancellablePromise<R>>(null)
+  this.onError { result.setError(it) }
+    .onSuccess {
+      val promise = try {
+        f(it)
+      } catch (e: Throwable) {
+        result.setError(e)
+        return@onSuccess
+      }
+      if (secondPromise.compareAndSet(null, promise)) {
+        promise.processed(result)
+      } else {
+        promise.cancel()
+      }
+    }
+  return result.onError {
+    if (secondPromise.compareAndSet(null, result)) {
+      this.cancel()
+    } else {
+      secondPromise.get()?.cancel()
+    }
+  }
 }

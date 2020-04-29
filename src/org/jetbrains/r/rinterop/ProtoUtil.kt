@@ -49,10 +49,6 @@ object ProtoUtil {
     return Service.RRef.newBuilder().setErrorStackSysFrameIndex(index).build()
   }
 
-  fun getVariablesRequestProto(obj: Service.RRef, start: Long, end: Long): Service.GetVariablesRequest {
-    return Service.GetVariablesRequest.newBuilder().setObj(obj).setStart(start).setEnd(end).build()
-  }
-
   fun canSetValue(ref: Service.RRef): Boolean = when (ref.refCase) {
     Service.RRef.RefCase.MEMBER -> true
     Service.RRef.RefCase.LISTELEMENT -> canSetValue(ref.listElement.list)

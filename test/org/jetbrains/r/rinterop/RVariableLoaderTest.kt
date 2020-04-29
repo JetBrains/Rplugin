@@ -30,6 +30,117 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
     ), vars.map { it.value.javaClass })
   }
 
+  fun testHiddenAndPartial() {
+    rInterop.executeCode("""
+      e <- new.env()
+      e $ a <- 1
+      e $ b <- 2
+      e $ c <- 3
+      e $ .a <- 4
+      e $ .b <- 5
+      e $ .c <- 6
+    """.trimIndent())
+    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    TestCase.assertEquals(
+      setOf("a" to "[1] 1", "b" to "[1] 2", "c" to "[1] 3", ".a" to "[1] 4", ".b" to "[1] 5", ".c" to "[1] 6"),
+      loader.variables.map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+    )
+    loader.loadVariablesPartially(0, 10, withHidden = false).blockingGet(DEFAULT_TIMEOUT)!!.let { result ->
+      TestCase.assertEquals(
+        setOf("a" to "[1] 1", "b" to "[1] 2", "c" to "[1] 3"),
+        result.vars.map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+      )
+      TestCase.assertEquals(3, result.totalCount)
+    }
+
+    val result1 = loader.loadVariablesPartially(0, 2, withHidden = false).blockingGet(DEFAULT_TIMEOUT)!!
+    val result2 = loader.loadVariablesPartially(2, 4, withHidden = false).blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals(3, result1.totalCount)
+    TestCase.assertEquals(3, result2.totalCount)
+    TestCase.assertEquals(2, result1.vars.size)
+    TestCase.assertEquals(1, result2.vars.size)
+    TestCase.assertEquals(
+      setOf("a" to "[1] 1", "b" to "[1] 2", "c" to "[1] 3"),
+      (result1.vars + result2.vars).map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+    )
+
+    val result3 = loader.loadVariablesPartially(0, 2).blockingGet(DEFAULT_TIMEOUT)!!
+    val result4 = loader.loadVariablesPartially(2, 6).blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals(6, result3.totalCount)
+    TestCase.assertEquals(6, result4.totalCount)
+    TestCase.assertEquals(2, result3.vars.size)
+    TestCase.assertEquals(4, result4.vars.size)
+    TestCase.assertEquals(
+      setOf("a" to "[1] 1", "b" to "[1] 2", "c" to "[1] 3", ".a" to "[1] 4", ".b" to "[1] 5", ".c" to "[1] 6"),
+      (result3.vars + result4.vars).map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+    )
+  }
+
+  fun testNoFunctions() {
+    rInterop.executeCode("""
+      e <- new.env()
+      e $ v1 <- 1
+      e $ v2 <- 2
+      e $ v3 <- 3
+      e $ f1 <- function(x1) {}
+      e $ f2 <- function(x2) {}
+      e $ f3 <- function(x3) {}
+    """.trimIndent())
+    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    val set = setOf("v1" to "[1] 1", "v2" to "[1] 2", "v3" to "[1] 3")
+
+    loader.loadVariablesPartially(0, 10, noFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!.let { result ->
+      TestCase.assertEquals(
+        set, result.vars.map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+      )
+      TestCase.assertEquals(3, result.totalCount)
+    }
+
+    val result1 = loader.loadVariablesPartially(0, 2, noFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!
+    val result2 = loader.loadVariablesPartially(2, 4, noFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals(3, result1.totalCount)
+    TestCase.assertEquals(3, result2.totalCount)
+    TestCase.assertEquals(2, result1.vars.size)
+    TestCase.assertEquals(1, result2.vars.size)
+    TestCase.assertEquals(
+      set,
+      (result1.vars + result2.vars).map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
+    )
+  }
+
+  fun testOnlyFunctions() {
+    rInterop.executeCode("""
+      e <- new.env()
+      e $ v1 <- 1
+      e $ v2 <- 2
+      e $ v3 <- 3
+      e $ f1 <- function(x1) {}
+      e $ f2 <- function(x2) {}
+      e $ f3 <- function(x3) {}
+    """.trimIndent())
+    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    val set = setOf("f1" to "function(x1)", "f2" to "function(x2)", "f3" to "function(x3)")
+
+    loader.loadVariablesPartially(0, 10, onlyFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!.let { result ->
+      TestCase.assertEquals(
+        set,
+        result.vars.map { it.name to (it.value as RValueFunction).header.trim() }.toSet()
+      )
+      TestCase.assertEquals(3, result.totalCount)
+    }
+
+    val result1 = loader.loadVariablesPartially(0, 2, onlyFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!
+    val result2 = loader.loadVariablesPartially(2, 4, onlyFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals(3, result1.totalCount)
+    TestCase.assertEquals(3, result2.totalCount)
+    TestCase.assertEquals(2, result1.vars.size)
+    TestCase.assertEquals(1, result2.vars.size)
+    TestCase.assertEquals(
+      set,
+      (result1.vars + result2.vars).map { it.name to (it.value as RValueFunction).header.trim() }.toSet()
+    )
+  }
+
   fun testEnvironment() {
     rInterop.executeCode("""
       a = 1
