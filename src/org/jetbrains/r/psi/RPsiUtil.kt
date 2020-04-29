@@ -170,8 +170,6 @@ fun RIdentifierExpression.isNamespaceAccess() : Boolean {
   return parent?.let { it is RNamespaceAccessExpression && it.identifier == this } == true
 }
 
-fun RStringLiteralExpression.isComplete() = text.length > 1 && text.first() == text.last()
-
 fun RExpression.isAssignee(): Boolean {
   val parent = parent
   return parent is RAssignmentStatement && this == parent.assignee

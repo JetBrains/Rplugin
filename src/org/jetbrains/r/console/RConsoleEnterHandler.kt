@@ -17,9 +17,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
+import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.isComplete
 import org.jetbrains.r.statistics.RStatistics
 
 object RConsoleEnterHandler {
@@ -87,12 +88,7 @@ object RConsoleEnterHandler {
 
   private fun checkComplete(el: PsiElement): Boolean {
     val file = el.containingFile
-    val parentStringLiteral = PsiTreeUtil.getParentOfType(el, org.jetbrains.r.psi.api.RStringLiteralExpression::class.java, false)
-
-    if (parentStringLiteral != null) {
-      return parentStringLiteral.isComplete()
-    }
-
+    if (el.elementType == RElementTypes.R_INVALID_STRING) return false
     return !PsiTreeUtil.hasErrorElements(file)
   }
 

@@ -18,8 +18,12 @@ class RConsoleEnterHandlerTest : RLightCodeInsightFixtureTestCase() {
   fun testStringQuotes() {
     checkFalse("'123")
     checkFalse("\"123")
+    checkFalse("r\"123")
+    checkFalse("r\"(123")
+    checkFalse("r\"(123)")
     checkTrue("'123'")
     checkTrue("\"123\"")
+    checkTrue("r\"(123)\"")
   }
 
   fun testOperators() {
