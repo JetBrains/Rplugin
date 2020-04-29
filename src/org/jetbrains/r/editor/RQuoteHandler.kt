@@ -18,8 +18,10 @@ class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiC
     return super.isOpeningQuote(iterator, offset)
   }
 
-  override fun getClosingQuote(iterator: HighlighterIterator, offset: Int): CharSequence? =
-    if (isRawString(iterator, offset)) "()\"" else "\""
+  override fun getClosingQuote(iterator: HighlighterIterator, offset: Int): CharSequence? {
+    return if (isRawString(iterator, offset)) "()\""
+    else iterator.document.charsSequence[iterator.start].takeIf { it == '"' || it == '\'' }?.toString()
+  }
 
   override fun insertClosingQuote(editor: Editor, offset: Int, closingQuote: CharSequence) {
     super.insertClosingQuote(editor, offset, closingQuote)

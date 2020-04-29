@@ -177,7 +177,23 @@ class TypingTest : RUsefulTestCase() {
     """, "(")
   }
 
-  fun testAddQuote() {
+
+  fun testAddSingleQuote() {
+    doTest("""
+      hello <- <caret>
+    """, """
+      hello <- '<caret>'
+    """, "'")
+  }
+
+  fun testAdd2SingleQuotes() {
+    doTest("""
+      hello <- <caret>
+    """, """
+      hello <- ''<caret>
+    """, "''")
+  }
+  fun testAddDoubleQuote() {
     doTest("""
       hello <- <caret>
     """, """
@@ -185,7 +201,7 @@ class TypingTest : RUsefulTestCase() {
     """, "\"")
   }
 
-  fun testAdd2Quotes() {
+  fun testAdd2DoubleQuotes() {
     doTest("""
       hello <- <caret>
     """, """
@@ -200,6 +216,15 @@ class TypingTest : RUsefulTestCase() {
       hello <- r"(<caret>)"
     """, "\"")
   }
+
+  fun testNoAutoQuoteInComment() {
+    doTest("""
+      #hello <- <caret>
+    """, """
+      #hello <- '<caret>
+    """, "'")
+  }
+
 
   fun testParenthesisInTheEndOfRFence() {
     doRmdTest("""
