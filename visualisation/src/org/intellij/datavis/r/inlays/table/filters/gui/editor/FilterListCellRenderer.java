@@ -40,11 +40,11 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
     private final static int X_MARGIN_ARROW = 1;
     private final static int WIDTH_ARROW = 5;
     private final static int HEIGHT_ARROW = 6; // must be even
-    private final static int X[] = { 0, WIDTH_ARROW, 0 };
-    private final static int Y[] = { 0, HEIGHT_ARROW / 2, HEIGHT_ARROW };
+    private final static int[] X = { 0, WIDTH_ARROW, 0 };
+    private final static int[] Y = { 0, HEIGHT_ARROW / 2, HEIGHT_ARROW };
 
-    private CellRendererPane painter = new CellRendererPane();
-    private JList referenceList;
+    private final CellRendererPane painter = new CellRendererPane();
+    private final JList referenceList;
     private Component inner;
     private Color arrowColor;
 
@@ -54,11 +54,9 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
     private int width;
 
     IFilterEditor editor;
-    Color fg;
-    Color bg;
     ChoiceRenderer renderer;
 
-    private class DefaultRenderer extends JLabel implements ListCellRenderer {
+    private static class DefaultRenderer extends JLabel implements ListCellRenderer {
 
         private static final long serialVersionUID = 5837846455371777058L;
 
@@ -104,7 +102,7 @@ class FilterListCellRenderer extends JComponent implements ListCellRenderer {
      * Specific cellRenderer for the TableFilter, taking care of {@link
      * CustomChoice} components.
      */
-    private ListCellRenderer defaultRenderer;
+    private final ListCellRenderer defaultRenderer;
 
     public FilterListCellRenderer(IFilterEditor editor, JList mainList) {
         setUserRenderer(null);
