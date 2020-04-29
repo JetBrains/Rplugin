@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.keymap.KeymapUtil
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -96,6 +97,9 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
   override fun visitStringLiteralExpression(o: RStringLiteralExpression) {
     val call = PsiTreeUtil.skipParentsOfType(o, RNamedArgument::class.java, RArgumentList::class.java)
     if (call !is RCallExpression) return
+
+    // To avoid IndexNotReadyException
+    if (DumbService.isDumb(o.project)) return
     if (!call.isFunctionFromLibrary("source", "base")) return
     if (RParameterInfoUtil.getArgumentByName(call, "file") != o) return
 

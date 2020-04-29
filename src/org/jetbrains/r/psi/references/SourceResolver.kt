@@ -13,11 +13,10 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.ex.temp.TempFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.psi.RPsiUtil
+import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.findVariableDefinition
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
@@ -137,8 +136,11 @@ private fun RControlFlowHolder.analyseIncludedSourcesInner(): Map<Instruction, I
 private fun getSourceDeclaration(sourceIdentifier: PsiElement): RAssignmentStatement? {
   val result = mutableListOf<ResolveResult>()
   RResolver.resolveInFilesOrLibrary(sourceIdentifier, "source", result)
-  if (result.isEmpty()) return null
-  return result.mapNotNull { it.element }.first { RPsiUtil.isLibraryElement(it) } as RAssignmentStatement
+  return result.mapNotNull { it.element }.firstOrNull {
+    val file = it.containingFile
+    val (name, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(file.name) ?: return@firstOrNull false
+    name == "base"
+  } as? RAssignmentStatement
 }
 
 private fun updateSources(sources: IncludedSources, element: PsiElement?): IncludedSources {
