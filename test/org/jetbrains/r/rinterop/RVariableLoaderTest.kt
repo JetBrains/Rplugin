@@ -171,7 +171,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(4, total)
     TestCase.assertEquals(listOf("bb", "cc"), vars.map { it.name })
     TestCase.assertEquals(listOf("[1] 22", "[1] 33"), vars.map { (it.value as RValueSimple).text })
-    TestCase.assertEquals(listOf("[1] 22", "[1] 33"), vars.map { it.ref.evaluateAsText().trim() })
+    TestCase.assertEquals(listOf("[1] 22", "[1] 33"), vars.map { it.ref.evaluateAsTextAsync().get().trim() })
   }
 
   fun testVector() {
@@ -241,7 +241,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       .createVariableLoader().variables
       .map { it.name to it.ref }
       .toMap()
-    TestCase.assertEquals("[1] 10", attributes["A1"]?.evaluateAsText()?.trim())
-    TestCase.assertEquals("[1] 20", attributes["A2"]?.evaluateAsText()?.trim())
+    TestCase.assertEquals("[1] 10", attributes["A1"]?.evaluateAsTextAsync()?.get()?.trim())
+    TestCase.assertEquals("[1] 20", attributes["A2"]?.evaluateAsTextAsync()?.get()?.trim())
   }
 }

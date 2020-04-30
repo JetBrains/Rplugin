@@ -7,6 +7,7 @@ package org.jetbrains.r.run.debug.stack
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeLater
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
@@ -61,12 +62,14 @@ class RXStackFrame(val functionName: String,
     val environments = object : XValueGroup(RBundle.message("variable.view.parent.environments")) {
       override fun computeChildren(node: XCompositeNode) {
         loader.parentEnvironments.getAsync().then {
-          val children = XValueChildrenList()
-          for (env in it) {
-            val environment = RXEnvironment(env.name, env.ref.createVariableLoader())
-            children.add(environment)
+          invokeLater {
+            val children = XValueChildrenList()
+            for (env in it) {
+              val environment = RXEnvironment(env.name, env.ref.createVariableLoader())
+              children.add(environment)
+            }
+            node.addChildren(children, true)
           }
-          node.addChildren(children, true)
         }.onError {
           node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())
         }
@@ -120,11 +123,13 @@ internal open class PartialChildrenListBuilder(
     val withHidden = stackFrame.variableViewSettings.showHiddenVariables
     loader.loadVariablesPartially(offset, endOffset,withHidden = withHidden,
                                   noFunctions = noFunctions, onlyFunctions = onlyFunctions).then { (vars, totalCount) ->
-      addContents(result, vars, offset)
-      node.addChildren(result, true)
-      offset = min(endOffset, totalCount)
-      if (offset != totalCount) {
-        node.tooManyChildren((totalCount - offset).let { if (it > Int.MAX_VALUE) -1 else it.toInt() })
+      invokeLater {
+        addContents(result, vars, offset)
+        node.addChildren(result, true)
+        offset = min(endOffset, totalCount)
+        if (offset != totalCount) {
+          node.tooManyChildren((totalCount - offset).let { if (it > Int.MAX_VALUE) -1 else it.toInt() })
+        }
       }
     }.onError {
       node.setErrorMessage((it as? RDebuggerException)?.message.orEmpty())

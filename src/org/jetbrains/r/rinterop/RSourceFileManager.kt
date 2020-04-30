@@ -18,6 +18,7 @@ import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.run.debug.RLineBreakpointType
+import org.jetbrains.r.util.thenCancellable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -44,9 +45,9 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
       files[fileId] = it
       return it
     }
-    val text = rInterop.execute(rInterop.stub::getSourceFileText, StringValue.of(fileId)).value
+    val text = rInterop.execute(rInterop.asyncStub::getSourceFileText, StringValue.of(fileId)).value
     if (text.isEmpty()) return null
-    val name = rInterop.execute(rInterop.stub::getSourceFileName, StringValue.of(fileId)).value
+    val name = rInterop.execute(rInterop.asyncStub::getSourceFileName, StringValue.of(fileId)).value
     val file = filesystem.createFile(name, text)
     file.putUserData(FILE_ID, fileId)
     files[fileId] = file
@@ -55,7 +56,7 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
 
   fun getFunctionPosition(rRef: RRef): CancellablePromise<RSourcePosition?> {
     val map = cachedFunctionPositions
-    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).then { position ->
+    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).thenCancellable { position ->
       map.getOrPut(rRef.proto) {
         rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }.let { Optional.ofNullable(it) }
       }.orElse(null)

@@ -9,6 +9,7 @@ import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.exception.RDebuggerException
+import org.jetbrains.r.util.thenCancellable
 import org.jetbrains.r.util.tryRegisterDisposable
 
 open class RRef internal constructor(internal val proto: Service.RRef, internal val rInterop: RInterop) {
@@ -30,9 +31,9 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
 
   fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
     return rInterop.executeAsync(rInterop.asyncStub::copyToPersistentRef, proto)
-      .then {
+      .thenCancellable {
         if (it.responseCase == Service.CopyToPersistentRefResponse.ResponseCase.PERSISTENTINDEX) {
-          return@then RPersistentRef(it.persistentIndex, rInterop, disposableParent)
+          return@thenCancellable RPersistentRef(it.persistentIndex, rInterop, disposableParent)
         }
         throw RDebuggerException(it.error)
       }
@@ -44,17 +45,13 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   }
 
   fun getValueInfoAsync(): CancellablePromise<RValue> {
-    return rInterop.executeAsync(rInterop.asyncStub::loaderGetValueInfo, proto).then {
+    return rInterop.executeAsync(rInterop.asyncStub::loaderGetValueInfo, proto).thenCancellable {
       ProtoUtil.rValueFromProto(it)
     }
   }
 
-  fun evaluateAsText(): String {
-    return evaluateAsTextAsync().get()
-  }
-
   fun evaluateAsTextAsync(): CancellablePromise<String> {
-    return rInterop.executeAsync(rInterop.asyncStub::evaluateAsText, proto).then {
+    return rInterop.executeAsync(rInterop.asyncStub::evaluateAsText, proto).thenCancellable {
       if (it.resultCase == Service.StringOrError.ResultCase.VALUE) {
         it.value
       } else {
@@ -63,20 +60,28 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     }
   }
 
-  fun evaluateAsBoolean(): Boolean {
-    return rInterop.executeWithCheckCancel(rInterop.asyncStub::evaluateAsBoolean, proto).value
-  }
-
   fun getDistinctStrings(): List<String> {
-    return rInterop.executeWithCheckCancel(rInterop.asyncStub::getDistinctStrings, proto).listList
+    return try {
+      rInterop.executeWithCheckCancel(rInterop.asyncStub::getDistinctStrings, proto).listList
+    } catch (e: RInteropTerminated) {
+      emptyList()
+    }
   }
 
   fun ls(): List<String> {
-    return rInterop.executeWithCheckCancel(rInterop.asyncStub::loadObjectNames, proto).listList
+    return try {
+      rInterop.executeWithCheckCancel(rInterop.asyncStub::loadObjectNames, proto).listList
+    } catch (e: RInteropTerminated) {
+      emptyList()
+    }
   }
 
   fun functionSourcePosition(): RSourcePosition? {
-    return functionSourcePositionAsync().getWithCheckCanceled()
+    return try {
+      functionSourcePositionAsync().getWithCheckCanceled()
+    } catch (e: RInteropTerminated) {
+      null
+    }
   }
 
   fun functionSourcePositionAsync(): CancellablePromise<RSourcePosition?> {
@@ -92,7 +97,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
       .setRef(proto)
       .setValue(value.proto)
       .build()
-    return rInterop.executeAsync(rInterop.asyncStub::setValue, request).then {
+    return rInterop.executeAsync(rInterop.asyncStub::setValue, request).thenCancellable {
       if (it.responseCase == Service.SetValueResponse.ResponseCase.ERROR) {
         throw RDebuggerException(it.error)
       }

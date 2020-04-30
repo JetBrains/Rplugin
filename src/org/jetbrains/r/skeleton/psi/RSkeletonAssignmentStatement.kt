@@ -9,6 +9,7 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -20,7 +21,9 @@ import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.references.RReferenceBase
 import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.rinterop.RInteropTerminated
 import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RValueError
 import org.jetbrains.r.rinterop.RVar
 
 class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) : RSkeletonBase(), RAssignmentStatement {
@@ -92,6 +95,11 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
 
     val accessOperator = if (stub.exported) "::" else ":::"
     val expressionRef = RRef.expressionRef("$packageName$accessOperator${RNamesValidator.quoteIfNeeded(getName())}", consoleView.rInterop)
-    return RVar(name, expressionRef, expressionRef.getValueInfo())
+    val rValue = try {
+      expressionRef.getValueInfo()
+    } catch (e: RInteropTerminated) {
+      RValueError(RBundle.message("rinterop.terminated"))
+    }
+    return RVar(name, expressionRef, rValue)
   }
 }

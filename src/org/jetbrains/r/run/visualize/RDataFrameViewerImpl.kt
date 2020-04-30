@@ -16,6 +16,7 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropTerminated
 import org.jetbrains.r.rinterop.RPersistentRef
 import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rinterop.Service.DataFrameInfoResponse.ColumnType.*
@@ -98,16 +99,22 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   }
 
   override fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer {
-    if (!rInterop.isAlive) throw RDataFrameException(RBundle.message("console.process.terminated"))
-    return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
-      disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
+    try {
+      return RDataFrameViewerImpl(rInterop.dataFrameSort(ref, sortKeys)).also { newDataFrame ->
+        disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
+      }
+    } catch (e: RInteropTerminated) {
+      throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }
 
   override fun filter(f: Service.DataFrameFilterRequest.Filter): RDataFrameViewer {
-    if (!rInterop.isAlive) throw RDataFrameException(RBundle.message("console.process.terminated"))
-    return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
-      disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
+    try {
+      return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
+        disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }
+      }
+    } catch (e: RInteropTerminated) {
+      throw RDataFrameException(RBundle.message("rinterop.terminated"))
     }
   }
 

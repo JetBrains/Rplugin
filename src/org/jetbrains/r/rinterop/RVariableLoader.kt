@@ -13,7 +13,7 @@ class RVariableLoader internal constructor(val obj: RRef) {
   val rInterop = obj.rInterop
 
   val parentEnvironments = rInterop.AsyncCached(emptyList()) {
-    rInterop.executeAsync(rInterop.asyncStub::loaderGetParentEnvs, obj.proto).then { response ->
+    rInterop.executeAsync(rInterop.asyncStub::loaderGetParentEnvs, obj.proto).thenCancellable { response ->
       response.envsList.mapIndexed { index, it ->
         REnvironmentRef(it.name, RRef(ProtoUtil.parentEnvRefProto(obj.proto, index + 1), rInterop))
       }
@@ -52,7 +52,7 @@ class RVariableLoader internal constructor(val obj: RRef) {
       .setObj(obj.proto).setStart(start).setEnd(end)
       .setNoHidden(!withHidden).setNoFunctions(noFunctions).setOnlyFunctions(onlyFunctions).build()
     return rInterop.executeAsync(rInterop.asyncStub::loaderGetVariables, request)
-      .then(rInterop.executor) { response ->
+      .thenCancellable { response ->
         val vars = if (response.isEnv) {
           response.varsList.map { RVar(it.name, obj.getMemberRef(it.name), ProtoUtil.rValueFromProto(it.value)) }
         } else {

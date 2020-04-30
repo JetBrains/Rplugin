@@ -23,6 +23,7 @@ import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropTerminated
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
@@ -76,6 +77,15 @@ class VisualizeTableHandler : CodeInsightActionHandler {
               } else {
                 RNotificationUtil.notifyExecutionError(
                   project, RBundle.message("visualize.table.action.error.hint", it.message.orEmpty()))
+              }
+            }
+            is RInteropTerminated -> {
+              if (editor != null) {
+                HintManager.getInstance()
+                  .showErrorHint(editor, RBundle.message("rinterop.terminated"))
+              } else {
+                RNotificationUtil.notifyExecutionError(
+                  project, RBundle.message("rinterop.terminated"))
               }
             }
             is RequiredPackageException -> {

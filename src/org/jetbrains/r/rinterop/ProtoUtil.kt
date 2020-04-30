@@ -16,7 +16,7 @@ object ProtoUtil {
       proto.hasEnvironment() -> RValueEnvironment(proto.clsList, proto.environment.name)
       proto.hasGraph() -> RValueGraph(proto.clsList)
       proto.hasMatrix() -> RValueMatrix(proto.clsList, proto.matrix.dimList)
-      proto.hasError() -> RValueError(proto.clsList, proto.error.text.trimEnd())
+      proto.hasError() -> RValueError(proto.error.text.trimEnd())
       else -> RValueSimple(listOf(), "")
     }
   }

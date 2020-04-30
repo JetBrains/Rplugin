@@ -137,7 +137,7 @@ class RGraphicsDevice(
             if (output == "TRUE") {
               strategy.onSuccessfulRescale()
             }
-          } else if (result.stderr.isBlank()) {
+          } else if (result.stderr.isBlank() && rInterop.isAlive) {
             LOGGER.error("Cannot get any output from graphics device")
           }
         }

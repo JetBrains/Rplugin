@@ -46,6 +46,7 @@ import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
 import org.jetbrains.r.settings.RSettings
+import org.jetbrains.r.util.thenCancellable
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -102,73 +103,61 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   val isAlive: Boolean
     get() = !terminationPromise.isDone
 
-  fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> execute(
-    f: KFunction1<Request, Response>,
-    request: Request
-  ) : Response {
-    val nextStubNumber = rInteropGrpcLogger.nextStubNumber()
-    rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
-    val response = try {
-      f.invoke(request)
-    } catch (e: StatusRuntimeException) {
-      reportIfCrash(e)
-      throw e
-    }
-    rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, response)
-    return response
-  }
-
-  fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
+  internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
     f: KFunction1<Request, ListenableFuture<Response>>,
     request: Request
-  ) : ListenableFuture<Response> {
+  ) : CancellablePromise<Response> {
     val nextStubNumber = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
-    return f.invoke(request).apply {
+    val promise = AsyncPromise<Response>()
+    val future = f.invoke(request).apply {
       addListener(Runnable {
-        try {
-          rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, get())
-        } catch (e: ExecutionException) {
-          reportIfCrash(e.cause)
-        } catch (ignored: CancellationException) {
+        val result = try {
+          get()
+        } catch (e: Throwable) {
+          promise.setError(processError(e, f.name))
+          return@Runnable
         }
-      }, executor)
+        promise.setResult(result)
+        rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, result)
+      }, MoreExecutors.directExecutor())
+    }
+    promise.onError { future.cancel(true) }
+    return promise
+  }
+
+  internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> execute(
+    f: KFunction1<Request, ListenableFuture<Response>>, request: Request) : Response {
+    try {
+      return executeAsync(f, request).blockingGet(Int.MAX_VALUE)!!
+    } catch (e: ExecutionException) {
+      throw (e.cause as? RInteropException) ?: e
     }
   }
 
-  fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeWithCheckCancel(
+  internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeWithCheckCancel(
     f: KFunction1<Request, ListenableFuture<Response>>,
     request: Request) : Response {
-    val nextStubNumber = rInteropGrpcLogger.nextStubNumber()
-    rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
-    var result: Response? = null
-    try {
-      f.invoke(request).getWithCheckCanceled().also { result = it; return it }
-    } catch (e: ExecutionException) {
-      reportIfCrash(e.cause)
-      throw e
-    } finally {
-      rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, result)
-    }
+    return executeAsync(f, request).getWithCheckCanceled()
   }
 
-  val workingDir: String by Cached {
+  val workingDir: String by Cached("") {
     executeWithCheckCancel(asyncStub::getWorkingDir, Empty.getDefaultInstance()).value
   }
 
   val loadedPackages = AsyncCached<Map<String, Int>>(emptyMap()) {
-    executeAsync(asyncStub::loaderGetLoadedNamespaces, Empty.getDefaultInstance()).then {
+    executeAsync(asyncStub::loaderGetLoadedNamespaces, Empty.getDefaultInstance()).thenCancellable {
       it.listList.mapIndexed { index, s -> s to index }.toMap().also {
         project.messageBus.syncPublisher(LOADED_LIBRARIES_UPDATED).onLibrariesUpdated()
       }
     }
   }
 
-  val rMarkdownChunkOptions: List<String> by Cached {
+  val rMarkdownChunkOptions: List<String> by Cached(emptyList()) {
     executeWithCheckCancel(asyncStub::getRMarkdownChunkOptions, Empty.getDefaultInstance()).listList
   }
 
-  private val getInfoResponse = execute(stub::getInfo, Empty.getDefaultInstance())
+  private val getInfoResponse = execute(asyncStub::getInfo, Empty.getDefaultInstance())
   val rVersion = RVersion.forceParse(getInfoResponse.rVersion)
   val workspaceFile: String?
   private var saveOnExitValue = false
@@ -219,11 +208,14 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  fun <R> executeTask(f: () -> R): Promise<R> {
-    val promise = AsyncPromise<R>()
+  fun executeTask(f: () -> Unit): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
     executor.execute {
       try {
-        promise.setResult(f())
+        f()
+        promise.setResult(Unit)
+      } catch (ignored: RInteropTerminated) {
+        promise.setResult(Unit)
       } catch (e: Throwable) {
         promise.setError(e)
       }
@@ -231,13 +223,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     return promise
   }
 
-  fun isBusy(): Boolean {
-    return executeWithCheckCancel(asyncStub::isBusy, Empty.getDefaultInstance()).value
-  }
-
   fun setWorkingDir(dir: String) {
-    executeWithCheckCancel(asyncStub::setWorkingDir, StringValue.of(dir))
-    invalidateCaches()
+    try {
+      executeWithCheckCancel(asyncStub::setWorkingDir, StringValue.of(dir))
+      invalidateCaches()
+    } catch (ignored: RInteropTerminated) {
+    }
   }
 
   fun isLibraryLoaded(name: String): Boolean {
@@ -245,7 +236,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun loadLibrary(name: String): CancellablePromise<Unit> {
-    return executeAsync(asyncStub::loadLibrary, StringValue.of(name)).then {
+    return executeAsync(asyncStub::loadLibrary, StringValue.of(name)).thenCancellable {
       invalidateCaches()
     }
   }
@@ -255,13 +246,13 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setWithDynamicLibrary(withDynamicLibrary)
       .setPackageName(name)
       .build()
-    return executeAsync(asyncStub::unloadLibrary, request).then {
+    return executeAsync(asyncStub::unloadLibrary, request).thenCancellable {
       invalidateCaches()
     }
   }
 
   fun setOutputWidth(width: Int) = executeTask {
-    execute(stub::setOutputWidth, Int32Value.of(width))
+    execute(asyncStub::setOutputWidth, Int32Value.of(width))
   }
 
   fun replExecute(code: String, setLastValue: Boolean = false): CancellablePromise<RIExecutionResult> {
@@ -384,12 +375,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         }
 
         override fun onError(t: Throwable?) {
-          if (isAlive) {
-            reportIfCrash(t)
-            promise.setError(t ?: RuntimeException())
-          } else {
-            promise.setResult(RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString(), exception))
-          }
+          t?.let { processError(t, "executeCode") }
+          promise.setResult(RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString(), exception))
         }
 
         override fun onCompleted() {
@@ -406,11 +393,11 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun replSendReadLn(s: String) = executeTask {
-    execute(stub::sendReadLn, StringValue.of(s))
+    execute(asyncStub::sendReadLn, StringValue.of(s))
   }
 
   fun replSendEof() = executeTask {
-    execute(stub::sendEof, Empty.getDefaultInstance())
+    execute(asyncStub::sendEof, Empty.getDefaultInstance())
   }
 
   fun addAsyncEventsListener(listener: AsyncEventsListener) {
@@ -427,7 +414,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
                          condition: String? = null) = executeTask {
     val position = Service.SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build()
-    execute(stub::debugAddBreakpoint, Service.DebugAddBreakpointRequest.newBuilder()
+    execute(asyncStub::debugAddBreakpoint, Service.DebugAddBreakpointRequest.newBuilder()
       .setPosition(position)
       .setSuspend(suspend)
       .setEvaluateAndLog(evaluateAndLog ?: "")
@@ -437,47 +424,47 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun debugRemoveBreakpoint(file: VirtualFile, line: Int) = executeTask {
-    execute(stub::debugRemoveBreakpoint, Service.SourcePosition.newBuilder()
+    execute(asyncStub::debugRemoveBreakpoint, Service.SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build())
   }
 
   fun debugCommandContinue() = executeTask {
-    execute(stub::debugCommandContinue, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandContinue, Empty.getDefaultInstance())
   }
 
   fun debugCommandPause() = executeTask {
-    execute(stub::debugCommandPause, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandPause, Empty.getDefaultInstance())
   }
 
   fun debugCommandStop() = executeTask {
-    execute(stub::debugCommandStop, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandStop, Empty.getDefaultInstance())
   }
 
   fun debugCommandStepOver() = executeTask {
-    execute(stub::debugCommandStepOver, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandStepOver, Empty.getDefaultInstance())
   }
 
   fun debugCommandStepInto() = executeTask {
-    execute(stub::debugCommandStepInto, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandStepInto, Empty.getDefaultInstance())
   }
 
   fun debugCommandForceStepInto() = executeTask {
-    execute(stub::debugCommandForceStepInto, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandForceStepInto, Empty.getDefaultInstance())
   }
 
   fun debugCommandStepOut() = executeTask {
-    execute(stub::debugCommandStepOut, Empty.getDefaultInstance())
+    execute(asyncStub::debugCommandStepOut, Empty.getDefaultInstance())
   }
 
   fun debugCommandRunToPosition(position: RSourcePosition) = executeTask {
-    execute(stub::debugCommandRunToPosition, Service.SourcePosition.newBuilder()
+    execute(asyncStub::debugCommandRunToPosition, Service.SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(position.file))
       .setLine(position.line)
       .build())
   }
 
   fun debugMuteBreakpoints(mute: Boolean) = executeTask {
-    execute(stub::debugMuteBreakpoints, BoolValue.of(mute))
+    execute(asyncStub::debugMuteBreakpoints, BoolValue.of(mute))
   }
   fun graphicsInit(properties: RGraphicsUtils.InitProperties, inMemory: Boolean): RIExecutionResult {
     val screenParametersMessage = buildScreenParametersMessage(properties.screenParameters)
@@ -533,9 +520,13 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   class HttpdResponse(val content: ByteArray, val url: String)
 
   fun httpdRequest(url: String): HttpdResponse? {
-    return executeWithCheckCancel(asyncStub::httpdRequest, StringValue.of(url))
-      .takeIf { it.success }
-      ?.let { HttpdResponse(it.content.toByteArray(), it.url) }
+    return try {
+      executeWithCheckCancel(asyncStub::httpdRequest, StringValue.of(url))
+        .takeIf { it.success }
+        ?.let { HttpdResponse(it.content.toByteArray(), it.url) }
+    } catch (e: RInteropTerminated) {
+      null
+    }
   }
 
   fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, screenParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
@@ -563,7 +554,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setPackageName(packageName)
       .putAllArguments(arguments)
       .build()
-    execute(stub::repoInstallPackage, request)
+    execute(asyncStub::repoInstallPackage, request)
   }
 
   fun repoAddLibraryPath(path: String): RIExecutionResult {
@@ -579,7 +570,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       .setPackageName(packageName)
       .setLibraryPath(libraryPath)
       .build()
-    execute(stub::repoRemovePackage, request)
+    execute(asyncStub::repoRemovePackage, request)
   }
 
   fun previewDataImport(options: Map<String, String>): RIExecutionResult {
@@ -599,7 +590,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     } catch (e: RequiredPackageException) {
        return rejectedPromise(e)
     }
-    return executeAsync(asyncStub::dataFrameRegister, ref.proto).toPromise(executor).then {
+    return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable {
       val index = it.value
       if (index == -1) {
         throw RDataFrameException("Invalid data frame")
@@ -608,7 +599,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         val persistentRef = RPersistentRef(index, this)
         Disposer.register(persistentRef, Disposable {
           dataFrameViewerCache.remove(index)
-          if (isAlive) execute(stub::dataFrameDispose, Int32Value.of(index))
+          if (isAlive) execute(asyncStub::dataFrameDispose, Int32Value.of(index))
         })
         val viewer = RDataFrameViewerImpl(persistentRef)
         viewer
@@ -622,7 +613,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   fun dataFrameGetData(ref: RRef, start: Int, end: Int): Promise<Service.DataFrameGetDataResponse> {
     val request = Service.DataFrameGetDataRequest.newBuilder().setRef(ref.proto).setStart(start).setEnd(end).build()
-    return executeAsync(asyncStub::dataFrameGetData, request).toPromise(executor)
+    return executeAsync(asyncStub::dataFrameGetData, request)
   }
 
   fun dataFrameSort(ref: RRef, sortKeys: List<RowSorter.SortKey>, disposableParent: Disposable? = null): RPersistentRef {
@@ -642,17 +633,29 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun findAllNamedArguments(function: RRef): List<String> {
-    return executeWithCheckCancel(asyncStub::findAllNamedArguments, function.proto).listList
+    return try {
+      executeWithCheckCancel(asyncStub::findAllNamedArguments, function.proto).listList
+    } catch (e: RInteropTerminated) {
+      emptyList()
+    }
   }
 
   fun getFormalArguments(function: RRef): List<String> {
-    return executeWithCheckCancel(asyncStub::getFormalArguments, function.proto).listList
+    return try {
+      executeWithCheckCancel(asyncStub::getFormalArguments, function.proto).listList
+    } catch (e: RInteropTerminated) {
+      emptyList()
+    }
   }
 
   fun getTableColumnsInfo(table: RRef): TableInfo {
-    val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
-    return executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
-      TableInfo(columnsList.map { TableManipulationColumn(it.name, it.type) }, TableType.toTableType(tableType))
+    return try {
+      val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
+      executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
+        TableInfo(columnsList.map { TableManipulationColumn(it.name, it.type) }, TableType.toTableType(tableType))
+      }
+    } catch (e: RInteropTerminated) {
+      TableInfo(emptyList(), TableType.UNKNOWN)
     }
   }
 
@@ -701,12 +704,15 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun clearEnvironment(env: RRef) {
-    executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
-    invalidateCaches()
+    try {
+      executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
+      invalidateCaches()
+    } catch (ignored: RInteropTerminated) {
+    }
   }
 
   fun getObjectSizes(refs: List<RRef>): List<Long> {
-    return execute(stub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
+    return execute(asyncStub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
@@ -725,20 +731,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
     }
     if (withCheckCancelled) {
-      while (true) {
-        try {
-          ProgressManager.checkCanceled()
-          promise.blockingGet(10)
-          break
-        } catch (ignored: TimeoutException) {
-        } catch (e: InterruptedException) {
-          promise.cancel(true)
-          throw ProcessCanceledException()
-        } catch (e: ProcessCanceledException) {
-          promise.cancel(true)
-          throw e
-        }
-      }
+      promise.getWithCheckCanceled()
     } else {
       promise.blockingGet(Int.MAX_VALUE)
     }
@@ -776,7 +769,10 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
       }
 
       override fun onError(t: Throwable?) {
-        reportIfCrash(t)
+        val e = t?.let { processError(it, methodDescriptor.fullMethodName) }
+        if (e is RInteropTerminated) {
+          consumer?.invoke(RBundle.message("rinterop.terminated"), ProcessOutputType.STDERR)
+        }
         promise.setResult(Unit)
       }
 
@@ -892,31 +888,37 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   private fun processAsyncEvents() {
-    val future = executeAsync(asyncStub::getNextAsyncEvent, Empty.getDefaultInstance())
-    future.addListener(Runnable {
-      try {
-        val event = future.get()
-        executeTask {
-          if (asyncProcessingStarted) {
-            processAsyncEvent(event)
-          } else {
-            asyncEventsBeforeStarted.add(event)
-          }
-          if (event.hasTermination()) {
-            heartbeatTimer.cancel()
-            terminationPromise.setResult(Unit)
-            asyncStub.quitProceed(Empty.getDefaultInstance())
-          }
+    executeAsync(asyncStub::getNextAsyncEvent, Empty.getDefaultInstance()).onSuccess { event ->
+      executeTask {
+        if (asyncProcessingStarted) {
+          processAsyncEvent(event)
+        } else {
+          asyncEventsBeforeStarted.add(event)
         }
-        if (event.hasTermination()) return@Runnable
-      } catch (ignored: CancellationException) {
-      } catch (e: ExecutionException) {
-        heartbeatTimer.cancel()
-        terminationPromise.setResult(Unit)
-        return@Runnable
+        if (event.hasTermination()) {
+          heartbeatTimer.cancel()
+          terminationPromise.setResult(Unit)
+          executeAsync(asyncStub::quitProceed, Empty.getDefaultInstance())
+        }
       }
-      processAsyncEvents()
-    }, MoreExecutors.directExecutor())
+      if (!event.hasTermination()) {
+        processAsyncEvents()
+      }
+    }.onError {
+      when (it) {
+        is CancellationException -> {
+          processAsyncEvents()
+        }
+        is RInteropRequestFailed -> {
+          LOG.error(it)
+          processAsyncEvents()
+        }
+        else -> {
+          heartbeatTimer.cancel()
+          terminationPromise.setResult(Unit)
+        }
+      }
+    }
   }
 
   private fun stackFromProto(proto: Service.StackFrameList,
@@ -940,7 +942,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         channel.shutdownNow()
         channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
         processHandler.waitFor(5000)
-        executor.shutdownNow()
+        executor.shutdown()
       } catch (ignored: TimeoutException) {
       } finally {
         processHandler.destroyProcess()
@@ -957,12 +959,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
               if (!processHandler.waitFor(2000)) {
                 processHandler.destroyProcess()
               }
-              executor.shutdownNow()
+              executor.shutdown()
             }
           } catch (e: ProcessCanceledException) {
             terminationPromise.setResult(Unit)
             processHandler.destroyProcess()
-            executor.shutdownNow()
+            executor.shutdown()
           }
         }
 
@@ -986,9 +988,33 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     }
   }
 
-  inner class Cached<T>(val f: () -> T) {
+  private fun processError(e: Throwable, methodName: String): Throwable {
+    (e as? ExecutionException)?.cause?.let { return processError(it, methodName) }
+    if (!isAlive) return RInteropTerminated()
+    if (e is StatusRuntimeException) {
+      val code = e.status.code
+      return if (code == Status.Code.UNAVAILABLE || code == Status.Code.INTERNAL) {
+        RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
+        terminationPromise.setResult(Unit)
+        RInteropTerminated()
+      } else {
+        RInteropRequestFailed(methodName, e)
+      }
+    }
+    return e
+  }
+
+  inner class Cached<T>(defaultValue: T? = null, val f: () -> T) {
+    private var previousValue = defaultValue ?: f()
     private val cached = object : AtomicClearableLazyValue<T>() {
-      override fun compute() = f()
+      override fun compute(): T {
+        if (!isAlive) return previousValue
+        return try {
+          f().also { previousValue = it }
+        } catch (e: RInteropTerminated) {
+          previousValue
+        }
+      }
     }
     private var cacheIndex = -1
 
@@ -1014,7 +1040,17 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
         if (cacheIndex < currentCacheIndex) {
           cacheIndex = currentCacheIndex
           currentPromise?.cancel()
-          currentPromise = f().onSuccess { cached = it }
+          val promise = AsyncPromise<T>().also { currentPromise = it }
+          f().onSuccess {
+            cached = it
+            promise.setResult(it)
+          }.onError {
+            if (it is RInteropTerminated) {
+              promise.setResult(cached)
+            } else {
+              promise.setError(it)
+            }
+          }
         }
         return cached
       }
@@ -1063,32 +1099,10 @@ internal fun <T> Future<T>.getWithCheckCanceled(cancelOnInterrupt: Boolean = tru
     } catch (e: ProcessCanceledException) {
       if (cancelOnInterrupt) cancel(true)
       throw e
+    } catch (e: ExecutionException) {
+      throw (e.cause as? RInteropException) ?: e
     }
   }
-}
-
-internal fun <T> ListenableFuture<T>.toPromise(executor: Executor): CancellablePromise<T> {
-  return this.then(executor) { it }
-}
-
-internal fun <T, R> ListenableFuture<T>.then(executor: Executor = MoreExecutors.directExecutor(), f: (T) -> R): CancellablePromise<R> {
-  val promise = object : AsyncPromise<R>() {
-    override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-      if (super.cancel(mayInterruptIfRunning)) {
-        this@then.cancel(mayInterruptIfRunning)
-        return true
-      }
-      return false
-    }
-  }
-  this.addListener(Runnable {
-    try {
-      promise.setResult(f(this.get()))
-    } catch (e: Throwable) {
-      promise.setError(e)
-    }
-  }, executor)
-  return promise
 }
 
 private val LOG = Logger.getInstance(RInteropUtil.javaClass)

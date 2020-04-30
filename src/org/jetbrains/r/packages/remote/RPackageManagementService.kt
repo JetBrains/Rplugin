@@ -249,12 +249,7 @@ class RPackageManagementService(private val project: Project,
 
     internal fun toErrorDescription(exception: ExecutionException?): ErrorDescription? {
       return exception?.let { e ->
-        if (e is RExecutionException) {
-          ErrorDescription(e.message ?: "Unknown error", e.command, e.stderr, null)
-        }
-        else {
-          ErrorDescription(e.message ?: "Unknown error", null, null, null)
-        }
+        ErrorDescription(e.message ?: "Unknown error", null, null, null)
       }
     }
 

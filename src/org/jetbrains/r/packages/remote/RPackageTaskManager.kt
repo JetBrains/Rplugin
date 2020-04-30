@@ -22,6 +22,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.rinterop.RInteropTerminated
 import java.util.concurrent.ConcurrentSkipListSet
 
 class RPackageTaskManager(
@@ -89,6 +90,11 @@ class RPackageTaskManager(
         catch (e: ExecutionException) {
           exceptions.add(e)
           taskNotify(action, e)
+        }
+        catch (e: RInteropTerminated) {
+          val exception = ExecutionException(RBundle.message("rinterop.terminated"))
+          exceptions.add(exception)
+          taskNotify(action, exception)
         }
       }
       taskFinished(exceptions)

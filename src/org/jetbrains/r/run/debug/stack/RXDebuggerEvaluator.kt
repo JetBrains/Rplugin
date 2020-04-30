@@ -14,9 +14,13 @@ import org.jetbrains.r.rinterop.RVar
 
 class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var parentDisposable: Disposable? = null) : XDebuggerEvaluator() {
   override fun evaluate(expression: String, callback: XEvaluationCallback, expressionPosition: XSourcePosition?) {
-    val resultPromise = RRef.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable)
-    resultPromise.onSuccess {
-      callback.evaluated(RXVar(RVar(expression, it, it.getValueInfo()), stackFrame).also { setObjectSizes(listOf(it), stackFrame) })
+    RRef.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable).onSuccess {
+      it.getValueInfoAsync().onSuccess { rValue ->
+        callback.evaluated(RXVar(RVar(expression, it, rValue), stackFrame)
+                             .also { rxVar -> setObjectSizes(listOf(rxVar), stackFrame) })
+      }.onError {
+        callback.errorOccurred("")
+      }
     }.onError {
       if (it is RDebuggerException) {
         callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { msg -> msg.isNotBlank() } ?: "Error")

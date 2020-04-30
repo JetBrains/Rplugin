@@ -33,7 +33,8 @@ fun <T, R> CancellablePromise<T>.thenCancellable(f: (T) -> R): CancellablePromis
       result.setError(e)
     }
   }.onError { result.setError(it) }
-  return result.onError { if (this.isPending) this.cancel() }
+  result.onError { if (this.isPending) this.cancel() }
+  return result
 }
 
 fun <T, R> CancellablePromise<T>.thenAsyncCancellable(f: (T) -> CancellablePromise<R>): CancellablePromise<R> {
@@ -53,11 +54,12 @@ fun <T, R> CancellablePromise<T>.thenAsyncCancellable(f: (T) -> CancellablePromi
         promise.cancel()
       }
     }
-  return result.onError {
+  result.onError {
     if (secondPromise.compareAndSet(null, result)) {
       this.cancel()
     } else {
       secondPromise.get()?.cancel()
     }
   }
+  return result
 }
