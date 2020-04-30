@@ -581,7 +581,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   }
 
   fun commitDataImport(variableName: String) {
-    execute(stub::commitDataImport, StringValue.of(variableName))
+    execute(asyncStub::commitDataImport, StringValue.of(variableName))
   }
 
   fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {
