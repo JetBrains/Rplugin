@@ -5,11 +5,14 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
@@ -162,15 +165,22 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
           currentOptions = options
         }
         .onError { e ->
-          LOGGER.error("Unable to update preview", e)
+          LOGGER.warn("Unable to update preview", e)
           previewer.closePreview()
           currentOptions = null
+          showErrorDialog()
         }
         .onProcessed {
           form.optionPanel.setEnabledRecursively(true)
           form.topPanel.setEnabledRecursively(true)
           updateOkAction()
         }
+    }
+  }
+
+  private fun showErrorDialog() {
+    invokeLater(ModalityState.stateForComponent(form.contentPane)) {
+      Messages.showErrorDialog(PREVIEW_FAILURE_DESCRIPTION, PREVIEW_FAILURE_TITLE)
     }
   }
 
@@ -185,21 +195,21 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
   private fun preparePreviewRefAsync(options: Map<String, String>): Promise<Pair<RRef, Int>> {
     return runAsync {
       val result = interop.previewDataImport(options)
-      val errorCount = parseErrorCount(result.stdout)
+      val errorCount = parseErrorCount(result.stdout, result.stderr)
       val ref = RRef.expressionRef(PREVIEW_DATA_VARIABLE_NAME, interop)
       Pair(ref, errorCount)
     }
   }
 
-  private fun parseErrorCount(output: String): Int {
+  private fun parseErrorCount(output: String, error: String): Int {
     if (output.isBlank()) {
-      throw RuntimeException("Cannot get any output from interop")
+      throw RuntimeException("Cannot get any output from interop\nStderr was: '$error'")
     }
     // Note: expected format
     //  - for failure: "NULL"
     //  - for success: "[1] errorCount\n"
     if (output == "NULL" || output.length < 6 || !output.startsWith("[1]")) {
-      throw RuntimeException("Failed to preview data import. Output was: '$output'")
+      throw RuntimeException("Failed to preview data import.\nStdout was: '$output'\nStderr was: '$error'")
     }
     return output.substring(4, output.length - 1).toInt()
   }
@@ -402,6 +412,9 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
     private val PROJECT_DIRECTORY_HINT = RBundle.message("import.data.dialog.project.directory.hint")
     private val INVALID_NAME_INPUT_MESSAGE = RBundle.message("import.data.dialog.invalid.name.input.message")
     private val INVALID_INTEGER_INPUT_MESSAGE = RBundle.message("import.data.dialog.invalid.integer.input.message")
+
+    private val PREVIEW_FAILURE_TITLE = RBundle.message("import.data.dialog.preview.failure.title")
+    private val PREVIEW_FAILURE_DESCRIPTION = RBundle.message("import.data.dialog.preview.failure.description")
 
     private val OPEN_FILE_TEXT = RBundle.message("import.data.dialog.preview.open.file")
     private val FILE_CHOOSER_TITLE = RBundle.message("import.data.dialog.file.chooser.title")
