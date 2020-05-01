@@ -40,7 +40,7 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KProperty
 
-class RImportCsvDataDialog(private val project: Project, private val interop: RInterop, parent: Disposable)
+class RImportCsvDataDialog(private val project: Project, private val interop: RInterop, parent: Disposable, initialPath: String? = null)
   : DialogWrapper(project, null, true, IdeModalityType.IDE, false)
 {
   private val fileInputField = TextFieldWithBrowseButton {
@@ -72,6 +72,7 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
   private var filePath: String? = null
     set(path) {
       field = path
+      updateVariableName()
       fileInputField.text = path?.beautifyPath() ?: ""
       updatePreviewAsync()
     }
@@ -97,7 +98,7 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
     setupInputControls()
     setupPreviewComponent()
     removeMarginsIfPossible()
-    updateOkAction()
+    filePath = initialPath
   }
 
   override fun createCenterPanel(): JComponent? {
@@ -144,6 +145,10 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
     }
   }
 
+  private fun updateVariableName() {
+    variableName = filePath?.let { File(it).nameWithoutExtension } ?: DEFAULT_VARIABLE_NAME
+  }
+
   @Synchronized
   private fun updatePreviewAsync() {
     updateOkAction()
@@ -160,7 +165,6 @@ class RImportCsvDataDialog(private val project: Project, private val interop: RI
       updateOkAction()
       prepareViewerAsync(options)
         .onSuccess { (viewer, errorCount) ->
-          variableName = File(filePath!!).nameWithoutExtension
           previewer.showPreview(viewer, errorCount)
           currentOptions = options
         }
