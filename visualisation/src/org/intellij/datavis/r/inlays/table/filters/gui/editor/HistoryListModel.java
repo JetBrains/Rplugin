@@ -22,10 +22,10 @@ import java.util.List;
  */
 class HistoryListModel extends AbstractListModel {
     private static final long serialVersionUID = -374115548677017807L;
-    private List<Object> history = new ArrayList<Object>();
+    private final List<Object> history = new ArrayList<>();
     private List<Object> shownHistory = history;
     private Object lastAdded;
-    private Comparator stringComparator;
+    private Comparator<String> stringComparator;
     private int maxHistory;
 
     /**  Initializes the model to a specific history content */
@@ -41,7 +41,7 @@ class HistoryListModel extends AbstractListModel {
     
     /** Returns the items currently visible */
     public List<Object> getShownHistory(){
-    	return new ArrayList<Object>(shownHistory);
+    	return new ArrayList<>(shownHistory);
     }
 
     /**
@@ -69,7 +69,7 @@ class HistoryListModel extends AbstractListModel {
         int index = shownHistory.indexOf(exclude);
         if (index != -1) {
             if (shownHistory == history) {
-                shownHistory = new ArrayList<Object>(history);
+                shownHistory = new ArrayList<>(history);
             }
 
             shownHistory.remove(index);
@@ -143,9 +143,7 @@ class HistoryListModel extends AbstractListModel {
 
         int current = history.size();
         if (current > size) {
-            for (int i = current - 1; i >= size; i--) {
-                history.remove(i);
-            }
+            history.subList(size, current).clear();
 
             shownHistory = history;
             fireContentsChanged(this, maxHistory, current);
