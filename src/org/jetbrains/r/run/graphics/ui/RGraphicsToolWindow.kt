@@ -74,17 +74,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun refresh(normal: List<RSnapshot>) {
     if (normal.isNotEmpty()) {
-      val loadedNumber = loadSnapshotNumber()
-      lastIndex = if (loadedNumber != null) {
-        val suggested = normal.indexOfFirst { it.number == loadedNumber }
-        if (suggested >= 0) {
-          suggested
-        } else {
-          normal.lastIndex
-        }
-      } else {
-        normal.lastIndex
-      }
+      lastIndex = suggestSnapshotIndex(normal)
       lastNormal = normal
       showCurrent()
     } else {
@@ -93,6 +83,16 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     postSnapshotNumber()
     if (isAutoResizeEnabled) {
       postScreenDimension()
+    }
+  }
+
+  private fun suggestSnapshotIndex(normal: List<RSnapshot>): Int {
+    return suggestSnapshotIndexOrNull(normal)?.takeIf { it in normal.indices } ?: normal.lastIndex
+  }
+
+  private fun suggestSnapshotIndexOrNull(normal: List<RSnapshot>): Int? {
+    return loadSnapshotNumber()?.let { number ->
+      normal.indexWith(number) ?: lastNormal.indexWith(number)
     }
   }
 
@@ -282,6 +282,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       if (!file.exists() && !file.createNewFile()) {
         throw RuntimeException(RBundle.message("graphics.panel.file.saver.failure.details"))
       }
+    }
+
+    private fun List<RSnapshot>.indexWith(number: Int): Int? {
+      return indexOfLast { it.number == number }.takeIf { it >= 0 }
     }
   }
 }
