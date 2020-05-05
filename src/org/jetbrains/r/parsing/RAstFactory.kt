@@ -14,7 +14,6 @@ import com.intellij.psi.impl.source.tree.PsiCommentImpl
 import com.intellij.psi.impl.source.tree.injected.CommentLiteralEscaper
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.parsing.RElementTypes.R_NL
 import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.roxygen.RoxygenCommentPlaceholder
 
@@ -35,9 +34,9 @@ class RAstFactory : DefaultASTFactoryImpl() {
   }
 
   override fun createLeaf(type: IElementType, text: CharSequence): LeafElement {
-    if (type == R_NL) {
-      return RNextLinePsiWhiteSpace(type, text)
-    }
+//    if (type == R_NL) {
+//      return RNextLinePsiWhiteSpace(type, text)
+//    }
     return super.createLeaf(type, text)
   }
 

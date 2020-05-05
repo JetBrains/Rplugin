@@ -188,7 +188,6 @@ class RExtractMethodTest : RUsefulTestCase() {
       |1 + <selection>2 * 3</selection>
     """.trimMargin(), """
       |foo <- function() 2 * 3
-      |
       |1 + foo()
     """.trimMargin())
   }
@@ -198,7 +197,6 @@ class RExtractMethodTest : RUsefulTestCase() {
       |f <- function(x = <selection>4</selection>) x * 2
     """.trimMargin(), """
       |foo <- function() 4
-      |
       |f <- function(x = foo()) x * 2
     """.trimMargin())
   }

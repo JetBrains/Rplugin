@@ -6,7 +6,6 @@ import com.intellij.lang.TokenSeparatorGenerator
 import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.tree.Factory
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.api.RExpression
 
 class RTokenSeparatorGenerator : TokenSeparatorGenerator {
@@ -20,7 +19,7 @@ class RTokenSeparatorGenerator : TokenSeparatorGenerator {
       val leftPrevAncestor = PsiTreeUtil.findPrevParent(commonParent, left.psi)
       val rightPrevAncestor = PsiTreeUtil.findPrevParent(commonParent, right.psi)
       if (leftPrevAncestor is RExpression && rightPrevAncestor is RExpression) {
-        return Factory.createSingleLeafElement(RElementTypes.R_NL, "\n", 0, 1, null, right.treeParent.psi.manager)
+        return Factory.createSingleLeafElement(TokenType.WHITE_SPACE, "\n", 0, 1, null, right.treeParent.psi.manager)
       }
     }
     return null

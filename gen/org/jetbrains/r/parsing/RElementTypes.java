@@ -104,7 +104,6 @@ public interface RElementTypes {
   IElementType R_NA_INTEGER_ = new RElementType("NA_integer_");
   IElementType R_NA_REAL_ = new RElementType("NA_real_");
   IElementType R_NEXT = new RElementType("next");
-  IElementType R_NL = new RElementType("nl");
   IElementType R_NOT = new RElementType("!");
   IElementType R_NOTEQ = new RElementType("!=");
   IElementType R_NULL = new RElementType("NULL");

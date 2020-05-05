@@ -26,10 +26,6 @@ private val completionContext = TokenSet.create(
   MARKDOWN_EOL,
 
   RParserDefinition.END_OF_LINE_COMMENT,
-  RParserDefinition.SPACE,
-  RParserDefinition.TAB,
-  RParserDefinition.FORMFEED,
-  RElementTypes.R_NL,
   RElementTypes.R_SEMI,
 
   RElementTypes.R_LBRACE,

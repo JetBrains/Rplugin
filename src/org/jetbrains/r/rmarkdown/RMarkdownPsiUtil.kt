@@ -41,7 +41,7 @@ object RMarkdownPsiUtil {
     HEADER_LEVEL_6_SET)
 
   fun isSpace(node: ASTNode): Boolean {
-    return FormatterUtil.isWhitespaceOrEmpty(node) || node.elementType == RElementTypes.R_NL || node.elementType == MARKDOWN_EOL
+    return FormatterUtil.isWhitespaceOrEmpty(node) || node.elementType == MARKDOWN_EOL
   }
 
   fun getExecutableFenceLanguage(fullFenceHeader: CharSequence): String? {

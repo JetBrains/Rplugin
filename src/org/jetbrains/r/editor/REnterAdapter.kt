@@ -15,6 +15,7 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.editor.formatting.R_SPACE_TOKENS
+import org.jetbrains.r.editor.formatting.findPrevNonSpaceNode
 import org.jetbrains.r.parsing.RElementTypes
 
 private val R_CLOSE_PAIRS = TokenSet.create(
@@ -41,21 +42,8 @@ class REnterAdapter : EnterHandlerDelegateAdapter() {
     val brackets = element.parent ?: return false
     val content = brackets.node.findChildByType(R_OPEN_PAIRS)?.psi?.nextSibling ?: return false
     if (R_CLOSE_PAIRS.contains(element.elementType)) {
-      val prevElementType = element.prevSibling?.elementType
+      val prevElementType = findPrevNonSpaceNode(element.node)?.elementType
       if (prevElementType != RElementTypes.R_EMPTY_EXPRESSION && prevElementType != TokenType.ERROR_ELEMENT) return false
-    } else {
-      val noBracketNadErrorInTheEnd = element.elementType == RElementTypes.R_NL &&
-                                      brackets.lastChild?.elementType == TokenType.ERROR_ELEMENT &&
-                                      brackets.lastChild?.textOffset == file.textLength
-      if (!noBracketNadErrorInTheEnd) return false
-      var cur: PsiElement? = element
-      while (cur != null) {
-        if (!R_SPACE_TOKENS.contains(cur.elementType) &&
-            cur.elementType != TokenType.ERROR_ELEMENT &&
-            cur.elementType != RElementTypes.R_EMPTY_EXPRESSION)
-          return false
-        cur = cur.nextSibling
-      }
     }
     val contentIndent = calculateIndent(content, editor)
 

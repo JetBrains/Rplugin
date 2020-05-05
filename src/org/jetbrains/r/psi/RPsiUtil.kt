@@ -5,10 +5,8 @@
 package org.jetbrains.r.psi
 
 import com.google.common.collect.Lists
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiReference
+import com.intellij.lang.ASTNode
+import com.intellij.psi.*
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -17,7 +15,6 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RAssignmentStatementImpl
 import org.jetbrains.r.psi.stubs.RParameterStub
 import org.jetbrains.r.skeleton.psi.RSkeletonBase
-import java.util.regex.Pattern
 
 
 object RPsiUtil {
@@ -140,6 +137,9 @@ object RPsiUtil {
     val end = comment.indexOfLast { it != '-' && it != '=' && it != '#' }.takeIf { it != -1 } ?: return "Untitled"
     return comment.substring(start, end + 1).trim()
   }
+
+  fun isWhitespaceWithNL(psi: PsiElement): Boolean = isWhitespaceWithNL(psi.node)
+  fun isWhitespaceWithNL(node: ASTNode): Boolean = node.elementType == TokenType.WHITE_SPACE && node.textContains('\n')
 }
 
 val RIdentifierExpression.isInsideSubscription: Boolean

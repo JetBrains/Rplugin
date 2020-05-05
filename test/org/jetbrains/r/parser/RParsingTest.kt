@@ -134,6 +134,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testRawString() = doTest()
 
+  fun testCorrectNewLines() = doTest()
+
   //----------Syntax error tests-----------
   fun testErrorFor() = doTest()
 
@@ -170,6 +172,8 @@ class RParsingTest : RUsefulTestCase() {
   fun testUnclosedSingleQuotedString() = doTest()
 
   fun testUnclosedDoubleQuotedString() = doTest()
+
+  fun testIncorrectNewLines() = doTest()
 
   //---------------------------------------
   private fun doTest() {

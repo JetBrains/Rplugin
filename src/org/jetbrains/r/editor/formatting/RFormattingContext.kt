@@ -8,14 +8,15 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import com.intellij.psi.tree.ILazyParseableElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.util.containers.FactoryMap
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
 private val NON_INDENT_PARTS = TokenSet.create(
@@ -28,10 +29,6 @@ private val NON_INDENT_PARTS = TokenSet.create(
 
 val R_SPACE_TOKENS = TokenSet.create(
   TokenType.WHITE_SPACE,
-  RElementTypes.R_NL,
-  RParserDefinition.FORMFEED,
-  RParserDefinition.SPACE,
-  RParserDefinition.TAB,
   RParserDefinition.END_OF_LINE_COMMENT
 )
 
@@ -95,8 +92,8 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   }
 
   private fun isCommentAtEmptyLine(node: ASTNode) =
-    (node.elementType == RParserDefinition.END_OF_LINE_COMMENT && findPrevNonSpaceNode(
-      node)?.elementType == RElementTypes.R_NL)
+    node.elementType == RParserDefinition.END_OF_LINE_COMMENT &&
+    node.treePrev?.let { RPsiUtil.isWhitespaceWithNL(it) } ?: false
 
   private fun findFirstCommentAfterComma(start: ASTNode?): ASTNode? {
     var current: ASTNode? = start
@@ -132,28 +129,42 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   private fun findFirstAssignmentInTable(start: ASTNode): ASTNode {
     var current: ASTNode? = start
     var answer: ASTNode = start
-    var nlSeen = false
     while (current != null) {
       if (current.firstChildNode != null) {
-        nlSeen = false
         if (current.elementType == RElementTypes.R_ASSIGNMENT_STATEMENT && !isFunctionDeclarationNode(current)) {
           answer = current
         } else {
           return answer
         }
       }
-      if (current.elementType == RElementTypes.R_NL) {
-        if (nlSeen) {
+
+      if (RPsiUtil.isWhitespaceWithNL(current)) {
+        if (current.text.count { it == '\n' } > 1) {
           return answer
         }
-        nlSeen = true
       }
       current = current.treePrev
     }
     return answer
   }
 
-  fun computeSpacing(parent: Block, child1: Block?, child2: Block): Spacing? = spacingBuilder.getSpacing(parent, child1, child2)
+  fun computeSpacing(parent: Block, child1: Block?, child2: Block): Spacing? {
+    return computeComplexSpacing(child1, child2) ?: spacingBuilder.getSpacing(parent, child1, child2)
+  }
+
+  private fun computeComplexSpacing(child1: Block?,
+                                    child2: Block): Spacing? {
+    val node1 = (child1 as? RFormatterBlock)?.node ?: return null
+    val node2 = (child2 as? RFormatterBlock)?.node ?: return null
+    if (isBigFunctionDeclaration(node1) || isBigFunctionDeclaration(node2)) {
+      val common = settings.getCommonSettings(RLanguage.INSTANCE)
+      return Spacing.createSpacing(0, 0, 2, false, common.KEEP_BLANK_LINES_IN_CODE)
+    }
+    return null
+  }
+
+  private fun isBigFunctionDeclaration(node1: ASTNode?) =
+    (node1?.psi as? RAssignmentStatement)?.isFunctionDeclaration == true && node1.textContains('\n')
 
   fun computeNewChildIndent(node: ASTNode): Indent {
     return when {
@@ -167,19 +178,6 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
   fun computeWrap(node: ASTNode): Wrap {
     val wrapType: WrapType = if (isRightExprInOpChain(node.psi)) WrapType.ALWAYS else WrapType.NONE
     return Wrap.createWrap(wrapType, true)
-  }
-
-  fun isIncomplete(node: ASTNode): Boolean {
-    if (node.elementType is ILazyParseableElementType) {
-      return false
-    }
-    var lastChild: ASTNode? = node.lastChildNode
-    while (lastChild != null &&
-           lastChild.elementType !is ILazyParseableElementType &&
-           (lastChild.psi is PsiWhiteSpace || lastChild.psi is PsiComment)) {
-      lastChild = lastChild.treePrev
-    }
-    return lastChild != null && (lastChild.psi is PsiErrorElement || isIncomplete(lastChild))
   }
 
   fun computeBlockIndent(node: ASTNode): Indent? {

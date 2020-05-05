@@ -17,7 +17,6 @@ class RInlineInRMarkdownTest : RUsefulTestCase() {
       ```
     """.trimIndent(), """
       ```{r}
-      
       10 + 10 + (10 + 10) * (10 + 10)
       ```
     """.trimIndent())
@@ -74,7 +73,6 @@ class RInlineInRMarkdownTest : RUsefulTestCase() {
       ```  
     """.trimIndent(), """
       ```{r}
-      
       10 + 5
       ```
       
@@ -98,7 +96,6 @@ class RInlineInRMarkdownTest : RUsefulTestCase() {
       ```  
     """.trimIndent(),"""
       ```{r}
-      
       10 + 4
       ```
       

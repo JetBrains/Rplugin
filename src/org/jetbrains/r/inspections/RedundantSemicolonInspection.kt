@@ -13,6 +13,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.RVisitor
 
 /**
@@ -29,17 +30,13 @@ class RedundantSemicolonInspection : RInspection() {
     override fun visitElement(element: PsiElement) {
       if (element.elementType != RElementTypes.R_SEMI) return
       var nextSibling = element.nextSibling
-      while (nextSibling is PsiWhiteSpace  && !isNextLine(nextSibling) || nextSibling is PsiComment) {
+      while (nextSibling is PsiWhiteSpace && !RPsiUtil.isWhitespaceWithNL(nextSibling) || nextSibling is PsiComment) {
         nextSibling = nextSibling.nextSibling
       }
-      if (nextSibling != null && !isNextLine(nextSibling)) return
+      if (nextSibling != null && !RPsiUtil.isWhitespaceWithNL(nextSibling)) return
       myProblemHolder.registerProblem(element, RBundle.message("inspection.redundant.semicolon.description"),
                                       ProblemHighlightType.LIKE_UNUSED_SYMBOL, RedundantSemicolonQuickFix)
     }
-  }
-
-  private fun isNextLine(element: PsiElement): Boolean {
-    return element is PsiWhiteSpace && element.textContains('\n')
   }
 
   private object RedundantSemicolonQuickFix : LocalQuickFix {

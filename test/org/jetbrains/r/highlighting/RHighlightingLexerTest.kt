@@ -221,24 +221,24 @@ class RHighlightingLexerTest : TestCase() {
   }
 
   fun testAssignment() {
-    doTest("a <- 42\n", "identifier", "SPACE", "<-", "SPACE", "NUMERIC", "nl")
+    doTest("a <- 42\n", "identifier", "WHITE_SPACE", "<-", "WHITE_SPACE", "NUMERIC", "WHITE_SPACE")
   }
 
 
   fun testAssignmentComment() {
-    doTest("A <- a * 2  # R is case sensitive\n", "identifier", "SPACE", "<-", "SPACE", "identifier", "SPACE", "*", "SPACE", "NUMERIC",
-           "SPACE", "END_OF_LINE_COMMENT", "nl")
+    doTest("A <- a * 2  # R is case sensitive\n", "identifier", "WHITE_SPACE", "<-", "WHITE_SPACE", "identifier", "WHITE_SPACE", "*", "WHITE_SPACE", "NUMERIC",
+           "WHITE_SPACE", "END_OF_LINE_COMMENT", "WHITE_SPACE")
   }
 
 
   fun testPrintFunction() {
-    doTest("print(a)\n", "identifier", "(", "identifier", ")", "nl")
+    doTest("print(a)\n", "identifier", "(", "identifier", ")", "WHITE_SPACE")
   }
 
 
   fun testCat() {
-    doTest("cat(A, \"\\n\") # \"84\" is concatenated with \"\\n\"\n", "identifier", "(", "identifier", ",", "SPACE", "STRING", ")", "SPACE",
-           "END_OF_LINE_COMMENT", "nl")
+    doTest("cat(A, \"\\n\") # \"84\" is concatenated with \"\\n\"\n", "identifier", "(", "identifier", ",", "WHITE_SPACE", "STRING", ")", "WHITE_SPACE",
+           "END_OF_LINE_COMMENT", "WHITE_SPACE")
   }
 
 
@@ -248,8 +248,8 @@ class RHighlightingLexerTest : TestCase() {
 
 
   fun testDoubleBracketsSeparated() {
-    doTest("return(invisible(dll_list[[ seq_along(dll_list)[ind] ]]))", "identifier", "(", "identifier", "(", "identifier", "[[", "SPACE",
-           "identifier", "(", "identifier", ")", "[", "identifier", "]", "SPACE", "]]", ")", ")")
+    doTest("return(invisible(dll_list[[ seq_along(dll_list)[ind] ]]))", "identifier", "(", "identifier", "(", "identifier", "[[", "WHITE_SPACE",
+           "identifier", "(", "identifier", ")", "[", "identifier", "]", "WHITE_SPACE", "]]", ")", ")")
   }
 
   fun testIf() {
@@ -259,8 +259,8 @@ class RHighlightingLexerTest : TestCase() {
           cat(A, ">", a, "\n")
         }
       """.trimIndent(),
-           "if", "(", "identifier", ">", "identifier", ")", "SPACE", "END_OF_LINE_COMMENT", "nl", "{", "nl", "SPACE", "identifier",
-           "(", "identifier", ",", "SPACE", "STRING", ",", "SPACE", "identifier", ",", "SPACE", "STRING", ")", "nl", "}")
+           "if", "(", "identifier", ">", "identifier", ")", "WHITE_SPACE", "END_OF_LINE_COMMENT", "WHITE_SPACE", "{", "WHITE_SPACE", "identifier",
+           "(", "identifier", ",", "WHITE_SPACE", "STRING", ",", "WHITE_SPACE", "identifier", ",", "WHITE_SPACE", "STRING", ")", "WHITE_SPACE", "}")
   }
 
   private fun doTest(text: String, vararg expectedTokens: String) {

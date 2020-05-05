@@ -64,6 +64,7 @@ class FormatterTest : RUsefulTestCase() {
       xxx <- 10# One space required
       y <- 20   # Do not touch spaces
         # Shift comment!
+      
       z <- function(param1,  # Do not touch spaces
                     # Leave here
                     p2       # Do not touch spaces
@@ -76,6 +77,7 @@ class FormatterTest : RUsefulTestCase() {
       xxx <- 10 # One space required
       y <- 20   # Do not touch spaces
       # Shift comment!
+      
       z <- function(param1,  # Do not touch spaces
                     # Leave here
                     p2       # Do not touch spaces
@@ -408,6 +410,39 @@ class FormatterTest : RUsefulTestCase() {
             c
       }
     """) { common.ALIGN_MULTILINE_PARAMETERS = false }
+  }
+
+  fun testInsertBlankLineAroundFunction() {
+    doTest("""
+      f1 <- function() {
+        10
+      }
+      f2 <- function() {
+        10
+      }
+      x <- 10
+      small <- function() 10
+      y <- 20
+      f3 <- function() {
+        10
+      }
+    """, """
+      f1 <- function() {
+        10
+      }
+      
+      f2 <- function() {
+        10
+      }
+      
+      x <- 10
+      small <- function() 10
+      y <- 20
+      
+      f3 <- function() {
+        10
+      }
+    """)
   }
 
   fun testMaximumBlankLinesInExpression() {

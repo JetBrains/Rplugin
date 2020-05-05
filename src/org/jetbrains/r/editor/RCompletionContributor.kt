@@ -315,9 +315,6 @@ class RCompletionContributor : CompletionContributor() {
         },
         R_ELSE to { element ->
           var sibling: PsiElement? = PsiTreeUtil.skipWhitespacesAndCommentsBackward(element)
-          while (sibling?.elementType == R_NL) {
-            sibling = PsiTreeUtil.skipWhitespacesAndCommentsBackward(sibling)
-          }
           sibling is RIfStatement && !sibling.node.getChildren(null).any { it.elementType == R_ELSE }
         }
       )

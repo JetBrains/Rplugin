@@ -3,6 +3,7 @@
 package org.jetbrains.r.lexer;
 
 import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import java.util.Stack;
 import org.jetbrains.r.parsing.RElementTypes;
@@ -82,12 +83,9 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 %%
 
 <YYINITIAL> {
-[\n]                        { return R_NL; }
 {ROXYGEN_COMMENT}           { return ROXYGEN_COMMENT; }
 {END_OF_LINE_COMMENT}       { return END_OF_LINE_COMMENT; }
-[\ ]                        { return SPACE; }
-[\t]                        { return TAB; }
-[\f]                        { return FORMFEED; }
+[\ \t\f\n]                  { return TokenType.WHITE_SPACE; }
 
 // logical constants
 "TRUE"                      { return R_TRUE; }

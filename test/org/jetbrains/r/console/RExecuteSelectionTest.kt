@@ -158,11 +158,11 @@ class RExecuteSelectionTest : RUsefulTestCase() {
   }
 
   fun testIf() {
-    doTest("if { print(1)<caret>\n print(2)\n print(3)\n}","if { print(1)\n print(2)\n print(3)\n}")
+    doTest("if(T) { print(1)<caret>\n print(2)\n print(3)\n}","if(T) { print(1)\n print(2)\n print(3)\n}")
   }
 
   fun testInsideIf() {
-    doTest("if { print(1)\n print(2)<caret>\n print(3)\n}","print(2)")
+    doTest("if(T) { print(1)\n print(2)<caret>\n print(3)\n}","print(2)")
   }
 
   // Discussable behaviour

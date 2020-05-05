@@ -13,11 +13,10 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.parsing.RElementTypes
+import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
 internal object REditorActionUtil {
@@ -125,7 +124,7 @@ internal object REditorActionUtil {
         parent = next.parent
         next = next.nextSibling
       }
-      if (next.elementType == RElementTypes.R_NL) {
+      if (RPsiUtil.isWhitespaceWithNL(next)) {
         return result
       }
       val executeUnit = findExecuteUnit(next)
