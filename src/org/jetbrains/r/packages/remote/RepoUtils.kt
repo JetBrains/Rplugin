@@ -193,7 +193,7 @@ object RepoUtils {
     val urls = repoUrls.map { trimRepoUrlSuffix(it) }
 
     // Ensure writable library path exists => interpreter won't ask during package installation
-    val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter)
+    val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter.libraryPaths, interpreter.userLibraryPath)
 
     val fallbackMethod = getFallbackDownloadMethod()
     val arguments = getInstallArguments(urls, libraryPath)
@@ -250,23 +250,23 @@ object RepoUtils {
   }
 
   // Note: returns pair of writable path and indicator whether new library path was created
-  private fun getGuaranteedWritableLibraryPath(interpreter: RInterpreter): Pair<String, Boolean> {
-    val writable = findWritableLibraryPath(interpreter)
+  fun getGuaranteedWritableLibraryPath(libraryPaths: List<VirtualFile>, userPath: String): Pair<String, Boolean> {
+    val writable = findWritableLibraryPath(libraryPaths)
     return if (writable != null) {
       Pair(writable, false)
     } else {
-      tryCreateUserLibraryPath(interpreter)
+      tryCreateUserLibraryPath(userPath)
     }
   }
 
-  private fun findWritableLibraryPath(interpreter: RInterpreter): String? {
-    return interpreter.libraryPaths.find { it.isWritable }?.path?.let { path ->
+  private fun findWritableLibraryPath(libraryPaths: List<VirtualFile>): String? {
+    return libraryPaths.find { it.isWritable }?.path?.let { path ->
       FileUtil.toSystemIndependentName(path)
     }
   }
 
-  private fun tryCreateUserLibraryPath(interpreter: RInterpreter): Pair<String, Boolean> {
-    val path = FileUtil.toSystemIndependentName(interpreter.userLibraryPath)
+  private fun tryCreateUserLibraryPath(userPath: String): Pair<String, Boolean> {
+    val path = FileUtil.toSystemIndependentName(userPath)
     return Pair(path, File(path).mkdirs())
   }
 

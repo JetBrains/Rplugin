@@ -30,6 +30,7 @@ import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RSkeletonUtil
+import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -56,7 +57,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private val updateEpoch = AtomicInteger(0)
 
   override val interop: RInterop
-    get() = getConsoleForInterpreter(this, project).rInterop
+    get() = getConsole(project).rInterop
 
   override val skeletonRoots: Set<VirtualFile>
     get() {
@@ -133,12 +134,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     name2PsiFile.clear()
     val installedPackages = loadInstalledPackages()
     val name2installedPackages = installedPackages.asSequence().map { it.packageName to it }.toMap()
-    val libraryPaths = loadLibraryPaths()
+    val (libraryPaths, userPath) = loadPaths()
     val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
     val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
     state = State(libraryPaths, skeletonPaths, skeletonRoots, makeExpiring(installedPackages), name2installedPackages,
-                  name2libraryPaths, getUserPath())
+                  name2libraryPaths, userPath)
   }
 
   private fun <E>makeExpiring(values: List<E>): ExpiringList<E> {
@@ -146,6 +147,19 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     return ExpiringList(values) {
       usedUpdateEpoch < updateEpoch.get() || interpreterPath != RInterpreterManager.getInstance(project).interpreterPath
     }
+  }
+
+  private fun loadPaths(): Pair<List<VirtualFile>, String> {
+    val libraryPaths = loadLibraryPaths().toMutableList()
+    val userPath = getUserPath()
+    val (_, isUserDirectoryCreated) = RepoUtils.getGuaranteedWritableLibraryPath(libraryPaths, userPath)
+    if (isUserDirectoryCreated) {
+      interop.repoAddLibraryPath(userPath)
+      findVirtualFile(userPath)?.let { vf ->
+        libraryPaths.add(vf)
+      }
+    }
+    return Pair(libraryPaths, userPath)
   }
 
   private fun getUserPath(): String {
@@ -169,7 +183,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private fun loadLibraryPaths(): List<VirtualFile> {
     val lines = runHelper(LIBRARY_PATHS_HELPER)
     val paths = lines.filter { it.isNotBlank() }
-    return paths.mapNotNull { VfsUtil.findFileByIoFile(File(it), true) }.toList().also {
+    return paths.mapNotNull { findVirtualFile(it) }.toList().also {
       if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
     }
   }
@@ -259,15 +273,10 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       return null
     }
 
-    private fun getConsoleForInterpreter(interpreter: RInterpreter, project: Project): RConsoleView {
-      val current = RConsoleManager.getInstance(project).currentConsoleOrNull
-      return if (current != null && current.interpreterPath == interpreter.interpreterPath) {
-        current
-      } else {
-        RConsoleManager.runConsole(project)
-          .onError { LOG.error("Cannot run new console for interpreter", it) }
-          .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
-      }
+    private fun getConsole(project: Project): RConsoleView {
+      return RConsoleManager.getInstance(project).currentConsoleAsync
+               .onError { LOG.error("Cannot run new console for interpreter", it) }
+               .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
     }
 
     private fun String.expandTilde(): String {
@@ -276,6 +285,10 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       } else {
         this
       }
+    }
+
+    private fun findVirtualFile(path: String): VirtualFile? {
+      return VfsUtil.findFileByIoFile(File(path), true)
     }
   }
 
