@@ -68,8 +68,8 @@ class RPackageProjectManager(private val project: Project) {
    * gross syntax errors, etc.)
    */
   fun getProjectPackageDescriptionInfo(): PackageDescriptionInfo? {
-    return CachedValuesManager.getManager(project).getCachedValue(project) {
-      runReadAction {
+    return runReadAction {
+      CachedValuesManager.getManager(project).getCachedValue(project) {
         val virtualFile = project.guessProjectDir()?.findChild("DESCRIPTION")
         val file = virtualFile?.let { PsiUtilCore.findFileSystemItem(project, it) } as? PsiFile
         val nullPackageDescriptionInfo: PackageDescriptionInfo? = null
