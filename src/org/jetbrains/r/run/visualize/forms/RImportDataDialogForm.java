@@ -14,27 +14,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
 
-public class RImportCsvDataDialogForm extends JDialog {
+public class RImportDataDialogForm extends JDialog {
   private JPanel contentPane;
   private JPanel optionPanel;
   private JPanel centerPanel;
   private JPanel topPanel;
   private JPanel fileInputFieldPanel;
   private JTextField nameTextField;
-  private JCheckBox firstRowAsNamesCheckBox;
   private JCheckBox viewAfterImportCheckBox;
-  private JCheckBox myTrimSpacesCheckBox;
-  private JComboBox delimiterComboBox;
-  private JComboBox quotesComboBox;
-  private JComboBox escapeComboBox;
-  private JComboBox commentComboBox;
-  private JComboBox naComboBox;
   private JPanel okCancelButtonsPanel;
-  private JTextField skipTextField;
   private JTextField headTextField;
   private JPanel previewPanel;
   private JPanel openFileLinkPanel;
   private JLabel noDataLabel;
+  private JPanel importOptionPanel;
 
   @Override
   public JPanel getContentPane() {
@@ -61,44 +54,12 @@ public class RImportCsvDataDialogForm extends JDialog {
     return nameTextField;
   }
 
-  public JCheckBox getFirstRowAsNamesCheckBox() {
-    return firstRowAsNamesCheckBox;
-  }
-
   public JCheckBox getViewAfterImportCheckBox() {
     return viewAfterImportCheckBox;
   }
 
-  public JCheckBox getTrimSpacesCheckBox() {
-    return myTrimSpacesCheckBox;
-  }
-
-  public JComboBox getDelimiterComboBox() {
-    return delimiterComboBox;
-  }
-
-  public JComboBox getQuotesComboBox() {
-    return quotesComboBox;
-  }
-
-  public JComboBox getEscapeComboBox() {
-    return escapeComboBox;
-  }
-
-  public JComboBox getCommentComboBox() {
-    return commentComboBox;
-  }
-
-  public JComboBox getNaComboBox() {
-    return naComboBox;
-  }
-
   public JPanel getOkCancelButtonsPanel() {
     return okCancelButtonsPanel;
-  }
-
-  public JTextField getSkipTextField() {
-    return skipTextField;
   }
 
   public JTextField getHeadTextField() {
@@ -117,7 +78,11 @@ public class RImportCsvDataDialogForm extends JDialog {
     return noDataLabel;
   }
 
-  public RImportCsvDataDialogForm() {
+  public JPanel getImportOptionPanel() {
+    return importOptionPanel;
+  }
+
+  public RImportDataDialogForm() {
     setContentPane(contentPane);
     setModal(true);
   }
@@ -168,115 +133,55 @@ public class RImportCsvDataDialogForm extends JDialog {
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null,
                                                 null, 0, false));
     optionPanel = new JPanel();
-    optionPanel.setLayout(new GridLayoutManager(14, 2, new JBInsets(0, 8, 0, 0), -1, -1));
+    optionPanel.setLayout(new GridLayoutManager(8, 2, new JBInsets(0, 8, 0, 0), -1, -1));
     centerPanel.add(optionPanel, BorderLayout.EAST);
-    final JLabel label2 = new JLabel();
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.name"));
-    optionPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
     final Spacer spacer1 = new Spacer();
-    optionPanel.add(spacer1, new GridConstraints(13, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+    optionPanel.add(spacer1, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                                                  GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-    nameTextField = new JTextField();
-    optionPanel.add(nameTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                       GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-                                                       new Dimension(150, -1), null, 0, false));
-    firstRowAsNamesCheckBox = new JCheckBox();
-    firstRowAsNamesCheckBox.setSelected(true);
-    this.$$$loadButtonText$$$(firstRowAsNamesCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.column.names"));
-    optionPanel.add(firstRowAsNamesCheckBox, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK |
-                                                                 GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-                                                                 null, null, null, 0, false));
-    myTrimSpacesCheckBox = new JCheckBox();
-    myTrimSpacesCheckBox.setSelected(true);
-    this.$$$loadButtonText$$$(myTrimSpacesCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.trim.spaces"));
-    optionPanel.add(myTrimSpacesCheckBox, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                                              GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    final JLabel label3 = new JLabel();
-    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.delimiter"));
-    optionPanel.add(label3, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+    final JLabel label2 = new JLabel();
+    Font label2Font = this.$$$getFont$$$(null, Font.BOLD, -1, label2.getFont());
+    if (label2Font != null) label2.setFont(label2Font);
+    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.import.options"));
+    optionPanel.add(label2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
-    delimiterComboBox = new JComboBox();
-    optionPanel.add(delimiterComboBox, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                           GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-                                                           null, null, 0, false));
+    final JLabel label3 = new JLabel();
+    Font label3Font = this.$$$getFont$$$(null, Font.BOLD, -1, label3.getFont());
+    if (label3Font != null) label3.setFont(label3Font);
+    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.preview.options"));
+    optionPanel.add(label3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                false));
     final JLabel label4 = new JLabel();
-    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.quotes"));
+    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.head"));
     optionPanel.add(label4, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
-    quotesComboBox = new JComboBox();
-    optionPanel.add(quotesComboBox, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                        GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                                                        null, 0, false));
-    final JLabel label5 = new JLabel();
-    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.escape"));
-    optionPanel.add(label5, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    escapeComboBox = new JComboBox();
-    optionPanel.add(escapeComboBox, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                        GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                                                        null, 0, false));
-    final JLabel label6 = new JLabel();
-    this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.comment"));
-    optionPanel.add(label6, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    commentComboBox = new JComboBox();
-    optionPanel.add(commentComboBox, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                         GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                                                         null, 0, false));
-    final JLabel label7 = new JLabel();
-    this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.na"));
-    optionPanel.add(label7, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    naComboBox = new JComboBox();
-    optionPanel.add(naComboBox, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                    GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
-                                                    0, false));
-    final JLabel label8 = new JLabel();
-    this.$$$loadLabelText$$$(label8, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.skip"));
-    optionPanel.add(label8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    skipTextField = new JTextField();
-    skipTextField.setText("0");
-    optionPanel.add(skipTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                       GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-                                                       new Dimension(150, -1), null, 0, false));
-    final JLabel label9 = new JLabel();
-    Font label9Font = this.$$$getFont$$$(null, Font.BOLD, -1, label9.getFont());
-    if (label9Font != null) label9.setFont(label9Font);
-    this.$$$loadLabelText$$$(label9, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.import.options"));
-    optionPanel.add(label9, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    final JLabel label10 = new JLabel();
-    Font label10Font = this.$$$getFont$$$(null, Font.BOLD, -1, label10.getFont());
-    if (label10Font != null) label10.setFont(label10Font);
-    this.$$$loadLabelText$$$(label10, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.preview.options"));
-    optionPanel.add(label10, new GridConstraints(11, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                 false));
-    final JLabel label11 = new JLabel();
-    this.$$$loadLabelText$$$(label11, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.head"));
-    optionPanel.add(label11, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                 false));
     headTextField = new JTextField();
-    optionPanel.add(headTextField, new GridConstraints(12, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+    optionPanel.add(headTextField, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
                                                        new Dimension(150, -1), null, 0, false));
     final JSeparator separator1 = new JSeparator();
-    optionPanel.add(separator1, new GridConstraints(10, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    optionPanel.add(separator1, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                    GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                    null, 0, false));
+    final JLabel label5 = new JLabel();
+    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.name"));
+    optionPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                false));
+    nameTextField = new JTextField();
+    optionPanel.add(nameTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                       GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                       new Dimension(150, -1), null, 0, false));
+    importOptionPanel = new JPanel();
+    importOptionPanel.setLayout(new BorderLayout(0, 0));
+    optionPanel.add(importOptionPanel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                           GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                           GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                           null, null, null, 0, false));
+    final JSeparator separator2 = new JSeparator();
+    optionPanel.add(separator2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
                                                     GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                     null, 0, false));
     previewPanel = new JPanel();
