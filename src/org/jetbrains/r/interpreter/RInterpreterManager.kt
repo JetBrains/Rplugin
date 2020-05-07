@@ -70,7 +70,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private var firstOpenedFile = true
 
   init {
-    invalidateRSkeletonCaches()
+    if (!ApplicationManager.getApplication().isUnitTestMode) {
+      invalidateRSkeletonCaches()
+    }
   }
 
 
