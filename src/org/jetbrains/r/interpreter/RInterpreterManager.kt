@@ -5,6 +5,7 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.ide.browsers.BrowserLauncher
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.runInEdt
@@ -20,9 +21,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.impl.PsiDocumentManagerImpl
+import com.intellij.psi.stubs.StubUpdatingIndex
+import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -64,6 +68,10 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private var initialized = false
   private var rInterpreter: RInterpreterImpl? = null
   private var firstOpenedFile = true
+
+  init {
+    invalidateRSkeletonCaches()
+  }
 
 
   private fun fetchInterpreterPath(oldPath: String = ""): String {
@@ -211,6 +219,22 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     fun openDownloadRPage() {
       BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)
     }
+  }
+}
+
+/**
+ * This method invalidate Stub Index on first start of R plugin
+ * We need to do that to workaround IntelliJ 2020.1 platform bug when
+ * skeleton files are not re-indexed on plugin update.
+ */
+private fun invalidateRSkeletonCaches() {
+  val key = "rplugin.version"
+  val version = RPluginUtil.getPlugin().version
+  val propertiesComponent = PropertiesComponent.getInstance()
+  val lastVersion = propertiesComponent.getValue(key)
+  if (version != lastVersion) {
+    propertiesComponent.setValue(key, version)
+    FileBasedIndex.getInstance().requestRebuild(StubUpdatingIndex.INDEX_ID)
   }
 }
 
