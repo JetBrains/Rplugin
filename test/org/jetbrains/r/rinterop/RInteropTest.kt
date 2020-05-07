@@ -270,4 +270,37 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     """.trimIndent()).blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("Toplevel handler was called!", rInterop.executeCode("cat(result)").stdout)
   }
+
+  fun testStackOverflow() {
+    rInterop.executeCode("f <- function() f()")
+    var promptPromise = AsyncPromise<Unit>()
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      override fun onPrompt(isDebug: Boolean) {
+        promptPromise.setResult(Unit)
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
+    promptPromise.blockingGet(DEFAULT_TIMEOUT)
+    promptPromise = AsyncPromise<Unit>()
+    rInterop.replExecute("f()").blockingGet(DEFAULT_TIMEOUT)
+    promptPromise.blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("123", rInterop.executeCode("cat(123)").stdout)
+  }
+
+  fun testStackOverflowDebug() {
+    rInterop.executeCode("f <- function() f()")
+    var promptPromise = AsyncPromise<Unit>()
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      override fun onPrompt(isDebug: Boolean) {
+        promptPromise.setResult(Unit)
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
+    promptPromise.blockingGet(DEFAULT_TIMEOUT)
+    promptPromise = AsyncPromise<Unit>()
+    rInterop.replExecute("f()", isDebug = true).blockingGet(DEFAULT_TIMEOUT)
+    promptPromise.blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("123", rInterop.executeCode("cat(123)").stdout)
+    TestCase.assertFalse(rInterop.isDebug)
+  }
 }

@@ -255,8 +255,8 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(asyncStub::setOutputWidth, Int32Value.of(width))
   }
 
-  fun replExecute(code: String, setLastValue: Boolean = false): CancellablePromise<RIExecutionResult> {
-    return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue)
+  fun replExecute(code: String, setLastValue: Boolean = false, isDebug: Boolean = false): CancellablePromise<RIExecutionResult> {
+    return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue, isDebug = isDebug)
   }
 
   /**
