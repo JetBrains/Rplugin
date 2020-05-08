@@ -7,6 +7,7 @@ package org.jetbrains.r.breadcrumbs
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
+import com.intellij.xml.breadcrumbs.BreadcrumbsPanel
 import com.intellij.xml.breadcrumbs.BreadcrumbsXmlWrapper
 import com.intellij.xml.breadcrumbs.CrumbPresentation
 import org.jetbrains.r.actions.RActionUtil
@@ -22,10 +23,10 @@ class RPsiCrumb(element: PsiElement, provider: BreadcrumbsProvider, presentation
   }
 
   private fun unmuteCaretChangeUpdate(editor: Editor) {
-    // BreadcrumbsXmlWrapper is not track caret changes just after Crumb navigation
-    // But in this custome implementation we need to track it
+    // BreadcrumbsXmlWrapper does not track caret changes just after Crumb navigation
+    // But in this custom implementation we need to track it
     val breadcrumbsComponent = BreadcrumbsXmlWrapper.getBreadcrumbsComponent(editor) ?: return
-    val trackCaretChangeFlag = breadcrumbsComponent.javaClass.getDeclaredField("myUserCaretChange")
+    val trackCaretChangeFlag = BreadcrumbsPanel::class.java.getDeclaredField("myUserCaretChange")
     trackCaretChangeFlag.isAccessible = true
     trackCaretChangeFlag.set(breadcrumbsComponent, true)
   }
