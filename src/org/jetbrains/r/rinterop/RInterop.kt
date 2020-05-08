@@ -110,19 +110,18 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     val nextStubNumber = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onStubMessageRequest(nextStubNumber, request, f.name)
     val promise = AsyncPromise<Response>()
-    val future = f.invoke(request).apply {
-      addListener(Runnable {
-        val result = try {
-          get()
-        } catch (e: Throwable) {
-          promise.setError(processError(e, f.name))
-          return@Runnable
-        }
-        promise.setResult(result)
-        rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, result)
-      }, MoreExecutors.directExecutor())
-    }
+    val future = f.invoke(request)
     promise.onError { future.cancel(true) }
+    future.addListener(Runnable {
+      val result = try {
+        future.get()
+      } catch (e: Throwable) {
+        promise.setError(processError(e, f.name))
+        return@Runnable
+      }
+      promise.setResult(result)
+      rInteropGrpcLogger.onStubMessageResponse(nextStubNumber, result)
+    }, MoreExecutors.directExecutor())
     return promise
   }
 
