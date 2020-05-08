@@ -126,17 +126,6 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     return null
   }
 
-  private fun findPrevNonSpaceNode(start: ASTNode): ASTNode? {
-    var current: ASTNode? = start.treePrev
-    while (current != null) {
-      if (current.elementType != TokenType.WHITE_SPACE) {
-        return current
-      }
-      current = current.treePrev
-    }
-    return null
-  }
-
   private fun isFunctionDeclarationNode(nodeParent: ASTNode) =
     (nodeParent.psi as? RAssignmentStatement)?.isFunctionDeclaration ?: false
 
@@ -310,4 +299,15 @@ private fun createSpacingBuilder(settings: CodeStyleSettings): SpacingBuilder {
 
     .aroundInside(TokenSet.ANY, TokenSet.create(RParserDefinition.FILE, RElementTypes.R_BLOCK_EXPRESSION))
     .spacing(0, 0, 0, true, common.KEEP_BLANK_LINES_IN_CODE)
+}
+
+fun findPrevNonSpaceNode(start: ASTNode): ASTNode? {
+  var current: ASTNode? = start.treePrev
+  while (current != null) {
+    if (current.elementType != TokenType.WHITE_SPACE) {
+      return current
+    }
+    current = current.treePrev
+  }
+  return null
 }
