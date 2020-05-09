@@ -157,7 +157,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingBracketNotInLink() {
-    doTypeTest("""
+    doTest("""
       #' Just some brackets: <caret>]
     """, """
       #' Just some brackets: ]<caret>]
@@ -165,7 +165,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingBracketOvertype() {
-    doTypeTest("""
+    doTest("""
       #' [foo<caret>]
     """, """
       #' [foo]<caret>
@@ -173,7 +173,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingBracketOvertypeEmpty() {
-    doTypeTest("""
+    doTest("""
       #' [<caret>]
     """, """
       #' []<caret>
@@ -181,7 +181,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingBracketLinkWithTextOvertype() {
-    doTypeTest("""
+    doTest("""
       #' [foo][bar<caret>]
     """, """
       #' [foo][bar]<caret>
@@ -189,7 +189,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingParenOvertype() {
-    doTypeTest("""
+    doTest("""
       #' [foo](bar<caret>)
     """, """
       #' [foo](bar)<caret>
@@ -197,7 +197,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testClosingParenOvertypeEmpty() {
-    doTypeTest("""
+    doTest("""
       #' [foo](<caret>)
     """, """
       #' [foo]()<caret>
@@ -205,7 +205,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testOpenBracket() {
-    doTypeTest("""
+    doTest("""
       #' <caret>
     """, """
       #' [<caret>]
@@ -213,7 +213,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testOpenBracketLinkWithText() {
-    doTypeTest("""
+    doTest("""
       #' [foo]<caret>
     """, """
       #' [foo][<caret>]
@@ -221,7 +221,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testOpenParen() {
-    doTypeTest("""
+    doTest("""
       #' [foo]<caret>
     """, """
       #' [foo](<caret>)
@@ -229,7 +229,7 @@ class RoxygenTypingTest : RUsefulTestCase() {
   }
 
   fun testOpenParenOutOfLink() {
-    doTypeTest("""
+    doTest("""
       #' <caret>
     """, """
       #' (<caret>
@@ -261,14 +261,6 @@ class RoxygenTypingTest : RUsefulTestCase() {
                               @Language("R") expected: String) {
     myFixture.configureByText(RFileType, fileText.trimIndent())
     myFixture.performEditorAction(IdeActions.ACTION_EDITOR_BACKSPACE)
-    myFixture.checkResult(expected.trimIndent())
-  }
-
-  private fun doTypeTest(@Language("R") fileText: String,
-                         @Language("R") expected: String,
-                         text: String) {
-    myFixture.configureByText(RFileType, fileText.trimIndent())
-    myFixture.type(text)
     myFixture.checkResult(expected.trimIndent())
   }
 }
