@@ -368,8 +368,7 @@ You can find the source code in the following repositories:
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
                   language="RMarkdown" extensions="Rmd"/>
-        <fileType name="Roxygen file" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE"
-                  language="Roxygen" extensions="R"/>
+        <fileType name="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenFileType" fieldName="INSTANCE" language="Roxygen"/>
 
         <lang.fileViewProviderFactory language="RMarkdown"
                                       implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileViewProviderFactory"/>

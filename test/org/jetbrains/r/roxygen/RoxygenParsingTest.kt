@@ -7,7 +7,7 @@ import com.intellij.testFramework.ParsingTestCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.roxygen.parsing.RoxygenParserDefinition
 
-class RoxygenParsingTest : ParsingTestCase("roxygen/parser", "R", RoxygenParserDefinition()) {
+class RoxygenParsingTest : ParsingTestCase("roxygen/parser", "roxygen", RoxygenParserDefinition()) {
   fun testSingleTextLine() = doTest(true)
 
   fun testAllLinksAndTextTogether() = doTest(true)

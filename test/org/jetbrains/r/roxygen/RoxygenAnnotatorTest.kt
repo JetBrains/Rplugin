@@ -3,10 +3,16 @@
  */
 package org.jetbrains.r.roxygen
 
+import com.intellij.openapi.fileTypes.FileTypeManager
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import java.nio.file.Paths
 
 class RoxygenAnnotatorTest : RLightCodeInsightFixtureTestCase() {
+
+  override fun setUp() {
+    super.setUp()
+    FileTypeManager.getInstance().registerFileType(RoxygenFileType, RoxygenFileType.defaultExtension)
+  }
 
   override fun getTestDataPath(): String = Paths.get(super.getTestDataPath(), "roxygen", "annotator").toString()
 
@@ -22,6 +28,6 @@ class RoxygenAnnotatorTest : RLightCodeInsightFixtureTestCase() {
 
   private fun doTest() {
     val testName = getTestName(true)
-    myFixture.testHighlighting(true, true, false, testName + ".R")
+    myFixture.testHighlighting(true, true, false, "$testName.roxygen")
   }
 }
