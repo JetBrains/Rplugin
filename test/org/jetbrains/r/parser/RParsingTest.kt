@@ -145,18 +145,22 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testErrorIf() = doTest()
 
+  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
   fun testErrorMethod1() = doTest()
 
   fun testErrorMethod2() = doTest()
 
+  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
   fun testErrorMethod3() = doTest()
 
+  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
   fun testErrorMethod4() = doTest()
 
   fun testErrorMethod5() = doTest()
 
   fun testErrorMethod6() = doTest()
 
+  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
   fun testErrorMethod7() = doTest()
 
   fun testErrorCall1() = doTest()

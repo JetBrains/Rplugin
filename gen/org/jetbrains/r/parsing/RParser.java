@@ -502,7 +502,7 @@ public class RParser implements PsiParser, LightPsiParser {
   // identifier_expression ('=' expression)?
   public static boolean parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter")) return false;
-    if (!nextTokenIsSmart(b, R_IDENTIFIER)) return false;
+    if (!nextTokenIs(b, R_IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = identifier_expression(b, l + 1);
