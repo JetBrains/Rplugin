@@ -8,4 +8,4 @@ RFile:RawString.r
     PsiWhiteSpace(' ')
     R_STRING_LITERAL_EXPRESSION
       PsiElement(STRING)('r"(hello\n"world")"')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

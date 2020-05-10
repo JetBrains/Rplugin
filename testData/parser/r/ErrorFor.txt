@@ -1,5 +1,5 @@
 RFile:ErrorFor.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func1')
@@ -15,16 +15,14 @@ RFile:ErrorFor.r
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('    ')
+        PsiWhiteSpace('\n    ')
         R_FOR_STATEMENT
           PsiElement(for)('for')
-          PsiElement(nl)('\n')
           PsiErrorElement:'(' expected, got '}'
             <empty list>
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func2')
@@ -40,17 +38,15 @@ RFile:ErrorFor.r
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('    ')
+        PsiWhiteSpace('\n    ')
         R_FOR_STATEMENT
           PsiElement(for)('for')
           PsiElement(()('(')
-          PsiElement(nl)('\n')
           PsiErrorElement:'}' unexpected
             <empty list>
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func3')
@@ -66,8 +62,7 @@ RFile:ErrorFor.r
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('    ')
+        PsiWhiteSpace('\n    ')
         R_FOR_STATEMENT
           PsiElement(for)('for')
           PsiWhiteSpace(' ')
@@ -75,10 +70,9 @@ RFile:ErrorFor.r
           PsiErrorElement:')' unexpected
             <empty list>
           PsiElement())(')')
-          PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func4')
@@ -94,8 +88,7 @@ RFile:ErrorFor.r
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('    ')
+        PsiWhiteSpace('\n    ')
         R_FOR_STATEMENT
           PsiElement(for)('for')
           PsiWhiteSpace(' ')
@@ -118,8 +111,8 @@ RFile:ErrorFor.r
                 PsiElement(NUMERIC)('2')
               PsiElement())(')')
           PsiElement())(')')
-          PsiElement(nl)('\n')
           PsiErrorElement:<expression> expected, got '}'
             <empty list>
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

@@ -41,8 +41,7 @@ RFile:WhileInsideIf.r
     PsiElement())(')')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('print')
@@ -51,7 +50,7 @@ RFile:WhileInsideIf.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('x')
           PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')
     PsiWhiteSpace(' ')
     PsiElement(else)('else')
@@ -96,8 +95,7 @@ RFile:WhileInsideIf.r
       PsiElement())(')')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
+        PsiWhiteSpace('\n  ')
         R_FOR_STATEMENT
           PsiElement(for)('for')
           PsiWhiteSpace(' ')
@@ -133,8 +131,7 @@ RFile:WhileInsideIf.r
           PsiElement())(')')
           R_BLOCK_EXPRESSION
             PsiElement({)('{')
-            PsiElement(nl)('\n')
-            PsiWhiteSpace('    ')
+            PsiWhiteSpace('\n    ')
             R_IF_STATEMENT
               PsiElement(if)('if')
               PsiWhiteSpace(' ')
@@ -166,8 +163,7 @@ RFile:WhileInsideIf.r
               PsiElement())(')')
               R_BLOCK_EXPRESSION
                 PsiElement({)('{')
-                PsiElement(nl)('\n')
-                PsiWhiteSpace('      ')
+                PsiWhiteSpace('\n      ')
                 R_ASSIGNMENT_STATEMENT
                   R_IDENTIFIER_EXPRESSION
                     PsiElement(identifier)('diff_idx')
@@ -177,18 +173,15 @@ RFile:WhileInsideIf.r
                   PsiWhiteSpace(' ')
                   R_IDENTIFIER_EXPRESSION
                     PsiElement(identifier)('idx')
-                PsiElement(nl)('\n')
-                PsiWhiteSpace('      ')
+                PsiWhiteSpace('\n      ')
                 R_BREAK_STATEMENT
                   PsiElement(break)('break')
-                PsiElement(nl)('\n')
-                PsiWhiteSpace('    ')
+                PsiWhiteSpace('\n    ')
                 PsiElement(})('}')
-            PsiElement(nl)('\n')
-            PsiWhiteSpace('  ')
+            PsiWhiteSpace('\n  ')
             PsiElement(})('}')
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
-  PsiErrorElement:';', <and operator>, <expression>, <or operator> or nl expected, got '}'
+  PsiWhiteSpace('\n')
+  PsiErrorElement:';' or <expression> expected, got '}'
     PsiElement(})('}')

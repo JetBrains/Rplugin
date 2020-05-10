@@ -1,5 +1,5 @@
 RFile:ErrorMethod7.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func')
@@ -15,11 +15,11 @@ RFile:ErrorMethod7.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('x')
         PsiElement(,)(',')
-        PsiErrorElement:nl expected, got ')'
+        PsiErrorElement:identifier expected, got ')'
           <empty list>
         PsiElement())(')')
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')

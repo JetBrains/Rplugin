@@ -1,7 +1,6 @@
 RFile:multicell.rmd
   PsiElement(OUTER)('It's a header\n---\n\n```{r}')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('x')
@@ -11,8 +10,7 @@ RFile:multicell.rmd
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('312312')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('y')
@@ -22,10 +20,9 @@ RFile:multicell.rmd
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('432432432')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiElement(OUTER)('```\n\nSome Text\n\n\n```{r}')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('z')
@@ -35,10 +32,9 @@ RFile:multicell.rmd
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('432432432')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiElement(OUTER)('```\n\nAnother Text\n\n```{r}')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_OPERATOR_EXPRESSION
     R_OPERATOR_EXPRESSION
       R_IDENTIFIER_EXPRESSION
@@ -55,5 +51,5 @@ RFile:multicell.rmd
     PsiWhiteSpace(' ')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('z')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiElement(OUTER)('```\n\n')

@@ -1,5 +1,5 @@
 RFile:ErrorMethod1.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func')
@@ -11,6 +11,6 @@ RFile:ErrorMethod1.r
       PsiElement(function)('function')
       R_PARAMETER_LIST
         PsiElement(()('(')
-        PsiElement(nl)('\n')
-        PsiErrorElement:')' or nl expected
+        PsiErrorElement:')' or identifier expected
           <empty list>
+  PsiWhiteSpace('\n')

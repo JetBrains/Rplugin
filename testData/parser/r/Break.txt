@@ -1,5 +1,5 @@
 RFile:Break.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('z')
@@ -9,14 +9,13 @@ RFile:Break.r
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('0')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_REPEAT_STATEMENT
     PsiElement(repeat)('repeat')
     PsiWhiteSpace(' ')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_ASSIGNMENT_STATEMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('z')
@@ -33,8 +32,7 @@ RFile:Break.r
           PsiWhiteSpace(' ')
           R_NUMERIC_LITERAL_EXPRESSION
             PsiElement(NUMERIC)('1')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('print')
@@ -43,8 +41,7 @@ RFile:Break.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('z')
           PsiElement())(')')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_IF_STATEMENT
         PsiElement(if)('if')
         PsiElement(()('(')
@@ -65,5 +62,5 @@ RFile:Break.r
           R_ARGUMENT_LIST
             PsiElement(()('(')
             PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')

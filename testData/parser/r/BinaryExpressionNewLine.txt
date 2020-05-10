@@ -13,8 +13,7 @@ RFile:BinaryExpressionNewLine.r
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('help.statet')
             PsiElement())(')')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('                ')
+        PsiWhiteSpace('\n                ')
         R_AND_OPERATOR
           PsiElement(&&)('&&')
         PsiWhiteSpace(' ')
@@ -52,8 +51,7 @@ RFile:BinaryExpressionNewLine.r
     PsiWhiteSpace(' ')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('        ')
+      PsiWhiteSpace('\n        ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('.showHelp')
@@ -62,9 +60,9 @@ RFile:BinaryExpressionNewLine.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('help.statet')
           PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_IF_STATEMENT
     PsiElement(if)('if')
     PsiWhiteSpace(' ')
@@ -85,8 +83,7 @@ RFile:BinaryExpressionNewLine.r
         PsiWhiteSpace(' ')
         R_NUMERIC_LITERAL_EXPRESSION
           PsiElement(NUMERIC)('0')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('              ')
+      PsiWhiteSpace('\n              ')
       R_OR_OPERATOR
         PsiElement(||)('||')
       PsiWhiteSpace(' ')
@@ -108,11 +105,9 @@ RFile:BinaryExpressionNewLine.r
     PsiWhiteSpace(' ')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('        ')
+      PsiWhiteSpace('\n        ')
       PsiComment(END_OF_LINE_COMMENT)('# NextMethod ?')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('        ')
+      PsiWhiteSpace('\n        ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('return')
@@ -135,5 +130,5 @@ RFile:BinaryExpressionNewLine.r
                 PsiElement(identifier)('...')
               PsiElement())(')')
           PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')

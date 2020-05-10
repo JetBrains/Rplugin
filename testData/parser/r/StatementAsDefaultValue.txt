@@ -5,8 +5,7 @@ RFile:StatementAsDefaultValue.r
     PsiWhiteSpace(' ')
     R_ASSIGN_OPERATOR
       PsiElement(<-)('<-')
-    PsiElement(nl)('\n')
-    PsiWhiteSpace('    ')
+    PsiWhiteSpace('\n    ')
     R_FUNCTION_EXPRESSION
       PsiElement(function)('function')
       R_PARAMETER_LIST
@@ -66,7 +65,7 @@ RFile:StatementAsDefaultValue.r
               R_NUMERIC_LITERAL_EXPRESSION
                 PsiElement(NUMERIC)('1')
         PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
         PsiElement(})('}')

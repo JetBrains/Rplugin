@@ -15,7 +15,7 @@ RFile:ArgumentsWithoutComma.r
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('y')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo2')
@@ -60,7 +60,7 @@ RFile:ArgumentsWithoutComma.r
       R_NUMERIC_LITERAL_EXPRESSION
         PsiElement(NUMERIC)('3')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('ok')
@@ -80,7 +80,7 @@ RFile:ArgumentsWithoutComma.r
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('y')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo3')
@@ -97,7 +97,7 @@ RFile:ArgumentsWithoutComma.r
           R_NUMERIC_LITERAL_EXPRESSION
             PsiElement(NUMERIC)('2')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo4')
@@ -109,10 +109,9 @@ RFile:ArgumentsWithoutComma.r
       PsiWhiteSpace(' ')
       R_IDENTIFIER_EXPRESSION
         PsiElement(identifier)('y')
+      PsiWhiteSpace('\n  ')
       R_NO_COMMA_TAIL
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('z')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

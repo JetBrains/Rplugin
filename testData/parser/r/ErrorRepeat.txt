@@ -1,5 +1,5 @@
 RFile:ErrorRepeat.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('func1')
@@ -15,12 +15,11 @@ RFile:ErrorRepeat.r
       PsiWhiteSpace(' ')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('    ')
+        PsiWhiteSpace('\n    ')
         R_REPEAT_STATEMENT
           PsiElement(repeat)('repeat')
-          PsiErrorElement:unmatched input
+          PsiErrorElement:<expression> expected, got '}'
             <empty list>
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

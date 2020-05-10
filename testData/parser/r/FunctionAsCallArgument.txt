@@ -18,8 +18,7 @@ RFile:FunctionAsCallArgument.r
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('size.category')
         PsiElement(,)(',')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
+        PsiWhiteSpace('\n  ')
         R_FUNCTION_EXPRESSION
           PsiElement(function)('function')
           R_PARAMETER_LIST

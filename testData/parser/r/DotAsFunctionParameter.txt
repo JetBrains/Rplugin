@@ -27,10 +27,7 @@ RFile:DotAsFunctionParameter.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('...')
         PsiElement())(')')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('\t')
-      PsiWhiteSpace('\t')
-      PsiWhiteSpace('    ')
+      PsiWhiteSpace('\n\t\t    ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('vapply')
@@ -48,8 +45,7 @@ RFile:DotAsFunctionParameter.r
                 R_IDENTIFIER_EXPRESSION
                   PsiElement(identifier)('.')
               PsiElement())(')')
-            PsiElement(nl)('\n')
-            PsiWhiteSpace('                           ')
+            PsiWhiteSpace('\n                           ')
             R_UNARY_NOT_EXPRESSION
               R_NOT_OPERATOR
                 PsiElement(!)('!')
@@ -77,8 +73,7 @@ RFile:DotAsFunctionParameter.r
                           PsiElement())(')')
                       PsiElement())(')')
                   PsiElement(,)(',')
-                  PsiElement(nl)('\n')
-                  PsiWhiteSpace('                                      ')
+                  PsiWhiteSpace('\n                                      ')
                   R_CALL_EXPRESSION
                     R_IDENTIFIER_EXPRESSION
                       PsiElement(identifier)('TRAFO')
@@ -103,8 +98,7 @@ RFile:DotAsFunctionParameter.r
                     PsiElement(identifier)('...')
                   PsiElement())(')')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                           ')
+          PsiWhiteSpace('\n                           ')
           R_NA_LITERAL
             PsiElement(NA)('NA')
           PsiElement())(')')

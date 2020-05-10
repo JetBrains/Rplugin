@@ -7,8 +7,7 @@ RFile:EmptyKeywordArgument.r
       R_IDENTIFIER_EXPRESSION
         PsiElement(identifier)('tag')
       PsiElement(,)(',')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('               ')
+      PsiWhiteSpace('\n               ')
       R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('UNKNOWN')
@@ -18,8 +17,7 @@ RFile:EmptyKeywordArgument.r
         R_EMPTY_EXPRESSION
           <empty list>
       PsiElement(,)(',')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('               ')
+      PsiWhiteSpace('\n               ')
       R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('VERB')
@@ -46,8 +44,7 @@ RFile:EmptyKeywordArgument.r
                 PsiElement())(')')
             PsiElement())(')')
       PsiElement(,)(',')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('               ')
+      PsiWhiteSpace('\n               ')
       R_NAMED_ARGUMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('RCODE')

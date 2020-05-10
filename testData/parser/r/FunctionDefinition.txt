@@ -1,5 +1,5 @@
 RFile:FunctionDefinition.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('readinteger')
@@ -12,11 +12,10 @@ RFile:FunctionDefinition.r
       R_PARAMETER_LIST
         PsiElement(()('(')
         PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
+        PsiWhiteSpace('\n  ')
         R_ASSIGNMENT_STATEMENT
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('n')
@@ -37,8 +36,7 @@ RFile:FunctionDefinition.r
                 R_STRING_LITERAL_EXPRESSION
                   PsiElement(STRING)('"Enter an integer: "')
               PsiElement())(')')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
+        PsiWhiteSpace('\n  ')
         R_CALL_EXPRESSION
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('return')
@@ -53,10 +51,9 @@ RFile:FunctionDefinition.r
                   PsiElement(identifier)('n')
                 PsiElement())(')')
             PsiElement())(')')
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('print')

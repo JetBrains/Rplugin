@@ -1,5 +1,5 @@
 RFile:WhileStatement.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_WHILE_STATEMENT
     PsiElement(while)('while')
     PsiElement(()('(')
@@ -11,11 +11,10 @@ RFile:WhileStatement.r
       R_NUMERIC_LITERAL_EXPRESSION
         PsiElement(NUMERIC)('0')
     PsiElement())(')')
-    PsiElement(nl)('\n')
+    PsiWhiteSpace('\n')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('Sys.sleep')
@@ -24,8 +23,7 @@ RFile:WhileStatement.r
           R_NUMERIC_LITERAL_EXPRESSION
             PsiElement(NUMERIC)('1')
           PsiElement())(')')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_ASSIGNMENT_STATEMENT
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('from')
@@ -42,8 +40,7 @@ RFile:WhileStatement.r
           PsiWhiteSpace(' ')
           R_NUMERIC_LITERAL_EXPRESSION
             PsiElement(NUMERIC)('1')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('print')
@@ -52,6 +49,6 @@ RFile:WhileStatement.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('from')
           PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

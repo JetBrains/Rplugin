@@ -20,8 +20,8 @@ RFile:ReprInFunctionDef.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('...')
         PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')

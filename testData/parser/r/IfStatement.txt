@@ -12,11 +12,10 @@ RFile:IfStatement.r
     PsiElement())(')')
     PsiWhiteSpace(' ')
     PsiComment(END_OF_LINE_COMMENT)('# true, 84 > 42')
-    PsiElement(nl)('\n')
+    PsiWhiteSpace('\n')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_CALL_EXPRESSION
         R_IDENTIFIER_EXPRESSION
           PsiElement(identifier)('cat')
@@ -37,5 +36,5 @@ RFile:IfStatement.r
           R_STRING_LITERAL_EXPRESSION
             PsiElement(STRING)('"\n"')
           PsiElement())(')')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')

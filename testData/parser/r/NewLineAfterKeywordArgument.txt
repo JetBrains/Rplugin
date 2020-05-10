@@ -12,8 +12,7 @@ RFile:NewLineAfterKeywordArgument.r
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('kernel')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('gaussian')
@@ -43,8 +42,7 @@ RFile:NewLineAfterKeywordArgument.r
                       PsiElement())(')')
                 PsiElement())(')')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('rectangular')
@@ -66,8 +64,7 @@ RFile:NewLineAfterKeywordArgument.r
               R_NUMERIC_LITERAL_EXPRESSION
                 PsiElement(NUMERIC)('6')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('triangular')
@@ -89,8 +86,7 @@ RFile:NewLineAfterKeywordArgument.r
               R_NUMERIC_LITERAL_EXPRESSION
                 PsiElement(NUMERIC)('9')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('epanechnikov')
@@ -120,8 +116,7 @@ RFile:NewLineAfterKeywordArgument.r
                       PsiElement())(')')
                 PsiElement())(')')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('biweight')
@@ -148,8 +143,7 @@ RFile:NewLineAfterKeywordArgument.r
               R_NUMERIC_LITERAL_EXPRESSION
                 PsiElement(NUMERIC)('49')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('cosine')
@@ -198,8 +192,7 @@ RFile:NewLineAfterKeywordArgument.r
                           PsiElement(NUMERIC)('2')
                   PsiElement())(')')
           PsiElement(,)(',')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           R_NAMED_ARGUMENT
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('optcosine')
@@ -245,7 +238,6 @@ RFile:NewLineAfterKeywordArgument.r
                 PsiElement(/)('/')
               R_NUMERIC_LITERAL_EXPRESSION
                 PsiElement(NUMERIC)('16')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('                      ')
+          PsiWhiteSpace('\n                      ')
           PsiElement())(')')
       PsiElement())(')')

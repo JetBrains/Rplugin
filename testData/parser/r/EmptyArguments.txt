@@ -1,13 +1,12 @@
 RFile:EmptyArguments.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo')
     R_ARGUMENT_LIST
       PsiElement(()('(')
       PsiElement())(')')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo')
@@ -19,8 +18,7 @@ RFile:EmptyArguments.r
       R_EMPTY_EXPRESSION
         <empty list>
       PsiElement())(')')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo')
@@ -32,8 +30,7 @@ RFile:EmptyArguments.r
       R_EMPTY_EXPRESSION
         <empty list>
       PsiElement())(')')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('foo')
@@ -45,4 +42,4 @@ RFile:EmptyArguments.r
       R_NUMERIC_LITERAL_EXPRESSION
         PsiElement(NUMERIC)('10')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

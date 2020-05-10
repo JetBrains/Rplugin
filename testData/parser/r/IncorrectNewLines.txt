@@ -1,0 +1,16 @@
+RFile:IncorrectNewLines.r
+  R_NUMERIC_LITERAL_EXPRESSION
+    PsiElement(NUMERIC)('10')
+  PsiWhiteSpace('\n')
+  PsiErrorElement:';' or <expression> expected, got '*'
+    PsiElement(*)('*')
+  PsiWhiteSpace(' ')
+  PsiElement(NUMERIC)('15')
+  PsiWhiteSpace('\n\n')
+  PsiElement(NUMERIC)('20')
+  PsiWhiteSpace('\n')
+  PsiElement(-)('-')
+  PsiWhiteSpace(' ')
+  PsiElement(NUMERIC)('10')
+  PsiWhiteSpace(' ')
+  PsiComment(END_OF_LINE_COMMENT)('# no error but unary minus here')

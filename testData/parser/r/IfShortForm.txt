@@ -21,8 +21,7 @@ RFile:IfShortForm.r
           R_NUMERIC_LITERAL_EXPRESSION
             PsiElement(NUMERIC)('0')
           PsiElement())(')')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('    ')
+      PsiWhiteSpace('\n    ')
       PsiElement(else)('else')
       PsiWhiteSpace(' ')
       R_CALL_EXPRESSION

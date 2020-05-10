@@ -1,10 +1,10 @@
 RFile:ErrorCall1.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('c')
     R_ARGUMENT_LIST
       PsiElement(()('(')
-      PsiElement(nl)('\n')
-      PsiErrorElement:')', ',', <expression> or nl expected
+      PsiErrorElement:')', ',' or <expression> expected
         <empty list>
+  PsiWhiteSpace('\n')

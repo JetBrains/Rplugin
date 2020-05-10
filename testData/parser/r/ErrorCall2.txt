@@ -1,5 +1,5 @@
 RFile:ErrorCall2.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('c')
@@ -7,6 +7,6 @@ RFile:ErrorCall2.r
       PsiElement(()('(')
       R_NUMERIC_LITERAL_EXPRESSION
         PsiElement(NUMERIC)('10')
-      PsiElement(nl)('\n')
-      PsiErrorElement:')', ',', <and operator>, <expression>, <or operator> or nl expected
+      PsiErrorElement:$, '(', ')', ',', ':', <and operator>, <compare operator>, <expression>, <left assign operator>, <muldiv operator>, <or operator>, <plusminus operator>, <right assign operator>, '=', '@', INFIX_OP, '^' or '~' expected
         <empty list>
+  PsiWhiteSpace('\n')

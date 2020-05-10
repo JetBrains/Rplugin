@@ -1,7 +1,7 @@
 RFile:MemberAccess.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiComment(END_OF_LINE_COMMENT)('## simple')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_MEMBER_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('my')
@@ -9,10 +9,9 @@ RFile:MemberAccess.r
       PsiElement($)('$')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('member')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   PsiComment(END_OF_LINE_COMMENT)('## cascaded access')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_MEMBER_EXPRESSION
     R_MEMBER_EXPRESSION
       R_IDENTIFIER_EXPRESSION
@@ -25,10 +24,9 @@ RFile:MemberAccess.r
       PsiElement($)('$')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('asdf')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   PsiComment(END_OF_LINE_COMMENT)('## member access that look like constants')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_MEMBER_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('out')
@@ -36,7 +34,7 @@ RFile:MemberAccess.r
       PsiElement($)('$')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('F')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_MEMBER_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('out')
@@ -44,20 +42,17 @@ RFile:MemberAccess.r
       PsiElement($)('$')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('T')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   PsiComment(END_OF_LINE_COMMENT)('# out$NA')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiComment(END_OF_LINE_COMMENT)('# out$for')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiComment(END_OF_LINE_COMMENT)('# out$TRUE')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiComment(END_OF_LINE_COMMENT)('# out$NULL')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n\n')
   PsiComment(END_OF_LINE_COMMENT)('## member assignment')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_MEMBER_EXPRESSION
       R_IDENTIFIER_EXPRESSION
@@ -72,4 +67,4 @@ RFile:MemberAccess.r
     PsiWhiteSpace(' ')
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('F.stat')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

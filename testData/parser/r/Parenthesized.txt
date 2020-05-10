@@ -1,5 +1,5 @@
 RFile:Parenthesized.r
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('i')
@@ -9,7 +9,7 @@ RFile:Parenthesized.r
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('2')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_OPERATOR_EXPRESSION
     R_OPERATOR_EXPRESSION
       R_NUMERIC_LITERAL_EXPRESSION
@@ -24,10 +24,9 @@ RFile:Parenthesized.r
       PsiElement(NUMERIC)('1')
   PsiWhiteSpace(' ')
   PsiComment(END_OF_LINE_COMMENT)('# this means (1:i) - 1, not 1:(i-1)')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiComment(END_OF_LINE_COMMENT)('#[1] 0 1')
-  PsiElement(nl)('\n')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n\n')
   R_OPERATOR_EXPRESSION
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('1')

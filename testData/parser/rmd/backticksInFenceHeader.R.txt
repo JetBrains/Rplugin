@@ -1,6 +1,6 @@
 RFile:backticksInFenceHeader.rmd
   PsiElement(OUTER)('# R-293 Backticks in code chunk metadata breaks parsing\n\n```{r graphics, message=FALSE, fig.cap='A scatterplot of `cars`', fig.width=11, fig.height=5}')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_CALL_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('library')
@@ -9,7 +9,7 @@ RFile:backticksInFenceHeader.rmd
       R_IDENTIFIER_EXPRESSION
         PsiElement(identifier)('ggplot2')
       PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_OPERATOR_EXPRESSION
     R_CALL_EXPRESSION
       R_IDENTIFIER_EXPRESSION
@@ -44,5 +44,5 @@ RFile:backticksInFenceHeader.rmd
       R_ARGUMENT_LIST
         PsiElement(()('(')
         PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiElement(OUTER)('```\n')

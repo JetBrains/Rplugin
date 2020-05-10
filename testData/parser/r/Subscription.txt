@@ -20,7 +20,7 @@ RFile:Subscription.r
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('1')
     PsiElement(])(']')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_SUBSCRIPTION_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('mtcars')
@@ -32,7 +32,7 @@ RFile:Subscription.r
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('2')
     PsiElement(])(']')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_SUBSCRIPTION_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('mtcars')
@@ -44,7 +44,7 @@ RFile:Subscription.r
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('am')
     PsiElement(])(']')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_SUBSCRIPTION_EXPRESSION
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('mtcars')
@@ -52,7 +52,7 @@ RFile:Subscription.r
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('9')
     PsiElement(]])(']]')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_SUBSCRIPTION_EXPRESSION
     R_MEMBER_EXPRESSION
       R_IDENTIFIER_EXPRESSION

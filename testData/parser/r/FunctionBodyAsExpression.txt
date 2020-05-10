@@ -57,4 +57,4 @@ RFile:FunctionBodyAsExpression.r
                   PsiElement(identifier)('mktcap')
               PsiElement())(')')
         PsiElement())(')')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')

@@ -9,8 +9,7 @@ RFile:ChainedCalls.r
       PsiElement())(')')
     R_BLOCK_EXPRESSION
       PsiElement({)('{')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_IF_STATEMENT
         PsiElement(if)('if')
         PsiWhiteSpace(' ')
@@ -29,8 +28,7 @@ RFile:ChainedCalls.r
         PsiElement())(')')
         R_BLOCK_EXPRESSION
           PsiElement({)('{')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('    ')
+          PsiWhiteSpace('\n    ')
           R_CALL_EXPRESSION
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('stop')
@@ -39,11 +37,9 @@ RFile:ChainedCalls.r
               R_STRING_LITERAL_EXPRESSION
                 PsiElement(STRING)('""')
               PsiElement())(')')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('  ')
+          PsiWhiteSpace('\n  ')
           PsiElement(})('}')
-      PsiElement(nl)('\n')
-      PsiWhiteSpace('  ')
+      PsiWhiteSpace('\n  ')
       R_IF_STATEMENT
         PsiElement(if)('if')
         PsiWhiteSpace(' ')
@@ -117,8 +113,7 @@ RFile:ChainedCalls.r
         PsiElement())(')')
         R_BLOCK_EXPRESSION
           PsiElement({)('{')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('    ')
+          PsiWhiteSpace('\n    ')
           R_CALL_EXPRESSION
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('stop')
@@ -127,8 +122,7 @@ RFile:ChainedCalls.r
               R_STRING_LITERAL_EXPRESSION
                 PsiElement(STRING)('""')
               PsiElement())(')')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('  ')
+          PsiWhiteSpace('\n  ')
           PsiElement(})('}')
-      PsiElement(nl)('\n')
+      PsiWhiteSpace('\n')
       PsiElement(})('}')

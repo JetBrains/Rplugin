@@ -40,7 +40,7 @@ RFile:AssignmentInSubscription.r
     PsiWhiteSpace(' ')
     R_STRING_LITERAL_EXPRESSION
       PsiElement(STRING)('"gray"')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   R_ASSIGNMENT_STATEMENT
     R_SUBSCRIPTION_EXPRESSION
       R_IDENTIFIER_EXPRESSION

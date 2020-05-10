@@ -1,7 +1,6 @@
 RFile:simple.rmd
   PsiElement(OUTER)('It's a header\n---\n\n```{r}')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('x')
@@ -11,8 +10,7 @@ RFile:simple.rmd
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('312312')
-  PsiElement(nl)('\n')
-  PsiWhiteSpace('  ')
+  PsiWhiteSpace('\n  ')
   R_ASSIGNMENT_STATEMENT
     R_IDENTIFIER_EXPRESSION
       PsiElement(identifier)('y')
@@ -22,5 +20,5 @@ RFile:simple.rmd
     PsiWhiteSpace(' ')
     R_NUMERIC_LITERAL_EXPRESSION
       PsiElement(NUMERIC)('432432432')
-  PsiElement(nl)('\n')
+  PsiWhiteSpace('\n')
   PsiElement(OUTER)('```\n')

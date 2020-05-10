@@ -23,11 +23,7 @@ RFile:DotAsKeywordArgument.r
               R_IDENTIFIER_EXPRESSION
                 PsiElement(identifier)('n')
             PsiElement())(')')
-          PsiElement(nl)('\n')
-          PsiWhiteSpace('\t')
-          PsiWhiteSpace('\t')
-          PsiWhiteSpace('\t')
-          PsiWhiteSpace('    ')
+          PsiWhiteSpace('\n\t\t\t    ')
           R_CALL_EXPRESSION
             R_IDENTIFIER_EXPRESSION
               PsiElement(identifier)('substitute')

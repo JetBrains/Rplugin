@@ -6,8 +6,7 @@ RFile:BlockAsArgument.r
       PsiElement(()('(')
       R_BLOCK_EXPRESSION
         PsiElement({)('{')
-        PsiElement(nl)('\n')
-        PsiWhiteSpace('  ')
+        PsiWhiteSpace('\n  ')
         R_ASSIGNMENT_STATEMENT
           R_IDENTIFIER_EXPRESSION
             PsiElement(identifier)('B')
@@ -64,6 +63,6 @@ RFile:BlockAsArgument.r
                       PsiElement(NUMERIC)('100000')
                     PsiElement())(')')
               PsiElement())(')')
-        PsiElement(nl)('\n')
+        PsiWhiteSpace('\n')
         PsiElement(})('}')
       PsiElement())(')')
