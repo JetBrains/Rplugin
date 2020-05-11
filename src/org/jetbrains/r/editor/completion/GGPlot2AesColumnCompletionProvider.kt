@@ -16,8 +16,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.editor.RLookupElement
-import org.jetbrains.r.editor.TABLE_MANIPULATION_PRIORITY
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RDataTableAnalyzer

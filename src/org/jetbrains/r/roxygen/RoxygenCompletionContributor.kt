@@ -6,13 +6,17 @@ package org.jetbrains.r.roxygen
 
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.icons.AllIcons
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
-import org.jetbrains.r.editor.GLOBAL_GROUPING
-import org.jetbrains.r.editor.RLookupElement
-import org.jetbrains.r.editor.VARIABLE_GROUPING
+import org.jetbrains.r.editor.completion.*
+import org.jetbrains.r.psi.api.RAssignmentStatement
+import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.roxygen.psi.RoxygenElementFilters
+import org.jetbrains.r.roxygen.psi.api.RoxygenIdentifierExpression
+import org.jetbrains.r.roxygen.psi.api.RoxygenNamespaceAccessExpression
 
 class RoxygenCompletionContributor : CompletionContributor() {
 
@@ -23,6 +27,8 @@ class RoxygenCompletionContributor : CompletionContributor() {
   init {
     addTagNamesCompletion()
     addParameterCompletion()
+    addNamespaceAccessExpression()
+    addIdentifierCompletion()
   }
 
   private fun addTagNamesCompletion() {
@@ -35,6 +41,18 @@ class RoxygenCompletionContributor : CompletionContributor() {
     extend(CompletionType.BASIC, psiElement()
       .withLanguage(RoxygenLanguage.INSTANCE)
       .andOr(RoxygenElementFilters.PARAMETER_FILTER), ParameterCompletionProvider())
+  }
+
+  private fun addNamespaceAccessExpression() {
+    extend(CompletionType.BASIC, psiElement()
+      .withLanguage(RoxygenLanguage.INSTANCE)
+      .and(RoxygenElementFilters.NAMESPACE_ACCESS_FILTER), NamespaceAccessCompletionProvider())
+  }
+
+  private fun addIdentifierCompletion() {
+    extend(CompletionType.BASIC, psiElement()
+      .withLanguage(RoxygenLanguage.INSTANCE)
+      .andOr(RoxygenElementFilters.IDENTIFIER_FILTER), IdentifierCompletionProvider())
   }
 
   private inner class TagNameCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -51,13 +69,61 @@ class RoxygenCompletionContributor : CompletionContributor() {
   private inner class ParameterCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val function = RoxygenUtil.findAssociatedFunction(parameters.position)
-      function?.parameterList?.parameterList?.forEach { result.addElement(createParameterLookupElement(it.name)) }
+      function?.parameterList?.parameterList?.forEach {
+        result.addElement(RLookupElementFactory().createLocalVariableLookupElement(it.name, true))
+      }
+    }
+  }
+
+  private class NamespaceAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val position =
+        PsiTreeUtil.getParentOfType(parameters.position, RoxygenIdentifierExpression::class.java, false) ?: return
+      val namespaceAccess = position.parent as? RoxygenNamespaceAccessExpression ?: return
+      val namespaceName = namespaceAccess.namespaceName
+      RPackageCompletionUtil.addNamespaceCompletion(namespaceName, false, parameters, result, roxygenLinkCompletionElementFactory)
+    }
+  }
+
+  private inner class IdentifierCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val position =
+        PsiTreeUtil.getParentOfType(parameters.position, RoxygenIdentifierExpression::class.java, false) ?: return
+      RPackageCompletionUtil.addPackageCompletion(position, result)
+      val originalFile = parameters.originalFile
+      val prefix = position.name.let { StringUtil.trimEnd(it, CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED) }
+      RPackageCompletionUtil.addCompletionFromIndices(position.project, RSearchScopeUtil.getScope(originalFile),
+                                                      originalFile, prefix, HashSet(), result, roxygenLinkCompletionElementFactory)
     }
   }
 
   companion object {
-    private fun createParameterLookupElement(lookupString: String): LookupElement {
-      return PrioritizedLookupElement.withGrouping(RLookupElement(lookupString, true, AllIcons.Nodes.Parameter), VARIABLE_GROUPING)
+    private val roxygenLinkCompletionElementFactory = RLookupElementFactory(RoxygenFunctionLinkInsertHandler,
+                                                                            RoxygenConstantLinkInsertHandler)
+
+    private object RoxygenFunctionLinkInsertHandler : RLookupElementInsertHandler {
+      override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = InsertHandler<LookupElement> { context, _ ->
+        val offset = context.tailOffset
+        val document = context.document
+        insertSpaceAfterLinkIfNeeded(document, offset)
+        document.insertString(offset, "()")
+        context.editor.caretModel.moveCaretRelatively(4, 0, false, false, false)
+      }
+    }
+
+    private object RoxygenConstantLinkInsertHandler : RLookupElementInsertHandler {
+      override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        insertSpaceAfterLinkIfNeeded(document, context.tailOffset)
+        context.editor.caretModel.moveCaretRelatively(2, 0, false, false, false)
+      }
+    }
+
+    private fun insertSpaceAfterLinkIfNeeded(document: Document, tailOffset: Int) {
+      val text = document.text
+      if (tailOffset + 1 >= text.length || text[tailOffset + 1] != ' ') {
+        document.insertString(tailOffset + 1, " ")
+      }
     }
 
     private val TAG_NAMES =

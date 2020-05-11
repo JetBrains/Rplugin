@@ -18,6 +18,7 @@ import org.jetbrains.r.psi.api.RListSubsetOperator
 import org.jetbrains.r.psi.api.RNamespaceAccessExpression
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
+import org.jetbrains.r.roxygen.RoxygenFileType
 import org.jetbrains.r.settings.REditorSettings
 
 private const val identifierPrefixLength = 2
@@ -25,7 +26,7 @@ private const val identifierPrefixLength = 2
 class RCompletionAutoPopupHandler : TypedHandlerDelegate() {
 
   override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
-    if (file.fileType != RFileType && file.virtualFile?.fileType != RMarkdownFileType) return Result.CONTINUE
+    if (file.fileType !in listOf(RFileType, RoxygenFileType) && file.virtualFile?.fileType != RMarkdownFileType) return Result.CONTINUE
     val offset = editor.caretModel.offset
 
     if (identifierPart(charTyped)) {
