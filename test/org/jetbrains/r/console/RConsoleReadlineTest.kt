@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.console
 
-import com.intellij.testFramework.PlatformTestUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.rinterop.RInterop
@@ -19,6 +18,12 @@ class RConsoleReadlineTest : RConsoleBaseTestCase() {
     })
     val promise2 = console.executeText("s = paste0('[', readline(), ']')\n")
     promise1.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    var remaining = 20
+    while (console.executeActionHandler.state != RConsoleExecuteActionHandler.State.READ_LN) {
+      remaining--
+      TestCase.assertTrue(remaining > 0)
+      Thread.sleep(15)
+    }
     console.executeText("line\n")
     promise2.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[line]", rInterop.executeCode("cat(s)").stdout)
