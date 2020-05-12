@@ -85,10 +85,10 @@ abstract class RImportDataDialog(
   private var previewRowCount by IntFieldDelegate(form.headTextField)
   private var viewAfterImport by CheckBoxDelegate(form.viewAfterImportCheckBox)
 
-  private var currentOptions: Map<String, String>? = null
+  private var currentOptions: ImportOptions? = null
 
   protected abstract val importOptionComponent: JComponent
-  protected abstract val importOptions: Map<String, String>?
+  protected abstract val additionalOptions: Map<String, String>?
   protected abstract val importMode: String
 
   override fun init() {
@@ -141,10 +141,12 @@ abstract class RImportDataDialog(
 
   private fun importData() {
     variableName?.let { name ->
-      interop.commitDataImport(name)
-      if (viewAfterImport) {
-        val ref = RRef.expressionRef(name, interop)
-        VisualizeTableHandler.visualizeTable(interop, ref, project, name)
+      collectImportOptions()?.let { options ->
+        interop.commitDataImport(name, options.path, options.mode, options.additional)
+        if (viewAfterImport) {
+          val ref = RRef.expressionRef(name, interop)
+          VisualizeTableHandler.visualizeTable(interop, ref, project, name)
+        }
       }
     }
   }
@@ -156,7 +158,7 @@ abstract class RImportDataDialog(
   @Synchronized
   private fun updatePreviewAsync() {
     updateOkAction()
-    getPreviewOptions()?.let { options ->
+    collectImportOptions()?.let { options ->
       if (!form.optionPanel.isEnabled) {
         return
       }
@@ -192,7 +194,7 @@ abstract class RImportDataDialog(
     }
   }
 
-  private fun prepareViewerAsync(options: Map<String, String>): Promise<Pair<RDataFrameViewer, Int>> {
+  private fun prepareViewerAsync(options: ImportOptions): Promise<Pair<RDataFrameViewer, Int>> {
     return preparePreviewRefAsync(options).thenAsync { (ref, errorCount) ->
       interop.dataFrameGetViewer(ref).then { viewer ->
         Pair(viewer, errorCount)
@@ -200,9 +202,9 @@ abstract class RImportDataDialog(
     }
   }
 
-  private fun preparePreviewRefAsync(options: Map<String, String>): Promise<Pair<RRef, Int>> {
+  private fun preparePreviewRefAsync(options: ImportOptions): Promise<Pair<RRef, Int>> {
     return runAsync {
-      val result = interop.previewDataImport(options)
+      val result = interop.previewDataImport(options.path, options.mode, options.rowCount, options.additional)
       val errorCount = parseErrorCount(result.stdout, result.stderr)
       val ref = RRef.expressionRef(PREVIEW_DATA_VARIABLE_NAME, interop)
       Pair(ref, errorCount)
@@ -222,15 +224,11 @@ abstract class RImportDataDialog(
     return output.substring(4, output.length - 1).toInt()
   }
 
-  private fun getPreviewOptions(): Map<String, String>? {
+  private fun collectImportOptions(): ImportOptions? {
     return filePath?.let { path ->
-      previewRowCount?.let { previewCount ->
-        importOptions?.toMutableMap()?.also { options ->
-          options["importLocation"] = FileUtil.toSystemIndependentName(path).quote()
-          options["modelLocation"] = "NULL"
-          options["mode"] = importMode.quote()
-          options["maxPreviewRows"] = "$previewCount"
-          options["openDataViewer"] = "FALSE"
+      previewRowCount?.let { rowCount ->
+        additionalOptions?.let { additional ->
+          ImportOptions(FileUtil.toSystemIndependentName(path), importMode, rowCount, additional)
         }
       }
     }
@@ -291,6 +289,25 @@ abstract class RImportDataDialog(
         return null
       }
       return text
+    }
+  }
+
+  protected inner class TextFieldDelegate(private val field: JTextField) {
+    init {
+      field.addFocusLostListener {
+        updatePreviewAsync()
+      }
+      field.addActionListener {
+        updatePreviewAsync()
+      }
+    }
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+      return field.text ?: ""
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+      field.text = value
     }
   }
 
@@ -362,6 +379,8 @@ abstract class RImportDataDialog(
   }
 
   protected data class ComboBoxEntry<V>(val representation: String, val value: V)
+
+  private data class ImportOptions(val path: String, val mode: String, val rowCount: Int, val additional: Map<String, String>)
 
   companion object {
     private const val DEFAULT_PREVIEW_HEAD = 50

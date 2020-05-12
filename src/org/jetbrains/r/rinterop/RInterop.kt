@@ -572,15 +572,24 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     execute(asyncStub::repoRemovePackage, request)
   }
 
-  fun previewDataImport(options: Map<String, String>): RIExecutionResult {
+  fun previewDataImport(path: String, mode: String, rowCount: Int, additional: Map<String, String>): RIExecutionResult {
     val request = Service.PreviewDataImportRequest.newBuilder()
-      .putAllOptions(options)
+      .putAllOptions(additional)
+      .setRowCount(rowCount)
+      .setMode(mode)
+      .setPath(path)
       .build()
     return executeRequest(RPIServiceGrpc.getPreviewDataImportMethod(), request)
   }
 
-  fun commitDataImport(variableName: String) {
-    execute(asyncStub::commitDataImport, StringValue.of(variableName))
+  fun commitDataImport(name: String, path: String, mode: String, additional: Map<String, String>) {
+    val request = Service.CommitDataImportRequest.newBuilder()
+      .putAllOptions(additional)
+      .setMode(mode)
+      .setPath(path)
+      .setName(name)
+      .build()
+    execute(asyncStub::commitDataImport, request)
   }
 
   fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {

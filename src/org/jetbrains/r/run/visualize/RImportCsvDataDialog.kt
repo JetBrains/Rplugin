@@ -28,7 +28,7 @@ class RImportCsvDataDialog(project: Project, interop: RInterop, parent: Disposab
 
   override val importOptionComponent: JComponent = form.contentPane
 
-  override val importOptions: Map<String, String>?
+  override val additionalOptions: Map<String, String>?
     get() = skipRowCount?.let { skipCount ->
       mutableMapOf<String, String>().also { options ->
         options["skip"] = skipCount.toString()
