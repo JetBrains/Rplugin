@@ -83,6 +83,31 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
     TestCase.assertTrue("stderr = $stderr", "hi" in stderr.toString())
   }
 
+  fun testBackground() {
+    val stdoutBuf = StringBuilder()
+    val promise = AsyncPromise<Unit>()
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      var done = false
+
+      override fun onText(text: String, type: ProcessOutputType) {
+        if (type == ProcessOutputType.STDOUT) stdoutBuf.append(text)
+        if ("[1] 222" in stdoutBuf) promise.setResult(Unit)
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
+    rInterop.replExecute("""
+      system("${StringUtil.escapeStringCharacters(makeRCommand("Sys.sleep(1); print(200 + 20 + 2)"))}", wait = FALSE)
+      print(100 + 10 + 1)
+    """.trimIndent())
+    promise.blockingGet(DEFAULT_TIMEOUT)
+    val stdout = stdoutBuf.toString()
+    val pos1 = stdout.indexOf("[1] 111")
+    val pos2 = stdout.indexOf("[1] 222")
+    TestCase.assertTrue(pos1 != -1)
+    TestCase.assertTrue(pos2 != -1)
+    TestCase.assertTrue(pos1 < pos2)
+  }
+
   private fun makeRCommand(code: String): String {
     return "${RInterpreterUtil.suggestHomePath()} --no-save --no-restore --slave -e \"${StringUtil.escapeStringCharacters(code)}\""
   }
