@@ -251,10 +251,14 @@ You can find the source code in the following repositories:
     <!-- Variable view actions -->
     <actions>
         <group id="org.jetbrains.r.debugger.RXVariablesViewActions">
+            <action id="org.jetbrains.r.debugger.RImportBaseDataAction"
+                    class="org.jetbrains.r.debugger.RImportBaseDataAction"
+                    text="From Text with base"
+                    description="Import dataset from text with base"/>
             <action id="org.jetbrains.r.debugger.RImportCsvDataAction"
                     class="org.jetbrains.r.debugger.RImportCsvDataAction"
-                    description="Import dataset from text with readr"
-                    icon="AllIcons.ToolbarDecorator.Import"/>
+                    text="From Text with readr"
+                    description="Import dataset from text with readr"/>
         </group>
     </actions>
 

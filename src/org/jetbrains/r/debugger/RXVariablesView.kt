@@ -47,6 +47,7 @@ import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXDebuggerEvaluator
 import org.jetbrains.r.run.debug.stack.RXStackFrame
 import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
+import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
 import java.awt.BorderLayout
 import java.awt.event.*
@@ -257,12 +258,27 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
         RDebuggerEvaluateHandler.perform(console.project, RXDebuggerEvaluator(stackFrame ?: return), e.dataContext)
       }
     })
-    actions.addAction(createPackageDependentAction<RImportCsvDataAction>(IMPORT_CSV_REQUIREMENTS) {
-      RImportCsvDataDialog(console.project, console.rInterop, console.project).show()
-    })
+    actions.addAction(createImportActionGroup())
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, actions, false) as ActionToolbarImpl
     toolbar.setTargetComponent(tree)
     getPanel().add(toolbar.getComponent(), BorderLayout.WEST)
+  }
+
+  private fun createImportActionGroup(): ActionGroup {
+    val project = console.project
+    val interop = console.rInterop
+    val actions = listOf(
+      ToolbarUtil.createAnActionButton<RImportBaseDataAction> {
+        RImportBaseDataDialog(project, interop, project).show()
+      },
+      createPackageDependentAction<RImportCsvDataAction>(IMPORT_CSV_REQUIREMENTS) {
+        RImportCsvDataDialog(project, interop, project).show()
+      }
+    )
+    return DefaultActionGroup(IMPORT_ACTION_GROUP_NAME, actions).apply {
+      templatePresentation.icon = AllIcons.ToolbarDecorator.Import
+      isPopup = true
+    }
   }
 
   private inline fun <reified A : AnAction>createPackageDependentAction(packageNames: List<String>, noinline onClick: () -> Unit): AnAction {
@@ -346,6 +362,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
   }
 
   companion object {
+    private val IMPORT_ACTION_GROUP_NAME = RBundle.message("import.data.action.group.name")
     private val IMPORT_CSV_REQUIREMENTS = listOf("readr")
 
     private fun isAboveSelectedItem(event: MouseEvent, watchTree: XDebuggerTree, fullWidth: Boolean): Boolean {

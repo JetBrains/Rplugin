@@ -44,6 +44,10 @@ object ToolbarUtil {
     return actionToolbar.component
   }
 
+  inline fun <reified A : AnAction>createAnActionButton(noinline onClick: () -> Unit): AnActionButton {
+    return createAnActionButton(A::class.qualifiedName ?: "", onClick)
+  }
+
   fun createAnActionButton(id: String, onClick: Runnable): AnActionButton {
     return createAnActionButton(id) {
       onClick.run()
