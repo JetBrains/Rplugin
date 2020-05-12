@@ -3,7 +3,7 @@
   <id>R4Intellij</id>
   <version>2020.1-SNAPSHOT</version>
   <vendor>JetBrains</vendor>
-  <idea-version since-build="201.5985.0"/>
+  <idea-version since-build="201.6668.60"/>
   <xi:include href="/META-INF/plugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/visualisation-201.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

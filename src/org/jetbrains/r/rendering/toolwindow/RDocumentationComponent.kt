@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
+import com.intellij.openapi.application.ApplicationBundle
 import com.intellij.openapi.editor.colors.EditorColors.*
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.DumbAware
@@ -18,20 +19,21 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.*
+import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import java.awt.*
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import javax.swing.JComponent
-import javax.swing.JEditorPane
-import javax.swing.JScrollPane
+import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.text.Highlighter
 import javax.swing.text.JTextComponent
+import kotlin.math.max
 
 class RDocumentationComponent(project: Project) : DocumentationComponent(DocumentationManager.getInstance(project)) {
   override fun needsToolbar(): Boolean = true
-  private val searchModel = SearchModel(component as JEditorPane)
+  private val statusLabelAction = StatusLabelAction()
+  private val searchModel = SearchModel(component as JEditorPane, statusLabelAction.statusLabel)
   private val textSearchFieldAction = TextSearchFieldAction()
 
   init {
@@ -40,22 +42,49 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     // UI hacky hacks
     UIUtil.findComponentOfType(this, ActionToolbarImpl::class.java)?.let { actionToolbarImpl ->
       updateActionGroup(actionToolbarImpl.actionGroup as DefaultActionGroup)
+      actionToolbarImpl.secondaryActionsButton
       addSearchTextFieldListeners()
     }
   }
 
   private fun updateActionGroup(actionGroup: DefaultActionGroup) {
-    actionGroup.remove(actionGroup.childActionsOrStubs[4]) // remove Restore Size
-    actionGroup.remove(actionGroup.childActionsOrStubs[3]) // remove Show Toolbar
+    actionGroup.remove(actionGroup.childActionsOrStubs[5]) // remove Restore Size
+    actionGroup.remove(actionGroup.childActionsOrStubs[4]) // remove Show Toolbar
+    val fontSize = actionGroup.childActionsOrStubs[3]
+    actionGroup.remove(fontSize)
+    actionGroup.remove(actionGroup.childActionsOrStubs[2]) // remove Show on Mouse Move
     actionGroup.remove(actionGroup.childActionsOrStubs[1]) // remove Open as Tool Window
     val innerActionGroup = actionGroup.childActionsOrStubs[0] as DefaultActionGroup // action group with back and forward buttons
     innerActionGroup.remove(innerActionGroup.childActionsOrStubs[2]) // remove edit action
+
+    actionGroup.add(wrapAction(innerActionGroup.childActionsOrStubs[0]))
+    actionGroup.add(wrapAction(innerActionGroup.childActionsOrStubs[1]))
+
+    innerActionGroup.removeAll()
+
     addActions(innerActionGroup)
+  }
+
+  private fun wrapAction(anAction: AnAction): AnAction {
+    class ActionWrapper : AnAction(), RightAlignedToolbarAction {
+      init {
+        copyFrom(anAction)
+      }
+
+      override fun actionPerformed(e: AnActionEvent) {
+        anAction.actionPerformed(e)
+      }
+
+      override fun update(e: AnActionEvent) {
+        anAction.update(e)
+      }
+    }
+    return ActionWrapper()
   }
 
   private fun addActions(innerActionGroup: DefaultActionGroup) {
     val searchTextField = textSearchFieldAction.myField
-    innerActionGroup.add(Separator(), Constraints.FIRST)
+    innerActionGroup.add(statusLabelAction, Constraints.FIRST)
     val nextOccurrenceAction = createNextOccurrenceAction()
     nextOccurrenceAction.registerCustomShortcutSet(nextOccurrenceAction.shortcutSet, searchTextField)
     nextOccurrenceAction.registerCustomShortcutSet(nextOccurrenceAction.shortcutSet, this)
@@ -112,7 +141,24 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent = myField
   }
 
-  private class SearchModel(private val editorPane: JEditorPane) {
+  private class StatusLabelAction : AnActionButton("", "", null), CustomComponentAction, DumbAware {
+    val statusLabel: JLabel = JLabel().also { label ->
+      // copy-pasted from com.intellij.find.editorHeaderActions.StatusTextAction
+      //noinspection HardCodedStringLiteral
+      label.font = JBUI.Fonts.toolbarFont()
+      label.text = "9888 results"
+      val size = label.preferredSize
+      size.height = max(size.height, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE.height)
+      label.preferredSize = size
+      label.text = null
+      label.horizontalAlignment = SwingConstants.CENTER
+    }
+    override fun isDumbAware(): Boolean = true
+    override fun actionPerformed(e: AnActionEvent) {}
+    override fun createCustomComponent(presentation: Presentation, place: String): JComponent = statusLabel
+  }
+
+  private class SearchModel(private val editorPane: JEditorPane, private val matchLabel: JLabel) {
     init {
       editorPane.document.addDocumentListener(object : DocumentAdapter() {
         override fun textChanged(e: DocumentEvent) {
@@ -149,6 +195,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       check(hasNext) { "Doesn't have next element" }
       currentSelection += 1
       updateHighlighting()
+      updateMatchLabel()
       scroll()
     }
 
@@ -156,6 +203,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       check(hasPrev) { "Doesn't have prev element" }
       currentSelection -= 1
       updateHighlighting()
+      updateMatchLabel()
       scroll()
     }
 
@@ -167,14 +215,33 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     private fun updateIndices() {
       indices.clear()
       currentSelection = 0
-      if (pattern.isEmpty()) return
-      val text = editorPane.document.getText(0, editorPane.document.length)
-      var index = 0
-      while (index < text.length) {
-        index = StringUtil.indexOfIgnoreCase(text, pattern, index)
-        if (index == -1) break
-        indices.add(index)
-        index += pattern.length
+      if (pattern.isNotEmpty()) {
+        val text = editorPane.document.getText(0, editorPane.document.length)
+        var index = 0
+        while (index < text.length) {
+          index = StringUtil.indexOfIgnoreCase(text, pattern, index)
+          if (index == -1) break
+          indices.add(index)
+          index += pattern.length
+        }
+      }
+      updateMatchLabel()
+    }
+
+    private fun updateMatchLabel() {
+      matchLabel.foreground = UIUtil.getLabelForeground()
+      matchLabel.font = JBUI.Fonts.toolbarFont()
+      val matches = indices.size
+      val cursorIndex = currentSelection + 1
+      if (pattern.isEmpty()) {
+        matchLabel.text = ""
+      } else {
+        if (indices.size > 0) {
+          matchLabel.text = ApplicationBundle.message("editorsearch.current.cursor.position", cursorIndex, matches)
+        } else {
+          matchLabel.foreground = UIUtil.getErrorForeground()
+          matchLabel.text = ApplicationBundle.message("editorsearch.matches", matches)
+        }
       }
     }
 
