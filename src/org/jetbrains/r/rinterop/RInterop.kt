@@ -281,7 +281,7 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     runReadAction {
       val document = FileDocumentManager.getInstance().getDocument(file)
                      ?: return@runReadAction
-      code = textRange?.let { document.getText(it) } ?: document.text ?: ""
+      code = textRange?.let { document.getText(it) } ?: document.text
       lineOffset = textRange?.let { document.getLineNumber(it.startOffset) } ?: 0
     }
     if (lineOffset == -1) {
@@ -989,15 +989,15 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
 
   private fun processError(e: Throwable, methodName: String): Throwable {
     (e as? ExecutionException)?.cause?.let { return processError(it, methodName) }
-    if (!isAlive) return RInteropTerminated()
+    if (!isAlive) return RInteropTerminated(this)
     if (e is StatusRuntimeException) {
       val code = e.status.code
       return if (code == Status.Code.UNAVAILABLE || code == Status.Code.INTERNAL) {
         RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
         terminationPromise.setResult(Unit)
-        RInteropTerminated()
+        RInteropTerminated(this)
       } else {
-        RInteropRequestFailed(methodName, e)
+        RInteropRequestFailed(this, methodName, e)
       }
     }
     return e

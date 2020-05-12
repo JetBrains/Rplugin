@@ -4,6 +4,19 @@
 
 package org.jetbrains.r.rinterop
 
-sealed class RInteropException(message: String, cause: Throwable? = null) : Exception(message, cause)
-class RInteropTerminated : RInteropException("RWrapper was terminated")
-class RInteropRequestFailed(methodName: String, cause: Throwable? = null) : RInteropException("Request $methodName failed", cause)
+import com.intellij.openapi.diagnostic.Attachment
+import com.intellij.openapi.diagnostic.ExceptionWithAttachments
+
+sealed class RInteropException(val rInterop: RInterop, message: String, cause: Throwable? = null) :
+  Exception(message, cause), ExceptionWithAttachments {
+  private val lazyAttachments by lazy {
+    val log = rInterop.rInteropGrpcLogger.toJson(true)
+    arrayOf(Attachment("grpc_log.json", log).apply { isIncluded = true })
+  }
+
+  override fun getAttachments() = lazyAttachments
+}
+
+class RInteropTerminated(rInterop: RInterop) : RInteropException(rInterop, "RWrapper was terminated")
+class RInteropRequestFailed(rInterop: RInterop, methodName: String, cause: Throwable? = null) :
+  RInteropException(rInterop, "Request $methodName failed", cause)
