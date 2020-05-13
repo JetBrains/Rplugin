@@ -722,6 +722,9 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
   fun getObjectSizes(refs: List<RRef>): List<Long> {
     return execute(asyncStub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
+  fun raiseSigsegv() {
+    executeAsync(asyncStub::raiseSigsegv, Empty.getDefaultInstance())
+  }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
     methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
@@ -990,19 +993,12 @@ class RInterop(val processHandler: ProcessHandler, address: String, port: Int, v
     cacheIndex.incrementAndGet()
   }
 
-  private fun reportIfCrash(t: Throwable?) {
-    if (t is StatusRuntimeException && t.status.code == Status.Code.UNAVAILABLE) {
-      RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
-    }
-  }
-
   private fun processError(e: Throwable, methodName: String): Throwable {
     (e as? ExecutionException)?.cause?.let { return processError(it, methodName) }
     if (!isAlive) return RInteropTerminated(this)
     if (e is StatusRuntimeException) {
       val code = e.status.code
       return if (code == Status.Code.UNAVAILABLE || code == Status.Code.INTERNAL) {
-        RInteropUtil.reportCrash(this, RInteropUtil.updateCrashes())
         terminationPromise.setResult(Unit)
         RInteropTerminated(this)
       } else {

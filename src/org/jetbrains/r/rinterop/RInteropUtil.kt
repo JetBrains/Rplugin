@@ -5,10 +5,14 @@
 package org.jetbrains.r.rinterop
 
 import com.google.common.annotations.VisibleForTesting
+import com.intellij.diagnostic.IdeMessagePanel
+import com.intellij.diagnostic.MessagePool
+import com.intellij.diagnostic.MessagePoolListener
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -17,6 +21,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
 import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -89,8 +94,9 @@ object RInteropUtil {
           LOG.info(stdout.toString())
         }
         val updateCrashes = updateCrashes()
-        if (updateCrashes.isNotEmpty() || (event.exitCode != 0 && rInteropForReport != null)) {
-          reportCrash(rInteropForReport, updateCrashes)
+        if (updateCrashes.isNotEmpty() || event.exitCode != 0) {
+          reportCrash(project, rInteropForReport, updateCrashes, process.getUserData(PROCESS_CRASH_REPORT_FILE),
+                      process.getUserData(PROCESS_TERMINATED_WITH_REPORT) ?: false)
         }
         if (linePromise.state == Promise.State.PENDING) {
           linePromise.setError(RuntimeException(
@@ -128,8 +134,9 @@ object RInteropUtil {
     }
   }
 
-  internal fun reportCrash(rInterop: RInterop?, updateCrashes: List<File>) {
-    if (ApplicationManager.getApplication().isUnitTestMode || rInterop?.isAlive == false) return
+  private fun reportCrash(project: Project, rInterop: RInterop?, updateCrashes: List<File>,
+                          crashReportFile: String? = null, terminatedWithReport: Boolean = false) {
+    if (ApplicationManager.getApplication().isUnitTestMode) return
     var attachments = updateCrashes.map { file ->
       try {
         val path = file.getPath()
@@ -148,8 +155,28 @@ object RInteropUtil {
       val grpcLog = it.toJson(true)
       attachments = attachments.plus(Attachment("grpc_log.json", grpcLog).apply { isIncluded = true })
     }
-    val message = "RWrapper terminated with Runtime Error" +
+    if (crashReportFile != null) {
+      val file = File(crashReportFile)
+      if (file.exists() && file.isFile) {
+        val content = file.readText(Charsets.UTF_8)
+        file.delete()
+        if (content.isNotEmpty()) {
+          attachments = attachments.plus(Attachment("rwrapper-crash-report.txt", content).apply { isIncluded = true })
+        }
+      }
+    }
+    val message = (if (terminatedWithReport) "RWrapper forcibly terminated by user" else "RWrapper terminated with Runtime Error") +
                   (updateCrashes.firstOrNull()?.let { ", the crash minidump found: $it " } ?: "")
+    if (terminatedWithReport) {
+      MessagePool.getInstance().addListener(object : MessagePoolListener {
+        override fun newEntryAdded() {
+          MessagePool.getInstance().removeListener(this)
+          invokeLater {
+            (FatalErrorWidgetFactory().createWidget(project) as? IdeMessagePanel)?.openErrorsDialog(null)
+          }
+        }
+      })
+    }
     LOG.error(message, *attachments)
   }
 
@@ -172,11 +199,13 @@ object RInteropUtil {
       rwrapper.setExecutable(true)
     }
     val crashpadHandler = getCrashpadHandler()
+    val crashReportFile = FileUtil.createTempFile("rwrapper-crash-report", ".txt", true).absolutePath
 
     var command = GeneralCommandLine()
       .withExePath(wrapperPath)
       .withWorkDirectory(project.basePath!!)
       .withParameters("--with-timeout")
+      .withParameters("--crash-report-file", crashReportFile)
       .withEnvironment("R_HOME", paths.home)
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
@@ -207,7 +236,10 @@ object RInteropUtil {
       command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
     }
     command = command.withEnvironment("R_HELPERS_PATH", RPluginUtil.helpersPath)
-    return result.also { result.setResult(ColoredProcessHandler(command).apply { setShouldDestroyProcessRecursively(true) } to paths) }
+    return result.also { result.setResult(ColoredProcessHandler(command).apply {
+      setShouldDestroyProcessRecursively(true)
+      this.putUserData(PROCESS_CRASH_REPORT_FILE, crashReportFile)
+    } to paths) }
   }
 
   private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
@@ -314,4 +346,7 @@ operating systems, but generally includes the following:
  - A selection of memory potentially referenced from registers and
    from stack.
   """
+
+  private val PROCESS_CRASH_REPORT_FILE = Key<String>("org.jetbrains.r.rinterop.RInteropUtil.crashReportFile")
+  val PROCESS_TERMINATED_WITH_REPORT = Key<Boolean>("org.jetbrains.r.rinterop.RInteropUtil.terminatedWithReport")
 }

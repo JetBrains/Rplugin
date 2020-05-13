@@ -99,6 +99,10 @@ You can find the source code in the following repositories:
                 class="org.jetbrains.r.console.RConsoleView$RestartRAction" text="Restart R"
                 icon="AllIcons.Actions.Restart"/>
 
+        <action id="org.jetbrains.r.console.RConsoleView.TerminateRWithReportAction"
+                class="org.jetbrains.r.console.RConsoleView$TerminateRWithReportAction" text="Terminate R and Generate Report"
+                icon="AllIcons.Debugger.KillProcess"/>
+
         <action id="org.jetbrains.r.console.RConsoleView.REofAction"
                 class="org.jetbrains.r.console.RConsoleView$REofAction">
           <keyboard-shortcut keymap="$default" first-keystroke="control D"/>

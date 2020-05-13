@@ -34,6 +34,7 @@ import com.intellij.openapi.editor.markup.MarkupModel
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
@@ -50,11 +51,13 @@ import com.intellij.util.ui.FontInfo
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RInteropUtil
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.event.KeyEvent
@@ -376,6 +379,23 @@ class RConsoleView(val rInterop: RInterop,
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
       RConsoleToolWindowFactory.restartConsole(console)
+    }
+  }
+
+  class TerminateRWithReportAction : DumbAwareAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+      val console = getConsole(e) ?: return
+      val yesNo = Messages.showYesNoDialog(e.project, RBundle.message("console.terminate.with.report.message"),
+                                           RBundle.message("console.terminate.with.report.title"), null)
+      if (yesNo == Messages.YES) {
+        console.rInterop.processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
+        console.rInterop.raiseSigsegv()
+      }
+    }
+
+    override fun update(e: AnActionEvent) {
+      val console = getConsole(e)
+      e.presentation.isEnabled = console?.rInterop?.isAlive == true
     }
   }
 }
