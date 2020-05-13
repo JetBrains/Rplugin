@@ -16,6 +16,8 @@ import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RInterop
 
 abstract class RImportDataContextAction(text: String, description: String) : DumbAwareAction(text, description, null) {
+  protected abstract val supportedFormats: List<String>
+
   final override fun actionPerformed(e: AnActionEvent) {
     e.project?.let { project ->
       e.selectedFiles?.firstOrNull()?.let { file ->
@@ -35,7 +37,7 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
   }
 
   protected open fun isApplicableTo(file: VirtualFile): Boolean {
-    return !file.isDirectory && !ScratchUtil.isScratch(file)
+    return !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.isSupportedFormat == true
   }
 
   protected open fun isEnabled(project: Project): Boolean {
@@ -43,6 +45,9 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
   }
 
   protected abstract fun applyTo(project: Project, interop: RInterop, file: VirtualFile)
+
+  private val String.isSupportedFormat: Boolean
+    get() = toLowerCase() in supportedFormats
 
   companion object {
     private val AnActionEvent.selectedFiles: Array<VirtualFile>?

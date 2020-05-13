@@ -45,8 +45,8 @@ class RImportBaseDataDialog(project: Project, interop: RInterop, parent: Disposa
       options["na.strings"] = na.quote()
     }
 
-  override val importMode: String
-    get() = "base"
+  override val supportedFormats = RImportDataUtil.supportedTextFormats
+  override val importMode = "base"
 
   init {
     init()

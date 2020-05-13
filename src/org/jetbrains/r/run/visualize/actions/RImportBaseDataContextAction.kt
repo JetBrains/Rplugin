@@ -9,8 +9,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
+import org.jetbrains.r.run.visualize.RImportDataUtil
 
 class RImportBaseDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION) {
+  override val supportedFormats = RImportDataUtil.supportedTextFormats
+
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
     RImportBaseDataDialog(project, interop, project, file.path).show()
   }

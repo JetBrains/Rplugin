@@ -51,8 +51,8 @@ class RImportCsvDataDialog(project: Project, interop: RInterop, parent: Disposab
       }
     }
 
-  override val importMode: String
-    get() = "text"
+  override val supportedFormats = RImportDataUtil.supportedTextFormats
+  override val importMode = "text"
 
   init {
     init()

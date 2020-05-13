@@ -89,6 +89,7 @@ abstract class RImportDataDialog(
 
   protected abstract val importOptionComponent: JComponent
   protected abstract val additionalOptions: Map<String, String>?
+  protected abstract val supportedFormats: List<String>
   protected abstract val importMode: String
 
   override fun init() {
@@ -130,6 +131,7 @@ abstract class RImportDataDialog(
 
   private fun chooseFile() {
     val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+      .withFileFilter { it.extension?.isSupportedFormat ?: false }
       .withDescription(FILE_CHOOSER_DESCRIPTION)
       .withTitle(FILE_CHOOSER_TITLE)
     val dialog = FileChooserDialogImpl(descriptor, project)
@@ -138,6 +140,9 @@ abstract class RImportDataDialog(
       filePath = file.path
     }
   }
+
+  private val String.isSupportedFormat: Boolean
+    get() = toLowerCase() in supportedFormats
 
   private fun importData() {
     variableName?.let { name ->

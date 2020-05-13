@@ -10,8 +10,11 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
+import org.jetbrains.r.run.visualize.RImportDataUtil
 
 class RImportCsvDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION) {
+  override val supportedFormats = RImportDataUtil.supportedTextFormats
+
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
     RImportCsvDataDialog(project, interop, project, file.path).show()
   }
