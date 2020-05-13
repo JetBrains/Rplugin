@@ -37,6 +37,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -58,6 +59,7 @@ import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
+import org.jvnet.winp.WinProcess
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.event.KeyEvent
@@ -389,7 +391,11 @@ class RConsoleView(val rInterop: RInterop,
                                            RBundle.message("console.terminate.with.report.title"), null)
       if (yesNo == Messages.YES) {
         console.rInterop.processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
-        console.rInterop.raiseSigsegv()
+        if (SystemInfo.isWindows) {
+          WinProcess(console.rInterop.processHandler.process).sendCtrlC()
+        } else {
+          console.rInterop.raiseSigsegv()
+        }
       }
     }
 

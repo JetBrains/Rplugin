@@ -7,7 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
-import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -66,7 +66,7 @@ private const val DEADLINE_TEST = 40L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 const val RINTEROP_THREAD_NAME = "RInterop"
 
-class RInterop(val processHandler: ProcessHandler, address: String, port: Int, val project: Project) : Disposable {
+class RInterop(val processHandler: OSProcessHandler, address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
 
