@@ -9,6 +9,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValueEnvironment
 import org.jetbrains.r.rinterop.RValueSimple
@@ -59,11 +60,13 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
           .onSuccess {
             callback.valueModified()
             rInterop.invalidateCaches()
+            RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
           }
           .onError {
             if (it is CancellationException) return@onError
             callback.errorOccurred(it.message ?: "Error")
             rInterop.invalidateCaches()
+            RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
           }
       }
     }

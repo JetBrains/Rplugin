@@ -111,13 +111,14 @@ internal open class PartialChildrenListBuilder(
   private val stackFrame: RXStackFrame, private val loader: RVariableLoader,
   private val noFunctions: Boolean = false, private val onlyFunctions: Boolean = false) {
   private var offset = 0L
-  private var firstCall = true
+  private var previousNode: XCompositeNode? = null
 
   fun computeChildren(node: XCompositeNode) {
     val result = XValueChildrenList()
-    if (firstCall) {
+    if (node !== previousNode) {
+      previousNode = node
+      offset = 0
       addTopChildren(result)
-      firstCall = false
     }
     val endOffset = offset + MAX_ITEMS
     val withHidden = stackFrame.variableViewSettings.showHiddenVariables
