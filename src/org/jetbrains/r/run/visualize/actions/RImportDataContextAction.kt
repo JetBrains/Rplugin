@@ -21,9 +21,7 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
   final override fun actionPerformed(e: AnActionEvent) {
     e.project?.let { project ->
       e.selectedFiles?.firstOrNull()?.let { file ->
-        getCurrentInteropOrNull(project)?.let { interop ->
-          applyTo(project, interop, file)
-        }
+        applyTo(project, file)
       }
     }
   }
@@ -36,11 +34,17 @@ abstract class RImportDataContextAction(text: String, description: String) : Dum
     return e.selectedFiles?.let { it.size == 1 && isApplicableTo(it.first()) } ?: false
   }
 
-  protected open fun isApplicableTo(file: VirtualFile): Boolean {
+  fun isApplicableTo(file: VirtualFile): Boolean {
     return !file.isDirectory && !ScratchUtil.isScratch(file) && file.extension?.isSupportedFormat == true
   }
 
-  protected open fun isEnabled(project: Project): Boolean {
+  fun applyTo(project: Project, file: VirtualFile) {
+    getCurrentInteropOrNull(project)?.let { interop ->
+      applyTo(project, interop, file)
+    }
+  }
+
+  open fun isEnabled(project: Project): Boolean {
     return true
   }
 

@@ -16,10 +16,8 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.Gray
-import com.intellij.ui.JBColor
-import com.intellij.ui.OnePixelSplitter
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.ui.*
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.labels.LinkListener
 import com.intellij.util.ui.JBUI
@@ -148,10 +146,19 @@ abstract class RImportDataDialog(
     variableName?.let { name ->
       collectImportOptions()?.let { options ->
         interop.commitDataImport(name, options.path, options.mode, options.additional)
+        updateEditorNotifications()
         if (viewAfterImport) {
           val ref = RRef.expressionRef(name, interop)
           VisualizeTableHandler.visualizeTable(interop, ref, project, name)
         }
+      }
+    }
+  }
+
+  private fun updateEditorNotifications() {
+    filePath?.let { path ->
+      VfsUtil.findFile(Paths.get(path), true)?.let { file ->
+        EditorNotifications.getInstance(project).updateNotifications(file)
       }
     }
   }

@@ -576,6 +576,10 @@ You can find the source code in the following repositories:
         <scratch.rootType implementation="org.jetbrains.r.console.RConsoleRootType"/>
 
 
+        <!-- Editor notification providers -->
+        <editorNotificationProvider implementation="org.jetbrains.r.notifications.RDataImportNotificationProvider"/>
+
+
         <!-- Inspections -->
 
         <!-- note: display names not needed if defined in impl-->
