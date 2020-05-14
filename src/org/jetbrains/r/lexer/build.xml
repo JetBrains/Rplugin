@@ -17,7 +17,7 @@
     </target>
 
     <target name="jflex" description="Produces Jflex based lexer" depends="clean">
-        <get src="https://jetbrains.bintray.com/intellij-third-party-dependencies/org/jetbrains/intellij/deps/jflex/jflex/${jflex-version}/jflex-${jflex-version}.jar" dest="${jflex.dir}" skipexisting="true"/>
+        <get src="https://cache-redirector.jetbrains.com/jetbrains.bintray.com/intellij-third-party-dependencies/org/jetbrains/intellij/deps/jflex/jflex/${jflex-version}/jflex-${jflex-version}.jar" dest="${jflex.dir}" skipexisting="true"/>
         <java jar="${jflex.file}" output="${lexer.log}" fork="true" maxmemory="${compiler.max.memory}">
             <arg value="-skel"/>
             <arg value="${lexer.skeleton}"/>
