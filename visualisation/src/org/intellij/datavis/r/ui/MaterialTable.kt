@@ -14,9 +14,7 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.MouseEvent
-import javax.swing.JLabel
-import javax.swing.JTable
-import javax.swing.SwingConstants
+import javax.swing.*
 import javax.swing.border.Border
 import javax.swing.event.MouseInputAdapter
 import javax.swing.table.TableCellRenderer
@@ -65,6 +63,32 @@ open class MaterialTable : JBTable {
     }
   }
 
+  fun enableMultilineHeader() {
+    tableHeader.defaultRenderer = MultiLineTableHeaderRenderer()
+  }
+
+  internal class MultiLineTableHeaderRenderer : JTextArea(), TableCellRenderer {
+    init {
+      font = JBUI.Fonts.label().deriveFont(Font.BOLD)
+      isOpaque = false
+      background = Gray.TRANSPARENT
+      isEditable = false
+      lineWrap = true
+    }
+
+    override fun getTableCellRendererComponent(table: JTable,
+                                               value: Any,
+                                               isSelected: Boolean,
+                                               hasFocus: Boolean,
+                                               row: Int,
+                                               column: Int): Component {
+      text = "${value}"
+      setSize(preferredSize.width, rowHeight)
+      border = BorderFactory.createEmptyBorder(3, 3, 3, 3)
+      return this
+    }
+  }
+
   private var rollOverRowIndex = -1
 
   init {
@@ -73,7 +97,7 @@ open class MaterialTable : JBTable {
     background = EditorColorsManager.getInstance().globalScheme.defaultBackground
     setShowColumns(true)
     autoCreateRowSorter = true
-    rowHeight = (font.size*1.8).toInt()
+    rowHeight = (font.size * 1.8).toInt()
 
     //table.background = Color.white
     setShowGrid(false)
