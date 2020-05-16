@@ -39,7 +39,7 @@ object RVisualizeTableUtil {
       columnModel.addColumn(tableColumn)
     }
     val model = RDataFrameTableModel(viewer)
-    val materialTable = MaterialTable(model, columnModel)
+    val materialTable = RMaterialTable(model, columnModel)
     val connect = ApplicationManager.getApplication().messageBus.connect(viewer)
     connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener { globalColorScheme ->
       globalColorScheme?.defaultBackground?.let { materialTable.background = it }
