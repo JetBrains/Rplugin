@@ -5,11 +5,12 @@
 package org.intellij.datavis.r.ui
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.ui.Gray
 import com.intellij.ui.IdeBorderFactory
+import com.intellij.ui.JBColor
 import com.intellij.ui.SideBorder
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
+import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Font
@@ -28,7 +29,9 @@ import javax.swing.table.TableModel
 open class MaterialTable : JBTable {
 
   constructor() : super()
-  constructor(model : TableModel, columnModel: TableColumnModel) : super(model, columnModel)
+  constructor(model: TableModel, columnModel: TableColumnModel) : super(model, columnModel)
+
+  var indexColumnWidth = 0
 
   /** TODO need to discuss with UI/UX dep. */
   class SimpleHeaderRenderer : JLabel(), TableCellRenderer {
@@ -40,7 +43,7 @@ open class MaterialTable : JBTable {
     init {
       font = JBUI.Fonts.label().deriveFont(Font.BOLD)
       isOpaque = false // In the other case label will not fill the background.
-      background = Gray.TRANSPARENT
+      background = HEADER_BACKGROUND
       verticalAlignment = SwingConstants.CENTER
     }
 
@@ -71,7 +74,7 @@ open class MaterialTable : JBTable {
     init {
       font = JBUI.Fonts.label().deriveFont(Font.BOLD)
       isOpaque = false
-      background = Gray.TRANSPARENT
+      background = HEADER_BACKGROUND
       isEditable = false
       lineWrap = true
     }
@@ -103,7 +106,7 @@ open class MaterialTable : JBTable {
     setShowGrid(false)
     tableHeader.defaultRenderer = SimpleHeaderRenderer()
     tableHeader.isOpaque = false
-    tableHeader.background = Gray.TRANSPARENT
+    tableHeader.background = HEADER_BACKGROUND
     tableHeader.resizingAllowed = true
     tableHeader.reorderingAllowed = false // Temporary disabled because of visual artifacts. Should be enabled when we will finish with new table component.
 
@@ -137,9 +140,18 @@ open class MaterialTable : JBTable {
       c.background = getSelectionBackground()
     }
     else {
-      c.foreground = foreground
-      c.background = background
+      if (0 < indexColumnWidth && column < indexColumnWidth) {
+        c.font = JBUI.Fonts.label().deriveFont(Font.BOLD)
+        c.foreground = foreground
+        c.background = HEADER_BACKGROUND
+      }
+      else {
+        c.foreground = foreground
+        c.background = background
+      }
     }
     return c
   }
 }
+
+val HEADER_BACKGROUND: Color = JBColor.PanelBackground
