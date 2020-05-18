@@ -5,6 +5,7 @@
 package org.jetbrains.r.psi.cfg
 
 import com.intellij.codeInsight.controlflow.Instruction
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.psi.api.*
 
@@ -39,6 +40,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
   private val innerFunctions = ArrayList<RFunctionExpression>()
 
   fun runAnalysis(inputState: LocalVariableInfo): LocalAnalysisResult {
+    ProgressManager.checkCanceled()
     result[controlFlow.instructions[0]] = inputState
     for (instruction in controlFlow.instructions.drop(1)) {
       val info = join(instruction)
@@ -60,6 +62,7 @@ private class AnalysisInstance(private val controlFlowHolder: RControlFlowHolder
   }
 
   private fun transferFunction(instruction: Instruction, info: LocalVariableInfo): LocalVariableInfo {
+    ProgressManager.checkCanceled()
     var result: LocalVariableInfo = info
     when (val element = instruction.element) {
       is RAssignmentStatement -> {
