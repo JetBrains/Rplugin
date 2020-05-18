@@ -142,13 +142,12 @@ open class MaterialTable : JBTable {
     else {
       if (0 < indexColumnWidth && column < indexColumnWidth) {
         c.font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-        c.foreground = foreground
         c.background = HEADER_BACKGROUND
       }
       else {
-        c.foreground = foreground
         c.background = background
       }
+      c.foreground = foreground
     }
     return c
   }
