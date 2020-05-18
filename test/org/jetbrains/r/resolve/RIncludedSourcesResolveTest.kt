@@ -4,9 +4,16 @@
 
 package org.jetbrains.r.resolve
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.util.ProgressIndicatorBase
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
+import junit.framework.TestCase
+import org.apache.commons.lang.StringUtils
+import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.psi.api.RFile
 import java.io.File
 
 class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource") {
@@ -69,13 +76,13 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
   fun testFileDeletion() {
     val files = getFiles()
     val expectedBeforeDeletion = getExpectedResult("# before deletion", files)
-    val actualBeforeDeletion = getActualResults()
+    val actualBeforeDeletion = getActualResultsWithTimeLimit()
     assertEquals(expectedBeforeDeletion, actualBeforeDeletion)
 
     val fileForDeletion = files.find { it.name == "deleteThis.R" } ?: error("Missing file for deletion")
     runWriteAction { fileForDeletion.delete() }
     val expectedAfterDeletion = getExpectedResult("# after deletion", files.minus(fileForDeletion))
-    val actualAfterDeletion = getActualResults()
+    val actualAfterDeletion = getActualResultsWithTimeLimit()
     assertEquals(expectedAfterDeletion, actualAfterDeletion)
   }
 
@@ -83,7 +90,7 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
     val fileName = "createThis.R"
     val files = getFiles { it != fileName }
     val expectedBeforeCreation = getExpectedResult("# before creation", files)
-    val actualBeforeCreation = getActualResults()
+    val actualBeforeCreation = getActualResultsWithTimeLimit()
     assertEquals(expectedBeforeCreation, actualBeforeCreation)
 
     val fileForCreation = File("$TEST_DATA_PATH/resolveInSource/fileCreation/createThis.R")
@@ -91,14 +98,91 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
 
     val createdFile = myFixture.addFileToProject(fileName, fileForCreation.readText())
     val expectedAfterDeletion = getExpectedResult("# after creation", files.plus(createdFile))
-    val actualAfterDeletion = getActualResults()
+    val actualAfterDeletion = getActualResultsWithTimeLimit()
     assertEquals(expectedAfterDeletion, actualAfterDeletion)
+  }
+
+  // Checking that functions that don't include any sources don't participate in the dependency graph
+  fun testCallsWithoutIncludedSources() {
+    val mainText = """
+      bar <- function() {}
+      foo <- function() {}
+      source("B.R")
+      ${StringUtils.repeat("foo()\n", 25000)}
+      ba<caret>r()
+    """.trimIndent()
+    myFixture.configureByText("main.R", mainText).also { file ->
+      // Pre-build a dependency graph, since it's slow on such large example
+      (file as RFile).includedSources
+    }
+    val bFile = myFixture.addFileToProject("B.R", "bar <- 42")
+    val expected = setOf(PsiElementWrapper(bFile.firstChild))
+    val actual = getActualResultsWithTimeLimit()
+    assertEquals(expected, actual)
+  }
+
+  fun testLotsDuplicates() {
+    val mainText = """
+      bar <- function() {}
+      foo <- function() {
+        ${StringUtils.repeat("source('C.R')\nsource('D.R')\n", 100)}
+      }
+      
+      source("B.R")
+      ${StringUtils.repeat("foo()\n", 1000)}
+      ba<caret>r()
+    """.trimIndent()
+    myFixture.configureByText("main.R", mainText)
+    val bFile = myFixture.addFileToProject("B.R", "bar <- 42")
+    val expected = setOf(PsiElementWrapper(bFile.firstChild))
+    val actual = getActualResultsWithTimeLimit()
+    assertEquals(expected, actual)
+  }
+
+  fun testUIFreezes() {
+    val mainText = buildString {
+      appendln("bar <- function() {}")
+      for (i in 0..1000) {
+        appendln("foo$i <- function {")
+        for (j in 0..100) {
+          appendln("  source('file${i * 100 + j}')")
+        }
+        appendln("}\n")
+      }
+
+      appendln("source('B.R')")
+      for (i in 0..1000) {
+        appendln("foo$i()")
+      }
+      appendln("ba<caret>r()")
+    }
+    myFixture.configureByText("main.R", mainText).also { (it as RFile).includedSources }
+
+    var delay = 10L
+    while (delay < 1500) {
+      runAsync { ProgressManager.getInstance().runInReadActionWithWriteActionPriority({ getActualResults() }, ProgressIndicatorBase()) }
+
+      Thread.sleep(delay)
+      var writeActionTime = System.currentTimeMillis()
+      runWriteAction {
+        writeActionTime = System.currentTimeMillis() - writeActionTime
+      }
+      // No UI Freezes
+      TestCase.assertTrue("Timeout: $writeActionTime > 300\nDelay: $delay", writeActionTime < 300)
+      delay *= 2
+    }
   }
 
   private fun doTest() {
     val expected = getExpectedResult("# this")
-    val actual = getActualResults()
+    val actual = getActualResultsWithTimeLimit()
     assertEquals(expected, actual)
+  }
+
+  private fun getActualResultsWithTimeLimit(): Set<PsiElementWrapper> {
+    val result = runAsync { runReadAction { getActualResults() } }.blockingGet(500)
+    assertNotNull("Resolve is too long", result)
+    return result!!
   }
 
   override fun getFiles(editorFileName: String, filterPredicate: (String) -> Boolean): List<PsiFile> {
