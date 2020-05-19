@@ -20,13 +20,13 @@ import javax.swing.*;
  * <p>Users have, after version 3.2, no direct use for this class</p>
  *
  * <p>In Java 6, a filter is automatically associated to a {@link
- * javax.swing.RowSorter}, so {@link JTable} instances with a
- * TableFilter must define their own {@link javax.swing.RowSorter}. Being this
+ * RowSorter}, so {@link JTable} instances with a
+ * TableFilter must define their own {@link RowSorter}. Being this
  * not the case, the TableFilter will automatically set the default {@link
- * javax.swing.RowSorter} in that table. That is, tables with a TableFilter will
+ * RowSorter} in that table. That is, tables with a TableFilter will
  * always have sorting enabled.</p>
  *
- * <p>The {@link javax.swing.RowSorter} interface does not support filtering
+ * <p>The {@link RowSorter} interface does not support filtering
  * capabilities, which are only enabled via the {@link
  * DefaultRowSorter} class. If the registered table uses any sorter
  * that does not subclass the {@link DefaultRowSorter} class, the
@@ -54,7 +54,7 @@ public class FiltersHandler extends AbstractFiltersHandler {
   @Override
   protected void setCurrentFilter(@Nullable RowFilter<?, ?> filter) {
     currentFilter = filter;
-    RowSorter sorter = getSorter();
+    RowSorter<?> sorter = getSorter();
     if (sorter != null) {
       ((DefaultRowSorter)sorter).setRowFilter(filter);
     }

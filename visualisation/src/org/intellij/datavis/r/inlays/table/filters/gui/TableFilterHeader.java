@@ -11,6 +11,7 @@ import org.intellij.datavis.r.inlays.table.filters.IFilter;
 import org.intellij.datavis.r.inlays.table.filters.IFilterObserver;
 import org.intellij.datavis.r.inlays.table.filters.IParser;
 import org.intellij.datavis.r.inlays.table.filters.gui.editor.FilterEditor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -44,7 +45,7 @@ import java.util.*;
  * and can be manipulated separately.</p>
  *
  * <p>The implementation relies on the {@link
- * org.intellij.datavis.r.inlays.table.filters.gui.FiltersHandler} class, please read its
+ * FiltersHandler} class, please read its
  * documentation to understand the requirements on the table and its model, and
  * how it is affected by this filter</p>
  *
@@ -82,7 +83,7 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
     }
 
     /** The helper to handle the location of the filter in the table header. */
-    private PositionHelper positionHelper = new PositionHelper(this);
+    private final PositionHelper positionHelper = new PositionHelper(this);
 
     /** Flag to handle instant filtering support. */
     boolean instantFilteringEnabled = FilterSettings.instantFiltering;
@@ -112,10 +113,10 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
     AbstractFiltersHandler filtersHandler;
 
     /** The set of currently subscribed observers. */
-    Set<IFilterHeaderObserver> observers = new HashSet<IFilterHeaderObserver>();
+    Set<IFilterHeaderObserver> observers = new HashSet<>();
 
     /** Helper to revalidate the controller when the table changes size. */
-    private ComponentAdapter resizer = new ComponentAdapter() {
+    private final ComponentAdapter resizer = new ComponentAdapter() {
         @Override public void componentResized(ComponentEvent e) {
             if (columnsController != null) {
                 columnsController.revalidate();
@@ -496,16 +497,16 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
         private static final long serialVersionUID = -5183169239497633085L;
 
         /** The list of columns, sorted in the view way. */
-        private LinkedList<FilterColumnPanel> columns;
+        private final LinkedList<FilterColumnPanel> columns;
 
         /** Preferred size of the component. */
-        private Dimension preferredSize;
+        private final Dimension preferredSize;
 
         /**
          * The panel must keep a reference to the TableColumnModel, to be able
          * to 'unregister' when the controller is destroyed.
          */
-        private TableColumnModel tableColumnModel;
+        private final TableColumnModel tableColumnModel;
 
         /**
          * Variable keeping track of the number of times that the run() method
@@ -525,7 +526,7 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
         /**
          * The model associated to the table when the controller is created.
          */
-        private TableModel tableModel;
+        private final TableModel tableModel;
 
         /**
          * Creates the controller for all the columns<br>
@@ -563,7 +564,7 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
         }
 
         /** {@link Iterable} interface. */
-        @Override public Iterator<FilterEditor> iterator() {
+        @Override public @NotNull Iterator<FilterEditor> iterator() {
             final Iterator<FilterColumnPanel> it = columns.iterator();
 
             return new Iterator<FilterEditor>() {

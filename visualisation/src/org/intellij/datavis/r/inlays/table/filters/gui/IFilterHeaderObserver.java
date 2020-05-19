@@ -8,7 +8,7 @@ import javax.swing.table.TableColumn;
 
 /**
  * <p>A ITableFilterHeaderObserver instance receives notifications when the
- * associated {@link org.intellij.datavis.r.inlays.table.filters.gui.IFilterEditor} instances are
+ * associated {@link IFilterEditor} instances are
  * created, destroyed, or update the held filter.</p>
  */
 public interface IFilterHeaderObserver {
@@ -37,8 +37,7 @@ public interface IFilterHeaderObserver {
                                    TableColumn tableColumn);
 
     /**
-     * <p>Notification made by the {@link
-     * org.intellij.datavis.r.inlays.table.filters.gui.IFilterEditor} when the filter's content is
+     * <p>Notification made by the {@link IFilterEditor} when the filter's content is
      * updated</p>
      *
      * @param  header       the associated table filter header
