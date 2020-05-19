@@ -16,10 +16,12 @@ public class RTildeOperatorImpl extends ROperatorImpl implements RTildeOperator 
     super(node);
   }
 
+  @Override
   public void accept(@NotNull RVisitor visitor) {
     visitor.visitTildeOperator(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

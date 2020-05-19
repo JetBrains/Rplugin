@@ -21,6 +21,7 @@ public class RStringLiteralExpressionImpl extends RStringInjectHost implements R
     visitor.visitStringLiteralExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

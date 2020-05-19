@@ -21,6 +21,7 @@ public class RArgumentListImpl extends RElementImpl implements RArgumentList {
     visitor.visitArgumentList(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

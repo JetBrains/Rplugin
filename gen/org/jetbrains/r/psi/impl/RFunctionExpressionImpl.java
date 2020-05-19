@@ -22,6 +22,7 @@ public class RFunctionExpressionImpl extends RControlFlowHolderImpl implements R
     visitor.visitFunctionExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

@@ -16,10 +16,12 @@ public class RSubscriptionExpressionImpl extends RExpressionImpl implements RSub
     super(node);
   }
 
+  @Override
   public void accept(@NotNull RVisitor visitor) {
     visitor.visitSubscriptionExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

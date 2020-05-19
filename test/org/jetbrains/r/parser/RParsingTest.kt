@@ -145,22 +145,22 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testErrorIf() = doTest()
 
-  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
+  // grammar-kit version should be newer 2020 May 9th
   fun testErrorMethod1() = doTest()
 
   fun testErrorMethod2() = doTest()
 
-  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
+  // grammar-kit version should be newer 2020 May 9th
   fun testErrorMethod3() = doTest()
 
-  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
+  // grammar-kit version should be newer 2020 May 9th
   fun testErrorMethod4() = doTest()
 
   fun testErrorMethod5() = doTest()
 
   fun testErrorMethod6() = doTest()
 
-  // To fix this test patch RParser manually. See the comment before 'parameter' rule in r.bnf
+  // grammar-kit version should be newer 2020 May 9th
   fun testErrorMethod7() = doTest()
 
   fun testErrorCall1() = doTest()

@@ -377,7 +377,7 @@ public class RParser implements PsiParser, LightPsiParser {
   // (identifier_expression | string_literal_expression) eq_assign_operator (expression | external_empty_expression)
   public static boolean named_argument(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "named_argument")) return false;
-    if (!nextTokenIsSmart(b, R_IDENTIFIER, R_STRING)) return false;
+    if (!nextTokenIs(b, "<named argument>", R_IDENTIFIER, R_STRING)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, R_NAMED_ARGUMENT, "<named argument>");
     r = named_argument_0(b, l + 1);

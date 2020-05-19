@@ -16,10 +16,12 @@ public class RMuldivOperatorImpl extends ROperatorImpl implements RMuldivOperato
     super(node);
   }
 
+  @Override
   public void accept(@NotNull RVisitor visitor) {
     visitor.visitMuldivOperator(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

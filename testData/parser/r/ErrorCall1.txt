@@ -5,6 +5,6 @@ RFile:ErrorCall1.r
       PsiElement(identifier)('c')
     R_ARGUMENT_LIST
       PsiElement(()('(')
-      PsiErrorElement:')', ',' or <expression> expected
+      PsiErrorElement:')', ',', <expression> or <named argument> expected
         <empty list>
   PsiWhiteSpace('\n')

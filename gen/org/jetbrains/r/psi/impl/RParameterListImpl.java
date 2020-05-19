@@ -21,6 +21,7 @@ public class RParameterListImpl extends RElementImpl implements RParameterList {
     visitor.visitParameterList(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

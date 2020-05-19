@@ -23,6 +23,7 @@ public class RNamedArgumentImpl extends RElementImpl implements RNamedArgument {
     visitor.visitNamedArgument(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

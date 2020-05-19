@@ -234,10 +234,6 @@ private empty_first_arg ::= external_empty_expression ',' arg args_tail { pin=2 
 argument_list ::= '(' &<<incBrackets>> ( non_empty_first_arg | empty_first_arg )? ')' &<<decBrackets>> { pin(".*")=1 }
 call_expression ::= expression !<<isNewLine>> argument_list
 
-// grammar-kit generator has a bug here: it can construct 'correct' tree without parameter name.
-// To fix this problem I introduced a manual patch for the parser.
-// See commit with this comment and reapply the fix after each parser regeneration.
-// TODO: wait until grammar-kit will be fixed forget about this manual patching!
 parameter ::= identifier_expression ('=' expression)? {
   methods = [ getName setName getNameIdentifier getVariable getDefaultValue]
   extends = "org.jetbrains.r.psi.impl.RParameterBase"

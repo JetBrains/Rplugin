@@ -16,10 +16,12 @@ public class RCompareOperatorImpl extends ROperatorImpl implements RCompareOpera
     super(node);
   }
 
+  @Override
   public void accept(@NotNull RVisitor visitor) {
     visitor.visitCompareOperator(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

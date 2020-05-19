@@ -16,10 +16,12 @@ public class RPlusminusOperatorImpl extends ROperatorImpl implements RPlusminusO
     super(node);
   }
 
+  @Override
   public void accept(@NotNull RVisitor visitor) {
     visitor.visitPlusminusOperator(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

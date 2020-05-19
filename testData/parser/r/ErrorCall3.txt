@@ -11,5 +11,5 @@ RFile:ErrorCall3.r
       PsiWhiteSpace('\n')
       R_EMPTY_EXPRESSION
         <empty list>
-      PsiErrorElement:')', ',' or <expression> expected
+      PsiErrorElement:')', ',', <expression> or <named argument> expected
         <empty list>

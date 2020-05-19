@@ -22,6 +22,7 @@ public class ROperatorImpl extends RElementImpl implements ROperator {
     visitor.visitOperator(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);

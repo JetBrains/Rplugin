@@ -21,6 +21,7 @@ public class RNoCommaTailImpl extends RElementImpl implements RNoCommaTail {
     visitor.visitNoCommaTail(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof RVisitor) accept((RVisitor)visitor);
     else super.accept(visitor);
