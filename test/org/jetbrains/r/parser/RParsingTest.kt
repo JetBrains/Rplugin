@@ -136,6 +136,8 @@ class RParsingTest : RUsefulTestCase() {
 
   fun testCorrectNewLines() = doTest()
 
+  fun testLongBlockStatement() = doTest()
+
   //----------Syntax error tests-----------
   fun testErrorFor() = doTest()
 

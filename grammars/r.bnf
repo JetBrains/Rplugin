@@ -196,7 +196,7 @@ for_statement ::= for '(' &<<incBrackets>> identifier_expression 'in' expression
 repeat_statement ::= repeat expression { pin=1 methods = [ body = "expression" ] }
 break_statement ::= break { methods = [ getLoop ] }
 next_statement ::= next { methods = [ getLoop] }
-block_expression ::= '{' expression_list? '}' { pin=1 }
+block_expression ::= '{' &<<resetBrackets>> expression_list? '}' &<<decBrackets>> { pin=1 }
 
 private keyword ::= NA_integer_ | NA_real_ | NA_complex_ | NA_character_
   TRIPLE_DOTS | if | else | repeat | while |

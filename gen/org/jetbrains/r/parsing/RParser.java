@@ -1057,7 +1057,7 @@ public class RParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // '{' expression_list? '}'
+  // '{' &<<resetBrackets>> expression_list? '}' &<<decBrackets>>
   public static boolean block_expression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "block_expression")) return false;
     if (!nextTokenIsSmart(b, R_LBRACE)) return false;
@@ -1066,16 +1066,38 @@ public class RParser implements PsiParser, LightPsiParser {
     r = consumeTokenSmart(b, R_LBRACE);
     p = r; // pin = 1
     r = r && report_error_(b, block_expression_1(b, l + 1));
-    r = p && consumeToken(b, R_RBRACE) && r;
+    r = p && report_error_(b, block_expression_2(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, R_RBRACE)) && r;
+    r = p && block_expression_4(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // expression_list?
+  // &<<resetBrackets>>
   private static boolean block_expression_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "block_expression_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _AND_);
+    r = resetBrackets(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // expression_list?
+  private static boolean block_expression_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "block_expression_2")) return false;
     expression_list(b, l + 1);
     return true;
+  }
+
+  // &<<decBrackets>>
+  private static boolean block_expression_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "block_expression_4")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _AND_);
+    r = decBrackets(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   // help ( help)? (keyword | expression)

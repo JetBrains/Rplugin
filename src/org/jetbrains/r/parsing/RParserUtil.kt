@@ -8,6 +8,7 @@ package org.jetbrains.r.parsing
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.openapi.util.Key
+import com.intellij.util.containers.Stack
 
 object RParserUtil : GeneratedParserUtilBase() {
   private val R_PARSING_DATA: Key<ParsingData> = Key.create<ParsingData>("hello")
@@ -24,7 +25,7 @@ object RParserUtil : GeneratedParserUtilBase() {
 
   @JvmStatic
   fun isNewLine(builder: PsiBuilder, @Suppress("UNUSED_PARAMETER") level: Int): Boolean {
-    if (getRelatedData(builder).brackets != 0) {
+    if (getRelatedData(builder).brackets.let { !it.empty() && it.peek() != 0 }) {
       return false
     }
     if (builder.tokenType == null) return true
@@ -39,18 +40,27 @@ object RParserUtil : GeneratedParserUtilBase() {
   }
 
   @JvmStatic
+  fun resetBrackets(builder: PsiBuilder, @Suppress("UNUSED_PARAMETER") level: Int): Boolean {
+    getRelatedData(builder).brackets.apply { push(0) }
+    return true
+  }
+
+  @JvmStatic
   fun incBrackets(builder: PsiBuilder, @Suppress("UNUSED_PARAMETER") level: Int): Boolean {
-    getRelatedData(builder).brackets++
+    getRelatedData(builder).brackets.apply {
+      val previous = if (empty()) 0 else peek()
+      push(previous + 1)
+    }
     return true
   }
 
   @JvmStatic
   fun decBrackets(builder: PsiBuilder, @Suppress("UNUSED_PARAMETER") level: Int): Boolean {
-    getRelatedData(builder).brackets--
+    getRelatedData(builder).brackets.pop()
     return true
   }
 
   private class ParsingData {
-    var brackets = 0
+    val brackets = Stack<Int>()
   }
 }
