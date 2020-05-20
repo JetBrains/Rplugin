@@ -4,16 +4,15 @@
 
 package org.intellij.datavis.r.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.JBColor
 import com.intellij.ui.SideBorder
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import java.awt.Color
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.Font
+import java.awt.*
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.border.Border
@@ -70,13 +69,36 @@ open class MaterialTable : JBTable {
     tableHeader.defaultRenderer = MultiLineTableHeaderRenderer()
   }
 
-  internal class MultiLineTableHeaderRenderer : JTextArea(), TableCellRenderer {
+
+  internal class MultiLineTableHeaderRenderer : TableCellRenderer {
+    private val mainPanel: JPanel = JPanel()
+    private val headerText: JTextArea = JTextArea()
+    private val sortLabel: JLabel = JBLabel()
+    private val textInsets: Insets = JBUI.insets(3, 3, 3, 3)
+    private val sortLabelEmptyBorder: Border = IdeBorderFactory.createEmptyBorder(JBUI.insets(0, 2, 0, 20))
+    private val sortLabelIconBorder: Border = IdeBorderFactory.createEmptyBorder(
+      JBUI.insets(0, 2, 0, 20 - AllIcons.General.ArrowDown.iconWidth))
+
     init {
-      font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-      isOpaque = false
-      background = HEADER_BACKGROUND
-      isEditable = false
-      lineWrap = true
+      mainPanel.layout = BorderLayout()
+      headerText.font = JBUI.Fonts.label().deriveFont(Font.BOLD)
+      headerText.isOpaque = false
+      headerText.background = HEADER_BACKGROUND
+      headerText.isEditable = false
+      headerText.border = IdeBorderFactory.createEmptyBorder(textInsets)
+      sortLabel.border = sortLabelEmptyBorder
+      sortLabel.text = ""
+      mainPanel.add(headerText, BorderLayout.CENTER)
+      mainPanel.add(sortLabel, BorderLayout.EAST)
+    }
+
+    private fun getSortingIcon(column: Int, sortKeys: List<RowSorter.SortKey>): Icon? {
+      val sortKey = sortKeys.firstOrNull { it.column == column } ?: return null
+      return when (sortKey.sortOrder) {
+        SortOrder.ASCENDING -> AllIcons.General.ArrowDown
+        SortOrder.DESCENDING -> AllIcons.General.ArrowUp
+        else -> null
+      }
     }
 
     override fun getTableCellRendererComponent(table: JTable,
@@ -85,10 +107,10 @@ open class MaterialTable : JBTable {
                                                hasFocus: Boolean,
                                                row: Int,
                                                column: Int): Component {
-      text = "${value}"
-      setSize(preferredSize.width, rowHeight)
-      border = BorderFactory.createEmptyBorder(3, 3, 3, 3)
-      return this
+      headerText.text = "${value}"
+      sortLabel.icon = getSortingIcon(column, table.rowSorter.sortKeys)
+      sortLabel.border = if (sortLabel.icon != null) sortLabelIconBorder else sortLabelEmptyBorder
+      return mainPanel
     }
   }
 
