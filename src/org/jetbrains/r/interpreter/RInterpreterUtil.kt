@@ -23,6 +23,7 @@ import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
@@ -274,7 +275,12 @@ object RInterpreterUtil {
     return createProcessHandler(interpreterPath, commands, workingDirectory)
   }
 
-  fun createProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler {
+  fun createProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler =
+    CapturingProcessHandler(createCommandLine(interpreterPath, commands, workingDirectory))
+
+  fun createCommandLine(interpreterPath: String,
+                        commands: List<String>,
+                        workingDirectory: String?): @NotNull GeneralCommandLine {
     val interpreterFile = Paths.get(interpreterPath).toFile()
     val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
     val command = if (conda != null) {
@@ -287,7 +293,7 @@ object RInterpreterUtil {
     } else {
       commands
     }
-    return CapturingProcessHandler(GeneralCommandLine(command).withWorkDirectory(workingDirectory))
+    return GeneralCommandLine(command).withWorkDirectory(workingDirectory)
   }
 
   fun getScriptStdout(lines: String): String {
