@@ -144,8 +144,8 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     }
 
     try {
-      separatorHighlighter = editor.markupModel.addRangeHighlighter(null, cell.textRange.startOffset, cell.textRange.endOffset,
-                                                                    HighlighterLayer.SYNTAX - 1,
+      separatorHighlighter = editor.markupModel.addRangeHighlighter(cell.textRange.startOffset, cell.textRange.endOffset,
+                                                                    HighlighterLayer.SYNTAX - 1, null,
                                                                     HighlighterTargetArea.LINES_IN_RANGE).apply {
 
         customRenderer = separatorRenderer
