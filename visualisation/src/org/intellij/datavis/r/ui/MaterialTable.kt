@@ -4,17 +4,20 @@
 
 package org.intellij.datavis.r.ui
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.JBColor
 import com.intellij.ui.SideBorder
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import java.awt.*
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
+import java.awt.Font
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.JLabel
+import javax.swing.JTable
+import javax.swing.SwingConstants
 import javax.swing.border.Border
 import javax.swing.event.MouseInputAdapter
 import javax.swing.table.TableCellRenderer
@@ -29,8 +32,6 @@ open class MaterialTable : JBTable {
 
   constructor() : super()
   constructor(model: TableModel, columnModel: TableColumnModel) : super(model, columnModel)
-
-  var indexColumnWidth = 0
 
   /** TODO need to discuss with UI/UX dep. */
   class SimpleHeaderRenderer : JLabel(), TableCellRenderer {
@@ -62,55 +63,6 @@ open class MaterialTable : JBTable {
       border = if (table.columnCount == column + 1) null else cellBorder
       text = " ${value.toString()} "
       return this
-    }
-  }
-
-  fun enableMultilineHeader() {
-    tableHeader.defaultRenderer = MultiLineTableHeaderRenderer()
-  }
-
-
-  internal class MultiLineTableHeaderRenderer : TableCellRenderer {
-    private val mainPanel: JPanel = JPanel()
-    private val headerText: JTextArea = JTextArea()
-    private val sortLabel: JLabel = JBLabel()
-    private val textInsets: Insets = JBUI.insets(3, 3, 3, 3)
-    private val sortLabelEmptyBorder: Border = IdeBorderFactory.createEmptyBorder(JBUI.insets(0, 2, 0, 20))
-    private val sortLabelIconBorder: Border = IdeBorderFactory.createEmptyBorder(
-      JBUI.insets(0, 2, 0, 20 - AllIcons.General.ArrowDown.iconWidth))
-
-    init {
-      mainPanel.layout = BorderLayout()
-      headerText.font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-      headerText.isOpaque = false
-      headerText.background = HEADER_BACKGROUND
-      headerText.isEditable = false
-      headerText.border = IdeBorderFactory.createEmptyBorder(textInsets)
-      sortLabel.border = sortLabelEmptyBorder
-      sortLabel.text = ""
-      mainPanel.add(headerText, BorderLayout.CENTER)
-      mainPanel.add(sortLabel, BorderLayout.EAST)
-    }
-
-    private fun getSortingIcon(column: Int, sortKeys: List<RowSorter.SortKey>): Icon? {
-      val sortKey = sortKeys.firstOrNull { it.column == column } ?: return null
-      return when (sortKey.sortOrder) {
-        SortOrder.ASCENDING -> AllIcons.General.ArrowDown
-        SortOrder.DESCENDING -> AllIcons.General.ArrowUp
-        else -> null
-      }
-    }
-
-    override fun getTableCellRendererComponent(table: JTable,
-                                               value: Any,
-                                               isSelected: Boolean,
-                                               hasFocus: Boolean,
-                                               row: Int,
-                                               column: Int): Component {
-      headerText.text = "${value}"
-      sortLabel.icon = getSortingIcon(column, table.rowSorter.sortKeys)
-      sortLabel.border = if (sortLabel.icon != null) sortLabelIconBorder else sortLabelEmptyBorder
-      return mainPanel
     }
   }
 
@@ -154,22 +106,18 @@ open class MaterialTable : JBTable {
     addMouseListener(mouseListener)
   }
 
+  fun isHighlightRowSelected(row: Int) = isRowSelected(row) || row == rollOverRowIndex
+
   /** We are preparing renderer background for mouse hovered row. */
   override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
     val c = super.prepareRenderer(renderer, row, column)
-    if (isRowSelected(row) || row == rollOverRowIndex) {
+    if (isHighlightRowSelected(row)) {
       c.foreground = getSelectionForeground()
       c.background = getSelectionBackground()
     }
     else {
-      if (0 < indexColumnWidth && column < indexColumnWidth) {
-        c.font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-        c.background = HEADER_BACKGROUND
-      }
-      else {
-        c.background = background
-      }
       c.foreground = foreground
+      c.background = background
     }
     return c
   }
