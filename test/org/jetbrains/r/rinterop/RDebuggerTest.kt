@@ -446,7 +446,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
     TestCase.assertEquals(listOf(5, 0, 1), rInterop.debugStack.map { it.position!!.line })
-    TestCase.assertEquals(listOf(null, "print", "print.abacaba"), rInterop.debugStack.map { it.functionName })
+    TestCase.assertEquals(listOf(null, "base::print", "print.abacaba"), rInterop.debugStack.map { it.functionName })
     helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
   }
 
