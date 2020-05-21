@@ -45,7 +45,7 @@ abstract class RRunActionBase : REditorActionBase() {
 
 class RRunAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
-    console.rInterop.replSourceFile(file)
+    console.rInterop.replSourceFile(file, setLastValue = true)
   }
 
   override fun update(e: AnActionEvent) {
@@ -57,7 +57,7 @@ class RRunAction : RRunActionBase() {
 class RDebugAction : RRunActionBase() {
   override fun doExecute(console: RConsoleView, file: VirtualFile) {
     val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, file)
-    console.rInterop.replSourceFile(file, debug = true, firstDebugCommand = debugCommand)
+    console.rInterop.replSourceFile(file, setLastValue = true, debug = true, firstDebugCommand = debugCommand)
   }
 
   override fun update(e: AnActionEvent) {

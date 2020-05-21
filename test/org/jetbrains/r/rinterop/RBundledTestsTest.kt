@@ -1,0 +1,259 @@
+/*
+ * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+package org.jetbrains.r.rinterop
+
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Version
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
+import junit.framework.TestCase
+import org.jetbrains.r.console.RConsoleExecuteActionHandler
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.R_3_4
+import org.jetbrains.r.run.RProcessHandlerBaseTestCase
+import org.jetbrains.r.run.graphics.RGraphicsUtils
+import java.awt.Dimension
+import java.io.File
+import java.nio.file.Paths
+
+class RBundledTestsTest : RProcessHandlerBaseTestCase() {
+  private lateinit var tempDir: String
+  override val customDeadline = 600L
+
+  override fun setUp() {
+    super.setUp()
+    rInterop.asyncEventsStartProcessing()
+    tempDir = FileUtil.createTempDirectory("tmpdir", null, true).absolutePath
+    rInterop.setWorkingDir(tempDir)
+  }
+
+  // Tests from tools::testInstalledBasic
+  //   Unused tests:
+  //   reg-tests-2 - it uses R debugger
+  //   utf8-regex - it uses readLines and input in source file
+  fun testBasic_eval_etc() = doBasicTest("eval-etc", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  fun testBasic_simple_true() = doBasicTest("simple-true")
+  fun testBasic_arith_true() = doBasicTest("arith-true")
+  fun testBasic_lm_tests() = doBasicTest("lm-tests")
+  fun testBasic_ok_errors() = doBasicTest("ok-errors")
+  fun testBasic_method_dispatch() = doBasicTest("method-dispatch")
+  fun testBasic_array_subset() = doBasicTest("array-subset")
+  fun testBasic_any_all() = doBasicTest("any-all")
+  fun testBasic_d_p_q_r_tests() = doBasicTest("d-p-q-r-tests")
+  fun testBasic_complex() = doBasicTest("complex", allowDiff = true)
+  fun testBasic_print_tests() = doBasicTest("print-tests", allowDiff = true)
+  fun testBasic_lapack() = doBasicTest("lapack", allowDiff = true)
+  fun testBasic_datasets() = doBasicTest("datasets", allowDiff = true)
+  fun testBasic_datetime() = doBasicTest("datetime", allowDiff = true)
+  fun testBasic_iec60559() = doBasicTest("iec60559", allowDiff = true)
+  fun testBasic_reg_tests_1a() = doBasicTest("reg-tests-1a", before = "Sys.setlocale('LC_ALL', 'C')")
+  fun testBasic_reg_tests_1b() = doBasicTest("reg-tests-1b")
+  fun testBasic_reg_tests_1c() = doBasicTest("reg-tests-1c", before = "Sys.setlocale('LC_ALL', 'C')")
+  fun testBasic_reg_examples1() = doBasicTest("reg-examples1")
+  fun testBasic_reg_examples2() = doBasicTest("reg-examples2")
+  fun testBasic_reg_packages() = doBasicTest("reg-packages", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  fun testBasic_p_qbeta_strict_tst() = doBasicTest("p-qbeta-strict-tst")
+  fun testBasic_reg_IO() = doBasicTest("reg-IO")
+  fun testBasic_reg_IO2() = doBasicTest("reg-IO2")
+  fun testBasic_reg_plot() = doBasicTest("reg-plot")
+  fun testBasic_reg_S4() = doBasicTest("reg-S4")
+  fun testBasic_reg_BLAS() = doBasicTest("reg-BLAS")
+  fun testBasic_reg_tests_3() = doBasicTest("reg-tests-3", allowDiff = true)
+  fun testBasic_reg_examples3() = doBasicTest("reg-examples3", allowDiff = true)
+  fun testBasic_reg_plot_latin1() = doBasicTest("reg-plot-latin1", allowDiff = true)
+  fun testBasic_datetime2() = doBasicTest("datetime2", allowDiff = true)
+  fun testBasic_isas_tests() = doBasicTest("isas-tests", allowDiff = true)
+  fun testBasic_p_r_random_tests() = doBasicTest("p-r-random-tests", allowDiff = true)
+  fun testBasic_demos() = doBasicTest("demos", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  fun testBasic_demos2() = doBasicTest("demos2")
+  fun testBasic_primitives() = doBasicTest("primitives")
+  fun testBasic_PCRE() = doBasicTest("PCRE", since = R_3_4)
+  fun testBasic_CRANtools() = doBasicTest("CRANtools", since = R_3_4)
+  fun testBasic_no_segfault() = doBasicTest("no-segfault")
+  fun testBasic_internet() = doBasicTest("internet", allowDiff = true)
+  fun testBasic_internet2() = doBasicTest("internet2", allowDiff = true)
+  fun testBasic_libcurl() = doBasicTest("libcurl", allowDiff = true)
+
+  private fun doBasicTest(name: String, allowDiff: Boolean = false, since: Version? = null, before: String? = null) {
+    if (since != null && rInterop.rVersion < since) return
+
+    execute("""
+        Sys.setlocale("LC_COLLATE", "C")
+        Sys.setenv(R_DEFAULT_PACKAGES = "")
+        Sys.setenv(LC_COLLATE = "C")
+        Sys.setenv(SRCDIR = ".")
+        unlockBinding("interactive", baseenv())
+        unlockBinding("quit", baseenv())
+        assign("quit", function(...) invisible(NULL), envir = baseenv())
+        unlockBinding("q", baseenv())
+        assign("q", function(...) invisible(NULL), envir = baseenv())
+        options(keep.source = FALSE, error = NULL, warn = -1)
+    """.trimIndent())
+    File(execute("cat(R.home('tests'))")).listFiles()!!.filter { it.isFile || it.name == "Pkgs" }.forEach {
+      it.copyRecursively(File(tempDir, it.name))
+    }
+    RGraphicsUtils.createGraphicsDevice(rInterop, Dimension(640, 480), null)
+
+    val scriptName = "$name.R"
+    val script = File(tempDir, scriptName)
+    if (!script.exists()) {
+      val generator = Paths.get(tempDir, scriptName + "in").toString()
+      TestCase.assertTrue("${scriptName + "in"} does not exist", File(generator).exists())
+      val cmd = GeneralCommandLine(RInterpreterManager.getInstance(project).interpreterPath,
+                                   "--vanilla", "--slave", "-f", generator)
+        .withWorkDirectory(File(tempDir))
+      script.writeText(CapturingProcessHandler(cmd).runProcess().stdout)
+    }
+
+    before?.let { execute(it) }
+    val output = executeFile(script.absolutePath)
+    if (!allowDiff) {
+      val expectedFile = File(tempDir, scriptName + "out.save")
+      if (expectedFile.exists()) {
+        val expected = expectedFile.readText()
+        TestCase.assertEquals(prepareOutput(expected), prepareOutput(output))
+      }
+    }
+  }
+
+
+  fun testInstalledPackages() {
+    val knownPackages = execute("""
+        local({
+          knownPackages <- tools:::.get_standard_package_names()
+          cat(c(knownPackages $ base, knownPackages $ recommended), sep = "\n")
+          #cat('grid')
+        })
+    """.trimIndent()).lines().filter { it.isNotBlank() }
+    knownPackages.forEach { pkg ->
+      val script = execute("""
+        local({
+          pkg <- "$pkg"
+          if (pkg != "tcltk" || capabilities(pkg)) {
+            pkgdir <- find.package(pkg, .Library)
+            cat(tools:::.createExdotR(pkg, pkgdir, silent = TRUE, commentDonttest = TRUE))
+          }
+        })
+      """.trimIndent())
+        .let {
+          if (it.isEmpty()) return@forEach
+          File(tempDir, it)
+        }
+      if (!script.exists()) return@forEach
+      withRInterop { newInterop ->
+        println("Testing examples for package '$pkg'")
+        execute("""
+          Sys.setlocale("LC_COLLATE", "C")
+          Sys.setenv(R_DEFAULT_PACKAGES = "")
+          Sys.setenv(LC_COLLATE = "C")
+          Sys.setenv(SRCDIR = ".")
+          unlockBinding("quit", baseenv())
+          assign("quit", function(...) invisible(NULL), envir = baseenv())
+          unlockBinding("q", baseenv())
+          assign("q", function(...) invisible(NULL), envir = baseenv())
+          options(keep.source = FALSE, error = NULL, warn = -1)
+          Sys.unsetenv('DISPLAY')
+          Sys.setlocale('LC_TIME', 'C')
+          unlockBinding("interactive", baseenv())
+          assign('interactive', function(...) FALSE, envir = baseenv())
+        """.trimIndent(), newInterop)
+        val output = executeFile(script.absolutePath, newInterop)
+        val expectedFile = File(execute("cat(R.home('tests/Examples'))", newInterop), pkg + "-Ex.Rout.save")
+        if (expectedFile.exists()) {
+          println("  comparing output to ${expectedFile.name}")
+          val expected = expectedFile.readText()
+          TestCase.assertEquals(prepareOutput(expected), prepareOutput(output))
+        }
+      }
+    }
+  }
+
+  private fun execute(code: String, interop: RInterop = rInterop): String {
+    val result = interop.executeCode(code)
+    TestCase.assertNull(result.exception)
+    return result.stdout
+  }
+
+  private fun executeFile(file: String, interop: RInterop = rInterop): String {
+    val output = StringBuilder()
+    val script = StringUtil.convertLineSeparators(File(file).readText())
+    RConsoleExecuteActionHandler.splitCodeForExecution(project, script).forEach { (code, _) ->
+      code.lines().forEachIndexed { i, s ->
+        output.append(if (i == 0) "> " else "+ ").append(s).append("\n")
+      }
+      val result = interop.executeCodeAsync(code, setLastValue = true) { s, _ ->
+        output.append(s)
+      }.blockingGet(Integer.MAX_VALUE)!!
+      if (result.exception != null && interop.executeCode("cat(is.null(getOption('error')))").stdout == "TRUE") {
+        TestCase.fail("Error in $code:\n${result.exception}")
+      }
+    }
+    return output.toString()
+  }
+
+  private inline fun withRInterop(f: (RInterop) -> Unit) {
+    val newInterop = RInteropUtil.runRWrapperAndInterop(project).blockingGet(DEFAULT_TIMEOUT)!!
+    try {
+      newInterop.asyncEventsStartProcessing()
+      newInterop.setWorkingDir(tempDir)
+      f(newInterop)
+      TestCase.assertTrue(newInterop.isAlive)
+    } finally {
+      Disposer.dispose(newInterop)
+    }
+  }
+
+  companion object {
+    private fun prepareOutput(output: String): String {
+      return output.lineSequence()
+        .dropWhile { !it.startsWith(">") }
+        .map {
+          it.trim()
+            // <environment: 0x...>, <bytecode: 0x...>
+            .replace(Regex(": 0x[0-9a-f]*>"), ">")
+        }
+        .let { lines ->
+          val newLines = mutableListOf<String>()
+          var drop = false
+          lines.forEach {
+            if (it == "> ## IGNORE_RDIFF_BEGIN") drop = true
+            if (!drop) newLines.add(it)
+            if (it == "> ## IGNORE_RDIFF_END") drop = false
+          }
+          newLines
+        }
+        .filter {
+          it != ">" && it != "+" && it != "" &&
+          !it.startsWith("Time elapsed:") &&
+          // RWrapper creates some new objects in baseenv
+          !it.startsWith("Number of all base objects:") &&
+          !it.startsWith("Number of functions from these:") &&
+          // Warnings are not printed correctly in rwrapper
+          !it.matches(Regex("There were \\d+ warnings \\(use warnings\\(\\) to see them\\)"))
+        }
+        .let { lines ->
+          val newLines = mutableListOf<String>()
+          var drop = false
+          lines.forEach {
+            if (!drop || it.startsWith(">")) {
+              // Warnings are not printed correctly in rwrapper
+              if (it.startsWith("Warning message") ||
+                  it.startsWith("> summary(warnings") ||
+                  it.startsWith("In addition: Warning")) {
+                drop = true
+              } else {
+                drop = false
+                newLines.add(it)
+              }
+            }
+          }
+          newLines
+        }
+        .joinToString("\n")
+    }
+  }
+}

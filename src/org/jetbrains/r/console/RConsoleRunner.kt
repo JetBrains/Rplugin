@@ -101,6 +101,7 @@ class RConsoleRunner(private val project: Project,
       })
 
       runAsync {
+        rInterop.setWorkingDir(workingDir)
         // Setup console listener for graphics device
         val graphicsDevice = if (ApplicationManager.getApplication().isUnitTestMode) {
           null

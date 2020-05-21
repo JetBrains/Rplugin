@@ -24,19 +24,21 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType
-import java.util.concurrent.TimeoutException
 
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected lateinit var rInterop: RInterop
+  protected open val customDeadline: Long? = null
 
   override fun setUp() {
     super.setUp()
+    project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
     rInterop = getRInterop(project)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")
   }
 
   override fun tearDown() {
+    project.putUserData(RInterop.DEADLINE_TEST_KEY, null)
     if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
       Disposer.dispose(rInterop)
     }

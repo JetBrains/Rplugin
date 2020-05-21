@@ -22,6 +22,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -62,19 +63,21 @@ interface LoadedLibrariesListener {
   fun onLibrariesUpdated()
 }
 
-private const val DEADLINE_TEST = 40L
+private const val DEADLINE_TEST_DEFAULT = 40L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val processHandler: OSProcessHandler, address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
+  private val deadlineTest
+    get() = project.getUserData(DEADLINE_TEST_KEY) ?: DEADLINE_TEST_DEFAULT
 
   internal val stub = RPIServiceGrpc.newBlockingStub(channel).let {
-    if (isUnitTestMode) it.withDeadline(Deadline.after(DEADLINE_TEST, TimeUnit.SECONDS)) else it
+    if (isUnitTestMode) it.withDeadline(Deadline.after(deadlineTest, TimeUnit.SECONDS)) else it
   }
   internal val asyncStub = RPIServiceGrpc.newFutureStub(channel).let {
-    if (isUnitTestMode) it.withDeadline(Deadline.after(DEADLINE_TEST, TimeUnit.SECONDS)) else it
+    if (isUnitTestMode) it.withDeadline(Deadline.after(deadlineTest, TimeUnit.SECONDS)) else it
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
   private val heartbeatTimer: Timer
@@ -267,8 +270,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return if (withCheckCancelled) {
       promise.getWithCheckCanceled()
     } else {
-      val timeout = if (isUnitTestMode) EXECUTE_CODE_TEST_TIMEOUT else Int.MAX_VALUE
-      promise.blockingGet(timeout)!!
+      promise.blockingGet(Int.MAX_VALUE)!!
     }
   }
 
@@ -756,7 +758,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   ): CancellablePromise<Unit> {
     val number = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onExecuteRequestAsync(number, methodDescriptor, request)
-    val callOptions = if (isUnitTestMode) CallOptions.DEFAULT.withDeadlineAfter(DEADLINE_TEST, TimeUnit.SECONDS) else CallOptions.DEFAULT
+    val callOptions = if (isUnitTestMode) CallOptions.DEFAULT.withDeadlineAfter(deadlineTest, TimeUnit.SECONDS) else CallOptions.DEFAULT
     val call = channel.newCall(methodDescriptor, callOptions)
     val promise = object : AsyncPromise<Unit>() {
       override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
@@ -864,6 +866,10 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   private fun fireListenersAsync(f: (AsyncEventsListener) -> Promise<Unit>, end: () -> Unit) {
+    if (asyncEventsListeners.isEmpty()) {
+      end()
+      return
+    }
     val remaining = AtomicInteger(asyncEventsListeners.size)
     asyncEventsListeners.forEach { listener ->
       val promise = try {
@@ -1088,6 +1094,8 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     private const val HEARTBEAT_PERIOD = 20000
     private const val EXECUTE_CODE_TEST_TIMEOUT = 20000
     private const val GRPC_LOGGER_MAX_MESSAGES = 30
+
+    internal val DEADLINE_TEST_KEY = Key<Long>("org.jetbrains.r.rinterop.RInterop.DeadlineTest")
   }
 }
 
