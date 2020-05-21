@@ -309,7 +309,7 @@ object RInterpreterUtil {
     return runRInterpreter(interpreterPath, commands, workingDirectory)
   }
 
-  private fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
+  fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
     return mutableListOf(interpreterPath, "--slave", "--no-restore", "-f", helper.absolutePath, "--args").apply { addAll(args) }
   }
 
