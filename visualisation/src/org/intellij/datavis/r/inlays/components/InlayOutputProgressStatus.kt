@@ -32,7 +32,7 @@ fun buildProgressStatusComponent(progressStatus: InlayProgressStatus): JComponen
     }
   }
   val label = JLabel(progressStatus.statusText)
-  label.border = BorderFactory.createEmptyBorder(TEXT_BORDER, 0, TEXT_BORDER, 0)
+  label.border = BorderFactory.createEmptyBorder(TEXT_BORDER, TEXT_BORDER, TEXT_BORDER, 0)
   progressBar?.let { progressPanel.add(it, BorderLayout.PAGE_START) }
   progressPanel.add(label, BorderLayout.CENTER)
   return progressPanel
