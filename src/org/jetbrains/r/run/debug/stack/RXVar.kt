@@ -5,7 +5,6 @@
 package org.jetbrains.r.run.debug.stack
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.util.Disposer
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.r.RBundle
@@ -14,6 +13,7 @@ import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.rinterop.RValueEnvironment
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.CancellationException
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
@@ -55,7 +55,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
         val rInterop = rVar.ref.rInterop
         rVar.ref.setValue(RRef.expressionRef(expression.expression, stackFrame.environment))
           .also {
-            Disposer.register(stackFrame, Disposable { it.cancel() })
+            stackFrame.tryRegisterDisposable(Disposable { it.cancel() })
           }
           .onSuccess {
             callback.valueModified()
