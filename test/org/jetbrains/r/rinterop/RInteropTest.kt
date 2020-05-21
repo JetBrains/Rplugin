@@ -6,6 +6,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -302,5 +303,19 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     promptPromise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("123", rInterop.executeCode("cat(123)").stdout)
     TestCase.assertFalse(rInterop.isDebug)
+  }
+
+  fun testSaveLoadGlobalEnv() {
+    rInterop.executeCode("x <- 1; y <- 2")
+    val tempFile = FileUtil.createTempFile("tmp-", ".RData", true)
+    rInterop.saveGlobalEnvironment(tempFile.absolutePath).blockingGet(DEFAULT_TIMEOUT)
+    assertTrue(tempFile.length() > 0)
+    rInterop.executeCode("rm(list = ls())")
+    rInterop.loadEnvironment(tempFile.absolutePath, "foo").blockingGet(DEFAULT_TIMEOUT)
+    val (stdoutLocal, _, _) = rInterop.executeCode("cat(foo${'$'}x + foo${'$'}y)")
+    assertEquals("3", stdoutLocal)
+    rInterop.loadEnvironment(tempFile.absolutePath, "")
+    val (stdoutGlobal, _, _) = rInterop.executeCode("cat(x + y)")
+    assertEquals("3", stdoutGlobal)
   }
 }

@@ -253,6 +253,19 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       invalidateCaches()
     }
   }
+  
+  fun saveGlobalEnvironment(filename: String): CancellablePromise<Empty> =
+    executeAsync(asyncStub::saveGlobalEnvironment, StringValue.of(filename))
+
+  fun loadEnvironment(filename: String, variableName: String): CancellablePromise<Unit> {
+    val request = Service.LoadEnvironmentRequest.newBuilder()
+      .setFile(filename)
+      .setVariable(variableName)
+      .build()
+    return executeAsync(asyncStub::loadEnvironment, request).thenCancellable {
+      invalidateCaches()
+    }
+  }
 
   fun setOutputWidth(width: Int) = executeTask {
     execute(asyncStub::setOutputWidth, Int32Value.of(width))
