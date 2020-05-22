@@ -270,9 +270,13 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
 
     private fun prepareCode(code: String): String {
       // Use other commands in windows
-      return code
-        .replace("options(editor=\"touch\")", "options(editor = function(name, ...) name)")
-        .replace("system(paste(\"cat\"", "system(paste(\"cmd /c type\"")
+      return if (SystemInfo.isWindows) {
+        code
+          .replace("options(editor=\"touch\")", "options(editor = function(name, ...) name)")
+          .replace("system(paste(\"cat\"", "system(paste(\"cmd /c type\"")
+      } else {
+        code
+      }
     }
   }
 }
