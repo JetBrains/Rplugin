@@ -138,6 +138,10 @@ object RGraphicsUtils {
     return InitProperties(path, parameters)
   }
 
+  fun createGraphicsDevice(rInterop: RInterop, parameters: ScreenParameters): RGraphicsDevice {
+    return createGraphicsDevice(rInterop, parameters.dimension, parameters.resolution)
+  }
+
   fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
     // Note: 'FileUtil.createTempFile()' will break unit-tests
     val tmpDirectory = Files.createTempDirectory("rplugin-graphics").toFile()
