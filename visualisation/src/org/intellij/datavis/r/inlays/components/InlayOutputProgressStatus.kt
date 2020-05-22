@@ -17,7 +17,8 @@ enum class ProgressStatus {
 
 data class InlayProgressStatus(val progress: ProgressStatus, val statusText: String)
 
-fun buildProgressStatusComponent(progressStatus: InlayProgressStatus): JComponent {
+fun buildProgressStatusComponent(progressStatus: InlayProgressStatus): JComponent? {
+  if (progressStatus.progress == ProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
   val progressPanel = JPanel(BorderLayout())
   var progressBar: JProgressBar? = null
   if (progressStatus.progress != ProgressStatus.STOPPED_OK) {

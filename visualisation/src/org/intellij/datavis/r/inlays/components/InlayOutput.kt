@@ -11,7 +11,9 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -20,6 +22,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.ui.IdeBorderFactory
+import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.TextTransferable
 import com.intellij.util.ui.UIUtil
 import javafx.application.Platform
@@ -78,8 +82,7 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   abstract fun acceptType(type: String): Boolean
 
   fun updateProgressStatus(progressStatus: InlayProgressStatus) {
-    val progressPanel = buildProgressStatusComponent(progressStatus)
-    toolbarPane.progressComponent = progressPanel
+    toolbarPane.progressComponent = buildProgressStatusComponent(progressStatus)
   }
 
   private fun getProgressStatusHeight(): Int {
@@ -309,7 +312,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     Disposer.register(parent, console)
     toolbarPane.centralComponent = console.component
     (console.editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
-    (console.editor as EditorImpl).scrollPane.border = null
+    (console.editor as EditorImpl).scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(5, 0, 0, 0))
     MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane, parent)
 
     console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
