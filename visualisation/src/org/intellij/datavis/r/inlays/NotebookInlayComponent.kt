@@ -271,7 +271,6 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   /** Adjusts size of notebook output. Method called when success data comes with inlay component desired height. */
   private fun adjustSize(height: Int, output: NotebookInlayState) {
     beforeHeightChanged()
-    output.onHeightCalculated = null
 
     val desiredHeight = min(InlayDimensions.defaultHeight, height + InlayDimensions.topBorder + InlayDimensions.bottomBorder)
 
