@@ -7,6 +7,7 @@ package org.jetbrains.r.rinterop
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
@@ -55,7 +56,8 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   fun testBasic_reg_tests_1c() = doBasicTest("reg-tests-1c", before = "Sys.setlocale('LC_ALL', 'C')")
   fun testBasic_reg_examples1() = doBasicTest("reg-examples1")
   fun testBasic_reg_examples2() = doBasicTest("reg-examples2")
-  fun testBasic_reg_packages() = doBasicTest("reg-packages", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  fun testBasic_reg_packages() = doBasicTest("reg-packages", linuxOnly = true,
+                                             before = "assign('interactive', function(...) FALSE, envir = baseenv())")
   fun testBasic_p_qbeta_strict_tst() = doBasicTest("p-qbeta-strict-tst")
   fun testBasic_reg_IO() = doBasicTest("reg-IO")
   fun testBasic_reg_IO2() = doBasicTest("reg-IO2")
@@ -78,8 +80,10 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   fun testBasic_internet2() = doBasicTest("internet2", allowDiff = true)
   fun testBasic_libcurl() = doBasicTest("libcurl", allowDiff = true)
 
-  private fun doBasicTest(name: String, allowDiff: Boolean = false, since: Version? = null, before: String? = null) {
+  private fun doBasicTest(name: String, allowDiff: Boolean = false, since: Version? = null, before: String? = null,
+                          linuxOnly: Boolean = false) {
     if (since != null && rInterop.rVersion < since) return
+    if (linuxOnly && !SystemInfo.isLinux) return
 
     execute("""
         Sys.setlocale("LC_COLLATE", "C")
@@ -126,7 +130,6 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         local({
           knownPackages <- tools:::.get_standard_package_names()
           cat(c(knownPackages $ base, knownPackages $ recommended), sep = "\n")
-          #cat('grid')
         })
     """.trimIndent()).lines().filter { it.isNotBlank() }
     knownPackages.forEach { pkg ->
@@ -166,7 +169,11 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         if (expectedFile.exists()) {
           println("  comparing output to ${expectedFile.name}")
           val expected = expectedFile.readText()
-          TestCase.assertEquals(prepareOutput(expected), prepareOutput(output))
+          val preparedExpected = prepareOutput(expected)
+          val preparedOutput = prepareOutput(output)
+          if (!StringUtil.equalsIgnoreWhitespaces(preparedExpected, preparedOutput)) {
+            TestCase.assertEquals(preparedExpected, preparedOutput)
+          }
         }
       }
     }
@@ -181,7 +188,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   private fun executeFile(file: String, interop: RInterop = rInterop): String {
     val output = StringBuilder()
     val script = StringUtil.convertLineSeparators(File(file).readText())
-    RConsoleExecuteActionHandler.splitCodeForExecution(project, script).forEach { (code, _) ->
+    RConsoleExecuteActionHandler.splitCodeForExecution(project, prepareCode(script)).forEach { (code, _) ->
       code.lines().forEachIndexed { i, s ->
         output.append(if (i == 0) "> " else "+ ").append(s).append("\n")
       }
@@ -233,7 +240,9 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           !it.startsWith("Number of all base objects:") &&
           !it.startsWith("Number of functions from these:") &&
           // Warnings are not printed correctly in rwrapper
-          !it.matches(Regex("There were \\d+ warnings \\(use warnings\\(\\) to see them\\)"))
+          !it.matches(Regex("There were \\d+ warnings \\(use warnings\\(\\) to see them\\)")) &&
+          // This line is OS-dependent
+          !it.contains("options(pager = \"console\")")
         }
         .let { lines ->
           val newLines = mutableListOf<String>()
@@ -243,7 +252,10 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
               // Warnings are not printed correctly in rwrapper
               if (it.startsWith("Warning message") ||
                   it.startsWith("> summary(warnings") ||
-                  it.startsWith("In addition: Warning")) {
+                  it.startsWith("In addition: Warning") ||
+                  // System-dependent tests
+                  (SystemInfo.isWindows && it.startsWith("> windowsFonts(")) ||
+                  (SystemInfo.isWindows && it.startsWith("> if(.Platform${"$"}OS.type == \"unix\") {"))) {
                 drop = true
               } else {
                 drop = false
@@ -254,6 +266,13 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           newLines
         }
         .joinToString("\n")
+    }
+
+    private fun prepareCode(code: String): String {
+      // Use other commands in windows
+      return code
+        .replace("options(editor=\"touch\")", "options(editor = function(name, ...) name)")
+        .replace("system(paste(\"cat\"", "system(paste(\"cmd /c type\"")
     }
   }
 }
