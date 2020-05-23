@@ -153,7 +153,7 @@ object RGraphicsUtils {
   fun getDefaultScreenParameters(isFullScreenMode: Boolean = true): ScreenParameters {
     val screenSize = getScreenSize()
     val resolution = getDefaultResolution(screenSize, isFullScreenMode)
-    return ScreenParameters(screenSize, resolution)
+    return ScreenParameters(screenSize.downscaleIf(!isFullScreenMode), resolution)
   }
 
   fun getDefaultResolution(isFullScreenMode: Boolean): Int {
@@ -196,4 +196,8 @@ object RGraphicsUtils {
 
   internal fun downscaleForRetina(resolution: Int): Int =
     if (isRetina) resolution / 2 else resolution
+
+  private fun Dimension.downscaleIf(condition: Boolean): Dimension {
+    return if (condition) Dimension(width / 2, height / 2) else this
+  }
 }
