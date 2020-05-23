@@ -518,7 +518,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private void onUpdateFinished() {
-    myPackagesTable.getEmptyText().setText(StatusText.DEFAULT_EMPTY_TEXT);
+    myPackagesTable.getEmptyText().setText(StatusText.getDefaultEmptyText());
     updateUninstallUpgrade();
     // Action button presentations won't be updated if no events occur (e.g. mouse isn't moving, keys aren't being pressed).
     // In that case emulating activity will help:
@@ -537,8 +537,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
         }
         finally {
           final Collection<RInstalledPackage> finalPackages = packages;
-
-          final Map<String, RepoPackage> cache = buildNameToPackageMap(packageManagementService.getAllPackagesCached());
           final boolean shouldFetchLatestVersionsForOnlyInstalledPackages = shouldFetchLatestVersionsForOnlyInstalledPackages();
           UIUtil.invokeLaterIfNeeded(() -> {
             if (packageManagementService == myPackageManagementService) {
@@ -547,9 +545,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
                 myPackagesTableModel
                   .addRow(new Object[] {"", pkg, pkg.getDescription().get(TITLE), pkg.getVersion(), "", ""});
               }
-              if (!cache.isEmpty()) {
-                onUpdateFinished();
-              }
+              onUpdateFinished();
               if (shouldFetchLatestVersionsForOnlyInstalledPackages) {
                 setLatestVersionsForInstalledPackages();
               }
@@ -630,26 +626,6 @@ public class RInstalledPackagesPanelBase extends JPanel {
       return service.compareVersions(currentVersion, availableVersion) < 0;
     }
     return PackageVersionComparator.VERSION_COMPARATOR.compare(currentVersion, availableVersion) < 0;
-  }
-
-  private Map<String, RepoPackage> buildNameToPackageMap(java.util.List<? extends RepoPackage> packages) {
-    try {
-      return doBuildNameToPackageMap(packages);
-    }
-    catch (Exception e) {
-      PackageManagementService service = myPackageManagementService;
-      LOG.error("Failure in " + getClass().getName() +
-                ", service: " + (service != null ? service.getClass().getName() : null), e);
-      return Collections.emptyMap();
-    }
-  }
-
-  private static Map<String, RepoPackage> doBuildNameToPackageMap(List<? extends RepoPackage> packages) {
-    final Map<String, RepoPackage> packageMap = new HashMap<>();
-    for (RepoPackage aPackage : packages) {
-      packageMap.put(aPackage.getName(), aPackage);
-    }
-    return packageMap;
   }
 
   private static void doRecorded(@NotNull String actionId, @NotNull MouseEvent event, @NotNull Runnable runnable) {
