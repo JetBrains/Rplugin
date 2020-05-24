@@ -17,11 +17,13 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
 
   private val output = StringBuilder()
   private val stderr = StringBuilder()
+  private var rJobProgressProvider = RJobProgressProvider()
 
   override fun setUp() {
     super.setUp()
     output.setLength(0)
     stderr.setLength(0)
+    rJobProgressProvider = RJobProgressProvider()
   }
 
   fun testRun() {
@@ -34,6 +36,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     waitForTermination(processHandler)
     assertEquals("Hello world", output.toString())
     assertEquals("Error", stderr.toString())
+    assertTrue(rJobProgressProvider.current == rJobProgressProvider.total)
   }
 
   fun testRunImportGlobal() {
@@ -46,6 +49,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     waitForTermination(processHandler)
     assertEquals("3", output.toString())
     assertEquals("", stderr.toString())
+    assertTrue(rJobProgressProvider.current == rJobProgressProvider.total)
   }
 
   fun testRunExportGlobal() {
@@ -61,6 +65,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     val (stdout, stderr, _) = rInterop.executeCode("cat(x + y)")
     assertEquals("3", stdout)
     assertTrue(stderr.isEmpty())
+    assertTrue(rJobProgressProvider.current == rJobProgressProvider.total)
   }
 
   fun testRunExportVariable() {
@@ -78,6 +83,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     val (stdout, stderr, _) = rInterop.executeCode("cat($variableName${'$'}x + $variableName${'$'}y)")
     assertEquals("3", stdout)
     assertTrue(stderr.isEmpty())
+    assertTrue(rJobProgressProvider.current == rJobProgressProvider.total)
   }
 
   private fun createProcessHandler(task: RJobTask): ProcessHandler {
@@ -98,7 +104,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
 
   private fun ProcessHandler.installListener() {
     addProcessListener(object : ProcessAdapter() {
-      val filter = RSourceProgressInputFilter {}
+      val filter = RSourceProgressInputFilter { rJobProgressProvider.onProgressAvailable(it) }
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val consoleViewType = ConsoleViewContentType.getConsoleViewType(outputType)
         val filtered = filter.applyFilter(event.text, consoleViewType)
