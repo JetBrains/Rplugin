@@ -7,5 +7,25 @@ RFile:RawString.r
       PsiElement(<-)('<-')
     PsiWhiteSpace(' ')
     R_STRING_LITERAL_EXPRESSION
-      PsiElement(STRING)('r"(hello\n"world")"')
+      PsiElement(STRING)('r"(hello\n"[world]"]")"')
+  PsiWhiteSpace('\n\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('y')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('r"[hello\n"(world)")"]"')
+  PsiWhiteSpace('\n\n')
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('z')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('r"{hello\n"world)")"}"')
   PsiWhiteSpace('\n')

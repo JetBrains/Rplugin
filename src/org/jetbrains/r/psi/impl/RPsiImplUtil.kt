@@ -141,7 +141,7 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getName(stringLiteral: RStringLiteralExpressionImpl): String? {
     val text = stringLiteral.text
-    if (text.startsWith("""r"(""")) {
+    if (text.startsWith("r\"")) {
       return text.substring(3, text.length - 2)
     }
     if (text.length >= 2) {

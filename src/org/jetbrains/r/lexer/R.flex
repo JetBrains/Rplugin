@@ -78,7 +78,7 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 %}
 
-%xstate RAW_STRING_STATE
+%xstate RAW_PARENTHESIS_STRING_STATE RAW_BRACKET_STRING_STATE RAW_BRACE_STRING_STATE
 
 %%
 
@@ -108,7 +108,9 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 {STRING}                    { return R_STRING; }
 {STRING_WITHOUT_END}        { return R_INVALID_STRING; }
 
-r\"\(                       { yybegin(RAW_STRING_STATE); }
+r\"\(                       { yybegin(RAW_PARENTHESIS_STRING_STATE); }
+r\"\[                       { yybegin(RAW_BRACKET_STRING_STATE); }
+r\"\{                       { yybegin(RAW_BRACE_STRING_STATE); }
 
 // special constants
 "NULL"                      { return R_NULL; }
@@ -218,8 +220,19 @@ r\"\(                       { yybegin(RAW_STRING_STATE); }
 
 }
 
-<RAW_STRING_STATE> {
+<RAW_PARENTHESIS_STRING_STATE> {
 \)\"                        { yybegin(YYINITIAL); return R_STRING; }
+}
+
+<RAW_BRACKET_STRING_STATE> {
+\]\"                        { yybegin(YYINITIAL); return R_STRING; }
+}
+
+<RAW_BRACE_STRING_STATE> {
+\}\"                        { yybegin(YYINITIAL); return R_STRING; }
+}
+
+<RAW_PARENTHESIS_STRING_STATE, RAW_BRACKET_STRING_STATE, RAW_BRACE_STRING_STATE> {
 [^]                         {}
 <<EOF>>                     { yybegin(YYINITIAL); return R_INVALID_STRING; }
 }

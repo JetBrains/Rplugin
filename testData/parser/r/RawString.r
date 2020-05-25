@@ -1,2 +1,8 @@
 x <- r"(hello
-"world")"
+"[world]"]")"
+
+y <- r"[hello
+"(world)")"]"
+
+z <- r"{hello
+"world)")"}"
