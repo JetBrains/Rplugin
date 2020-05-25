@@ -92,9 +92,9 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         Sys.setenv(SRCDIR = ".")
         unlockBinding("interactive", baseenv())
         unlockBinding("quit", baseenv())
-        assign("quit", function(...) invisible(NULL), envir = baseenv())
+        assign("quit", function(...) stop("TEST_QUIT_CALLED"), envir = baseenv())
         unlockBinding("q", baseenv())
-        assign("q", function(...) invisible(NULL), envir = baseenv())
+        assign("q", quit, envir = baseenv())
         options(keep.source = FALSE, error = NULL, warn = -1)
     """.trimIndent())
     File(execute("cat(R.home('tests'))")).listFiles()!!.filter { it.isFile || it.name == "Pkgs" }.forEach {
@@ -155,9 +155,9 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           Sys.setenv(LC_COLLATE = "C")
           Sys.setenv(SRCDIR = ".")
           unlockBinding("quit", baseenv())
-          assign("quit", function(...) invisible(NULL), envir = baseenv())
+          assign("quit", function(...) stop("TEST_QUIT_CALLED"), envir = baseenv())
           unlockBinding("q", baseenv())
-          assign("q", function(...) invisible(NULL), envir = baseenv())
+          assign("q", quit, envir = baseenv())
           options(keep.source = FALSE, error = NULL, warn = -1)
           Sys.unsetenv('DISPLAY')
           Sys.setlocale('LC_TIME', 'C')
@@ -195,8 +195,11 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
       val result = interop.executeCodeAsync(code, setLastValue = true) { s, _ ->
         output.append(s)
       }.blockingGet(Integer.MAX_VALUE)!!
-      if (result.exception != null && interop.executeCode("cat(is.null(getOption('error')))").stdout == "TRUE") {
-        TestCase.fail("Error in $code:\n${result.exception}")
+      result.exception?.let {
+        if ("TEST_QUIT_CALLED" in it) return@executeFile output.toString()
+        if (interop.executeCode("cat(is.null(getOption('error')))").stdout == "TRUE") {
+          TestCase.fail("Error in $code:\n$it")
+        }
       }
     }
     return output.toString()
@@ -266,17 +269,29 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           newLines
         }
         .joinToString("\n")
+        // This test does not work on non-fresh R installation
+        .replace("""
+          > stopifnot(identical(
+          +     sort(dependsOnPkgs("lattice", lib.loc = .Library)),
+          +     c("Matrix", "mgcv", "nlme", "survival")))
+        """.trimIndent(), "")
     }
 
-    private fun prepareCode(code: String): String {
-      // Use other commands in windows
-      return if (SystemInfo.isWindows) {
-        code
+    private fun prepareCode(s: String): String {
+      var code = s
+      if (SystemInfo.isWindows) {
+        // Use other commands in windows
+        code = code
           .replace("options(editor=\"touch\")", "options(editor = function(name, ...) name)")
           .replace("system(paste(\"cat\"", "system(paste(\"cmd /c type\"")
-      } else {
-        code
       }
+      // This test does not work on non-fresh R installation
+      code = code.replace("""
+        stopifnot(identical(
+            sort(dependsOnPkgs("lattice", lib.loc = .Library)),
+            c("Matrix", "mgcv", "nlme", "survival")))
+      """.trimIndent(), "")
+      return code
     }
   }
 }
