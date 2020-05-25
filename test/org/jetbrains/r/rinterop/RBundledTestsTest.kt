@@ -244,6 +244,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         }
         .filter {
           it != ">" && it != "+" && it != "" &&
+          "TEST_QUIT_CALLED" !in it &&
           !it.startsWith("Time elapsed:") &&
           // RWrapper creates some new objects in baseenv
           !it.startsWith("Number of all base objects:") &&
