@@ -15,6 +15,7 @@ import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.R_3_4
+import org.jetbrains.r.interpreter.R_3_5
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
@@ -36,7 +37,12 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   //   Unused tests:
   //   reg-tests-2 - it uses R debugger
   //   utf8-regex - it uses readLines and input in source file
-  fun testBasic_eval_etc() = doBasicTest("eval-etc", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  fun testBasic_eval_etc() {
+    // File 'eval-fns.R' is required for this test but it is missing in some R distribution
+    if (rInterop.rVersion >= R_3_5 && execute("cat(file.exists(R.home('tests/eval-fns.R')))") == "FALSE") return
+    doBasicTest("eval-etc", before = "assign('interactive', function(...) FALSE, envir = baseenv())")
+  }
+
   fun testBasic_simple_true() = doBasicTest("simple-true")
   fun testBasic_arith_true() = doBasicTest("arith-true")
   fun testBasic_lm_tests() = doBasicTest("lm-tests")
@@ -242,6 +248,8 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           // RWrapper creates some new objects in baseenv
           !it.startsWith("Number of all base objects:") &&
           !it.startsWith("Number of functions from these:") &&
+          !it.startsWith("Number of base objects:") &&
+          !it.startsWith("Number of functions in base:") &&
           // Warnings are not printed correctly in rwrapper
           !it.matches(Regex("There were \\d+ warnings \\(use warnings\\(\\) to see them\\)")) &&
           // This line is OS-dependent
