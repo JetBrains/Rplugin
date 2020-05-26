@@ -139,6 +139,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         })
     """.trimIndent()).lines().filter { it.isNotBlank() }
     knownPackages.forEach { pkg ->
+      if (pkg == "tcltk" && SystemInfo.isMac) return@forEach
       val script = execute("""
         local({
           pkg <- "$pkg"
