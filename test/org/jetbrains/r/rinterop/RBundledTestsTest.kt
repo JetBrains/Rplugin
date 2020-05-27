@@ -96,6 +96,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         Sys.setenv(R_DEFAULT_PACKAGES = "")
         Sys.setenv(LC_COLLATE = "C")
         Sys.setenv(SRCDIR = ".")
+        Sys.setenv(TZ = "UTC")
         unlockBinding("interactive", baseenv())
         unlockBinding("quit", baseenv())
         assign("quit", function(...) stop("TEST_QUIT_CALLED"), envir = baseenv())
@@ -161,6 +162,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           Sys.setenv(R_DEFAULT_PACKAGES = "")
           Sys.setenv(LC_COLLATE = "C")
           Sys.setenv(SRCDIR = ".")
+          Sys.setenv(TZ = "UTC")
           unlockBinding("quit", baseenv())
           assign("quit", function(...) stop("TEST_QUIT_CALLED"), envir = baseenv())
           unlockBinding("q", baseenv())
@@ -203,12 +205,16 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
         output.append(s)
       }.blockingGet(Integer.MAX_VALUE)!!
       result.exception?.let {
-        if ("TEST_QUIT_CALLED" in it) return@executeFile output.toString()
+        if ("TEST_QUIT_CALLED" in it) {
+          TestCase.assertEquals("1", execute("cat(1)", interop))
+          return@executeFile output.toString()
+        }
         if (interop.executeCode("cat(is.null(getOption('error')))").stdout == "TRUE") {
           TestCase.fail("Error in $code:\n$it")
         }
       }
     }
+    TestCase.assertEquals("1", execute("cat(1)", interop))
     return output.toString()
   }
 
