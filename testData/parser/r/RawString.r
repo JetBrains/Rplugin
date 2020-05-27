@@ -4,5 +4,8 @@ x <- r"(hello
 y <- r"[hello
 "(world)")"]"
 
-z <- r"{hello
+z <- R"{hello
 "world)")"}"
+
+a <- r"--(hello
+"[wor)---"--)--"

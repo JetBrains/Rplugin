@@ -75,10 +75,46 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 //ESCAPE_SEQUENCE=\\([rntbafv\'\"\\]|{NONZERO_OCT_DIGIT}|{OCT_DIGIT}{2,3}|"x"{HEX_DIGIT}{1,2}|"u"{HEX_DIGIT}{1,4}|"u{"{HEX_DIGIT}{1,4}"}"|"U"{HEX_DIGIT}{1,8}|"U{"{HEX_DIGIT}{1,8}"}")
 
 %{
-private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
-%}
+  private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 
-%xstate RAW_PARENTHESIS_STRING_STATE RAW_BRACKET_STRING_STATE RAW_BRACE_STRING_STATE
+  private boolean acceptRowString() {
+    int minusPrefixLength = 0;
+    while(zzMarkedPos < zzEndRead && zzBuffer.charAt(zzMarkedPos) == '-') {
+      minusPrefixLength++;
+      zzMarkedPos++;
+    }
+    if (zzMarkedPos >= zzEndRead) {
+      return false;
+    }
+    char closeBrace;
+    switch (zzBuffer.charAt(zzMarkedPos)) {
+      case '(': closeBrace = ')'; break;
+      case '[': closeBrace = ']'; break;
+      case '{': closeBrace = '}'; break;
+      default: return false;
+    }
+    zzMarkedPos++;
+    while (zzMarkedPos < zzEndRead) {
+      char c = zzBuffer.charAt(zzMarkedPos);
+      if (c == closeBrace) {
+        zzMarkedPos++;
+        int minusSuffixLength = 0;
+        while(zzMarkedPos < zzEndRead && zzBuffer.charAt(zzMarkedPos) == '-') {
+          minusSuffixLength++;
+          zzMarkedPos++;
+        }
+        if (zzMarkedPos < zzEndRead && minusPrefixLength == minusSuffixLength && zzBuffer.charAt(zzMarkedPos) == '"') {
+          zzMarkedPos++;
+          return true;
+        }
+      }
+      else {
+        zzMarkedPos++;
+      }
+    }
+    return false;
+  }
+%}
 
 %%
 
@@ -108,9 +144,10 @@ private Stack<IElementType> myExpectedBracketsStack = new Stack<>();
 {STRING}                    { return R_STRING; }
 {STRING_WITHOUT_END}        { return R_INVALID_STRING; }
 
-r\"\(                       { yybegin(RAW_PARENTHESIS_STRING_STATE); }
-r\"\[                       { yybegin(RAW_BRACKET_STRING_STATE); }
-r\"\{                       { yybegin(RAW_BRACE_STRING_STATE); }
+(r|R)\"                     {
+        if (acceptRowString()) return R_STRING;
+        else return R_INVALID_STRING;
+      }
 
 // special constants
 "NULL"                      { return R_NULL; }
@@ -218,21 +255,4 @@ r\"\{                       { yybegin(RAW_BRACE_STRING_STATE); }
 "?"                         { return R_HELP; }
 .                           { return BAD_CHARACTER; }
 
-}
-
-<RAW_PARENTHESIS_STRING_STATE> {
-\)\"                        { yybegin(YYINITIAL); return R_STRING; }
-}
-
-<RAW_BRACKET_STRING_STATE> {
-\]\"                        { yybegin(YYINITIAL); return R_STRING; }
-}
-
-<RAW_BRACE_STRING_STATE> {
-\}\"                        { yybegin(YYINITIAL); return R_STRING; }
-}
-
-<RAW_PARENTHESIS_STRING_STATE, RAW_BRACKET_STRING_STATE, RAW_BRACE_STRING_STATE> {
-[^]                         {}
-<<EOF>>                     { yybegin(YYINITIAL); return R_INVALID_STRING; }
 }

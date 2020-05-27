@@ -141,13 +141,23 @@ internal object RPsiImplUtil {
   @JvmStatic
   fun getName(stringLiteral: RStringLiteralExpressionImpl): String? {
     val text = stringLiteral.text
-    if (text.startsWith("r\"")) {
-      return text.substring(3, text.length - 2)
+
+    rowStringMinusNumber(text)?.let {
+      return text.substring(3 + it, text.length - (2 + it))
     }
     if (text.length >= 2) {
       return text.substring(1, text.length - 1)
     }
     return null
+  }
+
+  /** This method relay on correct [string] (It should be checked in lexer already) */
+  private fun rowStringMinusNumber(string: String): Int? {
+    if (string[0].toLowerCase() != 'r') return null
+
+    var minusNumber = 0
+    while(string[2 + minusNumber] == '-') minusNumber++
+    return minusNumber
   }
 
   @JvmStatic
@@ -156,8 +166,11 @@ internal object RPsiImplUtil {
     if (text.length < 2) {
       throw IncorrectOperationException("incorrect string literal: " + text)
     }
-    val quote = text[0]
-    val result = if (text.startsWith("""r"(""")) """r"($name)"""" else quote + name + quote
+    val result = rowStringMinusNumber(text)?.let {
+      text.replaceRange(3 + it, text.length - (2 + it), name)
+    } ?: text[0].let {
+      it + name + it
+    }
     val replacement = RElementFactory.createRPsiElementFromText(stringLiteral.project, result)
     return stringLiteral.replace(replacement)
   }
