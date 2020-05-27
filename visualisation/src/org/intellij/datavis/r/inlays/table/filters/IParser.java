@@ -59,7 +59,7 @@ public interface IParser {
     String stripHtml(String s);
 
     /** Helper class used on {@link IParser#parseInstantText(String)}. */
-    public class InstantFilter {
+    class InstantFilter {
         public RowFilter filter;
         public String    expression;
     }
