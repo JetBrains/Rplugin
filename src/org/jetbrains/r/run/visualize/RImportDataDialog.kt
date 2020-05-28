@@ -73,10 +73,13 @@ abstract class RImportDataDialog(
 
   private var filePath: String? = null
     set(path) {
-      field = path
-      updateVariableName()
-      fileInputField.text = path?.beautifyPath() ?: ""
-      updatePreviewAsync()
+      if (field != path) {
+        field = path
+        onFileChanged()
+        updateVariableName()
+        fileInputField.text = path?.beautifyPath() ?: ""
+        updatePreviewAsync()
+      }
     }
 
   private var variableName by NameFieldDelegate(form.nameTextField)
@@ -110,6 +113,14 @@ abstract class RImportDataDialog(
 
   protected open fun updateOkAction() {
     isOKActionEnabled = filePath != null && variableName != null && previewRowCount != null && previewer.hasPreview
+  }
+
+  protected open fun onFileChanged() {
+    // Do nothing
+  }
+
+  protected open fun onUpdateFinished() {
+    // Do nothing
   }
 
   private fun setupPreviewComponent() {
@@ -168,12 +179,12 @@ abstract class RImportDataDialog(
   }
 
   @Synchronized
-  private fun updatePreviewAsync() {
+  protected fun updatePreviewAsync() {
     updateOkAction()
+    if (!form.optionPanel.isEnabled) {
+      return
+    }
     collectImportOptions()?.let { options ->
-      if (!form.optionPanel.isEnabled) {
-        return
-      }
       if (options == currentOptions) {
         return
       }
@@ -195,6 +206,7 @@ abstract class RImportDataDialog(
         .onProcessed {
           form.optionPanel.setEnabledRecursively(true)
           form.topPanel.setEnabledRecursively(true)
+          onUpdateFinished()
           updateOkAction()
         }
     }
@@ -323,7 +335,10 @@ abstract class RImportDataDialog(
     }
   }
 
-  protected inner class IntFieldDelegate(private val field: JTextField) {
+  /**
+   * **Note:** if input is blank and [isBlankAllowed] is enabled, a result will be set to (-1)
+   */
+  protected inner class IntFieldDelegate(private val field: JTextField, private val isBlankAllowed: Boolean = false) {
     init {
       field.addTextChangedListener {
         val errorText = INVALID_INTEGER_INPUT_MESSAGE.takeIf { tryParse() == null }
@@ -347,6 +362,9 @@ abstract class RImportDataDialog(
     }
 
     private fun tryParse(): Int? {
+      if (isBlankAllowed && field.text.isBlank()) {
+        return -1
+      }
       return field.text.toIntOrNull()?.takeIf { it >= 0 }
     }
   }
@@ -367,24 +385,35 @@ abstract class RImportDataDialog(
     }
   }
 
-  protected inner class ComboBoxDelegate<V>(private val comboBox: JComboBox<Any>, private val entries: List<ComboBoxEntry<V>>) {
+  protected inner class ComboBoxDelegate<V>(private val comboBox: JComboBox<Any>, entries: List<ComboBoxEntry<V>>) {
+    private val currentEntries = mutableListOf<ComboBoxEntry<V>>()
+
     init {
-      for (entry in entries) {
-        comboBox.addItem(entry.representation)
-      }
+      updateEntries(entries)
       comboBox.addItemListener { e ->
-        if (e.stateChange == ItemEvent.SELECTED) {
+        if (comboBox.isEnabled && e.stateChange == ItemEvent.SELECTED) {
           updatePreviewAsync()
         }
       }
     }
 
+    fun updateEntries(entries: List<ComboBoxEntry<V>>) {
+      if (currentEntries != entries) {
+        currentEntries.clear()
+        currentEntries.addAll(entries)
+        comboBox.removeAllItems()
+        for (entry in currentEntries) {
+          comboBox.addItem(entry.representation)
+        }
+      }
+    }
+
     operator fun getValue(thisRef: Any?, property: KProperty<*>): V {
-      return entries[comboBox.selectedIndex].value
+      return currentEntries[comboBox.selectedIndex].value
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
-      entries.find { it.value == value }?.let { entry ->
+      currentEntries.find { it.value == value }?.let { entry ->
         comboBox.selectedItem = entry
       }
     }
@@ -396,7 +425,8 @@ abstract class RImportDataDialog(
 
   companion object {
     private const val DEFAULT_PREVIEW_HEAD = 50
-    private const val PREVIEW_DATA_VARIABLE_NAME = ".jetbrains\$previewDataImportResult\$data"
+    const val PREVIEW_VARIABLE_NAME = ".jetbrains\$previewDataImportResult"
+    private const val PREVIEW_DATA_VARIABLE_NAME = "$PREVIEW_VARIABLE_NAME\$data"
 
     private val LOGGER = Logger.getInstance(RImportCsvDataDialog::class.java)
 
@@ -452,7 +482,7 @@ abstract class RImportDataDialog(
       }
     }
 
-    private fun JTextField.addTextChangedListener(listener: (DocumentEvent) -> Unit) {
+    fun JTextField.addTextChangedListener(listener: (DocumentEvent) -> Unit) {
       document.addDocumentListener(object : DocumentAdapter() {
         override fun textChanged(e: DocumentEvent) {
           listener(e)
@@ -460,12 +490,19 @@ abstract class RImportDataDialog(
       })
     }
 
-    private fun JTextField.addFocusLostListener(listener: (FocusEvent) -> Unit) {
+    fun JTextField.addFocusLostListener(listener: (FocusEvent) -> Unit) {
       addFocusListener(object : FocusAdapter() {
         override fun focusLost(e: FocusEvent) {
           listener(e)
         }
       })
+    }
+
+    fun runWithDisabled(component: JComponent, task: () -> Unit) {
+      val isEnabled = component.isEnabled
+      component.isEnabled = false
+      task()
+      component.isEnabled = isEnabled
     }
   }
 }

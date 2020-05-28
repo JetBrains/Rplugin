@@ -6,4 +6,5 @@ package org.jetbrains.r.run.visualize
 
 object RImportDataUtil {
   val supportedTextFormats = listOf("txt", "csv", "tsv")
+  val supportedExcelFormats = listOf("xls", "xlsx")
 }
