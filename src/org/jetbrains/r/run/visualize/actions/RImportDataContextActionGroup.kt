@@ -15,7 +15,8 @@ import org.jetbrains.r.console.RConsoleManager
 class RImportDataContextActionGroup : ActionGroup(TITLE, null, R_LOGO_16), DumbAware {
   private val actions: Array<RImportDataContextAction> = arrayOf(
     RImportBaseDataContextAction(),
-    RImportCsvDataContextAction()
+    RImportCsvDataContextAction(),
+    RImportExcelDataContextAction()
   )
 
   override fun getChildren(e: AnActionEvent?): Array<AnAction> {
