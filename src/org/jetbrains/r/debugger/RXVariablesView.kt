@@ -49,6 +49,7 @@ import org.jetbrains.r.run.debug.stack.RXStackFrame
 import org.jetbrains.r.run.debug.stack.RXVariableViewSettings
 import org.jetbrains.r.run.visualize.RImportBaseDataDialog
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
+import org.jetbrains.r.run.visualize.RImportExcelDataDialog
 import java.awt.BorderLayout
 import java.awt.event.*
 import javax.swing.SwingUtilities
@@ -273,6 +274,9 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       },
       createPackageDependentAction<RImportCsvDataAction>(IMPORT_CSV_REQUIREMENTS) {
         RImportCsvDataDialog(project, interop, project).show()
+      },
+      createPackageDependentAction<RImportExcelDataAction>(IMPORT_EXCEL_REQUIREMENTS) {
+        RImportExcelDataDialog(project, interop, project).show()
       }
     )
     return DefaultActionGroup(IMPORT_ACTION_GROUP_NAME, actions).apply {
@@ -363,6 +367,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
   companion object {
     private val IMPORT_ACTION_GROUP_NAME = RBundle.message("import.data.action.group.name")
+    private val IMPORT_EXCEL_REQUIREMENTS = listOf("readxl")
     private val IMPORT_CSV_REQUIREMENTS = listOf("readr")
 
     private fun isAboveSelectedItem(event: MouseEvent, watchTree: XDebuggerTree, fullWidth: Boolean): Boolean {

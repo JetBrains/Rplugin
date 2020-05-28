@@ -9,3 +9,5 @@ import org.intellij.datavis.r.ui.DumbAwareActionAdapter
 class RImportBaseDataAction : DumbAwareActionAdapter()
 
 class RImportCsvDataAction : DumbAwareActionAdapter()
+
+class RImportExcelDataAction : DumbAwareActionAdapter()

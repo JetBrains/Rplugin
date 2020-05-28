@@ -264,6 +264,10 @@ You can find the source code in the following repositories:
                     class="org.jetbrains.r.debugger.RImportCsvDataAction"
                     text="From Text with readr"
                     description="Import dataset from text with readr"/>
+            <action id="org.jetbrains.r.debugger.RImportExcelDataAction"
+                    class="org.jetbrains.r.debugger.RImportExcelDataAction"
+                    text="From Excel"
+                    description="Import dataset from Excel with readxl"/>
         </group>
     </actions>
 
