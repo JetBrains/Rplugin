@@ -37,6 +37,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   //   Unused tests:
   //   reg-tests-2 - it uses R debugger
   //   utf8-regex - it uses readLines and input in source file
+  //   reg-packages - it requires pdflatex to be installed
   fun testBasic_eval_etc() {
     // File 'eval-fns.R' is required for this test but it is missing in some R distribution
     if (rInterop.rVersion >= R_3_5 && execute("cat(file.exists(R.home('tests/eval-fns.R')))") == "FALSE") return
@@ -62,8 +63,6 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   fun testBasic_reg_tests_1c() = doBasicTest("reg-tests-1c", before = "Sys.setlocale('LC_ALL', 'C')")
   fun testBasic_reg_examples1() = doBasicTest("reg-examples1")
   fun testBasic_reg_examples2() = doBasicTest("reg-examples2")
-  fun testBasic_reg_packages() = doBasicTest("reg-packages", linuxOnly = true,
-                                             before = "assign('interactive', function(...) FALSE, envir = baseenv())")
   fun testBasic_p_qbeta_strict_tst() = doBasicTest("p-qbeta-strict-tst")
   fun testBasic_reg_IO() = doBasicTest("reg-IO")
   fun testBasic_reg_IO2() = doBasicTest("reg-IO2")
@@ -208,6 +207,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
           return@executeFile output.toString()
         }
         if (interop.executeCode("cat(is.null(getOption('error')))").stdout == "TRUE") {
+          LOG.debug(output.toString())
           TestCase.fail("Error in $code:\n$it")
         }
       }
