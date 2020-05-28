@@ -37,6 +37,7 @@ internal object REditorActionUtil {
     if (nextSibling != null) {
       val siblingEndPos = nextSibling.textOffset
       editor.caretModel.currentCaret.moveToOffset(siblingEndPos)
+      editor.caretModel.currentCaret.removeSelection()
       editor.scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE)
     }
     return result
