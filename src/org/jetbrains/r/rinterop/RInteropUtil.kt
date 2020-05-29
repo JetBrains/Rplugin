@@ -137,6 +137,7 @@ object RInteropUtil {
   private fun reportCrash(project: Project, rInterop: RInterop?, updateCrashes: List<File>,
                           crashReportFile: String? = null, terminatedWithReport: Boolean = false) {
     if (ApplicationManager.getApplication().isUnitTestMode) return
+    if (rInterop?.killedByUsed == true) return
     var attachments = updateCrashes.map { file ->
       try {
         val path = file.getPath()

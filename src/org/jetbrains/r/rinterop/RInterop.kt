@@ -105,6 +105,8 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   private val terminationPromise = AsyncPromise<Unit>()
   val isAlive: Boolean
     get() = !terminationPromise.isDone
+  @Volatile
+  internal var killedByUsed = false
 
   internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
     f: KFunction1<Request, ListenableFuture<Response>>,
@@ -979,6 +981,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
               executor.shutdown()
             }
           } catch (e: ProcessCanceledException) {
+            killedByUsed = true
             terminationPromise.setResult(Unit)
             processHandler.destroyProcess()
             executor.shutdown()
