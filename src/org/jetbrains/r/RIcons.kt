@@ -27,4 +27,7 @@ val R_RMARKDOWN_PRESENTATION = load("fileTypes/presentation.svg")
 val R_RMARKDOWN_DOCUMENT = load("fileTypes/rMarkdown.svg")
 val R_RMARKDOWN_SHINY = load("fileTypes/shiny.svg")
 
+val RESTART_JOB = load("run/restartJob.svg")
+val RUN_JOB= load("run/runJob.svg")
+
 private fun load(path: String) = IconLoader.findIcon("/icons/" + path)
