@@ -97,7 +97,7 @@ class RConsoleManager(private val project: Project) {
       override fun contentRemoveQuery(event: ContentManagerEvent) {}
 
       override fun contentAdded(event: ContentManagerEvent) {
-        if (consoleCounter.incrementAndGet() == 1) {
+        if (RConsoleToolWindowFactory.isConsole(event.content) && consoleCounter.incrementAndGet() == 1) {
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, true)
           currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
           currentConsole?.onSelect()
@@ -105,14 +105,14 @@ class RConsoleManager(private val project: Project) {
       }
 
       override fun contentRemoved(event: ContentManagerEvent) {
-        if (consoleCounter.decrementAndGet() == 0) {
+        if (RConsoleToolWindowFactory.isConsole(event.content) && consoleCounter.decrementAndGet() == 0) {
           currentConsole = null
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, false)
         }
       }
 
       override fun selectionChanged(event: ContentManagerEvent) {
-        if (event.content.isSelected) {
+        if (event.content.isSelected && RConsoleToolWindowFactory.isConsole(event.content)) {
           currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
           currentConsole?.onSelect()
         }

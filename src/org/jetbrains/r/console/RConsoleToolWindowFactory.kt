@@ -14,6 +14,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
@@ -24,6 +25,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
+import org.jetbrains.r.console.jobs.RJobPanel
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -47,18 +49,43 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     })
     tryAddContent(toolWindow, project)
+    addJobsPanel(toolWindow, project)
+  }
+
+  private fun addJobsPanel(toolWindow: ToolWindow, project: Project) {
+    val rJobsPanel = RJobPanel(project)
+    val content = ContentFactory.SERVICE.getInstance().createContent(rJobsPanel, "Jobs", false)
+    content.putUserData(JOBS_CONTENT_KEY, Unit)
+    content.executionId
+    content.isCloseable = false
+    toolWindow.contentManager.addContent(content)
   }
 
   companion object {
     internal const val ID = "R Console"
+    private val JOBS_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.job")
+    private val CONSOLE_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.console")
 
-    fun show(project: Project) {
-      getRConsoleToolWindows(project)?.show(null)
+    private fun isJob(content: Content): Boolean = content.getUserData(JOBS_CONTENT_KEY) != null
+    internal fun isConsole(content: Content): Boolean = content.getUserData(CONSOLE_CONTENT_KEY) != null
+
+    fun focusOnCurrentConsole(project: Project) {
+      val rConsoleToolWindows = getRConsoleToolWindows(project)
+      rConsoleToolWindows?.show(null)
+      val currentConsoleOrNull = RConsoleManager.getInstance(project).currentConsoleOrNull ?: return
+      rConsoleToolWindows?.contentManager?.let {contentManager ->
+        contentManager.contents.firstOrNull { isConsole(it) && UIUtil.isAncestor(it.component, currentConsoleOrNull) }?.let { content ->
+         contentManager.setSelectedContent(content)
+        }
+      }
     }
 
     fun getRConsoleToolWindows(project: Project): ToolWindow? {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }
+
+    fun getJobsPanel(project: Project): RJobPanel? =
+      getRConsoleToolWindows(project)?.contentManager?.contents?.firstOrNull { isJob(it) }?.component as RJobPanel?
 
     fun addContent(project: Project, contentDescriptor: RunContentDescriptor, contentIndex: Int? = null) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
@@ -66,14 +93,17 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       contentManager.contents.firstOrNull { it.displayName == NO_INTERPRETER_FOUND_DISPLAY_NAME }?.let {
         contentManager.removeContent(it, true)
       }
-      val contentCount = contentManager.contentCount
+      val consoleCount = contentManager.contents.count { isConsole(it) }
       val content = createContent(contentDescriptor)
+      content.putUserData(CONSOLE_CONTENT_KEY, Unit)
       if (contentIndex == null) {
-        contentManager.addContent(content)
+        val last = contentManager.contents.indexOfLast { isConsole((it)) }
+        contentManager.addContent(content, last + 1)
       } else {
         contentManager.addContent(content, contentIndex)
       }
-      if (contentCount == 0) {
+      contentManager.setSelectedContent(content)
+      if (consoleCount == 0) {
         setAvailableForRToolWindows(project, true, Runnable {
           val rTools = ToolWindowManager.getInstance(project).getToolWindow(RToolWindowFactory.ID)
           rTools?.activate {
@@ -131,12 +161,12 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
 
     private fun tryAddContent(toolWindow: ToolWindow, project: Project) {
-      if (toolWindow.contentManager.contentCount == 0) {
+      if (toolWindow.contentManager.contents.count { isConsole(it) } == 0) {
         if (RInterpreterManager.getInstance(project).interpreterPath.isBlank()) {
           val contentFactory = ContentFactory.SERVICE.getInstance()
           val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component, NO_INTERPRETER_FOUND_DISPLAY_NAME, true)
           console.isCloseable = false
-          toolWindow.contentManager.addContent(console)
+          toolWindow.contentManager.addContent(console, 0)
         } else {
           RConsoleManager.getInstance(project).currentConsoleAsync
         }

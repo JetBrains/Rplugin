@@ -136,6 +136,9 @@ You can find the source code in the following repositories:
         <action id="VisualizeTableAction" class="org.jetbrains.r.run.visualize.VisualizeTableAction" text="Visualize Table"/>
         <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"
                 text="Dump gRPC Messages" description="Dump all gRPC messages which were sent to RWrapper"/>
+
+        <action id="org.jetbrains.r.console.jobs.RunRJobAction" class="org.jetbrains.r.console.jobs.RunRJobAction"
+                text="Start R Job" description="Start R job"/>
     </actions>
 
     <actions>

@@ -5,9 +5,15 @@
 package org.jetbrains.r.console.jobs
 
 enum class ExportGlobalEnvPolicy {
-  DO_NO_EXPORT,
-  EXPORT_TO_GLOBAL_ENV,
-  EXPORT_TO_VARIABLE,
+  DO_NO_EXPORT {
+    override fun toString() = "Do not copy results"
+  },
+  EXPORT_TO_GLOBAL_ENV {
+    override fun toString() = "Copy results to global environment"
+  },
+  EXPORT_TO_VARIABLE {
+    override fun toString() = "Copy results to variable"
+  }
 }
 
 data class RJobTask(val scriptPath: String,

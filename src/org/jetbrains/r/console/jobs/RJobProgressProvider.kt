@@ -11,6 +11,8 @@ class RJobProgressProvider {
   @Volatile
   var current: Int = 0
     private set
+  @Volatile
+  var progressUpdated: () -> Unit = {}
 
   fun onProgressAvailable(message: String) {
     val arguments = message.split(' ')
@@ -18,11 +20,13 @@ class RJobProgressProvider {
       if (arguments[0] == "count") {
         arguments[1].toIntOrNull()?.let {
          total = it
+         progressUpdated()
         }
       }
       if (arguments[0] == "statement") {
         arguments[1].toIntOrNull()?.let {
           current = it
+          progressUpdated()
         }
       }
     }

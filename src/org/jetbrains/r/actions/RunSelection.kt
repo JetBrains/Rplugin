@@ -6,7 +6,6 @@ package org.jetbrains.r.actions
 
 import com.intellij.execution.console.ConsoleHistoryController
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -46,7 +45,7 @@ abstract class RunSelectionBase : REditorActionBase() {
         }
       }
       .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
-    RConsoleToolWindowFactory.show(project)
+    RConsoleToolWindowFactory.focusOnCurrentConsole(project)
   }
 
   private fun executeForRFile(console: RConsoleView, selection: REditorActionUtil.SelectedCode) {

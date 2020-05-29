@@ -101,13 +101,12 @@ class RConsoleRunner(private val project: Project,
       })
 
       runAsync {
-        rInterop.setWorkingDir(workingDir)
         // Setup console listener for graphics device
         val graphicsDevice = if (ApplicationManager.getApplication().isUnitTestMode) {
           null
         } else {
           val screenParameters = RGraphicsSettings.getScreenParameters(project)
-          RGraphicsUtils.createGraphicsDevice(rInterop, screenParameters).apply {
+          RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
             configuration = configuration.copy(screenParameters = screenParameters)
             addListener(RGraphicsToolWindowListener(project))
           }.also {

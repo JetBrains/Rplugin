@@ -23,7 +23,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.psi.PsiWhiteSpace
 import com.intellij.xdebugger.XSourcePosition
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -375,16 +374,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> {
       val psiFile = RElementFactory.buildRFileFromText(project, text)
       return psiFile.children.asSequence()
-        .filter { it is PsiWhiteSpace }
-        .flatMap {
-          it.text.asSequence().mapIndexedNotNull { i, c ->
-            if (c == '\n') {
-              TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
-            } else {
-              null
-            }
-          }
-        }
+        .filter { it.text == "\n" }
+        .map { it.textRange }
         .let { sequenceOf(TextRange(0, 0)).plus(it) }
         .plus(TextRange(text.length, text.length))
         .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
