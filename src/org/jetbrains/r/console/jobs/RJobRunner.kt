@@ -9,6 +9,7 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
@@ -96,7 +97,10 @@ class RJobRunner(private val project: Project) {
     setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
     val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView)
     processHandler.startNotify()
-    RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+    invokeLater {
+      RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+      RConsoleToolWindowFactory.focusOnJobs(project)
+    }
   }
 
   companion object {

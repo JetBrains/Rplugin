@@ -85,6 +85,16 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
+    fun focusOnJobs(project: Project) {
+      val rConsoleToolWindows = getRConsoleToolWindows(project)
+      rConsoleToolWindows?.show(null)
+      rConsoleToolWindows?.contentManager?.let { contentManager ->
+        contentManager.contents.firstOrNull { isJob(it) }?.let { content ->
+          contentManager.setSelectedContent(content)
+        }
+      }
+    }
+
     fun getRConsoleToolWindows(project: Project): ToolWindow? {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }

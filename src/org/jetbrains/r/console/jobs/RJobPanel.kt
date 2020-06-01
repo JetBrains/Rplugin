@@ -95,9 +95,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   }
 
   fun addJobDescriptor(jobDescriptor: RJobDescriptor) {
-    invokeLater {
-      jobList.addJobDescriptor(jobDescriptor)
-    }
+    jobList.addJobDescriptor(jobDescriptor)
   }
 
   private fun addToolbar() {
@@ -332,7 +330,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     invokeLater {
       remove(rightComponent)
       addToRight(createTerminationStatusBar())
-      invalidate()
+      revalidate()
       repaint()
     }
   }
