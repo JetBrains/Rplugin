@@ -20,9 +20,11 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.jobs.RJobPanel
@@ -30,6 +32,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.swing.SwingConstants
 
 class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
@@ -65,8 +68,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     internal const val ID = "R Console"
     private val JOBS_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.job")
     private val CONSOLE_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.console")
+    private val CONSOLE_PLACEHOLDER_KEY = Key.create<Unit>("org.jetbrains.r.console.content.placeholder")
 
     private fun isJob(content: Content): Boolean = content.getUserData(JOBS_CONTENT_KEY) != null
+    private fun isPlaceholder(content: Content): Boolean = content.getUserData(CONSOLE_PLACEHOLDER_KEY) != null
     internal fun isConsole(content: Content): Boolean = content.getUserData(CONSOLE_CONTENT_KEY) != null
 
     fun focusOnCurrentConsole(project: Project) {
@@ -87,7 +92,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     fun getJobsPanel(project: Project): RJobPanel? =
       getRConsoleToolWindows(project)?.contentManager?.contents?.firstOrNull { isJob(it) }?.component as RJobPanel?
 
-    fun addContent(project: Project, contentDescriptor: RunContentDescriptor, contentIndex: Int? = null) {
+    fun addContent(project: Project, contentDescriptor: RunContentDescriptor) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")
       val contentManager = toolWindow.contentManager
       contentManager.contents.firstOrNull { it.displayName == NO_INTERPRETER_FOUND_DISPLAY_NAME }?.let {
@@ -96,11 +101,14 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val consoleCount = contentManager.contents.count { isConsole(it) }
       val content = createContent(contentDescriptor)
       content.putUserData(CONSOLE_CONTENT_KEY, Unit)
-      if (contentIndex == null) {
-        val last = contentManager.contents.indexOfLast { isConsole((it)) }
-        contentManager.addContent(content, last + 1)
-      } else {
-        contentManager.addContent(content, contentIndex)
+      val indexOfPlaceholder = contentManager.contents.indexOfFirst { isPlaceholder(it) }
+      if (indexOfPlaceholder >= 0) {
+        contentManager.removeContent(contentManager.getContent(indexOfPlaceholder)!!, true)
+        contentManager.addContent(content, indexOfPlaceholder)
+      }
+      else {
+        val lastConsoleIndex = contentManager.contents.indexOfLast { isConsole(it) }
+        contentManager.addContent(content, lastConsoleIndex + 1)
       }
       contentManager.setSelectedContent(content)
       if (consoleCount == 0) {
@@ -110,7 +118,6 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
             rTools.hide { rTools.show { } }
           }
         })
-
       }
     }
 
@@ -146,6 +153,26 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val toolWindow = getRConsoleToolWindows(console.project) ?: return null
       return toolWindow.contentManager.contents.firstOrNull {
         UIUtil.findComponentOfType(it.component, RConsoleView::class.java) == console
+      }
+    }
+
+    fun addConsolePlaceholder(project: Project, contentIndex: Int? = null) {
+      val toolWindow = getRConsoleToolWindows(project) ?: return
+      val contentFactory = ContentFactory.SERVICE.getInstance()
+      val panel = BorderLayoutPanel()
+      panel.addToCenter(JBLabel("Starting console...").apply {
+        horizontalAlignment = SwingConstants.CENTER
+        foreground = UIUtil.getInactiveTextColor()
+      })
+      val content = contentFactory.createContent(panel, "Starting console", false)
+      content.isCloseable = false
+      content.putUserData(CONSOLE_PLACEHOLDER_KEY, Unit)
+      val contentManager = toolWindow.contentManager
+      if (contentIndex == null) {
+        val lastConsoleIndex = contentManager.contents.indexOfLast { isConsole(it) }
+        contentManager.addContent(content, lastConsoleIndex + 1)
+      } else {
+        contentManager.addContent(content, contentIndex)
       }
     }
 

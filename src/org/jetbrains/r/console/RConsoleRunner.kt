@@ -65,6 +65,7 @@ class RConsoleRunner(private val project: Project,
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
     UIUtil.invokeLaterIfNeeded {
+      RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
       val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
       RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
         initByInterop(rInterop, interpreterPath, promise)
@@ -183,7 +184,7 @@ class RConsoleRunner(private val project: Project,
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
     if (!ApplicationManager.getApplication().isUnitTestMode) {
-      RConsoleToolWindowFactory.addContent(project, contentDescriptor, contentIndex)
+      RConsoleToolWindowFactory.addContent(project, contentDescriptor)
     }
   }
 
