@@ -148,20 +148,17 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
 
   fun testCompletionForDeepPredefinedParameters() {
 
-    myFixture.configureByText("foo.R", "")
-    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
-
     doTest("""
       print(x, q<caret>)
-    """.trimIndent(), "quote")
+    """.trimIndent(), "quote", withRuntimeInfo = true)
 
     doTest("""
       print(x, d<caret>)
-    """.trimIndent(), "digits")
+    """.trimIndent(), "digits", withRuntimeInfo = true)
 
     doWrongVariantsTest("""
       print.factor(x, d<caret>)
-    """.trimIndent(), "digits")
+    """.trimIndent(), "digits", withRuntimeInfo = true)
 
     val foosDeclaration = """
       foo <- function(x, ...) UseMethod("foo")
@@ -173,26 +170,189 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
       $foosDeclaration
       
       foo(x, p<caret>)
-    """.trimIndent(), "parameter")
+    """.trimIndent(), "parameter", withRuntimeInfo = true)
   }
 
   fun testCompletionForNotExportedDeepPredefinedParameters() {
-
-    myFixture.configureByText("foo.R", "")
-    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
-
     rInterop.executeCode("library(data.table)", true)
     doTest("""
       as.matrix(data.table(a = 1:3), rown<caret>)
-    """.trimIndent(), "rownames", "rownames.value")
+    """.trimIndent(), "rownames", "rownames.value", withRuntimeInfo = true)
   }
 
   fun testNotImportedNamedArguments() {
-    myFixture.configureByText("foo.R", "")
-    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    doTest("data.table::frollmean(table, al<caret>)", "algo", "align", withRuntimeInfo = true)
+    doTest("frollmean(table, al<caret>)", "algo", "align", withRuntimeInfo = true)
+  }
 
-    doTest("data.table::frollmean(table, al<caret>)", "algo", "align")
-    doTest("frollmean(table, al<caret>)", "algo", "align")
+  fun testReadCsvDotsNamedArgs() {
+    doTest("read.csv(nume<caret>)", "numerals", withRuntimeInfo = true)
+    doTest("read.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
+  }
+
+  fun testWriteCsvDotsNamedArgs() {
+    doTest("write.csv(row.na<caret>)", "row.names", withRuntimeInfo = true)
+    doTest("write.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
+  }
+
+  fun testTryCatchDotsNamedArgs() {
+    doTest("tryCatch(paste, colla<caret>)", "collapse", withRuntimeInfo = true)
+    doTest("tryCatch(paste, err<caret>)", "error", withRuntimeInfo = true)
+    doTest("tryCatch(paste, war<caret>)", "warning", withRuntimeInfo = true)
+  }
+
+  fun testNotLoadedLocalDotsNamedArgs() {
+    doTest("""
+      foo <- function(fileLocal, ...) {
+        read.csv(...)
+      }
+      
+      foo(fil<caret>)
+    """.trimIndent(), "file", "fileEncoding", "fileLocal", withRuntimeInfo = true)
+  }
+
+  fun testLoadedLocalDotsNamedArgs() {
+    rInterop.executeCode("""
+      bar <- function(fileTwo, ...) {
+        read.csv(...)
+      }
+      
+      foo <- function(fileLocal, ...) {
+        bar(...)
+      }
+    """.trimIndent(), true)
+
+    doTest("foo(fil<caret>)", "file", "fileLocal", "fileTwo", withRuntimeInfo = true)
+  }
+
+  fun testLapplyFunctionDotsNamedArgs() {
+    doTest("lapply(list, paste, colla<caret>)", "collapse", withRuntimeInfo = true)
+  }
+
+  fun testOverlappedDotsNamedArgs() {
+    val fooDef = """
+      foo <- function(fileLocal, ...) {
+        read.csv(...)
+      }
+      
+      bar <- function(fileLocal, ...) {
+        read.csv(fileEncoding = fileLocal, ...)
+      }
+    """.trimIndent()
+
+    doTest("""
+      $fooDef
+      foo(fil<caret>)
+    """.trimIndent(), "file", "fileEncoding", "fileLocal", withRuntimeInfo = true)
+    doTest("""
+      $fooDef
+      bar(fil<caret>)
+    """.trimIndent(), "file", "fileLocal", withRuntimeInfo = true)
+    doWrongVariantsTest("""
+      $fooDef
+      bar(fil<caret>)
+    """.trimIndent(), "fileEncoding", withRuntimeInfo = true)
+  }
+
+  fun testOverlappedFunctionDotsNamedArgs() {
+    val fooDef = """
+      foo <- function(FUN_MY, ...) {
+        lapply(list, ...)
+      }
+      
+      bar <- function(FUN_MY, ...) {
+        lapply(list, FUN = FUN_MY, ...)
+      }
+    """.trimIndent()
+
+    doTest("""
+      $fooDef
+      foo(FU<caret>)
+    """.trimIndent(), "FUN", "FUN_MY", withRuntimeInfo = true)
+    doTest("""
+      $fooDef
+      bar(FU<caret>)
+    """.trimIndent(), "FUN_MY", withRuntimeInfo = true)
+    doWrongVariantsTest("""
+      $fooDef
+      bar(FU<caret>)
+    """.trimIndent(), "FUN", withRuntimeInfo = true)
+  }
+
+  fun testLambdaInsideDotsNamedArgs() {
+    val fooDef = """
+      foo <- function(fileLocal, ...) {
+        function(fileInside, ...) {
+          read.table(...)
+        }
+      }
+    """.trimIndent()
+
+    doTest("""
+      $fooDef
+      foo(fil<caret>)
+    """.trimIndent(), "fileLocal", withRuntimeInfo = true)
+    doWrongVariantsTest("""
+      $fooDef
+      foo(fil<caret>)
+    """.trimIndent(), "fileInside", "fileEncoding", withRuntimeInfo = true)
+
+    val fooDefWithoutDots = """
+      foo <- function(fileLocal, ...) {
+        function(fileInside) {
+          read.table(...)
+        }
+      }
+    """.trimIndent()
+
+    doTest("""
+      $fooDefWithoutDots
+      foo(fil<caret>)
+    """.trimIndent(), "file", "fileEncoding", "fileLocal", withRuntimeInfo = true)
+    doWrongVariantsTest("""
+      $fooDefWithoutDots
+      foo(fil<caret>)
+    """.trimIndent(), "fileInside", withRuntimeInfo = true)
+  }
+
+  fun testLapplyLambdaFunctionDotsNamedArgs() {
+    doTest("""
+      lapply(list, function(xxxxx, xxxxxy, yyyyy, ...) {}, xxxx<caret>)
+    """.trimIndent(), "xxxxx", "xxxxxy", withRuntimeInfo = true)
+  }
+
+  fun testS3LapplyDotsNamedArgs() {
+    doTest("""
+      lapply(list, print, dig<caret>)
+    """.trimIndent(), "digits", withRuntimeInfo = true)
+  }
+
+  fun testLapplyInsideDotsNamedArgs() {
+    doTest("""
+      foo <- function(digitData, digital, ...) {
+        lapply(digitData, print.default, ...)
+      }
+      
+      foo(list, digi<caret>)
+    """.trimIndent(), "digital", "digitData", "digits", withRuntimeInfo = true)
+
+    doWrongVariantsTest("""
+      foo <- function(digitData, digital, ...) {
+        lapply(digitData, print.default, ..., digits = 10)
+      }
+      
+      foo(list, digi<caret>)
+    """.trimIndent(), "digits", withRuntimeInfo = true)
+  }
+
+  fun testCallAsArgument() {
+    doTest("""
+      foo <- function(digit1, digit2, ...) {
+        print.default(...) + digit1 + digit2
+      }
+      
+      foo(digi<caret>)
+    """.trimIndent(), "digit1", "digit2", "digits", withRuntimeInfo = true)
   }
 
   fun testCompletionForLocalVariableNames() {
@@ -310,16 +470,22 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("stats")
   }
 
-  private fun doWrongVariantsTest(text: String, vararg variants: String) {
+  private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false) {
     myFixture.configureByText("foo.R", text)
+    if (withRuntimeInfo) {
+      myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    }
     val result = myFixture.completeBasic()
     assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }
     UsefulTestCase.assertDoesntContain(lookupStrings, *variants)
   }
 
-  private fun doTest(text: String, vararg variants: String, strict: Boolean = false) {
+  private fun doTest(text: String, vararg variants: String, strict: Boolean = false, withRuntimeInfo: Boolean = false) {
     myFixture.configureByText("foo.R", text)
+    if (withRuntimeInfo) {
+      myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+    }
     val result = myFixture.completeBasic()
     assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }

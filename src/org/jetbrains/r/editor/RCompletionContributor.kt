@@ -22,6 +22,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
+import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
@@ -240,7 +241,8 @@ class RCompletionContributor : CompletionContributor() {
       val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
       val shownNames = HashSet<String>()
 
-      for (functionDeclaration in RPsiUtil.resolveCall(mainCall)) {
+      val declarations = RPsiUtil.resolveCall(mainCall)
+      for (functionDeclaration in declarations) {
         functionDeclaration.parameterNameList.forEach { consumeParameter(it, shownNames, result) }
       }
 
@@ -254,6 +256,37 @@ class RCompletionContributor : CompletionContributor() {
 
       for (parameter in namedArguments) {
         consumeParameter(parameter, shownNames, result)
+      }
+
+      val functionExpression = declarations.singleOrNull()?.let {
+        if (RPsiUtil.isLibraryElement(it)) null
+        else it.assignedValue as? RFunctionExpression
+      }
+      val dotsNamedArguments =
+        if (functionExpression != null) info.loadDotsNamedArguments(mainFunctionName, functionExpression)
+        else info.loadDotsNamedArguments(mainFunctionName)
+
+      for (parameter in dotsNamedArguments.argumentNames) {
+        consumeParameter(parameter, shownNames, result)
+      }
+
+      val argumentInfo = RParameterInfoUtil.getArgumentInfo(mainCall, declarations.singleOrNull()) ?: return
+      for (parameter in dotsNamedArguments.functionArgNames) {
+        val arg = argumentInfo.getArgumentPassedToParameter(parameter) ?: continue
+        if (arg is RFunctionExpression) {
+          arg.parameterList?.parameterList?.map { it.name }?.forEach {
+            consumeParameter(it, shownNames, result)
+          }
+        }
+        else {
+          arg.reference?.multiResolve(false)?.forEach { resolveResult ->
+            (resolveResult.element as? RAssignmentStatement)?.let { assignment ->
+              (assignment.parameterNameList + info.loadInheritorNamedArguments(assignment.name)).forEach {
+                consumeParameter(it, shownNames, result)
+              }
+            }
+          }
+        }
       }
     }
 

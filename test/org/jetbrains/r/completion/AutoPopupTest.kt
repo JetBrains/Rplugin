@@ -10,7 +10,9 @@ import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
+import org.jetbrains.r.hints.parameterInfo.RDotsNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
+import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -175,6 +177,14 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     }
 
     override fun loadInheritorNamedArguments(baseFunctionName: String): List<String> {
+      throw NotImplementedError()
+    }
+
+    override fun loadDotsNamedArguments(functionName: String): RDotsNamedArgumentsInfo {
+      throw NotImplementedError()
+    }
+
+    override fun loadDotsNamedArguments(functionName: String, functionExpression: RFunctionExpression): RDotsNamedArgumentsInfo {
       throw NotImplementedError()
     }
 

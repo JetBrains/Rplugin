@@ -37,6 +37,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
+import org.jetbrains.r.hints.parameterInfo.RDotsNamedArgumentsInfo
 import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
@@ -661,6 +662,15 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       executeWithCheckCancel(asyncStub::findInheritorNamedArguments, function.proto).listList
     } catch (e: RInteropTerminated) {
       emptyList()
+    }
+  }
+
+  fun findDotsNamedArguments(function: RRef): RDotsNamedArgumentsInfo {
+    return try {
+      val res = executeWithCheckCancel(asyncStub::findDotsNamedArguments, function.proto)
+      RDotsNamedArgumentsInfo(res.argNamesList, res.funArgNamesList)
+    } catch (e: RInteropTerminated) {
+      RDotsNamedArgumentsInfo(emptyList(), emptyList())
     }
   }
 
