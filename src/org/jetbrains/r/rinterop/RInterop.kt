@@ -53,7 +53,6 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.RowSorter
 import javax.swing.SortOrder
-import kotlin.collections.HashSet
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 
@@ -81,7 +80,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
   val executor = ConcurrencyUtil.newSingleThreadExecutor(RINTEROP_THREAD_NAME)
   private val heartbeatTimer: Timer
-  private val asyncEventsListeners = HashSet<AsyncEventsListener>()
+  private val asyncEventsListeners = Collections.newSetFromMap<AsyncEventsListener>(ConcurrentHashMap())
   private var asyncProcessingStarted = false
   private val asyncEventsBeforeStarted = mutableListOf<Service.AsyncEvent>()
   private val cacheIndex = AtomicInteger(0)
