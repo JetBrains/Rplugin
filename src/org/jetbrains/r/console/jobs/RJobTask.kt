@@ -4,15 +4,17 @@
 
 package org.jetbrains.r.console.jobs
 
+import org.jetbrains.r.RBundle
+
 enum class ExportGlobalEnvPolicy {
   DO_NO_EXPORT {
-    override fun toString() = "Do not copy results"
+    override fun toString() = RBundle.message("jobs.export.do.no.copy")
   },
   EXPORT_TO_GLOBAL_ENV {
-    override fun toString() = "Copy results to global environment"
+    override fun toString() = RBundle.message("jobs.export.copy.to.global.env")
   },
   EXPORT_TO_VARIABLE {
-    override fun toString() = "Copy results to variable"
+    override fun toString() = RBundle.message("jobs.export.copy.to.variable")
   }
 }
 

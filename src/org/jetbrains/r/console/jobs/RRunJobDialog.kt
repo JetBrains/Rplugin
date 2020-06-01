@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.layout.*
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
@@ -26,8 +27,8 @@ class RRunJobDialog(private val project: Project, defaultScript: String, default
 
   init {
     panel = createDialogPanel()
-    setTitle("Run Script as Job")
-    setOKButtonText("Run")
+    setTitle(RBundle.message("jobs.dialog.title"))
+    setOKButtonText(RBundle.message("jobs.dialog.ok.button.text"))
     init()
   }
 
@@ -35,29 +36,29 @@ class RRunJobDialog(private val project: Project, defaultScript: String, default
 
   private fun createDialogPanel(): DialogPanel =
     panel {
-      row { label("Script Paths:") }
+      row { label(RBundle.message("jobs.dialog.label.script.path")) }
       row {
         cell {
-          label("R Script:").withLargeLeftGap()
+          label(RBundle.message("jobs.dialog.label.r.script")).withLargeLeftGap()
           textFieldWithBrowseButton(::scriptPath).addTextChangedListener()
         }
       }
       row {
         cell {
-          label("Working directory:").withLargeLeftGap()
+          label(RBundle.message("jobs.dialog.label.working.directory")).withLargeLeftGap()
           textFieldWithBrowseButton(
             ::workingDirectory,
             fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
           ).addTextChangedListener()
         }
       }
-      row { label("Environments:") }
+      row { label(RBundle.message("jobs.dialog.label.environments")) }
       row {
-        checkBox("Run job with copy of global environment", ::runWithGlobalEnvironment).withLargeLeftGap()
+        checkBox(RBundle.message("jobs.dialog.checkbox.copy.global.env"), ::runWithGlobalEnvironment).withLargeLeftGap()
       }
       row {
         cell {
-          label("Upon completion of job:").withLargeLeftGap()
+          label(RBundle.message("jobs.dialog.label.upon.completion")).withLargeLeftGap()
           comboBox(DefaultComboBoxModel<ExportGlobalEnvPolicy>(
             arrayOf(ExportGlobalEnvPolicy.DO_NO_EXPORT, ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV,
                     ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)),

@@ -30,6 +30,7 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RESTART_JOB
 import org.jetbrains.r.R_LOGO_16
 import java.awt.*
@@ -71,7 +72,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   private val emptyLeftComponent = object : BorderLayoutPanel() {
     init {
       background = backgroundColor()
-      add(LinkLabel.create("Run Script as Job") {
+      add(LinkLabel.create(RBundle.message("jobs.panel.start.new.job.label.text") ) {
         if (RJobRunner.getInstance(project).canRun()) {
           RunRJobAction.showDialog(project)
         }
@@ -125,7 +126,9 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     background = backgroundColor()
   }
 
-  private inner class RemoveCompletedJobs : DumbAwareAction("Remove Completed Jobs", "Remove completed jobs", AllIcons.Actions.GC) {
+  private inner class RemoveCompletedJobs : DumbAwareAction(RBundle.message("jobs.panel.action.remove.completed.jobs.text"),
+                                                            RBundle.message("jobs.panel.action.remove.completed.jobs.description"),
+                                                            AllIcons.Actions.GC) {
     override fun actionPerformed(e: AnActionEvent) {
       jobList.jobEntities.filter { it.jobDescriptor.processTerminated }.forEach {
         jobList.removeJobEntity(it)
@@ -137,7 +140,9 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     }
   }
 
-  private inner class RerunJob : DumbAwareAction("Rerun Job", "Rerun job", RESTART_JOB) {
+  private inner class RerunJob : DumbAwareAction(RBundle.message("jobs.panel.action.rerun.job.text"),
+                                                 RBundle.message("jobs.panel.action.rerun.job.description"),
+                                                 RESTART_JOB) {
     override fun actionPerformed(e: AnActionEvent) {
       jobList.currentlySelected?.let {
         jobList.removeJobEntity(it)
@@ -405,7 +410,9 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
       return createTerminationStatusBar()
     }
     statusBarCreated.set(true)
-    val action = object : AnAction("Terminate", "Terminate", AllIcons.Actions.CloseHovered) {
+    val action = object : AnAction(RBundle.message("jobs.panel.action.terminate.text"),
+                                   RBundle.message("jobs.panel.action.terminate.description"),
+                                   AllIcons.Actions.CloseHovered) {
       override fun actionPerformed(e: AnActionEvent) {
         jobList.removeJobEntity(this@JobEntity)
         deleted = true
