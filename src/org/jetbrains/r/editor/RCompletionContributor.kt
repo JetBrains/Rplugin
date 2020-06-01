@@ -250,7 +250,7 @@ class RCompletionContributor : CompletionContributor() {
         is RIdentifierExpression -> expression.name
         else -> return
       }
-      val namedArguments = info.loadAllNamedArguments("'$mainFunctionName'")
+      val namedArguments = info.loadInheritorNamedArguments(mainFunctionName)
 
       for (parameter in namedArguments) {
         consumeParameter(parameter, shownNames, result)

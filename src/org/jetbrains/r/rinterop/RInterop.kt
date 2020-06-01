@@ -656,9 +656,9 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameFilter, request).value, this, disposableParent)
   }
 
-  fun findAllNamedArguments(function: RRef): List<String> {
+  fun findInheritorNamedArguments(function: RRef): List<String> {
     return try {
-      executeWithCheckCancel(asyncStub::findAllNamedArguments, function.proto).listList
+      executeWithCheckCancel(asyncStub::findInheritorNamedArguments, function.proto).listList
     } catch (e: RInteropTerminated) {
       emptyList()
     }

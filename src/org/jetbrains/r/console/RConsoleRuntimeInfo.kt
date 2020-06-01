@@ -23,7 +23,7 @@ interface RConsoleRuntimeInfo {
   fun loadPackage(name: String)
   fun loadDistinctStrings(expression: String): List<String>
   fun loadObjectNames(expression: String) : List<String>
-  fun loadAllNamedArguments(expression: String) : List<String>
+  fun loadInheritorNamedArguments(baseFunctionName: String) : List<String>
   fun getFormalArguments(expression: String) : List<String>
   fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
@@ -45,7 +45,7 @@ interface RConsoleRuntimeInfo {
 class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntimeInfo {
   private val objectNamesCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val distinctStringsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
-  private val allNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
+  private val inheritorNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
 
@@ -70,8 +70,10 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     return objectNamesCache.getOrPut(expression) { RRef.expressionRef(expression, rInterop).ls() }
   }
 
-  override fun loadAllNamedArguments(expression: String): List<String> {
-    return allNamedArgumentsCache.getOrPut(expression) { rInterop.findAllNamedArguments(RRef.expressionRef(expression, rInterop)) }
+  override fun loadInheritorNamedArguments(baseFunctionName: String): List<String> {
+    return inheritorNamedArgumentsCache.getOrPut(baseFunctionName) {
+      rInterop.findInheritorNamedArguments(RRef.expressionRef("'$baseFunctionName'", rInterop))
+    }
   }
 
   override fun getFormalArguments(expression: String): List<String> {

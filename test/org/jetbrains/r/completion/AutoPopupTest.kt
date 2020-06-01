@@ -174,7 +174,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       return listOf("foo", "bar")
     }
 
-    override fun loadAllNamedArguments(expression: String): List<String> {
+    override fun loadInheritorNamedArguments(baseFunctionName: String): List<String> {
       throw NotImplementedError()
     }
 
