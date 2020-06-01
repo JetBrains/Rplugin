@@ -138,7 +138,7 @@ You can find the source code in the following repositories:
                 text="Dump gRPC Messages" description="Dump all gRPC messages which were sent to RWrapper"/>
 
         <action id="org.jetbrains.r.console.jobs.RunRJobAction" class="org.jetbrains.r.console.jobs.RunRJobAction"
-                text="Start R Job" description="Start R job"/>
+                text="Run R Job" description="Run R job" icon="/icons/run/runJob.svg"/>
     </actions>
 
     <actions>

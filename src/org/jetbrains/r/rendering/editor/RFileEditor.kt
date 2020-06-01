@@ -31,6 +31,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
   private fun createActionGroup(): ActionGroup = DefaultActionGroup(
     ToolbarAction("org.jetbrains.r.actions.RRunAction"),
     ToolbarAction("org.jetbrains.r.actions.RDebugAction"),
+    ToolbarAction("org.jetbrains.r.console.jobs.RunRJobAction"),
     Separator(),
     ToolbarAction("org.jetbrains.r.actions.RunSelection"),
     ToolbarAction("org.jetbrains.r.actions.DebugSelection"),
