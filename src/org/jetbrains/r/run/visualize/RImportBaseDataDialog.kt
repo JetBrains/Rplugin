@@ -11,7 +11,7 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.forms.RImportBaseOptionPanelForm
 import javax.swing.JComponent
 
-class RImportBaseDataDialog(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null)
+class RImportBaseDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: String)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
   private val form = RImportBaseOptionPanelForm()
@@ -104,6 +104,12 @@ class RImportBaseDataDialog(project: Project, interop: RInterop, parent: Disposa
 
     private val COMMENT_ENTRIES = listOf(null, "#", "!", "%", "@", "/", "~").map { comment ->
       if (comment == null) ComboBoxEntry(OPTION_NONE, "") else ComboBoxEntry(comment, comment)
+    }
+
+    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null) {
+      initialPath.orChooseFile(project, RImportDataUtil.supportedTextFormats)?.let { path ->
+        RImportBaseDataDialog(project, interop, parent, path).show()
+      }
     }
   }
 }

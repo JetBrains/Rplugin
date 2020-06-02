@@ -17,6 +17,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.labels.LinkListener
@@ -46,11 +47,11 @@ abstract class RImportDataDialog(
 ) : DialogWrapper(project, null, true, IdeModalityType.IDE, false) {
 
   private val fileInputField = TextFieldWithBrowseButton {
-    chooseFile()
+    filePath = chooseFile()
   }
 
   private val openFileLinkLabel = LinkLabel<Any>(OPEN_FILE_TEXT, null, LinkListener<Any> { _, _ ->
-    chooseFile()
+    filePath = chooseFile()
   })
 
   private val form = RImportDataDialogForm().apply {
@@ -138,20 +139,9 @@ abstract class RImportDataDialog(
     variableName = DEFAULT_VARIABLE_NAME
   }
 
-  private fun chooseFile() {
-    val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
-      .withFileFilter { it.extension?.isSupportedFormat ?: false }
-      .withDescription(FILE_CHOOSER_DESCRIPTION)
-      .withTitle(FILE_CHOOSER_TITLE)
-    val dialog = FileChooserDialogImpl(descriptor, project)
-    val choice = dialog.choose(project)
-    choice.firstOrNull()?.let { file ->
-      filePath = file.path
-    }
+  private fun chooseFile(): String? {
+    return chooseFile(project, supportedFormats)
   }
-
-  private val String.isSupportedFormat: Boolean
-    get() = toLowerCase() in supportedFormats
 
   private fun importData() {
     variableName?.let { name ->
@@ -469,6 +459,10 @@ abstract class RImportDataDialog(
       }
     }
 
+    private fun checkFileSupported(file: VirtualFile, supportedFormats: List<String>): Boolean {
+      return file.extension?.let { it.toLowerCase() in supportedFormats } ?: false
+    }
+
     private fun JComponent.detach() {
       parent.remove(this)
     }
@@ -503,6 +497,20 @@ abstract class RImportDataDialog(
       component.isEnabled = false
       task()
       component.isEnabled = isEnabled
+    }
+
+    fun String?.orChooseFile(project: Project, supportedFormats: List<String>): String? {
+      return this ?: chooseFile(project, supportedFormats)
+    }
+
+    private fun chooseFile(project: Project, supportedFormats: List<String>): String? {
+      val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+        .withFileFilter { checkFileSupported(it, supportedFormats) }
+        .withDescription(FILE_CHOOSER_DESCRIPTION)
+        .withTitle(FILE_CHOOSER_TITLE)
+      val dialog = FileChooserDialogImpl(descriptor, project)
+      val choice = dialog.choose(project)
+      return choice.firstOrNull()?.path
     }
   }
 }

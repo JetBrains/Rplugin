@@ -16,7 +16,7 @@ class RImportCsvDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION)
   override val supportedFormats = RImportDataUtil.supportedTextFormats
 
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
-    RImportCsvDataDialog(project, interop, project, file.path).show()
+    RImportCsvDataDialog.show(project, interop, project, file.path)
   }
 
   override fun isEnabled(project: Project): Boolean {

@@ -15,7 +15,7 @@ class RImportBaseDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION
   override val supportedFormats = RImportDataUtil.supportedTextFormats
 
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
-    RImportBaseDataDialog(project, interop, project, file.path).show()
+    RImportBaseDataDialog.show(project, interop, project, file.path)
   }
 
   companion object {

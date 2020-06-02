@@ -16,7 +16,7 @@ class RImportExcelDataContextAction : RImportDataContextAction(TITLE, DESCRIPTIO
   override val supportedFormats = RImportDataUtil.supportedExcelFormats
 
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
-    RImportExcelDataDialog(project, interop, project, file.path).show()
+    RImportExcelDataDialog.show(project, interop, project, file.path)
   }
 
   override fun isEnabled(project: Project): Boolean {

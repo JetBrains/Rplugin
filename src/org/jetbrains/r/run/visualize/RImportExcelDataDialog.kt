@@ -16,7 +16,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.reflect.KProperty
 
-class RImportExcelDataDialog(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null)
+class RImportExcelDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: String)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
   private val form = RImportExcelOptionPanelForm()
@@ -159,5 +159,11 @@ class RImportExcelDataDialog(project: Project, interop: RInterop, parent: Dispos
     private val OPTION_DEFAULT = RBundle.message("import.data.dialog.option.default")
 
     private val DEFAULT_SHEET_ENTRIES = listOf(ComboBoxEntry<String?>(OPTION_DEFAULT, null))
+
+    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null) {
+      initialPath.orChooseFile(project, RImportDataUtil.supportedExcelFormats)?.let { path ->
+        RImportExcelDataDialog(project, interop, parent, path).show()
+      }
+    }
   }
 }

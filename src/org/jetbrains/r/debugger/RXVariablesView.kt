@@ -270,13 +270,13 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     val interop = console.rInterop
     val actions = listOf(
       ToolbarUtil.createAnActionButton<RImportBaseDataAction> {
-        RImportBaseDataDialog(project, interop, project).show()
+        RImportBaseDataDialog.show(project, interop, project)
       },
       createPackageDependentAction<RImportCsvDataAction>(IMPORT_CSV_REQUIREMENTS) {
-        RImportCsvDataDialog(project, interop, project).show()
+        RImportCsvDataDialog.show(project, interop, project)
       },
       createPackageDependentAction<RImportExcelDataAction>(IMPORT_EXCEL_REQUIREMENTS) {
-        RImportExcelDataDialog(project, interop, project).show()
+        RImportExcelDataDialog.show(project, interop, project)
       }
     )
     return DefaultActionGroup(IMPORT_ACTION_GROUP_NAME, actions).apply {

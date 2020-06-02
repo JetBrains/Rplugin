@@ -11,7 +11,7 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.forms.RImportCsvOptionPanelForm
 import javax.swing.JComponent
 
-class RImportCsvDataDialog(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null)
+class RImportCsvDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: String)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
   private val form = RImportCsvOptionPanelForm()
@@ -135,5 +135,11 @@ class RImportCsvDataDialog(project: Project, interop: RInterop, parent: Disposab
       ComboBoxEntry<String?>("0", "0"),
       ComboBoxEntry<String?>(OPTION_EMPTY_STRING, "")
     )
+
+    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null) {
+      initialPath.orChooseFile(project, RImportDataUtil.supportedTextFormats)?.let { path ->
+        RImportCsvDataDialog(project, interop, parent, path).show()
+      }
+    }
   }
 }
