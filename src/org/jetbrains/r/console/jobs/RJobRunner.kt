@@ -9,8 +9,10 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.TestOnly
@@ -36,6 +38,7 @@ class RJobRunner(private val project: Project) {
   @TestOnly
   internal fun run(task: RJobTask): ProcessHandler {
     check(canRun())
+    invokeAndWaitIfNeeded { FileDocumentManager.getInstance().saveAllDocuments() }
     val rConsoleManager = RConsoleManager.getInstance(project)
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
