@@ -12,10 +12,7 @@ import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
@@ -372,25 +369,26 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
 
   companion object {
-    fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> {
-      val psiFile = RElementFactory.buildRFileFromText(project, text)
-      return psiFile.children.asSequence()
-        .filter { it is PsiWhiteSpace }
-        .flatMap {
-          it.text.asSequence().mapIndexedNotNull { i, c ->
-            if (c == '\n') {
-              TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
-            } else {
-              null
+    fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> =
+      runReadAction {
+        val psiFile = RElementFactory.buildRFileFromText(project, text)
+        psiFile.children.asSequence()
+          .filter { it is PsiWhiteSpace }
+          .flatMap {
+            it.text.asSequence().mapIndexedNotNull { i, c ->
+              if (c == '\n') {
+                TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
+              } else {
+                null
+              }
             }
           }
-        }
-        .let { sequenceOf(TextRange(0, 0)).plus(it) }
-        .plus(TextRange(text.length, text.length))
-        .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
-        .map { text.substring(it.startOffset, it.endOffset) to it }
-        .toList()
-    }
+          .let { sequenceOf(TextRange(0, 0)).plus(it) }
+          .plus(TextRange(text.length, text.length))
+          .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
+          .map { text.substring(it.startOffset, it.endOffset) to it }
+          .toList()
+      }
 
     private class SourcePositionHyperlink(private val position: XSourcePosition) : HyperlinkInfo {
       override fun navigate(project: Project?) {
