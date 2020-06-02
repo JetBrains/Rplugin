@@ -15,8 +15,7 @@ import java.nio.file.Paths
 object RPluginUtil {
   const val PLUGIN_ID = "R4Intellij"
 
-  fun getPlugin(): IdeaPluginDescriptor =
-    PluginManager.getPlugin(PluginId.getId(PLUGIN_ID)) ?: PluginManager.getPlugin(PluginId.getId(PLUGIN_ID + "2"))!!
+  fun getPlugin(): IdeaPluginDescriptor = PluginManager.getPlugin(PluginId.getId(PLUGIN_ID))!!
 
   fun findFileInRHelpers(relativePath: String): File =
     Paths.get(helpersPath, relativePath).toFile()
