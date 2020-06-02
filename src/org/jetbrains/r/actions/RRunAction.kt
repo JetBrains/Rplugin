@@ -33,6 +33,7 @@ abstract class RRunActionBase : REditorActionBase() {
     }.onError {
       RNotificationUtil.notifyConsoleError(project, it.message)
     }
+    RConsoleToolWindowFactory.focusOnCurrentConsole(project)
   }
 
   override fun update(e: AnActionEvent) {
