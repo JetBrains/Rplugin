@@ -310,7 +310,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     })
 
     object : DoubleClickListener() {
-      override fun onDoubleClick(event: MouseEvent?): Boolean {
+      override fun onDoubleClick(event: MouseEvent): Boolean {
         jobList.openFileInEditor(this@JobEntity)
         return true
       }
