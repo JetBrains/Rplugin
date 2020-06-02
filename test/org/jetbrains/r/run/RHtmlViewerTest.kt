@@ -18,7 +18,7 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
     // Setup custom "default" browser
     // which should be used for URLs starting with either 'https:' or 'http:'.
     // That means all web request will be redirected to R stdout
-    rInterop.executeCode(".jetbrains_ther_old_browser <- function(url) { cat(url) }")
+    rInterop.executeCode(".jetbrains $ ther_old_browser <<- function(url) { cat(url) }")
     rInterop.asyncEventsStartProcessing()
   }
 
