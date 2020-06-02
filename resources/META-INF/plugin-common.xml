@@ -649,7 +649,7 @@ You can find the source code in the following repositories:
                          bundle="messages.RBundle" key="inspection.unsafe.sequence.name"
                          implementationClass="org.jetbrains.r.inspections.UnsafeSequenceInspection"/>
 
-        <localInspection shortName="RClosureAssignmentInspection" language="R" enabledByDefault="true" groupName="R"
+        <localInspection shortName="RClosureAssignmentInspection" language="R" enabledByDefault="false" groupName="R"
                          bundle="messages.RBundle" key="inspection.closure.assignment.name"
                          implementationClass="org.jetbrains.r.inspections.ClosureAssignmentInspection"/>
 
