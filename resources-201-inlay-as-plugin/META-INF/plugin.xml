@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
   <name>R Language for IntelliJ</name>
-  <id>R4Intellij</id>
+  <id>R4Intellij2</id>
   <version>2020.1-SNAPSHOT</version>
   <vendor>JetBrains</vendor>
   <idea-version since-build="201.0.0"/>
