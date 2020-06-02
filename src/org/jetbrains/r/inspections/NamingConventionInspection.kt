@@ -15,7 +15,7 @@ import com.intellij.refactoring.rename.RenameHandlerRegistry
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.rename.RNameSuggestionProvider
-import org.jetbrains.r.rendering.editor.RFileEditor
+import org.jetbrains.r.rendering.editor.AdvancedTextEditor
 
 /**
  * newName -> new_name
@@ -71,7 +71,7 @@ class NamingConventionInspection : RInspection() {
       val element = descriptor.psiElement ?: return
       val file = element.containingFile ?: return
       val editorManager = FileEditorManager.getInstance(project)
-      val fileEditor = editorManager.getSelectedEditor(file.virtualFile) as? RFileEditor ?: return renameWithoutEditor(element)
+      val fileEditor = editorManager.getSelectedEditor(file.virtualFile) as? AdvancedTextEditor ?: return renameWithoutEditor(element)
       val dataContext = DataManager.getInstance().getDataContext(fileEditor.textEditor.component)
       val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext)
 
