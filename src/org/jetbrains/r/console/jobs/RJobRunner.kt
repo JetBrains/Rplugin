@@ -17,6 +17,7 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rinterop.RInterop
@@ -36,29 +37,33 @@ class RJobRunner(private val project: Project) {
   internal fun run(task: RJobTask): ProcessHandler {
     check(canRun())
     val rConsoleManager = RConsoleManager.getInstance(project)
-    val rInterop = rConsoleManager.currentConsoleOrNull?.rInterop
+    val console = rConsoleManager.currentConsoleOrNull
+    val rInterop = console?.rInterop
     val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
     val (scriptFile, exportRDataFile) = generateRunScript(task, rInterop)
     val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, scriptFile, emptyList())
     val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, task.workingDirectory)
     val osProcessHandler = OSProcessHandler(commandLine)
     if (exportRDataFile != null) {
-      installProcessListener(osProcessHandler, exportRDataFile, rInterop, task)
+      installProcessListener(osProcessHandler, exportRDataFile, console, task)
     }
     return osProcessHandler
   }
 
   private fun installProcessListener(osProcessHandler: OSProcessHandler,
                                      exportRDataFile: File,
-                                     rInterop: RInterop?,
+                                     console: RConsoleView?,
                                      task: RJobTask) {
+    val rInterop = console?.rInterop
     osProcessHandler.addProcessListener(object : ProcessAdapter() {
       override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
         if (exportRDataFile.length() > 0 && rInterop?.isAlive == true) {
           val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
             File(task.scriptPath).nameWithoutExtension + "_results"
           else ""
-          rInterop.loadEnvironment(exportRDataFile.absolutePath, variableName)
+          rInterop.loadEnvironment(exportRDataFile.absolutePath, variableName).then {
+            console.debuggerPanel?.onCommandExecuted()
+          }
         }
       }
     })
