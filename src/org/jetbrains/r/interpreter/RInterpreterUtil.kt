@@ -23,7 +23,6 @@ import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
@@ -280,7 +279,7 @@ object RInterpreterUtil {
 
   fun createCommandLine(interpreterPath: String,
                         commands: List<String>,
-                        workingDirectory: String?): @NotNull GeneralCommandLine {
+                        workingDirectory: String?): GeneralCommandLine {
     val interpreterFile = Paths.get(interpreterPath).toFile()
     val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
     val command = if (conda != null) {
