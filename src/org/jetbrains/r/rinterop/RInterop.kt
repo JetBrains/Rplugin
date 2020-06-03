@@ -748,9 +748,6 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   fun getObjectSizes(refs: List<RRef>): List<Long> {
     return execute(asyncStub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
-  fun raiseSigsegv() {
-    executeAsync(asyncStub::raiseSigsegv, Empty.getDefaultInstance())
-  }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
     methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
