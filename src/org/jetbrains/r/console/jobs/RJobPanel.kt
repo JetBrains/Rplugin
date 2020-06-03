@@ -18,10 +18,12 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
+import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
+import com.intellij.uiDesigner.core.Spacer
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
@@ -48,6 +50,8 @@ private interface SplitterApi {
 class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   private val runJob = ActionManager.getInstance().getAction("org.jetbrains.r.console.jobs.RunRJobAction")
   private val jbSplitter = OnePixelSplitter(false, 0.4f)
+  private val toolbarActionGroup = DefaultActionGroup(AddJob(), RemoveCompletedJobs(), RerunJob())
+  private val popupActionGrouping =  DefaultActionGroup(AddJob(), Separator(), RemoveCompletedJobs(), RerunJob())
   private val splitterApi = object : SplitterApi {
     override fun setLeftComponent(component: JComponent) {
       jbSplitter.firstComponent = component
@@ -68,17 +72,26 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
       jbSplitter.invalidate()
     }
   }
-  private val jobList = JobList(splitterApi, project)
-  private val emptyLeftComponent = object : BorderLayoutPanel() {
+  private val jobList = JobList(splitterApi, project, popupActionGrouping)
+  private val emptyLeftComponent = object : JPanel(GridBagLayout()) {
     init {
       background = backgroundColor()
-      add(LinkLabel.create(RBundle.message("jobs.panel.start.new.job.label.text") ) {
+      PopupHandler.installPopupHandler(this, popupActionGrouping, JOBS_POPUP_PLACE)
+
+      add(Spacer(), GridBag().weighty(1.0).apply { gridy = 0 })
+
+      add(JBLabel(RBundle.message("jobs.panel.start.new.job.label.no.jobs")).apply {
+        foreground = infoColor()
+        horizontalAlignment = SwingConstants.CENTER
+      }, GridBag().weighty(0.0).apply { gridy = 1 })
+      add(LinkLabel.create(RBundle.message("jobs.panel.start.new.job.label.text")) {
         if (RJobRunner.getInstance(project).canRun()) {
           RunRJobAction.showDialog(project)
         }
       }.apply {
         horizontalAlignment = SwingConstants.CENTER
-      }, BorderLayout.CENTER)
+      }, GridBag().weighty(0.0).apply { gridy = 2 })
+      add(Spacer(), GridBag().weighty(1.0).apply { gridy = 3 })
     }
 
     override fun updateUI() {
@@ -100,8 +113,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   }
 
   private fun addToolbar() {
-    val actionGroup = DefaultActionGroup(AddJob(), RemoveCompletedJobs(), RerunJob())
-    val toolbar = ActionManager.getInstance().createActionToolbar("", actionGroup, false)
+    val toolbar = ActionManager.getInstance().createActionToolbar("JobsToolbar", toolbarActionGroup, false)
     toolbar.setTargetComponent(this)
     addToLeft(toolbar.component)
   }
@@ -158,7 +170,9 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   }
 }
 
-private class JobList(private val splitter: SplitterApi, private val project: Project) {
+private class JobList(private val splitter: SplitterApi,
+                      private val project: Project,
+                      val popupActionGroup: ActionGroup) {
   private val panel =  object : JPanel(GridBagLayout()) {
     override fun updateUI() {
       super.updateUI()
@@ -173,6 +187,7 @@ private class JobList(private val splitter: SplitterApi, private val project: Pr
 
   init {
     panel.background = backgroundColor()
+    PopupHandler.installPopupHandler(panel, popupActionGroup, JOBS_POPUP_PLACE)
     scrollPane.setViewportView(panel)
     scrollPane.border = null
     panel.border = null
@@ -301,6 +316,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
   }
 
   private fun installMouseListenerOnLeftPanel() {
+    PopupHandler.installPopupHandler(leftPanel, jobList.popupActionGroup, JOBS_POPUP_PLACE)
     leftPanel.addMouseListener(object : MouseAdapter() {
       override fun mouseClicked(event: MouseEvent) {
         if (event.button == MouseEvent.BUTTON1) {
@@ -449,3 +465,6 @@ private fun infoColor() = UIUtil.getInactiveTextColor()
 
 private val PROGRESS_BAR_WIDTH = JBUIScale.scale(150)
 private val LOGO_OFFSET = JBUIScale.scale(6)
+
+private const val JOBS_POPUP_PLACE = "JOBS_POPUP"
+private const val JOBS_TOOLBAR_PLACE = "JOBS_TOOLBAR"
