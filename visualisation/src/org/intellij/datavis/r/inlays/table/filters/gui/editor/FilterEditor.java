@@ -16,6 +16,7 @@ import org.intellij.datavis.r.inlays.table.filters.parser.DateComparator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.Format;
 import java.util.List;
@@ -47,7 +48,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   private Format format;
   private Comparator comparator;
   private Comparator choicesComparator;
-  private Class modelClass;
+  private final Class<?> modelClass;
   private boolean ignoreCase;
   private boolean enabledUI = true;
 
@@ -112,7 +113,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
    * IFilterEditor method.
    */
   @Override
-  public Class getModelClass() {
+  public Class<?> getModelClass() {
     return modelClass;
   }
 
@@ -158,7 +159,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
     if ((autoChoices != null) && (autoChoices != this.autoChoices)) {
       this.autoChoices = autoChoices;
 
-      Object enums[] = modelClass.getEnumConstants();
+      Object[] enums = modelClass.getEnumConstants();
       if ((Boolean.class == modelClass)
           || ((enums != null) && (enums.length <= 8))) {
         setEditable(editor.isAutoCompletion()
@@ -189,7 +190,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
       this.customChoices = null;
     }
     else {
-      this.customChoices = new HashSet<CustomChoice>(choices);
+      this.customChoices = new HashSet<>(choices);
     }
 
     requestChoices();
@@ -201,8 +202,8 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   @Override
   public Set<CustomChoice> getCustomChoices() {
     return (customChoices == null)
-           ? new HashSet<CustomChoice>()
-           : new HashSet<CustomChoice>(customChoices);
+           ? new HashSet<>()
+           : new HashSet<>(customChoices);
   }
 
   /**
@@ -743,7 +744,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
     };
     component.getActionMap().put(actionName, action);
     component.getInputMap(JComponent.WHEN_FOCUSED)
-      .put(KeyStroke.getKeyStroke(KeyEvent.VK_END, Event.CTRL_MASK),
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_MASK),
            actionName);
   }
 
@@ -770,7 +771,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
     };
     component.getActionMap().put(actionName, action);
     component.getInputMap(JComponent.WHEN_FOCUSED)
-      .put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, Event.CTRL_MASK),
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.CTRL_MASK),
            actionName);
   }
 
@@ -871,7 +872,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
     };
     component.getActionMap().put(actionName, action);
     component.getInputMap(JComponent.WHEN_FOCUSED)
-      .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK),
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_MASK),
            actionName);
   }
 
@@ -934,7 +935,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
     };
     component.getActionMap().put(actionName, action);
     component.getInputMap(JComponent.WHEN_FOCUSED)
-      .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK),
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_MASK),
            actionName);
   }
 

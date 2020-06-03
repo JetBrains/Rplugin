@@ -125,12 +125,12 @@ public abstract class ChoicesHandler implements TableModelListener, Runnable {
      * default filtering.
      */
     static protected class RowEntry extends RowFilter.Entry {
-        private TableModel model;
-        private int count;
-        private Format formatters[];
+        private final TableModel model;
+        private final int count;
+        private final Format[] formatters;
         public int row;
 
-        public RowEntry(TableModel model, FilterEditor editors[]) {
+        public RowEntry(TableModel model, FilterEditor[] editors) {
             this.model = model;
             this.count = model.getColumnCount();
 

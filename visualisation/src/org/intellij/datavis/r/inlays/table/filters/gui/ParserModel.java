@@ -28,8 +28,7 @@ import java.util.Map;
 public class ParserModel implements IParserModel {
 
     /** Format for primitive types (plus Date). */
-    private static Map<Class, Format> basicFormats =
-        new HashMap<Class, Format>();
+    private static final Map<Class<?>, Format> basicFormats = new HashMap<>();
 
     /** String comparator, case dependent. */
     private static Comparator<String> strComparator;
@@ -38,18 +37,16 @@ public class ParserModel implements IParserModel {
     private static Comparator<String> icStrComparator;
 
     /** Formats defined for the model. */
-    private Map<Class, Format> formats = new HashMap<Class, Format>();
+    private final Map<Class<?>, Format> formats = new HashMap<>();
 
     /** Comparators defined explicitly for the model. */
-    private Map<Class, Comparator> comparators =
-        new HashMap<Class, Comparator>();
+    private final Map<Class<?>, Comparator> comparators = new HashMap<>();
 
     /** Ignore case flag. */
     private boolean ignoreCase;
 
     /** Helper to handle property change events. */
-    private PropertyChangeSupport propertiesHandler = new PropertyChangeSupport(
-            this);
+    private final PropertyChangeSupport propertiesHandler = new PropertyChangeSupport(this);
 
 
     public ParserModel() {
@@ -78,7 +75,7 @@ public class ParserModel implements IParserModel {
         // (or the primitive format), and the editor's comparator, which is
         // never null
         boolean ignoreCase = editor.isIgnoreCase();
-        Class cl = editor.getModelClass();
+        Class<?> cl = editor.getModelClass();
         Format fmt = (cl == String.class) ? null : editor.getFormat();
         Comparator cmp = (fmt == null) ? null : editor.getComparator();
 
@@ -122,7 +119,7 @@ public class ParserModel implements IParserModel {
     }
 
     /** Defines the {@link Format} for the given class. */
-    @Override public final void setFormat(Class cl, Format fmt) {
+    @Override public final void setFormat(Class<?> cl, Format fmt) {
         Format old = formats.put(cl, fmt);
         if (old != fmt) {
             propertiesHandler.firePropertyChange(FORMAT_PROPERTY, null, cl);
@@ -138,13 +135,13 @@ public class ParserModel implements IParserModel {
     }
 
     /** Returns the {@link Comparator} for the given class. */
-    @Override public Comparator getComparator(Class cl) {
+    @Override public Comparator getComparator(Class<?> cl) {
         Comparator ret = comparators.get(cl);
         if (ret == null) {
             if (cl == String.class) {
                 ret = getStringComparator(ignoreCase);
             } else if (Comparable.class.isAssignableFrom(cl)) {
-                ret = COMPARABLE_COMPARATOR;
+                ret = Comparator.naturalOrder();
             } else {
                 ret = DEFAULT_COMPARATOR;
             }
@@ -154,7 +151,7 @@ public class ParserModel implements IParserModel {
     }
 
     /** Defines the {@link Comparator} for the given class. */
-    @Override public void setComparator(Class cl, Comparator cmp) {
+    @Override public void setComparator(Class<?> cl, Comparator cmp) {
         if (cl == String.class) {
             // do not allow a null comparator for Strings.
             // in addition, retrieve the proper case flag from the comparator
@@ -180,29 +177,21 @@ public class ParserModel implements IParserModel {
     public static Comparator<String> stringComparator(boolean ignoreCase) {
         if (ignoreCase) {
             if (icStrComparator == null) {
-                icStrComparator = new Comparator<String>() {
-                    @Override public int compare(String o1, String o2) {
-                        return o1.compareToIgnoreCase(o2);
-                    }
-                };
+                icStrComparator = String.CASE_INSENSITIVE_ORDER;
             }
 
             return icStrComparator;
         }
 
         if (strComparator == null) {
-            strComparator = new Comparator<String>() {
-                @Override public int compare(String o1, String o2) {
-                    return o1.compareTo(o2);
-                }
-            };
+            strComparator = Comparator.naturalOrder();
         }
 
         return strComparator;
     }
 
     /** Returns the {@link Format} defined for every FilterModel. */
-    private static Format getBasicFormat(Class cl) {
+    private static Format getBasicFormat(Class<?> cl) {
         // for Strings, we just use null.
         Format fmt = basicFormats.get(cl);
         if (fmt == null) {
@@ -397,31 +386,20 @@ public class ParserModel implements IParserModel {
         }
     }
 
-    /** Default comparator for Comparable instances. */
-    private static Comparator COMPARABLE_COMPARATOR =
-        new Comparator<Comparable>() {
-            @Override public int compare(Comparable o1, Comparable o2) {
-                return o1.compareTo(o2);
+    private static final Comparator DEFAULT_COMPARATOR = (o1, o2) -> {
+        // on a JTable, sorting will use the string representation, but here
+        // is not enough to distinguish on string representation, as it is
+        // only used for cases where the content is not converted to String
+        int ret = o1.toString().compareTo(o2.toString());
+        if ((ret == 0) && !o1.equals(o2)) {
+            ret = o1.hashCode() - o2.hashCode();
+            if (ret == 0) {
+                ret = System.identityHashCode(o1)
+                        - System.identityHashCode(o2);
             }
-        };
-
-    private static Comparator DEFAULT_COMPARATOR = new Comparator() {
-        @Override public int compare(Object o1, Object o2) {
-
-            // on a JTable, sorting will use the string representation, but here
-            // is not enough to distinguish on string representation, as it is
-            // only used for cases where the content is not converted to String
-            int ret = o1.toString().compareTo(o2.toString());
-            if ((ret == 0) && !o1.equals(o2)) {
-                ret = o1.hashCode() - o2.hashCode();
-                if (ret == 0) {
-                    ret = System.identityHashCode(o1)
-                            - System.identityHashCode(o2);
-                }
-            }
-
-            return ret;
         }
+
+        return ret;
     };
 
 }

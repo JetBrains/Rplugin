@@ -24,7 +24,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
     private AdaptiveChoicesSupport adaptiveSupport;
     private boolean interrupted = true;
 
-    public AdaptiveChoicesHandler(FiltersHandler handler) {
+    AdaptiveChoicesHandler(FiltersHandler handler) {
         super(handler);
     }
 
@@ -110,7 +110,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
     /** Creates the associated {@link AdaptiveChoicesSupport} instance. */
     private void createAdaptiveChoicesSupport() {
         Collection<FilterEditor> eds = handler.getEditors();
-        FilterEditor array[] = eds.toArray(new FilterEditor[eds.size()]);
+        FilterEditor[] array = eds.toArray(new FilterEditor[0]);
         adaptiveSupport = new AdaptiveChoicesSupport(handler.getTable()
                     .getModel(), array, handler.getFilters());
         setEnableTableModelEvents(true);
@@ -134,18 +134,22 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
      */
     static class AdaptiveChoicesSupport extends RowFilter {
 
-        /** A RowInfo for each row on the table model. */
-        private ArrayList<RowInfo> rows;
+        /**
+         * A RowInfo for each row on the table model.
+         */
+        private final ArrayList<RowInfo> rows;
 
-        /** A single instance to check the filters of every row/column. */
-        private RowEntry rowEntry;
+        /**
+         * A single instance to check the filters of every row/column.
+         */
+        private final RowEntry rowEntry;
 
         /**
          * An EditorHandle per editor (table model's column)<br>
          * The order is not important -it changes continuously while performing
          * updates.
          */
-        private EditorHandle editorHandles[];
+        private final EditorHandle[] editorHandles;
 
         /**
          * Each of the defined .<br>
@@ -156,19 +160,19 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
          * Note that any of the first N filters could be null, if there is no
          * column on that position (column removed from model)
          */
-        private RowInfo.Filter filters[];
+        private final RowInfo.Filter[] filters;
 
         /**
          * Only constructor; note: the parameter allFilters set is modified on
          * the constructor.
          */
-        public AdaptiveChoicesSupport(TableModel   model,
-                                      FilterEditor editors[],
-                                      Set<IFilter> allFilters) {
+        AdaptiveChoicesSupport(TableModel model,
+                               FilterEditor[] editors,
+                               Set<IFilter> allFilters) {
             // note that the allFilters set will be modified
             int columns = model.getColumnCount();
             int edLen = editors.length;
-            rows = new ArrayList<RowInfo>(model.getRowCount() + 1);
+            rows = new ArrayList<>(model.getRowCount() + 1);
             editorHandles = new EditorHandle[edLen];
 
             // note: columns could be different from editors.length if some
@@ -460,7 +464,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
 
         @Override public boolean include(Entry entry) {
         	RowInfo ri = rows.get((Integer) entry.getIdentifier());
-            return ri == null? true : ri.is(); //see issue 24 for this change
+            return ri == null || ri.is(); //see issue 24 for this change
         }
 
         public boolean include(int row) {
@@ -497,20 +501,19 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
             private Map<CustomChoice, RowFilter> missingChoices;
 
             /** The choices that will be set on the editor. */
-            private Set choices = new HashSet();
+            private final Set choices = new HashSet();
 
             /** Single constructor. */
-            public EditorHandle(FilterEditor editor, TableModel model) {
+            EditorHandle(FilterEditor editor, TableModel model) {
                 this.editor = editor;
                 this.column = editor.getModelIndex();
                 init(model);
             }
 
             /** Updates the formatter associated to this editor. */
-            public void updateFormatter(TableModel model, Format formatters[]) {
+            public void updateFormatter(TableModel model, Format[] formatters) {
                 formatters[column] = editor.getFormat();
                 init(model);
-
             }
 
             /** Initializes the member's variables. */
@@ -525,7 +528,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                         maxChoices = 3;
                     } else {
                     	// consider enum constants, plus null
-                        Object o[] = c.getEnumConstants();
+                        Object[] o = c.getEnumConstants();
                         if (o == null){
                         	// no enum, only handle ENABLED
                             if (AutoChoices.ENUMS == editor.getAutoChoices()) {
@@ -543,7 +546,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                 if (choices.isEmpty()) {
                     customChoices = null;
                 } else {
-                    customChoices = new HashMap<CustomChoice, RowFilter>();
+                    customChoices = new HashMap<>();
                     for (CustomChoice cc : choices) {
                         customChoices.put(cc, cc.getFilter(editor));
                     }
@@ -573,8 +576,8 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                 maxIterationChoices = maxChoices;
                 if (fullMode) {
                     missingChoices = (customChoices == null)
-                        ? Collections.EMPTY_MAP
-                        : new HashMap<CustomChoice, RowFilter>(customChoices);
+                        ? Collections.emptyMap()
+                        : new HashMap<>(customChoices);
                 } else {
                     maxIterationChoices -= editor.getChoicesSize();
                 }
@@ -630,8 +633,8 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
          * filtered out or not
          */
         static class RowInfo {
-            static final byte SET = (byte) 255;
-            byte info[];
+            static final byte SET = (byte)255;
+            byte[] info;
 
             RowInfo(int columns) {
                 int length = 1 + (columns >> 3);
@@ -641,7 +644,9 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                 }
             }
 
-            /** returns true if all the bits are set to 1. */
+            /**
+             * returns true if all the bits are set to 1.
+             */
             public boolean is() {
                 int length = info.length;
                 while (length-- > 0) {
@@ -653,10 +658,12 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                 return true;
             }
 
-            /** Defines a column in the RowInfo, associated to a filter. */
+            /**
+             * Defines a column in the RowInfo, associated to a filter.
+             */
             static class Filter {
-                private int col;
-                private int bit;
+                private final int col;
+                private final int bit;
                 int column;
                 IFilter filter;
 
@@ -677,7 +684,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                  * @return  true if it implies a change
                  */
                 public boolean set(RowInfo row, boolean set) {
-                    byte info[] = row.info;
+                    byte[] info = row.info;
                     byte now = info[col];
                     if (set) {
                         info[col] |= bit;
@@ -693,7 +700,7 @@ class AdaptiveChoicesHandler extends ChoicesHandler {
                  * exception of THIS column, are set to 1.
                  */
                 public boolean is(RowInfo row) {
-                    byte info[] = row.info;
+                    byte[] info = row.info;
                     boolean now = 0 != (info[col] & bit);
                     set(row, true);
 

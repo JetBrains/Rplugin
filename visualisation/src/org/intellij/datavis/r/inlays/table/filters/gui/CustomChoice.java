@@ -101,8 +101,8 @@ public abstract class CustomChoice implements Serializable {
    * The representation for each choice is the stringfied representation of
    * the passed instance.
    */
-  public static Set<CustomChoice> createSet(Object choices[]) {
-    Set<CustomChoice> ret = new HashSet<CustomChoice>();
+  public static Set<CustomChoice> createSet(Object[] choices) {
+    Set<CustomChoice> ret = new HashSet<>();
     for (Object o : choices) {
       ret.add(create(o, o.toString()));
     }
@@ -116,7 +116,7 @@ public abstract class CustomChoice implements Serializable {
    * the passed instance.
    */
   public static Set<CustomChoice> createSet(Collection choices) {
-    Set<CustomChoice> ret = new HashSet<CustomChoice>();
+    Set<CustomChoice> ret = new HashSet<>();
     for (Object o : choices) {
       ret.add(create(o, o.toString()));
     }

@@ -32,18 +32,18 @@ public class ChoicesListModel extends AbstractListModel
     private Comparator contentComparator;
     private Comparator<String> strComparator;
     private boolean renderedContent;
-    private TreeSet<Choice> content;
+    private final TreeSet<Choice> content;
     private TreeSet<Choice> alphaSortedContent;
-    private Object flatContent[];
+    private Object[] flatContent;
     private int size;
 
     public ChoicesListModel(Format     format,
                             Comparator choicesComparator,
-                            Comparator stringComparator) {
+                            Comparator<String> stringComparator) {
         this.format = format;
         this.strComparator = stringComparator;
         this.contentComparator = choicesComparator;
-        this.content = new TreeSet<Choice>(this);
+        this.content = new TreeSet<>(this);
         clearContent();
     }
 
@@ -53,7 +53,7 @@ public class ChoicesListModel extends AbstractListModel
      * @return  true if this is a change
      */
     public boolean setRenderedContent(Comparator choicesComparator,
-                                      Comparator stringComparator) {
+                                      Comparator<String> stringComparator) {
         if (updateComparators(choicesComparator, stringComparator)
                 || !renderedContent) {
             renderedContent = true;
@@ -202,14 +202,14 @@ public class ChoicesListModel extends AbstractListModel
      *
      * @param  unsortedList:  additional content to comb through
      */
-    public String getCompletion(String base, List unsortedList) {
+    public String getCompletion(String base, List<?> unsortedList) {
         int minLen = base.length();
         int maxLen = Integer.MAX_VALUE;
         String ret = null;
         Iterator<Choice> it = getAlphabeticallySortedContent().tailSet(
                 new Choice(base, base), true)
                 .iterator();
-        Iterator its = unsortedList.iterator();
+        Iterator<?> its = unsortedList.iterator();
         while ((maxLen > minLen) && (it.hasNext() || its.hasNext())) {
             String s = it.hasNext() ? it.next().str : its.next().toString();
             int match = ChoiceMatch.getMatchingLength(base, s, strComparator);
@@ -231,8 +231,7 @@ public class ChoicesListModel extends AbstractListModel
     private TreeSet<Choice> getAlphabeticallySortedContent() {
         if (alphaSortedContent == null) {
             flatContent(); // ensure we have the positions on the Choices
-            alphaSortedContent = new TreeSet<Choice>(new ChoiceTextComparator(
-                        strComparator));
+            alphaSortedContent = new TreeSet<>(new ChoiceTextComparator(strComparator));
             alphaSortedContent.addAll(content);
         }
 
@@ -254,7 +253,7 @@ public class ChoicesListModel extends AbstractListModel
     }
 
     private boolean updateComparators(Comparator choicesComparator,
-                                      Comparator stringComparator) {
+                                      Comparator<String> stringComparator) {
         boolean same = this.strComparator.equals(stringComparator);
         if (same){
         	if (choicesComparator==null){
@@ -345,9 +344,9 @@ public class ChoicesListModel extends AbstractListModel
     /** Comparator to compare Wrappers by their string member. */
     static private class ChoiceTextComparator implements Comparator<Choice> {
 
-        private Comparator stringComparator;
+        private final Comparator<String> stringComparator;
 
-        public ChoiceTextComparator(Comparator stringComparator) {
+        private ChoiceTextComparator(Comparator<String> stringComparator) {
             this.stringComparator = stringComparator;
         }
 

@@ -29,19 +29,19 @@ public interface IParserModel {
     IParser createParser(IFilterEditor editor);
 
     /** Returns the {@link Format} for the given class. */
-    Format getFormat(Class c);
+    Format getFormat(Class<?> c);
 
     /** Defines the {@link Format} for the given class. */
-    void setFormat(Class c, Format format);
+    void setFormat(Class<?> c, Format format);
 
     /**
      * Returns the {@link Comparator} for the given class.<br>
      * It never returns null.
      */
-    Comparator getComparator(Class c);
+    Comparator getComparator(Class<?> c);
 
     /** Defines the {@link Comparator} for the given class. */
-    void setComparator(Class c, Comparator format);
+    void setComparator(Class<?> c, Comparator format);
 
     /** Returns the {@link Comparator} used for String comparisons. */
     Comparator<String> getStringComparator(boolean ignoreCase);
