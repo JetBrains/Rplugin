@@ -65,13 +65,16 @@ class RConsoleRunner(private val project: Project,
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
     UIUtil.invokeLaterIfNeeded {
-      RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
+      val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
       val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
       RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
         initByInterop(rInterop, interpreterPath, promise)
       }.onError {
         showErrorMessage(project,  it.message ?: "Cannot find suitable rwrapper",  "Cannot run console")
         promise.setError(it)
+        UIUtil.invokeLaterIfNeeded {
+          placeholder?.manager?.removeContent(placeholder, true)
+        }
       }
     }
     return promise

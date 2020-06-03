@@ -166,8 +166,8 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
-    fun addConsolePlaceholder(project: Project, contentIndex: Int? = null) {
-      val toolWindow = getRConsoleToolWindows(project) ?: return
+    fun addConsolePlaceholder(project: Project, contentIndex: Int? = null): Content? {
+      val toolWindow = getRConsoleToolWindows(project) ?: return null
       val contentFactory = ContentFactory.SERVICE.getInstance()
       val panel = BorderLayoutPanel()
       panel.addToCenter(JBLabel("Starting console...").apply {
@@ -184,6 +184,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       } else {
         contentManager.addContent(content, contentIndex)
       }
+      return content
     }
 
     private fun createNoInterpreterConsoleView(project: Project): ConsoleView =
