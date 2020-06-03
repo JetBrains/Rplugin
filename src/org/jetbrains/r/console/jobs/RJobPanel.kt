@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.console.jobs
 
+import com.intellij.codeInsight.hint.HintUtil.RECENT_LOCATIONS_SELECTION_KEY
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAwareAction
@@ -350,7 +350,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     duration.text = DurationFormatUtils.formatDuration(jobDescriptor.duration, "mm:ss", true)
     duration.foreground = infoColor()
     panel.addToLeft(duration)
-    val startDateTime = JBLabel(DateFormatUtil.formatDateTime(jobDescriptor.startedAt))
+    val startDateTime = JBLabel(DateFormatUtil.formatTime(jobDescriptor.startedAt))
     startDateTime.foreground = infoColor()
     panel.addToRight(startDateTime)
     return panel
