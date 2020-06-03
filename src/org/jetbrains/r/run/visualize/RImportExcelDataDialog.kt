@@ -7,6 +7,7 @@ package org.jetbrains.r.run.visualize
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBTextField
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RRef
@@ -76,9 +77,9 @@ class RImportExcelDataDialog(project: Project, interop: RInterop, parent: Dispos
   }
 
   override fun onUpdateFinished() {
-    val ref = RRef.expressionRef(SHEET_VARIABLE_NAME, interop)
-    ref.evaluateAsTextAsync().onSuccess { value ->
-      val sheetNames = extractSheetNames(value)
+    runAsync {
+      val ref = RRef.expressionRef(SHEET_VARIABLE_NAME, interop)
+      val sheetNames = ref.getDistinctStrings().filter { it.isNotBlank() }
       updateSheetComboBox(sheetNames)
     }
   }
@@ -88,14 +89,6 @@ class RImportExcelDataDialog(project: Project, interop: RInterop, parent: Dispos
       val entries = if (sheetNames.isNotEmpty()) sheetNames.map { ComboBoxEntry<String?>(it, it) } else DEFAULT_SHEET_ENTRIES
       sheetDelegate.updateEntries(entries)
     }
-  }
-
-  private fun extractSheetNames(expressionValue: String): List<String> {
-    if (!expressionValue.startsWith("[1]")) {
-      return emptyList()
-    }
-    val text = expressionValue.substring(4, expressionValue.lastIndex)
-    return text.split(' ').map { it.trim('\"') }
   }
 
   private inner class RangeInputDelegate(panel: JPanel) {
