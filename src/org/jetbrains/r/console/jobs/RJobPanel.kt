@@ -201,9 +201,11 @@ private class JobList(private val splitter: SplitterApi, private val project: Pr
   private fun installMouseListeners(panel: JPanel) {
     panel.addMouseListener(object : MouseAdapter() {
       override fun mouseClicked(event: MouseEvent) {
-        val componentAtMouse = panel.getComponentAt(event.point)
-        if (componentAtMouse is JobEntity) {
-          changeSelection(componentAtMouse)
+        if (event.button == MouseEvent.BUTTON1) {
+          val componentAtMouse = panel.getComponentAt(event.point)
+          if (componentAtMouse is JobEntity) {
+            changeSelection(componentAtMouse)
+          }
         }
       }
     })
@@ -300,8 +302,10 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
 
   private fun installMouseListenerOnLeftPanel() {
     leftPanel.addMouseListener(object : MouseAdapter() {
-      override fun mouseClicked(e: MouseEvent?) {
-        jobList.changeSelection(this@JobEntity)
+      override fun mouseClicked(event: MouseEvent) {
+        if (event.button == MouseEvent.BUTTON1) {
+          jobList.changeSelection(this@JobEntity)
+        }
       }
 
       override fun mouseEntered(e: MouseEvent) {
