@@ -64,12 +64,14 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   private val splitterApi = object : SplitterApi {
     override fun setLeftComponent(component: JComponent) {
       jbSplitter.firstComponent = component
+      component.updateUI()
       jbSplitter.repaint()
       jbSplitter.invalidate()
     }
 
     override fun setRightComponent(component: JComponent) {
       jbSplitter.secondComponent = component
+      component.updateUI()
       jbSplitter.repaint()
       jbSplitter.invalidate()
     }
@@ -77,6 +79,8 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
     override fun restoreDefaults() {
       jbSplitter.firstComponent = emptyLeftComponent
       jbSplitter.secondComponent = emptyRightComponent
+      emptyLeftComponent.updateUI()
+      emptyRightComponent.updateUI()
       jbSplitter.repaint()
       jbSplitter.invalidate()
     }
@@ -186,10 +190,17 @@ private class JobList(private val splitter: SplitterApi,
     override fun updateUI() {
       super.updateUI()
       background = backgroundColor()
+      border = null
     }
   }
   private val emptyLabel = JLabel("")
-  private val scrollPane = JBScrollPane()
+  private val scrollPane = object : JBScrollPane() {
+    override fun updateUI() {
+      super.updateUI()
+      background = backgroundColor()
+      border = null
+    }
+  }
 
   val jobEntities = ArrayList<JobEntity>()
   var currentlySelected : JobEntity? = null
