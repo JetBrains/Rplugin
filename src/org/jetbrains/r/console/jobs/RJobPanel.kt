@@ -434,7 +434,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
 }
 
 private fun backgroundColor() = UIUtil.getEditorPaneBackground()
-private fun selectionColor() = EditorColorsUtil.getGlobalOrDefaultColorScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES).backgroundColor
+private fun selectionColor() = EditorColorsUtil.getGlobalOrDefaultColor(RECENT_LOCATIONS_SELECTION_KEY)!!
 private fun infoColor() = UIUtil.getInactiveTextColor()
 
 private val PROGRESS_BAR_WIDTH = JBUIScale.scale(150)
