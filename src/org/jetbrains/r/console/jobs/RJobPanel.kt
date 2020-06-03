@@ -26,6 +26,7 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.uiDesigner.core.Spacer
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
+import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.UIUtilities
 import com.intellij.util.ui.components.BorderLayoutPanel
@@ -376,9 +377,10 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     duration.text = DurationFormatUtils.formatDuration(jobDescriptor.duration, "mm:ss", true)
     duration.foreground = infoColor()
     panel.addToLeft(duration)
-    val startDateTime = JBLabel(DateFormatUtil.formatTime(jobDescriptor.startedAt))
-    startDateTime.foreground = infoColor()
-    panel.addToRight(startDateTime)
+    val startTime = JBLabel(DateFormatUtil.formatTime(jobDescriptor.startedAt))
+    startTime.border = JBEmptyBorder(0, 0, 0, START_TIME_RIGHT_INSET)
+    startTime.foreground = infoColor()
+    panel.addToRight(startTime)
     return panel
   }
 
@@ -464,6 +466,7 @@ private fun selectionColor() = EditorColorsUtil.getGlobalOrDefaultColor(RECENT_L
 private fun infoColor() = UIUtil.getInactiveTextColor()
 
 private val PROGRESS_BAR_WIDTH = JBUIScale.scale(150)
+private val START_TIME_RIGHT_INSET = JBUIScale.scale(6)
 private val LOGO_OFFSET = JBUIScale.scale(6)
 
 private const val JOBS_POPUP_PLACE = "JOBS_POPUP"
