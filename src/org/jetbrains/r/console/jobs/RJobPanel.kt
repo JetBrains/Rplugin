@@ -185,10 +185,15 @@ private class JobList(private val splitter: SplitterApi, private val project: Pr
     }
     val jobEntity = JobEntity(jobDescriptor, this)
     jobEntities.add(jobEntity)
-    panel.remove(emptyLabel)
+    panel.removeAll()
+
     val constraints = GridBag().weightx(1.0).anchor(GridBagConstraints.NORTH).fillCellHorizontally().coverLine()
       .insets(0, 0, 0, 0)
-    panel.add(jobEntity, constraints)
+
+    for (it in jobEntities.reversed()) {
+      panel.add(it, constraints)
+    }
+
     changeSelection(jobEntity)
     panel.add(emptyLabel, GridBag().weighty(1.0))
   }
@@ -234,6 +239,7 @@ private class JobList(private val splitter: SplitterApi, private val project: Pr
 
   fun removeJobEntity(jobEntity: JobEntity) {
     panel.remove(jobEntity)
+    jobEntities.remove(jobEntity)
     val count = jobEntityCount()
     if (jobEntity.isSelected && count > 0) {
       changeSelection(panel.components[0] as JobEntity)
