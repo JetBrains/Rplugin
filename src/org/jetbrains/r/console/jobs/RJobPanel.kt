@@ -174,6 +174,8 @@ private class JobList(private val splitter: SplitterApi, private val project: Pr
   init {
     panel.background = backgroundColor()
     scrollPane.setViewportView(panel)
+    scrollPane.border = null
+    panel.border = null
     installMouseListeners(panel)
   }
 
