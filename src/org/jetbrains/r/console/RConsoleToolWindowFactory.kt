@@ -8,6 +8,7 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAware
@@ -110,6 +111,11 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
       val consoleCount = contentManager.contents.count { isConsole(it) }
       val content = createContent(contentDescriptor)
+      Disposer.register(content, Disposable {
+        if (contentManager.contents.count { isConsole(it) } == 0) {
+          toolWindow.hide()
+        }
+      })
       content.putUserData(CONSOLE_CONTENT_KEY, Unit)
       val indexOfPlaceholder = contentManager.contents.indexOfFirst { isPlaceholder(it) }
       if (indexOfPlaceholder >= 0) {
@@ -184,6 +190,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       } else {
         contentManager.addContent(content, contentIndex)
       }
+      contentManager.setSelectedContent(content)
       return content
     }
 
