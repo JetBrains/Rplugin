@@ -227,13 +227,24 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     testLinkNull("https://cran.r-project.org/package=Matrix")
   }
 
+  fun testDocumentationDoesntExist() {
+    doTest("fooo_bar", documentationExist = false)
+    doTest("ggplot2::bb<caret>b", documentationExist = false)
+    doTest("""
+      #' ...
+      foo <- function() {}
+      
+      fo<caret>o
+    """.trimIndent(), documentationExist = false)
+  }
+
   // ---- END OF TESTS ---
 
   private fun makeHelper(page: String, pack: String): (String) -> Unit {
     return { doTest(it, page, pack) }
   }
 
-  private fun doTest(text: String, page: String, pack: String) {
+  private fun doTest(text: String, page: String = "", pack: String = "", documentationExist: Boolean = true) {
 
     myFixture.configureByText("test.R", text)
     val docElement = DocumentationManager.getInstance(myFixture.project).findTargetElement(myFixture.editor, myFixture.file)
@@ -244,12 +255,17 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     val docText = docProvider.generateDoc(docElement, originalElement)
 
-    assertNotNull("No document found for ${originalElement.text}", docText)
-    assertTrue("Wrong help page returned for ${originalElement.text}: $docText", docText!!.contains("page for $page")
-                                                                                 && docText.contains("Package <em>$pack</em>"))
-    assertSame("Doc for ${originalElement.text} contains incorrect links or excess uses of PSI_ELEMENT_PROTOCOL",
-               Regex("<a href=\"(.+?)\">(.+?)</a>").findAll(docText).count(),
-               Regex(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL).findAll(docText).count())
+    if (documentationExist) {
+      assertNotNull("No document found for ${originalElement.text}", docText)
+      assertTrue("Wrong help page returned for ${originalElement.text}: $docText", docText!!.contains("page for $page")
+                                                                                   && docText.contains("Package <em>$pack</em>"))
+      assertSame("Doc for ${originalElement.text} contains incorrect links or excess uses of PSI_ELEMENT_PROTOCOL",
+                 Regex("<a href=\"(.+?)\">(.+?)</a>").findAll(docText).count(),
+                 Regex(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL).findAll(docText).count())
+    }
+    else {
+      assertNull("There should be no documentation for ${originalElement.text}", docText)
+    }
   }
 
   private fun testLinkNull(link: String) {
