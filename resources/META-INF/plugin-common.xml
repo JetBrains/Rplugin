@@ -261,15 +261,15 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.debugger.RXVariablesViewActions">
             <action id="org.jetbrains.r.debugger.RImportBaseDataAction"
                     class="org.jetbrains.r.debugger.RImportBaseDataAction"
-                    text="From Text with base"
+                    text="CSV with Base"
                     description="Import dataset from text with base"/>
             <action id="org.jetbrains.r.debugger.RImportCsvDataAction"
                     class="org.jetbrains.r.debugger.RImportCsvDataAction"
-                    text="From Text with readr"
+                    text="CSV with Readr"
                     description="Import dataset from text with readr"/>
             <action id="org.jetbrains.r.debugger.RImportExcelDataAction"
                     class="org.jetbrains.r.debugger.RImportExcelDataAction"
-                    text="From Excel"
+                    text="Excel"
                     description="Import dataset from Excel with readxl"/>
         </group>
     </actions>

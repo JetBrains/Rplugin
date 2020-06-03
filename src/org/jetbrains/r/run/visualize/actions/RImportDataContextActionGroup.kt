@@ -30,6 +30,6 @@ class RImportDataContextActionGroup : ActionGroup(TITLE, null, R_LOGO_16), DumbA
   }
 
   companion object {
-    private val TITLE = RBundle.message("import.data.action.group.name")
+    private val TITLE = RBundle.message("import.data.action.group.name.from")
   }
 }

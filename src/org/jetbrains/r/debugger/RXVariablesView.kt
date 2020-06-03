@@ -269,6 +269,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
     val project = console.project
     val interop = console.rInterop
     val actions = listOf(
+      Separator(IMPORT_ACTION_GROUP_HEADER),
       ToolbarUtil.createAnActionButton<RImportBaseDataAction> {
         RImportBaseDataDialog.show(project, interop, project)
       },
@@ -367,6 +368,7 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
   companion object {
     private val IMPORT_ACTION_GROUP_NAME = RBundle.message("import.data.action.group.name")
+    private val IMPORT_ACTION_GROUP_HEADER = RBundle.message("import.data.action.group.name.from")
     private val IMPORT_EXCEL_REQUIREMENTS = listOf("readxl")
     private val IMPORT_CSV_REQUIREMENTS = listOf("readr")
 
