@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.run.visualize
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
@@ -14,6 +15,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.ListPopup
+import com.intellij.openapi.ui.popup.PopupStep
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
@@ -54,8 +59,13 @@ abstract class RImportDataDialog(
     filePath = chooseFile()
   })
 
+  private val previewHeadLinkLabel = LinkLabel<Any>("$DEFAULT_PREVIEW_HEAD", COMBO_ICON, LinkListener<Any> { _, _ ->
+    choosePreviewHead()
+  })
+
   private val form = RImportDataDialogForm().apply {
     contentPane.preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)
+    previewStatusComboBoxPanel.add(previewHeadLinkLabel)
     okCancelButtonsPanel.add(createOkCancelPanel())
     openFileLinkPanel.add(openFileLinkLabel)
     fileInputFieldPanel.add(fileInputField)
@@ -70,7 +80,7 @@ abstract class RImportDataDialog(
     }
   }
 
-  private val previewer = RImportDataPreviewer(parent, form.previewPanel)
+  private val previewer = RImportDataPreviewer(parent, form.previewContentPanel, form.previewStatusPanel)
 
   private var filePath: String? = null
     set(path) {
@@ -83,8 +93,16 @@ abstract class RImportDataDialog(
       }
     }
 
+  private var previewRowCount: Int = DEFAULT_PREVIEW_HEAD
+    set(count) {
+      if (field != count) {
+        field = count
+        previewHeadLinkLabel.text = "$count"
+        updatePreviewAsync()
+      }
+    }
+
   private var variableName by NameFieldDelegate(form.nameTextField)
-  private var previewRowCount by IntFieldDelegate(form.headTextField)
   private var viewAfterImport by CheckBoxDelegate(form.viewAfterImportCheckBox)
 
   private var currentOptions: ImportOptions? = null
@@ -97,6 +115,7 @@ abstract class RImportDataDialog(
   override fun init() {
     super.init()
     title = TITLE
+    setupStatusBar()
     setupInputControls()
     setupPreviewComponent()
     removeMarginsIfPossible()
@@ -113,7 +132,7 @@ abstract class RImportDataDialog(
   }
 
   protected open fun updateOkAction() {
-    isOKActionEnabled = filePath != null && variableName != null && previewRowCount != null && previewer.hasPreview
+    isOKActionEnabled = filePath != null && variableName != null && previewer.hasPreview
   }
 
   protected open fun onFileChanged() {
@@ -125,11 +144,16 @@ abstract class RImportDataDialog(
   }
 
   private fun setupPreviewComponent() {
-    val splitter = OnePixelSplitter(false, 1.0f).apply {
-      firstComponent = previewer.component
-      secondComponent = form.optionPanel
+    val splitter = OnePixelSplitter(false, 0.25f).apply {
+      secondComponent = previewer.component
+      firstComponent = form.optionPanel
     }
     form.centerPanel.add(splitter)
+  }
+
+  private fun setupStatusBar() {
+    form.previewStatusPanel.border = IdeBorderFactory.createBorder(SideBorder.BOTTOM or SideBorder.RIGHT)
+    previewHeadLinkLabel.horizontalTextPosition = SwingConstants.LEADING
   }
 
   private fun setupInputControls() {
@@ -137,6 +161,11 @@ abstract class RImportDataDialog(
     fileInputField.textField.isFocusable = false
     previewRowCount = DEFAULT_PREVIEW_HEAD
     variableName = DEFAULT_VARIABLE_NAME
+  }
+
+  private fun choosePreviewHead() {
+    val popup = PreviewHeadPopupStep().createPopup()
+    popup.showUnderneathOf(form.previewStatusComboBoxPanel)
   }
 
   private fun chooseFile(): String? {
@@ -179,7 +208,6 @@ abstract class RImportDataDialog(
         return
       }
       form.optionPanel.setEnabledRecursively(false)
-      form.topPanel.setEnabledRecursively(false)
       previewer.showLoading()
       updateOkAction()
       prepareViewerAsync(options)
@@ -195,7 +223,6 @@ abstract class RImportDataDialog(
         }
         .onProcessed {
           form.optionPanel.setEnabledRecursively(true)
-          form.topPanel.setEnabledRecursively(true)
           onUpdateFinished()
           updateOkAction()
         }
@@ -240,10 +267,8 @@ abstract class RImportDataDialog(
 
   private fun collectImportOptions(): ImportOptions? {
     return filePath?.let { path ->
-      previewRowCount?.let { rowCount ->
-        additionalOptions?.let { additional ->
-          ImportOptions(FileUtil.toSystemIndependentName(path), importMode, rowCount, additional)
-        }
+      additionalOptions?.let { additional ->
+        ImportOptions(FileUtil.toSystemIndependentName(path), importMode, previewRowCount, additional)
       }
     }
   }
@@ -267,6 +292,18 @@ abstract class RImportDataDialog(
   private fun Path.beautify(): Path {
     val basePath = Paths.get(project.basePath!!)
     return if (startsWith(basePath)) basePath.relativize(this) else this
+  }
+
+  private inner class PreviewHeadPopupStep : BaseListPopupStep<Int>(null, PREVIEW_HEAD_VALUES) {
+    override fun onChosen(selectedValue: Int, finalChoice: Boolean): PopupStep<*>? {
+      return doFinalStep {
+        previewRowCount = selectedValue
+      }
+    }
+
+    fun createPopup(): ListPopup {
+      return JBPopupFactory.getInstance().createListPopup(this)
+    }
   }
 
   private inner class NameFieldDelegate(private val field: JTextField) {
@@ -415,6 +452,7 @@ abstract class RImportDataDialog(
 
   companion object {
     private const val DEFAULT_PREVIEW_HEAD = 50
+    private val PREVIEW_HEAD_VALUES = (1..10).map { it * 10 }
     const val PREVIEW_VARIABLE_NAME = ".jetbrains\$previewDataImportResult"
     private const val PREVIEW_DATA_VARIABLE_NAME = "$PREVIEW_VARIABLE_NAME\$data"
 
@@ -432,6 +470,8 @@ abstract class RImportDataDialog(
     private val OPEN_FILE_TEXT = RBundle.message("import.data.dialog.preview.open.file")
     private val FILE_CHOOSER_TITLE = RBundle.message("import.data.dialog.file.chooser.title")
     private val FILE_CHOOSER_DESCRIPTION = RBundle.message("import.data.dialog.file.chooser.description")
+
+    private val COMBO_ICON = AllIcons.Actions.FindAndShowNextMatches
 
     private val HINT_COLOR = JBColor.namedColor("Editor.foreground", JBColor(Gray._80, Gray._160))
     private val HINT_FONT = JBUI.Fonts.label().let { font ->

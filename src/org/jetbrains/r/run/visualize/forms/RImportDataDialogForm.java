@@ -18,16 +18,17 @@ public class RImportDataDialogForm extends JDialog {
   private JPanel contentPane;
   private JPanel optionPanel;
   private JPanel centerPanel;
-  private JPanel topPanel;
   private JPanel fileInputFieldPanel;
   private JTextField nameTextField;
   private JCheckBox viewAfterImportCheckBox;
   private JPanel okCancelButtonsPanel;
-  private JTextField headTextField;
-  private JPanel previewPanel;
+  private JPanel previewContentPanel;
   private JPanel openFileLinkPanel;
   private JLabel noDataLabel;
   private JPanel importOptionPanel;
+  private JPanel previewPanel;
+  private JPanel previewStatusPanel;
+  private JPanel previewStatusComboBoxPanel;
 
   @Override
   public JPanel getContentPane() {
@@ -40,10 +41,6 @@ public class RImportDataDialogForm extends JDialog {
 
   public JPanel getCenterPanel() {
     return centerPanel;
-  }
-
-  public JPanel getTopPanel() {
-    return topPanel;
   }
 
   public JPanel getFileInputFieldPanel() {
@@ -62,12 +59,8 @@ public class RImportDataDialogForm extends JDialog {
     return okCancelButtonsPanel;
   }
 
-  public JTextField getHeadTextField() {
-    return headTextField;
-  }
-
-  public JPanel getPreviewPanel() {
-    return previewPanel;
+  public JPanel getPreviewContentPanel() {
+    return previewContentPanel;
   }
 
   public JPanel getOpenFileLinkPanel() {
@@ -80,6 +73,18 @@ public class RImportDataDialogForm extends JDialog {
 
   public JPanel getImportOptionPanel() {
     return importOptionPanel;
+  }
+
+  public JPanel getPreviewPanel() {
+    return previewPanel;
+  }
+
+  public JPanel getPreviewStatusPanel() {
+    return previewStatusPanel;
+  }
+
+  public JPanel getPreviewStatusComboBoxPanel() {
+    return previewStatusComboBoxPanel;
   }
 
   public RImportDataDialogForm() {
@@ -105,73 +110,30 @@ public class RImportDataDialogForm extends JDialog {
     contentPane = new JPanel();
     contentPane.setLayout(new GridLayoutManager(1, 1, new JBInsets(10, 10, 10, 10), -1, -1));
     final JPanel panel1 = new JPanel();
-    panel1.setLayout(new GridLayoutManager(3, 1, new JBInsets(0, 0, 0, 0), -1, -1));
+    panel1.setLayout(new GridLayoutManager(2, 1, new JBInsets(0, 0, 0, 0), -1, -1));
     contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
                                                 null, 0, false));
-    topPanel = new JPanel();
-    topPanel.setLayout(new GridLayoutManager(1, 2, new JBInsets(0, 0, 8, 0), -1, -1));
-    panel1.add(topPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
-                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                             GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    final JLabel label1 = new JLabel();
-    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.from"));
-    topPanel.add(label1,
-                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    fileInputFieldPanel = new JPanel();
-    fileInputFieldPanel.setLayout(new BorderLayout(0, 0));
-    topPanel.add(fileInputFieldPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
-                                                          null, null, 0, false));
     centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout(0, 0));
-    panel1.add(centerPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    panel1.add(centerPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null,
                                                 null, 0, false));
     optionPanel = new JPanel();
-    optionPanel.setLayout(new GridLayoutManager(8, 2, new JBInsets(0, 8, 0, 0), -1, -1));
-    centerPanel.add(optionPanel, BorderLayout.EAST);
+    optionPanel.setLayout(new GridLayoutManager(5, 2, new JBInsets(0, 0, 0, 8), -1, -1));
+    centerPanel.add(optionPanel, BorderLayout.WEST);
     final Spacer spacer1 = new Spacer();
-    optionPanel.add(spacer1, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+    optionPanel.add(spacer1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                                                  GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-    final JLabel label2 = new JLabel();
-    Font label2Font = this.$$$getFont$$$(null, Font.BOLD, -1, label2.getFont());
-    if (label2Font != null) label2.setFont(label2Font);
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.import.options"));
-    optionPanel.add(label2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    final JLabel label3 = new JLabel();
-    Font label3Font = this.$$$getFont$$$(null, Font.BOLD, -1, label3.getFont());
-    if (label3Font != null) label3.setFont(label3Font);
-    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.preview.options"));
-    optionPanel.add(label3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    final JLabel label4 = new JLabel();
-    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.head"));
-    optionPanel.add(label4, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
-                                                false));
-    headTextField = new JTextField();
-    optionPanel.add(headTextField, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                                                       GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-                                                       new Dimension(150, -1), null, 0, false));
-    final JSeparator separator1 = new JSeparator();
-    optionPanel.add(separator1, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                                                    GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                                                    null, 0, false));
-    final JLabel label5 = new JLabel();
-    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.name"));
-    optionPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+    final JLabel label1 = new JLabel();
+    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.name"));
+    optionPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
     nameTextField = new JTextField();
-    optionPanel.add(nameTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+    optionPanel.add(nameTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
                                                        new Dimension(150, -1), null, 0, false));
     importOptionPanel = new JPanel();
@@ -180,39 +142,82 @@ public class RImportDataDialogForm extends JDialog {
                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                            null, null, null, 0, false));
-    final JSeparator separator2 = new JSeparator();
-    optionPanel.add(separator2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
+    final JSeparator separator1 = new JSeparator();
+    optionPanel.add(separator1, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
                                                     GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                     null, 0, false));
+    final JLabel label2 = new JLabel();
+    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.from"));
+    optionPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                false));
+    fileInputFieldPanel = new JPanel();
+    fileInputFieldPanel.setLayout(new BorderLayout(0, 0));
+    optionPanel.add(fileInputFieldPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             null, null, null, 0, false));
     previewPanel = new JPanel();
-    previewPanel.setLayout(new GridLayoutManager(4, 1, new JBInsets(0, 0, 0, 8), -1, -1));
+    previewPanel.setLayout(new GridLayoutManager(2, 1, new JBInsets(0, 8, 0, 0), -1, -1));
     centerPanel.add(previewPanel, BorderLayout.CENTER);
+    previewContentPanel = new JPanel();
+    previewContentPanel.setLayout(new GridLayoutManager(4, 1, new JBInsets(0, 0, 0, 0), -1, -1));
+    previewPanel.add(previewContentPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              null, null, null, 0, false));
     final Spacer spacer2 = new Spacer();
-    previewPanel.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-                                                  GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    previewContentPanel.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                                         GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     openFileLinkPanel = new JPanel();
     openFileLinkPanel.setLayout(new BorderLayout(0, 0));
-    previewPanel.add(openFileLinkPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
-                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                                                            null, null, null, 0, false));
+    previewContentPanel.add(openFileLinkPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
+                                                                   GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                   GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                   GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                   GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     final Spacer spacer3 = new Spacer();
-    previewPanel.add(spacer3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-                                                  GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    previewContentPanel.add(spacer3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                                         GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     noDataLabel = new JLabel();
     this
       .$$$loadLabelText$$$(noDataLabel, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.preview.no.data.here"));
-    previewPanel.add(noDataLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
-                                                      GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
-                                                      0, false));
+    previewContentPanel.add(noDataLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+                                                             GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                             null, 0, false));
+    previewStatusPanel = new JPanel();
+    previewStatusPanel.setLayout(new GridLayoutManager(1, 4, new JBInsets(6, 8, 6, 8), -1, -1));
+    previewPanel.add(previewStatusPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    final JLabel label3 = new JLabel();
+    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.head.show"));
+    previewStatusPanel.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                       GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+                                                       0, false));
+    final Spacer spacer4 = new Spacer();
+    previewStatusPanel.add(spacer4, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+    previewStatusComboBoxPanel = new JPanel();
+    previewStatusComboBoxPanel.setLayout(new BorderLayout(0, 0));
+    previewStatusPanel.add(previewStatusComboBoxPanel,
+                           new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
+                                               null, 0, false));
+    final JLabel label4 = new JLabel();
+    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.head.lines"));
+    previewStatusPanel.add(label4, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                       GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+                                                       0, false));
     final JPanel panel2 = new JPanel();
     panel2.setLayout(new GridLayoutManager(1, 4, new JBInsets(8, 0, 0, 0), -1, -1));
-    panel1.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    panel1.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
                                            false));
-    final Spacer spacer4 = new Spacer();
-    panel2.add(spacer4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+    final Spacer spacer5 = new Spacer();
+    panel2.add(spacer5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                                             GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     viewAfterImportCheckBox = new JCheckBox();
     viewAfterImportCheckBox.setSelected(true);
@@ -227,31 +232,10 @@ public class RImportDataDialogForm extends JDialog {
                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
                                                          null, null, 0, false));
-    final Spacer spacer5 = new Spacer();
-    panel2.add(spacer5,
+    final Spacer spacer6 = new Spacer();
+    panel2.add(spacer6,
                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                                    1, null, new Dimension(JBUIScale.scale(20), -1), null, 0, false));
-  }
-
-  /**
-   * @noinspection ALL
-   */
-  private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
-    if (currentFont == null) return null;
-    String resultName;
-    if (fontName == null) {
-      resultName = currentFont.getName();
-    }
-    else {
-      Font testFont = new Font(fontName, Font.PLAIN, 10);
-      if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
-        resultName = fontName;
-      }
-      else {
-        resultName = currentFont.getName();
-      }
-    }
-    return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
   }
 
   /**

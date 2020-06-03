@@ -18,7 +18,7 @@ import org.jetbrains.r.RBundle
 import java.awt.*
 import javax.swing.*
 
-class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComponent) {
+class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComponent, private val statusComponent: JComponent) {
   private val loadingPanel = JBLoadingPanel(BorderLayout(), parent).apply {
     startLoading()
   }
@@ -56,14 +56,12 @@ class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComp
 
   private fun createViewerComponent(viewer: RDataFrameViewer, errorCount: Int): JComponent {
     val scrollPane = JBScrollPane(createTableFrom(viewer))
-    return if (errorCount > 0) {
-      JPanel(BorderLayout()).apply {
-        val errorBar = createErrorBar(errorCount)
-        add(scrollPane, BorderLayout.CENTER)
-        add(errorBar, BorderLayout.SOUTH)
+    return JPanel(GridBagLayout()).apply {
+      addWithYWeight(scrollPane, 1.0)
+      if (errorCount > 0) {
+        addWithYWeight(createErrorBar(errorCount), 0.0)
       }
-    } else {
-      scrollPane
+      addWithYWeight(statusComponent, 0.0)
     }
   }
 
@@ -88,7 +86,17 @@ class RImportDataPreviewer(private val parent: Disposable, emptyComponent: JComp
   }
 
   companion object {
-    private val ERROR_LABEL_INSETS = JBInsets(4, 4, 4, 4)
+    private val ERROR_LABEL_INSETS = JBInsets(6, 8, 6, 8)
+
+    private fun JPanel.addWithYWeight(component: JComponent, yWeight: Double) {
+      val constraints = GridBagConstraints().apply {
+        fill = GridBagConstraints.BOTH
+        gridy = componentCount
+        weighty = yWeight
+        weightx = 1.0
+      }
+      add(component, constraints)
+    }
 
     private fun createParsingErrorsMessage(errorCount: Int): String {
       return RBundle.message("import.data.dialog.preview.parsing.errors", errorCount)
