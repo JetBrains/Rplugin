@@ -58,11 +58,38 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   private fun addJobsPanel(toolWindow: ToolWindow, project: Project) {
     val rJobsPanel = RJobPanel(project)
-    val content = ContentFactory.SERVICE.getInstance().createContent(rJobsPanel, "Jobs", false)
+    val content = ContentFactory.SERVICE.getInstance().createContent(rJobsPanel, RBundle.message("jobs.panel.title"), false)
+    rJobsPanel.jobsStatusCallback = { ongoing: Int, finished: Int, failed: Int ->
+      content.displayName = buildDisplayName(ongoing, finished, failed)
+    }
     content.putUserData(JOBS_CONTENT_KEY, Unit)
     content.executionId
     content.isCloseable = false
     toolWindow.contentManager.addContent(content)
+  }
+
+  private fun buildDisplayName(ongoing: Int, finished: Int, failed: Int): String {
+    val builder = StringBuilder()
+    builder.append(RBundle.message("jobs.panel.title"))
+    if (ongoing + finished + failed > 0) {
+      builder.append(": ")
+    }
+    if (ongoing > 0) {
+      builder.append(RBundle.message("jobs.panel.title.ongoing", ongoing))
+      if (finished + failed > 0) {
+        builder.append(", ")
+      }
+    }
+    if (finished > 0) {
+      builder.append(RBundle.message("jobs.panel.title.finished", finished))
+      if (failed > 0) {
+        builder.append(", ")
+      }
+    }
+    if (failed > 0) {
+      builder.append(RBundle.message("jobs.panel.title.failed", failed))
+    }
+    return builder.toString()
   }
 
   companion object {
@@ -176,11 +203,11 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val toolWindow = getRConsoleToolWindows(project) ?: return null
       val contentFactory = ContentFactory.SERVICE.getInstance()
       val panel = BorderLayoutPanel()
-      panel.addToCenter(JBLabel("Starting console...").apply {
+      panel.addToCenter(JBLabel(RBundle.message("console.starting.label.text")).apply {
         horizontalAlignment = SwingConstants.CENTER
         foreground = UIUtil.getInactiveTextColor()
       })
-      val content = contentFactory.createContent(panel, "Starting console", false)
+      val content = contentFactory.createContent(panel, RBundle.message("console.starting.title"), false)
       content.isCloseable = false
       content.putUserData(CONSOLE_PLACEHOLDER_KEY, Unit)
       val contentManager = toolWindow.contentManager

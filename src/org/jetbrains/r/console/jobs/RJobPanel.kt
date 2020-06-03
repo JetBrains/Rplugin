@@ -48,7 +48,15 @@ private interface SplitterApi {
   fun restoreDefaults()
 }
 
+typealias JobsStatusCallback = ((ongoing: Int, finished: Int, failed: Int) -> Unit)
+
 class RJobPanel(private val project: Project) : BorderLayoutPanel() {
+  var jobsStatusCallback: JobsStatusCallback?
+    get() = jobList.jobsStatusCallback
+    set(value) {
+      jobList.jobsStatusCallback = value
+    }
+
   private val runJob = ActionManager.getInstance().getAction("org.jetbrains.r.console.jobs.RunRJobAction")
   private val jbSplitter = OnePixelSplitter(false, 0.4f)
   private val toolbarActionGroup = DefaultActionGroup(AddJob(), RemoveCompletedJobs(), RerunJob())
@@ -185,6 +193,7 @@ private class JobList(private val splitter: SplitterApi,
 
   val jobEntities = ArrayList<JobEntity>()
   var currentlySelected : JobEntity? = null
+  var jobsStatusCallback: JobsStatusCallback? = null
 
   init {
     panel.background = backgroundColor()
@@ -212,6 +221,7 @@ private class JobList(private val splitter: SplitterApi,
 
     changeSelection(jobEntity)
     panel.add(emptyLabel, GridBag().weighty(1.0))
+    updateJobStatusCallback()
   }
 
   private fun installMouseListeners(panel: JPanel) {
@@ -269,6 +279,22 @@ private class JobList(private val splitter: SplitterApi,
     if (!jobEntity.jobDescriptor.processTerminated) {
       jobEntity.jobDescriptor.destroyProcess()
     }
+    updateJobStatusCallback()
+  }
+
+  fun updateJobStatusCallback() {
+    var ongoing = 0
+    var failed = 0
+    var finished = 0
+    for (jobEntity in jobEntities) {
+      val jobDescriptor = jobEntity.jobDescriptor
+      if (jobDescriptor.processTerminated) {
+        if (jobDescriptor.processFailed) failed += 1 else finished += 1
+      } else {
+        ongoing += 1
+      }
+    }
+    jobsStatusCallback?.invoke(ongoing, finished, failed)
   }
 
   private fun jobEntityCount() = panel.components.count { it is JobEntity }
@@ -361,6 +387,9 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
   }
 
   private fun updateCenterComponentsAfterTermination() {
+    invokeLater {
+      jobList.updateJobStatusCallback()
+    }
     invokeLater {
       remove(rightComponent)
       addToRight(createTerminationStatusBar())
