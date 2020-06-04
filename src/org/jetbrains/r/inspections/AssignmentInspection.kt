@@ -7,7 +7,6 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RAssignmentStatement
@@ -27,7 +26,7 @@ class AssignmentInspection : RInspection() {
   private inner class Visitor(private val myProblemHolder: ProblemsHolder) : RVisitor() {
     override fun visitAssignmentStatement(o: RAssignmentStatement) {
       if (!o.isEqual) return
-      myProblemHolder.registerProblem(PsiTreeUtil.findChildOfType(o, ROperator::class.java)!!,
+      myProblemHolder.registerProblem(o.children.first { it is ROperator },
                                       RBundle.message("inspection.assignment.description"),
                                       ProblemHighlightType.WARNING, AssignmentQuickFix)
     }

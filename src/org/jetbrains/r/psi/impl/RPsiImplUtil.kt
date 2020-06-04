@@ -58,7 +58,7 @@ internal object RPsiImplUtil {
 
   @JvmStatic
   fun isEqual(assignment: RAssignmentStatement): Boolean {
-    return PsiTreeUtil.findChildOfType(assignment, ROperator::class.java)?.node?.findChildByType(R_EQ) != null
+    return assignment.children.firstOrNull { it is ROperator }?.node?.findChildByType(R_EQ) != null
   }
 
   @JvmStatic

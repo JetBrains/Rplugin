@@ -38,6 +38,8 @@ class AssignmentInspectionTest : RInspectionTest() {
       
       # named argument 
       print("a", quote = F)
+      print("a", quote = F) -> a
+      a <- print("a", quote = F)
     """.trimIndent())
   }
 
