@@ -259,6 +259,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
   }
 
   private fun runHelper(helper: File, args: List<String> = emptyList()): List<String> {
+    RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.blockingGet(Int.MAX_VALUE)
     val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
     return if (interpreterPath.isNotBlank()) {
       RInterpreterUtil.runHelper(interpreterPath, helper, project.basePath, args).lines()

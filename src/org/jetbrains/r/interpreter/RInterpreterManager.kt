@@ -25,6 +25,7 @@ import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
@@ -37,6 +38,8 @@ import org.jetbrains.r.statistics.RStatistics
 interface RInterpreterManager {
   val interpreter: RInterpreter?
   val interpreterPath: String
+  val interpreterPathValidatedPromise: Promise<Unit>
+
   /**
    *  true if skeletons update was performed at least once.
    */
@@ -64,6 +67,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   @Volatile
   override var interpreterPath: String = fetchInterpreterPath()
     private set
+  override var interpreterPathValidatedPromise: Promise<Unit> = checkInterpreterPath(interpreterPath).then { if (!it) interpreterPath = "" }
   private var asyncPromise = AsyncPromise<Unit>()
   private var initialized = false
   private var rInterpreter: RInterpreterImpl? = null
@@ -76,22 +80,15 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   }
 
 
-  private fun fetchInterpreterPath(oldPath: String = ""): String {
+  private fun fetchInterpreterPath(): String {
     return if (ApplicationManager.getApplication().isUnitTestMode) {
       RInterpreterUtil.suggestHomePath()
     } else {
-      val settings = RSettings.getInstance(project)
-      val suggestedPath = settings.interpreterPath
-      if (checkInterpreterPath(suggestedPath)) {
-        suggestedPath
-      } else {
-        settings.interpreterPath = oldPath
-        oldPath
-      }
+      RSettings.getInstance(project).interpreterPath
     }
   }
 
-  private fun checkInterpreterPath(path: String): Boolean {
+  private fun checkInterpreterPath(path: String): Promise<Boolean> = runAsync {
     val (isViable, e) = try {
       Pair(path.isNotBlank() && RInterpreterUtil.getVersionByPath(path) != null, null)
     } catch (e: Exception) {
@@ -107,7 +104,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       }
       RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
     }
-    return isViable
+    isViable
   }
 
   private fun ensureActiveInterpreterStored() {
@@ -128,7 +125,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       if (force) {
         rInterpreter = null
         asyncPromise = AsyncPromise()
-        interpreterPath = fetchInterpreterPath(interpreterPath)
+        val oldInterpreterPath = interpreterPath
+        interpreterPath = fetchInterpreterPath()
+        interpreterPathValidatedPromise = checkInterpreterPath(interpreterPath).then { if (!it) interpreterPath = oldInterpreterPath }
       }
       if (!initialized) {
         RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
@@ -136,13 +135,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         }
       }
       initialized = true
-      if (interpreterPath != "") {
-        setupInterpreter(asyncPromise)
-        return asyncPromise
-      }
+      setupInterpreter(asyncPromise)
+      return asyncPromise
     }
-    asyncPromise.setError("Cannot initialize interpreter")
-    return asyncPromise
   }
 
   override val interpreter: RInterpreter?
@@ -150,6 +145,11 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun setupInterpreter(promise: AsyncPromise<Unit>) {
     runBackgroundableTask("Initializing R interpreter", project) {
+      interpreterPathValidatedPromise.blockingGet(Int.MAX_VALUE)!!
+      if (interpreterPath == "") {
+        promise.setError("Cannot initialize interpreter")
+        return@runBackgroundableTask
+      }
       val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
       RInterpreterImpl(versionInfo, interpreterPath, project).let {
         rInterpreter = it

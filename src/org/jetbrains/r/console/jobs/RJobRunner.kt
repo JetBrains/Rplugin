@@ -16,6 +16,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
@@ -36,21 +37,23 @@ class RJobRunner(private val project: Project) {
     RInterpreterManager.getInstance(project).interpreterPath.isNotEmpty()
 
   @TestOnly
-  internal fun run(task: RJobTask): ProcessHandler {
+  internal fun run(task: RJobTask): Promise<ProcessHandler> {
     check(canRun())
     invokeAndWaitIfNeeded { FileDocumentManager.getInstance().saveAllDocuments() }
     val rConsoleManager = RConsoleManager.getInstance(project)
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
-    val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-    val (scriptFile, exportRDataFile) = generateRunScript(task, rInterop)
-    val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, scriptFile, emptyList())
-    val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, task.workingDirectory)
-    val osProcessHandler = OSProcessHandler(commandLine)
-    if (exportRDataFile != null) {
-      installProcessListener(osProcessHandler, exportRDataFile, console, task)
+    return RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.then {
+      val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
+      val (scriptFile, exportRDataFile) = generateRunScript(task, rInterop)
+      val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, scriptFile, emptyList())
+      val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, task.workingDirectory)
+      val osProcessHandler = OSProcessHandler(commandLine)
+      if (exportRDataFile != null) {
+        installProcessListener(osProcessHandler, exportRDataFile, console, task)
+      }
+      osProcessHandler
     }
-    return osProcessHandler
   }
 
   private fun installProcessListener(osProcessHandler: OSProcessHandler,
@@ -96,18 +99,19 @@ class RJobRunner(private val project: Project) {
   }
 
   fun runRJob(task: RJobTask) {
-    val processHandler = run(task)
-    val consoleView = ConsoleViewImpl(project, true)
-    consoleView.attachToProcess(processHandler)
-    val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
-    val rJobProgressProvider = RJobProgressProvider()
-    val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
-    setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
-    val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView)
-    processHandler.startNotify()
-    invokeLater {
-      RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
-      RConsoleToolWindowFactory.focusOnJobs(project)
+    run(task).then { processHandler ->
+      val consoleView = ConsoleViewImpl(project, true)
+      consoleView.attachToProcess(processHandler)
+      val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
+      val rJobProgressProvider = RJobProgressProvider()
+      val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
+      setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
+      val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView)
+      processHandler.startNotify()
+      invokeLater {
+        RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+        RConsoleToolWindowFactory.focusOnJobs(project)
+      }
     }
   }
 

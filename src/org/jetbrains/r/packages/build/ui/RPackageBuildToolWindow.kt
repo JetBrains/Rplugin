@@ -155,14 +155,16 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
 
   private fun runProcessAsync(processHandlerSupplier: (String) -> CapturingProcessHandler): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-      val processHandler = processHandlerSupplier(interpreterPath)
-      currentProcessHandler = processHandler
-      processHandler.addProcessListener(createProcessListener(promise))
-      runInEdt {
-        consoleView.attachToProcess(processHandler)
-        consoleView.scrollToEnd()
-        processHandler.startNotify()
+      RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.onSuccess {
+        val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
+        val processHandler = processHandlerSupplier(interpreterPath)
+        currentProcessHandler = processHandler
+        processHandler.addProcessListener(createProcessListener(promise))
+        runInEdt {
+          consoleView.attachToProcess(processHandler)
+          consoleView.scrollToEnd()
+          processHandler.startNotify()
+        }
       }
     }
   }

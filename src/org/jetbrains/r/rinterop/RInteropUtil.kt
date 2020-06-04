@@ -183,6 +183,7 @@ object RInteropUtil {
 
   private fun runRWrapper(project: Project): Promise<Pair<ColoredProcessHandler, RPaths>> {
     val result = AsyncPromise<Pair<ColoredProcessHandler, RPaths>>()
+    RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.blockingGet(Int.MAX_VALUE)
     val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
     if (StringUtil.isEmptyOrSpaces(interpreterPath)) {
       return rejectedPromise(RuntimeException(RBundle.message("console.runner.interpreter.not.specified")))

@@ -7,6 +7,7 @@ package org.jetbrains.r.mock
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 
@@ -21,6 +22,8 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
 
   override val interpreterPath: String
     get() = interpreter?.interpreterPath ?: ""
+
+  override val interpreterPathValidatedPromise = resolvedPromise(Unit)
 
   override val interpreter: RInterpreter? = MockInterpreter(project, MockInterpreterProvider.DUMMY)
 
