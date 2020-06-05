@@ -1,8 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="false">
   <name>R Language for IntelliJ</name>
+  <vendor>JetBrains</vendor>
   <id>R4Intellij</id>
-  <version>2020.2-SNAPSHOT</version>
-  <idea-version since-build="201.0.0"/>
-  <depends>org.intellij.datavis.r.inlays.visualisation</depends>
   <xi:include href="/META-INF/plugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

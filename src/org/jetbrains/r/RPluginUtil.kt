@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 object RPluginUtil {
   const val PLUGIN_ID = "R4Intellij"
+  private const val PLUGIN_NAME = "rplugin"
 
   fun getPlugin(): IdeaPluginDescriptor = PluginManager.getPlugin(PluginId.getId(PLUGIN_ID))!!
 
@@ -22,8 +23,8 @@ object RPluginUtil {
 
   val helpersPath: String
     get() {
-     return Paths.get(PathManager.getPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?: Paths.get(
-        PathManager.getPreInstalledPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?: Paths.get(
-        RPluginUtil::class.java.getProtectionDomain().getCodeSource().getLocation().toURI().path, "..").toString()
+     return Paths.get(PathManager.getPluginsPath(), PLUGIN_NAME).takeIf { it.exists() }?.toString() ?:
+            Paths.get(PathManager.getPreInstalledPluginsPath(), PLUGIN_NAME).takeIf { it.exists() }?.toString()
+            ?: throw IllegalStateException("Cannot find rplugin directory")
     }
 }

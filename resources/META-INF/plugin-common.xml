@@ -1,7 +1,8 @@
 <idea-plugin allow-bundled-update="true">
     <!-- ensure compatibility with all intellij products-->
     <depends>com.intellij.modules.lang</depends>
-    <depends optional="true" config-file="python-deps.xml">com.intellij.modules.python</depends>
+    <depends optional="true" config-file="plugin-python.xml">com.intellij.modules.python</depends>
+    <depends>org.intellij.datavis.r.inlays.visualisation</depends>
     <depends>com.intellij.modules.xdebugger</depends>
     <depends>org.intellij.plugins.markdown</depends>
 
@@ -678,6 +679,9 @@ You can find the source code in the following repositories:
         <!-- Project generators -->
         <moduleType id="R_MODULE" implementationClass="org.jetbrains.r.projectGenerator.builder.RModuleType"/>
         <projectTemplatesFactory implementation="org.jetbrains.r.projectGenerator.template.RTemplatesFactory" />
+
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.REmptyProjectGenerator"/>
+        <directoryProjectGenerator implementation="org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator"/>
 
         <datavis.inlays.inlayDescriptorProvider implementation="org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider"/>
         <datavis.r.inlays.components.graphicsManagerProvider implementation="org.jetbrains.r.rendering.chunk.ChunkGraphicsManagerProvider"/>
