@@ -152,7 +152,7 @@ class PositionHelper implements PropertyChangeListener {
                     // this way, it can be recovered if the position changes
                     view.setVisible(location != Position.REPLACE);
                     ((JTableHeader)view).setOpaque(false);
-                    ((JTableHeader)view).setBackground(Gray.TRANSPARENT);
+                    view.setBackground(Gray.TRANSPARENT);
                     filterHeader.add(view, location == Position.INLINE ? BorderLayout.NORTH : BorderLayout.SOUTH);
                     filterHeader.revalidate();
                     super.setView(filterHeader);

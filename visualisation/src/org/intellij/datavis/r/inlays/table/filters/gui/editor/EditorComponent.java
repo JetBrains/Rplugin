@@ -412,7 +412,7 @@ class EditorComponent extends JTextField {
             ChoiceMatch match = new ChoiceMatch();
             if (content instanceof CustomChoice) {
                 // never escape custom choices
-                text = ((CustomChoice) content).toString();
+                text = content.toString();
                 match.content = content;
             } else {
                 if (content instanceof String) {
