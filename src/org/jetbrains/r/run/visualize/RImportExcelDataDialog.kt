@@ -32,33 +32,16 @@ class RImportExcelDataDialog private constructor(project: Project, interop: RInt
   override val importOptionComponent: JComponent
     get() = form.contentPane
 
-  override val additionalOptions: Map<String, String>?
+  override val importOptions: RImportOptions?
     get() = range?.let { range ->
-      maxRowCount?.let { maxCount ->
-        skipRowCount?.let { skipCount ->
-          mutableMapOf<String, String>().also { options ->
-            if (range.isNotBlank()) {
-              options["range"] = range.quote()
-            } else {
-              options["skip"] = "$skipCount"
-              if (maxCount >= 0) {  // Note: will be (-1) when not set
-                options["nMax"] = "$maxCount"
-              }
-            }
-            if (na.isNotBlank()) {
-              options["na"] = na.quote()
-            }
-            sheet?.let { sheet ->
-              options["sheet"] = sheet.quote()
-            }
-            options["columnNames"] = firstRowAsNames.toRBoolean()
-          }
+      maxRowCount?.let { maxRowCount ->
+        skipRowCount?.let { skipRowCount ->
+          collectOptions(firstRowAsNames, sheet, range, maxRowCount, skipRowCount, na)
         }
       }
     }
 
   override val supportedFormats = RImportDataUtil.supportedExcelFormats
-  override val importMode = "xls"
 
   init {
     init()
@@ -152,7 +135,7 @@ class RImportExcelDataDialog private constructor(project: Project, interop: RInt
   }
 
   companion object {
-    private const val SHEET_VARIABLE_NAME = "$PREVIEW_VARIABLE_NAME\$options\$sheets"
+    private const val SHEET_VARIABLE_NAME = "${RDataImporter.PREVIEW_VARIABLE_NAME}\$options\$sheets"
     private const val RANGE_HINT = "A1:D10"
 
     private val INVALID_RANGE_MESSAGE = RBundle.message("import.data.dialog.invalid.range.input.message")
@@ -164,6 +147,34 @@ class RImportExcelDataDialog private constructor(project: Project, interop: RInt
       initialPath.orChooseFile(project, RImportDataUtil.supportedExcelFormats)?.let { path ->
         RImportExcelDataDialog(project, interop, parent, path).show()
       }
+    }
+
+    fun collectOptions(
+      firstRowAsNames: Boolean = true,
+      sheet: String? = null,
+      range: String = "",
+      maxRowCount: Int = -1,
+      skipRowCount: Int = 0,
+      na: String = ""
+    ): RImportOptions {
+      val additional = mutableMapOf<String, String>().also { options ->
+        if (range.isNotBlank()) {
+          options["range"] = range.quote()
+        } else {
+          options["skip"] = "$skipRowCount"
+          if (maxRowCount >= 0) {  // Note: will be (-1) when not set
+            options["nMax"] = "$maxRowCount"
+          }
+        }
+        if (na.isNotBlank()) {
+          options["na"] = na.quote()
+        }
+        sheet?.let { sheet ->
+          options["sheet"] = sheet.quote()
+        }
+        options["columnNames"] = firstRowAsNames.toRBoolean()
+      }
+      return RImportOptions("xls", additional)
     }
   }
 }

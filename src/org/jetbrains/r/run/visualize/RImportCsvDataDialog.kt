@@ -28,31 +28,12 @@ class RImportCsvDataDialog private constructor(project: Project, interop: RInter
 
   override val importOptionComponent: JComponent = form.contentPane
 
-  override val additionalOptions: Map<String, String>?
-    get() = skipRowCount?.let { skipCount ->
-      mutableMapOf<String, String>().also { options ->
-        options["skip"] = skipCount.toString()
-        options["columnNames"] = firstRowAsNames.toRBoolean()
-        options["trimSpaces"] = trimSpaces.toRBoolean()
-        options["delimiter"] = delimiter.quote()
-        if (quotes != QuoteKind.DEFAULT) {
-          options["quotes"] = quotes.toChar().quote()
-        }
-        if (form.escapeComboBox.isEnabled) {
-          options["escapeBackslash"] = escape.let { it == EscapeKind.BACKSLASH || it == EscapeKind.BOTH }.toRBoolean()
-          options["escapeDouble"] = escape.let { it == EscapeKind.DOUBLE || it == EscapeKind.BOTH }.toRBoolean()
-        }
-        comment?.let { comment ->
-          options["comments"] = comment.quote()
-        }
-        na?.let { na ->
-          options["na"] = na.quote()
-        }
-      }
+  override val importOptions: RImportOptions?
+    get() = skipRowCount?.let { skipRowCount ->
+      collectOptions(skipRowCount, firstRowAsNames, trimSpaces, delimiter, quotes, escape, comment, na)
     }
 
   override val supportedFormats = RImportDataUtil.supportedTextFormats
-  override val importMode = "text"
 
   init {
     init()
@@ -61,10 +42,10 @@ class RImportCsvDataDialog private constructor(project: Project, interop: RInter
   override fun updateOkAction() {
     super.updateOkAction()
     isOKActionEnabled = isOKActionEnabled && skipRowCount != null
-    form.escapeComboBox.isEnabled = delimiter.let { it != ',' && it != ' ' }
+    form.escapeComboBox.isEnabled = isEscapeEnabledFor(delimiter)
   }
 
-  private enum class QuoteKind {
+  enum class QuoteKind {
     DEFAULT,
     DOUBLE,
     SINGLE,
@@ -79,7 +60,7 @@ class RImportCsvDataDialog private constructor(project: Project, interop: RInter
     }
   }
 
-  private enum class EscapeKind {
+  enum class EscapeKind {
     BACKSLASH,
     DOUBLE,
     BOTH,
@@ -140,6 +121,42 @@ class RImportCsvDataDialog private constructor(project: Project, interop: RInter
       initialPath.orChooseFile(project, RImportDataUtil.supportedTextFormats)?.let { path ->
         RImportCsvDataDialog(project, interop, parent, path).show()
       }
+    }
+
+    fun collectOptions(
+      skipRowCount: Int = 0,
+      firstRowAsNames: Boolean = true,
+      trimSpaces: Boolean = true,
+      delimiter: Char = ',',
+      quotes: QuoteKind = QuoteKind.DEFAULT,
+      escape: EscapeKind = EscapeKind.NONE,
+      comment: String? = null,
+      na: String? = null
+    ): RImportOptions {
+      val additional = mutableMapOf<String, String>().also { options ->
+        options["skip"] = skipRowCount.toString()
+        options["columnNames"] = firstRowAsNames.toRBoolean()
+        options["trimSpaces"] = trimSpaces.toRBoolean()
+        options["delimiter"] = delimiter.quote()
+        if (quotes != QuoteKind.DEFAULT) {
+          options["quotes"] = quotes.toChar().quote()
+        }
+        if (isEscapeEnabledFor(delimiter)) {
+          options["escapeBackslash"] = escape.let { it == EscapeKind.BACKSLASH || it == EscapeKind.BOTH }.toRBoolean()
+          options["escapeDouble"] = escape.let { it == EscapeKind.DOUBLE || it == EscapeKind.BOTH }.toRBoolean()
+        }
+        comment?.let { comment ->
+          options["comments"] = comment.quote()
+        }
+        na?.let { na ->
+          options["na"] = na.quote()
+        }
+      }
+      return RImportOptions("text", additional)
+    }
+
+    private fun isEscapeEnabledFor(delimiter: Char): Boolean {
+      return delimiter.let { it != ',' && it != ' ' }
     }
   }
 }

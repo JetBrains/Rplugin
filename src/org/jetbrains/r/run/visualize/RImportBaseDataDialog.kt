@@ -30,23 +30,10 @@ class RImportBaseDataDialog private constructor(project: Project, interop: RInte
 
   override val importOptionComponent: JComponent = form.contentPane
 
-  override val additionalOptions: Map<String, String>?
-    get() = mutableMapOf<String, String>().also { options ->
-      options["header"] = firstRowAsNames.toRBoolean()
-      options["stringsAsFactors"] = stringsAsFactors.toRBoolean()
-      options["encoding"] = encoding.quote()
-      rowNames?.let { rowNames ->
-        options["row.names"] = rowNames
-      }
-      options["sep"] = delimiter.quote()
-      options["dec"] = decimal.quote()
-      options["quote"] = quotes.quote()
-      options["comment.char"] = comment.quote()
-      options["na.strings"] = na.quote()
-    }
+  override val importOptions: RImportOptions?
+    get() = collectOptions(firstRowAsNames, stringsAsFactors, encoding, rowNames, delimiter, decimal, quotes, comment, na)
 
   override val supportedFormats = RImportDataUtil.supportedTextFormats
-  override val importMode = "base"
 
   init {
     init()
@@ -110,6 +97,33 @@ class RImportBaseDataDialog private constructor(project: Project, interop: RInte
       initialPath.orChooseFile(project, RImportDataUtil.supportedTextFormats)?.let { path ->
         RImportBaseDataDialog(project, interop, parent, path).show()
       }
+    }
+
+    fun collectOptions(
+      firstRowAsNames: Boolean = true,
+      stringsAsFactors: Boolean = true,
+      encoding: String = "unknown",
+      rowNames: String? = null,
+      delimiter: String = ",",
+      decimal: Char = '.',
+      quotes: String = "\"",
+      comment: String = "",
+      na: String = "NA"
+    ): RImportOptions {
+      val additional = mutableMapOf<String, String>().also { options ->
+        options["header"] = firstRowAsNames.toRBoolean()
+        options["stringsAsFactors"] = stringsAsFactors.toRBoolean()
+        options["encoding"] = encoding.quote()
+        rowNames?.let { rowNames ->
+          options["row.names"] = rowNames
+        }
+        options["sep"] = delimiter.quote()
+        options["dec"] = decimal.quote()
+        options["quote"] = quotes.quote()
+        options["comment.char"] = comment.quote()
+        options["na.strings"] = na.quote()
+      }
+      return RImportOptions("base", additional)
     }
   }
 }

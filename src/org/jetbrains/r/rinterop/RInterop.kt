@@ -24,6 +24,7 @@ import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
@@ -591,19 +592,19 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   fun previewDataImport(path: String, mode: String, rowCount: Int, additional: Map<String, String>): RIExecutionResult {
     val request = Service.PreviewDataImportRequest.newBuilder()
+      .setPath(FileUtil.toSystemIndependentName(path))
       .putAllOptions(additional)
       .setRowCount(rowCount)
       .setMode(mode)
-      .setPath(path)
       .build()
     return executeRequest(RPIServiceGrpc.getPreviewDataImportMethod(), request)
   }
 
   fun commitDataImport(name: String, path: String, mode: String, additional: Map<String, String>) {
     val request = Service.CommitDataImportRequest.newBuilder()
+      .setPath(FileUtil.toSystemIndependentName(path))
       .putAllOptions(additional)
       .setMode(mode)
-      .setPath(path)
       .setName(name)
       .build()
     execute(asyncStub::commitDataImport, request)

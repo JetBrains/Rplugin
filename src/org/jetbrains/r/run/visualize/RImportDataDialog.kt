@@ -19,7 +19,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -29,10 +28,8 @@ import com.intellij.ui.components.labels.LinkListener
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RRef
 import org.jetbrains.r.run.visualize.forms.RImportDataDialogForm
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
@@ -81,6 +78,7 @@ abstract class RImportDataDialog(
   }
 
   private val previewer = RImportDataPreviewer(parent, form.previewContentPanel, form.previewStatusPanel)
+  private val importer = RDataImporter(interop)
 
   private var filePath: String? = null
     set(path) {
@@ -105,12 +103,11 @@ abstract class RImportDataDialog(
   private var variableName by NameFieldDelegate(form.nameTextField)
   private var viewAfterImport by CheckBoxDelegate(form.viewAfterImportCheckBox)
 
-  private var currentOptions: ImportOptions? = null
+  private var currentConfiguration: RImportConfiguration? = null
 
   protected abstract val importOptionComponent: JComponent
-  protected abstract val additionalOptions: Map<String, String>?
+  protected abstract val importOptions: RImportOptions?
   protected abstract val supportedFormats: List<String>
-  protected abstract val importMode: String
 
   override fun init() {
     super.init()
@@ -174,11 +171,10 @@ abstract class RImportDataDialog(
 
   private fun importData() {
     variableName?.let { name ->
-      collectImportOptions()?.let { options ->
-        interop.commitDataImport(name, options.path, options.mode, options.additional)
+      collectImportConfiguration()?.let { configuration ->
+        val ref = importer.importData(name, configuration.path, configuration.options)
         updateEditorNotifications()
         if (viewAfterImport) {
-          val ref = RRef.expressionRef(name, interop)
           VisualizeTableHandler.visualizeTable(interop, ref, project, name)
         }
       }
@@ -203,22 +199,22 @@ abstract class RImportDataDialog(
     if (!form.optionPanel.isEnabled) {
       return
     }
-    collectImportOptions()?.let { options ->
-      if (options == currentOptions) {
+    collectImportConfiguration()?.let { configuration ->
+      if (configuration == currentConfiguration) {
         return
       }
       form.optionPanel.setEnabledRecursively(false)
       previewer.showLoading()
       updateOkAction()
-      prepareViewerAsync(options)
+      prepareViewerAsync(configuration)
         .onSuccess { (viewer, errorCount) ->
           previewer.showPreview(viewer, errorCount)
-          currentOptions = options
+          currentConfiguration = configuration
         }
         .onError { e ->
           LOGGER.warn("Unable to update preview", e)
           previewer.closePreview()
-          currentOptions = null
+          currentConfiguration = null
           showErrorDialog()
         }
         .onProcessed {
@@ -235,40 +231,22 @@ abstract class RImportDataDialog(
     }
   }
 
-  private fun prepareViewerAsync(options: ImportOptions): Promise<Pair<RDataFrameViewer, Int>> {
-    return preparePreviewRefAsync(options).thenAsync { (ref, errorCount) ->
+  private fun prepareViewerAsync(configuration: RImportConfiguration): Promise<Pair<RDataFrameViewer, Int>> {
+    return prepareViewerAsync(configuration.path, configuration.rowCount, configuration.options)
+  }
+
+  private fun prepareViewerAsync(path: String, rowCount: Int, options: RImportOptions): Promise<Pair<RDataFrameViewer, Int>> {
+    return importer.previewDataAsync(path, rowCount, options).thenAsync { (ref, errorCount) ->
       interop.dataFrameGetViewer(ref).then { viewer ->
         Pair(viewer, errorCount)
       }
     }
   }
 
-  private fun preparePreviewRefAsync(options: ImportOptions): Promise<Pair<RRef, Int>> {
-    return runAsync {
-      val result = interop.previewDataImport(options.path, options.mode, options.rowCount, options.additional)
-      val errorCount = parseErrorCount(result.stdout, result.stderr)
-      val ref = RRef.expressionRef(PREVIEW_DATA_VARIABLE_NAME, interop)
-      Pair(ref, errorCount)
-    }
-  }
-
-  private fun parseErrorCount(output: String, error: String): Int {
-    if (output.isBlank()) {
-      throw RuntimeException("Cannot get any output from interop\nStderr was: '$error'")
-    }
-    // Note: expected format
-    //  - for failure: "NULL"
-    //  - for success: "[1] errorCount\n"
-    if (output == "NULL" || output.length < 6 || !output.startsWith("[1]")) {
-      throw RuntimeException("Failed to preview data import.\nStdout was: '$output'\nStderr was: '$error'")
-    }
-    return output.substring(4, output.length - 1).toInt()
-  }
-
-  private fun collectImportOptions(): ImportOptions? {
+  private fun collectImportConfiguration(): RImportConfiguration? {
     return filePath?.let { path ->
-      additionalOptions?.let { additional ->
-        ImportOptions(FileUtil.toSystemIndependentName(path), importMode, previewRowCount, additional)
+      importOptions?.let { options ->
+        RImportConfiguration(path, previewRowCount, options)
       }
     }
   }
@@ -448,13 +426,11 @@ abstract class RImportDataDialog(
 
   protected data class ComboBoxEntry<V>(val representation: String, val value: V)
 
-  private data class ImportOptions(val path: String, val mode: String, val rowCount: Int, val additional: Map<String, String>)
+  private data class RImportConfiguration(val path: String, val rowCount: Int, val options: RImportOptions)
 
   companion object {
     private const val DEFAULT_PREVIEW_HEAD = 50
     private val PREVIEW_HEAD_VALUES = (1..10).map { it * 10 }
-    const val PREVIEW_VARIABLE_NAME = ".jetbrains\$previewDataImportResult"
-    private const val PREVIEW_DATA_VARIABLE_NAME = "$PREVIEW_VARIABLE_NAME\$data"
 
     private val LOGGER = Logger.getInstance(RImportCsvDataDialog::class.java)
 
