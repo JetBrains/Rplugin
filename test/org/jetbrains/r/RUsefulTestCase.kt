@@ -216,6 +216,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       roxygen2
       ggplot2
       tibble
+      readxl
+      readr
     """.trimIndent().split("\n").toSet()
 
     fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 300): T? {
