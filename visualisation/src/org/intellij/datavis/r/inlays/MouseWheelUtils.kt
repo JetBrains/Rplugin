@@ -8,9 +8,12 @@ import com.intellij.ide.ui.LafManager
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.ui.ComponentUtil
+import com.intellij.util.ui.MouseEventAdapter
 import java.awt.Component
 import java.awt.event.MouseWheelEvent
 import java.awt.event.MouseWheelListener
+import javax.swing.JComponent
 import javax.swing.JScrollPane
 
 
@@ -34,24 +37,11 @@ object MouseWheelUtils {
                                           private val listeners: Array<MouseWheelListener>) : MouseWheelListener {
 
     override fun mouseWheelMoved(e: MouseWheelEvent) {
-
-      var cannotScroll = false
-
-      if (component is JScrollPane) {
-        val scrollBar = component.verticalScrollBar
-        if (e.preciseWheelRotation < 0 && scrollBar.value == scrollBar.minimum ||
-            e.preciseWheelRotation > 0 && scrollBar.value == scrollBar.maximum - scrollBar.model.extent) {
-          cannotScroll = true
-        }
+      for (listener in listeners) {
+        listener.mouseWheelMoved(e)
       }
-
-      if (cannotScroll || isEditorOwns()) {
-        component.parent.dispatchEvent(e)
-      }
-      else {
-        for (listener in listeners) {
-          listener.mouseWheelMoved(e)
-        }
+      if (!e.isConsumed) {
+        MouseEventAdapter.redispatch(e, ComponentUtil.getParentOfType(JScrollPane::class.java, component.parent))
       }
     }
   }
@@ -59,21 +49,10 @@ object MouseWheelUtils {
   private class EditorMouseWheelListenerWrapper(private val listeners: Array<MouseWheelListener>) : MouseWheelListener {
 
     override fun mouseWheelMoved(e: MouseWheelEvent) {
-      editorScrolls()
       for (listener in listeners) {
         listener.mouseWheelMoved(e)
       }
     }
-  }
-
-  private var lastTimestamp: Long = 0
-
-  fun isEditorOwns(): Boolean {
-    return System.currentTimeMillis() - lastTimestamp < 800
-  }
-
-  fun editorScrolls() {
-    lastTimestamp = System.currentTimeMillis()
   }
 
   fun wrapEditorMouseWheelListeners(editor: EditorImpl) {
@@ -92,7 +71,7 @@ object MouseWheelUtils {
 
     addListener(editor.scrollPane)
 
-    LafManager.getInstance().addLafManagerListener( LafManagerListener { addListener(editor.scrollPane) }, editor.disposable)
+    LafManager.getInstance().addLafManagerListener(LafManagerListener { addListener(editor.scrollPane) }, editor.disposable)
   }
 
   fun wrapMouseWheelListeners(component: Component, disposable: Disposable?) {
