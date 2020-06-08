@@ -20,8 +20,10 @@ object RPluginUtil {
   fun findFileInRHelpers(relativePath: String): File =
     Paths.get(helpersPath, relativePath).toFile()
 
-  val helpersPath =
-    Paths.get(PathManager.getPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?:
-    Paths.get(PathManager.getPreInstalledPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?:
-    Paths.get(RPluginUtil::class.java.getProtectionDomain().getCodeSource().getLocation().toURI().path, "..").toString()
+  val helpersPath: String
+    get() {
+     return Paths.get(PathManager.getPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?: Paths.get(
+        PathManager.getPreInstalledPluginsPath(), "rplugin").takeIf { it.exists() }?.toString() ?: Paths.get(
+        RPluginUtil::class.java.getProtectionDomain().getCodeSource().getLocation().toURI().path, "..").toString()
+    }
 }

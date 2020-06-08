@@ -23,7 +23,6 @@ import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.xml.bind.ValidationException
 
 class RPackageManagerGroupPanel(name: String,
                                 panelIcon: Icon?,
@@ -92,7 +91,7 @@ class RPackageManagerGroupPanel(name: String,
       try {
         panel.updatePackratSettings(rProjectSettings.interpreterPath!!)
       }
-      catch (e: ValidationException) {
+      catch (e: IllegalStateException) {
         e.message?.let { return listOf(ValidationInfo(it)) }
       }
     }

@@ -8,7 +8,6 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.*
-import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
@@ -69,7 +68,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     currentConsoleView = consoleView
     val rMarkdownConsolePanel = JPanel(BorderLayout())
     rMarkdownConsolePanel.add(consoleView.component, BorderLayout.CENTER)
-    val title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
+    val title = consoleTitle
     val contentDescriptor = RunContentDescriptor(consoleView, processHandler, rMarkdownConsolePanel, title)
     contentDescriptor.setFocusComputable { consoleView.preferredFocusableComponent }
     contentDescriptor.isAutoFocusContent = true

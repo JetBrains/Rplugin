@@ -7,9 +7,9 @@ package org.jetbrains.r.hints
 import com.intellij.codeHighlighting.*
 import com.intellij.codeInsight.hints.InlayHintsSettings
 import com.intellij.codeInsight.hints.InlayParameterHintsExtension
-import com.intellij.diff.util.DiffUtil
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.EditorKind
 import com.intellij.openapi.editor.LineExtensionInfo
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.markup.TextAttributes
@@ -43,7 +43,7 @@ class RReturnHintPass(private val file: PsiFile,
 
     val rCodeHintsModel = RReturnHintsModel.getInstance(myProject)
     val provider = InlayParameterHintsExtension.forLanguage(RLanguage.INSTANCE)
-    if (provider == null || DiffUtil.isDiffEditor(myEditor)) {
+    if (provider == null || myEditor.editorKind == EditorKind.DIFF) {
       rCodeHintsModel.clearDocumentInfo(myDocument)
       return
     }

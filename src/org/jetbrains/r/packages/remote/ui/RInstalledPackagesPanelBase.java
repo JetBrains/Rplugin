@@ -8,7 +8,10 @@ import com.google.common.collect.Lists;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.browsers.BrowserLauncher;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionToolbarPosition;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonShortcuts;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
@@ -36,16 +39,16 @@ import com.intellij.util.CatchingConsumer;
 import com.intellij.util.IJSwingUtilities;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.messages.MessageBusConnection;
+import com.intellij.util.ui.GraphicsUtil;
 import com.intellij.util.ui.StatusText;
 import com.intellij.util.ui.UIUtil;
-import com.intellij.util.ui.UIUtilities;
 import com.intellij.webcore.packaging.*;
+import org.intellij.datavis.r.ui.ToolbarUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
 import org.jetbrains.r.rinterop.RInteropKt;
-import org.intellij.datavis.r.ui.ToolbarUtil;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -257,11 +260,11 @@ public class RInstalledPackagesPanelBase extends JPanel {
   private void initColumnWidth() {
     TableColumnModel model = myPackagesTable.getColumnModel();
     int singleIconWidth = JBUIScale.scale(20);
-    int versionMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "1.2.3.4");
-    int versionMaxWidth  = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "1.2.3.9999.1.2.3");
-    int packageMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "ggplot2");
-    int packageMaxWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "veryVeryLongPackageName");
-    int descriptionMinWidth = UIUtilities.stringWidth(this, getFontMetrics(getFont()), "very short package description");
+    int versionMinWidth = GraphicsUtil.stringWidth("1.2.3.4", getFont());
+    int versionMaxWidth = GraphicsUtil.stringWidth("1.2.3.9999.1.2.3", getFont());
+    int packageMinWidth = GraphicsUtil.stringWidth("ggplot2", getFont());
+    int packageMaxWidth = GraphicsUtil.stringWidth("veryVeryLongPackageName", getFont());
+    int descriptionMinWidth = GraphicsUtil.stringWidth("very short package description", getFont());
     model.getColumn(IS_LOADED_COLUMN).setMinWidth(singleIconWidth * 3 / 2);
     model.getColumn(IS_LOADED_COLUMN).setMaxWidth(singleIconWidth * 3 / 2);
     model.getColumn(PACKAGE_NAME_COLUMN).setMinWidth(packageMinWidth);
@@ -685,7 +688,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
     @Override
     protected @NotNull Rectangle getTextBounds() {
-      int width = UIUtilities.stringWidth(this, getFontMetrics(getFont()), getText());
+      int width = GraphicsUtil.stringWidth(getText(), getFont());
       return new Rectangle(0, 0, width, 0);
     }
 

@@ -9,6 +9,7 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
+import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.UnixProcessManager
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
@@ -395,7 +396,7 @@ class RConsoleView(val rInterop: RInterop,
         if (SystemInfo.isWindows) {
           WinProcess(console.rInterop.processHandler.process).sendCtrlC()
         } else {
-          UnixProcessManager.sendSignal(console.rInterop.processHandler.process.pid().toInt(), UnixProcessManager.SIGABRT)
+          UnixProcessManager.sendSignal(OSProcessUtil.getProcessID(console.rInterop.processHandler.process), UnixProcessManager.SIGABRT)
         }
       }
     }

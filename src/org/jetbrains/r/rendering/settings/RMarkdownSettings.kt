@@ -4,12 +4,12 @@
 
 package org.jetbrains.r.rendering.settings
 
-import com.intellij.history.core.Paths
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.project.Project
+import java.io.File
 
 @State(name="RMarkdownSettings")
 class RMarkdownSettings: SimplePersistentStateComponent<RMarkdownSettingsState>(RMarkdownSettingsState()) {
@@ -49,7 +49,7 @@ class RMarkdownSettingsState: BaseState() {
   private fun RMarkdownRenderProfile.ensureNotBlankDirectory(path: String): RMarkdownRenderProfile {
     return this.also {
       if (it.knitRootDirectory.isBlank()) {
-        it.knitRootDirectory = Paths.getParentOf(path)
+        it.knitRootDirectory = File(path).parent
         incrementModificationCount()
       }
     }

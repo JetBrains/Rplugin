@@ -7,14 +7,13 @@ package org.jetbrains.r.projectGenerator.panel.packageManager
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import java.util.*
-import javax.xml.bind.ValidationException
 
 private val SCRIPT_PATH = RPluginUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
 
 fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
   val stdout = RInterpreterUtil.runHelper(rScriptPath, SCRIPT_PATH, null, emptyList()) {
-    throw ValidationException(it.stderr)
+    throw IllegalStateException(it.stderr)
   }
 
   val packratOptions = stdout.filter { it != '>' }.split("$").drop(1)

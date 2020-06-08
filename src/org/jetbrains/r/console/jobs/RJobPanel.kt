@@ -28,7 +28,6 @@ import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.UIUtil
-import com.intellij.util.ui.UIUtilities
 import com.intellij.util.ui.components.BorderLayoutPanel
 import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang.time.DurationFormatUtils
@@ -436,8 +435,9 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     val unbounded = paintUnbounded
     try {
       val logoWidth = rLogo.width + rLogo.insets.left + rLogo.insets.right
-      val filenameWidth = UIUtilities.stringWidth(this, getFontMetrics(font), filename)
-      val directoryNameWidth = UIUtilities.stringWidth(this, getFontMetrics(font), directoryName)
+      val fm = graphics.getFontMetrics(graphics.font)
+      val filenameWidth = fm.stringWidth(filename)
+      val directoryNameWidth = fm.stringWidth(directoryName)
 
       val firstTextWidth = if (unbounded) filenameWidth else width - rLogo.width - LOGO_OFFSET
       val secondTextWidth = if (unbounded) directoryNameWidth else width - (logoWidth + filenameWidth + LOGO_OFFSET * 2)

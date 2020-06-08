@@ -14,7 +14,6 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.process.ProcessTerminatedListener
-import com.intellij.execution.runners.ConsoleTitleGen
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
@@ -23,7 +22,6 @@ import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.keymap.impl.KeyProcessorContext
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -51,8 +49,6 @@ import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.jvm.isAccessible
 
 class RConsoleRunner(private val project: Project,
                      private val workingDir: String,
@@ -141,12 +137,9 @@ class RConsoleRunner(private val project: Project,
   }
 
   private fun createContentDescriptorAndActions() {
-    // TODO rework in 2020.1
-    val historyController = object : ConsoleHistoryController(RConsoleRootType.instance, "", consoleView) {
-      val getActions = KeyProcessorContext::class.memberFunctions.find { it.name == "getActions" }!!.also { it.isAccessible = true }
-    }
+    val historyController = ConsoleHistoryController(RConsoleRootType.instance, "", consoleView)
     // lets trigger getComponent to create the Editor
-    consoleView.getComponent()
+    consoleView.component
     historyController.install()
     val executeAction = createConsoleExecAction()
     val interruptAction = createInterruptAction(consoleView)
@@ -181,8 +174,7 @@ class RConsoleRunner(private val project: Project,
     panel.add(consoleView.component, BorderLayout.CENTER)
 
     actionToolbar.setTargetComponent(panel)
-    val title = ConsoleTitleGen(project, consoleTitle, false).makeTitle()
-    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, title, RFileType.icon)
+    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, "", RFileType.icon)
 
     contentDescriptor.setFocusComputable { consoleView.consoleEditor.contentComponent }
     contentDescriptor.isAutoFocusContent = true

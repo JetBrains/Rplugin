@@ -4,12 +4,9 @@
 
 package org.jetbrains.r.run.viewer.ui
 
-import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.javafx.JavaFxHtmlPanel
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.EmptyComponentPanel
-import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
@@ -23,16 +20,6 @@ import javax.swing.border.EmptyBorder
 class RViewerPanel {
   private val label = JLabel(NO_CONTENT, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
-
-  private val htmlPanel: ExtendedJavaFxHtmlPanel by lazy {
-    // Lazy evaluation prevents JavaFxHtmlPanel ctor from throwing
-    // "Write-unsafe context!" exception
-    ExtendedJavaFxHtmlPanel().also {
-      Disposer.get("ui")?.let { uiParent ->
-        Disposer.register(uiParent, it)
-      }
-    }
-  }
 
   private val multilineLabel = MultilineLabel().apply {
     border = EmptyBorder(JBUI.insets(5))
@@ -57,9 +44,10 @@ class RViewerPanel {
 
   private fun loadHtmlOrText(file: File, qualifiedUrl: String): Promise<Unit> {
     return if (file.extension.isNotEmpty()) {
-      htmlPanel.load(qualifiedUrl).onSuccess {
-        rootPanel.contentComponent = htmlPanel.component
-      }
+      //htmlPanel.load(qualifiedUrl).onSuccess {
+      //  rootPanel.contentComponent = htmlPanel.component
+      //}
+      resolvedPromise()
     } else {
       multilineLabel.text = file.readText()
       rootPanel.contentComponent = multilineScrollPane
@@ -74,26 +62,6 @@ class RViewerPanel {
   private fun closeViewer(text: String) {
     label.text = text
     rootPanel.contentComponent = null
-  }
-
-  private class ExtendedJavaFxHtmlPanel : JavaFxHtmlPanel() {
-    fun load(url: String): Promise<Unit> {
-      return AsyncPromise<Unit>().also {
-        runInPlatformWhenAvailable {
-          webViewGuaranteed.engine.load(url)
-          it.setResult(Unit)
-        }
-      }
-    }
-
-    fun loadText(text: String): Promise<Unit> {
-      return AsyncPromise<Unit>().also {
-        runInPlatformWhenAvailable {
-          webViewGuaranteed.engine.loadContent(text, "text/plain")
-          it.setResult(Unit)
-        }
-      }
-    }
   }
 
   private class MultilineLabel(text: String = "") : JTextArea(text) {

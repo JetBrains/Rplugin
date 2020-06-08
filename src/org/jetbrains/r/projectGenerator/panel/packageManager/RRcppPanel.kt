@@ -9,9 +9,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.layout.*
-import org.jdesktop.swingx.VerticalLayout
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
+import java.awt.BorderLayout
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 
@@ -51,7 +51,7 @@ class RRcppPanel(rProjectSettings: RProjectSettings) : RRcppPackageManagerPanel(
     get() = "Rcpp"
 
   init {
-    layout = VerticalLayout()
+    layout = BorderLayout()
     add(panel)
   }
 

@@ -8,25 +8,23 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.PlatformTestUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import java.nio.file.Paths
 
 object SessionUtil {
   fun getWorkspaceFile(project: Project): String? {
     val filename: String
-    val projectDir: VirtualFile
+    val projectDir: String
     if (ApplicationManager.getApplication().isUnitTestMode) {
       if (project.getUserData(ENABLE_SAVE_SESSION_IN_TESTS) == null) return null
-      projectDir = PlatformTestUtil.getOrCreateProjectTestBaseDir(project)
+      projectDir = project.basePath!!
       filename = "a"
     } else {
-      projectDir = project.guessProjectDir() ?: return null
+      projectDir = project.guessProjectDir()?.canonicalPath ?: return null
       val interpreter = RInterpreterManager.getInterpreter(project) ?: return null
       filename = interpreter.interpreterPath.hashCode().toString()
     }
-    return Paths.get(projectDir.canonicalPath ?: return null, WORKSPACE_DIRECTORY, "$filename.$EXTENSION").toString()
+    return Paths.get(projectDir, WORKSPACE_DIRECTORY, "$filename.$EXTENSION").toString()
   }
 
   internal val ENABLE_SAVE_SESSION_IN_TESTS = Key<Unit>("org.jetbrains.r.rinterop.EnableSaveSessionInTests")

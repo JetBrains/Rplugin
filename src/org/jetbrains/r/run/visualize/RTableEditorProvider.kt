@@ -4,17 +4,18 @@
 
 package org.jetbrains.r.run.visualize
 
-import com.intellij.diff.util.FileEditorBase
+import com.intellij.codeHighlighting.BackgroundEditorHighlighter
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.fileEditor.FileEditor
-import com.intellij.openapi.fileEditor.FileEditorPolicy
-import com.intellij.openapi.fileEditor.FileEditorProvider
+import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.ex.FakeFileType
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightVirtualFile
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeSupport
 import javax.swing.Icon
 import javax.swing.JComponent
 
@@ -49,12 +50,36 @@ class RTableEditorProvider : FileEditorProvider, DumbAware {
   override fun getPolicy(): FileEditorPolicy = FileEditorPolicy.HIDE_DEFAULT_EDITOR
 }
 
-private class TableFileEditor(private val tableFile: RTableVirtualFile) : FileEditorBase() {
+private class TableFileEditor(private val tableFile: RTableVirtualFile) : UserDataHolderBase(), FileEditor {
   override fun getComponent(): JComponent = tableFile.table
-
   override fun getName(): String = tableFile.name
-
   override fun getFile(): VirtualFile? = tableFile
-
   override fun getPreferredFocusedComponent(): JComponent? = null
+
+  private val propertyChangeSupport = PropertyChangeSupport(this)
+
+  override fun dispose() {}
+  override fun isValid(): Boolean = true
+
+  override fun selectNotify() {}
+  override fun deselectNotify() {}
+
+  override fun addPropertyChangeListener(listener: PropertyChangeListener) {
+    propertyChangeSupport.addPropertyChangeListener(listener)
+  }
+
+  override fun removePropertyChangeListener(listener: PropertyChangeListener) {
+    propertyChangeSupport.removePropertyChangeListener(listener)
+  }
+
+  //
+  // Unused
+  //
+
+  override fun getState(level: FileEditorStateLevel): FileEditorState = FileEditorState.INSTANCE
+  override fun setState(state: FileEditorState) {}
+  override fun isModified(): Boolean = false
+
+  override fun getBackgroundHighlighter(): BackgroundEditorHighlighter? = null
+  override fun getCurrentLocation(): FileEditorLocation? = null
 }

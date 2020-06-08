@@ -5,8 +5,8 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
-import com.sun.jna.Platform
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -117,6 +117,6 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   }
 
   companion object {
-    private val ECHO = if (Platform.isWindows()) "cmd /c echo" else "echo"
+    private val ECHO = if (SystemInfo.isWindows) "cmd /c echo" else "echo"
   }
 }
