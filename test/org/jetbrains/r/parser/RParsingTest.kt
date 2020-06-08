@@ -15,6 +15,8 @@ class RParsingTest : RUsefulTestCase() {
 
   override fun getTestDataPath(): String = DATA_PATH
 
+  fun testIdentifierLexing() = doTest()
+
   fun testTrue() = doTest()
 
   fun testSlice() = doTest()

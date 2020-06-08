@@ -28,7 +28,7 @@ WHITE_SPACE_CHAR=[\ \n\r\t\f]
 // is given by the C expression (isalnum(c) || c == ’.’ || c == ’_’)
 //
 // So lets support letters from the default C locale for now
-LETTER = [a-zA-Z] //
+LETTER = [:letter:]
 IDENT_START = {LETTER}|"."{LETTER}|"._"|".."
 IDENT_CONTINUE = {LETTER}|[0-9_"."]
 QUOTED_IDENTIFIER = "`" ([^\\\`]|{ANY_ESCAPE_SEQUENCE})* "`"

@@ -1,0 +1,11 @@
+RFile:IdentifierLexing.r
+  R_ASSIGNMENT_STATEMENT
+    R_IDENTIFIER_EXPRESSION
+      PsiElement(identifier)('variableä')
+    PsiWhiteSpace(' ')
+    R_ASSIGN_OPERATOR
+      PsiElement(<-)('<-')
+    PsiWhiteSpace(' ')
+    R_STRING_LITERAL_EXPRESSION
+      PsiElement(STRING)('"Hello World"')
+  PsiWhiteSpace('\n')
