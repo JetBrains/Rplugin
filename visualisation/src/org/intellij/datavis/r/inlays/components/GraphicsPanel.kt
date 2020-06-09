@@ -6,6 +6,7 @@ package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.Logger
@@ -142,9 +143,9 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   fun showImageBase64(data: String) {
     isAdvancedMode = true
-    invokeAndWaitIfNeeded {
+    ApplicationManager.getApplication().invokeAndWait {
       if (Disposer.isDisposed(disposableParent)) {
-        return@invokeAndWaitIfNeeded
+        return@invokeAndWait
       }
       openEditor(BinaryLightVirtualFile("image", Base64.getMimeDecoder().decode(data)))
     }
