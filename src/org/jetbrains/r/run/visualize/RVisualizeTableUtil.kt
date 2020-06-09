@@ -10,12 +10,14 @@ import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.ui.MaterialTable
 import javax.swing.table.DefaultTableColumnModel
 import javax.swing.table.TableColumn
+import kotlin.math.max
 
 object RVisualizeTableUtil {
-  private const val DEFAULT_ROW_HEIGHT = 20
+  private val DEFAULT_ROW_HEIGHT = JBUI.scale(22)
 
   @JvmStatic
   fun showTable(project: Project, viewer: RDataFrameViewer, name: String) {
@@ -45,7 +47,7 @@ object RVisualizeTableUtil {
       globalColorScheme?.defaultBackground?.let { materialTable.background = it }
     })
     materialTable.rowSorter = RDataFrameRowSorter(model, materialTable)
-    materialTable.rowHeight = DEFAULT_ROW_HEIGHT
+    materialTable.rowHeight = max(DEFAULT_ROW_HEIGHT, materialTable.rowHeight)
     return materialTable
   }
 }
