@@ -55,13 +55,15 @@ object InlayOutputUtil {
   }
 
   fun chooseDirectory(project: Project, title: String, description: String): VirtualFile? {
-    val descriptor = FileChooserDescriptor(false, true, false, false, false, false)
-      .withDescription(description)
-      .withTitle(title)
+    val descriptor = WritableDirectoryChooserDescriptor(title, description)
     val chooser = FileChooserDialogImpl(descriptor, project)
-    val toSelect = project.virtualBaseDir?.let { arrayOf(it) } ?: emptyArray()
+    val toSelect = project.virtualBaseDir.wrapInArray()
     val choice = chooser.choose(project, *toSelect)
     return choice.firstOrNull()
+  }
+
+  private fun VirtualFile?.wrapInArray(): Array<VirtualFile> {
+    return if (this != null) arrayOf(this) else emptyArray()
   }
 
   fun saveWithFileChooser(
@@ -104,5 +106,18 @@ object InlayOutputUtil {
     val details = e.message?.let { ":\n$it" }
     val content = "$EXPORT_FAILURE_DESCRIPTION$details"
     Messages.showErrorDialog(content, EXPORT_FAILURE_TITLE)
+  }
+
+  private class WritableDirectoryChooserDescriptor(title: String, description: String) :
+    FileChooserDescriptor(false, true, false, false, false, false)
+  {
+    init {
+      withDescription(description)
+      withTitle(title)
+    }
+
+    override fun isFileSelectable(file: VirtualFile?): Boolean {
+      return file?.isWritable == true && super.isFileSelectable(file)
+    }
   }
 }
