@@ -12,7 +12,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -26,6 +25,7 @@ import com.intellij.ui.*
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.labels.LinkListener
 import com.intellij.util.ui.JBUI
+import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
@@ -46,7 +46,7 @@ abstract class RImportDataDialog(
   protected val interop: RInterop,
   parent: Disposable,
   private val initialPath: String? = null
-) : DialogWrapper(project, null, true, IdeModalityType.IDE, false) {
+) : BorderlessDialogWrapper(project, TITLE, IdeModalityType.IDE) {
 
   private val fileInputField = TextFieldWithBrowseButton {
     filePath = chooseFile()
@@ -111,11 +111,9 @@ abstract class RImportDataDialog(
 
   override fun init() {
     super.init()
-    title = TITLE
     setupStatusBar()
     setupInputControls()
     setupPreviewComponent()
-    removeMarginsIfPossible()
     filePath = initialPath
   }
 
@@ -249,17 +247,6 @@ abstract class RImportDataDialog(
         RImportConfiguration(path, previewRowCount, options)
       }
     }
-  }
-
-  private fun removeMarginsIfPossible() {
-    (rootPane.contentPane as? JPanel)?.let { panel ->
-      panel.border = JBUI.Borders.empty()
-    }
-  }
-
-  private fun createOkCancelPanel(): JComponent {
-    val buttons = createActions().map { createJButtonForAction(it) }
-    return createButtonsPanel(buttons)
   }
 
   private fun String.beautifyPath(): String {

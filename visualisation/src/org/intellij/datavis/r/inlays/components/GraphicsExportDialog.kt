@@ -37,8 +37,8 @@ import kotlin.math.max
 import kotlin.math.round
 import kotlin.reflect.KProperty
 
-class GraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?)
-  : DialogWrapper(project, null, true, IdeModalityType.MODELESS, false)
+class GraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?) :
+  BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
   private val graphicsManager = GraphicsManager.getInstance(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
@@ -138,10 +138,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     setOKButtonText(SAVE_BUTTON_TEXT)
     setupInputControls()
     fillSouthPanel()
-    title = TITLE
     init()
     imageResolution = wrapper.localResolution
-    removeMarginsIfPossible()
     updateSize(initialSize)
   }
 
@@ -263,12 +261,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
   }
 
-  private fun removeMarginsIfPossible() {
-    (rootPane.contentPane as JPanel?)?.let { panel ->
-      panel.border = JBUI.Borders.empty()
-    }
-  }
-
   private fun createButton(action: AnAction): JComponent {
     val actionGroup = DefaultActionGroup(action)
     val toolbar = createToolbar(actionGroup)
@@ -286,11 +278,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
   private fun fillSouthPanel() {
     form.okCancelButtonsPanel.add(createOkCancelPanel())
-  }
-
-  private fun createOkCancelPanel(): JComponent {
-    val buttons = createActions().map { createJButtonForAction(it) }
-    return createButtonsPanel(buttons)
   }
 
   private fun updateOkAction() {

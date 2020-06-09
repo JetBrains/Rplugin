@@ -6,15 +6,14 @@ package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.util.Disposer
-import com.intellij.util.ui.JBUI
+import org.intellij.datavis.r.VisualizationBundle
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String) :
-  DialogWrapper(project, null, true, IdeModalityType.MODELESS, false)
+  BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
   private val graphicsManager = GraphicsManager.getInstance(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
@@ -28,8 +27,6 @@ class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String
 
   init {
     init()
-    title = TITLE
-    removeMarginsIfPossible()
     graphicsManager?.createImageGroup(imagePath)?.let { pair ->
       wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
@@ -46,13 +43,7 @@ class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String
     zoomGroup?.dispose()
   }
 
-  private fun removeMarginsIfPossible() {
-    (rootPane.contentPane as JPanel?)?.let { panel ->
-      panel.border = JBUI.Borders.empty()
-    }
-  }
-
   companion object {
-    private const val TITLE = "Graphics output"
+    private val TITLE = VisualizationBundle.message("inlay.output.image.zoom.dialog.title")
   }
 }
