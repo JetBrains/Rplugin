@@ -114,8 +114,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   private var darkMode = graphicsManager?.isDarkModeEnabled ?: true
 
   init {
-    val connect = project.messageBus.connect()
-    Disposer.register(disposableParent, connect)
+    val connect = project.messageBus.connect(disposableParent)
     connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
       currentFile?.let { showImageAsync(it) }
     })
@@ -255,6 +254,9 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   private fun openEditor(file: VirtualFile) {
     runInEdt {
+      if (Disposer.isDisposed(disposableParent)) {
+        return@runInEdt
+      }
       closeEditor(NO_GRAPHICS)
       val editor = UiCustomizer.instance.createImageEditor(project, file, this)
       adjustImageZoom(editor.zoomModel)
