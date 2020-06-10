@@ -6,9 +6,7 @@ package org.jetbrains.r.statistics
 
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.rinterop.RCondaUtil
 import java.io.File
 
@@ -37,7 +35,7 @@ object RStatistics {
 
   fun logSetupInterpreter(interpreter: RInterpreter) {
     val suggestedInterpreters = collectFoundInterpreters(interpreter)
-    val isConda = isConda(interpreter.interpreterPath)
+    val isConda = isConda(interpreter.interpreterLocation)
     logEvent(INTERPRETERS_ID, RStatisticsEvent.SETUP_INTERPRETER) {
       addData("version", interpreter.version.toCompactString())
       addData("is.conda", isConda)
@@ -45,12 +43,13 @@ object RStatistics {
     }
   }
 
-  private fun isConda(path: String) =
-    RCondaUtil.findCondaByRInterpreter(File(path)) != null
+  private fun isConda(interpreterLocation: RInterpreterLocation): Boolean {
+    return RCondaUtil.findCondaByRInterpreter(File(interpreterLocation.toLocalPathOrNull() ?: return false)) != null
+  }
 
   private fun collectFoundInterpreters(selected: RInterpreter): List<String> {
     val allInterpreters = RInterpreterUtil.suggestAllInterpreters(false)
-    val selectedInfo: RInterpreterInfo? = allInterpreters.find { it.interpreterPath == selected.interpreterPath }
+    val selectedInfo: RInterpreterInfo? = allInterpreters.find { it.interpreterLocation == selected.interpreterLocation }
     return if (selectedInfo == null) {
       // WTF actually??? This means we report information about interpreter and it is missing in all available interpreter list
       allInterpreters
@@ -63,5 +62,5 @@ object RStatistics {
   }
 
   private fun infoToString(info: RInterpreterInfo): String =
-    """${info.version.toCompactString()}_${isConda(info.interpreterPath)}"""
+    """${info.version.toCompactString()}_${isConda(info.interpreterLocation)}"""
 }

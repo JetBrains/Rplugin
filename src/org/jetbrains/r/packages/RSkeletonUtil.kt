@@ -116,11 +116,10 @@ object RSkeletonUtil {
 
             val packageName = rPackage.name
             var isError = false
-            val extraNamedArgumentsHelperPath = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R").absolutePath
-            helperStdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
-                                                      RepoUtils.PACKAGE_SUMMARY,
-                                                      project.basePath,
-                                                      listOf(packageName, extraNamedArgumentsHelperPath)) { output ->
+            val extraNamedArgumentsHelper = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R")
+            val extraNamedArgumentsHelperPath = rInterpreter.uploadHelperToHost(extraNamedArgumentsHelper)
+            helperStdout = rInterpreter.runHelper(RepoUtils.PACKAGE_SUMMARY, null,
+                                                  listOf(packageName, extraNamedArgumentsHelperPath)) { output ->
               reportError(rPackage, output)
               isError = true
             }

@@ -24,11 +24,10 @@ import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
 
-class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
+class RInstalledPackagesPanel(private val project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
 
   private val queue = MergingUpdateQueue(REFRESH_TASK_NAME, REFRESH_TIME_SPAN, true, null, project)
-  private val manager: RInterpreterManager = RInterpreterManager.getInstance(project)
 
   private val listener = object : PackageManagementService.Listener {
     override fun operationStarted(packageName: String?) {
@@ -42,7 +41,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   private val isReady: Boolean
-    get() = rPackageManagementService != null && manager.interpreter != null && !isTaskRunning
+    get() = rPackageManagementService != null && RInterpreterManager.getInterpreterOrNull(project) != null && !isTaskRunning
 
   @Volatile
   private var isTaskRunning = false

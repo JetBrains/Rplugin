@@ -19,8 +19,10 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.util.PathUtil
 import com.intellij.xdebugger.XSourcePosition
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -197,10 +199,17 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
     }
 
-    override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
+    override fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> {
       val promise = AsyncPromise<Unit>()
+      val fileName = PathUtil.getFileName(filePath)
+      val tmpFile = FileUtil.createTempFile(
+        fileName.substringBeforeLast('.'),
+        fileName.substringAfterLast('.', "").let { if (it.isEmpty()) "" else ".$it" },
+        true)
+        .also { it.writeBytes(content) }
       invokeLater {
-        RToolWindowFactory.showFile(consoleView.project, filePath).onProcessed {
+        RToolWindowFactory.showFile(consoleView.project, tmpFile.absolutePath).onProcessed {
+          tmpFile.delete()
           promise.setResult(Unit)
         }
       }

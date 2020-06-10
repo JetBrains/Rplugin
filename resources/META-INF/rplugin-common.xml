@@ -75,6 +75,9 @@ You can find the source code in the following repositories:
     <extensionPoints>
       <extensionPoint qualifiedName="com.intellij.rmdFenceProvider"
                       interface="org.jetbrains.r.rmarkdown.RmdFenceProvider" dynamic="true"/>
+
+      <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
+                      interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
     </extensionPoints>
 
     <actions>
@@ -696,6 +699,9 @@ You can find the source code in the following repositories:
         <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
         <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
 
-    </extensions>
+        <!-- Interpreter -->
+        <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
+
+  </extensions>
 
 </idea-plugin>

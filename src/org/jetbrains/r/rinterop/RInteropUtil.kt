@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.rinterop
 
-import com.google.common.annotations.VisibleForTesting
 import com.intellij.diagnostic.IdeMessagePanel
 import com.intellij.diagnostic.MessagePool
 import com.intellij.diagnostic.MessagePoolListener
@@ -24,11 +23,8 @@ import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
 import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.rejectedPromise
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -38,24 +34,24 @@ import java.util.concurrent.TimeoutException
 
 object RInteropUtil {
   val LOG = Logger.getInstance(RInteropUtil.javaClass)
-  fun runRWrapperAndInterop(project: Project): Promise<RInterop> {
+  fun runRWrapperAndInterop(interpreter: RInterpreter): Promise<RInterop> {
     val promise = AsyncPromise<RInterop>()
-    var createdProcess: ColoredProcessHandler? = null
+    var createdProcess: ProcessHandler? = null
     ProcessIOExecutorService.INSTANCE.execute {
-      runRWrapper(project).onError {
+      runRWrapper(interpreter).onError {
         promise.setError(it)
       }.onSuccess { (process, paths) ->
         createdProcess = process
-        createRInterop(process, project, promise, paths)
+        createRInterop(process, promise, paths, interpreter)
       }
     }
     return promise.onError { createdProcess?.destroyProcess() }
   }
 
-  private fun createRInterop(process: ColoredProcessHandler,
-                             project: Project,
+  private fun createRInterop(process: ProcessHandler,
                              promise: AsyncPromise<RInterop>,
-                             paths: RPaths) {
+                             paths: RPaths,
+                             interpreter: RInterpreter) {
     val linePromise = AsyncPromise<String>()
     var rInteropForReport: RInterop? = null
     val stdout = StringBuilder()
@@ -93,12 +89,12 @@ object RInteropUtil {
         }
         val updateCrashes = updateCrashes()
         if (updateCrashes.isNotEmpty() || event.exitCode != 0) {
-          reportCrash(project, rInteropForReport, updateCrashes, process.getUserData(PROCESS_CRASH_REPORT_FILE),
+          reportCrash(interpreter.project, rInteropForReport, updateCrashes, process.getUserData(PROCESS_CRASH_REPORT_FILE),
                       process.getUserData(PROCESS_TERMINATED_WITH_REPORT) ?: false)
         }
         if (linePromise.state == Promise.State.PENDING) {
           linePromise.setError(RuntimeException(
-                                """RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
+            """RWrapper terminated, exitcode: ${event.exitCode}${System.lineSeparator()}
                                 ${generateErrorReport()}
                                 """.trimIndent()))
         }
@@ -123,7 +119,7 @@ object RInteropUtil {
         }
         val port = Regex("PORT (\\d+)\\n").find(line)?.groupValues?.getOrNull(1)?.toIntOrNull()
                    ?: throw RuntimeException("Invalid RWrapper output")
-        val rInterop = RInterop(process, "127.0.0.1", port, project)
+        val rInterop = interpreter.createRInteropForProcess(process, port)
         rInteropForReport = rInterop
         promise.setResult(rInterop)
       } catch (e: Throwable) {
@@ -179,98 +175,96 @@ object RInteropUtil {
     LOG.error(message, *attachments)
   }
 
-  private fun runRWrapper(project: Project): Promise<Pair<ColoredProcessHandler, RPaths>> {
-    val result = AsyncPromise<Pair<ColoredProcessHandler, RPaths>>()
-    RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.blockingGet(Int.MAX_VALUE)
-    val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-    if (StringUtil.isEmptyOrSpaces(interpreterPath)) {
-      return rejectedPromise(RuntimeException(RBundle.message("console.runner.interpreter.not.specified")))
-    }
-    val paths = getRPaths(interpreterPath, project)
-    val version = RInterpreterUtil.getVersionByPath(interpreterPath)
-                  ?: return result.also { result.setError("Cannot parse R interpreter version") }
-
+  private fun runRWrapper(interpreter: RInterpreter): Promise<Pair<ProcessHandler, RPaths>> {
+    val result = AsyncPromise<Pair<ProcessHandler, RPaths>>()
+    val paths = getRPaths(interpreter)
+    val version = interpreter.version
     if (!RInterpreterUtil.isSupportedVersion(version)) return result.also { result.setError("Unsupported interpreter version " + version)  }
-    val wrapperPath = getWrapperPath()
+    val wrapperPath = getWrapperPath(interpreter.hostOS)
     LOG.info("R version is $version. RWrapper path: $wrapperPath")
     val rwrapper = File(wrapperPath)
     if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
     if (!rwrapper.canExecute()) {
       rwrapper.setExecutable(true)
     }
-    val crashpadHandler = getCrashpadHandler()
-    val crashReportFile = FileUtil.createTempFile("rwrapper-crash-report", ".txt", true).absolutePath
-
+    val wrapperPathOnHost = interpreter.uploadHelperToHost(rwrapper)
     var command = GeneralCommandLine()
-      .withExePath(wrapperPath)
-      .withWorkDirectory(project.basePath!!)
+      .withExePath(wrapperPathOnHost)
       .withParameters("--with-timeout")
-      .withParameters("--crash-report-file", crashReportFile)
       .withEnvironment("R_HOME", paths.home)
       .withEnvironment("R_SHARE_DIR", paths.share)
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
 
-    if (crashpadHandler.exists()) {
-      if (!crashpadHandler.canExecute()) {
-        crashpadHandler.setExecutable(true)
+    val crashReportFile: String?
+    if (interpreter.isLocal()) {
+      val crashpadHandler = getCrashpadHandler(interpreter.hostOS)
+      if (crashpadHandler.exists()) {
+        if (!crashpadHandler.canExecute()) {
+          crashpadHandler.setExecutable(true)
+        }
+        val crashes = getRWrapperCrashesDirectory()
+        FileUtil.createDirectory(crashes)
+        updateCrashes()
+        command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
+          .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
       }
-      val crashes = getRWrapperCrashesDirectory()
-      FileUtil.createDirectory(crashes)
-      updateCrashes()
-      command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
-                       .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
+
+      crashReportFile = FileUtil.createTempFile("rwrapper-crash-report", ".txt", true).absolutePath
+      command = command.withParameters("--crash-report-file", crashReportFile)
+    } else {
+      crashReportFile = null
     }
 
     command = command.withEnvironment("PATH", paths.path)
-    command = if (SystemInfo.isUnix) {
-      if (SystemInfo.isMac) {
+    command = when (interpreter.hostOS) {
+      OperatingSystem.MAC_OS -> {
         // DYLD_FALLBACK_LIBRARY_PATH doesn't work if notarization is enabled, use DYLD_LIBRARY_PATH instead.
         // Right now we notarize only bundled binaries.
         val dyldName = if (RPluginUtil.getPlugin().isBundled) "DYLD_LIBRARY_PATH" else "DYLD_FALLBACK_LIBRARY_PATH"
         command.withEnvironment(dyldName, paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
-      } else {
+      }
+      OperatingSystem.LINUX -> {
         command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
       }
-    } else {
-      command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
+      OperatingSystem.WINDOWS -> {
+        command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
+      }
     }
-    command = command.withEnvironment("R_HELPERS_PATH", RPluginUtil.helpersPath)
-    return result.also { result.setResult(ColoredProcessHandler(command).apply {
-      setShouldDestroyProcessRecursively(true)
+    result.setResult(interpreter.runProcessOnHost(command).apply {
       this.putUserData(PROCESS_CRASH_REPORT_FILE, crashReportFile)
-    } to paths) }
+    } to paths)
+    return result
   }
 
   private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
 
-  private fun getCrashpadHandler(): File = RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix())
+  private fun getCrashpadHandler(operatingSystem: OperatingSystem): File {
+    return RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix(operatingSystem))
+  }
 
-  private fun getWrapperPath(): String {
-    val filename = "rwrapper-" + getSystemSuffix()
+  private fun getWrapperPath(operatingSystem: OperatingSystem): String {
+    val filename = "rwrapper-" + getSystemSuffix(operatingSystem)
     return RPluginUtil.findFileInRHelpers(filename).absolutePath
   }
 
-  private fun getSystemSuffix(): String = when {
-      SystemInfo.isLinux -> "x64-linux"
-      SystemInfo.isMac -> "x64-osx"
-      SystemInfo.isWindows -> "x64-windows.exe"
-      else -> throw IllegalStateException("Unsupported OS")
-    }
+  private fun getSystemSuffix(operatingSystem: OperatingSystem): String = when (operatingSystem) {
+    OperatingSystem.LINUX -> "x64-linux"
+    OperatingSystem.MAC_OS -> "x64-osx"
+    OperatingSystem.WINDOWS -> "x64-windows.exe"
+  }
 
-  private data class RPaths(val home: String,
-                            val share: String,
-                            val include: String,
-                            val doc: String,
-                            val path: String,
-                            val ldPath: String)
+  data class RPaths(val home: String,
+                    val share: String,
+                    val include: String,
+                    val doc: String,
+                    val path: String,
+                    val ldPath: String)
 
-  private fun getRPaths(interpreter: String, project: Project): RPaths {
-
+  private fun getRPaths(interpreter: RInterpreter): RPaths {
     val script = RPluginUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
                  ?: throw RuntimeException("GetEnvVars.R not found")
-    
-    val output = RInterpreterUtil.runHelper(interpreter, script, project.basePath, emptyList())
+    val output = interpreter.runHelper(script, null, emptyList())
     val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     if (paths.size < 5) {
       LOG.error("cannot get rwrapper parameters, output: `$output`")
@@ -279,13 +273,12 @@ object RInteropUtil {
     return RPaths(paths[0], paths[1], paths[2], paths[3], paths[4], if (paths.size == 6) paths[5] else "")
   }
 
-  @VisibleForTesting
   @Synchronized
-  internal fun updateCrashes(): List<File> {
+  private fun updateCrashes(): List<File> {
     val directoryWithDumps = if (SystemInfo.isWindows) "reports" else "pending"
     val crashes = Paths.get(getRWrapperCrashesDirectory().absolutePath, directoryWithDumps)
-                       .toFile().takeIf { it.exists() }
-                       ?.listFiles { _, name -> name.endsWith(".dmp") } ?: return emptyList()
+                    .toFile().takeIf { it.exists() }
+                    ?.listFiles { _, name -> name.endsWith(".dmp") } ?: return emptyList()
     val newCrashes = crashes.filter { !oldCrashes.contains(it.name) }
     oldCrashes.clear()
 
@@ -301,6 +294,17 @@ object RInteropUtil {
     oldCrashes.addAll(names)
 
     return newCrashes
+  }
+
+  fun createRInteropForLocalProcess(interpreter: RInterpreter, process: ProcessHandler, port: Int): RInterop {
+    val project = interpreter.project
+    val rInterop = RInterop(interpreter, process, "127.0.0.1", port, project)
+    val workspaceFile = SessionUtil.getWorkspaceFile(project, interpreter)
+    val rScriptsPath = RPluginUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
+                       ?: throw RuntimeException("R Scripts not found")
+    val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
+    rInterop.init(rScriptsPath, projectDir, workspaceFile)
+    return rInterop
   }
 
   private val oldCrashes: MutableSet<String> = HashSet()

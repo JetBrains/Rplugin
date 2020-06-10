@@ -55,7 +55,7 @@ public class InstallLibraryFixTest extends LightPlatformCodeInsightFixtureTestCa
         myFixture.launchAction(assertOneElement(quickFixes));
         Thread.sleep(30000); // what a mess!!
 
-        RInterpreter interpreter = RInterpreterManager.Companion.getInterpreter(myFixture.getProject());
+        RInterpreter interpreter = RInterpreterManager.Companion.getInterpreterAsync(myFixture.getProject()).blockingGet(Integer.MAX_VALUE);
         assertNotNull(interpreter);
         String commandResult = interpreter.runCommand("require(pals) ==TRUE");
         assertNotNull(commandResult);

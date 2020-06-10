@@ -53,17 +53,9 @@ class RPackageManagementService(private val project: Project,
 
   private val interpreter: RInterpreter?
     get() {
-      fun getInitializedManager(): RInterpreterManager {
-        return interpreterManager.apply {
-          if (!hasInterpreter()) {
-            initializeInterpreter()
-              .onError { LOGGER.warn("Unable to initialize interpreter") }
-              .silentlyBlockingGet(DEFAULT_TIMEOUT)
-          }
-        }
-      }
-
-      return getInitializedManager().interpreter
+      return interpreterManager.getInterpreterAsync()
+        .onError { LOGGER.warn("Unable to initialize interpreter") }
+        .silentlyBlockingGet(DEFAULT_TIMEOUT)
     }
 
   private val interop: RInterop?

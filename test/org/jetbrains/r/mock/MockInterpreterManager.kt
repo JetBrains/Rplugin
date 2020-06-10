@@ -5,27 +5,20 @@
 package org.jetbrains.r.mock
 
 import com.intellij.openapi.project.Project
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
   override val isSkeletonInitialized: Boolean = true
 
-  override fun initializeInterpreter(force: Boolean): Promise<Unit> {
-    return AsyncPromise<Unit>().apply {
-      setResult(Unit)
-    }
-  }
+  override val interpreterOrNull: RInterpreter = MockInterpreter(project, MockInterpreterProvider.DUMMY)
 
-  override val interpreterPath: String
-    get() = interpreter?.interpreterPath ?: ""
+  override val interpreterLocation: RInterpreterLocation
+    get() = interpreterOrNull.interpreterLocation
 
-  override val interpreterPathValidatedPromise = resolvedPromise(Unit)
-
-  override val interpreter: RInterpreter? = MockInterpreter(project, MockInterpreterProvider.DUMMY)
+  override fun getInterpreterAsync(force: Boolean) = resolvedPromise(interpreterOrNull)
 
   override fun hasInterpreter(): Boolean = true
 }

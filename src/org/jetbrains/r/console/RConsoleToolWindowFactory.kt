@@ -174,11 +174,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val toolWindow = getRConsoleToolWindows(console.project) ?: return
       val content = getConsoleContent(console) ?: return
       val index = toolWindow.contentManager.getIndexOfContent(content)
-      val title = content.toolwindowTitle
       Disposer.dispose(console.rInterop)
       console.rInterop.executeOnTermination {
         invokeLater {
-          RConsoleRunner(console.project, console.workingDirectory, title, index).initAndRun().then {
+          RConsoleRunner(console.interpreter, console.workingDirectory, index).initAndRun().then {
             invokeLater {
               toolWindow.contentManager.removeContent(content, true)
               getConsoleContent(it)?.let { newContent ->
@@ -234,7 +233,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun tryAddContent(toolWindow: ToolWindow, project: Project) {
       if (toolWindow.contentManager.contents.count { isConsole(it) } == 0) {
-        if (RInterpreterManager.getInstance(project).interpreterPath.isBlank()) {
+        if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
           val contentFactory = ContentFactory.SERVICE.getInstance()
           val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component,
                                                      NO_INTERPRETER_FOUND_DISPLAY_NAME,

@@ -10,8 +10,6 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
@@ -22,9 +20,9 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
-import org.jetbrains.r.settings.RSettings
 import java.util.concurrent.atomic.AtomicInteger
 
 private val LOGGER = Logger.getInstance(RConsoleManager::class.java)
@@ -141,20 +139,17 @@ class RConsoleManager(private val project: Project) {
      */
     fun runConsole(project: Project, requestFocus: Boolean = false): Promise<RConsoleView> {
       val promise = AsyncPromise<RConsoleView>()
-      if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-        RInterpreterManager.getInstance(project).initializeInterpreter()
-      }
       doRunConsole(project, requestFocus).processed(promise)
       return promise
     }
 
     /**
-     * Close all consoles that has path to interpreter different than [interpreterPath]
+     * Close all consoles that has interpreter different than [interpreterLocation]
      */
-    fun closeMismatchingConsoles(project: Project, interpreterPath: String) {
+    fun closeMismatchingConsoles(project: Project, interpreterLocation: RInterpreterLocation?) {
       getContentDescription(project)?.let { description ->
         for ((content, console) in description.contentConsolePairs) {
-          if (console.interpreterPath != interpreterPath) {
+          if (console.interpreter.interpreterLocation != interpreterLocation) {
             description.contentManager.removeContent(content, true)
           }
         }
@@ -162,10 +157,10 @@ class RConsoleManager(private val project: Project) {
     }
 
     private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
-      return if (RSettings.getInstance(project).interpreterPath.isNotBlank()) {
-        val workingDir = project.basePath!!
-        val consoleTitle = "[ " + FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDir)) + " ]"
-        RConsoleRunner(project, workingDir, consoleTitle).initAndRun().onSuccess { console ->
+      val result = AsyncPromise<RConsoleView>()
+      RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
+        RConsoleRunner(interpreter).initAndRun().onSuccess { console ->
+          result.setResult(console)
           invokeLater {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)
             if (requestFocus) {
@@ -178,11 +173,10 @@ class RConsoleManager(private val project: Project) {
           }
           RPackageProjectManager.getInstance(project).loadOrSuggestToInstallMissedPackages()
         }
-      } else {
-        AsyncPromise<RConsoleView>().apply {
-          setError("Cannot run console until path to viable R interpreter is specified")
-        }
+      }.onError {
+        result.setError("Cannot run console until path to viable R interpreter is specified")
       }
+      return result
     }
 
     private fun getContentDescription(project: Project): ContentDescription? {

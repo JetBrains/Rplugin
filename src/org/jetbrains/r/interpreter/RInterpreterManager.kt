@@ -25,7 +25,8 @@ import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
+import org.jetbrains.concurrency.isRejected
+import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
@@ -36,26 +37,33 @@ import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RStatistics
 
 interface RInterpreterManager {
-  val interpreter: RInterpreter?
-  val interpreterPath: String
-  val interpreterPathValidatedPromise: Promise<Unit>
-
   /**
    *  true if skeletons update was performed at least once.
    */
   val isSkeletonInitialized: Boolean
+  val interpreterOrNull: RInterpreter?
+  val interpreterLocation: RInterpreterLocation?
 
-  fun hasInterpreter(): Boolean {
-    return interpreter != null
+  fun getInterpreterAsync(force: Boolean = false): Promise<RInterpreter>
+
+  fun getInterpreterBlocking() = getInterpreterAsync().run {
+    try {
+      blockingGet(Int.MAX_VALUE)
+    } catch (t: Throwable) {
+      null
+    }
   }
 
-  fun initializeInterpreter(force: Boolean = false): Promise<Unit>
+  fun hasInterpreter(): Boolean
 
   companion object {
     fun getInstance(project: Project): RInterpreterManager = project.getService(RInterpreterManager::class.java)
     fun getInstanceIfCreated(project: Project): RInterpreterManager? = project.getServiceIfCreated(RInterpreterManager::class.java)
 
-    fun getInterpreter(project: Project): RInterpreter? = getInstance(project).interpreter
+    @JvmOverloads
+    fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force)
+
+    fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
   }
 }
 
@@ -63,15 +71,22 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   @Volatile
   override var isSkeletonInitialized: Boolean = false
     private set
+  @Volatile
+  private var interpreterPromise: Promise<RInterpreter> = rejectedPromise("No R Interpreter")
+  @Volatile
+  private var initialized = false
 
   @Volatile
-  override var interpreterPath: String = fetchInterpreterPath()
+  override var interpreterOrNull: RInterpreterBase? = null
+    private set(value) {
+      field?.onUnsetAsProjectInterpreter()
+      field = value
+      value?.onSetAsProjectInterpreter()
+    }
+
+  @Volatile
+  override var interpreterLocation = fetchInterpreterLocation()
     private set
-  override var interpreterPathValidatedPromise: Promise<Unit> = checkInterpreterPath(interpreterPath).then { if (!it) interpreterPath = "" }
-  private var asyncPromise = AsyncPromise<Unit>()
-  private var initialized = false
-  private var rInterpreter: RInterpreterImpl? = null
-  private var firstOpenedFile = true
 
   init {
     if (!ApplicationManager.getApplication().isUnitTestMode) {
@@ -79,23 +94,44 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
-
-  private fun fetchInterpreterPath(): String {
-    return if (ApplicationManager.getApplication().isUnitTestMode) {
-      RInterpreterUtil.suggestHomePath()
-    } else {
-      RSettings.getInstance(project).interpreterPath
+  override fun getInterpreterAsync(force: Boolean): Promise<RInterpreter> {
+    if (initialized && !force) return interpreterPromise
+    synchronized(this) {
+      if (initialized && !force) return interpreterPromise
+      if (force) {
+        interpreterOrNull = null
+        interpreterLocation = fetchInterpreterLocation()
+      }
+      val location = interpreterLocation
+                     ?: return rejectedPromise<RInterpreter>("No R Interpreter").also { interpreterPromise = it }
+      if (!initialized) {
+        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
+          scheduleSkeletonUpdate()
+        }
+      }
+      initialized = true
+      return setupInterpreter(location).also { interpreterPromise = it }
     }
   }
 
-  private fun checkInterpreterPath(path: String): Promise<Boolean> = runAsync {
+  override fun hasInterpreter() = RSettings.getInstance(project).interpreterLocation != null
+
+  private fun fetchInterpreterLocation(): RInterpreterLocation? {
+    return if (ApplicationManager.getApplication().isUnitTestMode) {
+      RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
+    } else {
+      RSettings.getInstance(project).interpreterLocation
+    }
+  }
+
+  private fun checkInterpreterLocation(location: RInterpreterLocation?): Boolean {
     val (isViable, e) = try {
-      Pair(path.isNotBlank() && RInterpreterUtil.getVersionByPath(path) != null, null)
+      Pair(location?.getVersion() != null, null)
     } catch (e: Exception) {
       Pair(false, e)
     }
     if (!isViable) {
-      val message = createInvalidPathErrorMessage(path, e?.message)
+      val message = createInvalidLocationErrorMessage(location, e?.message)
       val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
         ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
       }
@@ -104,66 +140,40 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       }
       RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
     }
-    isViable
+    return isViable
   }
 
-  private fun ensureActiveInterpreterStored() {
-    rInterpreter?.let { suggested ->
-      val interpreter = RBasicInterpreterInfo(SUGGESTED_INTERPRETER_NAME, suggested.interpreterPath, suggested.version)
-      RInterpreterSettings.addOrEnableInterpreter(interpreter)
-    }
+  private fun ensureInterpreterStored(interpreter: RInterpreter) {
+    val info = RBasicInterpreterInfo(SUGGESTED_INTERPRETER_NAME, interpreter.interpreterLocation, interpreter.version)
+    RInterpreterSettings.addOrEnableInterpreter(info)
   }
 
-  override fun initializeInterpreter(force: Boolean): Promise<Unit> {
-    if (initialized && !force) {
-      return asyncPromise
-    }
-    synchronized(this) {
-      if (initialized && !force) {
-        return asyncPromise
-      }
-      if (force) {
-        rInterpreter = null
-        asyncPromise = AsyncPromise()
-        val oldInterpreterPath = interpreterPath
-        interpreterPath = fetchInterpreterPath()
-        interpreterPathValidatedPromise = checkInterpreterPath(interpreterPath).then { if (!it) interpreterPath = oldInterpreterPath }
-      }
-      if (!initialized) {
-        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
-          scheduleSkeletonUpdate()
-        }
-      }
-      initialized = true
-      setupInterpreter(asyncPromise)
-      return asyncPromise
-    }
-  }
-
-  override val interpreter: RInterpreter?
-    get() = rInterpreter
-
-  private fun setupInterpreter(promise: AsyncPromise<Unit>) {
+  private fun setupInterpreter(location: RInterpreterLocation): Promise<RInterpreter> {
+    val promise = AsyncPromise<RInterpreter>()
     runBackgroundableTask("Initializing R interpreter", project) {
-      interpreterPathValidatedPromise.blockingGet(Int.MAX_VALUE)!!
-      if (interpreterPath == "") {
-        promise.setError("Cannot initialize interpreter")
+      if (!checkInterpreterLocation(location)) {
+        promise.setError("Invalid R Interpreter")
         return@runBackgroundableTask
       }
-      val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
-      RInterpreterImpl(versionInfo, interpreterPath, project).let {
-        rInterpreter = it
-        ensureActiveInterpreterStored()
-        scheduleSkeletonUpdate()
-        promise.setResult(Unit)
-        RStatistics.logSetupInterpreter(it)
+      try {
+        location.createInterpreter(project).let {
+          interpreterOrNull = it
+          ensureInterpreterStored(it)
+          scheduleSkeletonUpdate()
+          promise.setResult(it)
+          RStatistics.logSetupInterpreter(it)
+        }
+      } catch (e: Throwable) {
+        promise.setError(e)
+        RInterpreterBase.LOG.warn(e)
       }
     }
+    return promise
   }
 
   private fun scheduleSkeletonUpdate(): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      val interpreter = rInterpreter
+      val interpreter = interpreterOrNull
       if (interpreter != null) {
         interpreter.updateState()
           .onProcessed { promise.setResult(Unit) }
@@ -183,7 +193,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
-  private fun updateSkeletons(interpreter: RInterpreterImpl) {
+  private fun updateSkeletons(interpreter: RInterpreterBase) {
     val dumbModeTask = object : DumbModeTask(interpreter) {
       override fun performInDumbMode(indicator: ProgressIndicator) {
         if (!project.isOpen || project.isDisposed) return
@@ -197,7 +207,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     DumbService.getInstance(project).queueTask(dumbModeTask)
   }
 
-  private fun refreshSkeletons(interpreter: RInterpreterImpl) {
+  private fun refreshSkeletons(interpreter: RInterpreterBase) {
     if (!project.isOpen || project.isDisposed) return
     interpreter.skeletonPaths.forEach { skeletonPath ->
       val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return@forEach
@@ -213,9 +223,13 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
     private val DOWNLOAD_R_HINT = RBundle.message("interpreter.manager.download.r.hint")
 
-    private fun createInvalidPathErrorMessage(path: String, details: String?): String {
+    private fun createInvalidLocationErrorMessage(location: RInterpreterLocation?, details: String?): String {
       val additional = details?.let { ":\n$it" }
-      return RBundle.message("interpreter.manager.invalid.path", path, additional ?: "")
+      return if (location == null) {
+        RBundle.message("interpreter.manager.no.interpreter")
+      } else {
+        RBundle.message("interpreter.manager.invalid.location", location, additional ?: "")
+      }
     }
 
     fun openDownloadRPage() {

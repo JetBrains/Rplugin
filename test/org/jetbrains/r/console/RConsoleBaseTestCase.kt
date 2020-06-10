@@ -14,8 +14,8 @@ abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {
 
   override fun setUp() {
     super.setUp()
-    val rConsoleRunner = RConsoleRunner(project, project.basePath!!, "Test R Console")
-    val promise = rConsoleRunner.initByInterop(rInterop, "dummyPath")
+    val rConsoleRunner = RConsoleRunner(interpreter)
+    val promise = rConsoleRunner.initByInterop(rInterop)
 
     console = promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT) ?: error("Cannot initialize test console")
     console.component // initialize editor and more...

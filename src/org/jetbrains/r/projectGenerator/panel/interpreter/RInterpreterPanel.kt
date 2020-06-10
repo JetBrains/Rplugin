@@ -5,10 +5,11 @@
 package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.panel.RPanel
 
 abstract class RInterpreterPanel : RPanel() {
-  open val interpreterPath: String? = null
+  open val interpreterLocation: RInterpreterLocation? = null
 
   open fun validateInterpreter(): List<ValidationInfo> = emptyList()
 }

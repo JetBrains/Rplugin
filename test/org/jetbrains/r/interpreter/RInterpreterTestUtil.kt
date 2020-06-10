@@ -16,10 +16,10 @@ import java.util.concurrent.atomic.AtomicInteger
 object RInterpreterTestUtil {
   private val LOGGER = Logger.getInstance(RInterpreterTestUtil::class.java)
 
-  fun makeSlaveInterpreter(project: Project): RInterpreter {
+  fun makeSlaveInterpreter(project: Project): RLocalInterpreterImpl {
     val interpreterPath = RInterpreterUtil.suggestHomePath()
-    val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
-    return RInterpreterImpl(versionInfo, interpreterPath, project).apply {
+    val versionInfo = RLocalInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
+    return RLocalInterpreterImpl(RLocalInterpreterLocation(interpreterPath), versionInfo, project).apply {
       updateState().blockingGet(DEFAULT_TIMEOUT)
     }
   }
@@ -35,11 +35,11 @@ object RInterpreterTestUtil {
     }
   }
 
-  fun installPackage(interpreter: RInterpreter, packagePath: String) {
+  fun installPackage(interpreter: RLocalInterpreterImpl, packagePath: String) {
     runCommand(interpreter.interpreterPath, "CMD", "INSTALL", packagePath)
   }
 
-  fun removePackage(interpreter: RInterpreter, packageName: String) {
+  fun removePackage(interpreter: RLocalInterpreterImpl, packageName: String) {
     runCommand(interpreter.interpreterPath, "CMD", "REMOVE", packageName)
   }
 

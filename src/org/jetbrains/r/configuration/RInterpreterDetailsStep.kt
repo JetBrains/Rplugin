@@ -9,8 +9,8 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.configuration.RAddInterpreterDialog
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Point
 import javax.swing.JComponent
 
@@ -18,7 +18,7 @@ class RInterpreterDetailsStep(
   private val existingInterpreters: List<RInterpreterInfo>,
   private val allDialog: DialogWrapper,
   private val onAdded: (RInterpreterInfo) -> Unit
-) : BaseListPopupStep<String>(null, listOf(ADD, SHOW_ALL)) {
+) : BaseListPopupStep<String>(null, getEntries()) {
 
   override fun onChosen(selectedValue: String?, finalChoice: Boolean): PopupStep<*>? {
     return doFinalStep {
@@ -27,23 +27,21 @@ class RInterpreterDetailsStep(
   }
 
   private fun onSelection(selectedValue: String?) {
-    when (selectedValue) {
-      ADD -> showAddDialog()
-      SHOW_ALL -> showAllDialog()
+    if (selectedValue == SHOW_ALL) allDialog.show()
+    RInterpreterSettingsProvider.getProviders().forEach {
+      if (it.getAddInterpreterActionName() == selectedValue) {
+        it.showAddInterpreterDialog(existingInterpreters, onAdded)
+        return
+      }
     }
   }
 
-  private fun showAddDialog() {
-    RAddInterpreterDialog.show(existingInterpreters, onAdded)
-  }
-
-  private fun showAllDialog() {
-    allDialog.show()
-  }
-
   companion object {
-    private val ADD = RBundle.message("project.settings.details.step.add")
     private val SHOW_ALL = RBundle.message("project.settings.details.step.show.all")
+
+    private fun getEntries(): List<String> {
+      return RInterpreterSettingsProvider.getProviders().map { it.getAddInterpreterActionName() }.plus(SHOW_ALL)
+    }
 
     fun show(
       existingInterpreters: List<RInterpreterInfo>,

@@ -14,12 +14,15 @@ import org.jetbrains.r.mock.MockInterpreterProvider
 import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RequiredPackage
-import org.jetbrains.r.packages.remote.*
+import org.jetbrains.r.packages.remote.RDefaultRepository
+import org.jetbrains.r.packages.remote.RRepoPackage
+import org.jetbrains.r.packages.remote.RRepository
+import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
-  private lateinit var slaveInterpreter: RInterpreter
+  private lateinit var slaveInterpreter: RLocalInterpreterImpl
   private lateinit var localRepoProvider: LocalRepoProvider
 
   override fun setUp() {
@@ -63,7 +66,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   }
 
   private fun setupMockInterpreter() {
-    RInterpreterManager.getInterpreter(project)?.let { interpreter ->
+    RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)?.let { interpreter ->
       val mock = interpreter as MockInterpreter
       slaveInterpreter = RInterpreterTestUtil.makeSlaveInterpreter(project)
       mock.provider = LocalInterpreterProvider(rInterop, slaveInterpreter)

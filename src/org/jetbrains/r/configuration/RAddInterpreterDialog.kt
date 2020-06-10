@@ -13,9 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.interpreter.RBasicInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.*
 
 class RAddInterpreterDialog {
   companion object {
@@ -51,15 +49,16 @@ class RAddInterpreterDialog {
             }
           }
 
-          fun checkDuplicate(interpreters: List<RInterpreterInfo>, path: String): Boolean {
-            return interpreters.find { i -> i.interpreterPath == path } == null
+          fun checkDuplicate(interpreters: List<RInterpreterInfo>, location: RInterpreterLocation): Boolean {
+            return !interpreters.any { i -> i.interpreterLocation == location }
           }
 
           val path = PathUtil.toSystemDependentName(it.path)
-          if (checkDuplicate(existingInterpreters, path)) {
+          val location = RLocalInterpreterLocation(path)
+          if (checkDuplicate(existingInterpreters, location)) {
             val (version, e) = tryGetInterpreterVersion(path)
             if (version != null && RInterpreterUtil.isSupportedVersion(version)) {
-              val interpreter = RBasicInterpreterInfo(ADDED_INTERPRETER_NAME, path, version)
+              val interpreter = RBasicInterpreterInfo(ADDED_INTERPRETER_NAME, location, version)
               onAdded(interpreter)
             } else {
               val details = e?.message?.let { m -> ":\n$m" } ?: ""

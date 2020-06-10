@@ -4,9 +4,6 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -37,9 +34,8 @@ import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class RInterpreterImpl(private val versionInfo: Map<String, String>,
-                       override val interpreterPath: String,
-                       private val project: Project) : RInterpreter {
+abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
+                                override val project: Project) : RInterpreter {
   @Volatile
   private var state = State.EMPTY
 
@@ -57,7 +53,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private val updateEpoch = AtomicInteger(0)
 
   override val interop: RInterop
-    get() = getConsole(project).rInterop
+    get() = getConsoleForInterpreter(this, project).rInterop
 
   override val skeletonRoots: Set<VirtualFile>
     get() {
@@ -78,9 +74,6 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
 
   override fun getLibraryPathByName(name: String) = state.name2libraryPaths[name]
 
-  override fun getProcessOutput(scriptText: String) = runScript(scriptText, interpreterPath, project.basePath!!)
-
-
 
   override fun getSkeletonFileByPackageName(name: String): PsiFile? {
     val cached = name2PsiFile[name]
@@ -97,6 +90,12 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
       }
     }
     return null
+  }
+
+  open fun onSetAsProjectInterpreter() {
+  }
+
+  open fun onUnsetAsProjectInterpreter() {
   }
 
   private fun getHelpersRoot(): File {
@@ -145,9 +144,11 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   private fun <E>makeExpiring(values: List<E>): ExpiringList<E> {
     val usedUpdateEpoch = updateEpoch.get()
     return ExpiringList(values) {
-      usedUpdateEpoch < updateEpoch.get() || interpreterPath != RInterpreterManager.getInstance(project).interpreterPath
+      usedUpdateEpoch < updateEpoch.get() || interpreterLocation != RInterpreterManager.getInstance(project).interpreterLocation
     }
   }
+
+  private fun runHelperLines(helper: File, vararg args: String) = runHelper(helper, basePath, args.toList()).lines()
 
   private fun loadPaths(): Pair<List<VirtualFile>, String> {
     val libraryPaths = loadLibraryPaths().toMutableList()
@@ -163,8 +164,8 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun getUserPath(): String {
-    val lines = runHelper(GET_ENV_HELPER, "R_LIBS_USER")
-    val firstLine = lines[0]
+    val lines = runHelperLines(GET_ENV_HELPER, "R_LIBS_USER")
+    val firstLine = lines.firstOrNull().orEmpty()
     if (firstLine.isNotBlank()) {
       return firstLine.expandTilde()
     } else {
@@ -181,7 +182,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadLibraryPaths(): List<VirtualFile> {
-    val lines = runHelper(LIBRARY_PATHS_HELPER)
+    val lines = runHelperLines(LIBRARY_PATHS_HELPER)
     val paths = lines.filter { it.isNotBlank() }
     return paths.mapNotNull { findVirtualFile(it) }.toList().also {
       if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
@@ -189,7 +190,7 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
   }
 
   private fun loadInstalledPackages(): List<RInstalledPackage> {
-    val text = RInterpreterUtil.runHelper(interpreterPath, INSTALLED_PACKAGES_HELPER, project.basePath, arrayOf<String>().toList())
+    val text = runHelper(INSTALLED_PACKAGES_HELPER, project.basePath, arrayOf<String>().toList())
     val lines = text.split("!!!JETBRAINS_RPLUGIN!!!")
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()
@@ -241,42 +242,22 @@ class RInterpreterImpl(private val versionInfo: Map<String, String>,
     return Version(major, minor, update)
   }
 
-  private fun runHelper(helper: File, vararg args: String) =
-    RInterpreterUtil.runHelper(interpreterPath, helper, project.basePath, args.toList()).lines()
-
   companion object {
-    val LOG = Logger.getInstance(RInterpreterImpl::class.java)
+    val LOG = Logger.getInstance(RInterpreterBase::class.java)
 
     private val GET_ENV_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/get_env.R")
     private val LIBRARY_PATHS_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/library_paths.R")
     private val INSTALLED_PACKAGES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/installed_packages.R")
 
-    // TODO: run via helper
-    fun loadInterpreterVersionInfo(interpreterPath: String, workingDirectory: String): Map<String, String> {
-      return runScript("version", interpreterPath, workingDirectory)?.stdoutLines?.map { it.split(' ', limit = 2) }
-               ?.filter { it.size == 2 }?.map { it[0] to it[1].trim() }?.toMap() ?: emptyMap()
-    }
-
-    private fun runScript(scriptText: String, interpreterPath: String, workingDirectory: String): ProcessOutput? {
-      val commandLine = arrayOf<String>(interpreterPath,  "--quiet", "--no-restore", "--slave", "-e", scriptText)
-
-      try {
-        val processHandler = CapturingProcessHandler(GeneralCommandLine(*commandLine).withWorkDirectory(workingDirectory))
-        return processHandler.runProcess(DEFAULT_TIMEOUT)
+    private fun getConsoleForInterpreter(interpreter: RInterpreter, project: Project): RConsoleView {
+      val current = RConsoleManager.getInstance(project).currentConsoleOrNull
+      return if (current != null && current.interpreter.interpreterLocation == interpreter.interpreterLocation) {
+        current
+      } else {
+        RConsoleManager.runConsole(project)
+          .onError { LOG.error("Cannot run new console for interpreter", it) }
+          .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
       }
-      catch (e: Throwable) {
-        LOG.info("Failed to run R executable: \n" +
-                 "Interpreter path " + interpreterPath + "0\n" +
-                 "Exception occurred: " + e.message)
-      }
-
-      return null
-    }
-
-    private fun getConsole(project: Project): RConsoleView {
-      return RConsoleManager.getInstance(project).currentConsoleAsync
-               .onError { LOG.error("Cannot run new console for interpreter", it) }
-               .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
     }
 
     private fun String.expandTilde(): String {

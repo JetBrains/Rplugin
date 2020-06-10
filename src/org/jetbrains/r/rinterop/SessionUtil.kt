@@ -8,11 +8,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.Key
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.isLocal
 import java.nio.file.Paths
 
 object SessionUtil {
-  fun getWorkspaceFile(project: Project): String? {
+  fun getWorkspaceFile(project: Project, interpreter: RInterpreter): String? {
+    if (!interpreter.isLocal()) return null
     val filename: String
     val projectDir: String
     if (ApplicationManager.getApplication().isUnitTestMode) {
@@ -21,8 +23,7 @@ object SessionUtil {
       filename = "a"
     } else {
       projectDir = project.guessProjectDir()?.canonicalPath ?: return null
-      val interpreter = RInterpreterManager.getInterpreter(project) ?: return null
-      filename = interpreter.interpreterPath.hashCode().toString()
+      filename = interpreter.interpreterLocation.hashCode().toString()
     }
     return Paths.get(projectDir, WORKSPACE_DIRECTORY, "$filename.$EXTENSION").toString()
   }

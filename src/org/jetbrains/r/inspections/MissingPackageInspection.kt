@@ -83,8 +83,8 @@ class MissingPackageInspection : RInspection() {
       else -> return
     }
 
-    val rInterpreter = RInterpreterManager.getInterpreter(packageExpression.project)
-    if (rInterpreter == null || rInterpreter.isUpdating || packageName == null) {  // Note: also prevents false positives during interpreter's update
+    val rInterpreter = RInterpreterManager.getInterpreterOrNull(packageExpression.project) ?: return
+    if (rInterpreter.isUpdating || packageName == null) {  // Note: also prevents false positives during interpreter's update
       return
     }
     val byName = rInterpreter.getPackageByName(packageName)

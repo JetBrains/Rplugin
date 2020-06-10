@@ -5,17 +5,16 @@
 package org.jetbrains.r.console
 
 import com.intellij.testFramework.UsefulTestCase
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
 
 class RPackageDependenciesTest : RConsoleBaseTestCase() {
 
   fun testLoadDependencies() {
     addLibraries()
-    val packages = RInterpreterManager.getInterpreter(project)?.installedPackages ?: error("No interpreter")
+    val packages = interpreter.installedPackages
     val packageMap = packages.map { it.packageName to it.packageVersion }.toMap()
-    val dplyrVersion = packageMap["dplyr"] ?: error("Dplyr no found")
-    val ggplot2Version = packageMap["ggplot2"] ?: error("Dplyr no found")
+    val dplyrVersion = packageMap["dplyr"] ?: error("Package 'dplyr' not found")
+    val ggplot2Version = packageMap["ggplot2"] ?: error("Package 'ggplot2' not found")
     myFixture.addFileToProject("DESCRIPTION", """
       Package: testPackage
       Title: Test package

@@ -18,6 +18,7 @@ import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
 import java.awt.Component
@@ -162,9 +163,9 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     tableModel.setIsBadRowValue(errorMessages.containsKey(row), row)
   }
 
-  fun updatePackratSettings(interpreter: String) {
-    if (interpreter != lastSettingsRequest.interpreterPath) {
-      lastSettingsRequest.interpreterPath = interpreter
+  fun updatePackratSettings(interpreter: RInterpreterLocation) {
+    if (interpreter != lastSettingsRequest.interpreterLocation) {
+      lastSettingsRequest.interpreterLocation = interpreter
       lastSettingsRequest.settings = getAllPackratSettings(interpreter)
     }
     tableModel.updateDataRows(lastSettingsRequest.settings.toTypedArray())
@@ -296,5 +297,6 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     }
   }
 
-  private data class LastSettingsRequest(var interpreterPath: String? = null, var settings: List<PackratSettings<*>> = emptyList())
+  private data class LastSettingsRequest(var interpreterLocation: RInterpreterLocation? = null,
+                                         var settings: List<PackratSettings<*>> = emptyList())
 }

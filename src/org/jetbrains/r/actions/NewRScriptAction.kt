@@ -34,7 +34,7 @@ class NewRScriptAction : TestableCreateFileFromTemplateAction("R Script",
   }
 
   override fun createFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {
-    RInterpreterManager.getInstance(directory.project).initializeInterpreter()
+    RInterpreterManager.getInterpreterAsync(directory.project)
     return super.createFile(name, templateName, directory)
   }
 

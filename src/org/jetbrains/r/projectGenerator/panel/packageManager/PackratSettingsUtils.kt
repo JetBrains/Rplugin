@@ -5,14 +5,14 @@
 package org.jetbrains.r.projectGenerator.panel.packageManager
 
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import java.util.*
 
 private val SCRIPT_PATH = RPluginUtil.findFileInRHelpers("R/projectGenerator/getPackratOptions.R")
 
-fun getAllPackratSettings(rScriptPath: String): List<PackratSettings<*>> {
+fun getAllPackratSettings(interpreterLocation: RInterpreterLocation): List<PackratSettings<*>> {
   val allPackratSettings = mutableListOf<PackratSettings<*>>()
-  val stdout = RInterpreterUtil.runHelper(rScriptPath, SCRIPT_PATH, null, emptyList()) {
+  val stdout = interpreterLocation.runHelper(SCRIPT_PATH, null, emptyList()) {
     throw IllegalStateException(it.stderr)
   }
 

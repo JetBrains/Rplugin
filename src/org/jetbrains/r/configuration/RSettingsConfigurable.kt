@@ -12,6 +12,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.remote.RepoProvider
@@ -55,14 +56,14 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   }
 
   override fun reset() {
-    fun String.findAmong(existing: List<RInterpreterInfo>): RInterpreterInfo? {
-      return if (this.isNotBlank()) existing.find { it.interpreterPath == this } else null
+    fun RInterpreterLocation.findAmong(existing: List<RInterpreterInfo>): RInterpreterInfo? {
+      return existing.find { it.interpreterLocation == this }
     }
 
     val existing = getSynchronously(LOADING_INTERPRETERS_TEXT) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
-    val selection = settings.interpreterPath.findAmong(existing)
+    val selection = settings.interpreterLocation?.findAmong(existing)
     interpreterPanel.initialSelection = selection
     interpreterPanel.initialInterpreters = existing
     interpreterPanel.reset()
@@ -72,11 +73,11 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
 
   override fun apply() {
     RInterpreterSettings.setEnabledInterpreters(interpreterPanel.currentInterpreters)
-    val path = interpreterPanel.currentSelection?.interpreterPath ?: ""
-    val previousPath = settings.interpreterPath
-    if (path != previousPath) {
-      settings.interpreterPath = path
-      onInterpreterPathChanged(path)
+    val location = interpreterPanel.currentSelection?.interpreterLocation
+    val previousLocation = settings.interpreterLocation
+    if (location != previousLocation) {
+      settings.interpreterLocation = location
+      onInterpreterLocationChanged(location)
     }
     settings.loadWorkspace = loadWorkspaceCheckBox.isSelected
     if (settings.saveWorkspace != saveWorkspaceCheckBox.isSelected) {
@@ -97,18 +98,18 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     }
   }
 
-  private fun onInterpreterPathChanged(path: String) {
+  private fun onInterpreterLocationChanged(location: RInterpreterLocation?) {
     if (project.isDefault) return
     restartInterpreter()
     RConsoleManager.runConsole(project).onSuccess {
       runInEdt {
-        RConsoleManager.closeMismatchingConsoles(project, path)
+        RConsoleManager.closeMismatchingConsoles(project, location)
       }
     }
   }
 
   private fun restartInterpreter() {
-    RInterpreterManager.getInstance(project).initializeInterpreter(true).onSuccess {
+    RInterpreterManager.getInterpreterAsync(project, true).onSuccess {
       RepoProvider.getInstance(project).onInterpreterVersionChange()
       ApplicationManager.getApplication().invokeLater {
         getPackagesPanel(project).scheduleRefresh()

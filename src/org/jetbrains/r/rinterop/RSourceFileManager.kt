@@ -10,7 +10,10 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.DeprecatedVirtualFileSystem
+import com.intellij.openapi.vfs.NonPhysicalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -33,7 +36,9 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
 
   fun getFileId(file: VirtualFile): String {
     file.getUserData(FILE_ID)?.let { return it }
-    val fileId = file.canonicalPath!!
+    val fileId = rInterop.interpreter.getFilePathAtHost(file)?.let { R_LOCAL_PREFIX + it }
+                 ?:IDE_LOCAL_PREFIX + file.url
+    file.putUserData(FILE_ID, fileId)
     files[fileId] = file
     return fileId
   }
@@ -41,9 +46,18 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   fun getFileById(fileId: String): VirtualFile? {
     if (fileId.isEmpty()) return null
     files[fileId]?.let { return it }
-    LocalFileSystem.getInstance().findFileByPath(fileId)?.let {
-      files[fileId] = it
-      return it
+    if (fileId.startsWith(IDE_LOCAL_PREFIX)) {
+      VirtualFileManager.getInstance().findFileByUrl(fileId.substring(IDE_LOCAL_PREFIX.length))?.let {
+        it.putUserData(FILE_ID, fileId)
+        files[fileId] = it
+        return it
+      }
+    } else if (fileId.startsWith(R_LOCAL_PREFIX)) {
+      rInterop.interpreter.findFileByPathAtHost(fileId.substring(R_LOCAL_PREFIX.length))?.let {
+        it.putUserData(FILE_ID, fileId)
+        files[fileId] = it
+        return it
+      }
     }
     val text = rInterop.execute(rInterop.asyncStub::getSourceFileText, StringValue.of(fileId)).value
     if (text.isEmpty()) return null
@@ -65,7 +79,10 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
 
   override fun dispose() {
     val temporaryFileUrls = files.values.filter { isTemporary(it) }.map { it.url }.toSet()
-    files.values.forEach { filesystem.removeFile(it.path) }
+    files.values.forEach {
+      it.putUserData(FILE_ID, null)
+      filesystem.removeFile(it.path)
+    }
     runInEdt {
       runWriteAction {
         val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
@@ -109,6 +126,8 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   companion object {
+    private const val IDE_LOCAL_PREFIX = "ilocal://"
+    private const val R_LOCAL_PREFIX = "rlocal://"
     private val FILE_ID = Key<String>("org.jetbrains.r.rinterop.SourceFileId")
     private const val PROTOCOL = "rwrapper"
     private val filesystem = VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as MyVirtualFileSystem

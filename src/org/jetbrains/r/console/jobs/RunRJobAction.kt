@@ -10,6 +10,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.settings.RSettings
 
 class RunRJobAction : DumbAwareAction() {
@@ -20,7 +21,7 @@ class RunRJobAction : DumbAwareAction() {
 
   override fun update(e: AnActionEvent) {
     val project = e.project
-    e.presentation.isEnabled = project?.isDefault == false && RSettings.getInstance(project).interpreterPath.isNotEmpty()
+    e.presentation.isEnabled = project?.isDefault == false && RSettings.getInstance(project).interpreterLocation?.toLocalPathOrNull() != null
   }
 
   companion object {

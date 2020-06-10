@@ -102,7 +102,7 @@ class RCompletionContributor : CompletionContributor() {
   private class InstalledPackageCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val interpreter = RInterpreterManager.getInterpreter(position.project) ?: return
+      val interpreter = RInterpreterManager.getInterpreterOrNull(position.project) ?: return
       val installedPackages = interpreter.installedPackages
       installedPackages.filter { it.isUser }.forEach {
         result.consume(rCompletionElementFactory.createPackageLookupElement(it.packageName, true))

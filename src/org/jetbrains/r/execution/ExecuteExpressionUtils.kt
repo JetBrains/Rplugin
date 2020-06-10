@@ -4,14 +4,13 @@
 
 package org.jetbrains.r.execution
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.ThrowableComputable
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import java.nio.file.Paths
 
@@ -41,22 +40,21 @@ object ExecuteExpressionUtils {
     }, title, false, null)
   }
 
-  fun executeScriptInBackground(rScriptPath: String,
+  fun executeScriptInBackground(interpreterLocation: RInterpreterLocation,
                                 relativeScriptPath: String,
                                 args: List<String>,
                                 title: String,
                                 timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
     return getSynchronously<ProcessOutput>(title) {
-      executeScript(rScriptPath, relativeScriptPath, args, timeout)
+      executeScript(interpreterLocation, relativeScriptPath, args, timeout)
     }
   }
 
-  fun executeScript(rScriptPath: String,
+  fun executeScript(interpreterLocation: RInterpreterLocation,
                     relativeScriptPath: String,
                     args: List<String>,
                     timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
-    val scriptPath = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString()).absolutePath
-    val generalCommandLine = GeneralCommandLine(rScriptPath, scriptPath, *args.toTypedArray())
-    return CapturingProcessHandler(generalCommandLine).runProcess(timeout)
+    val helper = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString())
+    return interpreterLocation.runHelperScript(helper, args, timeout)
   }
 }
