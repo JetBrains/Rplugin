@@ -54,29 +54,15 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
   }
 
-  private val autoResizeAction =
-    object : BasicToggleAction(AUTO_RESIZE_ACTIVE_TEXT, AUTO_RESIZE_IDLE_TEXT, AllIcons.General.FitContent, true) {
-      override fun onClick() {
-        wrapper.isAutoResizeEnabled = state
-        resizablePanel.isEnabled = state
-        updateSize(null)
-      }
-    }
+  private val autoResizeAction = BasicToggleAction(AUTO_RESIZE_PRESENTATION) { state ->
+    wrapper.isAutoResizeEnabled = state
+    resizablePanel.isEnabled = state
+    updateSize(null)
+  }
 
-  private val keepAspectRatioAction =
-    object : BasicToggleAction(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false) {
-      override fun update(e: AnActionEvent) {
-        val isEnabled = checkSizeInputs()
-        e.presentation.isEnabled = isEnabled
-        state = state && isEnabled
-        super.update(e)  // Note: late call of super method is intentional (as it must see latest value of `state`)
-        onClick()
-      }
-
-      override fun onClick() {
-        updateAspectRatio()
-      }
-    }
+  private val keepAspectRatioAction = BasicToggleAction(KEEP_ASPECT_RATIO_PRESENTATION, this::checkSizeInputs) {
+    updateAspectRatio()
+  }
 
   private val refreshAction = object : DumbAwareAction(REFRESH_PREVIEW_TEXT, REFRESH_PREVIEW_TEXT, AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
@@ -361,30 +347,60 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     return if (startsWith(basePath)) basePath.relativize(this) else this
   }
 
-  private open class BasicToggleAction(private val activeText: String, private val idleText: String, icon: Icon, isActive: Boolean)
-    : DumbAwareToggleAction(if (isActive) activeText else idleText, if (isActive) activeText else idleText, icon)
+  private class BasicToggleAction(
+    private val presentation: ToggleActionPresentation,
+    private val canClick: (() -> Boolean)? = null,
+    onClick: (Boolean) -> Unit
+  ) : DumbAwareToggleAction()
   {
-    var state = isActive
-      protected set
+    private val machine = BiStateMachine(presentation.initialState, onClick)
+
+    val state: Boolean
+      get() = machine.state
+
+    init {
+      templatePresentation.icon = presentation.icon
+      updateText(templatePresentation)
+    }
 
     override fun update(e: AnActionEvent) {
-      super.update(e)
-      val text = if (state) activeText else idleText
-      e.presentation.description = text
-      e.presentation.text = text
+      val isEnabled = canClick?.invoke() ?: true
+      e.presentation.isEnabled = isEnabled
+      machine.disableIf(!isEnabled)
+      updateText(e.presentation)
+      super.update(e)  // Note: late call of super method is intentional (as it must see latest value of `machine.state`)
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-      return state
+      return machine.state
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-      this.state = state
-      onClick()
+      machine.state = state
     }
 
-    protected open fun onClick() {
-      // Do nothing
+    private fun updateText(targetPresentation: Presentation) {
+      val text = if (machine.state) presentation.activeText else presentation.idleText
+      targetPresentation.description = text
+      targetPresentation.text = text
+    }
+  }
+
+  private data class ToggleActionPresentation(val activeText: String, val idleText: String, val icon: Icon, val initialState: Boolean)
+
+  private class BiStateMachine(initialState: Boolean, private val onChange: (Boolean) -> Unit) {
+    var state: Boolean = initialState
+      set(newState) {
+        if (field != newState) {
+          field = newState
+          onChange(field)
+        }
+      }
+
+    fun disableIf(condition: Boolean) {
+      if (condition) {
+        state = false
+      }
     }
   }
 
@@ -503,6 +519,12 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
     private val DPI_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.dpi.text")
     private val PX_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.px.text")
+
+    private val AUTO_RESIZE_PRESENTATION =
+      ToggleActionPresentation(AUTO_RESIZE_ACTIVE_TEXT, AUTO_RESIZE_IDLE_TEXT, AllIcons.General.FitContent, true)
+
+    private val KEEP_ASPECT_RATIO_PRESENTATION =
+      ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false)
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)
