@@ -172,6 +172,18 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
     }
   }
 
+  fun testFactor() {
+    val viewer = createViewer("data.frame(as.factor(c('Xaa', 'cc', 'cc', 'Yaa', 'Xaa', 'zz')))")
+    TestCase.assertEquals(listOf("Xaa", "cc", "cc", "Yaa", "Xaa", "zz"), List(viewer.nRows) { viewer.getValueAt(it, 1) })
+
+    val sorted = viewer.sortBy(listOf(RowSorter.SortKey(1, SortOrder.ASCENDING)))
+    TestCase.assertEquals(setOf("Xaa", "Yaa", "cc", "zz"), List(sorted.nRows) { sorted.getValueAt(it, 1) }.toSet())
+
+    val parser = RFilterParser(1)
+    val filtered = viewer.filter(parser.parseText("aa").proto)
+    TestCase.assertEquals(listOf("Xaa", "Yaa", "Xaa"), List(filtered.nRows) { filtered.getValueAt(it, 1) })
+  }
+
   private fun createViewer(expr: String): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(RRef.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
   }
