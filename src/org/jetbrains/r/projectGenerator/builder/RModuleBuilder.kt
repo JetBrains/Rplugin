@@ -55,7 +55,7 @@ class RModuleBuilder(private val generator: RProjectGenerator) : ModuleBuilder()
     return module
   }
 
-  override fun validate(current: Project?, dest: Project?): Boolean {
+  override fun validate(current: Project, dest: Project): Boolean {
     return settingsWizardStep?.checkValid() ?: true
   }
 }
