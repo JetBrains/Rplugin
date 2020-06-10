@@ -26,6 +26,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import java.awt.BorderLayout
 import java.io.File
@@ -98,17 +99,21 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>, isShiny: Boolean) {
-    val interpreter = RInterpreterManager.getInterpreter(project) ?: return
-    val pathToRscript = getRScriptPath(interpreter.interpreterPath)
-    val scriptPath = StringUtil.escapeBackSlashes(R_MARKDOWN_HELPER.absolutePath)
-    val filePath = StringUtil.escapeBackSlashes(rMarkdownFile.path)
-    val knitRootDirectory = StringUtil.escapeBackSlashes(
-      RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile.path))
-    val libraryPath = StringUtil.escapeBackSlashes(getPandocLibraryPath())
-    val resultTmpFile = FileUtil.createTempFile("rmd-output-path", ".txt", true)
-    val script = arrayListOf<String>(
-      pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory, resultTmpFile.absolutePath)
-    runRender(script, knitRootDirectory, rMarkdownFile.path, promise, resultTmpFile, isShiny)
+    RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
+      val pathToRscript = getRScriptPath(
+        (interpreter.interpreterLocation as? RLocalInterpreterLocation)?.path ?: throw NotImplementedError("Remote RMarkdown render is not implemented"))
+      val scriptPath = StringUtil.escapeBackSlashes(R_MARKDOWN_HELPER.absolutePath)
+      val filePath = StringUtil.escapeBackSlashes(rMarkdownFile.path)
+      val knitRootDirectory = StringUtil.escapeBackSlashes(
+        RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile.path))
+      val libraryPath = StringUtil.escapeBackSlashes(getPandocLibraryPath())
+      val resultTmpFile = FileUtil.createTempFile("rmd-output-path", ".txt", true)
+      val script = arrayListOf<String>(
+        pathToRscript, scriptPath, libraryPath, filePath, knitRootDirectory, resultTmpFile.absolutePath)
+      runRender(script, knitRootDirectory, rMarkdownFile.path, promise, resultTmpFile, isShiny)
+    }.onError {
+      promise.setError(it)
+    }
   }
 
   private fun getRScriptPath(interpreterPath: String): String {

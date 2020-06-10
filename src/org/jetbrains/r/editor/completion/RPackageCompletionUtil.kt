@@ -21,7 +21,7 @@ import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
 object RPackageCompletionUtil {
 
   fun addPackageCompletion(position: PsiElement, result: CompletionResultSet) {
-    val interpreter = RInterpreterManager.getInterpreter(position.project) ?: return
+    val interpreter = RInterpreterManager.getInterpreterOrNull(position.project) ?: return
     val installedPackages = interpreter.installedPackages
     installedPackages.forEach { result.consume(RLookupElementFactory().createPackageLookupElement(it.packageName, false)) }
   }
@@ -32,7 +32,7 @@ object RPackageCompletionUtil {
                              result: CompletionResultSet,
                              elementFactory: RLookupElementFactory) {
     val project = parameters.position.project
-    val interpreter = RInterpreterManager.getInterpreter(project) ?: return
+    val interpreter = RInterpreterManager.getInterpreterOrNull(project) ?: return
     val packageFile = interpreter.getSkeletonFileByPackageName(namespaceName) ?: return
     val scope = GlobalSearchScope.fileScope(packageFile)
     addCompletionFromIndices(project, scope, parameters.originalFile, "", HashSet(), result, elementFactory, isInternalAccess)
@@ -47,7 +47,7 @@ object RPackageCompletionUtil {
                                elementFactory: RLookupElementFactory,
                                isInternalAccess: Boolean = false) {
     val runtimeInfo = originFile.runtimeInfo
-    val interpreter = RInterpreterManager.getInterpreter(originFile.project)
+    val interpreter = RInterpreterManager.getInterpreterOrNull(originFile.project)
     var hasElementsWithPrefix = false
     if (runtimeInfo != null && interpreter != null) {
       val loadedPackages = runtimeInfo.loadedPackages

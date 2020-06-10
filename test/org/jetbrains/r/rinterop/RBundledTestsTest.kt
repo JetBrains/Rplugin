@@ -16,6 +16,7 @@ import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.R_3_4
 import org.jetbrains.r.interpreter.R_3_5
+import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
@@ -112,7 +113,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
     if (!script.exists()) {
       val generator = Paths.get(tempDir, scriptName + "in").toString()
       TestCase.assertTrue("${scriptName + "in"} does not exist", File(generator).exists())
-      val cmd = GeneralCommandLine(RInterpreterManager.getInstance(project).interpreterPath,
+      val cmd = GeneralCommandLine(RInterpreterManager.getInstance(project).interpreterLocation?.toLocalPathOrNull()!!,
                                    "--vanilla", "--slave", "-f", generator)
         .withWorkDirectory(File(tempDir))
       script.writeText(CapturingProcessHandler(cmd).runProcess().stdout)
@@ -217,7 +218,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   }
 
   private inline fun withRInterop(f: (RInterop) -> Unit) {
-    val newInterop = RInteropUtil.runRWrapperAndInterop(project).blockingGet(DEFAULT_TIMEOUT)!!
+    val newInterop = RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     try {
       newInterop.asyncEventsStartProcessing()
       newInterop.setWorkingDir(tempDir)

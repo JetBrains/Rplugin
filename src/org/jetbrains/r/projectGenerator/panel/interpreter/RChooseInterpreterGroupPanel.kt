@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBRadioButton
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import java.awt.BorderLayout
 import javax.swing.ButtonGroup
 import javax.swing.Icon
@@ -35,8 +36,8 @@ class RChooseInterpreterGroupPanel(name: String,
 
   override fun validateInterpreter(): List<ValidationInfo> = panels.filter { it.isEnabled }.flatMap { it.validateInterpreter() }
 
-  override val interpreterPath: String?
-    get() = mySelectedPanel.interpreterPath
+  override val interpreterLocation: RInterpreterLocation?
+    get() = mySelectedPanel.interpreterLocation
 
   override fun addChangeListener(listener: Runnable) {
     changeListeners += listener

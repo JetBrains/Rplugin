@@ -30,10 +30,11 @@ import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.interpreter.RInterpreterImpl
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
+import org.jetbrains.r.interpreter.RLocalInterpreterImpl
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.mock.MockInterpreterManager
 import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RPackage
@@ -46,6 +47,7 @@ import java.util.*
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
 
+  private var mockInterpreterManagerSet = false
   private var isLibraryAdded = false
 
   override fun getTestDataPath() : String {
@@ -63,7 +65,12 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   fun addLibraries() {
+    prepareTestSkeletons(project)
     setupMockInterpreterManager()
+    val dumbService = DumbServiceImpl.getInstance(project)
+    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
+      dumbService.queueTask(UnindexedFilesUpdater(project))
+    }
     setupMockRepoProvider()
   }
 
@@ -129,13 +136,10 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return PsiTreeUtil.getParentOfType(myFixture.file.findElementAt(myFixture.caretOffset), aClass, false)
   }
 
-  private fun setupMockInterpreterManager() {
-    prepareTestSkeletons(project)
+  fun setupMockInterpreterManager() {
+    if (mockInterpreterManagerSet) return
+    mockInterpreterManagerSet = true
     project.registerServiceInstance(RInterpreterManager::class.java, MockInterpreterManager(project))
-    val dumbService = DumbServiceImpl.getInstance(project)
-    if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
-      dumbService.queueTask(UnindexedFilesUpdater(project))
-    }
   }
 
   private fun setupMockRepoProvider() {
@@ -151,8 +155,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
     val interpreterPath = RInterpreterUtil.suggestHomePath()
     check(!(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
-    val versionInfo = RInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
-    val rInterpreter = RInterpreterImpl(versionInfo, interpreterPath, project)
+    val versionInfo = RLocalInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
+    val rInterpreter = RLocalInterpreterImpl(RLocalInterpreterLocation(interpreterPath), versionInfo, project)
     rInterpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
     val packagesForTest = missingTestSkeletons.map {
       rInterpreter.getPackageByName(it)?.run { RPackage(name, version) }

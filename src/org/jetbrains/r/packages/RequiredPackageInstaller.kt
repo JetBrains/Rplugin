@@ -163,7 +163,7 @@ class RequiredPackageInstaller(private val project: Project) {
    * or `null` if [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet
    */
   fun getMissingPackagesOrNull(packages: List<RequiredPackage>): List<RequiredPackage>? {
-    return RInterpreterManager.getInterpreter(project)?.let {
+    return RInterpreterManager.getInterpreterOrNull(project)?.let {
       getMissingPackages(packages)
     }
   }

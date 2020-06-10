@@ -11,7 +11,7 @@ import org.jetbrains.r.psi.api.RPsiElement
 
 class RImportReference(psiElement: RPsiElement): RReferenceBase<RPsiElement>(psiElement) {
   override fun multiResolveInner(incompleteCode: Boolean): Array<ResolveResult> {
-    val interpreter = RInterpreterManager.getInterpreter(element.project) ?: return emptyArray()
+    val interpreter = RInterpreterManager.getInterpreterOrNull(element.project) ?: return emptyArray()
     val packageName = psiElement.name ?: return emptyArray()
     return arrayOf(PsiElementResolveResult(interpreter.getSkeletonFileByPackageName(packageName) ?: return emptyArray()))
   }

@@ -5,36 +5,30 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.openapi.util.Version
-import java.io.File
 
 interface RInterpreterInfo {
   val interpreterName: String
-  val interpreterPath: String
+  val interpreterLocation: RInterpreterLocation
   val version: Version
-
-  fun exists(): Boolean {
-    return File(interpreterPath).exists()
-  }
 }
 
 data class RBasicInterpreterInfo(
   override val interpreterName: String,
-  override val interpreterPath: String,
+  override val interpreterLocation: RInterpreterLocation,
   override val version: Version
 ) : RInterpreterInfo {
   companion object {
-    fun from(name: String, path: String): RBasicInterpreterInfo? {
-      return if (File(path).exists()) {
-        RInterpreterUtil.tryGetVersionByPath(path)?.let { version ->
-          RBasicInterpreterInfo(name, path, version)
-        }
-      } else {
+    fun from(name: String, location: RInterpreterLocation): RBasicInterpreterInfo? {
+      val version = try {
+        location.getVersion()
+      } catch (_: Exception) {
         null
       }
+      return version?.let { RBasicInterpreterInfo(name, location, it) }
     }
   }
 }
 
 fun List<RInterpreterInfo>.findByPath(path: String): RInterpreterInfo? {
-  return find { it.interpreterPath == path }
+  return find { it.interpreterLocation.toLocalPathOrNull() == path }
 }

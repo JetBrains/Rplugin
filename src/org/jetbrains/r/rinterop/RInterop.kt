@@ -7,7 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
-import com.intellij.execution.process.OSProcessHandler
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -35,10 +35,10 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
@@ -68,7 +68,8 @@ private const val DEADLINE_TEST_DEFAULT = 40L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 const val RINTEROP_THREAD_NAME = "RInterop"
 
-class RInterop(val processHandler: OSProcessHandler, address: String, port: Int, val project: Project) : Disposable {
+class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
+               address: String, port: Int, val project: Project) : Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
@@ -164,7 +165,8 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   private val getInfoResponse = execute(asyncStub::getInfo, Empty.getDefaultInstance())
   val rVersion = RVersion.forceParse(getInfoResponse.rVersion)
-  val workspaceFile: String?
+  var workspaceFile: String? = null
+    private set
   private var saveOnExitValue = false
   var saveOnExit: Boolean
     get() = saveOnExitValue
@@ -184,10 +186,11 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
         }
       }, 0L, HEARTBEAT_PERIOD.toLong())
     }
+  }
 
+  fun init(rScriptsPath: String, baseDir: String, workspaceFile: String? = null) {
     val initRequest = Init.newBuilder()
-
-    workspaceFile = SessionUtil.getWorkspaceFile(project)?.also {
+    this.workspaceFile = workspaceFile?.also {
       val loadWorkspace: Boolean
       if (!ApplicationManager.getApplication().isUnitTestMode) {
         val settings = RSettings.getInstance(project)
@@ -199,11 +202,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       }
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
-
-    val rScriptsPath = RPluginUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
-                       ?: throw RuntimeException("R Scripts not found")
-    val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
-    initRequest.setRScriptsPath(rScriptsPath).setProjectDir(projectDir)
+    initRequest.setRScriptsPath(rScriptsPath).setProjectDir(baseDir)
     val initOutput = executeRequest(RPIServiceGrpc.getInitMethod(), initRequest.build())
     if (initOutput.stdout.isNotBlank()) {
       LOG.warn(initOutput.stdout)
@@ -874,7 +873,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       }
       AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
-        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title) }) {
+        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title, request.content.toByteArray()) }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -978,7 +977,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
         if (!processHandler.isProcessTerminated) {
           terminationPromise.blockingGet(20000)
         }
-        channel.shutdownNow()
+        channel.shutdown()
         channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
         processHandler.waitFor(5000)
         executor.shutdown()
@@ -993,7 +992,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
             indicator.isIndeterminate = true
             terminationPromise.getWithCheckCanceled()
             executeTask {
-              channel.shutdownNow()
+              channel.shutdown()
               channel.awaitTermination(1000, TimeUnit.MILLISECONDS)
               if (!processHandler.waitFor(2000)) {
                 processHandler.destroyProcess()
@@ -1109,7 +1108,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(content: String, url: String) {}
-    fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
+    fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> = resolvedPromise()
     fun onSubprocessInput() {}
   }
 

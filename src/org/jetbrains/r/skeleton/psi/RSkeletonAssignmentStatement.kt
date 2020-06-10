@@ -70,7 +70,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   }
 
   override fun canNavigate(): Boolean {
-    return super.canNavigate() && RInterpreterManager.getInstance(project).interpreter != null
+    return super.canNavigate() && RInterpreterManager.getInstance(project).hasInterpreter()
   }
 
   override fun getText(): String {

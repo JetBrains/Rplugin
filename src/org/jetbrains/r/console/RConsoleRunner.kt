@@ -37,7 +37,7 @@ import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -50,10 +50,11 @@ import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class RConsoleRunner(private val project: Project,
-                     private val workingDir: String,
-                     private val consoleTitle: String = RBundle.message("console.runner.default.title"),
+class RConsoleRunner(private val interpreter: RInterpreter,
+                     private val workingDir: String = interpreter.basePath,
                      private val contentIndex: Int? = null) {
+  private val project = interpreter.project
+  private val consoleTitle = interpreter.suggestConsoleName(workingDir)
   private lateinit var consoleView: RConsoleView
 
   internal var hasPendingPrompt = false
@@ -62,33 +63,22 @@ class RConsoleRunner(private val project: Project,
     val promise = AsyncPromise<RConsoleView>()
     UIUtil.invokeLaterIfNeeded {
       val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
-      RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.onSuccess {
-        val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-        RInteropUtil.runRWrapperAndInterop(project).onSuccess { rInterop ->
-          initByInterop(rInterop, interpreterPath, promise)
-        }.onError {
-          showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
-          promise.setError(it)
-          UIUtil.invokeLaterIfNeeded {
-            placeholder?.manager?.removeContent(placeholder, true)
-          }
+      RInteropUtil.runRWrapperAndInterop(interpreter).onSuccess { rInterop ->
+        initByInterop(rInterop, promise)
+      }.onError {
+        showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
+        promise.setError(it)
+        UIUtil.invokeLaterIfNeeded {
+          placeholder?.manager?.removeContent(placeholder, true)
         }
       }
     }
     return promise
   }
 
-  fun initByInterop(rInterop: RInterop, interpreterPath: String): AsyncPromise<RConsoleView> {
-    val promise = AsyncPromise<RConsoleView>()
-    initByInterop(rInterop, interpreterPath, promise)
-    return promise
-  }
-
-  private fun initByInterop(rInterop: RInterop,
-                            interpreterPath: String,
-                            promise: AsyncPromise<RConsoleView>) {
+  internal fun initByInterop(rInterop: RInterop, promise: AsyncPromise<RConsoleView> = AsyncPromise()): Promise<RConsoleView> {
     UIUtil.invokeLaterIfNeeded {
-      consoleView = RConsoleView(rInterop, interpreterPath, consoleTitle)
+      consoleView = RConsoleView(rInterop, consoleTitle)
       ProcessTerminatedListener.attach(rInterop.processHandler)
       rInterop.processHandler.addProcessListener(object : ProcessAdapter() {
         override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
@@ -134,6 +124,7 @@ class RConsoleRunner(private val project: Project,
         }
       }
     }
+    return promise
   }
 
   private fun createContentDescriptorAndActions() {

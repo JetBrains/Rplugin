@@ -23,7 +23,9 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -33,8 +35,7 @@ import kotlin.reflect.jvm.javaField
 @Service
 class RJobRunner(private val project: Project) {
 
-  fun canRun(): Boolean =
-    RInterpreterManager.getInstance(project).interpreterPath.isNotEmpty()
+  fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreter()
 
   @TestOnly
   internal fun run(task: RJobTask): Promise<ProcessHandler> {
@@ -43,8 +44,8 @@ class RJobRunner(private val project: Project) {
     val rConsoleManager = RConsoleManager.getInstance(project)
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
-    return RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.then {
-      val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
+    return RInterpreterManager.getInterpreterAsync(project).then { interpreter ->
+      val interpreterPath = interpreter.interpreterLocation.toLocalPathOrNull() ?: throw RuntimeException("Jobs are not supported for remote interpreters")
       val (scriptFile, exportRDataFile) = generateRunScript(task, rInterop)
       val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, scriptFile, emptyList())
       val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, task.workingDirectory)

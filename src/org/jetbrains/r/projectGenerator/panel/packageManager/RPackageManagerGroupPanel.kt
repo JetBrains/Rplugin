@@ -55,7 +55,7 @@ class RPackageManagerGroupPanel(name: String,
       installButton.isEnabled = false
       installButton.text = RBundle.message("project.settings.install.button.progress")
       ExecuteExpressionUtils
-        .executeScriptInBackground(rProjectSettings.rScriptPath!!, SCRIPT_PATH, listOf(selectedPanel.rPackageName),
+        .executeScriptInBackground(rProjectSettings.interpreterLocation!!, SCRIPT_PATH, listOf(selectedPanel.rPackageName),
                                    RBundle.message("project.settings.install.progress.title", selectedPanel.rPackageName),
                                    timeout = RInterpreterUtil.DEFAULT_TIMEOUT)
       rProjectSettings.isInstalledPackagesSetUpToDate = false
@@ -89,7 +89,7 @@ class RPackageManagerGroupPanel(name: String,
 
     if (panel is RPackratPanel) {
       try {
-        panel.updatePackratSettings(rProjectSettings.interpreterPath!!)
+        panel.updatePackratSettings(rProjectSettings.interpreterLocation!!)
       }
       catch (e: IllegalStateException) {
         e.message?.let { return listOf(ValidationInfo(it)) }

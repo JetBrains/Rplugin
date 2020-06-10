@@ -11,7 +11,7 @@ import org.jetbrains.r.interpreter.RInterpreterManager
 
 class RIndexableSetContributor : IndexableSetContributor() {
   override fun getAdditionalProjectRootsToIndex(project: Project): Set<VirtualFile> {
-    return RInterpreterManager.getInstanceIfCreated(project)?.interpreter?.skeletonRoots ?: emptySet()
+    return RInterpreterManager.getInterpreterOrNull(project)?.skeletonRoots ?: emptySet()
   }
 
   override fun getAdditionalRootsToIndex(): Set<VirtualFile> {

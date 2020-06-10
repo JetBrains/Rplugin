@@ -165,7 +165,7 @@ object RepoUtils {
   }
 
   private fun getInterpreter(suggested: RInterpreter?, project: Project): RInterpreter {
-    return suggested ?: RInterpreterManager.getInstance(project).interpreter ?:
+    return suggested ?: RInterpreterManager.getInterpreterOrNull(project) ?:
            throw ExecutionException("Cannot get interpreter for packaging task. Please, specify path to the R executable")
   }
 

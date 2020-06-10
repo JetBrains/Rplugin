@@ -12,7 +12,6 @@ import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.SystemInfo.isWindows
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.wm.impl.welcomeScreen.FlatWelcomeFrame
 import com.intellij.platform.DirectoryProjectGenerator
@@ -23,6 +22,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RInterpreterPanel
@@ -30,7 +30,6 @@ import org.jetbrains.r.projectGenerator.template.RPackageProjectGenerator
 import org.jetbrains.r.projectGenerator.template.RProjectGenerator
 import org.jetbrains.r.projectGenerator.template.RProjectSettings
 import java.awt.BorderLayout
-import java.io.File
 import java.util.function.Consumer
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants
@@ -108,7 +107,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     setErrorText("") // To prevent the "create" button from blinking
     checkForError(interpreterPanel.validateInterpreter()) { return false }
     if (rProjectGenerator.requiredPackageList && !rProjectSettings.isInstalledPackagesSetUpToDate) {
-      if (!isRScriptExists() || RPluginUtil.helperPathOrNull == null) {
+      if (RPluginUtil.helperPathOrNull == null) {
         checkForError(listOf(ValidationInfo(MISSING_RSCRIPT))) {
           rProjectSettings.installedPackages = emptySet()
           rProjectGenerator.validateGeneratorSettings()
@@ -156,15 +155,10 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
 
     val jPanel = JPanel(VerticalFlowLayout())
     val decorator = HideableDecorator(jPanel, RBundle.message("project.settings.more.settings"), false)
-    val result = interpreterPanel.interpreterPath?.let { rProjectGenerator.validateGeneratorSettings() }
+    val result = interpreterPanel.interpreterLocation?.let { rProjectGenerator.validateGeneratorSettings() }
     decorator.setOn(result == null || result.isNotEmpty())
     decorator.setContentComponent(advancedSettings)
     return jPanel
-  }
-
-  private fun isRScriptExists(): Boolean {
-    val rScriptPath = rProjectSettings.rScriptPath
-    return !(rScriptPath == null || !File(rScriptPath).exists())
   }
 
   private fun createInterpretersPanel(): JPanel {
@@ -172,7 +166,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     val decoratorPanel = JPanel(VerticalFlowLayout())
 
     val existingInterpreters = getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
-      RInterpreterUtil.suggestAllInterpreters(false)
+      RInterpreterUtil.suggestAllInterpreters(enabledOnly = false, localOnly = true)
     }
 
     val newInterpreterPanel = RAddNewInterpreterPanel(existingInterpreters)
@@ -188,11 +182,8 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     })
 
     interpreterPanel.addChangeListener(Runnable {
-      val path = interpreterPanel.mySelectedPanel.interpreterPath
-      rProjectSettings.interpreterPath = path
-      if (path != null) {
-        rProjectSettings.rScriptPath = File(path).resolveSibling(if (isWindows) "Rscript.exe" else "Rscript").absolutePath
-      }
+      val location = interpreterPanel.mySelectedPanel.interpreterLocation
+      rProjectSettings.interpreterPath = location?.toLocalPathOrNull()
     })
 
     interpreterPanel.addChangeListener(Runnable {
@@ -206,7 +197,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     container.add(interpreterPanel, BorderLayout.NORTH)
 
     val result = interpreterPanel.validateInterpreter()
-    decorator.setOn(result.isNotEmpty() || (rProjectGenerator.requiredPackageList && !isRScriptExists()))
+    decorator.setOn(result.isNotEmpty())
     decorator.setContentComponent(container)
 
     return decoratorPanel

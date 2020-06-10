@@ -11,6 +11,7 @@ import com.intellij.util.ui.JBUI
 import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.R_UNKNOWN
 import java.awt.Component
 import javax.swing.JList
@@ -47,8 +48,8 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
   private fun appendName(interpreter: RInterpreterInfo?) {
     if (interpreter != null) {
       append(interpreter.interpreterName)
-      append(" (${interpreter.version})")
-      append(" ${interpreter.interpreterPath}", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
+      append(" (${interpreter.version}) ")
+      append(interpreter.interpreterLocation.toString(), SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
     } else {
       append(NO_INTERPRETER)
     }
@@ -59,7 +60,7 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
 
     val SEPARATOR = object : RInterpreterInfo {
       override val interpreterName = ""
-      override val interpreterPath = ""
+      override val interpreterLocation = RLocalInterpreterLocation("")
       override val version = R_UNKNOWN
     }
   }

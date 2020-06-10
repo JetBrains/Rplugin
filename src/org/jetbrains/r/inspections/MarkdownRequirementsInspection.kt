@@ -25,7 +25,7 @@ class MarkdownRequirementsInspection : RInspection() {
   }
 
   private fun checkRMarkdownPackages(file: PsiFile, project: Project, problemsHolder: ProblemsHolder) {
-    if (RInterpreterManager.getInterpreter(project)?.isUpdating == false) {
+    if (RInterpreterManager.getInterpreterOrNull(project)?.isUpdating == false) {
       RMarkdownUtil.getMissingPackages(project)?.let { missing ->
         if (missing.isNotEmpty()) {
           problemsHolder.registerProblem(file, PROBLEM_DESCRIPTION, InstallLibrariesFix(missing))

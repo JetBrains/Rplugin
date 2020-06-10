@@ -6,7 +6,6 @@ package org.jetbrains.r.run
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -17,6 +16,8 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import junit.framework.TestCase
 import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RBooleanLiteral
 import org.jetbrains.r.psi.api.RCallExpression
@@ -28,11 +29,14 @@ import org.jetbrains.r.run.debug.RLineBreakpointType
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected lateinit var rInterop: RInterop
   protected open val customDeadline: Long? = null
+  protected lateinit var interpreter: RInterpreter
 
   override fun setUp() {
     super.setUp()
     project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
-    rInterop = getRInterop(project)
+    setupMockInterpreterManager()
+    interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)!!
+    rInterop = getRInterop(interpreter)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")
   }
@@ -107,8 +111,8 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   companion object {
     const val DEFAULT_TIMEOUT = 20000
 
-    private fun getRInterop(project: Project): RInterop {
-      return RInteropUtil.runRWrapperAndInterop(project).blockingGet(DEFAULT_TIMEOUT)!!
+    private fun getRInterop(interpreter: RInterpreter): RInterop {
+      return RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
     }
   }
 }

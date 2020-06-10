@@ -66,24 +66,16 @@ object RInterpreterUtil {
     return if (pathEntry.first() == '"' && pathEntry.last() == '"') pathEntry.substring(1, pathEntry.length - 1) else pathEntry
   }
 
-  fun tryGetVersionByPath(interpreterPath: String): Version? {
-    return try {
-      getVersionByPath(interpreterPath)
-    } catch (_: Exception) {
+  fun parseVersion(line: String?): Version? {
+    return if (line?.startsWith("R version") == true) {
+      val items = line.split(' ')
+      items.getOrNull(2)?.let { Version.parseVersion(it) }
+    } else {
       null
     }
   }
 
   fun getVersionByPath(interpreterPath: String): Version? {
-    fun parseVersion(line: String?): Version? {
-      return if (line?.startsWith("R version") == true) {
-        val items = line.split(' ')
-        items.getOrNull(2)?.let { Version.parseVersion(it) }
-      } else {
-        null
-      }
-    }
-
     fun checkOutput(inputStream: InputStream): Version? {
       return inputStream.bufferedReader().use {
         val line = it.readLine()
@@ -113,10 +105,10 @@ object RInterpreterUtil {
     return version != null && version.isOrGreaterThan(3, 4) && version.lessThan(4, 2)
   }
 
-  fun suggestAllInterpreters(enabledOnly: Boolean): List<RInterpreterInfo> {
+  fun suggestAllInterpreters(enabledOnly: Boolean, localOnly: Boolean = false): List<RInterpreterInfo> {
     fun MutableList<RInterpreterInfo>.addInterpreter(path: String, name: String) {
       if (findByPath(path) == null) {
-        RBasicInterpreterInfo.from(name, path)?.let { inflated ->
+        RBasicInterpreterInfo.from(name, RLocalInterpreterLocation(path))?.let { inflated ->
           add(inflated)
           RInterpreterSettings.addOrEnableInterpreter(inflated)
         }
@@ -125,7 +117,11 @@ object RInterpreterUtil {
 
     fun suggestAllExisting(): List<RInterpreterInfo> {
       return mutableListOf<RInterpreterInfo>().apply {
-        addAll(RInterpreterSettings.existingInterpreters)
+        if (localOnly) {
+          addAll(RInterpreterSettings.existingInterpreters.filter { it.interpreterLocation is RLocalInterpreterLocation })
+        } else {
+          addAll(RInterpreterSettings.existingInterpreters)
+        }
         suggestAllHomePaths().forEach { path ->
           addInterpreter(path, SUGGESTED_INTERPRETER_NAME)
         }
@@ -137,8 +133,8 @@ object RInterpreterUtil {
 
     val existing = suggestAllExisting()
     return if (enabledOnly) {
-      val disabledPaths = RInterpreterSettings.disabledPaths
-      existing.filter { it.interpreterPath !in disabledPaths }
+      val disabled = RInterpreterSettings.disabledLocations
+      existing.filter { it.interpreterLocation.toString() !in disabled }
     } else {
       existing
     }
@@ -236,7 +232,7 @@ object RInterpreterUtil {
     val time = System.currentTimeMillis()
     try {
       val result = runAsync { runHelperWithArgs(interpreterPath, helper, workingDirectory, args) }
-                     .onError { RInterpreterImpl.LOG.error(it) }
+                     .onError { RInterpreterBase.LOG.error(it) }
                      .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
       if (result.exitCode != 0) {
         if (errorHandler != null) {
@@ -249,7 +245,7 @@ object RInterpreterUtil {
       }
       if (result.stderr.isNotBlank()) {
         // Note: this could be a warning message therefore there is no need to throw
-        RInterpreterImpl.LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
+        RInterpreterBase.LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
       }
       if (result.stdout.isBlank()) {
         if (errorHandler != null) {
@@ -260,7 +256,7 @@ object RInterpreterUtil {
       }
       return getScriptStdout(result.stdout)
     } finally {
-      RInterpreterImpl.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
+      RInterpreterBase.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
   }
 
@@ -318,8 +314,8 @@ object RInterpreterUtil {
     val processHandler = createProcessHandler(interpreterPath, defaultCommands, workingDirectory)
     val output = processHandler.runProcess(DEFAULT_TIMEOUT)
     if (output.exitCode != 0) {
-      RInterpreterImpl.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
-      RInterpreterImpl.LOG.warn(output.stderr)
+      RInterpreterBase.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
+      RInterpreterBase.LOG.warn(output.stderr)
     }
     return output
   }

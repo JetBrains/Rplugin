@@ -9,6 +9,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import java.awt.BorderLayout
 
@@ -20,8 +21,8 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
   }
   private val lastValidatedInterpreter = LastValidatedInterpreter()
 
-  override val interpreterPath: String?
-    get() = manageInterpreterPanel.currentSelection?.interpreterPath
+  override val interpreterLocation: RInterpreterLocation?
+    get() = manageInterpreterPanel.currentSelection?.interpreterLocation
 
   init {
     layout = BorderLayout()
@@ -32,10 +33,10 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
   }
 
   override fun validateInterpreter(): List<ValidationInfo> {
-    val path = interpreterPath ?: return listOf(ValidationInfo(MISSING_INTERPRETER_TEXT))
-    if (path == lastValidatedInterpreter.path) return lastValidatedInterpreter.validationInfo
-    lastValidatedInterpreter.path = path
-    lastValidatedInterpreter.validationInfo = if (!isCorrectInterpreterPath(path)) {
+    val location = interpreterLocation ?: return listOf(ValidationInfo(MISSING_INTERPRETER_TEXT))
+    if (location == lastValidatedInterpreter.location) return lastValidatedInterpreter.validationInfo
+    lastValidatedInterpreter.location = location
+    lastValidatedInterpreter.validationInfo = if (!isCorrectInterpreterLocation(location)) {
       listOf(ValidationInfo(INVALID_INTERPRETER_TEXT))
     } else {
       emptyList()
@@ -43,10 +44,10 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     return lastValidatedInterpreter.validationInfo
   }
 
-  private fun isCorrectInterpreterPath(interpreterPath: String): Boolean {
+  private fun isCorrectInterpreterLocation(interpreterLocation: RInterpreterLocation): Boolean {
     return try {
       val version = ExecuteExpressionUtils.getSynchronously(CHECK_INTERPRETER_TITLE) {
-        RInterpreterUtil.getVersionByPath(interpreterPath)
+        interpreterLocation.getVersion()
       }
       RInterpreterUtil.isSupportedVersion(version)
     } catch (_: Exception) {
@@ -54,7 +55,8 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     }
   }
 
-  private data class LastValidatedInterpreter(var path: String? = null, var validationInfo: List<ValidationInfo> = emptyList())
+  private data class LastValidatedInterpreter(var location: RInterpreterLocation? = null,
+                                              var validationInfo: List<ValidationInfo> = emptyList())
 
   companion object {
     private val PANEL_NAME = RBundle.message("project.settings.new.interpreter")

@@ -14,28 +14,28 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
     private fun RInterpreterInfo.toSerializable(timestamp: Long? = null): RSerializableInterpreter {
       return RSerializableInterpreter().also {
         it.name = interpreterName
-        it.path = interpreterPath
+        it.interpreterLocation = interpreterLocation
         it.version = version.toString()
-        it.timestamp = timestamp ?: File(interpreterPath).lastModified()
+        it.timestamp = timestamp ?: interpreterLocation.lastModified() ?: -1
       }
     }
 
-    private fun RSerializableInterpreter.toInterpreter(): RInterpreterInfo {
-      return RBasicInterpreterInfo(name, path, RVersion.forceParse(version))
+    private fun RSerializableInterpreter.toInterpreter(): RInterpreterInfo? {
+      return RBasicInterpreterInfo(name, interpreterLocation ?: return null, RVersion.forceParse(version))
     }
 
-    private fun List<RSerializableInterpreter>.findByPath(path: String): RSerializableInterpreter? {
-      return find { it.path == path }
+    private fun List<RSerializableInterpreter>.findByLocation(location: RInterpreterLocation): RSerializableInterpreter? {
+      return find { it.interpreterLocation == location }
     }
 
     fun getInstance() = service<RInterpreterSettings>()
 
-    var disabledPaths: Set<String>
+    var disabledLocations: Set<String>
       get() {
-        return getInstance().state.disabledPaths.toSet()
+        return getInstance().state.disabledLocations.toSet()
       }
       private set(newPaths) {
-        getInstance().state.disabledPaths.apply {
+        getInstance().state.disabledLocations.apply {
           clear()
           addAll(newPaths)
         }
@@ -43,30 +43,31 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
 
     val existingInterpreters: List<RInterpreterInfo>
       get() {
-        val known = knownInterpreters
-        val existing = mutableListOf<RSerializableInterpreter>()
         var isModified = false
-        for (interpreter in known) {
-          val file = File(interpreter.path)
-          if (file.exists()) {
-            val timestamp = file.lastModified()
-            if (timestamp != interpreter.timestamp) {
-              // Inflate new instance of RBasicInterpreter in order to get actual version
-              isModified = true
-              RBasicInterpreterInfo.from(interpreter.name, interpreter.path)?.let { inflated ->
-                existing.add(inflated.toSerializable(timestamp))
+        return knownInterpreters
+          .mapNotNull { interpreterInfo ->
+            val interpreter = interpreterInfo.toInterpreter() ?: return@mapNotNull null
+            val localPath = interpreter.interpreterLocation.toLocalPathOrNull() ?: return@mapNotNull interpreterInfo
+            val file = File(localPath)
+            if (file.exists()) {
+              val timestamp = file.lastModified()
+              if (timestamp != interpreterInfo.timestamp) {
+                // Inflate new instance of RBasicInterpreter in order to get actual version
+                isModified = true
+                RBasicInterpreterInfo.from(interpreter.interpreterName, interpreter.interpreterLocation)?.toSerializable()
+              } else {
+                interpreterInfo
               }
             } else {
-              existing.add(interpreter)
+              isModified = true
+              null
             }
-          } else {
-            isModified = true
+          }.let { existing ->
+            if (isModified) {
+              knownInterpreters = existing
+            }
+            existing.mapNotNull { it.toInterpreter() }
           }
-        }
-        if (isModified) {
-          knownInterpreters = existing
-        }
-        return existing.map { it.toInterpreter() }
       }
 
     private var knownInterpreters: List<RSerializableInterpreter>
@@ -83,8 +84,7 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
     fun addOrEnableInterpreter(interpreter: RInterpreterInfo) {
       val known = knownInterpreters
       val current = interpreter.toSerializable()
-      val path = current.path
-      val previous = known.findByPath(path)
+      val previous = known.findByLocation(interpreter.interpreterLocation)
       if (previous != null) {
         if (previous.timestamp != current.timestamp) {
           previous.apply {
@@ -96,7 +96,7 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
       } else {
         knownInterpreters = known.plus(current)
       }
-      getInstance().state.disabledPaths.remove(path)
+      getInstance().state.disabledLocations.remove(interpreter.interpreterLocation.toString())
     }
 
     fun setEnabledInterpreters(interpreters: List<RInterpreterInfo>) {
@@ -104,33 +104,50 @@ class RInterpreterSettings : SimplePersistentStateComponent<RInterpreterSettings
       val newKnown = mutableListOf<RSerializableInterpreter>().apply {
         addAll(interpreters.map { it.toSerializable() })
         for (interpreter in oldKnown) {
-          if (findByPath(interpreter.path) == null) {
+          val location = interpreter.interpreterLocation
+          if (location != null && findByLocation(location) == null) {
             add(interpreter)
           }
         }
       }
-      val newDisabledPaths = mutableSetOf<String>().apply {
+      val newDisabledLocations = mutableSetOf<String>().apply {
         for (interpreter in oldKnown) {
-          add(interpreter.path)
+          interpreter.interpreterLocation?.toString()?.let { add(it) }
         }
         for (interpreter in interpreters) {
-          remove(interpreter.interpreterPath)
+          interpreter.interpreterLocation.toString().let { remove(it) }
         }
       }
       knownInterpreters = newKnown
-      disabledPaths = newDisabledPaths
+      disabledLocations = newDisabledLocations
     }
   }
 }
 
 class RInterpreterSettingsState : BaseState() {
   var interpreters: MutableList<RSerializableInterpreter> by list<RSerializableInterpreter>()
-  var disabledPaths: MutableList<String> by list<String>()
+  var disabledLocations: MutableList<String> by list<String>()
 }
 
 class RSerializableInterpreter {
   var name: String = ""
   var path: String = ""
+  var remoteHost: String = ""
   var version: String = ""
   var timestamp: Long = 0L
+
 }
+
+var RSerializableInterpreter.interpreterLocation: RInterpreterLocation?
+  get() {
+    return RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.deserializeLocation(this) }.firstOrNull()
+  }
+  set(value) {
+    if (value != null) {
+      for (provider in RInterpreterSettingsProvider.getProviders()) {
+        if (provider.serializeLocation(value, this)) return
+      }
+    }
+    path = ""
+    remoteHost = ""
+  }

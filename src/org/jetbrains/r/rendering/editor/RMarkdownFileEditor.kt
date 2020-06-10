@@ -29,7 +29,6 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
@@ -124,9 +123,6 @@ private class BuildManager(private val project: Project, private val report: Vir
     runAsync {
       if (!isRunning) {
         isRunning = true
-        if (!RInterpreterManager.getInstance(project).hasInterpreter()) {
-          RInterpreterManager.getInstance(project).initializeInterpreter()
-        }
         val editor = e.editor ?: return@runAsync
         val isShiny = editor.isShiny
         val document = editor.document

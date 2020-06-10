@@ -9,8 +9,9 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
-import com.intellij.execution.process.OSProcessUtil
+import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.UnixProcessManager
+import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
@@ -35,7 +36,6 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.MarkupModel
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -50,6 +50,7 @@ import com.intellij.ui.AppUIUtil
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ConcurrencyUtil
 import com.intellij.util.IJSwingUtilities
+import com.intellij.util.PathUtil
 import com.intellij.util.ui.FontInfo
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -58,6 +59,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
@@ -67,10 +69,9 @@ import java.awt.Font
 import java.awt.event.KeyEvent
 import javax.swing.JComponent
 
-class RConsoleView(val rInterop: RInterop,
-                   val interpreterPath: String,
-                   title: String)
-  : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(rInterop.project, title, RLanguage.INSTANCE) {
+  val interpreter: RInterpreter
+    get() = rInterop.interpreter
   val executeActionHandler = RConsoleExecuteActionHandler(this)
   val consoleRuntimeInfo = RConsoleRuntimeInfoImpl(rInterop)
   val isRunningCommand: Boolean
@@ -123,7 +124,7 @@ class RConsoleView(val rInterop: RInterop,
         field = directory
         invokeLater {
           val content = RConsoleToolWindowFactory.getConsoleContent(this) ?: return@invokeLater
-          content.displayName = "[ " + directory + " ]"
+          content.displayName = interpreter.suggestConsoleName(directory)
         }
       }
     }
@@ -362,21 +363,26 @@ class RConsoleView(val rInterop: RInterop,
   class RSetCurrentDirectoryFromEditor : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
       val console = getConsole(e) ?: return
-      val project = e.project ?: return
-      val path = getVirtualFile(project)?.parent?.path ?: return
+      val file = getVirtualFile(e) ?: return
+      val filePath = console.interpreter.getFilePathAtHost(file) ?: return
+      val dirPath = PathUtil.getParentPath(filePath)
       runAsync {
-        console.rInterop.setWorkingDir(path)
+        console.rInterop.setWorkingDir(dirPath)
         console.executeActionHandler.fireCommandExecuted()
       }
     }
 
     override fun update(e: AnActionEvent) {
-      val project = e.project
-      e.presentation.isEnabled = project != null && getVirtualFile(project)?.isInLocalFileSystem == true
+      e.presentation.isEnabled = false
+      val console = getConsole(e) ?: return
+      val file = getVirtualFile(e) ?: return
+      console.interpreter.getFilePathAtHost(file) ?: return
+      e.presentation.isEnabled = true
     }
 
-    private fun getVirtualFile(project: Project): VirtualFile? =
-      FileEditorManager.getInstance(project).selectedEditor?.file
+    private fun getVirtualFile(e: AnActionEvent): VirtualFile? {
+      return FileEditorManager.getInstance(e.project ?: return null).selectedEditor?.file
+    }
   }
 
   class RestartRAction : DumbAwareAction() {
@@ -388,22 +394,22 @@ class RConsoleView(val rInterop: RInterop,
 
   class TerminateRWithReportAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
-      val console = getConsole(e) ?: return
+      val processHandler = getConsole(e)?.rInterop?.processHandler as? OSProcessHandler ?: return
       val yesNo = Messages.showYesNoDialog(e.project, RBundle.message("console.terminate.with.report.message"),
                                            RBundle.message("console.terminate.with.report.title"), null)
       if (yesNo == Messages.YES) {
-        console.rInterop.processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
+        processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
         if (SystemInfo.isWindows) {
-          WinProcess(console.rInterop.processHandler.process).sendCtrlC()
+          WinProcess(processHandler.process).sendCtrlC()
         } else {
-          UnixProcessManager.sendSignal(OSProcessUtil.getProcessID(console.rInterop.processHandler.process), UnixProcessManager.SIGABRT)
+          UnixProcessManager.sendSignal(OSProcessUtil.getProcessID(processHandler.process), UnixProcessManager.SIGABRT)
         }
       }
     }
 
     override fun update(e: AnActionEvent) {
       val console = getConsole(e)
-      e.presentation.isEnabled = console?.rInterop?.isAlive == true
+      e.presentation.isEnabled = console?.rInterop?.isAlive == true && console.rInterop.processHandler is OSProcessHandler
     }
   }
 }

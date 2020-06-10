@@ -20,6 +20,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -155,16 +156,20 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
 
   private fun runProcessAsync(processHandlerSupplier: (String) -> CapturingProcessHandler): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      RInterpreterManager.getInstance(project).interpreterPathValidatedPromise.onSuccess {
-        val interpreterPath = RInterpreterManager.getInstance(project).interpreterPath
-        val processHandler = processHandlerSupplier(interpreterPath)
-        currentProcessHandler = processHandler
-        processHandler.addProcessListener(createProcessListener(promise))
-        runInEdt {
-          consoleView.attachToProcess(processHandler)
-          consoleView.scrollToEnd()
-          processHandler.startNotify()
+      val interpreterPath = RInterpreterManager.getInstance(project).interpreterLocation.let {
+        if (it !is RLocalInterpreterLocation) {
+          promise.setError("Remote runProcess unimplemented")
+          return@also
         }
+        it.path
+      }
+      val processHandler = processHandlerSupplier(interpreterPath)
+      currentProcessHandler = processHandler
+      processHandler.addProcessListener(createProcessListener(promise))
+      runInEdt {
+        consoleView.attachToProcess(processHandler)
+        consoleView.scrollToEnd()
+        processHandler.startNotify()
       }
     }
   }
