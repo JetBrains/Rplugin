@@ -174,7 +174,7 @@ class RConsoleRunner(private val project: Project,
     panel.add(consoleView.component, BorderLayout.CENTER)
 
     actionToolbar.setTargetComponent(panel)
-    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, "", RFileType.icon)
+    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, consoleTitle, RFileType.icon)
 
     contentDescriptor.setFocusComputable { consoleView.consoleEditor.contentComponent }
     contentDescriptor.isAutoFocusContent = true
