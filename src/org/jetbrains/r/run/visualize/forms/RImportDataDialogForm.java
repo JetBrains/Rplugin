@@ -108,7 +108,7 @@ public class RImportDataDialogForm extends JDialog {
    */
   private void $$$setupUI$$$() {
     contentPane = new JPanel();
-    contentPane.setLayout(new GridLayoutManager(1, 1, new JBInsets(10, 10, 10, 10), -1, -1));
+    contentPane.setLayout(new GridLayoutManager(1, 1, new JBInsets(8, 12, 8, 12), -1, -1));
     final JPanel panel1 = new JPanel();
     panel1.setLayout(new GridLayoutManager(2, 1, new JBInsets(0, 0, 0, 0), -1, -1));
     contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
