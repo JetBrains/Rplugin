@@ -54,12 +54,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     }
   }
 
-  private val autoResizeAction = BasicToggleAction(AUTO_RESIZE_PRESENTATION) { state ->
-    wrapper.isAutoResizeEnabled = state
-    resizablePanel.isEnabled = state
-    updateSize(null)
-  }
-
   private val keepAspectRatioAction = BasicToggleAction(KEEP_ASPECT_RATIO_PRESENTATION, this::checkSizeInputs) {
     updateAspectRatio()
   }
@@ -76,7 +70,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private val isAutoResizeEnabled: Boolean
-    get() = autoResizeAction.state
+    get() = form.autoResizeCheckBox.isSelected
 
   private val keepAspectRatio: Boolean
     get() = keepAspectRatioAction.state
@@ -122,6 +116,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     setupGraphicsContentPanel(initialSize)
     createImageGroup(parent, imagePath)
     setOKButtonText(SAVE_BUTTON_TEXT)
+    setupAutoResizeCheckBox()
     setupInputControls()
     fillSouthPanel()
     init()
@@ -132,7 +127,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   override fun createCenterPanel(): JComponent {
     return form.contentPane.apply {
       form.keepAspectRatioButtonPanel.add(createButton(keepAspectRatioAction))
-      form.autoResizeButtonPanel.add(createButton(autoResizeAction))
       form.refreshButtonPanel.add(createButton(refreshAction))
       form.graphicsContentPanel.add(resizablePanel)
     }
@@ -213,6 +207,15 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     field.isEnabled = false
     task()
     field.isEnabled = true
+  }
+
+  private fun setupAutoResizeCheckBox() {
+    form.autoResizeCheckBox.addItemListener {
+      val state = form.autoResizeCheckBox.isSelected
+      wrapper.isAutoResizeEnabled = state
+      resizablePanel.isEnabled = state
+      updateSize(null)
+    }
   }
 
   private fun setupInputControls() {
@@ -505,8 +508,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
     private val KEEP_ASPECT_RATIO_ACTIVE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.active")
     private val KEEP_ASPECT_RATIO_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.idle")
-    private val AUTO_RESIZE_ACTIVE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.auto.resize.active")
-    private val AUTO_RESIZE_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.auto.resize.idle")
     private val REFRESH_PREVIEW_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.refresh.preview")
 
     private val CHOOSE_DIRECTORY_DESCRIPTION = VisualizationBundle.message("inlay.output.image.export.dialog.choose.directory.description")
@@ -519,9 +520,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
     private val DPI_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.dpi.text")
     private val PX_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.px.text")
-
-    private val AUTO_RESIZE_PRESENTATION =
-      ToggleActionPresentation(AUTO_RESIZE_ACTIVE_TEXT, AUTO_RESIZE_IDLE_TEXT, AllIcons.General.FitContent, true)
 
     private val KEEP_ASPECT_RATIO_PRESENTATION =
       ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false)

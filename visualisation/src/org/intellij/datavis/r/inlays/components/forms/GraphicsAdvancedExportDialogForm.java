@@ -8,6 +8,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.JBInsets;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,8 +27,8 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
   private JPanel southPanel;
   private JPanel okCancelButtonsPanel;
   private JPanel graphicsContentPanel;
-  private JPanel autoResizeButtonPanel;
   private JPanel refreshButtonPanel;
+  private JCheckBox autoResizeCheckBox;
 
   @Override
   public JPanel getContentPane() {
@@ -74,12 +75,12 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     return graphicsContentPanel;
   }
 
-  public JPanel getAutoResizeButtonPanel() {
-    return autoResizeButtonPanel;
-  }
-
   public JPanel getRefreshButtonPanel() {
     return refreshButtonPanel;
+  }
+
+  public JCheckBox getAutoResizeCheckBox() {
+    return autoResizeCheckBox;
   }
 
   public GraphicsAdvancedExportDialogForm() {
@@ -103,10 +104,10 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
    */
   private void $$$setupUI$$$() {
     contentPane = new JPanel();
-    contentPane.setLayout(new GridLayoutManager(4, 1, new JBInsets(10, 10, 10, 10), -1, -1));
+    contentPane.setLayout(new GridLayoutManager(5, 1, new JBInsets(8, 12, 8, 12), -1, -1));
     southPanel = new JPanel();
     southPanel.setLayout(new GridLayoutManager(1, 2, new JBInsets(0, 0, 0, 0), -1, -1));
-    contentPane.add(southPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    contentPane.add(southPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null,
                                                     null, null, 0, false));
     final Spacer spacer1 = new Spacer();
@@ -192,7 +193,7 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     panel2.add(directoryFieldPanel, gbc);
     final JPanel panel3 = new JPanel();
     panel3.setLayout(new GridBagLayout());
-    contentPane.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
+    contentPane.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     final JLabel label3 = new JLabel();
@@ -203,7 +204,7 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     gbc.gridy = 0;
     gbc.weighty = 1.0;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new JBInsets(0, 8, 0, 8);
+    gbc.insets = new JBInsets(0, 28, 0, 8);
     panel3.add(label3, gbc);
     final JLabel label4 = new JLabel();
     this.$$$loadLabelText$$$(label4,
@@ -221,7 +222,7 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     gbc.gridx = 5;
     gbc.gridy = 0;
     gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new JBInsets(0, 20, 0, 8);
+    gbc.insets = new JBInsets(0, 28, 0, 8);
     panel3.add(label5, gbc);
     final JPanel panel4 = new JPanel();
     panel4.setLayout(new GridBagLayout());
@@ -256,13 +257,6 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     gbc.gridy = 0;
     gbc.fill = GridBagConstraints.BOTH;
     panel3.add(heightInputPanel, gbc);
-    autoResizeButtonPanel = new JPanel();
-    autoResizeButtonPanel.setLayout(new BorderLayout(0, 0));
-    gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.fill = GridBagConstraints.BOTH;
-    panel3.add(autoResizeButtonPanel, gbc);
     refreshButtonPanel = new JPanel();
     refreshButtonPanel.setLayout(new BorderLayout(0, 0));
     gbc = new GridBagConstraints();
@@ -278,9 +272,18 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     gbc.gridy = 0;
     gbc.fill = GridBagConstraints.BOTH;
     panel3.add(resolutionInputPanel, gbc);
+    autoResizeCheckBox = new JCheckBox();
+    autoResizeCheckBox.setSelected(true);
+    this.$$$loadButtonText$$$(autoResizeCheckBox,
+                              ResourceBundle.getBundle("messages/VisualizationBundle").getString("graphics.settings.auto.resize"));
+    gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.anchor = GridBagConstraints.WEST;
+    panel3.add(autoResizeCheckBox, gbc);
     final JPanel panel5 = new JPanel();
-    panel5.setLayout(new GridLayoutManager(1, 1, new JBInsets(10, 10, 10, 10), -1, -1));
-    contentPane.add(panel5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+    panel5.setLayout(new GridLayoutManager(1, 1, new JBInsets(8, 0, 8, 0), -1, -1));
+    contentPane.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
                                                 null, 0, false));
@@ -290,6 +293,9 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                          GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
                                                          null, null, 0, false));
+    final Spacer spacer2 = new Spacer();
+    contentPane.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                                 GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, JBUI.scale(8)), null, 0, false));
   }
 
   /**
