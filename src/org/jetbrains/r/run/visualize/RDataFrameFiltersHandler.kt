@@ -11,7 +11,7 @@ import org.intellij.datavis.r.inlays.table.filters.gui.ChoicesHandler
 import org.intellij.datavis.r.inlays.table.filters.gui.IFilterEditor
 import org.intellij.datavis.r.inlays.table.filters.gui.ParserModel
 import org.intellij.datavis.r.inlays.table.filters.gui.editor.FilterEditor
-import org.jetbrains.r.rinterop.Service.DataFrameFilterRequest.Filter
+import org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter
 import javax.swing.RowFilter
 import javax.swing.table.TableModel
 

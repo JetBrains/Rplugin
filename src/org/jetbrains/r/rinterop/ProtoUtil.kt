@@ -5,7 +5,7 @@
 package org.jetbrains.r.rinterop
 
 object ProtoUtil {
-  fun rValueFromProto(proto: Service.ValueInfo): RValue {
+  fun rValueFromProto(proto: ValueInfo): RValue {
     return when {
       proto.hasValue() -> RValueSimple(proto.clsList, proto.value.textValue.trimEnd(),
                                        proto.value.isComplete, proto.value.isVector, proto.value.isS4)
@@ -21,38 +21,38 @@ object ProtoUtil {
     }
   }
 
-  fun envMemberRefProto(env: Service.RRef, name: String): Service.RRef {
-    return Service.RRef.newBuilder().setMember(Service.RRef.Member.newBuilder().setEnv(env).setName(name)).build()
+  fun envMemberRefProto(env: RRef, name: String): RRef {
+    return RRef.newBuilder().setMember(RRef.Member.newBuilder().setEnv(env).setName(name)).build()
   }
 
-  fun listElementRefProto(list: Service.RRef, index: Long): Service.RRef {
-    return Service.RRef.newBuilder().setListElement(Service.RRef.ListElement.newBuilder().setList(list).setIndex(index)).build()
+  fun listElementRefProto(list: RRef, index: Long): RRef {
+    return RRef.newBuilder().setListElement(RRef.ListElement.newBuilder().setList(list).setIndex(index)).build()
   }
 
-  fun attributesRefProto(x: Service.RRef): Service.RRef {
-    return Service.RRef.newBuilder().setAttributes(x).build()
+  fun attributesRefProto(x: RRef): RRef {
+    return RRef.newBuilder().setAttributes(x).build()
   }
 
-  fun parentEnvRefProto(env: Service.RRef, index: Int): Service.RRef {
-    return Service.RRef.newBuilder().setParentEnv(Service.RRef.ParentEnv.newBuilder().setEnv(env).setIndex(index)).build()
+  fun parentEnvRefProto(env: RRef, index: Int): RRef {
+    return RRef.newBuilder().setParentEnv(RRef.ParentEnv.newBuilder().setEnv(env).setIndex(index)).build()
   }
 
-  fun expressionRefProto(code: String, env: Service.RRef): Service.RRef {
-    return Service.RRef.newBuilder().setExpression(Service.RRef.Expression.newBuilder().setEnv(env).setCode(code)).build()
+  fun expressionRefProto(code: String, env: RRef): RRef {
+    return RRef.newBuilder().setExpression(RRef.Expression.newBuilder().setEnv(env).setCode(code)).build()
   }
 
-  fun sysFrameRefProto(index: Int): Service.RRef {
-    return Service.RRef.newBuilder().setSysFrameIndex(index).build()
+  fun sysFrameRefProto(index: Int): RRef {
+    return RRef.newBuilder().setSysFrameIndex(index).build()
   }
 
-  fun errorStackSysFrameRefProto(index: Int): Service.RRef {
-    return Service.RRef.newBuilder().setErrorStackSysFrameIndex(index).build()
+  fun errorStackSysFrameRefProto(index: Int): RRef {
+    return RRef.newBuilder().setErrorStackSysFrameIndex(index).build()
   }
 
-  fun canSetValue(ref: Service.RRef): Boolean = when (ref.refCase) {
-    Service.RRef.RefCase.MEMBER -> true
-    Service.RRef.RefCase.LISTELEMENT -> canSetValue(ref.listElement.list)
-    Service.RRef.RefCase.ATTRIBUTES -> canSetValue(ref.attributes)
+  fun canSetValue(ref: RRef): Boolean = when (ref.refCase) {
+    RRef.RefCase.MEMBER -> true
+    RRef.RefCase.LISTELEMENT -> canSetValue(ref.listElement.list)
+    RRef.RefCase.ATTRIBUTES -> canSetValue(ref.attributes)
     else -> false
   }
 }

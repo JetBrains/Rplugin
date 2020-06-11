@@ -84,17 +84,17 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   private val heartbeatTimer: Timer
   private val asyncEventsListeners = Collections.newSetFromMap<AsyncEventsListener>(ConcurrentHashMap())
   private var asyncProcessingStarted = false
-  private val asyncEventsBeforeStarted = mutableListOf<Service.AsyncEvent>()
+  private val asyncEventsBeforeStarted = mutableListOf<AsyncEvent>()
   private val cacheIndex = AtomicInteger(0)
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
   internal val sourceFileManager = RSourceFileManager(this)
 
   val rInteropGrpcLogger = RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
-  val globalEnvRef = RReference(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
+  val globalEnvRef = RReference(RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
   val globalEnvLoader = globalEnvRef.createVariableLoader()
   val globalEnvEqualityObject = globalEnvRef.getEqualityObject()
-  val currentEnvRef = RReference(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
+  val currentEnvRef = RReference(RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
   val currentEnvLoader = currentEnvRef.createVariableLoader()
   @Volatile var isDebug = false
     private set
@@ -185,7 +185,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       }, 0L, HEARTBEAT_PERIOD.toLong())
     }
 
-    val initRequest = Service.Init.newBuilder()
+    val initRequest = Init.newBuilder()
 
     workspaceFile = SessionUtil.getWorkspaceFile(project)?.also {
       val loadWorkspace: Boolean
@@ -247,7 +247,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun unloadLibrary(name: String, withDynamicLibrary: Boolean): CancellablePromise<Unit> {
-    val request = Service.UnloadLibraryRequest.newBuilder()
+    val request = UnloadLibraryRequest.newBuilder()
       .setWithDynamicLibrary(withDynamicLibrary)
       .setPackageName(name)
       .build()
@@ -255,12 +255,12 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       invalidateCaches()
     }
   }
-  
+
   fun saveGlobalEnvironment(filename: String): CancellablePromise<Empty> =
     executeAsync(asyncStub::saveGlobalEnvironment, StringValue.of(filename))
 
   fun loadEnvironment(filename: String, variableName: String): CancellablePromise<Unit> {
-    val request = Service.LoadEnvironmentRequest.newBuilder()
+    val request = LoadEnvironmentRequest.newBuilder()
       .setFile(filename)
       .setVariable(variableName)
       .build()
@@ -291,7 +291,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
-                     firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
+                     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
                      setLastValue: Boolean = false,
                      consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
     var code = ""
@@ -333,11 +333,11 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   private fun executeCodeImpl(
     code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0, isRepl: Boolean = false,
     returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
-    firstDebugCommand: Service.ExecuteCodeRequest.DebugCommand = Service.ExecuteCodeRequest.DebugCommand.CONTINUE,
+    firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
     setLastValue: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
     CancellablePromise<RIExecutionResult> {
-    val request = Service.ExecuteCodeRequest.newBuilder()
+    val request = ExecuteCodeRequest.newBuilder()
       .setCode(code)
       .setSourceFileId(sourceFileId)
       .setSourceFileLineOffset(sourceFileLineOffset)
@@ -367,24 +367,24 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     var exception: String? = null
 
     executeTask {
-      ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<Service.ExecuteCodeResponse> {
-        override fun onNext(value: Service.ExecuteCodeResponse) {
+      ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<ExecuteCodeResponse> {
+        override fun onNext(value: ExecuteCodeResponse) {
           when (value.msgCase) {
-            Service.ExecuteCodeResponse.MsgCase.OUTPUT -> {
+            ExecuteCodeResponse.MsgCase.OUTPUT -> {
               rInteropGrpcLogger.onOutputAvailable(number, value.output)
               when (value.output.type) {
-                Service.CommandOutput.Type.STDOUT -> {
+                CommandOutput.Type.STDOUT -> {
                   outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDOUT)
                   if (returnOutput) stdoutBuffer.append(value.output.text.toStringUtf8())
                 }
-                Service.CommandOutput.Type.STDERR -> {
+                CommandOutput.Type.STDERR -> {
                   outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDERR)
                   if (returnOutput) stderrBuffer.append(value.output.text.toStringUtf8())
                 }
                 else -> {}
               }
             }
-            Service.ExecuteCodeResponse.MsgCase.EXCEPTION -> {
+            ExecuteCodeResponse.MsgCase.EXCEPTION -> {
               exception = value.exception
             }
             else -> {}
@@ -429,9 +429,9 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
                          suspend: Boolean = true,
                          evaluateAndLog: String? = null,
                          condition: String? = null) = executeTask {
-    val position = Service.SourcePosition.newBuilder()
+    val position = SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build()
-    execute(asyncStub::debugAddBreakpoint, Service.DebugAddBreakpointRequest.newBuilder()
+    execute(asyncStub::debugAddBreakpoint, DebugAddBreakpointRequest.newBuilder()
       .setPosition(position)
       .setSuspend(suspend)
       .setEvaluateAndLog(evaluateAndLog ?: "")
@@ -441,7 +441,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun debugRemoveBreakpoint(file: VirtualFile, line: Int) = executeTask {
-    execute(asyncStub::debugRemoveBreakpoint, Service.SourcePosition.newBuilder()
+    execute(asyncStub::debugRemoveBreakpoint, SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build())
   }
 
@@ -474,7 +474,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun debugCommandRunToPosition(position: RSourcePosition) = executeTask {
-    execute(asyncStub::debugCommandRunToPosition, Service.SourcePosition.newBuilder()
+    execute(asyncStub::debugCommandRunToPosition, SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(position.file))
       .setLine(position.line)
       .build())
@@ -485,7 +485,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
   fun graphicsInit(properties: RGraphicsUtils.InitProperties, inMemory: Boolean): RIExecutionResult {
     val screenParametersMessage = buildScreenParametersMessage(properties.screenParameters)
-    val request = Service.GraphicsInitRequest.newBuilder()
+    val request = GraphicsInitRequest.newBuilder()
       .setSnapshotDirectory(properties.snapshotDirectory)
       .setScreenParameters(screenParametersMessage)
       .setInMemory(inMemory)
@@ -499,7 +499,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   fun graphicsRescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
     val newParametersMessage = buildScreenParametersMessage(newParameters)
-    val request = Service.GraphicsRescaleRequest.newBuilder()
+    val request = GraphicsRescaleRequest.newBuilder()
       .setSnapshotNumber(snapshotNumber ?: -1)
       .setNewParameters(newParametersMessage)
       .build()
@@ -513,7 +513,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     newParameters: RGraphicsUtils.ScreenParameters
   ): RIExecutionResult {
     val newParametersMessage = buildScreenParametersMessage(newParameters)
-    val request = Service.GraphicsRescaleStoredRequest.newBuilder()
+    val request = GraphicsRescaleStoredRequest.newBuilder()
       .setParentDirectory(parentDirectory)
       .setSnapshotNumber(snapshotNumber)
       .setSnapshotVersion(snapshotVersion)
@@ -522,8 +522,8 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return executeRequest(RPIServiceGrpc.getGraphicsRescaleStoredMethod(), request)
   }
 
-  private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): Service.ScreenParameters {
-    return Service.ScreenParameters.newBuilder()
+  private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): ScreenParameters {
+    return ScreenParameters.newBuilder()
       .setWidth(parameters.width)
       .setHeight(parameters.height)
       .setResolution(parameters.resolution ?: -1)
@@ -547,7 +547,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, screenParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
-    val request = Service.ChunkParameters.newBuilder().setRmarkdownParameters(rmarkdownParameters)
+    val request = ChunkParameters.newBuilder().setRmarkdownParameters(rmarkdownParameters)
                                                       .setChunkText(chunkText)
                                                       .setOutputDirectory(outputDirectory)
                                                       .setWidth(screenParameters.width)
@@ -566,7 +566,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun repoInstallPackage(packageName: String, fallbackMethod: String?, arguments: Map<String, String>) {
-    val request = Service.RepoInstallPackageRequest.newBuilder()
+    val request = RepoInstallPackageRequest.newBuilder()
       .setFallbackMethod(fallbackMethod ?: "")
       .setPackageName(packageName)
       .putAllArguments(arguments)
@@ -583,7 +583,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun repoRemovePackage(packageName: String, libraryPath: String) {
-    val request = Service.RepoRemovePackageRequest.newBuilder()
+    val request = RepoRemovePackageRequest.newBuilder()
       .setPackageName(packageName)
       .setLibraryPath(libraryPath)
       .build()
@@ -591,7 +591,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun previewDataImport(path: String, mode: String, rowCount: Int, additional: Map<String, String>): RIExecutionResult {
-    val request = Service.PreviewDataImportRequest.newBuilder()
+    val request = PreviewDataImportRequest.newBuilder()
       .setPath(FileUtil.toSystemIndependentName(path))
       .putAllOptions(additional)
       .setRowCount(rowCount)
@@ -601,7 +601,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun commitDataImport(name: String, path: String, mode: String, additional: Map<String, String>) {
-    val request = Service.CommitDataImportRequest.newBuilder()
+    val request = CommitDataImportRequest.newBuilder()
       .setPath(FileUtil.toSystemIndependentName(path))
       .putAllOptions(additional)
       .setMode(mode)
@@ -633,28 +633,28 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun dataFrameGetInfo(ref: RReference): Service.DataFrameInfoResponse {
+  fun dataFrameGetInfo(ref: RReference): DataFrameInfoResponse {
     return executeWithCheckCancel(asyncStub::dataFrameGetInfo, ref.proto)
   }
 
-  fun dataFrameGetData(ref: RReference, start: Int, end: Int): Promise<Service.DataFrameGetDataResponse> {
-    val request = Service.DataFrameGetDataRequest.newBuilder().setRef(ref.proto).setStart(start).setEnd(end).build()
+  fun dataFrameGetData(ref: RReference, start: Int, end: Int): Promise<DataFrameGetDataResponse> {
+    val request = DataFrameGetDataRequest.newBuilder().setRef(ref.proto).setStart(start).setEnd(end).build()
     return executeAsync(asyncStub::dataFrameGetData, request)
   }
 
   fun dataFrameSort(ref: RReference, sortKeys: List<RowSorter.SortKey>, disposableParent: Disposable? = null): RPersistentRef {
     val keysProto = sortKeys.map {
-      Service.DataFrameSortRequest.SortKey.newBuilder()
+      DataFrameSortRequest.SortKey.newBuilder()
         .setColumnIndex(it.column)
         .setDescending(it.sortOrder == SortOrder.DESCENDING)
         .build()
     }
-    val request = Service.DataFrameSortRequest.newBuilder().setRef(ref.proto).addAllKeys(keysProto).build()
+    val request = DataFrameSortRequest.newBuilder().setRef(ref.proto).addAllKeys(keysProto).build()
     return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameSort, request).value, this, disposableParent)
   }
 
-  fun dataFrameFilter(ref: RReference, f: Service.DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef {
-    val request = Service.DataFrameFilterRequest.newBuilder().setRef(ref.proto).setFilter(f).build()
+  fun dataFrameFilter(ref: RReference, f: DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef {
+    val request = DataFrameFilterRequest.newBuilder().setRef(ref.proto).setFilter(f).build()
     return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameFilter, request).value, this, disposableParent)
   }
 
@@ -685,7 +685,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   fun getTableColumnsInfo(table: RReference): TableInfo {
     return try {
-      val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
+      val request = TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
       executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
         TableInfo(columnsList.map { TableManipulationColumn(it.name, it.type) }, TableType.toTableType(tableType))
       }
@@ -696,7 +696,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   fun convertRd2HTML(outputFilePath: String, rdFilePath: String = "", dbPath: String = "", dbPage: String = "", topicPackage: String = ""): RIExecutionResult {
     assert(rdFilePath.isEmpty() || (dbPage.isEmpty() && dbPath.isEmpty()))
-    val builder = Service.ConvertRd2HTMLRequest.newBuilder()
+    val builder = ConvertRd2HTMLRequest.newBuilder()
       .setOutputFilePath(outputFilePath)
       .setTopicPackage(topicPackage)
     if (rdFilePath.isNotEmpty()) {
@@ -704,7 +704,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
     else {
       assert(dbPage.isNotEmpty() && dbPath.isNotEmpty())
-      val dbRequest = Service.ConvertRd2HTMLRequest.DBRequest.newBuilder()
+      val dbRequest = ConvertRd2HTMLRequest.DBRequest.newBuilder()
         .setDbPath(dbPath)
         .setDbPage(dbPage)
         .build()
@@ -715,7 +715,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun makeRdFromRoxygen(functionName: String, functionText: String, outputFilePath: String): RIExecutionResult {
-    val request = Service.MakeRdFromRoxygenRequest.newBuilder()
+    val request = MakeRdFromRoxygenRequest.newBuilder()
       .setFunctionName(functionName)
       .setFunctionText(functionText)
       .setOutputFilePath(outputFilePath)
@@ -724,7 +724,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun findPackagePathByTopic(topic: String, searchSpace: String): RIExecutionResult {
-    val request = Service.FindPackagePathByTopicRequest.newBuilder()
+    val request = FindPackagePathByTopicRequest.newBuilder()
       .setTopic(topic)
       .setSearchSpace(searchSpace)
       .build()
@@ -732,7 +732,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun findPackagePathByPackageName(packageName: String): RIExecutionResult {
-    val request = Service.FindPackagePathByPackageNameRequest.newBuilder()
+    val request = FindPackagePathByPackageNameRequest.newBuilder()
       .setPackageName(packageName)
       .build()
     return executeRequest(RPIServiceGrpc.getFindPackagePathByPackageNameMethod(), request)
@@ -747,11 +747,11 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   fun getObjectSizes(refs: List<RReference>): List<Long> {
-    return execute(asyncStub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
+    return execute(asyncStub::getObjectSizes, RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
-    methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
+    methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
     request: TRequest
   ) : RIExecutionResult {
     val isEdt = !ApplicationManager.getApplication().isUnitTestMode && ApplicationManager.getApplication().isDispatchThread
@@ -774,7 +774,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequestAsync(
-    methodDescriptor: MethodDescriptor<TRequest, Service.CommandOutput>,
+    methodDescriptor: MethodDescriptor<TRequest, CommandOutput>,
     request: TRequest,
     consumer: ((String, ProcessOutputType) -> Unit)? = null
   ): CancellablePromise<Unit> {
@@ -791,13 +791,13 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
         return false
       }
     }
-    ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<Service.CommandOutput> {
-      override fun onNext(value: Service.CommandOutput) {
+    ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<CommandOutput> {
+      override fun onNext(value: CommandOutput) {
         rInteropGrpcLogger.onOutputAvailable(number, value)
         if (consumer == null) return
         when (value.type) {
-          Service.CommandOutput.Type.STDOUT -> consumer(value.text.toStringUtf8(), ProcessOutputType.STDOUT)
-          Service.CommandOutput.Type.STDERR -> consumer(value.text.toStringUtf8(), ProcessOutputType.STDERR)
+          CommandOutput.Type.STDOUT -> consumer(value.text.toStringUtf8(), ProcessOutputType.STDOUT)
+          CommandOutput.Type.STDERR -> consumer(value.text.toStringUtf8(), ProcessOutputType.STDERR)
           else -> {
           }
         }
@@ -819,35 +819,35 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return promise
   }
 
-  private fun processAsyncEvent(event: Service.AsyncEvent) {
+  private fun processAsyncEvent(event: AsyncEvent) {
     when (event.eventCase) {
-      Service.AsyncEvent.EventCase.BUSY -> {
+      AsyncEvent.EventCase.BUSY -> {
         fireListeners { it.onBusy() }
       }
-      Service.AsyncEvent.EventCase.TEXT -> {
+      AsyncEvent.EventCase.TEXT -> {
         val text = event.text.text.toStringUtf8()
         val type = when (event.text.type) {
-          Service.CommandOutput.Type.STDOUT -> ProcessOutputType.STDOUT
-          Service.CommandOutput.Type.STDERR -> ProcessOutputType.STDERR
+          CommandOutput.Type.STDOUT -> ProcessOutputType.STDOUT
+          CommandOutput.Type.STDERR -> ProcessOutputType.STDERR
           else -> return
         }
         fireListeners { it.onText(text, type) }
       }
-      Service.AsyncEvent.EventCase.REQUESTREADLN -> {
+      AsyncEvent.EventCase.REQUESTREADLN -> {
         invalidateCaches()
         val prompt = event.requestReadLn.prompt
         fireListeners { it.onRequestReadLn(prompt) }
       }
-      Service.AsyncEvent.EventCase.SUBPROCESSINPUT -> {
+      AsyncEvent.EventCase.SUBPROCESSINPUT -> {
         fireListeners { it.onSubprocessInput() }
       }
-      Service.AsyncEvent.EventCase.PROMPT -> {
+      AsyncEvent.EventCase.PROMPT -> {
         invalidateCaches()
         isDebug = false
         debugStack = emptyList()
         fireListeners { it.onPrompt() }
       }
-      Service.AsyncEvent.EventCase.DEBUGPROMPT -> {
+      AsyncEvent.EventCase.DEBUGPROMPT -> {
         invalidateCaches()
         isDebug = true
         if (event.debugPrompt.changed) {
@@ -855,30 +855,30 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
         }
         fireListeners { it.onPrompt(true) }
       }
-      Service.AsyncEvent.EventCase.EXCEPTION -> {
+      AsyncEvent.EventCase.EXCEPTION -> {
         if (!event.exception.exception.hasInterrupted()) {
           lastErrorStack = stackFromProto(event.exception.stack) { RReference.errorStackSysFrameRef(it, this) }
         }
         val info = exceptionInfoFromProto(event.exception.exception)
         fireListeners { it.onException(info) }
       }
-      Service.AsyncEvent.EventCase.TERMINATION -> {
+      AsyncEvent.EventCase.TERMINATION -> {
         fireListeners { it.onTermination() }
       }
-      Service.AsyncEvent.EventCase.VIEWREQUEST -> {
+      AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
         fireListenersAsync({ it.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value)) }) {
           Disposer.dispose(ref)
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
-      Service.AsyncEvent.EventCase.SHOWFILEREQUEST -> {
+      AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
         fireListenersAsync({it.onShowFileRequest(request.filePath, request.title) }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
-      Service.AsyncEvent.EventCase.SHOWHELPREQUEST -> {
+      AsyncEvent.EventCase.SHOWHELPREQUEST -> {
         val request = event.showHelpRequest
         fireListeners { it.onShowHelpRequest(request.content, request.url) }
       }
@@ -960,7 +960,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  private fun stackFromProto(proto: Service.StackFrameList,
+  private fun stackFromProto(proto: StackFrameList,
                              indexToEnvironment: (Int) -> RReference = { RReference.sysFrameRef(it, this) }): List<RStackFrame> {
     return proto.framesList.mapIndexed { index, it ->
       val file = sourceFileManager.getFileById(it.position.fileId)

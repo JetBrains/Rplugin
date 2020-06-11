@@ -10,7 +10,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
-import org.jetbrains.r.rinterop.Service
+import org.jetbrains.r.rinterop.TableColumnsInfo
 
 interface TableManipulationFunction {
   val functionName: String?
@@ -61,10 +61,10 @@ enum class TableType {
   UNKNOWN, DPLYR, DATA_FRAME, DATA_TABLE;
 
   companion object {
-    fun toTableType(type: Service.TableColumnsInfo.TableType): TableType = when (type) {
-      Service.TableColumnsInfo.TableType.DATA_FRAME -> DATA_FRAME
-      Service.TableColumnsInfo.TableType.DATA_TABLE -> DATA_TABLE
-      Service.TableColumnsInfo.TableType.DPLYR -> DPLYR
+    fun toTableType(type: TableColumnsInfo.TableType): TableType = when (type) {
+      TableColumnsInfo.TableType.DATA_FRAME -> DATA_FRAME
+      TableColumnsInfo.TableType.DATA_TABLE -> DATA_TABLE
+      TableColumnsInfo.TableType.DPLYR -> DPLYR
       else -> UNKNOWN
     }
   }

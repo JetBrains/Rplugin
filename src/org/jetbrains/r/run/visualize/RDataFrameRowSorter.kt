@@ -9,7 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.rinterop.Service
+import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import org.jetbrains.r.rinterop.getWithCheckCanceled
 import java.util.concurrent.Future
 import javax.swing.JTable
@@ -34,7 +34,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
       fireRowSorterChanged(null)
     }
 
-  var rowFilter: Service.DataFrameFilterRequest.Filter? = null
+  var rowFilter: DataFrameFilterRequest.Filter? = null
     set(value) {
       field = value
       update()

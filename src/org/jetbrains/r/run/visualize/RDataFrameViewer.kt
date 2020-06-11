@@ -7,7 +7,7 @@ package org.jetbrains.r.run.visualize
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.rinterop.Service
+import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import javax.swing.RowSorter
 import kotlin.reflect.KClass
 
@@ -32,7 +32,7 @@ interface RDataFrameViewer : Disposable {
 
   fun sortBy(sortKeys: List<RowSorter.SortKey>): RDataFrameViewer
 
-  fun filter(f: Service.DataFrameFilterRequest.Filter): RDataFrameViewer
+  fun filter(f: DataFrameFilterRequest.Filter): RDataFrameViewer
 
   override fun dispose() {
   }

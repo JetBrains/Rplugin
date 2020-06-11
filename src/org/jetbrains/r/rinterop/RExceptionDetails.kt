@@ -12,10 +12,10 @@ class RNoSuchPackageError(val packageName: String) : RExceptionDetails()
 
 data class RExceptionInfo(val message: String, val call: String?, val details: RExceptionDetails?)
 
-internal fun exceptionInfoFromProto(proto: Service.ExceptionInfo): RExceptionInfo {
+internal fun exceptionInfoFromProto(proto: ExceptionInfo): RExceptionInfo {
   val details = when (proto.detailsCase) {
-    Service.ExceptionInfo.DetailsCase.INTERRUPTED -> RInterrupted
-    Service.ExceptionInfo.DetailsCase.PACKAGENOTFOUND -> RNoSuchPackageError(proto.packageNotFound)
+    ExceptionInfo.DetailsCase.INTERRUPTED -> RInterrupted
+    ExceptionInfo.DetailsCase.PACKAGENOTFOUND -> RNoSuchPackageError(proto.packageNotFound)
     else -> null
   }
   return RExceptionInfo(proto.message, proto.call.takeIf { it.isNotEmpty() }, details)

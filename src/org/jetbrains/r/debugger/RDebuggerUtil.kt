@@ -19,9 +19,9 @@ import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpointListener
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import org.jetbrains.r.rinterop.ExecuteCodeRequest
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RSourceFileManager
-import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.run.debug.RLineBreakpointType
 import kotlin.math.max
 import kotlin.math.min
@@ -80,11 +80,11 @@ object RDebuggerUtil {
     }
   }
 
-  fun getFirstDebugCommand(project: Project, file: VirtualFile, range: TextRange? = null): Service.ExecuteCodeRequest.DebugCommand {
+  fun getFirstDebugCommand(project: Project, file: VirtualFile, range: TextRange? = null): ExecuteCodeRequest.DebugCommand {
     return if (haveBreakpoints(project, file, range)) {
-      Service.ExecuteCodeRequest.DebugCommand.CONTINUE
+      ExecuteCodeRequest.DebugCommand.CONTINUE
     } else {
-      Service.ExecuteCodeRequest.DebugCommand.STOP
+      ExecuteCodeRequest.DebugCommand.STOP
     }
   }
 

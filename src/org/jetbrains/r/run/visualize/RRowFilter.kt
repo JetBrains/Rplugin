@@ -4,10 +4,10 @@
 
 package org.jetbrains.r.run.visualize
 
-import org.jetbrains.r.rinterop.Service
+import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import javax.swing.RowFilter
 
-class RRowFilter(val proto: Service.DataFrameFilterRequest.Filter): RowFilter<Any?, Any?>() {
+class RRowFilter(val proto: DataFrameFilterRequest.Filter): RowFilter<Any?, Any?>() {
   override fun include(p0: Entry<out Any?, out Any?>?): Nothing {
     throw NotImplementedError()
   }

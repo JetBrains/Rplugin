@@ -31,12 +31,12 @@ class RInteropGrpcLogger(private val maxMessages: Int? = null) {
     addMessage(commandMessages.remove(number))
   }
 
-  fun onOutputAvailable(number: Int, value: Service.CommandOutput) {
+  fun onOutputAvailable(number: Int, value: CommandOutput) {
 
     commandMessages.get(number)?.apply {
       when (value.type) {
-        Service.CommandOutput.Type.STDOUT -> stdout.append(value.text.toStringUtf8())
-        Service.CommandOutput.Type.STDERR -> stderr.append(value.text.toStringUtf8())
+        CommandOutput.Type.STDOUT -> stdout.append(value.text.toStringUtf8())
+        CommandOutput.Type.STDERR -> stderr.append(value.text.toStringUtf8())
         else -> throw IllegalStateException("Cannot be reach")
       }
     }

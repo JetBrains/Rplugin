@@ -71,15 +71,15 @@ interface PathReplacer {
 
 class InitPathReplacer(private val project: Project, private val rScriptPath: String) : PathReplacer {
   override fun replace(methodName: String, request: GeneratedMessageV3): GeneratedMessageV3? {
-    if (methodName != "init" || request !is Service.Init) return null
-    return Service.Init.newBuilder().setProjectDir(project.basePath).setRScriptsPath(rScriptPath).build()
+    if (methodName != "init" || request !is Init) return null
+    return Init.newBuilder().setProjectDir(project.basePath).setRScriptsPath(rScriptPath).build()
   }
 }
 
 class GraphicsPathReplacer(private val project: Project, private val snapshotDirectory: String) : PathReplacer {
   override fun replace(methodName: String, request: GeneratedMessageV3): GeneratedMessageV3? {
-    if (methodName != "graphicsInit" || request !is Service.GraphicsInitRequest) return null
-    return Service.GraphicsInitRequest.newBuilder(request).setSnapshotDirectory(snapshotDirectory).build()
+    if (methodName != "graphicsInit" || request !is GraphicsInitRequest) return null
+    return GraphicsInitRequest.newBuilder(request).setSnapshotDirectory(snapshotDirectory).build()
   }
 }
 

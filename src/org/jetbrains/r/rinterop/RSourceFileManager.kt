@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
-  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<Service.RRef, Optional<RSourcePosition>>() }
+  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<RSourcePosition>>() }
 
   init {
     Disposer.register(rInterop, this)

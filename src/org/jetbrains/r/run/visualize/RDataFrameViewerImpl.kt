@@ -15,11 +15,8 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RInteropTerminated
-import org.jetbrains.r.rinterop.RPersistentRef
-import org.jetbrains.r.rinterop.Service
-import org.jetbrains.r.rinterop.Service.DataFrameInfoResponse.ColumnType.*
+import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType.*
 import javax.swing.RowSorter
 import kotlin.math.min
 import kotlin.reflect.KClass
@@ -37,7 +34,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
 
   private data class ColumnInfo(val name: String, val type: KClass<*>, val sortable: Boolean = true,
                                 val isRowNames: Boolean = false,
-                                val parseValue: (Service.DataFrameGetDataResponse.Value) -> Any?)
+                                val parseValue: (DataFrameGetDataResponse.Value) -> Any?)
 
   init {
     Disposer.register(this, ref)
@@ -108,7 +105,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
     }
   }
 
-  override fun filter(f: Service.DataFrameFilterRequest.Filter): RDataFrameViewer {
+  override fun filter(f: DataFrameFilterRequest.Filter): RDataFrameViewer {
     try {
       return RDataFrameViewerImpl(rInterop.dataFrameFilter(ref, f)).also { newDataFrame ->
         disposableParent?.let { newDataFrame.registerDisposable(it, virtualFile) }

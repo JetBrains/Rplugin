@@ -44,9 +44,9 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
+import org.jetbrains.r.rinterop.ExecuteCodeRequest
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.Service
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -311,7 +311,7 @@ object RunChunkHandler {
                                virtualFile: VirtualFile,
                                debug: Boolean,
                                range: TextRange?,
-                               debugCommand: Service.ExecuteCodeRequest.DebugCommand,
+                               debugCommand: ExecuteCodeRequest.DebugCommand,
                                result: MutableList<ProcessOutput>,
                                onOutput: (ProcessOutput) -> Unit,
                                promise: AsyncPromise<ExecutionResult>,

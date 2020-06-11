@@ -20,7 +20,7 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
-import org.jetbrains.r.rinterop.Service.ExecuteCodeRequest.DebugCommand
+import org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.util.PromiseUtil
 

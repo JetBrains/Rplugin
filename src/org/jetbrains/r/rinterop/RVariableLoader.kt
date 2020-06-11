@@ -48,7 +48,7 @@ class RVariableLoader internal constructor(val obj: RReference) {
   fun loadVariablesPartially(
     start: Long, end: Long, withHidden: Boolean = true,
     noFunctions: Boolean = false, onlyFunctions: Boolean = false): CancellablePromise<VariablesPart> {
-    val request = Service.GetVariablesRequest.newBuilder()
+    val request = GetVariablesRequest.newBuilder()
       .setObj(obj.proto).setStart(start).setEnd(end)
       .setNoHidden(!withHidden).setNoFunctions(noFunctions).setOnlyFunctions(onlyFunctions).build()
     return rInterop.executeAsync(rInterop.asyncStub::loaderGetVariables, request)
