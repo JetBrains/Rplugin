@@ -33,6 +33,7 @@ class RReturnHintEditorFactoryListener : EditorFactoryListener {
 
   override fun editorReleased(event: EditorFactoryEvent) {
     val project = event.editor.project ?: return
+    if (project.isDisposed) return
     RReturnHintsModel.getInstance(project).clearDocumentInfo(event.editor.document)
   }
 }
