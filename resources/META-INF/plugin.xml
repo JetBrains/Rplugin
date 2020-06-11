@@ -2,5 +2,5 @@
   <name>R Language for IntelliJ</name>
   <vendor>JetBrains</vendor>
   <id>R4Intellij</id>
-  <xi:include href="/META-INF/plugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/rplugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

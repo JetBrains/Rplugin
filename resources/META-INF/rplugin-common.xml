@@ -571,7 +571,7 @@ You can find the source code in the following repositories:
                                  id="RPsiElement"
                                  order="first"/>
 
-        <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/plugin-common.xml:448-->
+        <!--see /Users/brandl/projects/jb/intellij-community/plugins/groovy/src/META-INF/rplugin-common.xml:448-->
         <vetoRenameCondition implementation="org.jetbrains.r.psi.references.RenamingVetoCondition"/>
         <inlineActionHandler implementation="org.jetbrains.r.refactoring.inline.RInlineAssignmentHandler"/>
 
