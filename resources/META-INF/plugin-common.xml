@@ -593,77 +593,77 @@ You can find the source code in the following repositories:
         <!-- note: display names not needed if defined in impl-->
         <!--https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000074350-Why-are-default-xml-plugin-settings-preferred-over-code-based-component-configuration- -->
         <localInspection shortName="RUnusedParameter" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.unusedParameter.name"
+                         bundle="messages.RPluginBundle" key="inspection.unusedParameter.name"
                          implementationClass="org.jetbrains.r.inspections.UnusedParameterInspection"/>
 
         <localInspection shortName="RUnusedVariable" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.unusedVariable.name"
+                         bundle="messages.RPluginBundle" key="inspection.unusedVariable.name"
                          implementationClass="org.jetbrains.r.inspections.UnusedVariableInspection"/>
 
         <localInspection shortName="RUnresolvedReference" language="R" enabledByDefault="true" groupName="R"
                          level="WARNING"
-                         bundle="messages.RBundle" key="inspection.unresolvedReference.name"
+                         bundle="messages.RPluginBundle" key="inspection.unresolvedReference.name"
                          implementationClass="org.jetbrains.r.inspections.UnresolvedReferenceInspection"/>
 
         <localInspection shortName="RMarkdownRequirements" language="R" enabledByDefault="true" groupName="R"
                          level="WARNING"
-                         bundle="messages.RBundle" key="inspection.markdownRequirements.name"
+                         bundle="messages.RPluginBundle" key="inspection.markdownRequirements.name"
                          implementationClass="org.jetbrains.r.inspections.MarkdownRequirementsInspection"/>
 
         <localInspection shortName="RMissingPackage" language="R" enabledByDefault="true" groupName="R" level="ERROR"
-                         bundle="messages.RBundle" key="inspection.missingPackage.name"
+                         bundle="messages.RPluginBundle" key="inspection.missingPackage.name"
                          implementationClass="org.jetbrains.r.inspections.MissingPackageInspection"/>
 
         <localInspection shortName="RBooleanExpressionSimplifier" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.simplifyBooleanExpression.name"
+                         bundle="messages.RPluginBundle" key="inspection.simplifyBooleanExpression.name"
                          implementationClass="org.jetbrains.r.inspections.BooleanExpressionSimplifier"/>
 
         <localInspection shortName="RCompareToNaInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.compareToNa.name"
+                         bundle="messages.RPluginBundle" key="inspection.compareToNa.name"
                          implementationClass="org.jetbrains.r.inspections.CompareToNaInspection"/>
 
         <localInspection shortName="RPasteToPaste0Inspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.paste2paste0.name"
+                         bundle="messages.RPluginBundle" key="inspection.paste2paste0.name"
                          implementationClass="org.jetbrains.r.inspections.PasteToPaste0Inspection"/>
 
         <localInspection shortName="RDplyrBooleanOperatorInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.dplyrBooleanOperator.name"
+                         bundle="messages.RPluginBundle" key="inspection.dplyrBooleanOperator.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrBooleanOperatorsInspection"/>
 
         <localInspection shortName="RDplyrCallToPipeInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.dplyrCallToPipe.name"
+                         bundle="messages.RPluginBundle" key="inspection.dplyrCallToPipe.name"
                          implementationClass="org.jetbrains.r.inspections.dplyr.DplyrCallToPipeInspection"/>
 
         <localInspection shortName="RAssignmentInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.assignment.name"
+                         bundle="messages.RPluginBundle" key="inspection.assignment.name"
                          implementationClass="org.jetbrains.r.inspections.AssignmentInspection"/>
 
         <localInspection shortName="RRedundantConcatenationInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.redundant.concatenation.name"
+                         bundle="messages.RPluginBundle" key="inspection.redundant.concatenation.name"
                          implementationClass="org.jetbrains.r.inspections.RedundantConcatenationInspection"/>
 
         <localInspection shortName="RRedundantSemicolonInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.redundant.semicolon.name"
+                         bundle="messages.RPluginBundle" key="inspection.redundant.semicolon.name"
                          implementationClass="org.jetbrains.r.inspections.RedundantSemicolonInspection"/>
 
         <localInspection shortName="RUnsafeSequenceInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.unsafe.sequence.name"
+                         bundle="messages.RPluginBundle" key="inspection.unsafe.sequence.name"
                          implementationClass="org.jetbrains.r.inspections.UnsafeSequenceInspection"/>
 
         <localInspection shortName="RClosureAssignmentInspection" language="R" enabledByDefault="false" groupName="R"
-                         bundle="messages.RBundle" key="inspection.closure.assignment.name"
+                         bundle="messages.RPluginBundle" key="inspection.closure.assignment.name"
                          implementationClass="org.jetbrains.r.inspections.ClosureAssignmentInspection"/>
 
         <localInspection shortName="RTripleColonToDoubleColonInspection" language="R" enabledByDefault="true" groupName="R"
-                         bundle="messages.RBundle" key="inspection.triple.colon.to.double.colon.name"
+                         bundle="messages.RPluginBundle" key="inspection.triple.colon.to.double.colon.name"
                          implementationClass="org.jetbrains.r.inspections.TripleColonToDoubleColonInspection"/>
 
         <localInspection shortName="RNamingConventionInspection" language="R" enabledByDefault="false" groupName="R"
-                         bundle="messages.RBundle" key="inspection.naming.convention.name"
+                         bundle="messages.RPluginBundle" key="inspection.naming.convention.name"
                          implementationClass="org.jetbrains.r.inspections.NamingConventionInspection"/>
 
       <localInspection shortName="RDeprecatedDoubleStarts" language="R" enabledByDefault="true" groupName="R"
-                       bundle="messages.RBundle" key="inspection.deprecated.double.starts.name"
+                       bundle="messages.RPluginBundle" key="inspection.deprecated.double.starts.name"
                        implementationClass="org.jetbrains.r.inspections.DeprecatedDoubleStarts"/>
 
 

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 @NonNls
-private const val BUNDLE = "messages.RBundle"
+private const val BUNDLE = "messages.RPluginBundle"
 
 object RBundle : DynamicBundle(BUNDLE)  {
   fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any): String = getMessage(key, *params)
