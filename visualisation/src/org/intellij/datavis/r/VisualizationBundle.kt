@@ -4,31 +4,11 @@
 
 package org.intellij.datavis.r
 
-import com.intellij.CommonBundle
-import com.intellij.reference.SoftReference
-import org.jetbrains.annotations.NonNls
+import com.intellij.DynamicBundle
 import org.jetbrains.annotations.PropertyKey
-import java.lang.ref.Reference
-import java.util.*
 
-object VisualizationBundle {
-  private var ourBundle: Reference<ResourceBundle>? = null
+private const val BUNDLE = "messages.VisualizationBundle"
 
-  @NonNls
-  private const val BUNDLE = "messages.VisualizationBundle"
-
-  fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any): String {
-    return CommonBundle.message(bundle, key, *params)
-  }
-
-  // Cached loading
-  private val bundle: ResourceBundle
-    get() {
-      var bundle = SoftReference.dereference(ourBundle)
-      if (bundle == null) {
-        bundle = ResourceBundle.getBundle(BUNDLE)!!
-        ourBundle = SoftReference<ResourceBundle>(bundle)
-      }
-      return bundle
-    }
+object VisualizationBundle : DynamicBundle(BUNDLE) {
+  fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any): String = getMessage(key, params)
 }
