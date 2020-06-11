@@ -133,7 +133,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
     }
 
-    override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
+    override fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> {
       return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
     }
 

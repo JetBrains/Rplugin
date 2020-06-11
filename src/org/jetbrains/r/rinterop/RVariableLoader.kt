@@ -9,13 +9,13 @@ import org.jetbrains.concurrency.resolvedCancellablePromise
 import org.jetbrains.r.util.thenAsyncCancellable
 import org.jetbrains.r.util.thenCancellable
 
-class RVariableLoader internal constructor(val obj: RRef) {
+class RVariableLoader internal constructor(val obj: RReference) {
   val rInterop = obj.rInterop
 
   val parentEnvironments = rInterop.AsyncCached(emptyList()) {
     rInterop.executeAsync(rInterop.asyncStub::loaderGetParentEnvs, obj.proto).thenCancellable { response ->
       response.envsList.mapIndexed { index, it ->
-        REnvironmentRef(it.name, RRef(ProtoUtil.parentEnvRefProto(obj.proto, index + 1), rInterop))
+        REnvironmentRef(it.name, RReference(ProtoUtil.parentEnvRefProto(obj.proto, index + 1), rInterop))
       }
     }
   }

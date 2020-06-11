@@ -44,7 +44,7 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("", result.stdout)
     TestCase.assertTrue("result = $result", "zzyyxx" in result.stderr)
     TestCase.assertEquals(null, result.exception)
-    TestCase.assertTrue("abcd654" in RRef.expressionRef("a", rInterop).evaluateAsTextAsync().get())
+    TestCase.assertTrue("abcd654" in RReference.expressionRef("a", rInterop).evaluateAsTextAsync().get())
   }
 
   fun testInput() {

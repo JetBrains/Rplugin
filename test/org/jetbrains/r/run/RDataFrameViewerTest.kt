@@ -5,7 +5,7 @@
 package org.jetbrains.r.run
 
 import junit.framework.TestCase
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RFilterParser
@@ -152,7 +152,7 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testError() {
-    rInterop.dataFrameGetViewer(RRef.expressionRef("NULL", rInterop)).onSuccess {
+    rInterop.dataFrameGetViewer(RReference.expressionRef("NULL", rInterop)).onSuccess {
       TestCase.fail()
     }.onError {
       TestCase.assertTrue(it is RDataFrameException)
@@ -185,6 +185,6 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun createViewer(expr: String): RDataFrameViewer {
-    return rInterop.dataFrameGetViewer(RRef.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
+    return rInterop.dataFrameGetViewer(RReference.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
   }
 }

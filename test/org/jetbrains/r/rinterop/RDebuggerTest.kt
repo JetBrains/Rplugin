@@ -93,7 +93,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
       }
       cat(ggg())
     """.trimIndent())
-    val catFile = RRef.expressionRef("cat", rInterop).functionSourcePosition()!!.file
+    val catFile = RReference.expressionRef("cat", rInterop).functionSourcePosition()!!.file
     TestCase.assertTrue(RSourceFileManager.isTemporary(catFile))
     TestCase.assertFalse(RSourceFileManager.isTemporary(file))
     addBreakpoint(catFile, 1)

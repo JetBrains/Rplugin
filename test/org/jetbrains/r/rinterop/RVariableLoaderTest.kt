@@ -40,7 +40,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       e $ .b <- 5
       e $ .c <- 6
     """.trimIndent())
-    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    val loader = RReference.expressionRef("e", rInterop).createVariableLoader()
     TestCase.assertEquals(
       setOf("a" to "[1] 1", "b" to "[1] 2", "c" to "[1] 3", ".a" to "[1] 4", ".b" to "[1] 5", ".c" to "[1] 6"),
       loader.variables.map { it.name to (it.value as RValueSimple).text.trim() }.toSet()
@@ -86,7 +86,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       e $ f2 <- function(x2) {}
       e $ f3 <- function(x3) {}
     """.trimIndent())
-    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    val loader = RReference.expressionRef("e", rInterop).createVariableLoader()
     val set = setOf("v1" to "[1] 1", "v2" to "[1] 2", "v3" to "[1] 3")
 
     loader.loadVariablesPartially(0, 10, noFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!.let { result ->
@@ -118,7 +118,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       e $ f2 <- function(x2) {}
       e $ f3 <- function(x3) {}
     """.trimIndent())
-    val loader = RRef.expressionRef("e", rInterop).createVariableLoader()
+    val loader = RReference.expressionRef("e", rInterop).createVariableLoader()
     val set = setOf("f1" to "function(x1)", "f2" to "function(x2)", "f3" to "function(x3)")
 
     loader.loadVariablesPartially(0, 10, onlyFunctions = true).blockingGet(DEFAULT_TIMEOUT)!!.let { result ->
@@ -194,8 +194,8 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       a <- array(1:20, c(4, 5))
       b <- array(1:48, c(2, 3, 4, 2))
     """.trimIndent())
-    TestCase.assertEquals(listOf(4, 5), (RRef.expressionRef("a", rInterop).getValueInfo() as RValueMatrix).dim)
-    TestCase.assertEquals(listOf(2, 3, 4, 2), (RRef.expressionRef("b", rInterop).getValueInfo() as RValueMatrix).dim)
+    TestCase.assertEquals(listOf(4, 5), (RReference.expressionRef("a", rInterop).getValueInfo() as RValueMatrix).dim)
+    TestCase.assertEquals(listOf(2, 3, 4, 2), (RReference.expressionRef("b", rInterop).getValueInfo() as RValueMatrix).dim)
   }
 
   fun testInvalidateCaches() {
@@ -220,14 +220,14 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       }
     """.trimIndent()
     rInterop.executeCode("ff = $code")
-    val loadedHeader = (RRef.expressionRef("ff", rInterop).getValueInfo() as RValueFunction).header
+    val loadedHeader = (RReference.expressionRef("ff", rInterop).getValueInfo() as RValueFunction).header
     TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(header, loadedHeader))
   }
 
   fun testFunctionHeaderShow() {
     TestCase.assertTrue(StringUtil.equalsIgnoreWhitespaces(
       "function (object)",
-      (RRef.expressionRef("show", rInterop).getValueInfo() as RValueFunction).header
+      (RReference.expressionRef("show", rInterop).getValueInfo() as RValueFunction).header
     ))
   }
 
@@ -237,7 +237,7 @@ class RVariableLoaderTest : RProcessHandlerBaseTestCase() {
       attr(xyz, "A1") <- 10
       attr(xyz, "A2") <- 20
     """.trimIndent())
-    val attributes = RRef.expressionRef("xyz", rInterop).getAttributesRef()
+    val attributes = RReference.expressionRef("xyz", rInterop).getAttributesRef()
       .createVariableLoader().variables
       .map { it.name to it.ref }
       .toMap()

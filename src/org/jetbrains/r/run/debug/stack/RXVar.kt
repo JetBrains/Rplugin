@@ -9,7 +9,7 @@ import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValueEnvironment
 import org.jetbrains.r.rinterop.RValueSimple
 import org.jetbrains.r.rinterop.RVar
@@ -53,7 +53,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
           return
         }
         val rInterop = rVar.ref.rInterop
-        rVar.ref.setValue(RRef.expressionRef(expression.expression, stackFrame.environment))
+        rVar.ref.setValue(RReference.expressionRef(expression.expression, stackFrame.environment))
           .also {
             stackFrame.tryRegisterDisposable(Disposable { it.cancel() })
           }

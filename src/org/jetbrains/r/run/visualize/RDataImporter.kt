@@ -7,17 +7,17 @@ package org.jetbrains.r.run.visualize
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 
 data class RImportOptions(val mode: String, val additional: Map<String, String>)
 
 class RDataImporter(private val interop: RInterop) {
-  fun importData(name: String, path: String, options: RImportOptions): RRef {
+  fun importData(name: String, path: String, options: RImportOptions): RReference {
     interop.commitDataImport(name, path, options.mode, options.additional)
     return refOf(name)
   }
 
-  fun previewDataAsync(path: String, rowCount: Int, options: RImportOptions): Promise<Pair<RRef, Int>> {
+  fun previewDataAsync(path: String, rowCount: Int, options: RImportOptions): Promise<Pair<RReference, Int>> {
     return runAsync {
       val result = interop.previewDataImport(path, options.mode, rowCount, options.additional)
       val errorCount = parseErrorCount(result.stdout, result.stderr)
@@ -39,8 +39,8 @@ class RDataImporter(private val interop: RInterop) {
     return output.substring(4, output.length - 1).toInt()
   }
 
-  private fun refOf(name: String): RRef {
-    return RRef.expressionRef(name, interop)
+  private fun refOf(name: String): RReference {
+    return RReference.expressionRef(name, interop)
   }
 
   companion object {

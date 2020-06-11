@@ -4,6 +4,6 @@
 
 package org.jetbrains.r.debugger
 
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 
-data class RStackFrame(val position: RSourcePosition?, val environment: RRef, val functionName: String?, val equalityObject: Long)
+data class RStackFrame(val position: RSourcePosition?, val environment: RReference, val functionName: String?, val equalityObject: Long)

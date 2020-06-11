@@ -91,10 +91,10 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
 
   val rInteropGrpcLogger = RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
-  val globalEnvRef = RRef(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
+  val globalEnvRef = RReference(Service.RRef.newBuilder().setGlobalEnv(Empty.getDefaultInstance()).build(), this)
   val globalEnvLoader = globalEnvRef.createVariableLoader()
   val globalEnvEqualityObject = globalEnvRef.getEqualityObject()
-  val currentEnvRef = RRef(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
+  val currentEnvRef = RReference(Service.RRef.newBuilder().setCurrentEnv(Empty.getDefaultInstance()).build(), this)
   val currentEnvLoader = currentEnvRef.createVariableLoader()
   @Volatile var isDebug = false
     private set
@@ -610,7 +610,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     execute(asyncStub::commitDataImport, request)
   }
 
-  fun dataFrameGetViewer(ref: RRef): Promise<RDataFrameViewer> {
+  fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)
     } catch (e: RequiredPackageException) {
@@ -633,16 +633,16 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun dataFrameGetInfo(ref: RRef): Service.DataFrameInfoResponse {
+  fun dataFrameGetInfo(ref: RReference): Service.DataFrameInfoResponse {
     return executeWithCheckCancel(asyncStub::dataFrameGetInfo, ref.proto)
   }
 
-  fun dataFrameGetData(ref: RRef, start: Int, end: Int): Promise<Service.DataFrameGetDataResponse> {
+  fun dataFrameGetData(ref: RReference, start: Int, end: Int): Promise<Service.DataFrameGetDataResponse> {
     val request = Service.DataFrameGetDataRequest.newBuilder().setRef(ref.proto).setStart(start).setEnd(end).build()
     return executeAsync(asyncStub::dataFrameGetData, request)
   }
 
-  fun dataFrameSort(ref: RRef, sortKeys: List<RowSorter.SortKey>, disposableParent: Disposable? = null): RPersistentRef {
+  fun dataFrameSort(ref: RReference, sortKeys: List<RowSorter.SortKey>, disposableParent: Disposable? = null): RPersistentRef {
     val keysProto = sortKeys.map {
       Service.DataFrameSortRequest.SortKey.newBuilder()
         .setColumnIndex(it.column)
@@ -653,12 +653,12 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameSort, request).value, this, disposableParent)
   }
 
-  fun dataFrameFilter(ref: RRef, f: Service.DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef {
+  fun dataFrameFilter(ref: RReference, f: Service.DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef {
     val request = Service.DataFrameFilterRequest.newBuilder().setRef(ref.proto).setFilter(f).build()
     return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameFilter, request).value, this, disposableParent)
   }
 
-  fun findInheritorNamedArguments(function: RRef): List<String> {
+  fun findInheritorNamedArguments(function: RReference): List<String> {
     return try {
       executeWithCheckCancel(asyncStub::findInheritorNamedArguments, function.proto).listList
     } catch (e: RInteropTerminated) {
@@ -666,7 +666,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun findDotsNamedArguments(function: RRef): RDotsNamedArgumentsInfo {
+  fun findDotsNamedArguments(function: RReference): RDotsNamedArgumentsInfo {
     return try {
       val res = executeWithCheckCancel(asyncStub::findDotsNamedArguments, function.proto)
       RDotsNamedArgumentsInfo(res.argNamesList, res.funArgNamesList)
@@ -675,7 +675,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun getFormalArguments(function: RRef): List<String> {
+  fun getFormalArguments(function: RReference): List<String> {
     return try {
       executeWithCheckCancel(asyncStub::getFormalArguments, function.proto).listList
     } catch (e: RInteropTerminated) {
@@ -683,7 +683,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun getTableColumnsInfo(table: RRef): TableInfo {
+  fun getTableColumnsInfo(table: RReference): TableInfo {
     return try {
       val request = Service.TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
       executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
@@ -738,7 +738,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     return executeRequest(RPIServiceGrpc.getFindPackagePathByPackageNameMethod(), request)
   }
 
-  fun clearEnvironment(env: RRef) {
+  fun clearEnvironment(env: RReference) {
     try {
       executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
       invalidateCaches()
@@ -746,7 +746,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     }
   }
 
-  fun getObjectSizes(refs: List<RRef>): List<Long> {
+  fun getObjectSizes(refs: List<RReference>): List<Long> {
     return execute(asyncStub::getObjectSizes, Service.RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
   }
 
@@ -857,7 +857,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
       }
       Service.AsyncEvent.EventCase.EXCEPTION -> {
         if (!event.exception.exception.hasInterrupted()) {
-          lastErrorStack = stackFromProto(event.exception.stack) { RRef.errorStackSysFrameRef(it, this) }
+          lastErrorStack = stackFromProto(event.exception.stack) { RReference.errorStackSysFrameRef(it, this) }
         }
         val info = exceptionInfoFromProto(event.exception.exception)
         fireListeners { it.onException(info) }
@@ -961,7 +961,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
   }
 
   private fun stackFromProto(proto: Service.StackFrameList,
-                             indexToEnvironment: (Int) -> RRef = { RRef.sysFrameRef(it, this) }): List<RStackFrame> {
+                             indexToEnvironment: (Int) -> RReference = { RReference.sysFrameRef(it, this) }): List<RStackFrame> {
     return proto.framesList.mapIndexed { index, it ->
       val file = sourceFileManager.getFileById(it.position.fileId)
       val position = file?.let { f -> RSourcePosition(f, it.position.line) }
@@ -1107,7 +1107,7 @@ class RInterop(val processHandler: OSProcessHandler, address: String, port: Int,
     fun onPrompt(isDebug: Boolean = false) {}
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
-    fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> = resolvedPromise()
+    fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(content: String, url: String) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
     fun onSubprocessInput() {}

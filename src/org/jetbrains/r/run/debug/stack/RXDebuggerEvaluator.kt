@@ -9,12 +9,12 @@ import com.intellij.openapi.Disposable
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
 import org.jetbrains.r.debugger.exception.RDebuggerException
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RVar
 
 class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var parentDisposable: Disposable? = null) : XDebuggerEvaluator() {
   override fun evaluate(expression: String, callback: XEvaluationCallback, expressionPosition: XSourcePosition?) {
-    RRef.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable).onSuccess {
+    RReference.expressionRef(expression, stackFrame.loader.obj).copyToPersistentRef(parentDisposable).onSuccess {
       it.getValueInfoAsync().onSuccess { rValue ->
         callback.evaluated(RXVar(RVar(expression, it, rValue), stackFrame)
                              .also { rxVar -> setObjectSizes(listOf(rxVar), stackFrame) })

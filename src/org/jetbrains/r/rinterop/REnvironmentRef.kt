@@ -4,4 +4,4 @@
 
 package org.jetbrains.r.rinterop
 
-data class REnvironmentRef(val name: String, val ref: RRef)
+data class REnvironmentRef(val name: String, val ref: RReference)

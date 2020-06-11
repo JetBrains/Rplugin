@@ -12,21 +12,21 @@ import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.util.thenCancellable
 import org.jetbrains.r.util.tryRegisterDisposable
 
-open class RRef internal constructor(internal val proto: Service.RRef, internal val rInterop: RInterop) {
+open class RReference internal constructor(internal val proto: Service.RRef, internal val rInterop: RInterop) {
   fun createVariableLoader(): RVariableLoader {
     return RVariableLoader(this)
   }
 
-  fun getMemberRef(name: String): RRef {
-    return RRef(ProtoUtil.envMemberRefProto(proto, name), rInterop)
+  fun getMemberRef(name: String): RReference {
+    return RReference(ProtoUtil.envMemberRefProto(proto, name), rInterop)
   }
 
-  fun getListElementRef(index: Long): RRef {
-    return RRef(ProtoUtil.listElementRefProto(proto, index), rInterop)
+  fun getListElementRef(index: Long): RReference {
+    return RReference(ProtoUtil.listElementRefProto(proto, index), rInterop)
   }
 
-  fun getAttributesRef(): RRef {
-    return RRef(ProtoUtil.attributesRefProto(proto), rInterop)
+  fun getAttributesRef(): RReference {
+    return RReference(ProtoUtil.attributesRefProto(proto), rInterop)
   }
 
   fun copyToPersistentRef(disposableParent: Disposable? = null): CancellablePromise<RPersistentRef> {
@@ -92,7 +92,7 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::getEqualityObject, proto).value
   }
 
-  fun setValue(value: RRef): CancellablePromise<Unit> {
+  fun setValue(value: RReference): CancellablePromise<Unit> {
     val request = Service.SetValueRequest.newBuilder()
       .setRef(proto)
       .setValue(value.proto)
@@ -107,16 +107,16 @@ open class RRef internal constructor(internal val proto: Service.RRef, internal 
   fun canSetValue() = ProtoUtil.canSetValue(proto)
 
   companion object {
-    fun expressionRef(code: String, env: RRef) = RRef(ProtoUtil.expressionRefProto(code, env.proto), env.rInterop)
+    fun expressionRef(code: String, env: RReference) = RReference(ProtoUtil.expressionRefProto(code, env.proto), env.rInterop)
     fun expressionRef(code: String, rInterop: RInterop) = expressionRef(code, rInterop.currentEnvRef)
 
-    internal fun sysFrameRef(index: Int, rInterop: RInterop) = RRef(ProtoUtil.sysFrameRefProto(index), rInterop)
-    internal fun errorStackSysFrameRef(index: Int, rInterop: RInterop) = RRef(ProtoUtil.errorStackSysFrameRefProto(index), rInterop)
+    internal fun sysFrameRef(index: Int, rInterop: RInterop) = RReference(ProtoUtil.sysFrameRefProto(index), rInterop)
+    internal fun errorStackSysFrameRef(index: Int, rInterop: RInterop) = RReference(ProtoUtil.errorStackSysFrameRefProto(index), rInterop)
   }
 }
 
 class RPersistentRef internal constructor(index: Int, rInterop: RInterop, disposableParent: Disposable? = null):
-  RRef(Service.RRef.newBuilder().setPersistentIndex(index).build(), rInterop), Disposable {
+  RReference(Service.RRef.newBuilder().setPersistentIndex(index).build(), rInterop), Disposable {
   init {
     disposableParent?.tryRegisterDisposable(this)
   }

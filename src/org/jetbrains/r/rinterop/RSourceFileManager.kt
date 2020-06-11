@@ -54,7 +54,7 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
     return file
   }
 
-  fun getFunctionPosition(rRef: RRef): CancellablePromise<RSourcePosition?> {
+  fun getFunctionPosition(rRef: RReference): CancellablePromise<RSourcePosition?> {
     val map = cachedFunctionPositions
     return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).thenCancellable { position ->
       map.getOrPut(rRef.proto) {

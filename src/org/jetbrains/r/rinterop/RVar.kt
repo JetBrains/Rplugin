@@ -7,7 +7,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.project.Project
 
-data class RVar(val name: String, val ref: RRef, val value: RValue) {
+data class RVar(val name: String, val ref: RReference, val value: RValue) {
   val project: Project
     get() = ref.rInterop.project
 }

@@ -24,7 +24,7 @@ import org.jetbrains.r.psi.api.RExpression
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropTerminated
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class VisualizeTableAction : BaseCodeInsightAction() {
@@ -41,7 +41,7 @@ class VisualizeTableHandler : CodeInsightActionHandler {
     val expr = getSelectedExpression(editor, file)?.text ?: return
 
     val rInterop = file.runtimeInfo?.rInterop ?: return
-    val ref = RRef.expressionRef(expr, rInterop)
+    val ref = RReference.expressionRef(expr, rInterop)
     visualizeTable(rInterop, ref, project, expr, editor)
   }
 
@@ -64,7 +64,7 @@ class VisualizeTableHandler : CodeInsightActionHandler {
   }
 
   companion object {
-    fun visualizeTable(rInterop: RInterop, ref: RRef, project: Project, expr: String, editor: Editor? = null): Promise<Unit> {
+    fun visualizeTable(rInterop: RInterop, ref: RReference, project: Project, expr: String, editor: Editor? = null): Promise<Unit> {
       return rInterop.dataFrameGetViewer(ref).then {
         RVisualizeTableUtil.showTable(project, it, expr)
       }.onError {

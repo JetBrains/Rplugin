@@ -8,7 +8,7 @@ import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.*
 import java.io.File
 import java.nio.file.Paths
@@ -66,7 +66,7 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
     checkEqual(ref, expected)
   }
 
-  private fun checkEqual(ref: RRef, expected: DataFrame) {
+  private fun checkEqual(ref: RReference, expected: DataFrame) {
     val viewer = prepareViewer(ref)
     checkEqual(viewer, expected)
   }
@@ -94,7 +94,7 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
     }
   }
 
-  private fun prepareViewer(ref: RRef): RDataFrameViewer {
+  private fun prepareViewer(ref: RReference): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(ref).wait()
   }
 

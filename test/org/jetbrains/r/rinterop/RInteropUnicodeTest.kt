@@ -13,7 +13,7 @@ class RInteropUnicodeTest : RProcessHandlerBaseTestCase() {
     rInterop.executeCode("var <- '$s'")
     TestCase.assertEquals("[1] \"$s\"", rInterop.executeCode("var").stdout.trim())
     TestCase.assertEquals(s, rInterop.executeCode("cat(var)").stdout.trim())
-    TestCase.assertTrue(s in (RRef.expressionRef("var", rInterop).getValueInfo() as RValueSimple).text)
+    TestCase.assertTrue(s in (RReference.expressionRef("var", rInterop).getValueInfo() as RValueSimple).text)
     TestCase.assertTrue(rInterop.globalEnvLoader.variables.any { it.name == "var" })
   }
 
@@ -23,7 +23,7 @@ class RInteropUnicodeTest : RProcessHandlerBaseTestCase() {
     rInterop.executeCode("var <- '$escaped'")
     TestCase.assertEquals("[1] \"$s\"", rInterop.executeCode("var").stdout.trim())
     TestCase.assertEquals(s, rInterop.executeCode("cat(var)").stdout.trim())
-    TestCase.assertTrue(s in (RRef.expressionRef("var", rInterop).getValueInfo() as RValueSimple).text)
+    TestCase.assertTrue(s in (RReference.expressionRef("var", rInterop).getValueInfo() as RValueSimple).text)
     TestCase.assertTrue(rInterop.globalEnvLoader.variables.any { it.name == "var" })
   }
 
@@ -31,7 +31,7 @@ class RInteropUnicodeTest : RProcessHandlerBaseTestCase() {
     addLibraries()
     val s1 = "column \u79c1"
     val s2 = "value \u79c2"
-    val table = rInterop.dataFrameGetViewer(RRef.expressionRef("dplyr::tibble('$s1' = '$s2')", rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
+    val table = rInterop.dataFrameGetViewer(RReference.expressionRef("dplyr::tibble('$s1' = '$s2')", rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals(s1, table.getColumnName(1))
     TestCase.assertEquals(s2, table.getValueAt(0, 1))
   }

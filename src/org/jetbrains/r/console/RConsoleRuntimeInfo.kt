@@ -13,7 +13,7 @@ import org.jetbrains.r.hints.parameterInfo.RDotsNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValue
 import org.jetbrains.r.rinterop.getWithCheckCanceled
 
@@ -69,22 +69,22 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   }
 
   override fun loadDistinctStrings(expression: String): List<String> {
-    return distinctStringsCache.getOrPut(expression) { RRef.expressionRef(expression, rInterop).getDistinctStrings() }
+    return distinctStringsCache.getOrPut(expression) { RReference.expressionRef(expression, rInterop).getDistinctStrings() }
   }
 
   override fun loadObjectNames(expression: String): List<String> {
-    return objectNamesCache.getOrPut(expression) { RRef.expressionRef(expression, rInterop).ls() }
+    return objectNamesCache.getOrPut(expression) { RReference.expressionRef(expression, rInterop).ls() }
   }
 
   override fun loadInheritorNamedArguments(baseFunctionName: String): List<String> {
     return inheritorNamedArgumentsCache.getOrPut(baseFunctionName) {
-      rInterop.findInheritorNamedArguments(RRef.expressionRef("'$baseFunctionName'", rInterop))
+      rInterop.findInheritorNamedArguments(RReference.expressionRef("'$baseFunctionName'", rInterop))
     }
   }
 
   override fun loadDotsNamedArguments(functionName: String): RDotsNamedArgumentsInfo {
     return dotsNamedArgumentsCache.getOrPut(functionName) {
-      rInterop.findDotsNamedArguments(RRef.expressionRef("'$functionName'", rInterop))
+      rInterop.findDotsNamedArguments(RReference.expressionRef("'$functionName'", rInterop))
     }
   }
 
@@ -94,7 +94,7 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     val oldStamp = dotsNamedArgumentsStampCache[functionName]
     if (oldStamp == null || stamp < 0 || stamp != oldStamp) {
       dotsNamedArgumentsStampCache[functionName] = stamp
-      return rInterop.findDotsNamedArguments(RRef.expressionRef("'${functionExpression.text}'", rInterop)).also {
+      return rInterop.findDotsNamedArguments(RReference.expressionRef("'${functionExpression.text}'", rInterop)).also {
         dotsNamedArgumentsCache[functionName] = it
       }
     }
@@ -102,12 +102,12 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   }
 
   override fun getFormalArguments(expression: String): List<String> {
-    return formalArgumentsCache.getOrPut(expression) { rInterop.getFormalArguments(RRef.expressionRef(expression, rInterop)) }
+    return formalArgumentsCache.getOrPut(expression) { rInterop.getFormalArguments(RReference.expressionRef(expression, rInterop)) }
   }
 
   override fun loadTableColumns(expression: String): TableInfo {
     return tableColumnsCache.getOrPut(expression) {
-      rInterop.getTableColumnsInfo(RRef.expressionRef(expression, rInterop))
+      rInterop.getTableColumnsInfo(RReference.expressionRef(expression, rInterop))
     }
   }
 }

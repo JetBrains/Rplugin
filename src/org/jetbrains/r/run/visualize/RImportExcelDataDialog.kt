@@ -10,7 +10,7 @@ import com.intellij.ui.components.JBTextField
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.rinterop.RRef
+import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.forms.RImportExcelOptionPanelForm
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -61,7 +61,7 @@ class RImportExcelDataDialog private constructor(project: Project, interop: RInt
 
   override fun onUpdateFinished() {
     runAsync {
-      val ref = RRef.expressionRef(SHEET_VARIABLE_NAME, interop)
+      val ref = RReference.expressionRef(SHEET_VARIABLE_NAME, interop)
       val sheetNames = ref.getDistinctStrings().filter { it.isNotBlank() }
       updateSheetComboBox(sheetNames)
     }

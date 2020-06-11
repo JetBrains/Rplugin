@@ -117,7 +117,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
   fun testViewRequest() {
     val promise = AsyncPromise<Pair<RValue, String>>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onViewRequest(ref: RRef, title: String, value: RValue): Promise<Unit> {
+      override fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> {
         promise.setResult(value to title)
         return resolvedPromise()
       }
@@ -169,7 +169,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     """.trimIndent())
     TestCase.assertEquals("123456789", stdoutPromise.blockingGet(DEFAULT_TIMEOUT)!!.asSequence().sorted().joinToString(""))
     TestCase.assertEquals("!".repeat(expectedStderrLength), stderrPromise.blockingGet(DEFAULT_TIMEOUT))
-    TestCase.assertEquals((1..9).map { (it * it).toString() }, RRef.expressionRef("as.character(a)", rInterop).getDistinctStrings())
+    TestCase.assertEquals((1..9).map { (it * it).toString() }, RReference.expressionRef("as.character(a)", rInterop).getDistinctStrings())
     rInterop.removeAsyncEventsListener(listener)
   }
 
@@ -216,23 +216,23 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
 
   fun testSetValue() {
     rInterop.executeCode("aa <- 10; bb <- 20; cc <- 30")
-    RRef(ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "bb"), rInterop)
-      .setValue(RRef.expressionRef("123", rInterop))
+    RReference(ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "bb"), rInterop)
+      .setValue(RReference.expressionRef("123", rInterop))
       .blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[1] 123", rInterop.executeCode("bb").stdout.trim())
 
     rInterop.executeCode("s1 <- list(1,2,3,4); s2 <- s1")
-    RRef(ProtoUtil.listElementRefProto(
+    RReference(ProtoUtil.listElementRefProto(
       ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "s2"), 1), rInterop)
-      .setValue(RRef.expressionRef("'Hello'", rInterop))
+      .setValue(RReference.expressionRef("'Hello'", rInterop))
       .blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[1] 2", rInterop.executeCode("s1[[2]]").stdout.trim())
     TestCase.assertEquals("[1] \"Hello\"", rInterop.executeCode("s2[[2]]").stdout.trim())
 
     rInterop.executeCode("s1 <- c(1,2,3,4); s2 <- s1")
-    RRef(ProtoUtil.listElementRefProto(
+    RReference(ProtoUtil.listElementRefProto(
       ProtoUtil.envMemberRefProto(rInterop.globalEnvRef.proto, "s2"), 1), rInterop)
-      .setValue(RRef.expressionRef("321", rInterop))
+      .setValue(RReference.expressionRef("321", rInterop))
       .blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[1] 2", rInterop.executeCode("s1[2]").stdout.trim())
     TestCase.assertEquals("[1] 321", rInterop.executeCode("s2[2]").stdout.trim())
