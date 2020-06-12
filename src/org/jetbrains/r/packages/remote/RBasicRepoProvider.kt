@@ -274,9 +274,9 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
     private const val HTTPS_SUFFIX = "[https]"
 
     private val LOGGER = Logger.getInstance(RBasicRepoProvider::class.java)
-    private val CRAN_MIRRORS_HELPER = RPluginUtil.findFileInRHelpers("R/repos/local_cran_mirrors.txt")
-    private val AVAILABLE_PACKAGES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/available_packages.R")
-    private val DEFAULT_REPOSITORIES_HELPER = RPluginUtil.findFileInRHelpers("R/interpreter/default_repositories.R")
+    private val CRAN_MIRRORS_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/repos/local_cran_mirrors.txt") }
+    private val AVAILABLE_PACKAGES_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/interpreter/available_packages.R") }
+    private val DEFAULT_REPOSITORIES_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/interpreter/default_repositories.R") }
 
     private fun String.trimSlash(): String {
       return if (endsWith("/")) dropLast(1) else this
