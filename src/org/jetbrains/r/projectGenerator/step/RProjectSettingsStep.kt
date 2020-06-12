@@ -108,7 +108,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     setErrorText("") // To prevent the "create" button from blinking
     checkForError(interpreterPanel.validateInterpreter()) { return false }
     if (rProjectGenerator.requiredPackageList && !rProjectSettings.isInstalledPackagesSetUpToDate) {
-      if (!isRScriptExists()) {
+      if (!isRScriptExists() || RPluginUtil.helperPathOrNull == null) {
         checkForError(listOf(ValidationInfo(MISSING_RSCRIPT))) {
           rProjectSettings.installedPackages = emptySet()
           rProjectGenerator.validateGeneratorSettings()
@@ -224,7 +224,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   }
 
   companion object {
-    private val SCRIPT_PATH = RPluginUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R")
+    private val SCRIPT_PATH by lazy { RPluginUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R") }
     private val MISSING_RSCRIPT = RBundle.message("project.settings.missing.rscript")
   }
 }

@@ -22,9 +22,9 @@ object RPluginUtil {
     Paths.get(helpersPath, relativePath).toFile()
 
   val helpersPath: String
-    get() {
-     return Paths.get(PathManager.getPluginsPath(), PLUGIN_NAME).takeIf { it.exists() }?.toString() ?:
+    get() = helperPathOrNull ?: throw IllegalStateException("Cannot find rplugin directory")
+
+  val helperPathOrNull: String?
+    get() = Paths.get(PathManager.getPluginsPath(), PLUGIN_NAME).takeIf { it.exists() }?.toString() ?:
             Paths.get(PathManager.getPreInstalledPluginsPath(), PLUGIN_NAME).takeIf { it.exists() }?.toString()
-            ?: throw IllegalStateException("Cannot find rplugin directory")
-    }
 }
