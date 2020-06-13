@@ -250,6 +250,37 @@ class RReturnHintsTest : RLightCodeInsightFixtureTestCase() {
     """.trimIndent(), 2, false)
   }
 
+  fun testNamedArgumentFunction() {
+    doRFileTest("""
+      tryCatch(expr, error = function(e) {
+        b <- 10
+        b + 8 <${e}error>
+      })
+    """.trimIndent())
+  }
+
+  fun testMemberExpression() {
+    doRFileTest("""
+      foo${"$"}bar <- function(x, y) {
+        a <- 42 + 43
+        42 <${e}foo${"$"}bar>
+      }
+    """.trimIndent())
+
+    doRFileTest("""
+      foo${"$"}bar() <- function(x, y) {
+        a <- 42 + 43
+        42 <${e}lambda>
+      }
+    """.trimIndent())
+
+    doRFileTest("""
+      foo()${"$"}bar <- function(x, y) {
+        a <- 42 + 43
+        42 <${e}lambda>
+      }
+    """.trimIndent())
+  }
 
   private fun changeSettings(returnCnt: Int, implicitNullEnabled: Boolean) {
     val inlayHintsSettings = InlayHintsSettings.instance()
