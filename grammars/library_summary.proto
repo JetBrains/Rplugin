@@ -14,10 +14,16 @@ message RLibrarySymbol {
     FUNCTION = 1;
     DATASET = 2;
   }
+  message ExtraNamedArguments {
+      // See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+      repeated string argNames = 1;
+      repeated string funArgNames = 2;
+  }
   string name = 1;
   Type type = 2;
   bool exported = 3;
   string parameters = 4; // for functions
+  ExtraNamedArguments extraNamedArguments = 5; // for functions
 }
 
 message RLibraryPackage {

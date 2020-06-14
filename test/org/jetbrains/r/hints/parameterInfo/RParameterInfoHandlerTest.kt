@@ -191,7 +191,7 @@ class RParameterInfoHandlerTest : RLightCodeInsightFixtureTestCase() {
     doTest("""
       filter(10, 15, 43<caret>)
     """.trimIndent(),
-           "x, filter, <method = c(\"convolution\", \"recursive\")>, sides = 2, circular = FALSE, init = NULL",
+           "x, filter, <method = c(\"convolution\", \"recursive\")>, sides = 2L, circular = FALSE, init = NULL",
            ".data, <...>, .preserve = FALSE")
   }
 

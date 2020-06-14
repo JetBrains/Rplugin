@@ -59,6 +59,31 @@ public final class LibrarySummary {
      */
     com.google.protobuf.ByteString
         getParametersBytes();
+
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    boolean hasExtraNamedArguments();
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments();
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder();
   }
   /**
    * Protobuf type {@code library_summary.RLibrarySymbol}
@@ -129,6 +154,19 @@ public final class LibrarySummary {
               java.lang.String s = input.readStringRequireUtf8();
 
               parameters_ = s;
+              break;
+            }
+            case 42: {
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder subBuilder = null;
+              if (extraNamedArguments_ != null) {
+                subBuilder = extraNamedArguments_.toBuilder();
+              }
+              extraNamedArguments_ = input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(extraNamedArguments_);
+                extraNamedArguments_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -270,6 +308,873 @@ public final class LibrarySummary {
       // @@protoc_insertion_point(enum_scope:library_summary.RLibrarySymbol.Type)
     }
 
+    public interface ExtraNamedArgumentsOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.ExtraNamedArguments)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      java.util.List<java.lang.String>
+          getArgNamesList();
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      int getArgNamesCount();
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      java.lang.String getArgNames(int index);
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getArgNamesBytes(int index);
+
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      java.util.List<java.lang.String>
+          getFunArgNamesList();
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      int getFunArgNamesCount();
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      java.lang.String getFunArgNames(int index);
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getFunArgNamesBytes(int index);
+    }
+    /**
+     * Protobuf type {@code library_summary.RLibrarySymbol.ExtraNamedArguments}
+     */
+    public  static final class ExtraNamedArguments extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.ExtraNamedArguments)
+        ExtraNamedArgumentsOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use ExtraNamedArguments.newBuilder() to construct.
+      private ExtraNamedArguments(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private ExtraNamedArguments() {
+        argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new ExtraNamedArguments();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private ExtraNamedArguments(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  argNames_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                argNames_.add(s);
+                break;
+              }
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                  funArgNames_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000002;
+                }
+                funArgNames_.add(s);
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+            argNames_ = argNames_.getUnmodifiableView();
+          }
+          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+            funArgNames_ = funArgNames_.getUnmodifiableView();
+          }
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder.class);
+      }
+
+      public static final int ARGNAMES_FIELD_NUMBER = 1;
+      private com.google.protobuf.LazyStringList argNames_;
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getArgNamesList() {
+        return argNames_;
+      }
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      public int getArgNamesCount() {
+        return argNames_.size();
+      }
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      public java.lang.String getArgNames(int index) {
+        return argNames_.get(index);
+      }
+      /**
+       * <pre>
+       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+       * </pre>
+       *
+       * <code>repeated string argNames = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getArgNamesBytes(int index) {
+        return argNames_.getByteString(index);
+      }
+
+      public static final int FUNARGNAMES_FIELD_NUMBER = 2;
+      private com.google.protobuf.LazyStringList funArgNames_;
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getFunArgNamesList() {
+        return funArgNames_;
+      }
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      public int getFunArgNamesCount() {
+        return funArgNames_.size();
+      }
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      public java.lang.String getFunArgNames(int index) {
+        return funArgNames_.get(index);
+      }
+      /**
+       * <code>repeated string funArgNames = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFunArgNamesBytes(int index) {
+        return funArgNames_.getByteString(index);
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        for (int i = 0; i < argNames_.size(); i++) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, argNames_.getRaw(i));
+        }
+        for (int i = 0; i < funArgNames_.size(); i++) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, funArgNames_.getRaw(i));
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        {
+          int dataSize = 0;
+          for (int i = 0; i < argNames_.size(); i++) {
+            dataSize += computeStringSizeNoTag(argNames_.getRaw(i));
+          }
+          size += dataSize;
+          size += 1 * getArgNamesList().size();
+        }
+        {
+          int dataSize = 0;
+          for (int i = 0; i < funArgNames_.size(); i++) {
+            dataSize += computeStringSizeNoTag(funArgNames_.getRaw(i));
+          }
+          size += dataSize;
+          size += 1 * getFunArgNamesList().size();
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments)) {
+          return super.equals(obj);
+        }
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) obj;
+
+        if (!getArgNamesList()
+            .equals(other.getArgNamesList())) return false;
+        if (!getFunArgNamesList()
+            .equals(other.getFunArgNamesList())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (getArgNamesCount() > 0) {
+          hash = (37 * hash) + ARGNAMES_FIELD_NUMBER;
+          hash = (53 * hash) + getArgNamesList().hashCode();
+        }
+        if (getFunArgNamesCount() > 0) {
+          hash = (37 * hash) + FUNARGNAMES_FIELD_NUMBER;
+          hash = (53 * hash) + getFunArgNamesList().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.ExtraNamedArguments}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.ExtraNamedArguments)
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder.class);
+        }
+
+        // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstanceForType() {
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments build() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments buildPartial() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments(this);
+          int from_bitField0_ = bitField0_;
+          if (((bitField0_ & 0x00000001) != 0)) {
+            argNames_ = argNames_.getUnmodifiableView();
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.argNames_ = argNames_;
+          if (((bitField0_ & 0x00000002) != 0)) {
+            funArgNames_ = funArgNames_.getUnmodifiableView();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.funArgNames_ = funArgNames_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) {
+            return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments other) {
+          if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance()) return this;
+          if (!other.argNames_.isEmpty()) {
+            if (argNames_.isEmpty()) {
+              argNames_ = other.argNames_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureArgNamesIsMutable();
+              argNames_.addAll(other.argNames_);
+            }
+            onChanged();
+          }
+          if (!other.funArgNames_.isEmpty()) {
+            if (funArgNames_.isEmpty()) {
+              funArgNames_ = other.funArgNames_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureFunArgNamesIsMutable();
+              funArgNames_.addAll(other.funArgNames_);
+            }
+            onChanged();
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private com.google.protobuf.LazyStringList argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private void ensureArgNamesIsMutable() {
+          if (!((bitField0_ & 0x00000001) != 0)) {
+            argNames_ = new com.google.protobuf.LazyStringArrayList(argNames_);
+            bitField0_ |= 0x00000001;
+           }
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public com.google.protobuf.ProtocolStringList
+            getArgNamesList() {
+          return argNames_.getUnmodifiableView();
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public int getArgNamesCount() {
+          return argNames_.size();
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public java.lang.String getArgNames(int index) {
+          return argNames_.get(index);
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getArgNamesBytes(int index) {
+          return argNames_.getByteString(index);
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public Builder setArgNames(
+            int index, java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArgNamesIsMutable();
+          argNames_.set(index, value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public Builder addArgNames(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArgNamesIsMutable();
+          argNames_.add(value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public Builder addAllArgNames(
+            java.lang.Iterable<java.lang.String> values) {
+          ensureArgNamesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, argNames_);
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public Builder clearArgNames() {
+          argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public Builder addArgNamesBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          ensureArgNamesIsMutable();
+          argNames_.add(value);
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.LazyStringList funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private void ensureFunArgNamesIsMutable() {
+          if (!((bitField0_ & 0x00000002) != 0)) {
+            funArgNames_ = new com.google.protobuf.LazyStringArrayList(funArgNames_);
+            bitField0_ |= 0x00000002;
+           }
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public com.google.protobuf.ProtocolStringList
+            getFunArgNamesList() {
+          return funArgNames_.getUnmodifiableView();
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public int getFunArgNamesCount() {
+          return funArgNames_.size();
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public java.lang.String getFunArgNames(int index) {
+          return funArgNames_.get(index);
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getFunArgNamesBytes(int index) {
+          return funArgNames_.getByteString(index);
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public Builder setFunArgNames(
+            int index, java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureFunArgNamesIsMutable();
+          funArgNames_.set(index, value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public Builder addFunArgNames(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureFunArgNamesIsMutable();
+          funArgNames_.add(value);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public Builder addAllFunArgNames(
+            java.lang.Iterable<java.lang.String> values) {
+          ensureFunArgNamesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, funArgNames_);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public Builder clearFunArgNames() {
+          funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public Builder addFunArgNamesBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          ensureFunArgNamesIsMutable();
+          funArgNames_.add(value);
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.ExtraNamedArguments)
+      }
+
+      // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.ExtraNamedArguments)
+      private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments();
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<ExtraNamedArguments>
+          PARSER = new com.google.protobuf.AbstractParser<ExtraNamedArguments>() {
+        @java.lang.Override
+        public ExtraNamedArguments parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new ExtraNamedArguments(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<ExtraNamedArguments> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<ExtraNamedArguments> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
@@ -372,6 +1277,39 @@ public final class LibrarySummary {
       }
     }
 
+    public static final int EXTRANAMEDARGUMENTS_FIELD_NUMBER = 5;
+    private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments_;
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    public boolean hasExtraNamedArguments() {
+      return extraNamedArguments_ != null;
+    }
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments() {
+      return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+    }
+    /**
+     * <pre>
+     * for functions
+     * </pre>
+     *
+     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     */
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
+      return getExtraNamedArguments();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -398,6 +1336,9 @@ public final class LibrarySummary {
       if (!getParametersBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, parameters_);
       }
+      if (extraNamedArguments_ != null) {
+        output.writeMessage(5, getExtraNamedArguments());
+      }
       unknownFields.writeTo(output);
     }
 
@@ -421,6 +1362,10 @@ public final class LibrarySummary {
       if (!getParametersBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, parameters_);
       }
+      if (extraNamedArguments_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getExtraNamedArguments());
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -443,6 +1388,11 @@ public final class LibrarySummary {
           != other.getExported()) return false;
       if (!getParameters()
           .equals(other.getParameters())) return false;
+      if (hasExtraNamedArguments() != other.hasExtraNamedArguments()) return false;
+      if (hasExtraNamedArguments()) {
+        if (!getExtraNamedArguments()
+            .equals(other.getExtraNamedArguments())) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -463,6 +1413,10 @@ public final class LibrarySummary {
           getExported());
       hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
       hash = (53 * hash) + getParameters().hashCode();
+      if (hasExtraNamedArguments()) {
+        hash = (37 * hash) + EXTRANAMEDARGUMENTS_FIELD_NUMBER;
+        hash = (53 * hash) + getExtraNamedArguments().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -604,6 +1558,12 @@ public final class LibrarySummary {
 
         parameters_ = "";
 
+        if (extraNamedArgumentsBuilder_ == null) {
+          extraNamedArguments_ = null;
+        } else {
+          extraNamedArguments_ = null;
+          extraNamedArgumentsBuilder_ = null;
+        }
         return this;
       }
 
@@ -634,6 +1594,11 @@ public final class LibrarySummary {
         result.type_ = type_;
         result.exported_ = exported_;
         result.parameters_ = parameters_;
+        if (extraNamedArgumentsBuilder_ == null) {
+          result.extraNamedArguments_ = extraNamedArguments_;
+        } else {
+          result.extraNamedArguments_ = extraNamedArgumentsBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -695,6 +1660,9 @@ public final class LibrarySummary {
         if (!other.getParameters().isEmpty()) {
           parameters_ = other.parameters_;
           onChanged();
+        }
+        if (other.hasExtraNamedArguments()) {
+          mergeExtraNamedArguments(other.getExtraNamedArguments());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -952,6 +1920,159 @@ public final class LibrarySummary {
         parameters_ = value;
         onChanged();
         return this;
+      }
+
+      private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder> extraNamedArgumentsBuilder_;
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public boolean hasExtraNamedArguments() {
+        return extraNamedArgumentsBuilder_ != null || extraNamedArguments_ != null;
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments() {
+        if (extraNamedArgumentsBuilder_ == null) {
+          return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+        } else {
+          return extraNamedArgumentsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public Builder setExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments value) {
+        if (extraNamedArgumentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          extraNamedArguments_ = value;
+          onChanged();
+        } else {
+          extraNamedArgumentsBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public Builder setExtraNamedArguments(
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder builderForValue) {
+        if (extraNamedArgumentsBuilder_ == null) {
+          extraNamedArguments_ = builderForValue.build();
+          onChanged();
+        } else {
+          extraNamedArgumentsBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public Builder mergeExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments value) {
+        if (extraNamedArgumentsBuilder_ == null) {
+          if (extraNamedArguments_ != null) {
+            extraNamedArguments_ =
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder(extraNamedArguments_).mergeFrom(value).buildPartial();
+          } else {
+            extraNamedArguments_ = value;
+          }
+          onChanged();
+        } else {
+          extraNamedArgumentsBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public Builder clearExtraNamedArguments() {
+        if (extraNamedArgumentsBuilder_ == null) {
+          extraNamedArguments_ = null;
+          onChanged();
+        } else {
+          extraNamedArguments_ = null;
+          extraNamedArgumentsBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder getExtraNamedArgumentsBuilder() {
+        
+        onChanged();
+        return getExtraNamedArgumentsFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
+        if (extraNamedArgumentsBuilder_ != null) {
+          return extraNamedArgumentsBuilder_.getMessageOrBuilder();
+        } else {
+          return extraNamedArguments_ == null ?
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+        }
+      }
+      /**
+       * <pre>
+       * for functions
+       * </pre>
+       *
+       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder> 
+          getExtraNamedArgumentsFieldBuilder() {
+        if (extraNamedArgumentsBuilder_ == null) {
+          extraNamedArgumentsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder>(
+                  getExtraNamedArguments(),
+                  getParentForChildren(),
+                  isClean());
+          extraNamedArguments_ = null;
+        }
+        return extraNamedArgumentsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -2156,6 +3277,11 @@ public final class LibrarySummary {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_library_summary_RLibrarySymbol_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_library_summary_RLibraryPackage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -2170,17 +3296,21 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\246\001\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\266\002\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022\022\n\nparameters\030\004 " +
-      "\001(\t\",\n\004Type\022\t\n\005OTHER\020\000\022\014\n\010FUNCTION\020\001\022\013\n\007" +
-      "DATASET\020\002\"\330\001\n\017RLibraryPackage\022\014\n\004name\030\001 " +
-      "\001(\t\022;\n\010priority\030\002 \001(\0162).library_summary." +
-      "RLibraryPackage.Priority\0220\n\007symbols\030\003 \003(" +
-      "\0132\037.library_summary.RLibrarySymbol\"H\n\010Pr" +
-      "iority\022\013\n\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMEND" +
-      "ED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030org.jetb" +
-      "rains.r.packagesb\006proto3"
+      "\001(\t\022P\n\023extraNamedArguments\030\005 \001(\01323.libra" +
+      "ry_summary.RLibrarySymbol.ExtraNamedArgu" +
+      "ments\032<\n\023ExtraNamedArguments\022\020\n\010argNames" +
+      "\030\001 \003(\t\022\023\n\013funArgNames\030\002 \003(\t\",\n\004Type\022\t\n\005O" +
+      "THER\020\000\022\014\n\010FUNCTION\020\001\022\013\n\007DATASET\020\002\"\330\001\n\017RL" +
+      "ibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030" +
+      "\002 \001(\0162).library_summary.RLibraryPackage." +
+      "Priority\0220\n\007symbols\030\003 \003(\0132\037.library_summ" +
+      "ary.RLibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOW" +
+      "N\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014" +
+      "\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.packages" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2191,7 +3321,13 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_descriptor,
-        new java.lang.String[] { "Name", "Type", "Exported", "Parameters", });
+        new java.lang.String[] { "Name", "Type", "Exported", "Parameters", "ExtraNamedArguments", });
+    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor =
+      internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(0);
+    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor,
+        new java.lang.String[] { "ArgNames", "FunArgNames", });
     internal_static_library_summary_RLibraryPackage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_library_summary_RLibraryPackage_fieldAccessorTable = new
