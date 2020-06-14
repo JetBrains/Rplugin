@@ -5,9 +5,13 @@
 package org.jetbrains.r.hints.parameterInfo
 
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.io.DataInputOutputUtilRt
+import com.intellij.psi.stubs.StubInputStream
+import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.util.io.StringRef
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.api.*
 
@@ -15,7 +19,20 @@ import org.jetbrains.r.psi.api.*
  * @property argumentNames Names of arguments that can be passed directly to **...**
  * @property functionArgNames Names of arguments that are functions whose arguments can also be passed to **...**
  */
-data class RExtraNamedArgumentsInfo(val argumentNames: List<String>, val functionArgNames: List<String>)
+data class RExtraNamedArgumentsInfo(val argumentNames: List<String>, val functionArgNames: List<String>) {
+  fun serialize(dataStream: StubOutputStream) {
+    DataInputOutputUtilRt.writeSeq(dataStream, argumentNames) { dataStream.writeName(it) }
+    DataInputOutputUtilRt.writeSeq(dataStream, functionArgNames) { dataStream.writeName(it) }
+  }
+
+  companion object {
+    fun deserialize(dataStream: StubInputStream): RExtraNamedArgumentsInfo {
+      val argNames = DataInputOutputUtilRt.readSeq(dataStream) { StringRef.toString(dataStream.readName()) }
+      val funArgNames = DataInputOutputUtilRt.readSeq(dataStream) { StringRef.toString(dataStream.readName()) }
+      return RExtraNamedArgumentsInfo(argNames, funArgNames)
+    }
+  }
+}
 
 class RArgumentInfo private constructor(argumentList: RArgumentHolder, val parameterNames: List<String>) {
   private val pipeArgument: RExpression? = findPipeArgument(argumentList)

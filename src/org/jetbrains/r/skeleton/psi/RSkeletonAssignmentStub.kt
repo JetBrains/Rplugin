@@ -6,6 +6,7 @@ package org.jetbrains.r.skeleton.psi
 
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
+import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.stubs.RAssignmentStub
@@ -17,7 +18,8 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
                               private val myName: String,
                               val type: RSkeletonSymbolType,
                               val parameters: String,
-                              val exported: Boolean
+                              val exported: Boolean,
+                              val extraNamedArguments: RExtraNamedArgumentsInfo
 ) : StubBase<RAssignmentStatement>(parent, elementType), RAssignmentStub {
   override fun isRight(): Boolean = true
 

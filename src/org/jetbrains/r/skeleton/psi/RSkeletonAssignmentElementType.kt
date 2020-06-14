@@ -12,6 +12,7 @@ import com.intellij.psi.stubs.StubInputStream
 import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.io.StringRef
+import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RAssignmentNameIndex
@@ -30,6 +31,7 @@ class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub,
       dataStream.writeName(stub.parameters)
     }
     dataStream.writeBoolean(stub.exported)
+    stub.extraNamedArguments.serialize(dataStream)
   }
 
   override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): RSkeletonAssignmentStub {
@@ -39,7 +41,8 @@ class RSkeletonAssignmentElementType : RStubElementType<RSkeletonAssignmentStub,
                                     throw IllegalStateException("Unknown type number $typeNumber")
     val parameters = if (type == RSkeletonSymbolType.FUNCTION) StringRef.toString(dataStream.readName()) else ""
     val exported = dataStream.readBoolean()
-    return RSkeletonAssignmentStub(parentStub, this, name, type, parameters, exported)
+    val extraNamedArguments = RExtraNamedArgumentsInfo.deserialize(dataStream)
+    return RSkeletonAssignmentStub(parentStub, this, name, type, parameters, exported, extraNamedArguments)
   }
 
   override fun createStub(psi: RAssignmentStatement, parentStub: StubElement<*>?): RSkeletonAssignmentStub {

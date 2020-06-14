@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
+import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.parsing.RParserDefinition
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStub
@@ -25,12 +26,14 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
       LibrarySummary.RLibraryPackage.parseFrom(it)
     }
     for (symbol in binPackage.symbolsList) {
+      val extraNamedArguments = symbol.extraNamedArguments
       RSkeletonAssignmentStub(skeletonFileStub,
                               R_SKELETON_ASSIGNMENT_STATEMENT,
                               symbol.name,
                               symbol.type,
                               symbol.parameters,
-                              symbol.exported)
+                              symbol.exported,
+                              RExtraNamedArgumentsInfo(extraNamedArguments.argNamesList, extraNamedArguments.funArgNamesList))
 
     }
     return skeletonFileStub

@@ -186,19 +186,19 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testReadCsvExtraNamedArgs() {
-    doTest("read.csv(nume<caret>)", "numerals", withRuntimeInfo = true)
-    doTest("read.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
+    doTest("read.csv(nume<caret>)", "numerals")
+    doTest("read.csv(fil<caret>)", "file", "fileEncoding")
   }
 
   fun testWriteCsvExtraNamedArgs() {
-    doTest("write.csv(row.na<caret>)", "row.names", withRuntimeInfo = true)
-    doTest("write.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
+    doTest("write.csv(row.na<caret>)", "row.names")
+    doTest("write.csv(fil<caret>)", "file", "fileEncoding")
   }
 
   fun testTryCatchExtraNamedArgs() {
-    doTest("tryCatch(paste, colla<caret>)", "collapse", withRuntimeInfo = true)
-    doTest("tryCatch(paste, err<caret>)", "error", withRuntimeInfo = true)
-    doTest("tryCatch(paste, war<caret>)", "warning", withRuntimeInfo = true)
+    doTest("tryCatch(paste, colla<caret>)", "collapse")
+    doTest("tryCatch(paste, err<caret>)", "error")
+    doTest("tryCatch(paste, war<caret>)", "warning")
   }
 
   fun testNotLoadedLocalExtraNamedArgs() {
@@ -226,7 +226,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testLapplyFunctionExtraNamedArgs() {
-    doTest("lapply(list, paste, colla<caret>)", "collapse", withRuntimeInfo = true)
+    doTest("lapply(list, paste, colla<caret>)", "collapse")
   }
 
   fun testOverlappedExtraNamedArgs() {
@@ -318,7 +318,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
   fun testLapplyLambdaFunctionExtraNamedArgs() {
     doTest("""
       lapply(list, function(xxxxx, xxxxxy, yyyyy, ...) {}, xxxx<caret>)
-    """.trimIndent(), "xxxxx", "xxxxxy", withRuntimeInfo = true)
+    """.trimIndent(), "xxxxx", "xxxxxy")
   }
 
   fun testS3LapplyExtraNamedArgs() {

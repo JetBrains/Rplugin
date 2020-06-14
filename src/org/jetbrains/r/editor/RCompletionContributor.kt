@@ -30,6 +30,7 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
+import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
 import org.jetbrains.r.util.PathUtil
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -246,31 +247,31 @@ class RCompletionContributor : CompletionContributor() {
         functionDeclaration.parameterNameList.forEach { consumeParameter(it, shownNames, result) }
       }
 
-      val info = originalFile.runtimeInfo ?: return
+      val info = originalFile.runtimeInfo
       val mainFunctionName = when (val expression = mainCall.expression) {
         is RNamespaceAccessExpression -> expression.identifier?.name ?: return
         is RIdentifierExpression -> expression.name
         else -> return
       }
-      val namedArguments = info.loadInheritorNamedArguments(mainFunctionName)
+      info?.loadInheritorNamedArguments(mainFunctionName)?.forEach { consumeParameter(it, shownNames, result) }
 
-      for (parameter in namedArguments) {
-        consumeParameter(parameter, shownNames, result)
-      }
-
-      val functionExpression = declarations.singleOrNull()?.let {
-        if (RPsiUtil.isLibraryElement(it)) null
-        else it.assignedValue as? RFunctionExpression
-      }
+      val singleDeclaration = declarations.singleOrNull()
       val extraNamedArguments =
-        if (functionExpression != null) info.loadExtraNamedArguments(mainFunctionName, functionExpression)
-        else info.loadExtraNamedArguments(mainFunctionName)
+        when (singleDeclaration) {
+          null -> info?.loadExtraNamedArguments(mainFunctionName)
+          is RSkeletonAssignmentStatement -> singleDeclaration.stub.extraNamedArguments
+          else -> {
+            val functionExpression = singleDeclaration.assignedValue as? RFunctionExpression
+            if (functionExpression != null) info?.loadExtraNamedArguments(mainFunctionName, functionExpression)
+            else info?.loadExtraNamedArguments(mainFunctionName)
+          }
+        } ?: return
 
       for (parameter in extraNamedArguments.argumentNames) {
         consumeParameter(parameter, shownNames, result)
       }
 
-      val argumentInfo = RParameterInfoUtil.getArgumentInfo(mainCall, declarations.singleOrNull()) ?: return
+      val argumentInfo = RParameterInfoUtil.getArgumentInfo(mainCall, singleDeclaration) ?: return
       for (parameter in extraNamedArguments.functionArgNames) {
         val arg = argumentInfo.getArgumentPassedToParameter(parameter) ?: continue
         if (arg is RFunctionExpression) {
@@ -281,7 +282,8 @@ class RCompletionContributor : CompletionContributor() {
         else {
           arg.reference?.multiResolve(false)?.forEach { resolveResult ->
             (resolveResult.element as? RAssignmentStatement)?.let { assignment ->
-              (assignment.parameterNameList + info.loadInheritorNamedArguments(assignment.name)).forEach {
+              val inhNamedArgs = info?.loadInheritorNamedArguments(assignment.name) ?: emptyList()
+              (assignment.parameterNameList + inhNamedArgs).forEach {
                 consumeParameter(it, shownNames, result)
               }
             }

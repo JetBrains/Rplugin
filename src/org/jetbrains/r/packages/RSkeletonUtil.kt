@@ -18,6 +18,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 5
+  private const val CUR_SKELETON_VERSION = 6
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -115,10 +116,11 @@ object RSkeletonUtil {
 
             val packageName = rPackage.name
             var isError = false
+            val extraNamedArgumentsHelperPath = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R").absolutePath
             helperStdout = RInterpreterUtil.runHelper(rInterpreter.interpreterPath,
                                                       RepoUtils.PACKAGE_SUMMARY,
                                                       project.basePath,
-                                                      listOf(packageName)) { output ->
+                                                      listOf(packageName, extraNamedArgumentsHelperPath)) { output ->
               reportError(rPackage, output)
               isError = true
             }
@@ -251,31 +253,21 @@ object RSkeletonUtil {
         //No "function" description for exported symbols like `something <- .Primitive("some_primitive")`
         builder.setType(LibrarySummary.RLibrarySymbol.Type.FUNCTION)
 
-        val signatureStart = parts[typesEndIndex]
+        val signature = parts[typesEndIndex]
         val prefix = "function ("
-        if (!signatureStart.startsWith(prefix)) {
-          throw IOException("Invalid function description at $lineNum: " + line)
-        }
-
-        val signature = StringBuilder()
-        signature.append(signatureStart)
-
-        while (index < symbols.size && symbols[index] != "NULL") {
-          signature.append(symbols[index])
-          index++
-        }
-        index++
-
-        if (index > symbols.size) {
-          throw IOException("Invalid format at the end of file")
-        }
-
-        if (!signature.endsWith(") ")) {
-          throw IOException("Invalid function signature at $lineNum: " + signature)
+        if (!signature.startsWith(prefix) || !signature.endsWith(") ")) {
+          throw IOException("Invalid function description at $lineNum: " + signature)
         }
 
         val parameters = signature.substring(prefix.length, signature.length - 2)
         builder.setParameters(parameters)
+
+        if (parts.size > typesEndIndex + 1) {
+          val extraNamedArgsBuilder = LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder()
+          extraNamedArgsBuilder.addAllArgNames(parts[typesEndIndex + 1].split(";"))
+          extraNamedArgsBuilder.addAllFunArgNames(parts[typesEndIndex + 2].split(";"))
+          builder.setExtraNamedArguments(extraNamedArgsBuilder)
+        }
       }
       else if (types.contains("data.frame")) {
         builder.setType(LibrarySummary.RLibrarySymbol.Type.DATASET)
