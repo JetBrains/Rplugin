@@ -168,8 +168,7 @@ project(":") {
     intellij {
         val plugins = arrayOf("markdown", "yaml") +
                       (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
-                      (if (useInlayVisualisationFromPlugin()) arrayOf("rplugin-visualisation") else emptyArray()) +
-                      (if (is193()) emptyArray() else arrayOf("platform-images"))
+                      arrayOf("platform-images")
         pluginName = "rplugin"
         setPlugins(*plugins)
     }
@@ -183,21 +182,14 @@ project(":") {
     sourceSets {
         main {
             val srcDirs = mutableListOf("src", "gen")
-            if (!useInlayVisualisationFromPlugin()) srcDirs += "visualisation/src"
+            srcDirs += "visualisation/src"
             if (isPyCharm()) srcDirs += "src-python"
             java.srcDirs(*srcDirs.toTypedArray())
 
             val resourcesSrcDirs = mutableListOf("resources")
-            resourcesSrcDirs.add(
-              when {
-                  useInlayVisualisationFromPlugin() -> "resources-201-inlay-as-plugin"
-                  is193() -> "resources-193"
-                  else -> "resources-201"
-              })
-            if (!useInlayVisualisationFromPlugin()) {
-                resourcesSrcDirs.add("visualisation/resources")
-                resourcesSrcDirs.add(if (is193()) "visualisation/resources-193" else "visualisation/resources-201")
-            }
+            resourcesSrcDirs.add("resources-gradle")
+            resourcesSrcDirs.add("visualisation/resources")
+            resourcesSrcDirs.add("visualisation/resources-gradle")
             resources.srcDirs(*resourcesSrcDirs.toTypedArray())
         }
         test {
@@ -320,8 +312,6 @@ val Project.dependencyCachePath get(): String {
 fun Build_gradle.ideMinorVersion() = prop("ideMinor")
 
 fun Build_gradle.ideMajorVersion() = prop("ideMajor")
-
-fun Build_gradle.is193() = ideMajorVersion() == "193"
 
 fun Build_gradle.ideName() = prop("ideName")
 

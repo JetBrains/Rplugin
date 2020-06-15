@@ -1,4 +1,5 @@
 <idea-plugin allow-bundled-update="true">
+  <depends>com.intellij.platform.images</depends>
   <extensionPoints>
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.inlayDescriptorProvider"
                     interface="org.intellij.datavis.r.inlays.InlayDescriptorProvider"
