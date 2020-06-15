@@ -6,7 +6,7 @@ import java.lang.ProcessBuilder.Redirect
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
-fun String.runCommand(workingDir: File) {
+private fun String.runCommand(workingDir: File) {
   val process = ProcessBuilder(*split(" ").toTypedArray())
     .directory(workingDir)
     .redirectOutput(Redirect.INHERIT)
