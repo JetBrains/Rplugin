@@ -18,7 +18,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.wm.impl.status.FatalErrorWidgetFactory
@@ -30,7 +29,6 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.R_3_6
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -193,7 +191,7 @@ object RInteropUtil {
                   ?: return result.also { result.setError("Cannot parse R interpreter version") }
 
     if (!RInterpreterUtil.isSupportedVersion(version)) return result.also { result.setError("Unsupported interpreter version " + version)  }
-    val wrapperPath = getWrapperPath(version)
+    val wrapperPath = getWrapperPath()
     LOG.info("R version is $version. RWrapper path: $wrapperPath")
     val rwrapper = File(wrapperPath)
     if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
@@ -248,25 +246,9 @@ object RInteropUtil {
 
   private fun getCrashpadHandler(): File = RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix())
 
-  private fun getWrapperPath(version: Version): String {
+  private fun getWrapperPath(): String {
     val filename = "rwrapper-" + getSystemSuffix()
-    val fileByVersion = getRWrapperByRVersion(version, filename)
-    return if ((ApplicationManager.getApplication().isInternal || ApplicationManager.getApplication().isUnitTestMode) &&
-               !File(fileByVersion).exists()) {
-      RPluginUtil.findFileInRHelpers(filename).absolutePath
-    } else {
-      fileByVersion
-    }
-  }
-
-  private fun getRWrapperByRVersion(version: Version, relativePath: String): String {
-    val wrapperVersion = if (version.isOrGreaterThan(3, 4) && !SystemInfo.isMac) {
-      R_3_6
-    } else {
-      version
-    }
-    val directory = "R-${wrapperVersion.major}.${wrapperVersion.minor}"
-    return Paths.get(RPluginUtil.findFileInRHelpers(directory).absolutePath, relativePath).toString()
+    return RPluginUtil.findFileInRHelpers(filename).absolutePath
   }
 
   private fun getSystemSuffix(): String = when {
