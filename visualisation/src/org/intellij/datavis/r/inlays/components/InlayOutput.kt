@@ -330,7 +330,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
         SwingUtilities.invokeLater {
           if (outputs == null) {
             console.addData(data, ProcessOutputType.STDOUT)
-          } else {
+          }
+          else {
             outputs.forEach { console.addData(it.text, it.kind) }
           }
           console.flushDeferredText()
@@ -340,7 +341,9 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     }
   }
 
-  fun addData(message: String, outputType: Key<*>) = console.addData(message, outputType)
+  fun addData(message: String, outputType: Key<*>) {
+    console.addData(message, outputType)
+  }
 
   override fun scrollToTop() {
     console.scrollTo(0)

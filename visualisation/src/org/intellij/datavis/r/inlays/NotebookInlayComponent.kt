@@ -341,8 +341,8 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
 
   fun addText(message: String, outputType: Key<*>) {
     getOrCreateOutput().addText(message, outputType)
-    if (size.height == InlayDimensions.smallHeight) {
-      deltaSize(0, InlayDimensions.previewHeight - size.height)
+    if (size.height <= InlayDimensions.previewHeight * 3) {
+      deltaSize(0, min(InlayDimensions.lineHeight * (message.lines().size - 1), InlayDimensions.previewHeight * 3 - size.height))
     }
   }
 
