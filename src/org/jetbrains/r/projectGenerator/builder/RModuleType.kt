@@ -7,8 +7,8 @@ package org.jetbrains.r.projectGenerator.builder
 import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.module.ModuleTypeManager
+import icons.RIcons
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.R_LOGO_16
 import javax.swing.Icon
 
 open class RModuleType : ModuleType<ModuleBuilder>(R_MODULE) {
@@ -23,7 +23,7 @@ open class RModuleType : ModuleType<ModuleBuilder>(R_MODULE) {
 
   override fun getDescription(): String = RBundle.message("module.type.description")
 
-  override fun getNodeIcon(isOpened: Boolean): Icon = R_LOGO_16!!
+  override fun getNodeIcon(isOpened: Boolean): Icon = RIcons.R_logo_16!!
 
   companion object {
     const val R_MODULE = "R_MODULE"

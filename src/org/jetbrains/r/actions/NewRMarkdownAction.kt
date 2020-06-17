@@ -9,10 +9,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import org.jetbrains.r.R_RMARKDOWN_DOCUMENT
-import org.jetbrains.r.R_RMARKDOWN_HTML_NOTEBOOK
-import org.jetbrains.r.R_RMARKDOWN_PRESENTATION
-import org.jetbrains.r.R_RMARKDOWN_SHINY
+import icons.RIcons
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
@@ -29,10 +26,10 @@ class NewRMarkdownAction : TestableCreateFileFromTemplateAction("RMarkdown file"
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
       .setTitle("New RMarkdown file")
-      .addKind("HTML Notebook", R_RMARKDOWN_HTML_NOTEBOOK, NOTEBOOK_TEMPLATE_NAME)
-      .addKind("Document", R_RMARKDOWN_DOCUMENT, DOCUMENT_TEMPLATE_NAME)
-      .addKind("Presentation", R_RMARKDOWN_PRESENTATION, PRESENTATION_TEMPLATE_NAME)
-      .addKind("Shiny", R_RMARKDOWN_SHINY, SHINY_TEMPLATE_NAME)
+      .addKind("HTML Notebook", RIcons.FileTypes.HtmlNotebook, NOTEBOOK_TEMPLATE_NAME)
+      .addKind("Document", RIcons.FileTypes.RMarkdown, DOCUMENT_TEMPLATE_NAME)
+      .addKind("Presentation", RIcons.FileTypes.Presentation, PRESENTATION_TEMPLATE_NAME)
+      .addKind("Shiny", RIcons.FileTypes.Shiny, SHINY_TEMPLATE_NAME)
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {

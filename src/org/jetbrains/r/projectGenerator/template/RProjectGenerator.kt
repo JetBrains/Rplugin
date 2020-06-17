@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.*
-import org.jetbrains.r.R_LOGO_16
+import icons.RIcons
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.projectGenerator.builder.RModuleBuilder
 import org.jetbrains.r.projectGenerator.step.RProjectSettingsStep
@@ -23,7 +23,7 @@ import javax.swing.JPanel
 
 abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSettings>(), CustomStepProjectGenerator<RProjectSettings>, ProjectTemplate {
 
-  override fun getIcon(): Icon? = R_LOGO_16
+  override fun getIcon(): Icon? = RIcons.R_logo_16
 
   override fun createModuleBuilder(): ModuleBuilder = RModuleBuilder(this)
 
@@ -45,7 +45,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
   private var settingsListener: SettingsListener? = null
 
   override fun getLogo(): Icon? {
-    return R_LOGO_16
+    return RIcons.R_logo_16
   }
 
   open fun validateGeneratorSettings(): List<ValidationInfo> {

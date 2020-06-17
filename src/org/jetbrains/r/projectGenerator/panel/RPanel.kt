@@ -5,13 +5,13 @@
 package org.jetbrains.r.projectGenerator.panel
 
 import com.intellij.ui.components.JBPanel
-import org.jetbrains.r.R_LOGO_16
+import icons.RIcons
 import javax.swing.Icon
 
 abstract class RPanel : JBPanel<RPanel>() {
 
   abstract val panelName: String
-  open val icon: Icon? = R_LOGO_16
+  open val icon: Icon? = RIcons.R_logo_16
   open val changeListeners = mutableListOf<Runnable>()
 
   open fun addChangeListener(listener: Runnable) {

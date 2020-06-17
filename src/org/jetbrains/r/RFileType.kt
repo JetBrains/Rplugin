@@ -8,6 +8,7 @@ package org.jetbrains.r
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
 import com.intellij.util.indexing.FileBasedIndex
+import icons.RIcons
 
 object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 
@@ -17,7 +18,7 @@ object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 
   override fun getDefaultExtension(): String = "R"
 
-  override fun getIcon() = R_LOGO_16
+  override fun getIcon() = RIcons.R_logo_16
 
   var INPUT_FILTER: FileBasedIndex.InputFilter = DefaultFileTypeSpecificInputFilter(this)
 

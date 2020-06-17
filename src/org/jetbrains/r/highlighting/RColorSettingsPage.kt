@@ -12,13 +12,13 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
+import icons.RIcons
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.R_LOGO_16
 import javax.swing.Icon
 
 class RColorSettingsPage : RainbowColorSettingsPage {
 
-  override fun getIcon(): Icon? = R_LOGO_16
+  override fun getIcon(): Icon? = RIcons.R_logo_16
 
   override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 

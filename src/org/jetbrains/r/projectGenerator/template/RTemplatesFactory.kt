@@ -7,13 +7,13 @@ package org.jetbrains.r.projectGenerator.template
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.platform.ProjectTemplate
 import com.intellij.platform.ProjectTemplatesFactory
+import icons.RIcons
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.R_LOGO_16
 
 class RTemplatesFactory : ProjectTemplatesFactory() {
 
   override fun getGroups() = arrayOf(RBundle.message("module.group.name"))
-  override fun getGroupIcon(group: String) = R_LOGO_16
+  override fun getGroupIcon(group: String) = RIcons.R_logo_16
 
   override fun createTemplates(group: String?, context: WizardContext?): Array<out ProjectTemplate> {
     return arrayOf<ProjectTemplate>(REmptyProjectGenerator(), RPackageProjectGenerator())

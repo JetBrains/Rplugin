@@ -23,9 +23,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import icons.RIcons
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.RENDER
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
@@ -179,7 +179,7 @@ private fun createBuildOrRunAction(
 private fun createBuildAction(project: Project, manager: BuildManager): AnAction {
   val idleText = RBundle.message("rmarkdown.editor.toolbar.renderDocument")
   val runningText = RBundle.message("rmarkdown.editor.toolbar.interruptRenderDocument")
-  val idleIcon = RENDER
+  val idleIcon = RIcons.Render
   return createBuildOrRunAction(project, manager, idleText, runningText, idleIcon, false)
 }
 
