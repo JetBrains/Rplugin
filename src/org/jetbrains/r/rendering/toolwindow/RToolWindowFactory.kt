@@ -16,10 +16,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.webcore.packaging.PackagesNotificationPanel
+import icons.RIcons
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.R_GRAPH
-import org.jetbrains.r.R_HTML
-import org.jetbrains.r.R_PACKAGES
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.build.ui.RPackageBuildToolWindow
@@ -43,10 +41,10 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
 
   private fun createNestedToolWindows(project: Project, factory: ContentFactory): List<Content> {
     val holders = mutableListOf(
-      Triple(createPackages(project), PACKAGES, R_PACKAGES),
-      Triple(RGraphicsToolWindow(project), PLOTS, R_GRAPH),
+      Triple(createPackages(project), PACKAGES, RIcons.ToolWindow.RPackages),
+      Triple(RGraphicsToolWindow(project), PLOTS, RIcons.ToolWindow.RGraph),
       Triple(createHelp(project), HELP, AllIcons.Toolwindows.Documentation),
-      Triple(RViewerToolWindow(), VIEWER, R_HTML)
+      Triple(RViewerToolWindow(), VIEWER, RIcons.ToolWindow.RHtml)
     )
     if (RPackageBuildUtil.isPackage(project)) {
       val holder = Triple(RPackageBuildToolWindow(project), BUILD, AllIcons.Toolwindows.ToolWindowBuild)

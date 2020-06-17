@@ -29,12 +29,11 @@ import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
+import icons.RIcons
 import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.RESTART_JOB
-import org.jetbrains.r.R_LOGO_16
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -166,7 +165,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
 
   private inner class RerunJob : DumbAwareAction(RBundle.message("jobs.panel.action.rerun.job.text"),
                                                  RBundle.message("jobs.panel.action.rerun.job.description"),
-                                                 RESTART_JOB) {
+                                                 RIcons.Run.RestartJob) {
     override fun actionPerformed(e: AnActionEvent) {
       jobList.currentlySelected?.let {
         jobList.removeJobEntity(it)
@@ -315,7 +314,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
   : JPanel(MigLayout("insets 0 0 0 0", "[grow][][]", "[]")) {
 
   private var deleted = false
-  private val rLogo = JBLabel(R_LOGO_16)
+  private val rLogo = JBLabel(RIcons.R_logo_16)
   private val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
     add(rLogo)
   }

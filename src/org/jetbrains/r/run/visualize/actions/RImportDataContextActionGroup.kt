@@ -8,11 +8,11 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
+import icons.RIcons
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.R_LOGO_16
 import org.jetbrains.r.console.RConsoleManager
 
-class RImportDataContextActionGroup : ActionGroup(TITLE, null, R_LOGO_16), DumbAware {
+class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R_logo_16), DumbAware {
   private val actions: Array<RImportDataContextAction> = arrayOf(
     RImportBaseDataContextAction(),
     RImportCsvDataContextAction(),

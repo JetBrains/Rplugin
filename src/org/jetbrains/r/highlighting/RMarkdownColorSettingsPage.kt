@@ -12,7 +12,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
-import org.jetbrains.r.R_MARKDOWN
+import icons.RIcons
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.R_DEMO
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.TAGS
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -20,7 +20,7 @@ import javax.swing.Icon
 
 class RMarkdownColorSettingsPage : RainbowColorSettingsPage {
 
-  override fun getIcon(): Icon? = R_MARKDOWN
+  override fun getIcon(): Icon? = RIcons.RMarkdown
 
   override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 

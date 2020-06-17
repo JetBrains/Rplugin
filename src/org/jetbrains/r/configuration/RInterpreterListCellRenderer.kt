@@ -8,8 +8,8 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TitledSeparator
 import com.intellij.util.ui.JBUI
+import icons.RIcons
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.R_LOGO_16
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.R_UNKNOWN
 import java.awt.Component
@@ -35,7 +35,7 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
     when (value) {
       is RInterpreterInfo -> {
         appendName(value)
-        icon = R_LOGO_16
+        icon = RIcons.R_logo_16
       }
       null -> {
         appendName(null)

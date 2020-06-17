@@ -15,14 +15,14 @@ import com.intellij.webcore.packaging.ManagePackagesDialog
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
+import icons.RIcons
+import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.UPGRADE_ALL
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.packages.remote.RPackageManagementService
-import org.intellij.datavis.r.ui.ToolbarUtil
 
 class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel) :
   RInstalledPackagesPanelBase(project, area), RPackageServiceListener {
@@ -68,7 +68,7 @@ class RInstalledPackagesPanel(project: Project, area: PackagesNotificationPanel)
   }
 
   private fun makeUpgradeAllButton(): AnActionButton {
-    ActionManager.getInstance().getAction(UPGRADE_ALL_ACTION_ID).templatePresentation.icon = UPGRADE_ALL
+    ActionManager.getInstance().getAction(UPGRADE_ALL_ACTION_ID).templatePresentation.icon = RIcons.Packages.UpgradeAll
     return ToolbarUtil.createAnActionButton(UPGRADE_ALL_ACTION_ID, this::canUpgradeAllPackages, this::upgradeAllPackages)
   }
 
