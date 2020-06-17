@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.r.hints.parameterInfo.RDotsNamedArgumentsInfo
+import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.rinterop.RInterop
@@ -26,8 +26,8 @@ interface RConsoleRuntimeInfo {
   fun loadDistinctStrings(expression: String): List<String>
   fun loadObjectNames(expression: String) : List<String>
   fun loadInheritorNamedArguments(baseFunctionName: String) : List<String>
-  fun loadDotsNamedArguments(functionName: String): RDotsNamedArgumentsInfo
-  fun loadDotsNamedArguments(functionName: String, functionExpression: RFunctionExpression): RDotsNamedArgumentsInfo
+  fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo
+  fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo
   fun getFormalArguments(expression: String) : List<String>
   fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
@@ -50,8 +50,8 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val objectNamesCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val distinctStringsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val inheritorNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
-  private val dotsNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, RDotsNamedArgumentsInfo>() }
-  private val dotsNamedArgumentsStampCache by rInterop.Cached { mutableMapOf<String, Long>() }
+  private val extraNamedArgumentsCache by rInterop.Cached { mutableMapOf<String, RExtraNamedArgumentsInfo>() }
+  private val extraNamedArgumentsStampCache by rInterop.Cached { mutableMapOf<String, Long>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
 
@@ -82,23 +82,23 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     }
   }
 
-  override fun loadDotsNamedArguments(functionName: String): RDotsNamedArgumentsInfo {
-    return dotsNamedArgumentsCache.getOrPut(functionName) {
-      rInterop.findDotsNamedArguments(RReference.expressionRef("'$functionName'", rInterop))
+  override fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo {
+    return extraNamedArgumentsCache.getOrPut(functionName) {
+      rInterop.findExtraNamedArguments(RReference.expressionRef("'$functionName'", rInterop))
     }
   }
 
   @Synchronized
-  override fun loadDotsNamedArguments(functionName: String, functionExpression: RFunctionExpression): RDotsNamedArgumentsInfo {
+  override fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo {
     val stamp = functionExpression.containingFile.modificationStamp
-    val oldStamp = dotsNamedArgumentsStampCache[functionName]
+    val oldStamp = extraNamedArgumentsStampCache[functionName]
     if (oldStamp == null || stamp < 0 || stamp != oldStamp) {
-      dotsNamedArgumentsStampCache[functionName] = stamp
-      return rInterop.findDotsNamedArguments(RReference.expressionRef("'${functionExpression.text}'", rInterop)).also {
-        dotsNamedArgumentsCache[functionName] = it
+      extraNamedArgumentsStampCache[functionName] = stamp
+      return rInterop.findExtraNamedArguments(RReference.expressionRef("'${functionExpression.text}'", rInterop)).also {
+        extraNamedArgumentsCache[functionName] = it
       }
     }
-    return dotsNamedArgumentsCache.getValue(functionName)
+    return extraNamedArgumentsCache.getValue(functionName)
   }
 
   override fun getFormalArguments(expression: String): List<String> {

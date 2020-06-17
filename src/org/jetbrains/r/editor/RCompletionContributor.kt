@@ -262,16 +262,16 @@ class RCompletionContributor : CompletionContributor() {
         if (RPsiUtil.isLibraryElement(it)) null
         else it.assignedValue as? RFunctionExpression
       }
-      val dotsNamedArguments =
-        if (functionExpression != null) info.loadDotsNamedArguments(mainFunctionName, functionExpression)
-        else info.loadDotsNamedArguments(mainFunctionName)
+      val extraNamedArguments =
+        if (functionExpression != null) info.loadExtraNamedArguments(mainFunctionName, functionExpression)
+        else info.loadExtraNamedArguments(mainFunctionName)
 
-      for (parameter in dotsNamedArguments.argumentNames) {
+      for (parameter in extraNamedArguments.argumentNames) {
         consumeParameter(parameter, shownNames, result)
       }
 
       val argumentInfo = RParameterInfoUtil.getArgumentInfo(mainCall, declarations.singleOrNull()) ?: return
-      for (parameter in dotsNamedArguments.functionArgNames) {
+      for (parameter in extraNamedArguments.functionArgNames) {
         val arg = argumentInfo.getArgumentPassedToParameter(parameter) ?: continue
         if (arg is RFunctionExpression) {
           arg.parameterList?.parameterList?.map { it.name }?.forEach {

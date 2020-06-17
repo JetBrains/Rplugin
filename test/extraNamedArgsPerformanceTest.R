@@ -1,4 +1,4 @@
-findDotsNamedArgsForPackage <- function(name, depth) {
+findExtraNamedArgsForPackage <- function(name, depth) {
   spentTime <- NULL
   env <- as.environment(paste0("package:", name))
   funNames <- names(env)
@@ -8,7 +8,7 @@ findDotsNamedArgsForPackage <- function(name, depth) {
     funCnt <<- funCnt + 1
     for (t in 1:3) {
       start.time <- Sys.time()
-      ress <- .jetbrains$findDotsNamedArgs(x, depth)
+      ress <- .jetbrains$findExtraNamedArgs(x, depth)
       end.time <- Sys.time()
       timee <- end.time - start.time
       # Sometimes there are freezes that are not related to the performance of the code, but bad influence on the final result
@@ -58,7 +58,7 @@ allResults <- lapply(allPackages, function(x) {
              print(x)
              suppressMessages(suppressWarnings(library(x, character.only = TRUE)))
              for (i in 1:maxDepth) {
-               res <- findDotsNamedArgsForPackage(x, i)
+               res <- findExtraNamedArgsForPackage(x, i)
              }
              detachAllPackages()
            }, error = function(e) { print(e) })

@@ -4,18 +4,18 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.DotsNamedArguments}
+ * Protobuf type {@code rplugininterop.ExtraNamedArguments}
  */
-public  final class DotsNamedArguments extends
+public  final class ExtraNamedArguments extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.DotsNamedArguments)
-    DotsNamedArgumentsOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.ExtraNamedArguments)
+    ExtraNamedArgumentsOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use DotsNamedArguments.newBuilder() to construct.
-  private DotsNamedArguments(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use ExtraNamedArguments.newBuilder() to construct.
+  private ExtraNamedArguments(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private DotsNamedArguments() {
+  private ExtraNamedArguments() {
     argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
@@ -24,7 +24,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new DotsNamedArguments();
+    return new ExtraNamedArguments();
   }
 
   @java.lang.Override
@@ -32,7 +32,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private DotsNamedArguments(
+  private ExtraNamedArguments(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -96,20 +96,24 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DotsNamedArguments_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ExtraNamedArguments_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DotsNamedArguments_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ExtraNamedArguments_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.DotsNamedArguments.class, org.jetbrains.r.rinterop.DotsNamedArguments.Builder.class);
+            org.jetbrains.r.rinterop.ExtraNamedArguments.class, org.jetbrains.r.rinterop.ExtraNamedArguments.Builder.class);
   }
 
   public static final int ARGNAMES_FIELD_NUMBER = 1;
   private com.google.protobuf.LazyStringList argNames_;
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   public com.google.protobuf.ProtocolStringList
@@ -117,18 +121,30 @@ private static final long serialVersionUID = 0L;
     return argNames_;
   }
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   public int getArgNamesCount() {
     return argNames_.size();
   }
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   public java.lang.String getArgNames(int index) {
     return argNames_.get(index);
   }
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   public com.google.protobuf.ByteString
@@ -220,10 +236,10 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.DotsNamedArguments)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.ExtraNamedArguments)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.DotsNamedArguments other = (org.jetbrains.r.rinterop.DotsNamedArguments) obj;
+    org.jetbrains.r.rinterop.ExtraNamedArguments other = (org.jetbrains.r.rinterop.ExtraNamedArguments) obj;
 
     if (!getArgNamesList()
         .equals(other.getArgNamesList())) return false;
@@ -253,69 +269,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DotsNamedArguments parseFrom(
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -328,7 +344,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.DotsNamedArguments prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.ExtraNamedArguments prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -344,26 +360,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.DotsNamedArguments}
+   * Protobuf type {@code rplugininterop.ExtraNamedArguments}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.DotsNamedArguments)
-      org.jetbrains.r.rinterop.DotsNamedArgumentsOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.ExtraNamedArguments)
+      org.jetbrains.r.rinterop.ExtraNamedArgumentsOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DotsNamedArguments_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ExtraNamedArguments_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DotsNamedArguments_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ExtraNamedArguments_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.DotsNamedArguments.class, org.jetbrains.r.rinterop.DotsNamedArguments.Builder.class);
+              org.jetbrains.r.rinterop.ExtraNamedArguments.class, org.jetbrains.r.rinterop.ExtraNamedArguments.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.DotsNamedArguments.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.ExtraNamedArguments.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -391,17 +407,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DotsNamedArguments_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ExtraNamedArguments_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DotsNamedArguments getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.DotsNamedArguments.getDefaultInstance();
+    public org.jetbrains.r.rinterop.ExtraNamedArguments getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.ExtraNamedArguments.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DotsNamedArguments build() {
-      org.jetbrains.r.rinterop.DotsNamedArguments result = buildPartial();
+    public org.jetbrains.r.rinterop.ExtraNamedArguments build() {
+      org.jetbrains.r.rinterop.ExtraNamedArguments result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -409,8 +425,8 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DotsNamedArguments buildPartial() {
-      org.jetbrains.r.rinterop.DotsNamedArguments result = new org.jetbrains.r.rinterop.DotsNamedArguments(this);
+    public org.jetbrains.r.rinterop.ExtraNamedArguments buildPartial() {
+      org.jetbrains.r.rinterop.ExtraNamedArguments result = new org.jetbrains.r.rinterop.ExtraNamedArguments(this);
       int from_bitField0_ = bitField0_;
       if (((bitField0_ & 0x00000001) != 0)) {
         argNames_ = argNames_.getUnmodifiableView();
@@ -460,16 +476,16 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.DotsNamedArguments) {
-        return mergeFrom((org.jetbrains.r.rinterop.DotsNamedArguments)other);
+      if (other instanceof org.jetbrains.r.rinterop.ExtraNamedArguments) {
+        return mergeFrom((org.jetbrains.r.rinterop.ExtraNamedArguments)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.DotsNamedArguments other) {
-      if (other == org.jetbrains.r.rinterop.DotsNamedArguments.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.ExtraNamedArguments other) {
+      if (other == org.jetbrains.r.rinterop.ExtraNamedArguments.getDefaultInstance()) return this;
       if (!other.argNames_.isEmpty()) {
         if (argNames_.isEmpty()) {
           argNames_ = other.argNames_;
@@ -505,11 +521,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.DotsNamedArguments parsedMessage = null;
+      org.jetbrains.r.rinterop.ExtraNamedArguments parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.DotsNamedArguments) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.ExtraNamedArguments) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -528,6 +544,10 @@ private static final long serialVersionUID = 0L;
        }
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public com.google.protobuf.ProtocolStringList
@@ -535,18 +555,30 @@ private static final long serialVersionUID = 0L;
       return argNames_.getUnmodifiableView();
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public int getArgNamesCount() {
       return argNames_.size();
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public java.lang.String getArgNames(int index) {
       return argNames_.get(index);
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public com.google.protobuf.ByteString
@@ -554,6 +586,10 @@ private static final long serialVersionUID = 0L;
       return argNames_.getByteString(index);
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public Builder setArgNames(
@@ -567,6 +603,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public Builder addArgNames(
@@ -580,6 +620,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public Builder addAllArgNames(
@@ -591,6 +635,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public Builder clearArgNames() {
@@ -600,6 +648,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
+     * <pre>
+     * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+     * </pre>
+     *
      * <code>repeated string argNames = 1;</code>
      */
     public Builder addArgNamesBytes(
@@ -720,41 +772,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.DotsNamedArguments)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.ExtraNamedArguments)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.DotsNamedArguments)
-  private static final org.jetbrains.r.rinterop.DotsNamedArguments DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.ExtraNamedArguments)
+  private static final org.jetbrains.r.rinterop.ExtraNamedArguments DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.DotsNamedArguments();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.ExtraNamedArguments();
   }
 
-  public static org.jetbrains.r.rinterop.DotsNamedArguments getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.ExtraNamedArguments getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<DotsNamedArguments>
-      PARSER = new com.google.protobuf.AbstractParser<DotsNamedArguments>() {
+  private static final com.google.protobuf.Parser<ExtraNamedArguments>
+      PARSER = new com.google.protobuf.AbstractParser<ExtraNamedArguments>() {
     @java.lang.Override
-    public DotsNamedArguments parsePartialFrom(
+    public ExtraNamedArguments parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new DotsNamedArguments(input, extensionRegistry);
+      return new ExtraNamedArguments(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<DotsNamedArguments> parser() {
+  public static com.google.protobuf.Parser<ExtraNamedArguments> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<DotsNamedArguments> getParserForType() {
+  public com.google.protobuf.Parser<ExtraNamedArguments> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.DotsNamedArguments getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.ExtraNamedArguments getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 
