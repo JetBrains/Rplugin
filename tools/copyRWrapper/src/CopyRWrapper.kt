@@ -24,20 +24,31 @@ private fun String.runCommand(workingDir: File) {
 fun main(args: Array<String>) {
   val rwrapperDirectory = File(args[0])
   val destinationDirectory = File(args[1])
+  val customRWrapperPath = if (args.size > 2) File(args[2]) else null
 
-  if (SystemUtils.IS_OS_UNIX) {
+  if (SystemUtils.IS_OS_UNIX && customRWrapperPath == null) {
     "./build_rwrapper.sh".runCommand(rwrapperDirectory)
   }
 
   destinationDirectory.mkdirs()
 
-  rwrapperDirectory.takeIf { it.exists() && it.isDirectory }?.list { _, name ->
-    name.startsWith("rwrapper") || name.startsWith("R-") || name == "R"
-  }?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }?.forEach {
+  rwrapperDirectory
+    .takeIf { it.exists() && it.isDirectory }
+    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("R-") || name == "R" }
+    ?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }
+    ?.forEach {
     if (it.isDirectory) {
       FileUtils.copyDirectoryToDirectory(it, destinationDirectory)
     } else {
       FileUtils.copyFileToDirectory(it, destinationDirectory)
     }
   } ?: check(false) { "cannot find directory: ${rwrapperDirectory}" }
+
+  customRWrapperPath
+    ?.takeIf { it.exists() && it.isDirectory }
+    ?.list { _, name -> name.startsWith("rwrapper")}
+    ?.map { Paths.get(customRWrapperPath.toString(), it).toFile() }
+    ?.forEach {
+      FileUtils.copyFileToDirectory(it, destinationDirectory)
+    } ?: check(customRWrapperPath == null ) { "cannot find directory: ${customRWrapperPath}" }
 }
