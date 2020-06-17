@@ -1,0 +1,38 @@
+It's a header
+---
+
+```{r}
+  x <- 312312
+  y <- 432432432
+```
+
+```yaml
+ - a
+ - b
+ - c
+```
+
+Some Text
+
+
+```{r}
+  z <- 432432432
+```
+
+```{python}
+print("hello world!")
+```
+
+Another Text
+
+```{r}
+  x + y + z
+```
+
+> Here is a quote, followed by a code chunk:
+>
+> ```{r}
+> x = 1:10
+> rev(x^2)
+> ```
+>
