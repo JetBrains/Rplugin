@@ -9,9 +9,9 @@ import javax.swing.*;
  * NOTE THIS FILE IS AUTO-GENERATED
  * DO NOT EDIT IT BY HAND, run "Generate icon classes" configuration instead
  */
-public final class RpluginCoreIcons {
+public final class RIcons {
   private static @NotNull Icon load(@NotNull String path) {
-    return IconManager.getInstance().getIcon(path, RpluginCoreIcons.class);
+    return IconManager.getInstance().getIcon(path, RIcons.class);
   }
 
   /** 16x16 */ public static final @NotNull Icon ChangeWorkingDirectory = load("/icons/changeWorkingDirectory.svg");
