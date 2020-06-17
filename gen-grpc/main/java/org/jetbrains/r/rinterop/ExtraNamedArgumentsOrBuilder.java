@@ -3,24 +3,40 @@
 
 package org.jetbrains.r.rinterop;
 
-public interface DotsNamedArgumentsOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rplugininterop.DotsNamedArguments)
+public interface ExtraNamedArgumentsOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rplugininterop.ExtraNamedArguments)
     com.google.protobuf.MessageOrBuilder {
 
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   java.util.List<java.lang.String>
       getArgNamesList();
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   int getArgNamesCount();
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   java.lang.String getArgNames(int index);
   /**
+   * <pre>
+   * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+   * </pre>
+   *
    * <code>repeated string argNames = 1;</code>
    */
   com.google.protobuf.ByteString

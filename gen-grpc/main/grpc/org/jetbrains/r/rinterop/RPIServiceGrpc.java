@@ -1547,34 +1547,34 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.DotsNamedArguments> getFindDotsNamedArgumentsMethod;
+      org.jetbrains.r.rinterop.ExtraNamedArguments> getFindExtraNamedArgumentsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "findDotsNamedArguments",
+      fullMethodName = SERVICE_NAME + '/' + "findExtraNamedArguments",
       requestType = org.jetbrains.r.rinterop.RRef.class,
-      responseType = org.jetbrains.r.rinterop.DotsNamedArguments.class,
+      responseType = org.jetbrains.r.rinterop.ExtraNamedArguments.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.DotsNamedArguments> getFindDotsNamedArgumentsMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.DotsNamedArguments> getFindDotsNamedArgumentsMethod;
-    if ((getFindDotsNamedArgumentsMethod = RPIServiceGrpc.getFindDotsNamedArgumentsMethod) == null) {
+      org.jetbrains.r.rinterop.ExtraNamedArguments> getFindExtraNamedArgumentsMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.ExtraNamedArguments> getFindExtraNamedArgumentsMethod;
+    if ((getFindExtraNamedArgumentsMethod = RPIServiceGrpc.getFindExtraNamedArgumentsMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getFindDotsNamedArgumentsMethod = RPIServiceGrpc.getFindDotsNamedArgumentsMethod) == null) {
-          RPIServiceGrpc.getFindDotsNamedArgumentsMethod = getFindDotsNamedArgumentsMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.DotsNamedArguments>newBuilder()
+        if ((getFindExtraNamedArgumentsMethod = RPIServiceGrpc.getFindExtraNamedArgumentsMethod) == null) {
+          RPIServiceGrpc.getFindExtraNamedArgumentsMethod = getFindExtraNamedArgumentsMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.ExtraNamedArguments>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findDotsNamedArguments"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findExtraNamedArguments"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.DotsNamedArguments.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("findDotsNamedArguments"))
+                  org.jetbrains.r.rinterop.ExtraNamedArguments.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("findExtraNamedArguments"))
               .build();
         }
       }
     }
-    return getFindDotsNamedArgumentsMethod;
+    return getFindExtraNamedArgumentsMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.TableColumnsInfoRequest,
@@ -2804,9 +2804,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void findDotsNamedArguments(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.DotsNamedArguments> responseObserver) {
-      asyncUnimplementedUnaryCall(getFindDotsNamedArgumentsMethod(), responseObserver);
+    public void findExtraNamedArguments(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ExtraNamedArguments> responseObserver) {
+      asyncUnimplementedUnaryCall(getFindExtraNamedArgumentsMethod(), responseObserver);
     }
 
     /**
@@ -3353,12 +3353,12 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.StringList>(
                   this, METHODID_FIND_INHERITOR_NAMED_ARGUMENTS)))
           .addMethod(
-            getFindDotsNamedArgumentsMethod(),
+            getFindExtraNamedArgumentsMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 org.jetbrains.r.rinterop.RRef,
-                org.jetbrains.r.rinterop.DotsNamedArguments>(
-                  this, METHODID_FIND_DOTS_NAMED_ARGUMENTS)))
+                org.jetbrains.r.rinterop.ExtraNamedArguments>(
+                  this, METHODID_FIND_EXTRA_NAMED_ARGUMENTS)))
           .addMethod(
             getGetTableColumnsInfoMethod(),
             asyncUnaryCall(
@@ -3982,10 +3982,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void findDotsNamedArguments(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.DotsNamedArguments> responseObserver) {
+    public void findExtraNamedArguments(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ExtraNamedArguments> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getFindDotsNamedArgumentsMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getFindExtraNamedArgumentsMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4608,9 +4608,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.DotsNamedArguments findDotsNamedArguments(org.jetbrains.r.rinterop.RRef request) {
+    public org.jetbrains.r.rinterop.ExtraNamedArguments findExtraNamedArguments(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
-          getChannel(), getFindDotsNamedArgumentsMethod(), getCallOptions(), request);
+          getChannel(), getFindExtraNamedArgumentsMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5130,10 +5130,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.DotsNamedArguments> findDotsNamedArguments(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ExtraNamedArguments> findExtraNamedArguments(
         org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
-          getChannel().newCall(getFindDotsNamedArgumentsMethod(), getCallOptions()), request);
+          getChannel().newCall(getFindExtraNamedArgumentsMethod(), getCallOptions()), request);
     }
 
     /**
@@ -5376,7 +5376,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_GET_SOURCE_FILE_NAME = 46;
   private static final int METHODID_LOAD_OBJECT_NAMES = 47;
   private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 48;
-  private static final int METHODID_FIND_DOTS_NAMED_ARGUMENTS = 49;
+  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 49;
   private static final int METHODID_GET_TABLE_COLUMNS_INFO = 50;
   private static final int METHODID_GET_FORMAL_ARGUMENTS = 51;
   private static final int METHODID_GET_EQUALITY_OBJECT = 52;
@@ -5618,9 +5618,9 @@ public final class RPIServiceGrpc {
           serviceImpl.findInheritorNamedArguments((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList>) responseObserver);
           break;
-        case METHODID_FIND_DOTS_NAMED_ARGUMENTS:
-          serviceImpl.findDotsNamedArguments((org.jetbrains.r.rinterop.RRef) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.DotsNamedArguments>) responseObserver);
+        case METHODID_FIND_EXTRA_NAMED_ARGUMENTS:
+          serviceImpl.findExtraNamedArguments((org.jetbrains.r.rinterop.RRef) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ExtraNamedArguments>) responseObserver);
           break;
         case METHODID_GET_TABLE_COLUMNS_INFO:
           serviceImpl.getTableColumnsInfo((org.jetbrains.r.rinterop.TableColumnsInfoRequest) request,
@@ -5840,7 +5840,7 @@ public final class RPIServiceGrpc {
               .addMethod(getGetSourceFileNameMethod())
               .addMethod(getLoadObjectNamesMethod())
               .addMethod(getFindInheritorNamedArgumentsMethod())
-              .addMethod(getFindDotsNamedArgumentsMethod())
+              .addMethod(getFindExtraNamedArgumentsMethod())
               .addMethod(getGetTableColumnsInfoMethod())
               .addMethod(getGetFormalArgumentsMethod())
               .addMethod(getGetEqualityObjectMethod())

@@ -185,23 +185,23 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("frollmean(table, al<caret>)", "algo", "align", withRuntimeInfo = true)
   }
 
-  fun testReadCsvDotsNamedArgs() {
+  fun testReadCsvExtraNamedArgs() {
     doTest("read.csv(nume<caret>)", "numerals", withRuntimeInfo = true)
     doTest("read.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
   }
 
-  fun testWriteCsvDotsNamedArgs() {
+  fun testWriteCsvExtraNamedArgs() {
     doTest("write.csv(row.na<caret>)", "row.names", withRuntimeInfo = true)
     doTest("write.csv(fil<caret>)", "file", "fileEncoding", withRuntimeInfo = true)
   }
 
-  fun testTryCatchDotsNamedArgs() {
+  fun testTryCatchExtraNamedArgs() {
     doTest("tryCatch(paste, colla<caret>)", "collapse", withRuntimeInfo = true)
     doTest("tryCatch(paste, err<caret>)", "error", withRuntimeInfo = true)
     doTest("tryCatch(paste, war<caret>)", "warning", withRuntimeInfo = true)
   }
 
-  fun testNotLoadedLocalDotsNamedArgs() {
+  fun testNotLoadedLocalExtraNamedArgs() {
     doTest("""
       foo <- function(fileLocal, ...) {
         read.csv(...)
@@ -211,7 +211,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "file", "fileEncoding", "fileLocal", withRuntimeInfo = true)
   }
 
-  fun testLoadedLocalDotsNamedArgs() {
+  fun testLoadedLocalExtraNamedArgs() {
     rInterop.executeCode("""
       bar <- function(fileTwo, ...) {
         read.csv(...)
@@ -225,11 +225,11 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("foo(fil<caret>)", "file", "fileLocal", "fileTwo", withRuntimeInfo = true)
   }
 
-  fun testLapplyFunctionDotsNamedArgs() {
+  fun testLapplyFunctionExtraNamedArgs() {
     doTest("lapply(list, paste, colla<caret>)", "collapse", withRuntimeInfo = true)
   }
 
-  fun testOverlappedDotsNamedArgs() {
+  fun testOverlappedExtraNamedArgs() {
     val fooDef = """
       foo <- function(fileLocal, ...) {
         read.csv(...)
@@ -254,7 +254,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "fileEncoding", withRuntimeInfo = true)
   }
 
-  fun testOverlappedFunctionDotsNamedArgs() {
+  fun testOverlappedFunctionExtraNamedArgs() {
     val fooDef = """
       foo <- function(FUN_MY, ...) {
         lapply(list, ...)
@@ -279,7 +279,7 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "FUN", withRuntimeInfo = true)
   }
 
-  fun testLambdaInsideDotsNamedArgs() {
+  fun testLambdaInsideExtraNamedArgs() {
     val fooDef = """
       foo <- function(fileLocal, ...) {
         function(fileInside, ...) {
@@ -315,19 +315,19 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "fileInside", withRuntimeInfo = true)
   }
 
-  fun testLapplyLambdaFunctionDotsNamedArgs() {
+  fun testLapplyLambdaFunctionExtraNamedArgs() {
     doTest("""
       lapply(list, function(xxxxx, xxxxxy, yyyyy, ...) {}, xxxx<caret>)
     """.trimIndent(), "xxxxx", "xxxxxy", withRuntimeInfo = true)
   }
 
-  fun testS3LapplyDotsNamedArgs() {
+  fun testS3LapplyExtraNamedArgs() {
     doTest("""
       lapply(list, print, dig<caret>)
     """.trimIndent(), "digits", withRuntimeInfo = true)
   }
 
-  fun testLapplyInsideDotsNamedArgs() {
+  fun testLapplyInsideExtraNamedArgs() {
     doTest("""
       foo <- function(digitData, digital, ...) {
         lapply(digitData, print.default, ...)

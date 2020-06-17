@@ -15,7 +15,7 @@ import org.jetbrains.r.psi.api.*
  * @property argumentNames Names of arguments that can be passed directly to **...**
  * @property functionArgNames Names of arguments that are functions whose arguments can also be passed to **...**
  */
-data class RDotsNamedArgumentsInfo(val argumentNames: List<String>, val functionArgNames: List<String>)
+data class RExtraNamedArgumentsInfo(val argumentNames: List<String>, val functionArgNames: List<String>)
 
 class RArgumentInfo private constructor(argumentList: RArgumentHolder, val parameterNames: List<String>) {
   private val pipeArgument: RExpression? = findPipeArgument(argumentList)
