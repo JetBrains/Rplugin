@@ -1,8 +1,0 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
-  <name>R Language for IntelliJ</name>
-  <id>R4Intellij</id>
-  <vendor>JetBrains</vendor>
-  <depends>org.intellij.datavis.r.inlays.visualisation</depends>
-  <xi:include href="/META-INF/rplugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <depends optional="true" config-file="rplugin-python.xml">com.intellij.modules.python</depends>
-</idea-plugin>
