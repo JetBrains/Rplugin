@@ -6,6 +6,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -17,6 +18,7 @@ import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.debug.RLineBreakpointType
+import java.nio.file.Paths
 
 class SaveSessionTest : RUsefulTestCase() {
   private lateinit var interpreter: RInterpreter
@@ -25,16 +27,15 @@ class SaveSessionTest : RUsefulTestCase() {
     super.setUp()
     setupMockInterpreterManager()
     interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(RProcessHandlerBaseTestCase.DEFAULT_TIMEOUT)!!
-    project.putUserData(SessionUtil.ENABLE_SAVE_SESSION_IN_TESTS, Unit)
-    SessionUtil.getWorkspaceFile(project, interpreter)?.let {
-      runWriteAction {
-        LocalFileSystem.getInstance().refreshAndFindFileByPath(it)?.delete(this)
-      }
+    val workspaceFile = Paths.get(FileUtil.getTempDirectory(), "a.RData").toString()
+    project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, workspaceFile)
+    runWriteAction {
+      LocalFileSystem.getInstance().refreshAndFindFileByPath(workspaceFile)?.delete(this)
     }
   }
 
   override fun tearDown() {
-    project.putUserData(SessionUtil.ENABLE_SAVE_SESSION_IN_TESTS, null)
+    project.putUserData(RInteropUtil.WORKSPACE_FILE_FOR_TESTS, null)
     super.tearDown()
   }
 

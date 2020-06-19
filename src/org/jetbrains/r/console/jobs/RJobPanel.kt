@@ -15,7 +15,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.PopupHandler
@@ -24,6 +23,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.uiDesigner.core.Spacer
+import com.intellij.util.PathUtil
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.JBEmptyBorder
@@ -258,8 +258,7 @@ private class JobList(private val splitter: SplitterApi,
 
   fun openFileInEditor(componentAtMouse: JobEntity): Boolean {
     val scriptFile = componentAtMouse.jobDescriptor.scriptFile
-    val findFileByIoFile = VfsUtil.findFileByIoFile(scriptFile, true) ?: return true
-    FileEditorManager.getInstance(project).openFile(findFileByIoFile, true)
+    FileEditorManager.getInstance(project).openFile(scriptFile, true)
     return false
   }
 
@@ -323,7 +322,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
   private var paintUnbounded: Boolean = false
   private val filename = jobDescriptor.scriptFile.name
   private val directoryName = FileUtil.getLocationRelativeToUserHome(
-    LocalFileSystem.getInstance().extractPresentableUrl(jobDescriptor.scriptFile.parent))
+    LocalFileSystem.getInstance().extractPresentableUrl(PathUtil.getParentPath(jobDescriptor.scriptFile.path).orEmpty()))
 
 
   private val progressBar = JProgressBar().apply {

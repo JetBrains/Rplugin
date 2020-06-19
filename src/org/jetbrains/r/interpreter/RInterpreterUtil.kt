@@ -334,7 +334,11 @@ object RInterpreterUtil {
   }
 
   fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
-    return mutableListOf(interpreterPath, "--slave", "--no-restore", "-f", helper.absolutePath, "--args").apply { addAll(args) }
+    return getRunHelperCommands(interpreterPath, helper.absolutePath, args)
+  }
+
+  fun getRunHelperCommands(interpreterPath: String, helper: String, args: List<String>): List<String> {
+    return mutableListOf(interpreterPath, "--slave", "--no-restore", "-f", helper, "--args").apply { addAll(args) }
   }
 
   private fun runRInterpreter(interpreterPath: String,

@@ -12,6 +12,7 @@ import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.application.*
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
@@ -214,6 +215,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         }
       }
       return promise
+    }
+
+    override fun onBrowseURLRequest(url: String) {
+      BrowserUtil.browse(url)
     }
 
     private fun pollExecuteLaterQueue() {

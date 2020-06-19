@@ -11,7 +11,6 @@ import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiFile
@@ -61,7 +60,7 @@ object RSkeletonUtil {
     }
   }
 
-  fun updateSkeletons(rInterpreter: RInterpreter, project: Project, progressIndicator: ProgressIndicator? = null): Boolean {
+  fun updateSkeletons(rInterpreter: RInterpreter, progressIndicator: ProgressIndicator? = null): Boolean {
     checkVersion(rInterpreter.skeletonsDirectory)
     val generationMap = HashMap<String, List<RPackage>>()
     for (skeletonPath in rInterpreter.skeletonPaths) {
@@ -89,12 +88,11 @@ object RSkeletonUtil {
 
       generationMap[skeletonPath] = newPackages
     }
-    return generateSkeletons(generationMap, rInterpreter, project, progressIndicator)
+    return generateSkeletons(generationMap, rInterpreter, progressIndicator)
   }
 
   internal fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
                                  rInterpreter: RInterpreter,
-                                 project: Project,
                                  progressIndicator: ProgressIndicator? = null): Boolean {
     var result = false
 

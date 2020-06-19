@@ -202,6 +202,12 @@ private static final long serialVersionUID = 0L;
             eventCase_ = 11;
             break;
           }
+          case 98: {
+            java.lang.String s = input.readStringRequireUtf8();
+            eventCase_ = 12;
+            event_ = s;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -4546,6 +4552,7 @@ private static final long serialVersionUID = 0L;
     SHOWFILEREQUEST(9),
     SHOWHELPREQUEST(10),
     SUBPROCESSINPUT(11),
+    BROWSEURLREQUEST(12),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -4572,6 +4579,7 @@ private static final long serialVersionUID = 0L;
         case 9: return SHOWFILEREQUEST;
         case 10: return SHOWHELPREQUEST;
         case 11: return SUBPROCESSINPUT;
+        case 12: return BROWSEURLREQUEST;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -4873,6 +4881,49 @@ private static final long serialVersionUID = 0L;
     return com.google.protobuf.Empty.getDefaultInstance();
   }
 
+  public static final int BROWSEURLREQUEST_FIELD_NUMBER = 12;
+  /**
+   * <code>string browseURLRequest = 12;</code>
+   */
+  public java.lang.String getBrowseURLRequest() {
+    java.lang.Object ref = "";
+    if (eventCase_ == 12) {
+      ref = event_;
+    }
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      if (eventCase_ == 12) {
+        event_ = s;
+      }
+      return s;
+    }
+  }
+  /**
+   * <code>string browseURLRequest = 12;</code>
+   */
+  public com.google.protobuf.ByteString
+      getBrowseURLRequestBytes() {
+    java.lang.Object ref = "";
+    if (eventCase_ == 12) {
+      ref = event_;
+    }
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      if (eventCase_ == 12) {
+        event_ = b;
+      }
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -4919,6 +4970,9 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 11) {
       output.writeMessage(11, (com.google.protobuf.Empty) event_);
+    }
+    if (eventCase_ == 12) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 12, event_);
     }
     unknownFields.writeTo(output);
   }
@@ -4972,6 +5026,9 @@ private static final long serialVersionUID = 0L;
     if (eventCase_ == 11) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(11, (com.google.protobuf.Empty) event_);
+    }
+    if (eventCase_ == 12) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, event_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -5034,6 +5091,10 @@ private static final long serialVersionUID = 0L;
         if (!getSubprocessInput()
             .equals(other.getSubprocessInput())) return false;
         break;
+      case 12:
+        if (!getBrowseURLRequest()
+            .equals(other.getBrowseURLRequest())) return false;
+        break;
       case 0:
       default:
     }
@@ -5092,6 +5153,10 @@ private static final long serialVersionUID = 0L;
       case 11:
         hash = (37 * hash) + SUBPROCESSINPUT_FIELD_NUMBER;
         hash = (53 * hash) + getSubprocessInput().hashCode();
+        break;
+      case 12:
+        hash = (37 * hash) + BROWSEURLREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getBrowseURLRequest().hashCode();
         break;
       case 0:
       default:
@@ -5334,6 +5399,9 @@ private static final long serialVersionUID = 0L;
           result.event_ = subprocessInputBuilder_.build();
         }
       }
+      if (eventCase_ == 12) {
+        result.event_ = event_;
+      }
       result.eventCase_ = eventCase_;
       onBuilt();
       return result;
@@ -5426,6 +5494,12 @@ private static final long serialVersionUID = 0L;
         }
         case SUBPROCESSINPUT: {
           mergeSubprocessInput(other.getSubprocessInput());
+          break;
+        }
+        case BROWSEURLREQUEST: {
+          eventCase_ = 12;
+          event_ = other.event_;
+          onChanged();
           break;
         }
         case EVENT_NOT_SET: {
@@ -6970,6 +7044,86 @@ private static final long serialVersionUID = 0L;
       eventCase_ = 11;
       onChanged();;
       return subprocessInputBuilder_;
+    }
+
+    /**
+     * <code>string browseURLRequest = 12;</code>
+     */
+    public java.lang.String getBrowseURLRequest() {
+      java.lang.Object ref = "";
+      if (eventCase_ == 12) {
+        ref = event_;
+      }
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (eventCase_ == 12) {
+          event_ = s;
+        }
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string browseURLRequest = 12;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBrowseURLRequestBytes() {
+      java.lang.Object ref = "";
+      if (eventCase_ == 12) {
+        ref = event_;
+      }
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        if (eventCase_ == 12) {
+          event_ = b;
+        }
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string browseURLRequest = 12;</code>
+     */
+    public Builder setBrowseURLRequest(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  eventCase_ = 12;
+      event_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string browseURLRequest = 12;</code>
+     */
+    public Builder clearBrowseURLRequest() {
+      if (eventCase_ == 12) {
+        eventCase_ = 0;
+        event_ = null;
+        onChanged();
+      }
+      return this;
+    }
+    /**
+     * <code>string browseURLRequest = 12;</code>
+     */
+    public Builder setBrowseURLRequestBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      eventCase_ = 12;
+      event_ = value;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

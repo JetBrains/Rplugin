@@ -4,24 +4,31 @@
 
 package org.jetbrains.r.console.jobs
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.layout.*
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.RInterpreter
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 
-class RRunJobDialog(private val project: Project, defaultScript: String, defaultWorkingDirectory: String) :
-  DialogWrapper(project, null, true, IdeModalityType.IDE) {
+class RRunJobDialog(private val interpreter: RInterpreter, private val defaultScript: VirtualFile?,
+                    private val defaultWorkingDirectory: String) :
+  DialogWrapper(interpreter.project, null, true, IdeModalityType.IDE) {
+  private val project = interpreter.project
   private val panel: DialogPanel
-  var scriptPath: String = defaultScript
-  var workingDirectory = defaultWorkingDirectory
+  private lateinit var scriptField: TextFieldWithBrowseButton
+  private lateinit var workingDirField: TextFieldWithBrowseButton
+
+  val scriptPath get() = scriptField.text
+  val workingDirectory get() = workingDirField.text
   var runWithGlobalEnvironment: Boolean = false
   var exportGlobalEnvPolicy: ExportGlobalEnvPolicy = ExportGlobalEnvPolicy.DO_NO_EXPORT
 
@@ -40,16 +47,15 @@ class RRunJobDialog(private val project: Project, defaultScript: String, default
       row {
         cell {
           label(RBundle.message("jobs.dialog.label.r.script")).withLargeLeftGap()
-          textFieldWithBrowseButton(::scriptPath).addTextChangedListener()
+          component(interpreter.createFileChooserForHost(defaultScript?.let { interpreter.getFilePathAtHost(it) }.orEmpty() )
+                      .also { scriptField = it }).addTextChangedListener()
         }
       }
       row {
         cell {
           label(RBundle.message("jobs.dialog.label.working.directory")).withLargeLeftGap()
-          textFieldWithBrowseButton(
-            ::workingDirectory,
-            fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
-          ).addTextChangedListener()
+          component(interpreter.createFileChooserForHost(defaultWorkingDirectory, true)
+                      .also { workingDirField = it }).addTextChangedListener()
         }
       }
       row { label(RBundle.message("jobs.dialog.label.environments")) }
@@ -78,9 +84,17 @@ class RRunJobDialog(private val project: Project, defaultScript: String, default
 
   override fun doOKAction() {
     panel.apply()
-    val task = RJobTask(scriptPath, workingDirectory, runWithGlobalEnvironment, exportGlobalEnvPolicy)
     runAsync {
-     RJobRunner.getInstance(project).runRJob(task)
+      val script = interpreter.findFileByPathAtHost(scriptPath)
+      if (script == null) {
+        invokeLater {
+          Messages.showErrorDialog(project, RBundle.message("jobs.dialog.file.not.found.message", scriptPath),
+                                   RBundle.message("jobs.dialog.file.not.found.title"))
+        }
+      } else {
+        val task = RJobTask(script, workingDirectory, runWithGlobalEnvironment, exportGlobalEnvPolicy)
+        RJobRunner.getInstance(project).runRJob(task)
+      }
     }
     super.doOKAction()
   }

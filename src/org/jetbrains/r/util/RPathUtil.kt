@@ -7,7 +7,7 @@ package org.jetbrains.r.util
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 
-object PathUtil {
+object RPathUtil {
   fun toPath(first: String, vararg more: String): Path? {
     return try {
       Path.of(first, *more)
@@ -15,5 +15,15 @@ object PathUtil {
     catch (e: InvalidPathException) {
       null
     }
+  }
+
+  fun join(first: String, vararg more: String): String {
+    fun isSlash(c: Char) = c == '/' || c == '\\'
+
+    val result = StringBuilder(first.dropLastWhile(::isSlash))
+    for (s in more) {
+      result.append('/').append(s.trim(::isSlash))
+    }
+    return result.toString().replace('\\', '/')
   }
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -27,7 +28,6 @@ import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RSkeletonUtil
-import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -135,7 +135,7 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
     val name2installedPackages = installedPackages.asSequence().map { it.packageName to it }.toMap()
     val (libraryPaths, userPath) = loadPaths()
     val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
-    val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath) }
+    val skeletonPaths = libraryPaths.map { libraryPath -> libraryPathToSkeletonPath(libraryPath.path) }
     val skeletonRoots = skeletonPaths.mapNotNull { path -> VfsUtil.findFile(Paths.get(path), true) }.toSet()
     state = State(libraryPaths, skeletonPaths, skeletonRoots, makeExpiring(installedPackages), name2installedPackages,
                   name2libraryPaths, userPath)
@@ -150,47 +150,53 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
 
   private fun runHelperLines(helper: File, vararg args: String) = runHelper(helper, basePath, args.toList()).lines()
 
-  private fun loadPaths(): Pair<List<VirtualFile>, String> {
+  private fun loadPaths(): Pair<List<RInterpreter.LibraryPath>, String> {
     val libraryPaths = loadLibraryPaths().toMutableList()
     val userPath = getUserPath()
-    val (_, isUserDirectoryCreated) = RepoUtils.getGuaranteedWritableLibraryPath(libraryPaths, userPath)
+    val (_, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(libraryPaths, userPath)
     if (isUserDirectoryCreated) {
       interop.repoAddLibraryPath(userPath)
-      findVirtualFile(userPath)?.let { vf ->
-        libraryPaths.add(vf)
-      }
+      libraryPaths.add(RInterpreter.LibraryPath(userPath, true))
     }
     return Pair(libraryPaths, userPath)
   }
 
   private fun getUserPath(): String {
-    val lines = runHelperLines(GET_ENV_HELPER, "R_LIBS_USER")
+    val lines = runHelperLines(GET_ENV_HELPER, "R_LIBS_USER", "--normalize-path")
     val firstLine = lines.firstOrNull().orEmpty()
     if (firstLine.isNotBlank()) {
-      return firstLine.expandTilde()
+      return firstLine
     } else {
       throw RuntimeException("Cannot get user library path")
     }
   }
 
-  private fun mapNamesToLibraryPaths(packages: List<RInstalledPackage>, libraryPaths: List<VirtualFile>): Map<String, VirtualFile> {
+  private fun mapNamesToLibraryPaths(packages: List<RInstalledPackage>,
+                                     libraryPaths: List<RInterpreter.LibraryPath>): Map<String, RInterpreter.LibraryPath> {
     return packages.asSequence()
       .mapNotNull { rPackage ->
-        libraryPaths.find { it.path == rPackage.libraryPath }?.let { vf -> Pair(rPackage.packageName, vf) }
+        libraryPaths.find { it.path == rPackage.libraryPath }?.let { libraryPath -> Pair(rPackage.packageName, libraryPath) }
       }
       .toMap()
   }
 
-  private fun loadLibraryPaths(): List<VirtualFile> {
+  private fun loadLibraryPaths(): List<RInterpreter.LibraryPath> {
     val lines = runHelperLines(LIBRARY_PATHS_HELPER)
-    val paths = lines.filter { it.isNotBlank() }
-    return paths.mapNotNull { findVirtualFile(it) }.toList().also {
-      if (it.isEmpty()) LOG.error("Got empty library paths, output: ${lines}")
+    return lines.mapNotNull {
+      val parts = it.split("!!!JETBRAINS_RPLUGIN!!!")
+      if (parts.size != 2) {
+        null
+      } else {
+        val (path, isWritable) = parts
+        RInterpreter.LibraryPath(FileUtilRt.toSystemIndependentName(path), isWritable == "TRUE")
+      }
+    }.also {
+      if (it.isEmpty()) LOG.error("Got empty library paths, output: $lines")
     }
   }
 
   private fun loadInstalledPackages(): List<RInstalledPackage> {
-    val text = runHelper(INSTALLED_PACKAGES_HELPER, project.basePath, arrayOf<String>().toList())
+    val text = runHelper(INSTALLED_PACKAGES_HELPER, null, arrayOf<String>().toList())
     val lines = text.split("!!!JETBRAINS_RPLUGIN!!!")
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()
@@ -198,7 +204,7 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
         .map {
           val splitLine = it.split("^^^JETBRAINS_RPLUGIN^^^")
           try {
-            val libraryPath = splitLine[0].trim()
+            val libraryPath = FileUtilRt.toSystemIndependentName(splitLine[0].trim())
             val packageName = splitLine[1].trim()
             val version = splitLine[2].trim()
             val priority = splitLine[3].trim().let { token ->
@@ -259,45 +265,33 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
           .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Cannot run new console")
       }
     }
-
-    private fun String.expandTilde(): String {
-      return if (startsWith("~" + File.separator)) {
-        System.getProperty("user.home") + substring(1)
-      } else {
-        this
-      }
-    }
-
-    private fun findVirtualFile(path: String): VirtualFile? {
-      return VfsUtil.findFileByIoFile(File(path), true)
-    }
   }
 
   override val skeletonPaths: List<String>
     get() = state.skeletonPaths
 
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String?  =
-    libraryPaths.firstOrNull { Paths.get(libraryPathToSkeletonPath(it)) == Paths.get(skeletonPath) }?.path
+    libraryPaths.firstOrNull { Paths.get(libraryPathToSkeletonPath(it.path)) == Paths.get(skeletonPath) }?.path
 
   override val skeletonsDirectory: String
     get() = "${PathManager.getSystemPath()}${File.separator}${RSkeletonUtil.SKELETON_DIR_NAME}"
 
-  private fun libraryPathToSkeletonPath(libraryPath: VirtualFile) =
+  private fun libraryPathToSkeletonPath(libraryPath: String) =
     Paths.get(
       skeletonsDirectory,
-      "${File.separator}${interpreterName}${File.separator}${hash(libraryPath.path)}${File.separator}"
+      "${File.separator}${interpreterName}${File.separator}${hash(libraryPath)}${File.separator}"
     ).toString()
 
   private fun hash(libraryPath: String): String {
     return Paths.get(libraryPath).joinToString(separator = "", postfix = "-${libraryPath.hashCode()}") { it.toString().subSequence(0, 1) }
   }
 
-  private data class State(val libraryPaths: List<VirtualFile>,
+  private data class State(val libraryPaths: List<RInterpreter.LibraryPath>,
                            val skeletonPaths: List<String>,
                            val skeletonRoots: Set<VirtualFile>,
                            val installedPackages: ExpiringList<RInstalledPackage>,
                            val name2installedPackages: Map<String, RInstalledPackage>,
-                           val name2libraryPaths: Map<String, VirtualFile>,
+                           val name2libraryPaths: Map<String, RInterpreter.LibraryPath>,
                            val userLibraryPath: String) {
     companion object {
       val EMPTY = State(listOf(), listOf(), setOf(), emptyExpiringList(), mapOf(), mapOf(), "")

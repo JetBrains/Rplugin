@@ -150,5 +150,15 @@ public interface AsyncEventOrBuilder extends
    */
   com.google.protobuf.EmptyOrBuilder getSubprocessInputOrBuilder();
 
+  /**
+   * <code>string browseURLRequest = 12;</code>
+   */
+  java.lang.String getBrowseURLRequest();
+  /**
+   * <code>string browseURLRequest = 12;</code>
+   */
+  com.google.protobuf.ByteString
+      getBrowseURLRequestBytes();
+
   public org.jetbrains.r.rinterop.AsyncEvent.EventCase getEventCase();
 }
