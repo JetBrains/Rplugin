@@ -19,7 +19,7 @@ import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.RElementFilters
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RStringLiteralExpression
-import org.jetbrains.r.util.PathUtil
+import org.jetbrains.r.util.RPathUtil
 import java.io.File
 
 
@@ -31,7 +31,7 @@ class RReferenceContributor : PsiReferenceContributor() {
         val text = stringLiteral.name ?: return PsiReference.EMPTY_ARRAY
         if (URLUtil.URL_PATTERN.matcher(text).matches()) return arrayOf(WebReference(element))
 
-        val path = PathUtil.toPath(text.trim()) ?: return PsiReference.EMPTY_ARRAY
+        val path = RPathUtil.toPath(text.trim()) ?: return PsiReference.EMPTY_ARRAY
         val isAbsolute = path.isAbsolute
         val file = element.containingFile
         val project = element.project

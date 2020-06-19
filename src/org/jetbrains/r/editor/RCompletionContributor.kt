@@ -31,7 +31,7 @@ import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
-import org.jetbrains.r.util.PathUtil
+import org.jetbrains.r.util.RPathUtil
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -450,7 +450,7 @@ class RCompletionContributor : CompletionContributor() {
                                       _result: CompletionResultSet) {
       val reference = parameters.position.containingFile.findReferenceAt(parameters.offset) as? FileReference ?: return
       val filepath = stringLiteral.name?.trim() ?: return
-      val filePrefix = PathUtil.toPath(filepath)?.fileName?.toString()?.replace(CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED, "") ?: return
+      val filePrefix = RPathUtil.toPath(filepath)?.fileName?.toString()?.replace(CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED, "") ?: return
       val result = _result.withPrefixMatcher(filePrefix)
       val variants = reference.variants.map {
         when (it) {

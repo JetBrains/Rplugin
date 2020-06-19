@@ -5,7 +5,6 @@
 package org.jetbrains.r.console.jobs
 
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
@@ -14,19 +13,16 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.rinterop.RInterop
-import org.jetbrains.r.settings.RSettings
-import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.full.memberProperties
@@ -45,30 +41,27 @@ class RJobRunner(private val project: Project) {
     val console = rConsoleManager.currentConsoleOrNull
     val rInterop = console?.rInterop
     return RInterpreterManager.getInterpreterAsync(project).then { interpreter ->
-      val interpreterPath = interpreter.interpreterLocation.toLocalPathOrNull() ?: throw RuntimeException("Jobs are not supported for remote interpreters")
-      val (scriptFile, exportRDataFile) = generateRunScript(task, rInterop)
-      val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, scriptFile, emptyList())
-      val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, task.workingDirectory)
-      val osProcessHandler = OSProcessHandler(commandLine)
+      val (scriptFile, exportRDataFile) = generateRunScript(interpreter, task, rInterop)
+      val processHandler = interpreter.runHelperProcess(scriptFile, emptyList(), task.workingDirectory)
       if (exportRDataFile != null) {
-        installProcessListener(osProcessHandler, exportRDataFile, console, task)
+        installProcessListener(processHandler, exportRDataFile, console, task)
       }
-      osProcessHandler
+      processHandler
     }
   }
 
-  private fun installProcessListener(osProcessHandler: OSProcessHandler,
-                                     exportRDataFile: File,
+  private fun installProcessListener(processHandler: ProcessHandler,
+                                     exportRDataFile: String,
                                      console: RConsoleView?,
                                      task: RJobTask) {
     val rInterop = console?.rInterop
-    osProcessHandler.addProcessListener(object : ProcessAdapter() {
+    processHandler.addProcessListener(object : ProcessAdapter() {
       override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-        if (exportRDataFile.length() > 0 && rInterop?.isAlive == true) {
+        if (rInterop?.isAlive == true) {
           val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
-            File(task.scriptPath).nameWithoutExtension + "_results"
+            task.script.nameWithoutExtension + "_results"
           else ""
-          rInterop.loadEnvironment(exportRDataFile.absolutePath, variableName).then {
+          rInterop.loadEnvironment(exportRDataFile, variableName).then {
             console.debuggerPanel?.onCommandExecuted()
           }
         }
@@ -76,27 +69,25 @@ class RJobRunner(private val project: Project) {
     })
   }
 
-  private fun generateRunScript(task: RJobTask, rInterop: RInterop?): Pair<File, File?> {
+  private fun generateRunScript(interpreter: RInterpreter, task: RJobTask, rInterop: RInterop?): Pair<String, String?> {
     var importFile: String? = null
-    var exportFile: File? = null
+    var exportFile: String? = null
 
     if (task.importGlobalEnv) {
       if (rInterop?.isAlive == true) {
-        importFile = FileUtil.createTempFile("import", ".RData", true).absolutePath
+        importFile = interpreter.createTempFileOnHost("import.RData")
         rInterop.saveGlobalEnvironment(importFile).blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
       }
     }
     if (task.exportGlobalEnv != ExportGlobalEnvPolicy.DO_NO_EXPORT) {
-      exportFile = FileUtil.createTempFile("export", ".RData", true)
+      exportFile = interpreter.createTempFileOnHost("export.RData")
     }
     var text = RPluginUtil.findFileInRHelpers("R/SourceWithProgress.template.R").readText()
-    text = text.replace("<file-path>", task.scriptPath.toRString())
+    text = text.replace("<file-path>", interpreter.uploadFileToHostIfNeeded(task.script).toRString())
                .replace("<rdata-import>", importFile?.toRString() ?: "NULL")
-               .replace("<rdata-export>", exportFile?.absolutePath?.toRString() ?: "NULL")
+               .replace("<rdata-export>", exportFile?.toRString() ?: "NULL")
 
-    val template = FileUtil.createTempFile("rjob-", ".R", true)
-    template.writeText(text)
-    return Pair(template, exportFile)
+    return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
   fun runRJob(task: RJobTask) {

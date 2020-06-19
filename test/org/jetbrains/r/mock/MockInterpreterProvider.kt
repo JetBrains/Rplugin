@@ -4,9 +4,9 @@
 
 package org.jetbrains.r.mock
 
-import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
 
@@ -14,7 +14,7 @@ interface MockInterpreterProvider {
   val interop: RInterop
   val isUpdating: Boolean?
   val userLibraryPath: String
-  val libraryPaths: List<VirtualFile>
+  val libraryPaths: List<RInterpreter.LibraryPath>
   val installedPackages: ExpiringList<RInstalledPackage>
 
   companion object {
@@ -28,7 +28,7 @@ interface MockInterpreterProvider {
       override val userLibraryPath: String
         get() = throw NotImplementedError()
 
-      override val libraryPaths: List<VirtualFile>
+      override val libraryPaths: List<RInterpreter.LibraryPath>
         get() = throw NotImplementedError()
 
       override val installedPackages: ExpiringList<RInstalledPackage>

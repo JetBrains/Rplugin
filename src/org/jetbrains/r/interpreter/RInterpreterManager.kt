@@ -25,7 +25,6 @@ import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.isRejected
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
@@ -46,9 +45,9 @@ interface RInterpreterManager {
 
   fun getInterpreterAsync(force: Boolean = false): Promise<RInterpreter>
 
-  fun getInterpreterBlocking() = getInterpreterAsync().run {
+  fun getInterpreterBlocking(timeout: Int) = getInterpreterAsync().run {
     try {
-      blockingGet(Int.MAX_VALUE)
+      blockingGet(timeout)
     } catch (t: Throwable) {
       null
     }
@@ -64,6 +63,7 @@ interface RInterpreterManager {
     fun getInterpreterAsync(project: Project, force: Boolean = false): Promise<RInterpreter> = getInstance(project).getInterpreterAsync(force)
 
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
+    fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
   }
 }
 
@@ -110,7 +110,9 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         }
       }
       initialized = true
-      return setupInterpreter(location).also { interpreterPromise = it }
+      return setupInterpreter(location)
+        .onError { RSettings.getInstance(project).interpreterLocation = null }
+        .also { interpreterPromise = it }
     }
   }
 
@@ -180,8 +182,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
           .onSuccess {
             val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
               override fun run(indicator: ProgressIndicator) {
-                RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
-                RLibraryWatcher.getInstance(project).refresh()
+                interpreter.registersRootsToWatch()
                 updateSkeletons(interpreter)
               }
             }
@@ -197,7 +198,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     val dumbModeTask = object : DumbModeTask(interpreter) {
       override fun performInDumbMode(indicator: ProgressIndicator) {
         if (!project.isOpen || project.isDisposed) return
-        if (RSkeletonUtil.updateSkeletons(interpreter, project, indicator)) {
+        if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
           runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
         }
         isSkeletonInitialized = true

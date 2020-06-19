@@ -9,7 +9,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.project.Project
-import java.io.File
+import com.intellij.openapi.vfs.VirtualFile
 import java.util.*
 import javax.swing.JComponent
 
@@ -19,7 +19,7 @@ interface RJobDescriptor {
   val processFailed: Boolean
   val startedAt: Date
   val duration: Long
-  val scriptFile: File
+  val scriptFile: VirtualFile
 
   fun onProgressChanged(lambda: (current: Int, total: Int) -> Unit)
   fun onProcessTerminated(lambda: () -> Unit)
@@ -46,7 +46,7 @@ class RJobDescriptorImpl(
 
   override val startedAt: Date = Date()
   private val startedAtInMillis: Long = System.currentTimeMillis()
-  override val scriptFile: File = File(task.scriptPath)
+  override val scriptFile = task.script
 
   override val outputComponent: JComponent
     get() = consoleView.component

@@ -10,20 +10,16 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.rinterop.RInterop
-import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
@@ -165,7 +161,7 @@ object RepoUtils {
   }
 
   private fun getInterpreter(suggested: RInterpreter?, project: Project): RInterpreter {
-    return suggested ?: RInterpreterManager.getInterpreterOrNull(project) ?:
+    return suggested ?: RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT) ?:
            throw ExecutionException("Cannot get interpreter for packaging task. Please, specify path to the R executable")
   }
 
@@ -193,9 +189,9 @@ object RepoUtils {
     val urls = repoUrls.map { trimRepoUrlSuffix(it) }
 
     // Ensure writable library path exists => interpreter won't ask during package installation
-    val (libraryPath, isUserDirectoryCreated) = getGuaranteedWritableLibraryPath(interpreter.libraryPaths, interpreter.userLibraryPath)
+    val (libraryPath, isUserDirectoryCreated) = interpreter.getGuaranteedWritableLibraryPath()
 
-    val fallbackMethod = getFallbackDownloadMethod()
+    val fallbackMethod = getFallbackDownloadMethod(interpreter.hostOS)
     val arguments = getInstallArguments(urls, libraryPath)
     rInterop.runWithPackageUnloaded(repoPackage.name) {
       repoInstallPackage(repoPackage.name, fallbackMethod, arguments)
@@ -204,7 +200,7 @@ object RepoUtils {
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
       interpreter.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
-      RLibraryWatcher.getInstance(project).registerRootsToWatch(interpreter.libraryPaths)
+      interpreter.registersRootsToWatch()
     }
 
     // It's rather hard to get installation status from 'updateOutput'
@@ -249,31 +245,10 @@ object RepoUtils {
     return null
   }
 
-  // Note: returns pair of writable path and indicator whether new library path was created
-  fun getGuaranteedWritableLibraryPath(libraryPaths: List<VirtualFile>, userPath: String): Pair<String, Boolean> {
-    val writable = findWritableLibraryPath(libraryPaths)
-    return if (writable != null) {
-      Pair(writable, false)
-    } else {
-      tryCreateUserLibraryPath(userPath)
-    }
-  }
-
-  private fun findWritableLibraryPath(libraryPaths: List<VirtualFile>): String? {
-    return libraryPaths.find { it.isWritable }?.path?.let { path ->
-      FileUtil.toSystemIndependentName(path)
-    }
-  }
-
-  private fun tryCreateUserLibraryPath(userPath: String): Pair<String, Boolean> {
-    val path = FileUtil.toSystemIndependentName(userPath)
-    return Pair(path, File(path).mkdirs())
-  }
-
-  private fun getFallbackDownloadMethod(): String? {
-    return when {
-      SystemInfo.isLinux -> "wget"
-      SystemInfo.isMac -> "curl"
+  private fun getFallbackDownloadMethod(operatingSystem: OperatingSystem): String? {
+    return when (operatingSystem) {
+      OperatingSystem.LINUX -> "wget"
+      OperatingSystem.MAC_OS -> "curl"
       else -> null
     }
   }
@@ -305,11 +280,12 @@ object RepoUtils {
     if (!checkPackageInstalled(packageName, rInterop)) {
       throw ExecutionException("Cannot remove package '$packageName'. It is not installed")
     }
-    val libraryPath = getPackageLibraryPath(packageName, interpreter)
+    val libraryPath = interpreter.getLibraryPathByName(packageName)
+                      ?: throw ExecutionException("Cannot get library path for package '$packageName'")
     if (!libraryPath.isWritable) {
       throw ExecutionException("Cannot remove package '$packageName'. Library path is not writable")
     }
-    rInterop.repoRemovePackage(packageName, FileUtil.toSystemIndependentName(libraryPath.path))
+    rInterop.repoRemovePackage(packageName, libraryPath.path)
     val version = getPackageVersion(packageName, rInterop)
     if (version != null && RPackageVersion.isSame(version, repoPackage.version)) {
       throw ExecutionException("Cannot remove package '$packageName'. Check console for process output")
@@ -319,10 +295,6 @@ object RepoUtils {
   private fun checkPackageInstalled(packageName: String, rInterop: RInterop): Boolean {
     val checkOutput = rInterop.repoCheckPackageInstalled(packageName)
     return checkOutput.stdout == "TRUE"
-  }
-
-  private fun getPackageLibraryPath(packageName: String, interpreter: RInterpreter): VirtualFile {
-    return interpreter.getLibraryPathByName(packageName) ?: throw ExecutionException("Cannot get library path for package '$packageName'")
   }
 
   fun formatDetails(repoPackage: RRepoPackage?): String {

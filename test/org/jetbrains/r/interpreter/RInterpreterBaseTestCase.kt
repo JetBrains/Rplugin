@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.registerServiceInstance
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
@@ -89,7 +88,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     override val userLibraryPath: String
       get() = slaveInterpreter.userLibraryPath
 
-    override val libraryPaths: List<VirtualFile>
+    override val libraryPaths: List<RInterpreter.LibraryPath>
       get() = slaveInterpreter.libraryPaths
 
     override val installedPackages: ExpiringList<RInstalledPackage>

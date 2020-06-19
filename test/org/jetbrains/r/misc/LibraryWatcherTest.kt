@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.misc
 
+import com.intellij.openapi.vfs.LocalFileSystem
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterTestUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
@@ -25,7 +26,9 @@ class LibraryWatcherTest : RUsefulTestCase() {
     val libraryWatcher = RLibraryWatcher.getInstance(project)
     assertNotEmpty(interpreter.libraryPaths)
 
-    libraryWatcher.registerRootsToWatch(interpreter.libraryPaths)
+    libraryWatcher.registerRootsToWatch(interpreter.libraryPaths.mapNotNull {
+      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
+    })
 
     val atomicInteger = AtomicInteger(0)
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {

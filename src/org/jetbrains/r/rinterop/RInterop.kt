@@ -902,6 +902,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       AsyncEvent.EventCase.SUBPROCESSINPUT -> {
         fireListeners { it.onSubprocessInput() }
       }
+      AsyncEvent.EventCase.BROWSEURLREQUEST -> {
+        fireListeners { it.onBrowseURLRequest(event.browseURLRequest) }
+      }
       AsyncEvent.EventCase.PROMPT -> {
         invalidateCaches()
         isDebug = false
@@ -1172,6 +1175,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onShowHelpRequest(content: String, url: String) {}
     fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> = resolvedPromise()
     fun onSubprocessInput() {}
+    fun onBrowseURLRequest(url: String) {}
   }
 
   companion object {

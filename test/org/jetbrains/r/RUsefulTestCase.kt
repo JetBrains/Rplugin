@@ -162,7 +162,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       rInterpreter.getPackageByName(it)?.run { RPackage(name, version) }
       ?: throw IllegalStateException("No package $it found for $interpreterPath")
     }
-    RSkeletonUtil.generateSkeletons(Collections.singletonMap(SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter, project)
+    RSkeletonUtil.generateSkeletons(Collections.singletonMap(SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter)
   }
 
   private fun missingTestSkeletons(): Set<String> {

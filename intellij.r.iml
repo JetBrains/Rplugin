@@ -21,6 +21,8 @@
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module" module-name="intellij.platform.debugger" />
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
+    <orderEntry type="module" module-name="intellij.remoteRun" />
+    <orderEntry type="module" module-name="intellij.webDeployment" />
     <orderEntry type="library" name="winp" level="project" />
     <orderEntry type="library" name="miglayout-swing" level="project" />
     <orderEntry type="library" name="kotlin-reflect" level="project" />

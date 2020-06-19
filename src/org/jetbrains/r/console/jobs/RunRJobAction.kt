@@ -10,8 +10,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.interpreter.toLocalPathOrNull
-import org.jetbrains.r.settings.RSettings
+import org.jetbrains.r.interpreter.RInterpreterManager
 
 class RunRJobAction : DumbAwareAction() {
   override fun actionPerformed(e: AnActionEvent) {
@@ -21,16 +20,17 @@ class RunRJobAction : DumbAwareAction() {
 
   override fun update(e: AnActionEvent) {
     val project = e.project
-    e.presentation.isEnabled = project?.isDefault == false && RSettings.getInstance(project).interpreterLocation?.toLocalPathOrNull() != null
+    e.presentation.isEnabled = project?.isDefault == false && RInterpreterManager.getInstance(project).hasInterpreter()
   }
 
   companion object {
-    fun showDialog(project: Project) {
+    fun showDialog(project: Project) = RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
       val selectedFile = FileEditorManager.getInstance(project).selectedFiles.firstOrNull()
-      val scriptPath = if (selectedFile?.fileType == RFileType) selectedFile.path else ""
-      val workingDirectory = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
-                             ?: project.basePath ?: ""
-      RRunJobDialog(project, scriptPath, workingDirectory).show()
+      val script= selectedFile?.takeIf { it.fileType == RFileType }
+      val workingDirectory =
+        RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.workingDir?.takeIf { it.isNotEmpty() }
+        ?: interpreter.basePath
+      RRunJobDialog(interpreter, script, workingDirectory).show()
     }
   }
 }

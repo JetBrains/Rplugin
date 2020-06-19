@@ -24,12 +24,15 @@ import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.OperatingSystem
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.util.RPathUtil
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.file.Paths
 import java.util.concurrent.TimeoutException
 
 object RInteropUtil {
@@ -196,6 +199,10 @@ object RInteropUtil {
       .withEnvironment("R_INCLUDE_DIR", paths.include)
       .withEnvironment("R_DOC_DIR", paths.doc)
 
+    if (!interpreter.isLocal()) {
+      command = command.withParameters("--is-remote")
+    }
+
     val crashReportFile: String?
     if (interpreter.isLocal()) {
       val crashpadHandler = getCrashpadHandler(interpreter.hostOS)
@@ -228,7 +235,7 @@ object RInteropUtil {
         command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
       }
       OperatingSystem.WINDOWS -> {
-        command.withEnvironment("PATH", Paths.get(paths.home, "bin", "x64").toString() + ";" + paths.path)
+        command.withEnvironment("PATH", RPathUtil.join(paths.home, "bin", "x64") + ";" + paths.path)
       }
     }
     result.setResult(interpreter.runProcessOnHost(command).apply {
@@ -237,7 +244,7 @@ object RInteropUtil {
     return result
   }
 
-  private fun getRWrapperCrashesDirectory() = Paths.get(PathManager.getLogPath(), "rwrapper-crashes").toFile()
+  private fun getRWrapperCrashesDirectory() = File(RPathUtil.join(PathManager.getLogPath(), "rwrapper-crashes"))
 
   private fun getCrashpadHandler(operatingSystem: OperatingSystem): File {
     return RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix(operatingSystem))
@@ -276,8 +283,8 @@ object RInteropUtil {
   @Synchronized
   private fun updateCrashes(): List<File> {
     val directoryWithDumps = if (SystemInfo.isWindows) "reports" else "pending"
-    val crashes = Paths.get(getRWrapperCrashesDirectory().absolutePath, directoryWithDumps)
-                    .toFile().takeIf { it.exists() }
+    val crashes = File(RPathUtil.join(getRWrapperCrashesDirectory().absolutePath, directoryWithDumps))
+                    .takeIf { it.exists() }
                     ?.listFiles { _, name -> name.endsWith(".dmp") } ?: return emptyList()
     val newCrashes = crashes.filter { !oldCrashes.contains(it.name) }
     oldCrashes.clear()
@@ -299,7 +306,12 @@ object RInteropUtil {
   fun createRInteropForLocalProcess(interpreter: RInterpreter, process: ProcessHandler, port: Int): RInterop {
     val project = interpreter.project
     val rInterop = RInterop(interpreter, process, "127.0.0.1", port, project)
-    val workspaceFile = SessionUtil.getWorkspaceFile(project, interpreter)
+    val workspaceFile = if (ApplicationManager.getApplication().isUnitTestMode) {
+      project.getUserData(WORKSPACE_FILE_FOR_TESTS)
+    } else {
+      val filename = interpreter.interpreterLocation.hashCode().toString()
+      RPathUtil.join(interpreter.basePath, ".RDataFiles", "$filename.RData")
+    }
     val rScriptsPath = RPluginUtil.findFileInRHelpers("R").takeIf { it.exists() }?.absolutePath
                        ?: throw RuntimeException("R Scripts not found")
     val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
@@ -337,4 +349,5 @@ operating systems, but generally includes the following:
 
   private val PROCESS_CRASH_REPORT_FILE = Key<String>("org.jetbrains.r.rinterop.RInteropUtil.crashReportFile")
   val PROCESS_TERMINATED_WITH_REPORT = Key<Boolean>("org.jetbrains.r.rinterop.RInteropUtil.terminatedWithReport")
+  val WORKSPACE_FILE_FOR_TESTS = Key<String>("org.jetbrains.r.rinterop.RInteropUtil.workspaceFileForTests")
 }

@@ -6,10 +6,14 @@ package org.jetbrains.r.mock
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ColoredProcessHandler
+import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
+import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -28,7 +32,9 @@ import java.io.File
 import java.nio.file.Paths
 
 class MockInterpreter(override val project: Project, var provider: MockInterpreterProvider) : RInterpreter {
-  override val interpreterLocation = RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath())
+  private val interpreterPath = RInterpreterUtil.suggestHomePath()
+
+  override val interpreterLocation = RLocalInterpreterLocation(interpreterPath)
 
   override val interpreterName = "test"
 
@@ -59,13 +65,13 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
 
   override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.packageName == name }
 
-  override fun getLibraryPathByName(name: String): VirtualFile? {
+  override fun getLibraryPathByName(name: String): RInterpreter.LibraryPath? {
     throw NotImplementedError()
   }
 
   override fun getProcessOutput(scriptText: String): ProcessOutput? = throw NotImplementedError()
 
-  override val libraryPaths: List<VirtualFile>
+  override val libraryPaths: List<RInterpreter.LibraryPath>
     get() = provider.libraryPaths
 
   override val skeletonsDirectory: String
@@ -110,5 +116,46 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
 
   override fun uploadHelperToHost(helper: File): String {
     return helper.absolutePath
+  }
+
+  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
+    return file.path
+  }
+
+  override fun createFileChooserForHost(value: String, selectFolder: Boolean): TextFieldWithBrowseButton {
+    throw NotImplementedError()
+  }
+
+  override fun createTempFileOnHost(name: String, content: ByteArray?): String {
+    val i = name.indexOfLast { it == '.' }
+    val file = if (i == -1) {
+      FileUtilRt.createTempFile(name, null, true)
+    } else {
+      FileUtilRt.createTempFile(name.substring(0, i), name.substring(i), true)
+    }
+    content?.let { file.writeBytes(it) }
+    return file.path
+  }
+
+  override fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler {
+    val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, script, args)
+    val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, workingDirectory)
+    return OSProcessHandler(commandLine)
+  }
+
+  override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
+    val writable = libraryPaths.find { it.isWritable }
+    return if (writable != null) {
+      Pair(writable.path, false)
+    } else {
+      Pair(userPath, File(userPath).mkdirs())
+    }
+  }
+
+  override fun registersRootsToWatch() {
+    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
+      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
+    })
+    RLibraryWatcher.getInstance(project).refresh()
   }
 }

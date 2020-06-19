@@ -7,10 +7,19 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComponentWithBrowseButton
+import com.intellij.openapi.ui.TextComponentAccessor
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
+import javax.swing.JTextField
 
 class RLocalInterpreterImpl(
   override val interpreterLocation: RLocalInterpreterLocation,
@@ -23,6 +32,12 @@ class RLocalInterpreterImpl(
 
   override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
     return RInterpreterUtil.runHelper(interpreterPath, helper, workingDirectory, args, errorHandler)
+  }
+
+  override fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler {
+    val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, script, args)
+    val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, workingDirectory)
+    return OSProcessHandler(commandLine)
   }
 
   override fun runMultiOutputHelper(helper: File,
@@ -44,6 +59,52 @@ class RLocalInterpreterImpl(
     return ColoredProcessHandler(command.withWorkDirectory(basePath)).apply {
       setShouldDestroyProcessRecursively(true)
     }
+  }
+
+  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
+    return file.path
+  }
+
+  override fun createFileChooserForHost(value: String, selectFolder: Boolean): TextFieldWithBrowseButton {
+    return TextFieldWithBrowseButton().also { component ->
+      component.text = value
+      val descriptor = if (selectFolder) {
+        FileChooserDescriptorFactory.createSingleFolderDescriptor()
+      } else {
+        FileChooserDescriptorFactory.createSingleFileDescriptor()
+      }
+      component.addActionListener(
+        ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>(
+          null, null, component, project, descriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT))
+      FileChooserFactory.getInstance().installFileCompletion(component.textField, descriptor, true, null)
+    }
+  }
+
+  override fun createTempFileOnHost(name: String, content: ByteArray?): String {
+    val i = name.indexOfLast { it == '.' }
+    val file = if (i == -1) {
+      FileUtilRt.createTempFile(name, null, true)
+    } else {
+      FileUtilRt.createTempFile(name.substring(0, i), name.substring(i), true)
+    }
+    content?.let { file.writeBytes(it) }
+    return file.path
+  }
+
+  override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
+    val writable = libraryPaths.find { it.isWritable }
+    return if (writable != null) {
+      Pair(writable.path, false)
+    } else {
+      Pair(userPath, File(userPath).mkdirs())
+    }
+  }
+
+  override fun registersRootsToWatch() {
+    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
+      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
+    })
+    RLibraryWatcher.getInstance(project).refresh()
   }
 
   companion object {

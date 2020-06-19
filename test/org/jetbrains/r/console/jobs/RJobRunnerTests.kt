@@ -10,8 +10,9 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.console.RConsoleBaseTestCase
-import java.io.File
 
 class RJobRunnerTests : RConsoleBaseTestCase() {
 
@@ -79,7 +80,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     waitForTermination(processHandler)
     assertEquals("", output.toString())
     assertEquals("", stderr.toString())
-    val variableName = File(script).nameWithoutExtension + "_results"
+    val variableName = script.nameWithoutExtension + "_results"
     val (stdout, stderr, _) = rInterop.executeCode("cat($variableName${'$'}x + $variableName${'$'}y)")
     assertEquals("3", stdout)
     assertTrue(stderr.isEmpty())
@@ -119,9 +120,9 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
     })
   }
 
-  private fun createScript(text: String): String {
+  private fun createScript(text: String): VirtualFile {
     val tempFile = FileUtil.createTempFile("test", ".R", true)
     tempFile.writeText(text)
-    return tempFile.absolutePath
+    return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(tempFile)!!
   }
 }

@@ -8,6 +8,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -25,7 +26,8 @@ interface RInterpreter : RInterpreterInfo {
 
   val installedPackages: ExpiringList<RInstalledPackage>
 
-  val libraryPaths: List<VirtualFile>
+  data class LibraryPath(val path: String, val isWritable: Boolean)
+  val libraryPaths: List<LibraryPath>
 
   val userLibraryPath: String
 
@@ -33,7 +35,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getPackageByName(name: String): RInstalledPackage?
 
-  fun getLibraryPathByName(name: String): VirtualFile?
+  fun getLibraryPathByName(name: String): LibraryPath?
 
   fun getProcessOutput(scriptText: String): ProcessOutput?
 
@@ -71,6 +73,8 @@ interface RInterpreter : RInterpreterInfo {
 
   fun runProcessOnHost(command: GeneralCommandLine): ProcessHandler
 
+  fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler
+
   /**
    * @param errorHandler if errorHelper is not null, it could be called instead of throwing the exception.
    * @throws RuntimeException if errorHandler is null and the helper exited with non-zero code or produced zero length output.
@@ -89,6 +93,18 @@ interface RInterpreter : RInterpreterInfo {
   fun findLibraryPathBySkeletonPath(skeletonPath: String): String?
 
   fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop
+
+  fun uploadFileToHostIfNeeded(file: VirtualFile): String
+
+  fun createFileChooserForHost(value: String = "", selectFolder: Boolean = false): TextFieldWithBrowseButton
+
+  fun createTempFileOnHost(name: String = "a", content: ByteArray? = null): String
+
+  // Note: returns pair of writable path and indicator whether new library path was created
+  fun getGuaranteedWritableLibraryPath(libraryPaths: List<LibraryPath> = this.libraryPaths,
+                                       userPath: String = userLibraryPath): Pair<String, Boolean>
+
+  fun registersRootsToWatch()
 }
 
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation

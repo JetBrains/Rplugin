@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.console.jobs
 
+import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RBundle
 
 enum class ExportGlobalEnvPolicy {
@@ -18,7 +19,7 @@ enum class ExportGlobalEnvPolicy {
   }
 }
 
-data class RJobTask(val scriptPath: String,
+data class RJobTask(val script: VirtualFile,
                     val workingDirectory: String,
                     val importGlobalEnv: Boolean,
                     val exportGlobalEnv: ExportGlobalEnvPolicy)
