@@ -44,7 +44,7 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
       skeletonFiles.keys.map { RInstalledPackage(it.name, it.version, null, RUsefulTestCase.SKELETON_LIBRARY_PATH, emptyMap()) }) { false }
 
   override val skeletonRoots
-    get() = VfsUtil.findFile(Paths.get(RUsefulTestCase.SKELETON_LIBRARY_PATH), false) ?.let { setOf(it) }.orEmpty()
+    get() = VfsUtil.findFile(Paths.get(RUsefulTestCase.SKELETON_LIBRARY_PATH), true)?.let { setOf(it) }.orEmpty()
 
   override val isUpdating: Boolean
     get() = provider.isUpdating ?: false
