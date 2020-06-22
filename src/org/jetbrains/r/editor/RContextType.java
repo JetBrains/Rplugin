@@ -26,6 +26,6 @@ public class RContextType extends FileTypeBasedContextType {
 
 
     private static boolean isMyLanguage(Language language) {
-      return language.isKindOf(RLanguage.INSTANCE) || language.isKindOf(RLanguage.INSTANCE);
+      return language.isKindOf(RLanguage.INSTANCE);
     }
 }
