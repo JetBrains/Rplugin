@@ -9,9 +9,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.psi.PsiDocumentManager
-import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 /**
@@ -20,8 +18,8 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 interface RPromotedAction
 
 class RActionPromoter : ActionPromoter {
-  override fun promote(actions: MutableList<AnAction>, context: DataContext): List<AnAction> {
-    return if (isRContext(context)) actions.filter { it is RPromotedAction } else emptyList<AnAction>()
+  override fun promote(actions: List<AnAction>, context: DataContext): List<AnAction> {
+    return if (isRContext(context)) actions.filter { it is RPromotedAction } else emptyList()
   }
 
   private fun isRContext(context: DataContext): Boolean {
