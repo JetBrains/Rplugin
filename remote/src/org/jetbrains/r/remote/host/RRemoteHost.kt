@@ -9,11 +9,14 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
+import com.intellij.openapi.util.AtomicClearableLazyValue
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.remote.RemoteCredentials
 import com.intellij.ssh.ExecBuilder
+import com.intellij.ssh.SessionConfig
 import com.intellij.ssh.SftpChannelConfig
 import com.intellij.ssh.SshConnectionService
 import com.intellij.ssh.channels.SftpChannel
@@ -35,34 +38,29 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
-  val configId = sshConfig.id
-  val credentials get() = sshConfig.copyToCredentials()
-  val sessionConfig
-    get() = remoteCredentialsToSessionConfig(credentials, DEFAULT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS, null, null)
+  lateinit var configId: String
+    private set
+  lateinit var credentials: RemoteCredentials
+    private set
+  lateinit var sessionConfig: SessionConfig
+    private set
+  lateinit var config: CredentialsDeployable
+    private set
 
   private val uploadedHelpers = mutableMapOf<String, AsyncPromise<String>>()
 
-  val operatingSystem: OperatingSystem by lazy {
-    val unameResult = ExecBuilder(sessionConfig, "uname -s").execute()
-      .inputStream.bufferedReader().readText().trim().toLowerCase()
-    when (unameResult) {
-      "linux" -> OperatingSystem.LINUX
-      "darwin" -> OperatingSystem.MAC_OS
-      else -> OperatingSystem.WINDOWS
-    }
-  }
-
-  val config get() = object : CredentialsDeployable(credentials) {
-    override fun getRootNodePresentableDescription(showRootFolder: Boolean) = presentableName
-
-    override fun refreshCredentials() {
-      super.refreshCredentials()
-      sshUiData?.let {
-        it.loadFromCredentials(this@RRemoteHost.credentials)
-        server.fileTransferConfig.setSshConfig(it.config)
+  private val operatingSystemValue = object : AtomicClearableLazyValue<OperatingSystem>() {
+    override fun compute(): OperatingSystem {
+      val unameResult = ExecBuilder(sessionConfig, "uname -s").execute()
+        .inputStream.bufferedReader().readText().trim().toLowerCase()
+      return when (unameResult) {
+        "linux" -> OperatingSystem.LINUX
+        "darwin" -> OperatingSystem.MAC_OS
+        else -> OperatingSystem.WINDOWS
       }
     }
-  }.also { it.name = presentableName; it.id = configId }
+  }
+  val operatingSystem get() = operatingSystemValue.value
 
   val presentableName: String
     get() {
@@ -77,21 +75,56 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
       return s.toString()
     }
 
-  val remoteBasePath: String by lazy {
-    useSftpChannel {  channel ->
-      val home = channel.home.let { if (operatingSystem == OperatingSystem.WINDOWS && it.startsWith('/')) it.substring(1) else it }
-      RPathUtil.join(home, "jetbrains_rplugin")
+  private val remoteBasePathValue = object : AtomicClearableLazyValue<String>() {
+    override fun compute(): String {
+      return useSftpChannel {  channel ->
+        val home = channel.home.let { if (operatingSystem == OperatingSystem.WINDOWS && it.startsWith('/')) it.substring(1) else it }
+        RPathUtil.join(home, "jetbrains_rplugin")
+      }
     }
   }
-  val remoteHelpersRoot: String by lazy { useSftpChannel { RPathUtil.join(remoteBasePath, "helpers") } }
-  private val remoteTempDir: String by lazy {
-    if (operatingSystem == OperatingSystem.WINDOWS) {
-      ExecBuilder(sessionConfig, "echo %Temp%").execute()
-        .inputStream.bufferedReader().readText().trim()
-        .replace('\\', '/')
-    } else {
-      "/tmp"
+  val remoteBasePath get() = remoteBasePathValue.value
+
+  val remoteHelpersRoot: String
+    get() = RPathUtil.join(remoteBasePath, "helpers")
+
+  private val remoteTempDirValue = object : AtomicClearableLazyValue<String>() {
+    override fun compute(): String {
+      return if (operatingSystem == OperatingSystem.WINDOWS) {
+        ExecBuilder(sessionConfig, "echo %Temp%").execute()
+          .inputStream.bufferedReader().readText().trim()
+          .replace('\\', '/')
+      } else {
+        "/tmp"
+      }
     }
+  }
+  private val remoteTempDir get() = remoteTempDirValue.value
+
+  init {
+    refresh()
+  }
+
+  internal fun refresh() {
+    configId = sshConfig.id
+    credentials = sshConfig.copyToCredentials()
+    sessionConfig = remoteCredentialsToSessionConfig(credentials, DEFAULT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS,
+                                                     null, null)
+    synchronized(uploadedHelpers) { uploadedHelpers.clear() }
+    config = object : CredentialsDeployable(credentials) {
+      override fun getRootNodePresentableDescription(showRootFolder: Boolean) = presentableName
+
+      override fun refreshCredentials() {
+        super.refreshCredentials()
+        sshUiData?.let {
+          it.loadFromCredentials(this@RRemoteHost.credentials)
+          server.fileTransferConfig.setSshConfig(it.config)
+        }
+      }
+    }.also { it.name = presentableName; it.id = configId }
+    operatingSystemValue.drop()
+    remoteBasePathValue.drop()
+    remoteTempDirValue.drop()
   }
 
   inline fun <T> useSftpChannel(f: (SftpChannel) -> T): T {
