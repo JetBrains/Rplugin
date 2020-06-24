@@ -143,6 +143,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
           toolWindow.hide()
         }
       })
+      content.setPreferredFocusedComponent(contentDescriptor.preferredFocusComputable)
       content.putUserData(CONSOLE_CONTENT_KEY, Unit)
       val indexOfPlaceholder = contentManager.contents.indexOfFirst { isPlaceholder(it) }
       if (indexOfPlaceholder >= 0) {
