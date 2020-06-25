@@ -4,6 +4,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ssh.SftpChannelConfig
+import com.intellij.ssh.SftpChannelException
 import com.intellij.ssh.SshConnectionService
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.concurrency.await
@@ -56,7 +57,10 @@ private object RRemoteFileStrategy : JupyterRemoteFileStrategy {
   override suspend fun fetchIntoLocalFile(remotePath: JupyterRemotePath, localPath: Path) {
     val (host, path) = RRemoteVFS.getHostAndPath(remotePath) ?: return
     runAsync {
-      host.useSftpChannel { it.downloadFileOrDir(path, localPath.toString()) }
+      try {
+        host.useSftpChannel { it.downloadFileOrDir(path, localPath.toString()) }
+      } catch (_: SftpChannelException) {
+      }
     }.await()
   }
 
