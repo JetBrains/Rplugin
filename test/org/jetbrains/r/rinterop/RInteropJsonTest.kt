@@ -19,10 +19,8 @@ class RInteropJsonTest : RProcessHandlerBaseTestCase() {
   override fun setUp() {
     super.setUp()
     val initPathReplacer = InitPathReplacer(myFixture.project, RPluginUtil.findFileInRHelpers("R").absolutePath)
-    val graphicsPathReplacer = GraphicsPathReplacer(myFixture.project, myFixture.tempDirPath)
     val htmlPathReplacer = HtmlPathReplacer(myFixture.project, FileUtil.createTempFile("", "urls.txt", true).absolutePath)
     pathReplacers.add(initPathReplacer)
-    pathReplacers.add(graphicsPathReplacer)
     pathReplacers.add(htmlPathReplacer)
     grpcTester = GRPCTester(testDataPath + "/grpc/" + getTestName(true) + ".json.xz", rInterop, pathReplacers)
   }
