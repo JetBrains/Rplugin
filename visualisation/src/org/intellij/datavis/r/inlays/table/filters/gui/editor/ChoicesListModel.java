@@ -342,7 +342,7 @@ public class ChoicesListModel extends AbstractListModel
     }
 
     /** Comparator to compare Wrappers by their string member. */
-    static private class ChoiceTextComparator implements Comparator<Choice> {
+    static private final class ChoiceTextComparator implements Comparator<Choice> {
 
         private final Comparator<String> stringComparator;
 

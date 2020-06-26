@@ -21,7 +21,7 @@ import org.jetbrains.r.psi.api.RPsiElement;
 /**
  * @author brandl
  */
-public class RElementFactory {
+public final class RElementFactory {
   private static Logger ourLogger = Logger.getInstance(RElementFactory.class);
 
   private RElementFactory() {

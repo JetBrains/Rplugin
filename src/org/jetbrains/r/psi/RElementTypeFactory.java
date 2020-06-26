@@ -8,7 +8,7 @@ package org.jetbrains.r.psi;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
-public class RElementTypeFactory {
+public final class RElementTypeFactory {
     private RElementTypeFactory() {
     }
 
