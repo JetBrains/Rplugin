@@ -76,13 +76,6 @@ class InitPathReplacer(private val project: Project, private val rScriptPath: St
   }
 }
 
-class GraphicsPathReplacer(private val project: Project, private val snapshotDirectory: String) : PathReplacer {
-  override fun replace(methodName: String, request: GeneratedMessageV3): GeneratedMessageV3? {
-    if (methodName != "graphicsInit" || request !is GraphicsInitRequest) return null
-    return GraphicsInitRequest.newBuilder(request).setSnapshotDirectory(snapshotDirectory).build()
-  }
-}
-
 class HtmlPathReplacer(private val project: Project, private val fileForUrls: String) : PathReplacer {
   override fun replace(methodName: String, request: GeneratedMessageV3): GeneratedMessageV3? {
     if (methodName != "htmlViewerInit") return null

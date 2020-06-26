@@ -4,12 +4,15 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
+import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.RGraphicsDevice
+import org.jetbrains.r.run.graphics.RGraphicsRepository
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.Dimension
@@ -26,6 +29,7 @@ import kotlin.math.max
 class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   private lateinit var shadowDirectory: File
   private lateinit var graphicsDevice: RGraphicsDevice
+  private lateinit var graphicsManager: ChunkGraphicsManager
   private lateinit var graphicsHandler: UpdateGraphicsHandler
   private val expectedSnapshotDirectoryPath = File("testData").absolutePath
 
@@ -36,10 +40,12 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     super.setUp()
     val screenDimension = DEFAULT_DIMENSION
     graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
+    RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
     graphicsDevice.addListener { update ->
       currentSnapshots = update
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
+    graphicsManager = ChunkGraphicsManager(project)
     currentSnapshots = null
 
     // Shadow directory for snapshots produced by current implementation
@@ -95,6 +101,18 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     }
   }
 
+  fun testRescaleGroupPlot() {
+    runAndCheckRescaleGroup(PLOT_DRAWER, NON_DISTORTING_DIMENSIONS)
+  }
+
+  fun testRescaleGroupPoints() {
+    runAndCheckRescaleGroup(POINTS_DRAWER, NON_DISTORTING_DIMENSIONS)
+  }
+
+  fun testRescaleGroupGgPlot() {
+    runAndCheckRescaleGroup(GGPLOT_DRAWER, DISTORTING_DIMENSIONS)
+  }
+
   private fun runAndGetSnapshot(commands: List<String>): RSnapshot {
     return runAndGetAllSnapshots(commands).last()
   }
@@ -130,6 +148,35 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
       val snapshot = rescaleAndGetSnapshot(originalSnapshot.number, dimension)
       val suffix = "${drawerInfo.name}_${dimension.width}_${dimension.height}"
       checkSimilar(snapshot, drawerInfo.expectedIndex, getRescaleCandidates(dimension), suffix)
+    }
+  }
+
+  private fun runAndCheckRescaleGroup(drawerInfo: DrawerInfo, dimensions: List<Dimension>) {
+    val originalSnapshot = runAndGetSnapshot(drawerInfo.commands)
+    val (copy, group) = createImageGroup(originalSnapshot)
+    try {
+      for (dimension in dimensions) {
+        rescaleImage(copy, dimension)
+        val snapshot = getLastSnapshot()
+        val suffix = "${drawerInfo.name}_${dimension.width}_${dimension.height}_stored"
+        checkSimilar(snapshot, drawerInfo.expectedIndex, getRescaleCandidates(dimension), suffix)
+      }
+    } finally {
+      group.dispose()
+    }
+  }
+
+  private fun createImageGroup(snapshot: RSnapshot): Pair<File, Disposable> {
+    val result = graphicsManager.createImageGroup(snapshot.file.absolutePath)
+    TestCase.assertNotNull(result)
+    return result!!
+  }
+
+  private fun rescaleImage(file: File, dimension: Dimension) {
+    graphicsManager.rescaleImage(file.absolutePath, dimension) { rescaled ->
+      val snapshot = RSnapshot.from(rescaled)
+      TestCase.assertNotNull(snapshot)
+      currentSnapshots = listOf(snapshot!!)
     }
   }
 
