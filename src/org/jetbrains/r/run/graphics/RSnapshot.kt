@@ -5,6 +5,7 @@
 package org.jetbrains.r.run.graphics
 
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Paths
 
 enum class RSnapshotType {
@@ -37,14 +38,35 @@ data class RSnapshot(
    */
   val resolution: Int?
 ) {
+  private val recordedFileName: String
+    get() = "recorded_${number}.snapshot"
+
   val recordedFile: File
-    get() = Paths.get(file.parent, "recorded_${number}.snapshot").toFile()
+    get() = Paths.get(file.parent, recordedFileName).toFile()
+
+  fun createRecordedFile(recorded: ByteArray) {
+    createFileWith(recorded, recordedFileName, file.parentFile)
+  }
 
   companion object {
     // Note: for goodness' sake, don't move these literals to bundle!
     private const val SNAPSHOT_MAGIC = "snapshot"
     private const val NORMAL_SUFFIX = "normal"
     private const val SKETCH_SUFFIX = "sketch"
+
+    /**
+     * Create a snapshot file (or overwrite an old one) with [content] within a specified [directory].
+     */
+    fun from(content: ByteArray, name: String, directory: File): RSnapshot? {
+      val file = createFileWith(content, name, directory)
+      return from(file)
+    }
+
+    private fun createFileWith(content: ByteArray, name: String, directory: File): File {
+      val path = Paths.get(directory.absolutePath, name)
+      Files.write(path, content)
+      return path.toFile()
+    }
 
     fun from(file: File): RSnapshot? {
       val parts = file.nameWithoutExtension.split('_')

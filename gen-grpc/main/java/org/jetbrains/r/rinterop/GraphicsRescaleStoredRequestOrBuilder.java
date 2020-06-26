@@ -8,14 +8,14 @@ public interface GraphicsRescaleStoredRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string parentDirectory = 1;</code>
+   * <code>string groupId = 1;</code>
    */
-  java.lang.String getParentDirectory();
+  java.lang.String getGroupId();
   /**
-   * <code>string parentDirectory = 1;</code>
+   * <code>string groupId = 1;</code>
    */
   com.google.protobuf.ByteString
-      getParentDirectoryBytes();
+      getGroupIdBytes();
 
   /**
    * <code>int32 snapshotNumber = 2;</code>

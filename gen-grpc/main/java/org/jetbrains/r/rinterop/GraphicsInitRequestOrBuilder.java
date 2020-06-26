@@ -8,30 +8,20 @@ public interface GraphicsInitRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string snapshotDirectory = 1;</code>
-   */
-  java.lang.String getSnapshotDirectory();
-  /**
-   * <code>string snapshotDirectory = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getSnapshotDirectoryBytes();
-
-  /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   boolean hasScreenParameters();
   /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   org.jetbrains.r.rinterop.ScreenParameters getScreenParameters();
   /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   org.jetbrains.r.rinterop.ScreenParametersOrBuilder getScreenParametersOrBuilder();
 
   /**
-   * <code>bool inMemory = 3;</code>
+   * <code>bool inMemory = 2;</code>
    */
   boolean getInMemory();
 }

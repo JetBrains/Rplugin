@@ -482,10 +482,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun debugMuteBreakpoints(mute: Boolean) = executeTask {
     execute(asyncStub::debugMuteBreakpoints, BoolValue.of(mute))
   }
-  fun graphicsInit(properties: RGraphicsUtils.InitProperties, inMemory: Boolean): RIExecutionResult {
-    val screenParametersMessage = buildScreenParametersMessage(properties.screenParameters)
+
+  fun graphicsInit(parameters: RGraphicsUtils.ScreenParameters, inMemory: Boolean): RIExecutionResult {
+    val screenParametersMessage = buildScreenParametersMessage(parameters)
     val request = GraphicsInitRequest.newBuilder()
-      .setSnapshotDirectory(properties.snapshotDirectory)
       .setScreenParameters(screenParametersMessage)
       .setInMemory(inMemory)
       .build()
@@ -506,14 +506,14 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun graphicsRescaleStored(
-    parentDirectory: String,
+    groupId: String,
     snapshotNumber: Int,
     snapshotVersion: Int,
     newParameters: RGraphicsUtils.ScreenParameters
   ): RIExecutionResult {
     val newParametersMessage = buildScreenParametersMessage(newParameters)
     val request = GraphicsRescaleStoredRequest.newBuilder()
-      .setParentDirectory(parentDirectory)
+      .setGroupId(groupId)
       .setSnapshotNumber(snapshotNumber)
       .setSnapshotVersion(snapshotVersion)
       .setNewParameters(newParametersMessage)
@@ -527,6 +527,58 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .setHeight(parameters.height)
       .setResolution(parameters.resolution ?: -1)
       .build()
+  }
+
+  fun graphicsPullChangedNumbers(): List<Int>? {
+    val response = executeWithCheckCancel(asyncStub::graphicsPullChangedNumbers, Empty.getDefaultInstance())
+    if (response.message.isNotBlank()) {
+      throw RuntimeException(response.message)
+    }
+    return response.valueList.takeIf { it.isNotEmpty() }
+  }
+
+  class GraphicsPullResponse(val name: String, val content: ByteArray, val recorded: ByteArray? = null)
+
+  fun graphicsPullInMemorySnapshot(number: Int, withRecorded: Boolean): GraphicsPullResponse {
+    return graphicsPullSnapshot(number, withRecorded = withRecorded)
+  }
+
+  fun graphicsPullStoredSnapshot(number: Int, groupId: String): GraphicsPullResponse {
+    return graphicsPullSnapshot(number, groupId = groupId)
+  }
+
+  private fun graphicsPullSnapshot(number: Int, groupId: String = "", withRecorded: Boolean = false): GraphicsPullResponse {
+    val request = GraphicsPullSnapshotRequest.newBuilder()
+      .setWithRecorded(withRecorded)
+      .setSnapshotNumber(number)
+      .setGroupId(groupId)
+      .build()
+    val response = executeWithCheckCancel(asyncStub::graphicsPullSnapshot, request)
+    if (response.message.isNotBlank()) {
+      throw RuntimeException(response.message)
+    }
+    val recordedContent = response.recorded.takeIf { !it.isEmpty }?.toByteArray()
+    return GraphicsPullResponse(response.snapshotName, response.content.toByteArray(), recordedContent)
+  }
+
+  fun graphicsPushSnapshot(groupId: String, number: Int, recorded: ByteArray) {
+    val request = GraphicsPushSnapshotRequest.newBuilder()
+      .setRecorded(ByteString.copyFrom(recorded))
+      .setSnapshotNumber(number)
+      .setGroupId(groupId)
+      .build()
+    val response = executeWithCheckCancel(asyncStub::graphicsPushSnapshot, request)
+    if (response.value.isNotBlank()) {
+      throw RuntimeException(response.value)
+    }
+  }
+
+  fun graphicsCreateGroup(): RIExecutionResult {
+    return executeRequest(RPIServiceGrpc.getGraphicsCreateGroupMethod(), Empty.getDefaultInstance())
+  }
+
+  fun graphicsRemoveGroup(groupId: String): RIExecutionResult {
+    return executeRequest(RPIServiceGrpc.getGraphicsRemoveGroupMethod(), StringValue.of(groupId))
   }
 
   fun graphicsShutdown(): RIExecutionResult {

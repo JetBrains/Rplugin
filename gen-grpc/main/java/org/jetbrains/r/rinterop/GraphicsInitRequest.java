@@ -16,7 +16,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private GraphicsInitRequest() {
-    snapshotDirectory_ = "";
   }
 
   @java.lang.Override
@@ -50,12 +49,6 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            snapshotDirectory_ = s;
-            break;
-          }
-          case 18: {
             org.jetbrains.r.rinterop.ScreenParameters.Builder subBuilder = null;
             if (screenParameters_ != null) {
               subBuilder = screenParameters_.toBuilder();
@@ -68,7 +61,7 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 24: {
+          case 16: {
 
             inMemory_ = input.readBool();
             break;
@@ -105,65 +98,31 @@ private static final long serialVersionUID = 0L;
             org.jetbrains.r.rinterop.GraphicsInitRequest.class, org.jetbrains.r.rinterop.GraphicsInitRequest.Builder.class);
   }
 
-  public static final int SNAPSHOTDIRECTORY_FIELD_NUMBER = 1;
-  private volatile java.lang.Object snapshotDirectory_;
-  /**
-   * <code>string snapshotDirectory = 1;</code>
-   */
-  public java.lang.String getSnapshotDirectory() {
-    java.lang.Object ref = snapshotDirectory_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      snapshotDirectory_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string snapshotDirectory = 1;</code>
-   */
-  public com.google.protobuf.ByteString
-      getSnapshotDirectoryBytes() {
-    java.lang.Object ref = snapshotDirectory_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      snapshotDirectory_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int SCREENPARAMETERS_FIELD_NUMBER = 2;
+  public static final int SCREENPARAMETERS_FIELD_NUMBER = 1;
   private org.jetbrains.r.rinterop.ScreenParameters screenParameters_;
   /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   public boolean hasScreenParameters() {
     return screenParameters_ != null;
   }
   /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   public org.jetbrains.r.rinterop.ScreenParameters getScreenParameters() {
     return screenParameters_ == null ? org.jetbrains.r.rinterop.ScreenParameters.getDefaultInstance() : screenParameters_;
   }
   /**
-   * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+   * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
   public org.jetbrains.r.rinterop.ScreenParametersOrBuilder getScreenParametersOrBuilder() {
     return getScreenParameters();
   }
 
-  public static final int INMEMORY_FIELD_NUMBER = 3;
+  public static final int INMEMORY_FIELD_NUMBER = 2;
   private boolean inMemory_;
   /**
-   * <code>bool inMemory = 3;</code>
+   * <code>bool inMemory = 2;</code>
    */
   public boolean getInMemory() {
     return inMemory_;
@@ -183,14 +142,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getSnapshotDirectoryBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, snapshotDirectory_);
-    }
     if (screenParameters_ != null) {
-      output.writeMessage(2, getScreenParameters());
+      output.writeMessage(1, getScreenParameters());
     }
     if (inMemory_ != false) {
-      output.writeBool(3, inMemory_);
+      output.writeBool(2, inMemory_);
     }
     unknownFields.writeTo(output);
   }
@@ -201,16 +157,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getSnapshotDirectoryBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, snapshotDirectory_);
-    }
     if (screenParameters_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getScreenParameters());
+        .computeMessageSize(1, getScreenParameters());
     }
     if (inMemory_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(3, inMemory_);
+        .computeBoolSize(2, inMemory_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -227,8 +180,6 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.GraphicsInitRequest other = (org.jetbrains.r.rinterop.GraphicsInitRequest) obj;
 
-    if (!getSnapshotDirectory()
-        .equals(other.getSnapshotDirectory())) return false;
     if (hasScreenParameters() != other.hasScreenParameters()) return false;
     if (hasScreenParameters()) {
       if (!getScreenParameters()
@@ -247,8 +198,6 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + SNAPSHOTDIRECTORY_FIELD_NUMBER;
-    hash = (53 * hash) + getSnapshotDirectory().hashCode();
     if (hasScreenParameters()) {
       hash = (37 * hash) + SCREENPARAMETERS_FIELD_NUMBER;
       hash = (53 * hash) + getScreenParameters().hashCode();
@@ -389,8 +338,6 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      snapshotDirectory_ = "";
-
       if (screenParametersBuilder_ == null) {
         screenParameters_ = null;
       } else {
@@ -425,7 +372,6 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.jetbrains.r.rinterop.GraphicsInitRequest buildPartial() {
       org.jetbrains.r.rinterop.GraphicsInitRequest result = new org.jetbrains.r.rinterop.GraphicsInitRequest(this);
-      result.snapshotDirectory_ = snapshotDirectory_;
       if (screenParametersBuilder_ == null) {
         result.screenParameters_ = screenParameters_;
       } else {
@@ -480,10 +426,6 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.GraphicsInitRequest other) {
       if (other == org.jetbrains.r.rinterop.GraphicsInitRequest.getDefaultInstance()) return this;
-      if (!other.getSnapshotDirectory().isEmpty()) {
-        snapshotDirectory_ = other.snapshotDirectory_;
-        onChanged();
-      }
       if (other.hasScreenParameters()) {
         mergeScreenParameters(other.getScreenParameters());
       }
@@ -519,86 +461,17 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object snapshotDirectory_ = "";
-    /**
-     * <code>string snapshotDirectory = 1;</code>
-     */
-    public java.lang.String getSnapshotDirectory() {
-      java.lang.Object ref = snapshotDirectory_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        snapshotDirectory_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
-    }
-    /**
-     * <code>string snapshotDirectory = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getSnapshotDirectoryBytes() {
-      java.lang.Object ref = snapshotDirectory_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        snapshotDirectory_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string snapshotDirectory = 1;</code>
-     */
-    public Builder setSnapshotDirectory(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      snapshotDirectory_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string snapshotDirectory = 1;</code>
-     */
-    public Builder clearSnapshotDirectory() {
-      
-      snapshotDirectory_ = getDefaultInstance().getSnapshotDirectory();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string snapshotDirectory = 1;</code>
-     */
-    public Builder setSnapshotDirectoryBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      snapshotDirectory_ = value;
-      onChanged();
-      return this;
-    }
-
     private org.jetbrains.r.rinterop.ScreenParameters screenParameters_;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.ScreenParameters, org.jetbrains.r.rinterop.ScreenParameters.Builder, org.jetbrains.r.rinterop.ScreenParametersOrBuilder> screenParametersBuilder_;
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public boolean hasScreenParameters() {
       return screenParametersBuilder_ != null || screenParameters_ != null;
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public org.jetbrains.r.rinterop.ScreenParameters getScreenParameters() {
       if (screenParametersBuilder_ == null) {
@@ -608,7 +481,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public Builder setScreenParameters(org.jetbrains.r.rinterop.ScreenParameters value) {
       if (screenParametersBuilder_ == null) {
@@ -624,7 +497,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public Builder setScreenParameters(
         org.jetbrains.r.rinterop.ScreenParameters.Builder builderForValue) {
@@ -638,7 +511,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public Builder mergeScreenParameters(org.jetbrains.r.rinterop.ScreenParameters value) {
       if (screenParametersBuilder_ == null) {
@@ -656,7 +529,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public Builder clearScreenParameters() {
       if (screenParametersBuilder_ == null) {
@@ -670,7 +543,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public org.jetbrains.r.rinterop.ScreenParameters.Builder getScreenParametersBuilder() {
       
@@ -678,7 +551,7 @@ private static final long serialVersionUID = 0L;
       return getScreenParametersFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     public org.jetbrains.r.rinterop.ScreenParametersOrBuilder getScreenParametersOrBuilder() {
       if (screenParametersBuilder_ != null) {
@@ -689,7 +562,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.ScreenParameters screenParameters = 2;</code>
+     * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.ScreenParameters, org.jetbrains.r.rinterop.ScreenParameters.Builder, org.jetbrains.r.rinterop.ScreenParametersOrBuilder> 
@@ -707,13 +580,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean inMemory_ ;
     /**
-     * <code>bool inMemory = 3;</code>
+     * <code>bool inMemory = 2;</code>
      */
     public boolean getInMemory() {
       return inMemory_;
     }
     /**
-     * <code>bool inMemory = 3;</code>
+     * <code>bool inMemory = 2;</code>
      */
     public Builder setInMemory(boolean value) {
       
@@ -722,7 +595,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool inMemory = 3;</code>
+     * <code>bool inMemory = 2;</code>
      */
     public Builder clearInMemory() {
       

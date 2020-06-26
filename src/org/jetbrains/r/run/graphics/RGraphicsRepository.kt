@@ -7,6 +7,7 @@ package org.jetbrains.r.run.graphics
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import java.io.File
 
 class RGraphicsRepository(private val project: Project) {
@@ -66,9 +67,16 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun rescale(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
+  fun rescale(snapshot: RSnapshot, group: RDeviceGroup, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
     notNullDevicePromise.onSuccess {
-      currentDevice?.rescale(snapshot, newParameters, onRescale)
+      currentDevice?.rescale(snapshot, group, newParameters, onRescale)
+    }
+  }
+
+  @Synchronized
+  fun createDeviceGroupAsync(snapshot: RSnapshot): Promise<RDeviceGroup> {
+    return notNullDevicePromise.thenAsync {
+      currentDevice?.createDeviceGroupAsync(snapshot)
     }
   }
 

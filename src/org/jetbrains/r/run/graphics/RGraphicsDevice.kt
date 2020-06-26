@@ -6,22 +6,24 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.rejectedPromise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 
 class RGraphicsDevice(
   private val rInterop: RInterop,
-  private val tracedDirectory: File,
+  private val shadowDirectory: File,
   initialParameters: RGraphicsUtils.ScreenParameters,
   inMemory: Boolean
 ) {
 
   private var lastNormal = emptyList<RSnapshot>()
 
-  private val numbers2parameters = mutableMapOf<Int, RGraphicsUtils.ScreenParameters>()
+  private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
   private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
 
@@ -32,7 +34,7 @@ class RGraphicsDevice(
     set(value) {
       field = value
       value.snapshotNumber?.let { number ->
-        numbers2parameters[number]?.let { previousParameters ->
+        number2SnapshotInfos[number]?.parameters?.let { previousParameters ->
           val newParameters = value.screenParameters
           if (previousParameters != newParameters) {
             rescale(number, newParameters)
@@ -42,9 +44,8 @@ class RGraphicsDevice(
     }
 
   init {
-    val path = tracedDirectory.absolutePath
-    val initProperties = RGraphicsUtils.calculateInitProperties(path, initialParameters)
-    val result = rInterop.graphicsInit(initProperties, inMemory)
+    val parameters = RGraphicsUtils.calculateInitParameters(initialParameters)
+    val result = rInterop.graphicsInit(parameters, inMemory)
     val stderr = result.stderr
     if (stderr.isNotBlank()) {
       devicePromise.setError(stderr)
@@ -64,14 +65,14 @@ class RGraphicsDevice(
 
   fun clearSnapshot(number: Int) {
     lastNormal = removeSnapshotByNumber(lastNormal, number)
-    numbers2parameters.remove(number)
+    number2SnapshotInfos.remove(number)
     notifyListenersOnUpdate()
   }
 
   fun clearAllSnapshots() {
     deleteSnapshots(lastNormal, true)
     lastNormal = listOf()
-    numbers2parameters.clear()
+    number2SnapshotInfos.clear()
     for (listener in listeners) {
       listener(lastUpdate)
     }
@@ -90,19 +91,47 @@ class RGraphicsDevice(
     listeners.remove(listener)
   }
 
-  fun rescale(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
-    val parentDirectory = snapshot.file.parentFile
+  fun createDeviceGroupAsync(snapshot: RSnapshot): Promise<RDeviceGroup> {
+    if (!rInterop.isAlive) {
+      return rejectedPromise("Interop has already terminated")
+    }
+    val promise = createEmptyGroupAsync().then { groupId ->
+      val recorded = snapshot.recordedFile.readBytes()
+      rInterop.graphicsPushSnapshot(groupId, snapshot.number, recorded)
+      RDeviceGroup(groupId, rInterop)
+    }
+    return promise.onError { e ->
+      LOGGER.error("Cannot create device group", e)
+    }
+  }
+
+  private fun createEmptyGroupAsync() = runAsync {
+    val result = rInterop.graphicsCreateGroup()
+    if (result.stderr.isNotBlank()) {
+      throw RuntimeException("Cannot create empty group. Stderr was:\n${result.stderr}")
+    }
+    extractGroupIdFrom(result.stdout)
+  }
+
+  private fun extractGroupIdFrom(stdout: String): String {
+    // "[1] 'groupId'\n"
+    if (stdout.length < 8) {
+      throw RuntimeException("Unexpected output from interop:\n$stdout")
+    }
+    return stdout.substring(5, stdout.length - 2)
+  }
+
+  fun rescale(snapshot: RSnapshot, group: RDeviceGroup, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
     rescale(newParameters, object : RescaleStrategy {
-      override val hint = "Recorded snapshot at '${snapshot.file}'"
+      override val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
 
       override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
-        val directoryPath = FileUtil.toSystemIndependentName(parentDirectory.absolutePath)
-        return interop.graphicsRescaleStored(directoryPath, snapshot.number, snapshot.version, parameters)
+        return interop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
       }
 
       override fun onSuccessfulRescale() {
-        fetchLatestNormalSnapshots(parentDirectory)?.find { it.number == snapshot.number && it.version > snapshot.version }?.let { snapshot ->
-          onRescale(snapshot.file)
+        pullStoredSnapshot(snapshot, group.id, hint)?.let { pulled ->
+          onRescale(pulled.file)
         }
       }
     })
@@ -110,7 +139,7 @@ class RGraphicsDevice(
 
   private fun rescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters) {
     rescale(newParameters, object : RescaleStrategy {
-      override val hint = if (snapshotNumber != null) "In-Memory snapshot #${snapshotNumber}" else "Last in-memory snapshots"
+      override val hint = createHintFor(snapshotNumber)
 
       override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
         return interop.graphicsRescale(snapshotNumber, parameters)
@@ -146,29 +175,58 @@ class RGraphicsDevice(
   }
 
   private fun lookForNewSnapshots(tracedSnapshotNumber: Int?) {
-    fetchLatestSnapshots(tracedDirectory)?.let { type2snapshots ->
-      val normal = type2snapshots[RSnapshotType.NORMAL] ?: listOf()
-      if (checkUpdated(normal)) {
-        traceUpdatedSnapshots(normal)
-        lastNormal = normal
+    try {
+      rInterop.graphicsPullChangedNumbers()?.let { numbers ->
+        pullAndUpdateInMemorySnapshots(numbers)
+        lastNormal = collectLatestSnapshots()
         postSnapshotNumber(tracedSnapshotNumber)
         notifyListenersOnUpdate()
+      }
+    } catch (e: Exception) {
+      LOGGER.error("Cannot pull numbers of rescaled snapshots", e)
+    }
+  }
+
+  private fun collectLatestSnapshots(): List<RSnapshot> {
+    return number2SnapshotInfos.values.map { it.snapshot }.sortedBy { it.number }
+  }
+
+  private fun pullAndUpdateInMemorySnapshots(numbers: List<Int>) {
+    for (number in numbers) {
+      pullInMemorySnapshot(number)?.let { snapshot ->
+        val snapshotInfo = SnapshotInfo(snapshot, configuration.screenParameters)
+        number2SnapshotInfos[number] = snapshotInfo
       }
     }
   }
 
-  private fun traceUpdatedSnapshots(mostRecentNormal: List<RSnapshot>) {
-    val latestIdentities = mostRecentNormal.toIdentities().toSet()
-    val notTracedIdentities = latestIdentities.minus(lastNormal.toIdentities())
-    for (identity in notTracedIdentities) {
-      numbers2parameters[identity.first] = configuration.screenParameters
+  private fun pullInMemorySnapshot(number: Int): RSnapshot? {
+    val previous = number2SnapshotInfos[number]?.snapshot
+    return pullSnapshotTo(shadowDirectory, createHintFor(number), previous) {
+      val withRecorded = !number2SnapshotInfos.containsKey(number)
+      rInterop.graphicsPullInMemorySnapshot(number, withRecorded)
     }
   }
 
-  private fun checkUpdated(snapshots: List<RSnapshot>): Boolean {
-    val lastIdentities = lastNormal.map { Pair(it.number, it.version) }
-    val currentIdentities = snapshots.map { Pair(it.number, it.version) }
-    return lastIdentities != currentIdentities
+  private fun pullStoredSnapshot(previous: RSnapshot, groupId: String, hint: String): RSnapshot? {
+    return pullSnapshotTo(previous.file.parentFile, hint, previous) {
+      rInterop.graphicsPullStoredSnapshot(previous.number, groupId)
+    }
+  }
+
+  private fun pullSnapshotTo(directory: File, hint: String, previous: RSnapshot?, task: () -> RInterop.GraphicsPullResponse): RSnapshot? {
+    return try {
+      val response = task()
+      RSnapshot.from(response.content, response.name, directory)?.also { snapshot ->
+        response.recorded?.let { recorded ->
+          snapshot.createRecordedFile(recorded)
+        }
+        previous?.file?.delete()
+      }
+    } catch (e: Error) {
+      LOGGER.error("Cannot pull <$hint>", e)
+      null
+    }
   }
 
   private fun postSnapshotNumber(number: Int?) {
@@ -185,6 +243,8 @@ class RGraphicsDevice(
     val screenParameters: RGraphicsUtils.ScreenParameters,
     val snapshotNumber: Int?
   )
+
+  private data class SnapshotInfo(val snapshot: RSnapshot, val parameters: RGraphicsUtils.ScreenParameters)
 
   private interface RescaleStrategy {
     val hint: String
@@ -235,10 +295,6 @@ class RGraphicsDevice(
       }
     }
 
-    private fun List<RSnapshot>.toIdentities(): Sequence<Pair<Int, Int>> {
-      return asSequence().map { Pair(it.number, it.version) }
-    }
-
     private fun removeSnapshotByNumber(snapshots: List<RSnapshot>, number: Int): List<RSnapshot> {
       val snapshot = snapshots.find { it.number == number }
       return if (snapshot != null) {
@@ -260,6 +316,11 @@ class RGraphicsDevice(
         }
         snapshot.file.delete()
       }
+    }
+
+    private fun createHintFor(snapshotNumber: Int?): String {
+      // Note: for error logging only. Not intended to be moved to RBundle
+      return if (snapshotNumber != null) "In-Memory snapshot #${snapshotNumber}" else "Last in-memory snapshots"
     }
   }
 }
