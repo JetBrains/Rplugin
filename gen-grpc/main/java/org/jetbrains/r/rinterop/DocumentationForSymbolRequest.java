@@ -4,26 +4,27 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.FindPackagePathByPackageNameRequest}
+ * Protobuf type {@code rplugininterop.DocumentationForSymbolRequest}
  */
-public  final class FindPackagePathByPackageNameRequest extends
+public  final class DocumentationForSymbolRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.FindPackagePathByPackageNameRequest)
-    FindPackagePathByPackageNameRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.DocumentationForSymbolRequest)
+    DocumentationForSymbolRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use FindPackagePathByPackageNameRequest.newBuilder() to construct.
-  private FindPackagePathByPackageNameRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use DocumentationForSymbolRequest.newBuilder() to construct.
+  private DocumentationForSymbolRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private FindPackagePathByPackageNameRequest() {
-    packageName_ = "";
+  private DocumentationForSymbolRequest() {
+    symbol_ = "";
+    package_ = "";
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new FindPackagePathByPackageNameRequest();
+    return new DocumentationForSymbolRequest();
   }
 
   @java.lang.Override
@@ -31,7 +32,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private FindPackagePathByPackageNameRequest(
+  private DocumentationForSymbolRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -52,7 +53,13 @@ private static final long serialVersionUID = 0L;
           case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            packageName_ = s;
+            symbol_ = s;
+            break;
+          }
+          case 18: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            package_ = s;
             break;
           }
           default: {
@@ -76,45 +83,79 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_FindPackagePathByPackageNameRequest_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DocumentationForSymbolRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_FindPackagePathByPackageNameRequest_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DocumentationForSymbolRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.class, org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.Builder.class);
+            org.jetbrains.r.rinterop.DocumentationForSymbolRequest.class, org.jetbrains.r.rinterop.DocumentationForSymbolRequest.Builder.class);
   }
 
-  public static final int PACKAGENAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object packageName_;
+  public static final int SYMBOL_FIELD_NUMBER = 1;
+  private volatile java.lang.Object symbol_;
   /**
-   * <code>string packageName = 1;</code>
+   * <code>string symbol = 1;</code>
    */
-  public java.lang.String getPackageName() {
-    java.lang.Object ref = packageName_;
+  public java.lang.String getSymbol() {
+    java.lang.Object ref = symbol_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      packageName_ = s;
+      symbol_ = s;
       return s;
     }
   }
   /**
-   * <code>string packageName = 1;</code>
+   * <code>string symbol = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getPackageNameBytes() {
-    java.lang.Object ref = packageName_;
+      getSymbolBytes() {
+    java.lang.Object ref = symbol_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      packageName_ = b;
+      symbol_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int PACKAGE_FIELD_NUMBER = 2;
+  private volatile java.lang.Object package_;
+  /**
+   * <code>string package = 2;</code>
+   */
+  public java.lang.String getPackage() {
+    java.lang.Object ref = package_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      package_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string package = 2;</code>
+   */
+  public com.google.protobuf.ByteString
+      getPackageBytes() {
+    java.lang.Object ref = package_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      package_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -135,8 +176,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getPackageNameBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, packageName_);
+    if (!getSymbolBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, symbol_);
+    }
+    if (!getPackageBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, package_);
     }
     unknownFields.writeTo(output);
   }
@@ -147,8 +191,11 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getPackageNameBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, packageName_);
+    if (!getSymbolBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, symbol_);
+    }
+    if (!getPackageBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, package_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -160,13 +207,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.DocumentationForSymbolRequest)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest other = (org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest) obj;
+    org.jetbrains.r.rinterop.DocumentationForSymbolRequest other = (org.jetbrains.r.rinterop.DocumentationForSymbolRequest) obj;
 
-    if (!getPackageName()
-        .equals(other.getPackageName())) return false;
+    if (!getSymbol()
+        .equals(other.getSymbol())) return false;
+    if (!getPackage()
+        .equals(other.getPackage())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -178,76 +227,78 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + PACKAGENAME_FIELD_NUMBER;
-    hash = (53 * hash) + getPackageName().hashCode();
+    hash = (37 * hash) + SYMBOL_FIELD_NUMBER;
+    hash = (53 * hash) + getSymbol().hashCode();
+    hash = (37 * hash) + PACKAGE_FIELD_NUMBER;
+    hash = (53 * hash) + getPackage().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -260,7 +311,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.DocumentationForSymbolRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -276,26 +327,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.FindPackagePathByPackageNameRequest}
+   * Protobuf type {@code rplugininterop.DocumentationForSymbolRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.FindPackagePathByPackageNameRequest)
-      org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.DocumentationForSymbolRequest)
+      org.jetbrains.r.rinterop.DocumentationForSymbolRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_FindPackagePathByPackageNameRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DocumentationForSymbolRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_FindPackagePathByPackageNameRequest_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DocumentationForSymbolRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.class, org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.Builder.class);
+              org.jetbrains.r.rinterop.DocumentationForSymbolRequest.class, org.jetbrains.r.rinterop.DocumentationForSymbolRequest.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.DocumentationForSymbolRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -313,7 +364,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      packageName_ = "";
+      symbol_ = "";
+
+      package_ = "";
 
       return this;
     }
@@ -321,17 +374,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_FindPackagePathByPackageNameRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DocumentationForSymbolRequest_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.getDefaultInstance();
+    public org.jetbrains.r.rinterop.DocumentationForSymbolRequest getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.DocumentationForSymbolRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest build() {
-      org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest result = buildPartial();
+    public org.jetbrains.r.rinterop.DocumentationForSymbolRequest build() {
+      org.jetbrains.r.rinterop.DocumentationForSymbolRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -339,9 +392,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest buildPartial() {
-      org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest result = new org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest(this);
-      result.packageName_ = packageName_;
+    public org.jetbrains.r.rinterop.DocumentationForSymbolRequest buildPartial() {
+      org.jetbrains.r.rinterop.DocumentationForSymbolRequest result = new org.jetbrains.r.rinterop.DocumentationForSymbolRequest(this);
+      result.symbol_ = symbol_;
+      result.package_ = package_;
       onBuilt();
       return result;
     }
@@ -380,18 +434,22 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest) {
-        return mergeFrom((org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest)other);
+      if (other instanceof org.jetbrains.r.rinterop.DocumentationForSymbolRequest) {
+        return mergeFrom((org.jetbrains.r.rinterop.DocumentationForSymbolRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest other) {
-      if (other == org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.getDefaultInstance()) return this;
-      if (!other.getPackageName().isEmpty()) {
-        packageName_ = other.packageName_;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.DocumentationForSymbolRequest other) {
+      if (other == org.jetbrains.r.rinterop.DocumentationForSymbolRequest.getDefaultInstance()) return this;
+      if (!other.getSymbol().isEmpty()) {
+        symbol_ = other.symbol_;
+        onChanged();
+      }
+      if (!other.getPackage().isEmpty()) {
+        package_ = other.package_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -409,11 +467,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest parsedMessage = null;
+      org.jetbrains.r.rinterop.DocumentationForSymbolRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.DocumentationForSymbolRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -423,71 +481,140 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object packageName_ = "";
+    private java.lang.Object symbol_ = "";
     /**
-     * <code>string packageName = 1;</code>
+     * <code>string symbol = 1;</code>
      */
-    public java.lang.String getPackageName() {
-      java.lang.Object ref = packageName_;
+    public java.lang.String getSymbol() {
+      java.lang.Object ref = symbol_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        packageName_ = s;
+        symbol_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>string packageName = 1;</code>
+     * <code>string symbol = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getPackageNameBytes() {
-      java.lang.Object ref = packageName_;
+        getSymbolBytes() {
+      java.lang.Object ref = symbol_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        packageName_ = b;
+        symbol_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string packageName = 1;</code>
+     * <code>string symbol = 1;</code>
      */
-    public Builder setPackageName(
+    public Builder setSymbol(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      packageName_ = value;
+      symbol_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string packageName = 1;</code>
+     * <code>string symbol = 1;</code>
      */
-    public Builder clearPackageName() {
+    public Builder clearSymbol() {
       
-      packageName_ = getDefaultInstance().getPackageName();
+      symbol_ = getDefaultInstance().getSymbol();
       onChanged();
       return this;
     }
     /**
-     * <code>string packageName = 1;</code>
+     * <code>string symbol = 1;</code>
      */
-    public Builder setPackageNameBytes(
+    public Builder setSymbolBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      packageName_ = value;
+      symbol_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object package_ = "";
+    /**
+     * <code>string package = 2;</code>
+     */
+    public java.lang.String getPackage() {
+      java.lang.Object ref = package_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        package_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string package = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPackageBytes() {
+      java.lang.Object ref = package_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        package_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string package = 2;</code>
+     */
+    public Builder setPackage(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      package_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string package = 2;</code>
+     */
+    public Builder clearPackage() {
+      
+      package_ = getDefaultInstance().getPackage();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string package = 2;</code>
+     */
+    public Builder setPackageBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      package_ = value;
       onChanged();
       return this;
     }
@@ -504,41 +631,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.FindPackagePathByPackageNameRequest)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.DocumentationForSymbolRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.FindPackagePathByPackageNameRequest)
-  private static final org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.DocumentationForSymbolRequest)
+  private static final org.jetbrains.r.rinterop.DocumentationForSymbolRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.DocumentationForSymbolRequest();
   }
 
-  public static org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.DocumentationForSymbolRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<FindPackagePathByPackageNameRequest>
-      PARSER = new com.google.protobuf.AbstractParser<FindPackagePathByPackageNameRequest>() {
+  private static final com.google.protobuf.Parser<DocumentationForSymbolRequest>
+      PARSER = new com.google.protobuf.AbstractParser<DocumentationForSymbolRequest>() {
     @java.lang.Override
-    public FindPackagePathByPackageNameRequest parsePartialFrom(
+    public DocumentationForSymbolRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new FindPackagePathByPackageNameRequest(input, extensionRegistry);
+      return new DocumentationForSymbolRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<FindPackagePathByPackageNameRequest> parser() {
+  public static com.google.protobuf.Parser<DocumentationForSymbolRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<FindPackagePathByPackageNameRequest> getParserForType() {
+  public com.google.protobuf.Parser<DocumentationForSymbolRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.DocumentationForSymbolRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

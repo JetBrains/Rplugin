@@ -586,15 +586,28 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeRequest(RPIServiceGrpc.getGraphicsShutdownMethod(), Empty.getDefaultInstance())
   }
 
-  class HttpdResponse(val content: ByteArray, val url: String)
+  data class HttpdResponse(val content: String, val url: String)
 
   fun httpdRequest(url: String): HttpdResponse? {
     return try {
       executeWithCheckCancel(asyncStub::httpdRequest, StringValue.of(url))
         .takeIf { it.success }
-        ?.let { HttpdResponse(it.content.toByteArray(), it.url) }
+        ?.let { HttpdResponse(it.content, it.url) }
     } catch (e: RInteropTerminated) {
       null
+    }
+  }
+
+  fun getDocumentationForPackage(packageName: String): CancellablePromise<HttpdResponse?> {
+    return executeAsync(asyncStub::getDocumentationForPackage, StringValue.of(packageName)).thenCancellable {
+      if (it.success) HttpdResponse(it.content, it.url) else null
+    }
+  }
+
+  fun getDocumentationForSymbol(symbol: String, packageName: String? = null): CancellablePromise<HttpdResponse?> {
+    val request = DocumentationForSymbolRequest.newBuilder().setSymbol(symbol).setPackage(packageName.orEmpty()).build()
+    return executeAsync(asyncStub::getDocumentationForSymbol, request).thenCancellable {
+      if (it.success) HttpdResponse(it.content, it.url) else null
     }
   }
 
@@ -784,21 +797,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeRequest(RPIServiceGrpc.getMakeRdFromRoxygenMethod(), request)
   }
 
-  fun findPackagePathByTopic(topic: String, searchSpace: String): RIExecutionResult {
-    val request = FindPackagePathByTopicRequest.newBuilder()
-      .setTopic(topic)
-      .setSearchSpace(searchSpace)
-      .build()
-    return executeRequest(RPIServiceGrpc.getFindPackagePathByTopicMethod(), request)
-  }
-
-  fun findPackagePathByPackageName(packageName: String): RIExecutionResult {
-    val request = FindPackagePathByPackageNameRequest.newBuilder()
-      .setPackageName(packageName)
-      .build()
-    return executeRequest(RPIServiceGrpc.getFindPackagePathByPackageNameMethod(), request)
-  }
-
   fun clearEnvironment(env: RReference) {
     try {
       executeWithCheckCancel(asyncStub::clearEnvironment, env.proto)
@@ -943,8 +941,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
-        val request = event.showHelpRequest
-        fireListeners { it.onShowHelpRequest(request.content, request.url) }
+        val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
+        fireListeners { it.onShowHelpRequest(httpdResponse) }
       }
       else -> {
       }
@@ -1172,7 +1170,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
-    fun onShowHelpRequest(content: String, url: String) {}
+    fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}

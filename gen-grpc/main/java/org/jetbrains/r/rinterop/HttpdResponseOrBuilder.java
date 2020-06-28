@@ -13,9 +13,14 @@ public interface HttpdResponseOrBuilder extends
   boolean getSuccess();
 
   /**
-   * <code>bytes content = 2;</code>
+   * <code>string content = 2;</code>
    */
-  com.google.protobuf.ByteString getContent();
+  java.lang.String getContent();
+  /**
+   * <code>string content = 2;</code>
+   */
+  com.google.protobuf.ByteString
+      getContentBytes();
 
   /**
    * <code>string url = 3;</code>

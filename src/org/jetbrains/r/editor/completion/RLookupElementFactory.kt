@@ -26,10 +26,10 @@ const val PACKAGE_PRIORITY = -1.0
 const val GLOBAL_GROUPING = 0
 const val NAMESPACE_NAME_GROUPING = -1
 
-class RLookupElement(private val lookup: String,
+class RLookupElement(val lookup: String,
                      private val bold: Boolean,
                      private val icon: Icon? = null,
-                     private val packageName: String? = null,
+                     val packageName: String? = null,
                      private val tailText: String? = null,
                      private val itemText: String = lookup) : LookupElement() {
 

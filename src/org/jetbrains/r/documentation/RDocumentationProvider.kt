@@ -11,6 +11,7 @@ import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo.isWindows
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
@@ -22,11 +23,14 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.getWithCheckCanceled
 import java.io.File
 import java.io.IOException
 import java.net.MalformedURLException
@@ -35,8 +39,6 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.*
-
-const val SHOW_PACKAGE_DOCS = ".jetbrains.show_package_help"
 
 private const val INDEX_HTML = "00Index.html"
 private const val WINDOWS_MAX_PATH_LENGTH = 259
@@ -56,8 +58,6 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   private val separator = File.separator
 
   private val pathToDocumentation = makePath(PathManager.getSystemPath(), "documentation")
-
-  private val getFirstResult = { str: String -> Regex("\"(.*?)\"").find(str)?.groupValues?.get(1) }
 
   private val localFunctionRequiredPackage = listOf(RequiredPackage("roxygen2"))
 
@@ -206,26 +206,6 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     containingFile.runtimeInfo ?: exitWithReport(RBundle.message("documentation.console.closed.problem"))
   }
 
-  private fun getRealPath(rInterop: RInterop, symbol: String, helpPackage: String? = null): String? {
-
-    // .packages(TRUE) != loadNamespaces()
-    val searchSpace = if (helpPackage == null) "loadedNamespaces()" else "'$helpPackage'"
-    var result = rInterop.findPackagePathByTopic(symbol, searchSpace)
-
-    return if (result.stdout == "character(0)\n" && helpPackage != null) {
-      result = rInterop.findPackagePathByPackageName(helpPackage.dropWhile { it == '.' })
-      val home = getFirstResult(result.stdout)
-      "$home/help/$symbol"
-    }
-    else {
-      getFirstResult(result.stdout)
-    }
-  }
-
-  private fun getDirNameForConsole(rInterop: RInterop): String? {
-    return "R_version_${rInterop.rVersion}"
-  }
-
   private fun makePath(vararg pathParts: String): String {
     val resultPath = StringJoiner(separator, "", "")
     for (part in pathParts) {
@@ -241,188 +221,46 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     return path
   }
 
-  private fun getHtmlPath(rInterop: RInterop, helpPath: String?): String? {
-    helpPath ?: return null
-
-    if (helpPath.startsWith("http")) {
-      return helpPath
-    }
-
-    val dirNameForConsole = getDirNameForConsole(rInterop) ?: return null
-
-    val helpPathComponents = helpPath.split("/")
-    if (helpPath.endsWith(INDEX_HTML)) {
-      val helpPackage = helpPathComponents[0]
-      val htmlPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, INDEX_HTML), WINDOWS_MAX_PATH_LENGTH)
-
-      val htmlFile = File(htmlPath)
-      if (!htmlFile.exists()) {
-        val result = rInterop.findPackagePathByPackageName(helpPackage)
-        val packagePath = getFirstResult(result.stdout)?.replace("/", separator).also {
-          if (it == null) {
-            LOG.error("Cannot find package $helpPackage. Stdout: ${result.stdout};\n Stderr: ${result.stderr}")
-          }
-        } ?: return null
-        val indexFile = File(makePath(packagePath, "html", INDEX_HTML))
-        if (!indexFile.exists()) return null
-
-        val htmlTmpPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, "00Index_tmp"),
-                                           WINDOWS_MAX_PATH_LENGTH - 1)
-
-        val htmlTmpFile = File(htmlTmpPath)
-        try {
-          if (!htmlTmpFile.parentFile.exists()) {
-            Files.createDirectories(htmlTmpFile.parentFile.toPath())
-          }
-          Files.copy(indexFile.toPath(), htmlTmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-
-          if (!convertHelpPage(htmlTmpPath, htmlPath)) {
-            return null
-          }
-          return htmlPath
-        }
-        catch (e: IOException) {
-          LOG.error(e)
-          return null
-        }
-        finally {
-          htmlTmpFile.delete()
-        }
-      }
-      return htmlPath
-    }
-
-    val helpPackage = helpPathComponents[helpPathComponents.size - 3]
-    val helpPage = helpPathComponents[helpPathComponents.size - 1]
-
-    val htmlPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, "$helpPage.html"),
-                                    WINDOWS_MAX_PATH_LENGTH)
-
-    val htmlFile = File(htmlPath)
-    if (htmlFile.exists()) {
-      return htmlPath
-    }
-    else {
-      val htmlTmpPath = cutPathIfWindows(makePath(pathToDocumentation, dirNameForConsole, helpPackage, "${helpPage}_tmp"),
-                                         WINDOWS_MAX_PATH_LENGTH - 1)
-
-      val htmlTmpFile = File(htmlTmpPath)
-
-      try {
-        if (!htmlTmpFile.parentFile.exists()) {
-          Files.createDirectories(htmlFile.parentFile.toPath())
-        }
-
-        val result = rInterop.convertRd2HTML(dbPath = helpPath.replace(Regex("/$helpPage$"), "/$helpPackage"),
-                                             dbPage = helpPage,
-                                             outputFilePath = htmlTmpFile.absolutePath.replace(separator, "/"),
-                                             topicPackage = helpPackage)
-        if (htmlTmpFile.exists()) {
-          if (!convertHelpPage(htmlTmpPath, htmlPath)) {
-            LOG.error("Convert help page failed. Rd2HTML stdout: ${result.stdout};\n Rd2HTML stderr: ${result.stderr}")
-            return null
-          }
-          return htmlPath
-        }
-        else {
-          return null
-        }
-      }
-      catch (e: IOException) {
-        LOG.error(e)
-        return null
-      }
-      finally {
-        htmlTmpFile.delete()
-      }
-    }
-  }
-
-  private fun getHtmlPathForNamespaceAccessExpression(rInterop: RInterop,
-                                                      namespaceAccessExpression: RNamespaceAccessExpression): String? {
-    val identifier = namespaceAccessExpression.identifier ?: return null
-    return getHtmlPath(rInterop, getRealPath(rInterop, identifier.text, namespaceAccessExpression.namespaceName))
-  }
-
-
-  private fun getPath(rInterop: RInterop, psiElement: PsiElement?): String? {
-
-    val element = psiElement ?: return null
-
-    // check if doc of internally rerouted doc-popup click
-    restoreInterceptedLink(rInterop, element)?.let { return getHtmlPath(rInterop, it) }
-
-    if (element is RStringLiteralExpression || element is RNamedArgument) {
-      return null
-    }
-
-    if (element is RHelpExpression) {
-      return getHtmlPath(rInterop, getRealPath(rInterop, "help"))
-    }
-
-    // qualified name
-    if (element is RNamespaceAccessExpression) {
-      return getHtmlPathForNamespaceAccessExpression(rInterop, element)
-    }
-
-    if (element.parent is RNamespaceAccessExpression) {
-      val parent = (element.parent as RNamespaceAccessExpression)
-      return getHtmlPathForNamespaceAccessExpression(rInterop, parent)
-    }
-
-    val elementFirstChild = element.firstChild
-    if (element is RCallExpression && elementFirstChild is RNamespaceAccessExpression) {
-      return getHtmlPathForNamespaceAccessExpression(rInterop, elementFirstChild)
-    }
-
-    val symbol = when (element) {
-      is RAssignmentStatement -> element.name
-      is RCallExpression -> elementFirstChild.text
-      else -> element.text
-    }
-
-    // keyword or function in library
-    return getHtmlPath(rInterop, getRealPath(rInterop, symbol))
-  }
-
-
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
     RDocumentationUtil.getTextFromElement(psiElement)?.let { return it }
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
-    val path = extractPackageName(psiElement)?.let {
-      getHtmlPath(rInterop, "$it/html/$INDEX_HTML")
-    } ?: let {
-      checkPossibilityReturnDocumentation(psiElement) { return it }
-
-      try {
-        getDocumentationLocalFunction(rInterop, psiElement)?.let { path ->
-          return Scanner(File(path), StandardCharsets.UTF_8).use {
-            it.useDelimiter("\\A").next()
-          }
+    if (psiElement is RStringLiteralExpression && psiElement.getCopyableUserData(INTERCEPTED_LINK) == true) {
+      return rInterop.httpdRequest(psiElement.name.orEmpty())?.let { RDocumentationUtil.convertHelpPage(it) }
+    }
+    checkPossibilityReturnDocumentation(psiElement) { return it }
+    try {
+      getDocumentationLocalFunction(rInterop, psiElement)?.let { path ->
+        return Scanner(File(path), StandardCharsets.UTF_8).use {
+          it.useDelimiter("\\A").next()
         }
       }
-      catch (e: RequiredPackageException) {
-        return e.message
+    } catch (e: RequiredPackageException) {
+      return e.message
+    }
+
+    val element = PsiTreeUtil.getNonStrictParentOfType(psiElement, RExpression::class.java) ?: return null
+    val (symbol, pkg) = when {
+      element is RStringLiteralExpression || element is RNamedArgument -> return null
+      element is RHelpExpression -> "help" to null
+      element is RNamespaceAccessExpression -> (element.identifier?.name ?: return null) to element.namespaceName
+      element.parent is RNamespaceAccessExpression -> {
+        val parent = (element.parent as RNamespaceAccessExpression)
+        (parent.identifier?.name ?: return null) to parent.namespaceName
       }
-      getPath(rInterop, psiElement) ?: return null
+      element is RCallExpression -> {
+        when (val elementFirstChild = element.firstChild) {
+          is RNamespaceAccessExpression -> (elementFirstChild.identifier?.name ?: return null) to elementFirstChild.namespaceName
+          is RIdentifierExpression -> elementFirstChild.name to null
+          else -> elementFirstChild.text to null
+        }
+      }
+      element is RAssignmentStatement -> element.name to null
+      element is RIdentifierExpression -> element.name to null
+      else -> element.text to null
     }
-
-    val inputStream = if (path.startsWith("http")) {
-      makeURL(path).openStream()
-    }
-    else {
-      File(path).inputStream()
-    }
-
-    return Scanner(inputStream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
-  }
-
-  private fun extractPackageName(psiElement: PsiElement): String? {
-    val consoleHelpCallPattern = psiElement(RCallExpression::class.java).withChild(
-      psiElement(RIdentifierExpression::class.java).withText(SHOW_PACKAGE_DOCS))
-    return psiElement.takeIf { consoleHelpCallPattern.accepts(it) }
-                     ?.let { (psiElement as RCallExpression).argumentList.expressionList[0].text }
+    val response = rInterop.getDocumentationForSymbol(symbol, pkg).getWithCheckCanceled() ?: return null
+    return RDocumentationUtil.convertHelpPage(response)
   }
 
   /**
@@ -438,14 +276,23 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
    */
   override fun getDocumentationElementForLink(psiManager: PsiManager, link: String?, context: PsiElement?): PsiElement? {
     if (context == null || context.language != RLanguage.INSTANCE || link == null) return null
-    RDocumentationUtil.navigateByLinkFromElement(context, link)?.let { return it }
     if (link == INSTALL_REQUIRED_PACKAGES_LINK) {
       RequiredPackageInstaller.getInstance(psiManager.project)
         .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, false)
       return null
     }
+    return RElementFactory.createRPsiElementFromText(psiManager.project, "\"${StringUtil.escapeStringCharacters(link)}\"").also {
+      it.putCopyableUserData(INTERCEPTED_LINK, true)
+    }
+  }
 
-    return RElementFactory.createRPsiElementFromText(psiManager.project, "help_url(\"${StringUtil.escapeStringCharacters(link)}\")")
+  override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, item: Any?, element: PsiElement?): PsiElement? {
+    if (psiManager == null || item !is RLookupElement) return null
+    val name = item.lookup
+    val pkg = item.packageName
+    if (pkg == null) return RElementFactory.createRPsiElementFromText(psiManager.project, RNamesValidator.quoteIfNeeded(name))
+    return RElementFactory.createRPsiElementFromText(
+      psiManager.project, "${RNamesValidator.quoteIfNeeded(pkg)}::${RNamesValidator.quoteIfNeeded(name)}")
   }
 
   private fun convertHelpPage(fromPath: String, toPath: String): Boolean {
@@ -517,40 +364,9 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     }
   }
 
-  private fun makeURL(url: String): URL {
-    try {
-      return URL(url)
-    }
-    catch (e: MalformedURLException) {
-      LOG.error(e)
-      throw RuntimeException(e)
-    }
-  }
-
-  private fun isBlank(str: String?): Boolean {
-    return str != null && str.trim { it <= ' ' }.isEmpty()
-  }
-
-  private fun restoreInterceptedLink(rInterop: RInterop, reference: PsiElement): String? {
-    val localLinkPattern = psiElement(RCallExpression::class.java).withChild(
-      psiElement(RIdentifierExpression::class.java).withText("help_url"))
-
-    if (!localLinkPattern.accepts(reference)) {
-      return null
-    }
-
-    val linkPath = (reference as RCallExpression).argumentList.expressionList[0].name ?: return null
-
-    if (linkPath.startsWith("http") || linkPath.endsWith(INDEX_HTML)) {
-      return linkPath
-    }
-
-    val split = linkPath.split("/")
-    val helpPackage = split[0]
-    val helpPage = split[2].replace(".html", "")
-
-    return getRealPath(rInterop, helpPage, helpPackage)
-  }
-
   private class RequiredPackageException(message: String?) : RuntimeException(message)
+
+  companion object {
+    private val INTERCEPTED_LINK = Key<Boolean>("org.jetbrains.r.documentation.InterceptedLink")
+  }
 }

@@ -16,7 +16,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private HttpdResponse() {
-    content_ = com.google.protobuf.ByteString.EMPTY;
+    content_ = "";
     url_ = "";
   }
 
@@ -56,8 +56,9 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 18: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-            content_ = input.readBytes();
+            content_ = s;
             break;
           }
           case 26: {
@@ -108,12 +109,37 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CONTENT_FIELD_NUMBER = 2;
-  private com.google.protobuf.ByteString content_;
+  private volatile java.lang.Object content_;
   /**
-   * <code>bytes content = 2;</code>
+   * <code>string content = 2;</code>
    */
-  public com.google.protobuf.ByteString getContent() {
-    return content_;
+  public java.lang.String getContent() {
+    java.lang.Object ref = content_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      content_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string content = 2;</code>
+   */
+  public com.google.protobuf.ByteString
+      getContentBytes() {
+    java.lang.Object ref = content_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      content_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int URL_FIELD_NUMBER = 3;
@@ -167,8 +193,8 @@ private static final long serialVersionUID = 0L;
     if (success_ != false) {
       output.writeBool(1, success_);
     }
-    if (!content_.isEmpty()) {
-      output.writeBytes(2, content_);
+    if (!getContentBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, content_);
     }
     if (!getUrlBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, url_);
@@ -186,9 +212,8 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(1, success_);
     }
-    if (!content_.isEmpty()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(2, content_);
+    if (!getContentBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, content_);
     }
     if (!getUrlBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, url_);
@@ -367,7 +392,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       success_ = false;
 
-      content_ = com.google.protobuf.ByteString.EMPTY;
+      content_ = "";
 
       url_ = "";
 
@@ -451,8 +476,9 @@ private static final long serialVersionUID = 0L;
       if (other.getSuccess() != false) {
         setSuccess(other.getSuccess());
       }
-      if (other.getContent() != com.google.protobuf.ByteString.EMPTY) {
-        setContent(other.getContent());
+      if (!other.getContent().isEmpty()) {
+        content_ = other.content_;
+        onChanged();
       }
       if (!other.getUrl().isEmpty()) {
         url_ = other.url_;
@@ -513,17 +539,43 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
+    private java.lang.Object content_ = "";
     /**
-     * <code>bytes content = 2;</code>
+     * <code>string content = 2;</code>
      */
-    public com.google.protobuf.ByteString getContent() {
-      return content_;
+    public java.lang.String getContent() {
+      java.lang.Object ref = content_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        content_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
-     * <code>bytes content = 2;</code>
+     * <code>string content = 2;</code>
      */
-    public Builder setContent(com.google.protobuf.ByteString value) {
+    public com.google.protobuf.ByteString
+        getContentBytes() {
+      java.lang.Object ref = content_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        content_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string content = 2;</code>
+     */
+    public Builder setContent(
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -533,11 +585,25 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bytes content = 2;</code>
+     * <code>string content = 2;</code>
      */
     public Builder clearContent() {
       
       content_ = getDefaultInstance().getContent();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string content = 2;</code>
+     */
+    public Builder setContentBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      content_ = value;
       onChanged();
       return this;
     }

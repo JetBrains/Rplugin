@@ -194,9 +194,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
     }
 
-    override fun onShowHelpRequest(content: String, url: String) {
+    override fun onShowHelpRequest(httpdResponse: RInterop.HttpdResponse) {
       invokeLater {
-        RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, content, url))
+        RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, httpdResponse))
       }
     }
 

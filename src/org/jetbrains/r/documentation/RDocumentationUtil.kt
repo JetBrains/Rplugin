@@ -16,45 +16,33 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.rinterop.RInterop
-import java.nio.charset.Charset
 
 object RDocumentationUtil {
-  fun makeElementForText(rInterop: RInterop, text: String, url: String): PsiElement {
+  fun makeElementForText(rInterop: RInterop, httpdResponse: RInterop.HttpdResponse): PsiElement {
     return RElementFactory.createRPsiElementFromText(rInterop.project, "text").also {
-      it.putCopyableUserData(ELEMENT_TEXT) { convertHelpPage(text, url) }
-      it.putCopyableUserData(ELEMENT_NAVIGATE_BY_LINK) { link -> makeElementForLink(rInterop, link) }
-    }
-  }
-
-  private fun makeElementForLink(rInterop: RInterop, url: String): PsiElement {
-    return RElementFactory.createRPsiElementFromText(rInterop.project, "text").also {
-      it.putCopyableUserData(ELEMENT_TEXT) {
-        rInterop.httpdRequest(url)?.let { response ->
-          convertHelpPage(String(response.content, Charset.defaultCharset()), response.url)
-        } ?: "$url not found"
-      }
-      it.putCopyableUserData(ELEMENT_NAVIGATE_BY_LINK) { link -> makeElementForLink(rInterop, link) }
+      it.putCopyableUserData(ELEMENT_TEXT) { convertHelpPage(httpdResponse) }
     }
   }
 
   internal fun getTextFromElement(element: PsiElement) = element.getCopyableUserData(ELEMENT_TEXT)?.invoke()
 
-  internal fun navigateByLinkFromElement(element: PsiElement, link: String) =
-    element.getCopyableUserData(ELEMENT_NAVIGATE_BY_LINK)?.invoke(link)
-
-  private fun convertHelpPage(text: String, url: String): String {
+  internal fun convertHelpPage(httpdResponse: RInterop.HttpdResponse): String {
+    var (text, url) = httpdResponse
+    val bodyStart = text.indexOf("<body>")
+    val bodyEnd = text.lastIndexOf("</body>")
+    if (bodyStart != -1 && bodyEnd != -1) text = text.substring(bodyStart + "<body>".length, bodyEnd)
     val urlComponents = url.substringBefore('?').substringAfter("://")
       .substringAfter('/', "").substringBeforeLast('/', "")
       .split('/')
     return Regex("href\\s*=\\s*\"([^\"]*)\"").replace(text) {
       val link = it.groupValues[1]
       val result = when {
-        link.startsWith('#') -> url
+        link.startsWith('#') -> "psi_element://$url"
         link.startsWith("http://127.0.0.1") -> {
           "psi_element:///" + link.substringAfter("://").substringAfter('/', "")
         }
         "://" in link -> link
-        link.startsWith('/') -> "psi_element://" + link
+        link.startsWith('/') -> "psi_element://$link"
         else -> {
           var parentCount = 0
           while (link.startsWith("../", parentCount * 3)) ++parentCount
@@ -68,6 +56,5 @@ object RDocumentationUtil {
       .let { Regex("<img.*>").replace(it, "") }
   }
 
-private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
-  private val ELEMENT_NAVIGATE_BY_LINK = Key<(String) -> PsiElement>("org.jetbrains.r.documentation.ElementNavigate")
+  private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
 }
