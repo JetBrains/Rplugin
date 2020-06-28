@@ -2228,68 +2228,6 @@ public final class RPIServiceGrpc {
     return getMakeRdFromRoxygenMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByTopicRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByTopicMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "findPackagePathByTopic",
-      requestType = org.jetbrains.r.rinterop.FindPackagePathByTopicRequest.class,
-      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByTopicRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByTopicMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByTopicRequest, org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByTopicMethod;
-    if ((getFindPackagePathByTopicMethod = RPIServiceGrpc.getFindPackagePathByTopicMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getFindPackagePathByTopicMethod = RPIServiceGrpc.getFindPackagePathByTopicMethod) == null) {
-          RPIServiceGrpc.getFindPackagePathByTopicMethod = getFindPackagePathByTopicMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.FindPackagePathByTopicRequest, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findPackagePathByTopic"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.FindPackagePathByTopicRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("findPackagePathByTopic"))
-              .build();
-        }
-      }
-    }
-    return getFindPackagePathByTopicMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByPackageNameMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "findPackagePathByPackageName",
-      requestType = org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.class,
-      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByPackageNameMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest, org.jetbrains.r.rinterop.CommandOutput> getFindPackagePathByPackageNameMethod;
-    if ((getFindPackagePathByPackageNameMethod = RPIServiceGrpc.getFindPackagePathByPackageNameMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getFindPackagePathByPackageNameMethod = RPIServiceGrpc.getFindPackagePathByPackageNameMethod) == null) {
-          RPIServiceGrpc.getFindPackagePathByPackageNameMethod = getFindPackagePathByPackageNameMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findPackagePathByPackageName"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("findPackagePathByPackageName"))
-              .build();
-        }
-      }
-    }
-    return getFindPackagePathByPackageNameMethod;
-  }
-
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
       org.jetbrains.r.rinterop.HttpdResponse> getHttpdRequestMethod;
 
@@ -2319,6 +2257,68 @@ public final class RPIServiceGrpc {
       }
     }
     return getHttpdRequestMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForPackageMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getDocumentationForPackage",
+      requestType = com.google.protobuf.StringValue.class,
+      responseType = org.jetbrains.r.rinterop.HttpdResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForPackageMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForPackageMethod;
+    if ((getGetDocumentationForPackageMethod = RPIServiceGrpc.getGetDocumentationForPackageMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetDocumentationForPackageMethod = RPIServiceGrpc.getGetDocumentationForPackageMethod) == null) {
+          RPIServiceGrpc.getGetDocumentationForPackageMethod = getGetDocumentationForPackageMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.HttpdResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getDocumentationForPackage"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getDocumentationForPackage"))
+              .build();
+        }
+      }
+    }
+    return getGetDocumentationForPackageMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DocumentationForSymbolRequest,
+      org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForSymbolMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getDocumentationForSymbol",
+      requestType = org.jetbrains.r.rinterop.DocumentationForSymbolRequest.class,
+      responseType = org.jetbrains.r.rinterop.HttpdResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DocumentationForSymbolRequest,
+      org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForSymbolMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DocumentationForSymbolRequest, org.jetbrains.r.rinterop.HttpdResponse> getGetDocumentationForSymbolMethod;
+    if ((getGetDocumentationForSymbolMethod = RPIServiceGrpc.getGetDocumentationForSymbolMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetDocumentationForSymbolMethod = RPIServiceGrpc.getGetDocumentationForSymbolMethod) == null) {
+          RPIServiceGrpc.getGetDocumentationForSymbolMethod = getGetDocumentationForSymbolMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.DocumentationForSymbolRequest, org.jetbrains.r.rinterop.HttpdResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getDocumentationForSymbol"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.DocumentationForSymbolRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getDocumentationForSymbol"))
+              .build();
+        }
+      }
+    }
+    return getGetDocumentationForSymbolMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
@@ -3181,23 +3181,23 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void findPackagePathByTopic(org.jetbrains.r.rinterop.FindPackagePathByTopicRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncUnimplementedUnaryCall(getFindPackagePathByTopicMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void findPackagePathByPackageName(org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncUnimplementedUnaryCall(getFindPackagePathByPackageNameMethod(), responseObserver);
-    }
-
-    /**
-     */
     public void httpdRequest(com.google.protobuf.StringValue request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getHttpdRequestMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getDocumentationForPackage(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetDocumentationForPackageMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getDocumentationForSymbol(org.jetbrains.r.rinterop.DocumentationForSymbolRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetDocumentationForSymbolMethod(), responseObserver);
     }
 
     /**
@@ -3773,26 +3773,26 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.CommandOutput>(
                   this, METHODID_MAKE_RD_FROM_ROXYGEN)))
           .addMethod(
-            getFindPackagePathByTopicMethod(),
-            asyncServerStreamingCall(
-              new MethodHandlers<
-                org.jetbrains.r.rinterop.FindPackagePathByTopicRequest,
-                org.jetbrains.r.rinterop.CommandOutput>(
-                  this, METHODID_FIND_PACKAGE_PATH_BY_TOPIC)))
-          .addMethod(
-            getFindPackagePathByPackageNameMethod(),
-            asyncServerStreamingCall(
-              new MethodHandlers<
-                org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest,
-                org.jetbrains.r.rinterop.CommandOutput>(
-                  this, METHODID_FIND_PACKAGE_PATH_BY_PACKAGE_NAME)))
-          .addMethod(
             getHttpdRequestMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.StringValue,
                 org.jetbrains.r.rinterop.HttpdResponse>(
                   this, METHODID_HTTPD_REQUEST)))
+          .addMethod(
+            getGetDocumentationForPackageMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.StringValue,
+                org.jetbrains.r.rinterop.HttpdResponse>(
+                  this, METHODID_GET_DOCUMENTATION_FOR_PACKAGE)))
+          .addMethod(
+            getGetDocumentationForSymbolMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.DocumentationForSymbolRequest,
+                org.jetbrains.r.rinterop.HttpdResponse>(
+                  this, METHODID_GET_DOCUMENTATION_FOR_SYMBOL)))
           .addMethod(
             getGetWorkingDirMethod(),
             asyncUnaryCall(
@@ -4479,26 +4479,26 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void findPackagePathByTopic(org.jetbrains.r.rinterop.FindPackagePathByTopicRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getFindPackagePathByTopicMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void findPackagePathByPackageName(org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getFindPackagePathByPackageNameMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
     public void httpdRequest(com.google.protobuf.StringValue request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getHttpdRequestMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getDocumentationForPackage(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetDocumentationForPackageMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getDocumentationForSymbol(org.jetbrains.r.rinterop.DocumentationForSymbolRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetDocumentationForSymbolMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5143,25 +5143,23 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> findPackagePathByTopic(
-        org.jetbrains.r.rinterop.FindPackagePathByTopicRequest request) {
-      return blockingServerStreamingCall(
-          getChannel(), getFindPackagePathByTopicMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> findPackagePathByPackageName(
-        org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest request) {
-      return blockingServerStreamingCall(
-          getChannel(), getFindPackagePathByPackageNameMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
     public org.jetbrains.r.rinterop.HttpdResponse httpdRequest(com.google.protobuf.StringValue request) {
       return blockingUnaryCall(
           getChannel(), getHttpdRequestMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.HttpdResponse getDocumentationForPackage(com.google.protobuf.StringValue request) {
+      return blockingUnaryCall(
+          getChannel(), getGetDocumentationForPackageMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.HttpdResponse getDocumentationForSymbol(org.jetbrains.r.rinterop.DocumentationForSymbolRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getGetDocumentationForSymbolMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5706,6 +5704,22 @@ public final class RPIServiceGrpc {
     }
 
     /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.HttpdResponse> getDocumentationForPackage(
+        com.google.protobuf.StringValue request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetDocumentationForPackageMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.HttpdResponse> getDocumentationForSymbol(
+        org.jetbrains.r.rinterop.DocumentationForSymbolRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetDocumentationForSymbolMethod(), getCallOptions()), request);
+    }
+
+    /**
      * <pre>
      * Misc
      * </pre>
@@ -5860,9 +5874,9 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DATA_FRAME_DISPOSE = 68;
   private static final int METHODID_CONVERT_RD2HTML = 69;
   private static final int METHODID_MAKE_RD_FROM_ROXYGEN = 70;
-  private static final int METHODID_FIND_PACKAGE_PATH_BY_TOPIC = 71;
-  private static final int METHODID_FIND_PACKAGE_PATH_BY_PACKAGE_NAME = 72;
-  private static final int METHODID_HTTPD_REQUEST = 73;
+  private static final int METHODID_HTTPD_REQUEST = 71;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 73;
   private static final int METHODID_GET_WORKING_DIR = 74;
   private static final int METHODID_SET_WORKING_DIR = 75;
   private static final int METHODID_CLEAR_ENVIRONMENT = 76;
@@ -6175,16 +6189,16 @@ public final class RPIServiceGrpc {
           serviceImpl.makeRdFromRoxygen((org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
           break;
-        case METHODID_FIND_PACKAGE_PATH_BY_TOPIC:
-          serviceImpl.findPackagePathByTopic((org.jetbrains.r.rinterop.FindPackagePathByTopicRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
-          break;
-        case METHODID_FIND_PACKAGE_PATH_BY_PACKAGE_NAME:
-          serviceImpl.findPackagePathByPackageName((org.jetbrains.r.rinterop.FindPackagePathByPackageNameRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
-          break;
         case METHODID_HTTPD_REQUEST:
           serviceImpl.httpdRequest((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse>) responseObserver);
+          break;
+        case METHODID_GET_DOCUMENTATION_FOR_PACKAGE:
+          serviceImpl.getDocumentationForPackage((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse>) responseObserver);
+          break;
+        case METHODID_GET_DOCUMENTATION_FOR_SYMBOL:
+          serviceImpl.getDocumentationForSymbol((org.jetbrains.r.rinterop.DocumentationForSymbolRequest) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse>) responseObserver);
           break;
         case METHODID_GET_WORKING_DIR:
@@ -6359,9 +6373,9 @@ public final class RPIServiceGrpc {
               .addMethod(getDataFrameDisposeMethod())
               .addMethod(getConvertRd2HTMLMethod())
               .addMethod(getMakeRdFromRoxygenMethod())
-              .addMethod(getFindPackagePathByTopicMethod())
-              .addMethod(getFindPackagePathByPackageNameMethod())
               .addMethod(getHttpdRequestMethod())
+              .addMethod(getGetDocumentationForPackageMethod())
+              .addMethod(getGetDocumentationForSymbolMethod())
               .addMethod(getGetWorkingDirMethod())
               .addMethod(getSetWorkingDirMethod())
               .addMethod(getClearEnvironmentMethod())

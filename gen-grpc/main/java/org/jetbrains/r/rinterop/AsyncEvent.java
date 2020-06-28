@@ -175,14 +175,14 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 82: {
-            org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder subBuilder = null;
+            org.jetbrains.r.rinterop.HttpdResponse.Builder subBuilder = null;
             if (eventCase_ == 10) {
-              subBuilder = ((org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_).toBuilder();
+              subBuilder = ((org.jetbrains.r.rinterop.HttpdResponse) event_).toBuilder();
             }
             event_ =
-                input.readMessage(org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.parser(), extensionRegistry);
+                input.readMessage(org.jetbrains.r.rinterop.HttpdResponse.parser(), extensionRegistry);
             if (subBuilder != null) {
-              subBuilder.mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_);
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.HttpdResponse) event_);
               event_ = subBuilder.buildPartial();
             }
             eventCase_ = 10;
@@ -3845,698 +3845,6 @@ private static final long serialVersionUID = 0L;
 
   }
 
-  public interface ShowHelpRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:rplugininterop.AsyncEvent.ShowHelpRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string content = 1;</code>
-     */
-    java.lang.String getContent();
-    /**
-     * <code>string content = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getContentBytes();
-
-    /**
-     * <code>string url = 2;</code>
-     */
-    java.lang.String getUrl();
-    /**
-     * <code>string url = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getUrlBytes();
-  }
-  /**
-   * Protobuf type {@code rplugininterop.AsyncEvent.ShowHelpRequest}
-   */
-  public  static final class ShowHelpRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.ShowHelpRequest)
-      ShowHelpRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use ShowHelpRequest.newBuilder() to construct.
-    private ShowHelpRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private ShowHelpRequest() {
-      content_ = "";
-      url_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new ShowHelpRequest();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ShowHelpRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              content_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              url_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ShowHelpRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ShowHelpRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.class, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder.class);
-    }
-
-    public static final int CONTENT_FIELD_NUMBER = 1;
-    private volatile java.lang.Object content_;
-    /**
-     * <code>string content = 1;</code>
-     */
-    public java.lang.String getContent() {
-      java.lang.Object ref = content_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        content_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string content = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getContentBytes() {
-      java.lang.Object ref = content_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        content_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int URL_FIELD_NUMBER = 2;
-    private volatile java.lang.Object url_;
-    /**
-     * <code>string url = 2;</code>
-     */
-    public java.lang.String getUrl() {
-      java.lang.Object ref = url_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        url_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string url = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getUrlBytes() {
-      java.lang.Object ref = url_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        url_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!getContentBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, content_);
-      }
-      if (!getUrlBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, url_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!getContentBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, content_);
-      }
-      if (!getUrlBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, url_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest)) {
-        return super.equals(obj);
-      }
-      org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest other = (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) obj;
-
-      if (!getContent()
-          .equals(other.getContent())) return false;
-      if (!getUrl()
-          .equals(other.getUrl())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + CONTENT_FIELD_NUMBER;
-      hash = (53 * hash) + getContent().hashCode();
-      hash = (37 * hash) + URL_FIELD_NUMBER;
-      hash = (53 * hash) + getUrl().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code rplugininterop.AsyncEvent.ShowHelpRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:rplugininterop.AsyncEvent.ShowHelpRequest)
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ShowHelpRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ShowHelpRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.class, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder.class);
-      }
-
-      // Construct using org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        content_ = "";
-
-        url_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ShowHelpRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getDefaultInstanceForType() {
-        return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest build() {
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest buildPartial() {
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest result = new org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest(this);
-        result.content_ = content_;
-        result.url_ = url_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) {
-          return mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest other) {
-        if (other == org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance()) return this;
-        if (!other.getContent().isEmpty()) {
-          content_ = other.content_;
-          onChanged();
-        }
-        if (!other.getUrl().isEmpty()) {
-          url_ = other.url_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object content_ = "";
-      /**
-       * <code>string content = 1;</code>
-       */
-      public java.lang.String getContent() {
-        java.lang.Object ref = content_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          content_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string content = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getContentBytes() {
-        java.lang.Object ref = content_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          content_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string content = 1;</code>
-       */
-      public Builder setContent(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        content_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string content = 1;</code>
-       */
-      public Builder clearContent() {
-        
-        content_ = getDefaultInstance().getContent();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string content = 1;</code>
-       */
-      public Builder setContentBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        content_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object url_ = "";
-      /**
-       * <code>string url = 2;</code>
-       */
-      public java.lang.String getUrl() {
-        java.lang.Object ref = url_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          url_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string url = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getUrlBytes() {
-        java.lang.Object ref = url_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          url_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string url = 2;</code>
-       */
-      public Builder setUrl(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        url_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string url = 2;</code>
-       */
-      public Builder clearUrl() {
-        
-        url_ = getDefaultInstance().getUrl();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string url = 2;</code>
-       */
-      public Builder setUrlBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        url_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:rplugininterop.AsyncEvent.ShowHelpRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:rplugininterop.AsyncEvent.ShowHelpRequest)
-    private static final org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest();
-    }
-
-    public static org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<ShowHelpRequest>
-        PARSER = new com.google.protobuf.AbstractParser<ShowHelpRequest>() {
-      @java.lang.Override
-      public ShowHelpRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ShowHelpRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<ShowHelpRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ShowHelpRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   private int eventCase_ = 0;
   private java.lang.Object event_;
   public enum EventCase
@@ -4831,28 +4139,28 @@ private static final long serialVersionUID = 0L;
 
   public static final int SHOWHELPREQUEST_FIELD_NUMBER = 10;
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
   public boolean hasShowHelpRequest() {
     return eventCase_ == 10;
   }
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
-  public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getShowHelpRequest() {
+  public org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest() {
     if (eventCase_ == 10) {
-       return (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_;
+       return (org.jetbrains.r.rinterop.HttpdResponse) event_;
     }
-    return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+    return org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
-  public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder getShowHelpRequestOrBuilder() {
+  public org.jetbrains.r.rinterop.HttpdResponseOrBuilder getShowHelpRequestOrBuilder() {
     if (eventCase_ == 10) {
-       return (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_;
+       return (org.jetbrains.r.rinterop.HttpdResponse) event_;
     }
-    return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+    return org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
   }
 
   public static final int SUBPROCESSINPUT_FIELD_NUMBER = 11;
@@ -4966,7 +4274,7 @@ private static final long serialVersionUID = 0L;
       output.writeMessage(9, (org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest) event_);
     }
     if (eventCase_ == 10) {
-      output.writeMessage(10, (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_);
+      output.writeMessage(10, (org.jetbrains.r.rinterop.HttpdResponse) event_);
     }
     if (eventCase_ == 11) {
       output.writeMessage(11, (com.google.protobuf.Empty) event_);
@@ -5021,7 +4329,7 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 10) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(10, (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_);
+        .computeMessageSize(10, (org.jetbrains.r.rinterop.HttpdResponse) event_);
     }
     if (eventCase_ == 11) {
       size += com.google.protobuf.CodedOutputStream
@@ -6775,33 +6083,33 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder> showHelpRequestBuilder_;
+        org.jetbrains.r.rinterop.HttpdResponse, org.jetbrains.r.rinterop.HttpdResponse.Builder, org.jetbrains.r.rinterop.HttpdResponseOrBuilder> showHelpRequestBuilder_;
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
     public boolean hasShowHelpRequest() {
       return eventCase_ == 10;
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
-    public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getShowHelpRequest() {
+    public org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest() {
       if (showHelpRequestBuilder_ == null) {
         if (eventCase_ == 10) {
-          return (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_;
+          return (org.jetbrains.r.rinterop.HttpdResponse) event_;
         }
-        return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+        return org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
       } else {
         if (eventCase_ == 10) {
           return showHelpRequestBuilder_.getMessage();
         }
-        return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+        return org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
-    public Builder setShowHelpRequest(org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest value) {
+    public Builder setShowHelpRequest(org.jetbrains.r.rinterop.HttpdResponse value) {
       if (showHelpRequestBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -6815,10 +6123,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
     public Builder setShowHelpRequest(
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder builderForValue) {
+        org.jetbrains.r.rinterop.HttpdResponse.Builder builderForValue) {
       if (showHelpRequestBuilder_ == null) {
         event_ = builderForValue.build();
         onChanged();
@@ -6829,13 +6137,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
-    public Builder mergeShowHelpRequest(org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest value) {
+    public Builder mergeShowHelpRequest(org.jetbrains.r.rinterop.HttpdResponse value) {
       if (showHelpRequestBuilder_ == null) {
         if (eventCase_ == 10 &&
-            event_ != org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance()) {
-          event_ = org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.newBuilder((org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_)
+            event_ != org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance()) {
+          event_ = org.jetbrains.r.rinterop.HttpdResponse.newBuilder((org.jetbrains.r.rinterop.HttpdResponse) event_)
               .mergeFrom(value).buildPartial();
         } else {
           event_ = value;
@@ -6851,7 +6159,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
     public Builder clearShowHelpRequest() {
       if (showHelpRequestBuilder_ == null) {
@@ -6870,37 +6178,37 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
-    public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder getShowHelpRequestBuilder() {
+    public org.jetbrains.r.rinterop.HttpdResponse.Builder getShowHelpRequestBuilder() {
       return getShowHelpRequestFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
-    public org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder getShowHelpRequestOrBuilder() {
+    public org.jetbrains.r.rinterop.HttpdResponseOrBuilder getShowHelpRequestOrBuilder() {
       if ((eventCase_ == 10) && (showHelpRequestBuilder_ != null)) {
         return showHelpRequestBuilder_.getMessageOrBuilder();
       } else {
         if (eventCase_ == 10) {
-          return (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_;
+          return (org.jetbrains.r.rinterop.HttpdResponse) event_;
         }
-        return org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+        return org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+     * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder> 
+        org.jetbrains.r.rinterop.HttpdResponse, org.jetbrains.r.rinterop.HttpdResponse.Builder, org.jetbrains.r.rinterop.HttpdResponseOrBuilder> 
         getShowHelpRequestFieldBuilder() {
       if (showHelpRequestBuilder_ == null) {
         if (!(eventCase_ == 10)) {
-          event_ = org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.getDefaultInstance();
+          event_ = org.jetbrains.r.rinterop.HttpdResponse.getDefaultInstance();
         }
         showHelpRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder>(
-                (org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest) event_,
+            org.jetbrains.r.rinterop.HttpdResponse, org.jetbrains.r.rinterop.HttpdResponse.Builder, org.jetbrains.r.rinterop.HttpdResponseOrBuilder>(
+                (org.jetbrains.r.rinterop.HttpdResponse) event_,
                 getParentForChildren(),
                 isClean());
         event_ = null;

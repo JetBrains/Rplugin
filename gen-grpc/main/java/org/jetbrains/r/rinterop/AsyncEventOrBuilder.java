@@ -125,17 +125,17 @@ public interface AsyncEventOrBuilder extends
   org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequestOrBuilder getShowFileRequestOrBuilder();
 
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
   boolean hasShowHelpRequest();
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
-  org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequest getShowHelpRequest();
+  org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest();
   /**
-   * <code>.rplugininterop.AsyncEvent.ShowHelpRequest showHelpRequest = 10;</code>
+   * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
-  org.jetbrains.r.rinterop.AsyncEvent.ShowHelpRequestOrBuilder getShowHelpRequestOrBuilder();
+  org.jetbrains.r.rinterop.HttpdResponseOrBuilder getShowHelpRequestOrBuilder();
 
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>

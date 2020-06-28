@@ -6,6 +6,7 @@
 package org.jetbrains.r.packages.remote
 
 import com.intellij.execution.ExecutionException
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.CatchingConsumer
@@ -20,14 +21,13 @@ import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.documentation.SHOW_PACKAGE_DOCS
+import org.jetbrains.r.documentation.RDocumentationUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
-import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import java.util.concurrent.atomic.AtomicInteger
@@ -232,7 +232,14 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun navigateToPackageDocumentation(pkg: RInstalledPackage) {
-    RToolWindowFactory.showDocumentation(RElementFactory.buildRFileFromText(project, "$SHOW_PACKAGE_DOCS(${pkg.name})").firstChild)
+    val rInterop = interop ?: return
+    rInterop.getDocumentationForPackage(pkg.name).then {
+      if (it != null) {
+        invokeLater {
+          RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, it))
+        }
+      }
+    }
   }
 
   interface MultiListener {

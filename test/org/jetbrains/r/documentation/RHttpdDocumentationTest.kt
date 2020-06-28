@@ -29,15 +29,15 @@ class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testHttpdRequest() {
-    val response = rInterop.httpdRequest("/library/base/html/print.html")!!
-    TestCase.assertEquals("/library/base/html/print.html", response.url)
-    TestCase.assertTrue(response.content.toString(Charsets.UTF_8).contains("print {base}"))
+    val (content, url) = rInterop.httpdRequest("/library/base/html/print.html")!!
+    TestCase.assertEquals("/library/base/html/print.html", url)
+    TestCase.assertTrue(content.contains("print {base}"))
   }
 
   fun testHttpdRequestRedirect() {
-    val response = rInterop.httpdRequest("/library/base/help/print")!!
-    TestCase.assertEquals("/library/base/html/print.html", response.url)
-    TestCase.assertTrue(response.content.toString(Charsets.UTF_8).contains("print {base}"))
+    val (content, url) = rInterop.httpdRequest("/library/base/help/print")!!
+    TestCase.assertEquals("/library/base/html/print.html", url)
+    TestCase.assertTrue(content.contains("print {base}"))
   }
 
   fun testLinkTransform() {
@@ -58,16 +58,15 @@ class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
       <a href="psi_element:///a/b/c/d/xyz.html">link</a>
       <a href="psi_element:///q/w/e.html">link</a>
     """.trimIndent()
-    TestCase.assertEquals(expected, RDocumentationUtil.getTextFromElement(RDocumentationUtil.makeElementForText(rInterop, input, url)))
+    TestCase.assertEquals(expected, RDocumentationUtil.getTextFromElement(
+      RDocumentationUtil.makeElementForText(rInterop,RInterop.HttpdResponse(input, url))))
   }
 
-  private data class HelpRequest(val content: String, val url: String)
-
-  private fun executeHelpCommand(command: String): HelpRequest {
-    val result = AsyncPromise<HelpRequest>()
+  private fun executeHelpCommand(command: String): RInterop.HttpdResponse {
+    val result = AsyncPromise<RInterop.HttpdResponse>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onShowHelpRequest(content: String, url: String) {
-        result.setResult(HelpRequest(content, url))
+      override fun onShowHelpRequest(httpdResponse: RInterop.HttpdResponse) {
+        result.setResult(httpdResponse)
         rInterop.removeAsyncEventsListener(this)
       }
     })
