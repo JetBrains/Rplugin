@@ -578,7 +578,7 @@ You can find the source code in the following repositories:
 
         <!-- coding assistance-->
         <liveTemplateContext implementation="org.jetbrains.r.editor.RContextType"/>
-        <defaultLiveTemplatesProvider implementation="org.jetbrains.r.editor.LiveTemplateProvider"/>
+        <defaultLiveTemplates file="liveTemplates/rtemplates.xml"/>
         <internalFileTemplate name="R Script"/>
         <internalFileTemplate name="RMarkdown"/>
 
