@@ -5,6 +5,7 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.application.subscribe
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -20,7 +21,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import java.util.concurrent.atomic.AtomicInteger
 
-class RLibraryWatcher(private val project: Project) {
+class RLibraryWatcher(private val project: Project) : Disposable {
   private val bulkFileListener: BulkFileListener
   private val rootsToWatch = HashSet<LocalFileSystem.WatchRequest>()
   private val files4Watching = ArrayList<VirtualFile>()
@@ -96,6 +97,8 @@ class RLibraryWatcher(private val project: Project) {
     }
   }
 
+  override fun dispose() {}
+
   enum class TimeSlot {
     /** Time slot for services that should be updated at first */
     FIRST,
@@ -116,7 +119,7 @@ class RLibraryWatcher(private val project: Project) {
       private val groups = TimeSlot.values().map { mutableListOf<() -> Promise<Unit>>() }
 
       init {
-        val connection = project.messageBus.connect()
+        val connection = project.messageBus.connect(getInstance(project))
         connection.subscribe(TOPIC, object : RLibraryListener {
           override fun libraryChanged() {
             val copy = groups.map { it.toList() }  // Note: if new listeners are going to be added during refresh they won't be taken into account
