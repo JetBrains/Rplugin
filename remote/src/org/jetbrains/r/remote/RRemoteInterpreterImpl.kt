@@ -122,7 +122,8 @@ class RRemoteInterpreterImpl(
   override fun createFileChooserForHost(value: String, selectFolder: Boolean): TextFieldWithBrowseButton {
     return TextFieldWithBrowseButton().also { component ->
       component.text = value
-      component.addActionListener(RemoteBrowseActionListener(component.textField, "Select File") { consumer ->
+      component.addActionListener(RemoteBrowseActionListener(component.textField,
+                                                             RRemoteBundle.message("remote.file.chooser.title")) { consumer ->
         consumer.consume(remoteHost.credentials)
       }.withFoldersOnly(selectFolder))
     }
