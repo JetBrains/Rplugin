@@ -445,6 +445,16 @@ class FormatterTest : RUsefulTestCase() {
     """)
   }
 
+  fun testDoNotInsertBlankLineBetweenCommentAndStatement() {
+    val text = """
+      # Hello world
+      f <- function(x, y) {
+        x + y
+      }
+    """
+    doTest(text, text)
+  }
+
   fun testMaximumBlankLinesInExpression() {
     doTest("""
       x <- 10 +
