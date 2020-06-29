@@ -156,7 +156,9 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
                                     child2: Block): Spacing? {
     val node1 = (child1 as? RFormatterBlock)?.node ?: return null
     val node2 = (child2 as? RFormatterBlock)?.node ?: return null
-    if (isBigFunctionDeclaration(node1) || (isBigFunctionDeclaration(node2) && node1.elementType != RParserDefinition.END_OF_LINE_COMMENT)) {
+    if (isBigFunctionDeclaration(node1) || (isBigFunctionDeclaration(node2) &&
+                                            node1.elementType != RParserDefinition.END_OF_LINE_COMMENT &&
+                                            node1.elementType != RParserDefinition.ROXYGEN_COMMENT)) {
       val common = settings.getCommonSettings(RLanguage.INSTANCE)
       return Spacing.createSpacing(0, 0, 2, false, common.KEEP_BLANK_LINES_IN_CODE)
     }

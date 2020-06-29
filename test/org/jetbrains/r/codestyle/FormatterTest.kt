@@ -445,6 +445,20 @@ class FormatterTest : RUsefulTestCase() {
     """)
   }
 
+  fun testDoNotInsertBlankLineBetweenRoxygenCommentAndStatement() {
+    val text = """
+      #' Arbitrary function
+      #'
+      #' @param x param 1
+      #' @param y param 2
+      #' @return Sum of x and y
+      f <- function(x, y) {
+        return(x + y)
+      }
+    """
+    doTest(text, text)
+  }
+
   fun testDoNotInsertBlankLineBetweenCommentAndStatement() {
     val text = """
       # Hello world
