@@ -31,6 +31,7 @@ import com.jetbrains.plugins.webDeployment.ui.remotebrowser.ServerTreeViewOption
 import com.jetbrains.plugins.webDeployment.ui.remotebrowser.WebServerTreeBuilder
 import org.apache.commons.vfs2.FileName
 import org.apache.commons.vfs2.FileType
+import org.jetbrains.r.remote.RRemoteBundle
 import org.jetbrains.r.remote.host.RRemoteHost
 import java.awt.event.MouseEvent
 import javax.swing.tree.TreePath
@@ -41,10 +42,10 @@ class RRemoteHostViewPanel(val project: Project, val remoteHost: RRemoteHost) : 
   val serverTree: ServerTree
   private val treeBuilder: WebServerTreeBuilder
 
-  private val showHiddenFilesAction = MyToggleAction("Show Hidden Files", false)
-  private val showSizeAction = MyToggleAction("Show Size", false)
-  private val showTimestampAction = MyToggleAction("Show Date", false)
-  private val showPermissionsAction = MyToggleAction("Show Permissions", false)
+  private val showHiddenFilesAction = MyToggleAction(RRemoteBundle.message("remote.host.view.show.hidden.files"), false)
+  private val showSizeAction = MyToggleAction(RRemoteBundle.message("remote.host.view.show.size"), false)
+  private val showTimestampAction = MyToggleAction(RRemoteBundle.message("remote.host.view.show.date"), false)
+  private val showPermissionsAction = MyToggleAction(RRemoteBundle.message("remote.host.view.show.permissions"), false)
 
   init {
     val viewOptions = object : ServerTreeViewOptions {
@@ -119,7 +120,7 @@ class RRemoteHostViewPanel(val project: Project, val remoteHost: RRemoteHost) : 
   }
 
   private fun createShowActions(): AnAction {
-    return DefaultActionGroup("Show...", listOf(
+    return DefaultActionGroup(RRemoteBundle.message("remote.host.view.show.group.title"), listOf(
       showHiddenFilesAction,
       showSizeAction,
       showTimestampAction,

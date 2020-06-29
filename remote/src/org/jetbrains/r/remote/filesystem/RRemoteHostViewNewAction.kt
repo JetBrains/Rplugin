@@ -22,7 +22,7 @@ import com.jetbrains.plugins.webDeployment.actions.WebDeploymentDataKeys
 import org.jetbrains.r.remote.RRemoteBundle
 import org.jetbrains.r.util.RPathUtil
 
-class RRemoteHostViewNewActionGroup : ActionGroup("New...", true), DumbAware {
+class RRemoteHostViewNewActionGroup : ActionGroup(WDBundle.message("new.remote.item.new"), true), DumbAware {
   override fun getChildren(event: AnActionEvent?): Array<AnAction> {
     return arrayOf(
       ActionManager.getInstance().getAction("org.jetbrains.r.remote.filesystem.RRemoteHostViewNewAction.NewFile"),

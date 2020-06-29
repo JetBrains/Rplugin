@@ -27,7 +27,7 @@ object RAddRemoteInterpreterDialog {
   fun show(existingInterpreters: List<RInterpreterInfo>, onAdded: (RInterpreterInfo) -> Unit) {
     val dialog = object : DialogWrapper(null) {
       val panel = JPanel(GridBagLayout())
-      val sshConfigLabel = JLabel("Remote host:").also {
+      val sshConfigLabel = JLabel(RRemoteBundle.message("add.remote.dialog.remote.host.label")).also {
         panel.add(it, GridBagConstraints().apply {
           gridx = 0
           gridy = 0
@@ -46,7 +46,7 @@ object RAddRemoteInterpreterDialog {
         })
         it.reload()
       }
-      val pathLabel = JLabel("Interpreter path:").also {
+      val pathLabel = JLabel(RRemoteBundle.message("add.remote.dialog.interpreter.path.label")).also {
         panel.add(it, GridBagConstraints().apply {
           gridx = 0
           gridy = 1
@@ -63,7 +63,7 @@ object RAddRemoteInterpreterDialog {
           weighty = 1.0
           fill = GridBagConstraints.HORIZONTAL
         })
-        it.addActionListener(RemoteBrowseActionListener(it.textField, "Select R Interpreter") { consumer ->
+        it.addActionListener(RemoteBrowseActionListener(it.textField, RBundle.message("project.settings.select.interpreter")) { consumer ->
           val config = sshConfigComboBox.selectedSshConfig ?: return@RemoteBrowseActionListener
           consumer.consume(config.copyToCredentials())
         })
@@ -123,7 +123,7 @@ object RAddRemoteInterpreterDialog {
       return
     }
 
-    val interpreter = RBasicInterpreterInfo("Remote", location, version)
+    val interpreter = RBasicInterpreterInfo(RRemoteBundle.message("project.settings.remote.name"), location, version)
     onAdded(interpreter)
   }
 }
