@@ -30,7 +30,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.documentation.RDocumentationUtil
+import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.intentions.DependencyManagementFix
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.notifications.RNotificationUtil
@@ -196,7 +196,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onShowHelpRequest(httpdResponse: RInterop.HttpdResponse) {
       invokeLater {
-        RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, httpdResponse))
+        RToolWindowFactory.showDocumentation(RDocumentationProvider.makeElementForText(rInterop, httpdResponse))
       }
     }
 

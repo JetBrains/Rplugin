@@ -4,28 +4,27 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.MakeRdFromRoxygenRequest}
+ * Protobuf type {@code rplugininterop.ConvertRoxygenToHTMLRequest}
  */
-public  final class MakeRdFromRoxygenRequest extends
+public  final class ConvertRoxygenToHTMLRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.MakeRdFromRoxygenRequest)
-    MakeRdFromRoxygenRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.ConvertRoxygenToHTMLRequest)
+    ConvertRoxygenToHTMLRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use MakeRdFromRoxygenRequest.newBuilder() to construct.
-  private MakeRdFromRoxygenRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use ConvertRoxygenToHTMLRequest.newBuilder() to construct.
+  private ConvertRoxygenToHTMLRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private MakeRdFromRoxygenRequest() {
+  private ConvertRoxygenToHTMLRequest() {
     functionName_ = "";
     functionText_ = "";
-    outputFilePath_ = "";
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new MakeRdFromRoxygenRequest();
+    return new ConvertRoxygenToHTMLRequest();
   }
 
   @java.lang.Override
@@ -33,7 +32,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private MakeRdFromRoxygenRequest(
+  private ConvertRoxygenToHTMLRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -63,12 +62,6 @@ private static final long serialVersionUID = 0L;
             functionText_ = s;
             break;
           }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            outputFilePath_ = s;
-            break;
-          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -90,15 +83,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_MakeRdFromRoxygenRequest_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ConvertRoxygenToHTMLRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_MakeRdFromRoxygenRequest_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ConvertRoxygenToHTMLRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.class, org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.Builder.class);
+            org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.class, org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.Builder.class);
   }
 
   public static final int FUNCTIONNAME_FIELD_NUMBER = 1;
@@ -169,40 +162,6 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int OUTPUTFILEPATH_FIELD_NUMBER = 3;
-  private volatile java.lang.Object outputFilePath_;
-  /**
-   * <code>string outputFilePath = 3;</code>
-   */
-  public java.lang.String getOutputFilePath() {
-    java.lang.Object ref = outputFilePath_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      outputFilePath_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string outputFilePath = 3;</code>
-   */
-  public com.google.protobuf.ByteString
-      getOutputFilePathBytes() {
-    java.lang.Object ref = outputFilePath_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      outputFilePath_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -223,9 +182,6 @@ private static final long serialVersionUID = 0L;
     if (!getFunctionTextBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, functionText_);
     }
-    if (!getOutputFilePathBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, outputFilePath_);
-    }
     unknownFields.writeTo(output);
   }
 
@@ -241,9 +197,6 @@ private static final long serialVersionUID = 0L;
     if (!getFunctionTextBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, functionText_);
     }
-    if (!getOutputFilePathBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, outputFilePath_);
-    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -254,17 +207,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest other = (org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest) obj;
+    org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest other = (org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) obj;
 
     if (!getFunctionName()
         .equals(other.getFunctionName())) return false;
     if (!getFunctionText()
         .equals(other.getFunctionText())) return false;
-    if (!getOutputFilePath()
-        .equals(other.getOutputFilePath())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -280,76 +231,74 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getFunctionName().hashCode();
     hash = (37 * hash) + FUNCTIONTEXT_FIELD_NUMBER;
     hash = (53 * hash) + getFunctionText().hashCode();
-    hash = (37 * hash) + OUTPUTFILEPATH_FIELD_NUMBER;
-    hash = (53 * hash) + getOutputFilePath().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parseFrom(
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -362,7 +311,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -378,26 +327,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.MakeRdFromRoxygenRequest}
+   * Protobuf type {@code rplugininterop.ConvertRoxygenToHTMLRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.MakeRdFromRoxygenRequest)
-      org.jetbrains.r.rinterop.MakeRdFromRoxygenRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.ConvertRoxygenToHTMLRequest)
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_MakeRdFromRoxygenRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ConvertRoxygenToHTMLRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_MakeRdFromRoxygenRequest_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ConvertRoxygenToHTMLRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.class, org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.Builder.class);
+              org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.class, org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -419,25 +368,23 @@ private static final long serialVersionUID = 0L;
 
       functionText_ = "";
 
-      outputFilePath_ = "";
-
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_MakeRdFromRoxygenRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ConvertRoxygenToHTMLRequest_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.getDefaultInstance();
+    public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest build() {
-      org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest result = buildPartial();
+    public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest build() {
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -445,11 +392,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest buildPartial() {
-      org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest result = new org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest(this);
+    public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest buildPartial() {
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest result = new org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest(this);
       result.functionName_ = functionName_;
       result.functionText_ = functionText_;
-      result.outputFilePath_ = outputFilePath_;
       onBuilt();
       return result;
     }
@@ -488,26 +434,22 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest) {
-        return mergeFrom((org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest)other);
+      if (other instanceof org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) {
+        return mergeFrom((org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest other) {
-      if (other == org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest other) {
+      if (other == org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.getDefaultInstance()) return this;
       if (!other.getFunctionName().isEmpty()) {
         functionName_ = other.functionName_;
         onChanged();
       }
       if (!other.getFunctionText().isEmpty()) {
         functionText_ = other.functionText_;
-        onChanged();
-      }
-      if (!other.getOutputFilePath().isEmpty()) {
-        outputFilePath_ = other.outputFilePath_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -525,11 +467,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest parsedMessage = null;
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -676,75 +618,6 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
-
-    private java.lang.Object outputFilePath_ = "";
-    /**
-     * <code>string outputFilePath = 3;</code>
-     */
-    public java.lang.String getOutputFilePath() {
-      java.lang.Object ref = outputFilePath_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        outputFilePath_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
-    }
-    /**
-     * <code>string outputFilePath = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getOutputFilePathBytes() {
-      java.lang.Object ref = outputFilePath_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        outputFilePath_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string outputFilePath = 3;</code>
-     */
-    public Builder setOutputFilePath(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      outputFilePath_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string outputFilePath = 3;</code>
-     */
-    public Builder clearOutputFilePath() {
-      
-      outputFilePath_ = getDefaultInstance().getOutputFilePath();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string outputFilePath = 3;</code>
-     */
-    public Builder setOutputFilePathBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      outputFilePath_ = value;
-      onChanged();
-      return this;
-    }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -758,41 +631,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.MakeRdFromRoxygenRequest)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.ConvertRoxygenToHTMLRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.MakeRdFromRoxygenRequest)
-  private static final org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.ConvertRoxygenToHTMLRequest)
+  private static final org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest();
   }
 
-  public static org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<MakeRdFromRoxygenRequest>
-      PARSER = new com.google.protobuf.AbstractParser<MakeRdFromRoxygenRequest>() {
+  private static final com.google.protobuf.Parser<ConvertRoxygenToHTMLRequest>
+      PARSER = new com.google.protobuf.AbstractParser<ConvertRoxygenToHTMLRequest>() {
     @java.lang.Override
-    public MakeRdFromRoxygenRequest parsePartialFrom(
+    public ConvertRoxygenToHTMLRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new MakeRdFromRoxygenRequest(input, extensionRegistry);
+      return new ConvertRoxygenToHTMLRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<MakeRdFromRoxygenRequest> parser() {
+  public static com.google.protobuf.Parser<ConvertRoxygenToHTMLRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<MakeRdFromRoxygenRequest> getParserForType() {
+  public com.google.protobuf.Parser<ConvertRoxygenToHTMLRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

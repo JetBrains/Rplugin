@@ -59,8 +59,7 @@ class RHttpdDocumentationTest : RProcessHandlerBaseTestCase() {
       <a href="psi_element:///a/b/c/d/xyz.html">link</a>
       <a href="psi_element:///q/w/e.html">link</a>
     """.trimIndent()
-    TestCase.assertEquals(expected, RDocumentationUtil.getTextFromElement(
-      RDocumentationUtil.makeElementForText(rInterop,RInterop.HttpdResponse(input, url))))
+    TestCase.assertEquals(expected, RDocumentationProvider.convertHelpPage(RInterop.HttpdResponse(input, url)))
   }
 
   private fun executeHelpCommand(command: String): RInterop.HttpdResponse {

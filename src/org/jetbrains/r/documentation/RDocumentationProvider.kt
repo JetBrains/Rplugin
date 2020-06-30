@@ -93,9 +93,9 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   }
 
   @Throws(RequiredPackageException::class)
-  private fun getHtmlLocalFunctionPath(rInterop: RInterop,
-                                       localFunction: RAssignmentStatement,
-                                       docStringValue: String?): String? {
+  private fun getHtmlLocalFunction(rInterop: RInterop,
+                                   localFunction: RAssignmentStatement,
+                                   docStringValue: String?): String? {
     // TODO(This is a temporary solution, full support for roxygen see DS-16)
     docStringValue ?: return null
 
@@ -127,43 +127,13 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     val functionText = "#'${docStringValue.replace("<br>", "\n#'")}\n${localFunction.text.takeWhile { it != '{' }}{}"
       .replace("\\", "\\\\")
       .replace("\"", "\\\"")
-
-    val rdPath = cutPathIfWindows(makePath(pathToDocumentation, "local", "rd.tmp"), WINDOWS_MAX_PATH_LENGTH)
-    val rdFile = File(rdPath)
-
-    val htmlTmpPath = cutPathIfWindows(makePath(pathToDocumentation, "local", fileName, "${functionName}_tmp"), WINDOWS_MAX_PATH_LENGTH - 1)
-    val htmlTmpFile = File(htmlTmpPath)
-    try {
-      if (!htmlFile.parentFile.exists()) {
-        Files.createDirectories(htmlFile.parentFile.toPath())
-      }
-
-      rdFile.delete()
-      val executionMakeRdFromRoxygen = rInterop.makeRdFromRoxygen(functionName, functionText, rdFile.absolutePath.replace(separator, "/"))
-      if (!rdFile.exists()) {
-        LOG.error(
-          "Convert roxygen to Rd failed. Stdout: ${executionMakeRdFromRoxygen.stdout};\n Stderr: ${executionMakeRdFromRoxygen.stderr}")
-        return null
-      }
-
-      val executionMakeHtml = rInterop.convertRd2HTML(rdFilePath = rdFile.absolutePath.replace(separator, "/"),
-                                                      outputFilePath = htmlTmpFile.absolutePath.replace(separator, "/"))
-      if (!convertHelpPage(htmlTmpPath, htmlPath)) {
-        LOG.error(
-          "Roxygen2Rd. Stdout: ${executionMakeRdFromRoxygen.stdout};\n Stderr: ${executionMakeRdFromRoxygen.stderr}\n\n" +
-          "Rd2HTML. Stdout: ${executionMakeHtml.stdout};\n Stderr: ${executionMakeHtml.stderr}")
-        return null
-      }
-      return htmlPath
-    }
-    catch (e: IOException) {
-      LOG.error(e)
+    val result = rInterop.convertRoxygenToHTML(functionName, functionText)
+    if (result.exception != null) {
+      LOG.error("RoxygenToHTML. ${result.exception}")
       return null
     }
-    finally {
-      htmlTmpFile.delete()
-      rdFile.delete()
-    }
+    return convertHelpPage(RInterop.HttpdResponse(result.stdout, "")) +
+           "<hr>\n<div style=\"text-align: center;\">[Package <em>${localFunction.containingFile.name}</em>]</div>\n"
   }
 
   @Throws(RequiredPackageException::class)
@@ -189,7 +159,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     if (localFunction is RAssignmentStatement) {
       val assignedValue = localFunction.assignedValue
       if (assignedValue is RFunctionExpression) {
-        return getHtmlLocalFunctionPath(rInterop, localFunction, assignedValue.docStringValue)
+        return getHtmlLocalFunction(rInterop, localFunction, assignedValue.docStringValue)
       }
     }
 
@@ -223,23 +193,24 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
-    RDocumentationUtil.getTextFromElement(psiElement)?.let { return it }
+    psiElement.getCopyableUserData(ELEMENT_TEXT)?.let { return it() }
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
     if (psiElement is RStringLiteralExpression && psiElement.getCopyableUserData(INTERCEPTED_LINK) == true) {
-      return rInterop.httpdRequest(psiElement.name.orEmpty())?.let { RDocumentationUtil.convertHelpPage(it) }
+      val url = psiElement.name.orEmpty()
+      if (url.startsWith("http")) {
+        val stream = URL(url).openStream()
+        return Scanner(stream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
+      }
+      return rInterop.httpdRequest(url)?.let { convertHelpPage(it) }
     }
     checkPossibilityReturnDocumentation(psiElement) { return it }
+    val element = PsiTreeUtil.getNonStrictParentOfType(psiElement, RPsiElement::class.java) ?: return null
     try {
-      getDocumentationLocalFunction(rInterop, psiElement)?.let { path ->
-        return Scanner(File(path), StandardCharsets.UTF_8).use {
-          it.useDelimiter("\\A").next()
-        }
-      }
+      getDocumentationLocalFunction(rInterop, element)?.let { return it }
     } catch (e: RequiredPackageException) {
       return e.message
     }
 
-    val element = PsiTreeUtil.getNonStrictParentOfType(psiElement, RExpression::class.java) ?: return null
     val (symbol, pkg) = when {
       element is RStringLiteralExpression || element is RNamedArgument -> return null
       element is RHelpExpression -> "help" to null
@@ -260,7 +231,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       else -> element.text to null
     }
     val response = rInterop.getDocumentationForSymbol(symbol, pkg).getWithCheckCanceled() ?: return null
-    return RDocumentationUtil.convertHelpPage(response)
+    return convertHelpPage(response)
   }
 
   /**
@@ -295,78 +266,47 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       psiManager.project, "${RNamesValidator.quoteIfNeeded(pkg)}::${RNamesValidator.quoteIfNeeded(name)}")
   }
 
-  private fun convertHelpPage(fromPath: String, toPath: String): Boolean {
-    try {
-
-      val file = File(fromPath)
-      val htmlRaw = try {
-        Scanner(file, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
-      }
-      catch (e: NoSuchElementException) {
-        return false
-      }
-
-      val headBody = htmlRaw.indexOf("<body>")
-
-      var htmlTrimmed = htmlRaw
-      if (headBody != -1) {
-        htmlTrimmed = htmlRaw.substring(headBody + 6, htmlRaw.length).trim { it <= ' ' }
-      }
-      else if (htmlRaw.startsWith("<!DOCTYPE html")) {
-        return false
-      }
-
-      // Remove not html hrefs
-      htmlTrimmed = htmlTrimmed.replace(Regex("((<\\w+>)?<a href=\"(?!http)(?>(?!\\.html).)*\">.*</a>.*(<\\w+>)?)"), "")
-
-      // Remove manuals hrefs
-      htmlTrimmed = htmlTrimmed.replace(Regex("((<\\w+>)?<a href=\".*/doc/.*\">.*</a>.*(<\\w+>)?)"), "")
-
-      // Remove images
-      htmlTrimmed = htmlTrimmed.replace(Regex("<a href.*<img.*></a>"), "")
-      htmlTrimmed = htmlTrimmed.replace(Regex("<img.*>"), "")
-
-      // fix relative URLs
-      htmlTrimmed = htmlTrimmed.replace("../../", DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL)
-      htmlTrimmed = htmlTrimmed.replace("../", "${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}${file.parentFile.name}/html/")
-
-      if (File(toPath).name == INDEX_HTML) {
-        htmlTrimmed = htmlTrimmed.replace(Regex("(href=\")((?!psi)(?!http))"),
-                                          "href=\"${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}${file.parentFile.name}/html/")
-      }
-      htmlTrimmed = htmlTrimmed.replace(Regex("(href=\")(?!psi)"), "href=\"${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}")
-
-      // Replace links with internal ones that are correctly handled by
-      // com.intellij.codeInsight.documentation.DocumentationManager.navigateByLink()
-      // See https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000095710-Intercept-clicks-in-documentation-popup-
-      //      htmlTrimmed = htmlTrimmed.replace("http://127.0.0.1:$HELP_SERVER_PORT/", "psi_element://")
-      //            http://127.0.0.1:25593/library/base/html/file.info.html
-      //            /library/base/html/path.info.html
-
-      // Add index page
-
-      val parentName = file.parentFile.name
-      val endBody = htmlTrimmed.indexOf("</body>")
-      htmlTrimmed = htmlTrimmed.substring(0, endBody) +
-                    "<hr>\n<div style=\"text-align: center;\">[Package <em>" +
-                    "${parentName}</em> <a href=\"psi_element://${parentName}/00Index.html\">Index</a>]</div>\n" +
-                    htmlTrimmed.substring(endBody)
-
-
-      LOG.info(htmlTrimmed)
-
-      File(toPath).writeText(htmlTrimmed, StandardCharsets.UTF_8)
-      return true
-    }
-    catch (e: IOException) {
-      LOG.error(e)
-      return false
-    }
-  }
-
   private class RequiredPackageException(message: String?) : RuntimeException(message)
 
   companion object {
+    private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
     private val INTERCEPTED_LINK = Key<Boolean>("org.jetbrains.r.documentation.InterceptedLink")
+
+    fun makeElementForText(rInterop: RInterop, httpdResponse: RInterop.HttpdResponse): PsiElement {
+      return RElementFactory.createRPsiElementFromText(rInterop.project, "text").also {
+        it.putCopyableUserData(ELEMENT_TEXT) { convertHelpPage(httpdResponse) }
+      }
+    }
+
+    internal fun convertHelpPage(httpdResponse: RInterop.HttpdResponse): String {
+      var (text, url) = httpdResponse
+      val bodyStart = text.indexOf("<body>")
+      val bodyEnd = text.lastIndexOf("</body>")
+      if (bodyStart != -1 && bodyEnd != -1) text = text.substring(bodyStart + "<body>".length, bodyEnd)
+      val urlComponents = url.substringBefore('?').substringAfter("://")
+        .substringAfter('/', "").substringBeforeLast('/', "")
+        .split('/')
+      return Regex("href\\s*=\\s*\"([^\"]*)\"").replace(text) {
+        val link = it.groupValues[1]
+        val result = when {
+          link.startsWith('#') -> "psi_element://$url"
+          link.startsWith("http://127.0.0.1") -> {
+            "psi_element:///" + link.substringAfter("://").substringAfter('/', "")
+          }
+          "://" in link -> link
+          link.startsWith('/') -> "psi_element://$link"
+          else -> {
+            var parentCount = 0
+            while (link.startsWith("../", parentCount * 3)) ++parentCount
+            val prefix = urlComponents.dropLast(parentCount).joinToString("/")
+            "psi_element:///" + prefix + (if (prefix.isEmpty()) "" else "/") + link.drop(parentCount * 3)
+          }
+        }
+        "href=\"$result\""
+      }
+        .let { Regex("<a href.*<img.*></a>").replace(it, "") }
+        .let { Regex("<img.*>").replace(it, "") }
+    }
+
   }
 }
