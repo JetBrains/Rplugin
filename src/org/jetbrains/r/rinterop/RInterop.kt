@@ -768,33 +768,17 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun convertRd2HTML(outputFilePath: String, rdFilePath: String = "", dbPath: String = "", dbPage: String = "", topicPackage: String = ""): RIExecutionResult {
-    assert(rdFilePath.isEmpty() || (dbPage.isEmpty() && dbPath.isEmpty()))
-    val builder = ConvertRd2HTMLRequest.newBuilder()
-      .setOutputFilePath(outputFilePath)
-      .setTopicPackage(topicPackage)
-    if (rdFilePath.isNotEmpty()) {
-      builder.setRdFilePath(rdFilePath)
+  fun convertRoxygenToHTML(functionName: String, functionText: String): RIExecutionResult {
+    val result = executeWithCheckCancel(asyncStub::convertRoxygenToHTML,
+                                        ConvertRoxygenToHTMLRequest.newBuilder()
+                                          .setFunctionName(functionName)
+                                          .setFunctionText(functionText)
+                                          .build())
+    return if (result.resultCase == ConvertRoxygenToHTMLResponse.ResultCase.TEXT) {
+      RIExecutionResult(result.text, "", null)
+    } else {
+      RIExecutionResult("", "", result.error)
     }
-    else {
-      assert(dbPage.isNotEmpty() && dbPath.isNotEmpty())
-      val dbRequest = ConvertRd2HTMLRequest.DBRequest.newBuilder()
-        .setDbPath(dbPath)
-        .setDbPage(dbPage)
-        .build()
-      builder.setDbRequest(dbRequest)
-    }
-
-    return executeRequest(RPIServiceGrpc.getConvertRd2HTMLMethod(), builder.build())
-  }
-
-  fun makeRdFromRoxygen(functionName: String, functionText: String, outputFilePath: String): RIExecutionResult {
-    val request = MakeRdFromRoxygenRequest.newBuilder()
-      .setFunctionName(functionName)
-      .setFunctionText(functionText)
-      .setOutputFilePath(outputFilePath)
-      .build()
-    return executeRequest(RPIServiceGrpc.getMakeRdFromRoxygenMethod(), request)
   }
 
   fun clearEnvironment(env: RReference) {

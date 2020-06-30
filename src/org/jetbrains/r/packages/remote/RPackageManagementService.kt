@@ -21,7 +21,7 @@ import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.documentation.RDocumentationUtil
+import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -236,7 +236,7 @@ class RPackageManagementService(private val project: Project,
     rInterop.getDocumentationForPackage(pkg.name).then {
       if (it != null) {
         invokeLater {
-          RToolWindowFactory.showDocumentation(RDocumentationUtil.makeElementForText(rInterop, it))
+          RToolWindowFactory.showDocumentation(RDocumentationProvider.makeElementForText(rInterop, it))
         }
       }
     }

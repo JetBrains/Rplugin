@@ -255,7 +255,7 @@ fun prop(name: String): String =
         ?: error("Property `$name` is not defined in gradle.properties")
 
 fun prepareSandbox(prepareSandboxTask: PrepareSandboxTask, project: Project, isTestingSandbox: Boolean = false) {
-    buildRWrapper(project)
+    //buildRWrapper(project)
     doCopyRWrapperTask(prepareSandboxTask, project)
 }
 

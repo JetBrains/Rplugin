@@ -2166,66 +2166,35 @@ public final class RPIServiceGrpc {
     return getDataFrameDisposeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRd2HTMLRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getConvertRd2HTMLMethod;
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest,
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> getConvertRoxygenToHTMLMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "convertRd2HTML",
-      requestType = org.jetbrains.r.rinterop.ConvertRd2HTMLRequest.class,
-      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRd2HTMLRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getConvertRd2HTMLMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRd2HTMLRequest, org.jetbrains.r.rinterop.CommandOutput> getConvertRd2HTMLMethod;
-    if ((getConvertRd2HTMLMethod = RPIServiceGrpc.getConvertRd2HTMLMethod) == null) {
+      fullMethodName = SERVICE_NAME + '/' + "convertRoxygenToHTML",
+      requestType = org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.class,
+      responseType = org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest,
+      org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> getConvertRoxygenToHTMLMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest, org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> getConvertRoxygenToHTMLMethod;
+    if ((getConvertRoxygenToHTMLMethod = RPIServiceGrpc.getConvertRoxygenToHTMLMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getConvertRd2HTMLMethod = RPIServiceGrpc.getConvertRd2HTMLMethod) == null) {
-          RPIServiceGrpc.getConvertRd2HTMLMethod = getConvertRd2HTMLMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.ConvertRd2HTMLRequest, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "convertRd2HTML"))
+        if ((getConvertRoxygenToHTMLMethod = RPIServiceGrpc.getConvertRoxygenToHTMLMethod) == null) {
+          RPIServiceGrpc.getConvertRoxygenToHTMLMethod = getConvertRoxygenToHTMLMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest, org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "convertRoxygenToHTML"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.ConvertRd2HTMLRequest.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("convertRd2HTML"))
+                  org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("convertRoxygenToHTML"))
               .build();
         }
       }
     }
-    return getConvertRd2HTMLMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getMakeRdFromRoxygenMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "makeRdFromRoxygen",
-      requestType = org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.class,
-      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest,
-      org.jetbrains.r.rinterop.CommandOutput> getMakeRdFromRoxygenMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest, org.jetbrains.r.rinterop.CommandOutput> getMakeRdFromRoxygenMethod;
-    if ((getMakeRdFromRoxygenMethod = RPIServiceGrpc.getMakeRdFromRoxygenMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getMakeRdFromRoxygenMethod = RPIServiceGrpc.getMakeRdFromRoxygenMethod) == null) {
-          RPIServiceGrpc.getMakeRdFromRoxygenMethod = getMakeRdFromRoxygenMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "makeRdFromRoxygen"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("makeRdFromRoxygen"))
-              .build();
-        }
-      }
-    }
-    return getMakeRdFromRoxygenMethod;
+    return getConvertRoxygenToHTMLMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
@@ -3167,16 +3136,9 @@ public final class RPIServiceGrpc {
      * Documentation
      * </pre>
      */
-    public void convertRd2HTML(org.jetbrains.r.rinterop.ConvertRd2HTMLRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncUnimplementedUnaryCall(getConvertRd2HTMLMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void makeRdFromRoxygen(org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncUnimplementedUnaryCall(getMakeRdFromRoxygenMethod(), responseObserver);
+    public void convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getConvertRoxygenToHTMLMethod(), responseObserver);
     }
 
     /**
@@ -3759,19 +3721,12 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty>(
                   this, METHODID_DATA_FRAME_DISPOSE)))
           .addMethod(
-            getConvertRd2HTMLMethod(),
-            asyncServerStreamingCall(
+            getConvertRoxygenToHTMLMethod(),
+            asyncUnaryCall(
               new MethodHandlers<
-                org.jetbrains.r.rinterop.ConvertRd2HTMLRequest,
-                org.jetbrains.r.rinterop.CommandOutput>(
-                  this, METHODID_CONVERT_RD2HTML)))
-          .addMethod(
-            getMakeRdFromRoxygenMethod(),
-            asyncServerStreamingCall(
-              new MethodHandlers<
-                org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest,
-                org.jetbrains.r.rinterop.CommandOutput>(
-                  this, METHODID_MAKE_RD_FROM_ROXYGEN)))
+                org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest,
+                org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse>(
+                  this, METHODID_CONVERT_ROXYGEN_TO_HTML)))
           .addMethod(
             getHttpdRequestMethod(),
             asyncUnaryCall(
@@ -4463,18 +4418,10 @@ public final class RPIServiceGrpc {
      * Documentation
      * </pre>
      */
-    public void convertRd2HTML(org.jetbrains.r.rinterop.ConvertRd2HTMLRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getConvertRd2HTMLMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void makeRdFromRoxygen(org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getMakeRdFromRoxygenMethod(), getCallOptions()), request, responseObserver);
+    public void convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getConvertRoxygenToHTMLMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5127,18 +5074,9 @@ public final class RPIServiceGrpc {
      * Documentation
      * </pre>
      */
-    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> convertRd2HTML(
-        org.jetbrains.r.rinterop.ConvertRd2HTMLRequest request) {
-      return blockingServerStreamingCall(
-          getChannel(), getConvertRd2HTMLMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> makeRdFromRoxygen(
-        org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest request) {
-      return blockingServerStreamingCall(
-          getChannel(), getMakeRdFromRoxygenMethod(), getCallOptions(), request);
+    public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getConvertRoxygenToHTMLMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5696,6 +5634,17 @@ public final class RPIServiceGrpc {
     }
 
     /**
+     * <pre>
+     * Documentation
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> convertRoxygenToHTML(
+        org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getConvertRoxygenToHTMLMethod(), getCallOptions()), request);
+    }
+
+    /**
      */
     public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.HttpdResponse> httpdRequest(
         com.google.protobuf.StringValue request) {
@@ -5872,21 +5821,20 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DATA_FRAME_SORT = 66;
   private static final int METHODID_DATA_FRAME_FILTER = 67;
   private static final int METHODID_DATA_FRAME_DISPOSE = 68;
-  private static final int METHODID_CONVERT_RD2HTML = 69;
-  private static final int METHODID_MAKE_RD_FROM_ROXYGEN = 70;
-  private static final int METHODID_HTTPD_REQUEST = 71;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 73;
-  private static final int METHODID_GET_WORKING_DIR = 74;
-  private static final int METHODID_SET_WORKING_DIR = 75;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 76;
-  private static final int METHODID_LOAD_LIBRARY = 77;
-  private static final int METHODID_UNLOAD_LIBRARY = 78;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 79;
-  private static final int METHODID_LOAD_ENVIRONMENT = 80;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 81;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 82;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 83;
+  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 69;
+  private static final int METHODID_HTTPD_REQUEST = 70;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 71;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 72;
+  private static final int METHODID_GET_WORKING_DIR = 73;
+  private static final int METHODID_SET_WORKING_DIR = 74;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 75;
+  private static final int METHODID_LOAD_LIBRARY = 76;
+  private static final int METHODID_UNLOAD_LIBRARY = 77;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 78;
+  private static final int METHODID_LOAD_ENVIRONMENT = 79;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 80;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 81;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 82;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6181,13 +6129,9 @@ public final class RPIServiceGrpc {
           serviceImpl.dataFrameDispose((com.google.protobuf.Int32Value) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
-        case METHODID_CONVERT_RD2HTML:
-          serviceImpl.convertRd2HTML((org.jetbrains.r.rinterop.ConvertRd2HTMLRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
-          break;
-        case METHODID_MAKE_RD_FROM_ROXYGEN:
-          serviceImpl.makeRdFromRoxygen((org.jetbrains.r.rinterop.MakeRdFromRoxygenRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
+        case METHODID_CONVERT_ROXYGEN_TO_HTML:
+          serviceImpl.convertRoxygenToHTML((org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse>) responseObserver);
           break;
         case METHODID_HTTPD_REQUEST:
           serviceImpl.httpdRequest((com.google.protobuf.StringValue) request,
@@ -6371,8 +6315,7 @@ public final class RPIServiceGrpc {
               .addMethod(getDataFrameSortMethod())
               .addMethod(getDataFrameFilterMethod())
               .addMethod(getDataFrameDisposeMethod())
-              .addMethod(getConvertRd2HTMLMethod())
-              .addMethod(getMakeRdFromRoxygenMethod())
+              .addMethod(getConvertRoxygenToHTMLMethod())
               .addMethod(getHttpdRequestMethod())
               .addMethod(getGetDocumentationForPackageMethod())
               .addMethod(getGetDocumentationForSymbolMethod())

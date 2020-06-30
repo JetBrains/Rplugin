@@ -56,6 +56,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   public override fun setUp() {
     super.setUp()
+    File(project.basePath!!).mkdirs()
     myFixture.testDataPath = testDataPath
   }
 

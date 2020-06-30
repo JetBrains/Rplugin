@@ -205,8 +205,8 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   fun testNavigateLink() {
     myFixture.configureByText("foo.R", "x <- 123")
-    doLinkTest("base/html/print.html", "page for print")
-    doLinkTest("base/html/00Index.html", "The R Base Package")
+    doLinkTest("/library/base/html/print.html", "page for print")
+    doLinkTest("/library/base/html/00Index.html", "The R Base Package")
   }
 
   fun testExternalLink() {
@@ -217,8 +217,8 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
   fun testNavigateLinkDoesntWork() {
     myFixture.configureByText("foo.txt", "x <- 123")
-    testLinkNull("base/html/print.html")
-    testLinkNull("base/html/00Index.html")
+    testLinkNull("/library/base/html/print.html")
+    testLinkNull("/library/base/html/00Index.html")
   }
 
   fun testExternalLinkDoesntWork() {
@@ -248,8 +248,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
 
     myFixture.configureByText("test.R", text)
     val docElement = DocumentationManager.getInstance(myFixture.project).findTargetElement(myFixture.editor, myFixture.file)
-    val originalPointer = docElement.getUserData(ORIGINAL_ELEMENT_KEY)
-    val originalElement = if (originalPointer != null) originalPointer.getElement() else null
+    val originalElement = docElement.getUserData(ORIGINAL_ELEMENT_KEY)?.getElement()
     assertNotNull("No original element at ${psiUnderCaret()?.text}", originalElement)
     originalElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
@@ -261,7 +260,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
                                                                                    && docText.contains("Package <em>$pack</em>"))
       assertSame("Doc for ${originalElement.text} contains incorrect links or excess uses of PSI_ELEMENT_PROTOCOL",
                  Regex("<a href=\"(.+?)\">(.+?)</a>").findAll(docText).count(),
-                 Regex(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL).findAll(docText).count())
+                 Regex("${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}|href=\"https?://").findAll(docText).count())
     }
     else {
       assertNull("There should be no documentation for ${originalElement.text}", docText)

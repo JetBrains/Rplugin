@@ -3,8 +3,8 @@
 
 package org.jetbrains.r.rinterop;
 
-public interface MakeRdFromRoxygenRequestOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rplugininterop.MakeRdFromRoxygenRequest)
+public interface ConvertRoxygenToHTMLRequestOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rplugininterop.ConvertRoxygenToHTMLRequest)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -26,14 +26,4 @@ public interface MakeRdFromRoxygenRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFunctionTextBytes();
-
-  /**
-   * <code>string outputFilePath = 3;</code>
-   */
-  java.lang.String getOutputFilePath();
-  /**
-   * <code>string outputFilePath = 3;</code>
-   */
-  com.google.protobuf.ByteString
-      getOutputFilePathBytes();
 }
