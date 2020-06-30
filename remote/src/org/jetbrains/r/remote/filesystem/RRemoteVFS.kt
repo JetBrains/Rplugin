@@ -30,7 +30,12 @@ class RRemoteVFS : JupyterRemoteFileSystem(RRemoteFileStrategy) {
   override fun getProtocol() = PROTOCOL
 
   fun findFileByPath(host: RRemoteHost, path: String): VirtualFile? {
-    val jupyterPath = JupyterRemotePath.parse(host.configId, path)
+    val convertedPath = if (host.operatingSystem == OperatingSystem.WINDOWS) {
+      path.replace('\\', '/')
+    } else {
+      path
+    }
+    val jupyterPath = JupyterRemotePath.parse(host.configId, convertedPath)
     return runBlocking { openAsVirtualFile(jupyterPath) }
   }
 
