@@ -352,6 +352,7 @@ You can find the source code in the following repositories:
         <statistics.counterUsagesCollector groupId="r.interpreters" version="1"/>
         <statistics.counterUsagesCollector groupId="r.workflow" version="1"/>
 
+        <indexableFilesFilter implementation="org.jetbrains.r.settings.RIndexableFilesFilter"/>
         <indexedRootsProvider implementation="org.jetbrains.r.settings.RIndexableSetContributor"/>
         <fileType name="R" implementationClass="org.jetbrains.r.RFileType" fieldName="INSTANCE" language="R" extensions="R;Rprofile"/>
         <fileType name="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownFileType" fieldName="INSTANCE"
