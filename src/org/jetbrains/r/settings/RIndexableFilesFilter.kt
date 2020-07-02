@@ -1,9 +1,10 @@
 package org.jetbrains.r.settings
 
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableFilesFilter
 import org.jetbrains.r.skeleton.RSkeletonFileType
 
 class RIndexableFilesFilter : IndexableFilesFilter {
-  override fun shouldIndex(file: VirtualFile): Boolean = file.fileType == RSkeletonFileType
+  override fun shouldIndex(file: VirtualFile): Boolean = !Registry.`is`("pycharm.lazy.indexing", false) || file.fileType == RSkeletonFileType
 }
