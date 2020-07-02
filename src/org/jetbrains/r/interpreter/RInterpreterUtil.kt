@@ -7,11 +7,11 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.execution.process.ProcessOutput
+import com.intellij.execution.process.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtil
@@ -26,6 +26,7 @@ import com.intellij.util.io.isDirectory
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.lexer.SingleStringTokenLexer
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
@@ -33,6 +34,12 @@ import java.io.InputStream
 import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+interface RMultiOutputProcessor {
+  fun beforeStart()
+  fun onOutputAvailable(output: String)
+  fun onTerminated(exitCode: Int, stderr: String)
+}
 
 object RInterpreterUtil {
   val DEFAULT_TIMEOUT
@@ -229,33 +236,51 @@ object RInterpreterUtil {
                 args: List<String>,
                 errorHandler: ((ProcessOutput) -> Unit)? = null): String {
     val scriptName = helper.name
+    val result = runHelperBase(interpreterPath, helper, workingDirectory, args) { CapturingProcessAdapter(it) }
+    if (result.exitCode != 0) {
+      if (errorHandler != null) {
+        errorHandler(result)
+        return ""
+      } else {
+        val message = "Helper '$scriptName' has non-zero exit code: ${result.exitCode}"
+        throw RuntimeException("$message\nStdout: ${result.stdout}\nStderr: ${result.stderr}")
+      }
+    }
+    if (result.stderr.isNotBlank()) {
+      // Note: this could be a warning message therefore there is no need to throw
+      RInterpreterBase.LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
+    }
+    if (result.stdout.isBlank()) {
+      if (errorHandler != null) {
+        errorHandler(result)
+        return ""
+      }
+      throw RuntimeException("Cannot get any output from helper '$scriptName'")
+    }
+    return getScriptStdout(result.stdout)
+  }
+
+  fun runMultiOutputHelper(interpreterPath: String,
+                           helper: File,
+                           workingDirectory: String?,
+                           args: List<String>,
+                           processor: RMultiOutputProcessor) {
+    runHelperBase(interpreterPath, helper, workingDirectory, args) { RMultiOutputProcessAdapter.createProcessAdapter(it, processor) }
+  }
+
+  private fun runHelperBase(interpreterPath: String,
+                            helper: File,
+                            workingDirectory: String?,
+                            args: List<String>,
+                            processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
+    val scriptName = helper.name
     val time = System.currentTimeMillis()
     try {
-      val result = runAsync { runHelperWithArgs(interpreterPath, helper, workingDirectory, args) }
-                     .onError { RInterpreterBase.LOG.error(it) }
-                     .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
-      if (result.exitCode != 0) {
-        if (errorHandler != null) {
-          errorHandler(result)
-          return ""
-        } else {
-          val message = "Helper '$scriptName' has non-zero exit code: ${result.exitCode}"
-          throw RuntimeException("$message\nStdout: ${result.stdout}\nStderr: ${result.stderr}")
-        }
-      }
-      if (result.stderr.isNotBlank()) {
-        // Note: this could be a warning message therefore there is no need to throw
-        RInterpreterBase.LOG.warn("Helper '$scriptName' has non-blank stderr:\n${result.stderr}")
-      }
-      if (result.stdout.isBlank()) {
-        if (errorHandler != null) {
-          errorHandler(result)
-          return ""
-        }
-        throw RuntimeException("Cannot get any output from helper '$scriptName'")
-      }
-      return getScriptStdout(result.stdout)
-    } finally {
+      return runAsync { runHelperWithArgs(interpreterPath, helper, workingDirectory, args, processAdapterProducer) }
+               .onError { RInterpreterBase.LOG.error(it) }
+               .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
+    }
+    finally {
       RInterpreterBase.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
     }
   }
@@ -299,9 +324,13 @@ object RInterpreterUtil {
     return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
   }
 
-  private fun runHelperWithArgs(interpreterPath: String, helper: File, workingDirectory: String?, args: List<String>): ProcessOutput {
+  private fun runHelperWithArgs(interpreterPath: String,
+                                helper: File,
+                                workingDirectory: String?,
+                                args: List<String>,
+                                processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
     val commands = getRunHelperCommands(interpreterPath, helper, args)
-    return runRInterpreter(interpreterPath, commands, workingDirectory)
+    return runRInterpreter(interpreterPath, commands, workingDirectory, processAdapterProducer)
   }
 
   fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
@@ -310,9 +339,11 @@ object RInterpreterUtil {
 
   private fun runRInterpreter(interpreterPath: String,
                               defaultCommands: List<String>,
-                              workingDirectory: String?): ProcessOutput {
-    val processHandler = createProcessHandler(interpreterPath, defaultCommands, workingDirectory)
-    val output = processHandler.runProcess(DEFAULT_TIMEOUT)
+                              workingDirectory: String?,
+                              processAdapterProducer: (ProcessOutput) -> ProcessAdapter = { CapturingProcessAdapter(it) }): ProcessOutput {
+    val processHandler = OSProcessHandler(createCommandLine(interpreterPath, defaultCommands, workingDirectory))
+    val processRunner = CapturingProcessRunner(processHandler, processAdapterProducer)
+    val output = processRunner.runProcess(DEFAULT_TIMEOUT)
     if (output.exitCode != 0) {
       RInterpreterBase.LOG.warn("Failed to run script. Exit code: " + output.exitCode)
       RInterpreterBase.LOG.warn(output.stderr)
@@ -321,4 +352,58 @@ object RInterpreterUtil {
   }
 
   private data class CondaPath(val path: String, val environment: String)
+
+  private class RMultiOutputProcessAdapter private constructor(private val output: ProcessOutput,
+                                                               private val processor: RMultiOutputProcessor) : ProcessAdapter() {
+
+    private val stdoutBuffer = StringBuffer()
+    private val beginLexer = SingleStringTokenLexer(RPLUGIN_OUTPUT_BEGIN, stdoutBuffer)
+    private val endLexer = SingleStringTokenLexer(RPLUGIN_OUTPUT_END, stdoutBuffer)
+    private var markerOccurred: Boolean = false
+
+    override fun processTerminated(event: ProcessEvent) {
+      val exitCode = event.exitCode
+      output.exitCode = exitCode
+      processor.onTerminated(exitCode, output.stderr)
+    }
+
+    override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+      val text = event.text
+      if (outputType == ProcessOutputTypes.STDOUT) {
+        for (char in text) {
+          processCharacter(char)
+        }
+      }
+      else if (outputType == ProcessOutputTypes.STDERR) {
+        output.appendStderr(text)
+      }
+    }
+
+    private fun processCharacter(char: Char) {
+      if (!markerOccurred) {
+        if (beginLexer.advanceChar(char)) {
+          markerOccurred = true
+          beginLexer.restore()
+        }
+      }
+      else {
+        if (endLexer.advanceChar(char)) {
+          markerOccurred = false
+          endLexer.restore()
+          processor.onOutputAvailable(stdoutBuffer.toString())
+          stdoutBuffer.setLength(0)
+        }
+      }
+    }
+
+    companion object {
+      /**
+       * Not pass stdout to the [output]. Process it using [processor]
+       */
+      fun createProcessAdapter(output: ProcessOutput, processor: RMultiOutputProcessor): RMultiOutputProcessAdapter {
+        processor.beforeStart()
+        return RMultiOutputProcessAdapter(output, processor)
+      }
+    }
+  }
 }

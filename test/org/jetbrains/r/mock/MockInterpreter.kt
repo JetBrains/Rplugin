@@ -18,10 +18,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.interpreter.OperatingSystem
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -76,6 +73,13 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
 
   override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
     return RInterpreterUtil.runHelper(interpreterLocation.path, helper, workingDirectory, args, errorHandler)
+  }
+
+  override fun runMultiOutputHelper(helper: File,
+                                    workingDirectory: String?,
+                                    args: List<String>,
+                                    processor: RMultiOutputProcessor) {
+    RInterpreterUtil.runMultiOutputHelper(interpreterLocation.path, helper, workingDirectory, args, processor)
   }
 
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String? = ""

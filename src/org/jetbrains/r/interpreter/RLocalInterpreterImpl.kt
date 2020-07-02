@@ -5,10 +5,7 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.execution.process.ColoredProcessHandler
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessOutput
+import com.intellij.execution.process.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.rinterop.RInterop
@@ -26,6 +23,13 @@ class RLocalInterpreterImpl(
 
   override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
     return RInterpreterUtil.runHelper(interpreterPath, helper, workingDirectory, args, errorHandler)
+  }
+
+  override fun runMultiOutputHelper(helper: File,
+                                    workingDirectory: String?,
+                                    args: List<String>,
+                                    processor: RMultiOutputProcessor) {
+    RInterpreterUtil.runMultiOutputHelper(interpreterPath, helper, workingDirectory, args, processor)
   }
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {

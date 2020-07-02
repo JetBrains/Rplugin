@@ -7,7 +7,6 @@
 
 package org.jetbrains.r.packages
 
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -18,25 +17,30 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RMultiOutputProcessor
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Integer.min
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 6
+  private const val CUR_SKELETON_VERSION = 7
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
   private const val PRIORITY_PREFIX = "## Package priority: "
+  private const val MAX_BUCKET_SIZE = 25 // 4 threads consume a total of ~1GB memory
 
   private val LOG = Logger.getInstance("#" + RSkeletonUtil::class.java.name)
 
@@ -96,47 +100,25 @@ object RSkeletonUtil {
 
     val es = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE)
 
-    var processed = 0
+    val promises = mutableListOf<AsyncPromise<Boolean>>()
     val fullSize = generationMap.values.map { it.size }.sum()
-    for ((skeletonPath, newPackages) in generationMap) {
+    for ((skeletonPath, _newPackages) in generationMap) {
+      val newPackages = _newPackages.shuffled() // to increase the probability of uniform distribution between threads
       val skeletonsDir = File(skeletonPath)
-      for (rPackage in newPackages) {
-        val skeletonFile = File(skeletonsDir, rPackage.skeletonFileName)
-        processed += 1
-        val finalProcessed = processed
+      var bucketSize = newPackages.size / MAX_THREAD_POOL_SIZE
+      if (newPackages.size % MAX_THREAD_POOL_SIZE != 0) ++bucketSize
+      bucketSize = min(bucketSize, MAX_BUCKET_SIZE)
+      for (i in newPackages.indices step bucketSize) {
+        val rPackages = (i until i + bucketSize).mapNotNull { newPackages.getOrNull(it) }
+        val skeletonFiles = rPackages.map { File(skeletonsDir, it.skeletonFileName) }
         val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
-        es.submit {
-          var helperStdout: String? = null
-          try {
-            LOG.info("building skeleton for package '$rPackage'")
-            indicator?.apply {
-              fraction = finalProcessed.toDouble() / fullSize
-              text = "Generating bin for '$rPackage'"
-            }
-
-            val packageName = rPackage.name
-            var isError = false
-            val extraNamedArgumentsHelper = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R")
-            val extraNamedArgumentsHelperPath = rInterpreter.uploadHelperToHost(extraNamedArgumentsHelper)
-            helperStdout = rInterpreter.runHelper(RepoUtils.PACKAGE_SUMMARY, null,
-                                                  listOf(packageName, extraNamedArgumentsHelperPath)) { output ->
-              reportError(rPackage, output)
-              isError = true
-            }
-            if (isError) return@submit
-            val binPackage: RLibraryPackage = convertToBinFormat(packageName, helperStdout)
-
-            FileOutputStream(skeletonFile).use {
-              binPackage.writeTo(it)
-            }
-            result = true
-          }
-          catch (e: Throwable) {
-            val attachments = helperStdout?.let { arrayOf(Attachment("$rPackage.RSummary", it)) } ?: emptyArray()
-            LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e, *attachments)
-          }
-        }
+        val skeletonProcessor = RSkeletonProcessor(es, rInterpreter, indicator, fullSize, rPackages, skeletonFiles)
+        promises.add(skeletonProcessor.runSkeletonHelper())
       }
+    }
+
+    for (promise in promises) {
+      promise.blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)?.let { result = result || it } // Wait for all helpers
     }
 
     try {
@@ -147,18 +129,6 @@ object RSkeletonUtil {
       e.printStackTrace()
     }
     return result
-  }
-
-  private fun reportError(rPackage: RPackage, output: ProcessOutput) {
-    val scriptOutput = RInterpreterUtil.getScriptStdout(output.stdout)
-    if (scriptOutput.startsWith("intellij-cannot-load-package")) {
-      LOG.warn("Cannot load package $rPackage in R interpreter: ${output.stderr}")
-    }
-    else {
-      LOG.error("Failed to generate skeleton for '" + rPackage + "'. The error was:\n\n" +
-                output.stderr +
-                "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
-    }
   }
 
   fun parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension: String): Pair<String, String>? =
@@ -274,6 +244,83 @@ object RSkeletonUtil {
       packageBuilder.addSymbols(builder.build())
     }
     return packageBuilder.build()
+  }
+
+  private class RSkeletonProcessor(private val es: ExecutorService,
+                                   private val rInterpreter: RInterpreter,
+                                   private val indicator: ProgressIndicator?,
+                                   private val allNewPackagesCnt: Int,
+                                   private val rPackages: List<RPackage>,
+                                   private val skeletonFiles: List<File>) : RMultiOutputProcessor {
+
+    private val resPromise = AsyncPromise<Boolean>()
+    private var curPackage: Int = -1
+    private val extraNamedArgumentsHelperPath = rInterpreter.uploadHelperToHost(extraNamedArgumentsHelper)
+    private val packageNames = rPackages.map { it.name }
+    private var hasGeneratedSkeletons = false
+
+    override fun beforeStart() {
+      indicator?.isIndeterminate = false
+      nextPackageProcess()
+    }
+
+    override fun onOutputAvailable(output: String) {
+      val rPackage = rPackages[curPackage]
+      val skeletonFile = skeletonFiles[curPackage]
+      nextPackageProcess()
+      try {
+        if (output.startsWith("intellij-cannot-load-package")) {
+          LOG.warn("Cannot load package $rPackage in R interpreter")
+          return
+        }
+        val binPackage: RLibraryPackage = convertToBinFormat(rPackage.name, output)
+        FileOutputStream(skeletonFile).use { binPackage.writeTo(it) }
+        hasGeneratedSkeletons = true
+      }
+      catch (e: Throwable) {
+        val attachments = arrayOf(Attachment("$rPackage.RSummary", output))
+        LOG.error("Failed to generate skeleton for '$rPackage'. The reason was:", e, *attachments)
+      }
+    }
+
+    override fun onTerminated(exitCode: Int, stderr: String) {
+      if (exitCode != 0) {
+        LOG.error("Failed to generate skeleton for '" + rPackages[curPackage] + "'. The error was:\n\n" + stderr +
+                  "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
+        if (curPackage < rPackages.size - 1) {
+          runSkeletonHelper() // Rerun helper for tail
+          return
+        }
+      }
+      resPromise.setResult(hasGeneratedSkeletons)
+    }
+
+    /**
+     * @return an [AsyncPromise] that will be set when generation is complete for all [rPackages].
+     * Set to `true` if at least 1 skeleton is generated successfully. `False` otherwise
+     */
+    fun runSkeletonHelper(): AsyncPromise<Boolean> {
+      val resPromise = resPromise
+      es.submit {
+        val packageNames = packageNames.subList(curPackage + 1, packageNames.size)
+        rInterpreter.runMultiOutputHelper(RepoUtils.PACKAGE_SUMMARY, null,
+                                          listOf(extraNamedArgumentsHelperPath) + packageNames, this)
+      }
+      return resPromise
+    }
+
+    private fun nextPackageProcess() {
+      ++curPackage
+      if (curPackage < rPackages.size) {
+        indicator?.apply {
+          fraction += 1.0 / allNewPackagesCnt
+          text = "Generating bin for '${rPackages[curPackage]}'"
+        }
+      }
+    }
+    companion object {
+      private val extraNamedArgumentsHelper = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R")
+    }
   }
 }
 
