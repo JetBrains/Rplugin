@@ -22,6 +22,7 @@ import org.jetbrains.r.rinterop.RValueUnevaluated
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.rinterop.RVariableLoader
 import org.jetbrains.r.util.tryRegisterDisposable
+import kotlin.math.exp
 import kotlin.math.min
 
 class RXStackFrame(val functionName: String,
@@ -32,10 +33,12 @@ class RXStackFrame(val functionName: String,
                    private val equalityObject: Any? = null) : XStackFrame(), Disposable {
   private val evaluator = RXDebuggerEvaluator(this, this)
   internal val environment get() = loader.obj
-  private val listBuilder = object : PartialChildrenListBuilder(this, loader, noFunctions = true) {
+  internal var expandFunctionGroup = false
+  private val listBuilder = object : PartialChildrenListBuilder(this, loader, noFunctions = true, isRoot = true) {
     override fun addTopChildren(result: XValueChildrenList) {
       addEnvironmentsGroup(result)
-      result.addTopGroup(FunctionsGroup())
+      result.addTopGroup(FunctionsGroup(expandFunctionGroup))
+      expandFunctionGroup = false
     }
   }
 
@@ -82,6 +85,10 @@ class RXStackFrame(val functionName: String,
   override fun dispose() {
   }
 
+  fun resetOffset() {
+    listBuilder.resetOffset()
+  }
+
   private inner class RXEnvironment internal constructor(name: String, loader: RVariableLoader)
     : XNamedValue(name.takeIf { it.isNotEmpty() } ?: RBundle.message("rx.presentation.utils.environment.unnamed")) {
     private val listBuilder = PartialChildrenListBuilder(this@RXStackFrame, loader)
@@ -99,18 +106,21 @@ class RXStackFrame(val functionName: String,
     }
   }
 
-  private inner class FunctionsGroup : XValueGroup(RBundle.message("variable.view.functions")) {
+  private inner class FunctionsGroup(private val autoExpand: Boolean = false) : XValueGroup(RBundle.message("variable.view.functions")) {
     private val listBuilder = PartialChildrenListBuilder(this@RXStackFrame, loader, onlyFunctions = true)
 
     override fun computeChildren(node: XCompositeNode) {
       listBuilder.computeChildren(node)
     }
+
+    override fun isAutoExpand() = autoExpand
   }
 }
 
 internal open class PartialChildrenListBuilder(
   private val stackFrame: RXStackFrame, private val loader: RVariableLoader,
-  private val noFunctions: Boolean = false, private val onlyFunctions: Boolean = false) {
+  private val noFunctions: Boolean = false, private val onlyFunctions: Boolean = false,
+  private val isRoot: Boolean = false) {
   private var offset = 0L
   private var previousNode: XCompositeNode? = null
 
@@ -141,17 +151,21 @@ internal open class PartialChildrenListBuilder(
       }
   }
 
+  fun resetOffset() {
+    previousNode = null
+  }
+
   protected open fun addTopChildren(result: XValueChildrenList) {
   }
 
   protected open fun addContents(result: XValueChildrenList, vars: List<RVar>, offset: Long) {
-    addEnvironmentContents(result, vars, stackFrame)
+    addEnvironmentContents(result, vars, stackFrame, isRoot)
   }
 }
 
 
-internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, stackFrame: RXStackFrame) {
-  val rxVars = vars.map { RXVar(it, stackFrame) }
+internal fun addEnvironmentContents(result: XValueChildrenList, vars: List<RVar>, stackFrame: RXStackFrame, isRoot: Boolean = false) {
+  val rxVars = vars.map { RXVar(it, stackFrame, isRoot) }
   rxVars.forEach { result.add(it) }
   setObjectSizes(rxVars, stackFrame)
 }

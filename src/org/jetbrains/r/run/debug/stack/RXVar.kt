@@ -8,15 +8,12 @@ import com.intellij.openapi.Disposable
 import com.intellij.xdebugger.XExpression
 import com.intellij.xdebugger.frame.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.rinterop.RReference
-import org.jetbrains.r.rinterop.RValueEnvironment
-import org.jetbrains.r.rinterop.RValueSimple
-import org.jetbrains.r.rinterop.RVar
+import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.CancellationException
 
-internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame) : XNamedValue(rVar.name) {
+internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame,
+                                          private val isChildOfRoot: Boolean = false) : XNamedValue(rVar.name) {
   private val listBuilder by lazy {
     val loader = if ((rVar.value as? RValueSimple)?.isS4 == true) {
       rVar.ref.getAttributesRef().createVariableLoader()
@@ -48,25 +45,24 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
     if (!rVar.ref.canSetValue()) return null
     return object : XValueModifier() {
       override fun setValue(expression: XExpression, callback: XModificationCallback) {
+        val rInterop = rVar.ref.rInterop
         if (expression.expression.isBlank()) {
           callback.valueModified()
           return
         }
-        val rInterop = rVar.ref.rInterop
         rVar.ref.setValue(RReference.expressionRef(expression.expression, stackFrame.environment))
           .also {
             stackFrame.tryRegisterDisposable(Disposable { it.cancel() })
           }
           .onSuccess {
-            callback.valueModified()
             rInterop.invalidateCaches()
-            RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            if (it is RValueFunction && isChildOfRoot) stackFrame.expandFunctionGroup = true
+            callback.valueModified()
           }
           .onError {
             if (it is CancellationException) return@onError
-            callback.errorOccurred(it.message ?: "Error")
             rInterop.invalidateCaches()
-            RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeActionHandler?.fireCommandExecuted()
+            callback.errorOccurred(it.message ?: "Error")
           }
       }
     }
@@ -85,9 +81,5 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
     }
     rxVars.forEach { result.add(it) }
     if (!isVector) setObjectSizes(rxVars, stackFrame)
-  }
-
-  companion object {
-    private const val MAX_ITEMS = 100
   }
 }

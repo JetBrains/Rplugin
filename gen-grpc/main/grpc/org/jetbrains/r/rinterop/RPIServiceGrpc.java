@@ -1671,28 +1671,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SetValueRequest,
-      org.jetbrains.r.rinterop.SetValueResponse> getSetValueMethod;
+      org.jetbrains.r.rinterop.ValueInfo> getSetValueMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "setValue",
       requestType = org.jetbrains.r.rinterop.SetValueRequest.class,
-      responseType = org.jetbrains.r.rinterop.SetValueResponse.class,
+      responseType = org.jetbrains.r.rinterop.ValueInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SetValueRequest,
-      org.jetbrains.r.rinterop.SetValueResponse> getSetValueMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SetValueRequest, org.jetbrains.r.rinterop.SetValueResponse> getSetValueMethod;
+      org.jetbrains.r.rinterop.ValueInfo> getSetValueMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SetValueRequest, org.jetbrains.r.rinterop.ValueInfo> getSetValueMethod;
     if ((getSetValueMethod = RPIServiceGrpc.getSetValueMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getSetValueMethod = RPIServiceGrpc.getSetValueMethod) == null) {
           RPIServiceGrpc.getSetValueMethod = getSetValueMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.SetValueRequest, org.jetbrains.r.rinterop.SetValueResponse>newBuilder()
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.SetValueRequest, org.jetbrains.r.rinterop.ValueInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "setValue"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.SetValueRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.SetValueResponse.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.ValueInfo.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("setValue"))
               .build();
         }
@@ -2833,7 +2833,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void setValue(org.jetbrains.r.rinterop.SetValueRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SetValueResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ValueInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getSetValueMethod(), responseObserver);
     }
 
@@ -3385,7 +3385,7 @@ public final class RPIServiceGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 org.jetbrains.r.rinterop.SetValueRequest,
-                org.jetbrains.r.rinterop.SetValueResponse>(
+                org.jetbrains.r.rinterop.ValueInfo>(
                   this, METHODID_SET_VALUE)))
           .addMethod(
             getGetObjectSizesMethod(),
@@ -4015,7 +4015,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void setValue(org.jetbrains.r.rinterop.SetValueRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SetValueResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ValueInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSetValueMethod(), getCallOptions()), request, responseObserver);
     }
@@ -4636,7 +4636,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.SetValueResponse setValue(org.jetbrains.r.rinterop.SetValueRequest request) {
+    public org.jetbrains.r.rinterop.ValueInfo setValue(org.jetbrains.r.rinterop.SetValueRequest request) {
       return blockingUnaryCall(
           getChannel(), getSetValueMethod(), getCallOptions(), request);
     }
@@ -5162,7 +5162,7 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.SetValueResponse> setValue(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ValueInfo> setValue(
         org.jetbrains.r.rinterop.SetValueRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getSetValueMethod(), getCallOptions()), request);
@@ -5636,7 +5636,7 @@ public final class RPIServiceGrpc {
           break;
         case METHODID_SET_VALUE:
           serviceImpl.setValue((org.jetbrains.r.rinterop.SetValueRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SetValueResponse>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ValueInfo>) responseObserver);
           break;
         case METHODID_GET_OBJECT_SIZES:
           serviceImpl.getObjectSizes((org.jetbrains.r.rinterop.RRefList) request,
