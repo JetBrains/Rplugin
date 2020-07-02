@@ -40,12 +40,8 @@ object RGraphicsUtils {
 
   private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
 
-  fun calculateInitParameters(screenParameters: ScreenParameters?): ScreenParameters {
-    return calculateInitParameters(screenParameters?.dimension, screenParameters?.resolution)
-  }
-
-  private fun calculateInitParameters(dimension: Dimension?, resolution: Int?): ScreenParameters {
-    return scaleForRetina(createParameters(dimension, resolution))
+  fun createParameters(parameters: ScreenParameters?): ScreenParameters {
+    return createParameters(parameters?.dimension, parameters?.resolution)
   }
 
   fun createGraphicsDevice(rInterop: RInterop, parameters: ScreenParameters): RGraphicsDevice {
@@ -106,7 +102,7 @@ object RGraphicsUtils {
   private fun scaleForRetina(dimension: Dimension): Dimension =
     if (isRetina) Dimension(dimension.width * 2, dimension.height * 2) else dimension
 
-  internal fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
+  fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
     if (isRetina) ScreenParameters(scaleForRetina(parameters.dimension), parameters.resolution?.times(2)) else parameters
 
   internal fun downscaleForRetina(resolution: Int): Int =

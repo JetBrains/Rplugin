@@ -69,21 +69,6 @@ private static final long serialVersionUID = 0L;
             outputDirectory_ = s;
             break;
           }
-          case 32: {
-
-            width_ = input.readInt32();
-            break;
-          }
-          case 40: {
-
-            height_ = input.readInt32();
-            break;
-          }
-          case 48: {
-
-            resolution_ = input.readInt32();
-            break;
-          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -218,33 +203,6 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int WIDTH_FIELD_NUMBER = 4;
-  private int width_;
-  /**
-   * <code>int32 width = 4;</code>
-   */
-  public int getWidth() {
-    return width_;
-  }
-
-  public static final int HEIGHT_FIELD_NUMBER = 5;
-  private int height_;
-  /**
-   * <code>int32 height = 5;</code>
-   */
-  public int getHeight() {
-    return height_;
-  }
-
-  public static final int RESOLUTION_FIELD_NUMBER = 6;
-  private int resolution_;
-  /**
-   * <code>int32 resolution = 6;</code>
-   */
-  public int getResolution() {
-    return resolution_;
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -268,15 +226,6 @@ private static final long serialVersionUID = 0L;
     if (!getOutputDirectoryBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, outputDirectory_);
     }
-    if (width_ != 0) {
-      output.writeInt32(4, width_);
-    }
-    if (height_ != 0) {
-      output.writeInt32(5, height_);
-    }
-    if (resolution_ != 0) {
-      output.writeInt32(6, resolution_);
-    }
     unknownFields.writeTo(output);
   }
 
@@ -294,18 +243,6 @@ private static final long serialVersionUID = 0L;
     }
     if (!getOutputDirectoryBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, outputDirectory_);
-    }
-    if (width_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, width_);
-    }
-    if (height_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(5, height_);
-    }
-    if (resolution_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(6, resolution_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -328,12 +265,6 @@ private static final long serialVersionUID = 0L;
         .equals(other.getChunkText())) return false;
     if (!getOutputDirectory()
         .equals(other.getOutputDirectory())) return false;
-    if (getWidth()
-        != other.getWidth()) return false;
-    if (getHeight()
-        != other.getHeight()) return false;
-    if (getResolution()
-        != other.getResolution()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -351,12 +282,6 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getChunkText().hashCode();
     hash = (37 * hash) + OUTPUTDIRECTORY_FIELD_NUMBER;
     hash = (53 * hash) + getOutputDirectory().hashCode();
-    hash = (37 * hash) + WIDTH_FIELD_NUMBER;
-    hash = (53 * hash) + getWidth();
-    hash = (37 * hash) + HEIGHT_FIELD_NUMBER;
-    hash = (53 * hash) + getHeight();
-    hash = (37 * hash) + RESOLUTION_FIELD_NUMBER;
-    hash = (53 * hash) + getResolution();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -496,12 +421,6 @@ private static final long serialVersionUID = 0L;
 
       outputDirectory_ = "";
 
-      width_ = 0;
-
-      height_ = 0;
-
-      resolution_ = 0;
-
       return this;
     }
 
@@ -531,9 +450,6 @@ private static final long serialVersionUID = 0L;
       result.rmarkdownParameters_ = rmarkdownParameters_;
       result.chunkText_ = chunkText_;
       result.outputDirectory_ = outputDirectory_;
-      result.width_ = width_;
-      result.height_ = height_;
-      result.resolution_ = resolution_;
       onBuilt();
       return result;
     }
@@ -593,15 +509,6 @@ private static final long serialVersionUID = 0L;
       if (!other.getOutputDirectory().isEmpty()) {
         outputDirectory_ = other.outputDirectory_;
         onChanged();
-      }
-      if (other.getWidth() != 0) {
-        setWidth(other.getWidth());
-      }
-      if (other.getHeight() != 0) {
-        setHeight(other.getHeight());
-      }
-      if (other.getResolution() != 0) {
-        setResolution(other.getResolution());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -835,84 +742,6 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       outputDirectory_ = value;
-      onChanged();
-      return this;
-    }
-
-    private int width_ ;
-    /**
-     * <code>int32 width = 4;</code>
-     */
-    public int getWidth() {
-      return width_;
-    }
-    /**
-     * <code>int32 width = 4;</code>
-     */
-    public Builder setWidth(int value) {
-      
-      width_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 width = 4;</code>
-     */
-    public Builder clearWidth() {
-      
-      width_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private int height_ ;
-    /**
-     * <code>int32 height = 5;</code>
-     */
-    public int getHeight() {
-      return height_;
-    }
-    /**
-     * <code>int32 height = 5;</code>
-     */
-    public Builder setHeight(int value) {
-      
-      height_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 height = 5;</code>
-     */
-    public Builder clearHeight() {
-      
-      height_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private int resolution_ ;
-    /**
-     * <code>int32 resolution = 6;</code>
-     */
-    public int getResolution() {
-      return resolution_;
-    }
-    /**
-     * <code>int32 resolution = 6;</code>
-     */
-    public Builder setResolution(int value) {
-      
-      resolution_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 resolution = 6;</code>
-     */
-    public Builder clearResolution() {
-      
-      resolution_ = 0;
       onChanged();
       return this;
     }

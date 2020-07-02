@@ -4,12 +4,8 @@
 
 package org.jetbrains.r.run.graphics
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.rejectedPromise
-import org.jetbrains.concurrency.runAsync
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
@@ -37,14 +33,14 @@ class RGraphicsDevice(
         number2SnapshotInfos[number]?.parameters?.let { previousParameters ->
           val newParameters = value.screenParameters
           if (previousParameters != newParameters) {
-            rescale(number, newParameters)
+            rescaleInMemoryAsync(number, newParameters)
           }
         }
       }
     }
 
   init {
-    val parameters = RGraphicsUtils.calculateInitParameters(initialParameters)
+    val parameters = RGraphicsUtils.createParameters(initialParameters)
     val result = rInterop.graphicsInit(parameters, inMemory)
     val stderr = result.stderr
     if (stderr.isNotBlank()) {
@@ -56,7 +52,7 @@ class RGraphicsDevice(
   }
 
   fun update() {
-    rescale(null, configuration.screenParameters)
+    rescaleInMemoryAsync(null, configuration.screenParameters)
   }
 
   fun reset() {
@@ -78,8 +74,10 @@ class RGraphicsDevice(
     }
   }
 
-  fun shutdown() {
-    rInterop.graphicsShutdown()
+  fun dumpAndShutdownAsync(): Promise<Unit> {
+    return dumpAllAsync().then<Unit> {  // Note: explicit cast `RIExecutionResult` -> `Unit`
+      rInterop.graphicsShutdown()
+    }
   }
 
   fun addListener(listener: (List<RSnapshot>) -> Unit) {
@@ -121,82 +119,89 @@ class RGraphicsDevice(
     return stdout.substring(5, stdout.length - 2)
   }
 
-  fun rescale(snapshot: RSnapshot, group: RDeviceGroup, newParameters: RGraphicsUtils.ScreenParameters, onRescale: (File) -> Unit) {
-    rescale(newParameters, object : RescaleStrategy {
-      override val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
-
-      override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
-        return interop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
-      }
-
-      override fun onSuccessfulRescale() {
-        pullStoredSnapshot(snapshot, group.id, hint)?.let { pulled ->
-          onRescale(pulled.file)
-        }
-      }
-    })
+  private fun dumpAllAsync(): Promise<Unit> {
+    val promise = executeWithLogAsync(createHintFor(null)) {
+      rInterop.graphicsDump()
+    }
+    return promise.thenIfTrue {
+      pullInMemorySnapshots()
+    }
   }
 
-  private fun rescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters) {
-    rescale(newParameters, object : RescaleStrategy {
-      override val hint = createHintFor(snapshotNumber)
-
-      override fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
-        return interop.graphicsRescale(snapshotNumber, parameters)
-      }
-
-      override fun onSuccessfulRescale() {
-        lookForNewSnapshots(snapshotNumber)
-      }
-    })
+  fun rescaleStoredAsync(snapshot: RSnapshot, group: RDeviceGroup, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
+    val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
+    val promise = executeWithLogAsync(hint) {
+      rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
+    }
+    return promise.then { isRescaled ->
+      if (isRescaled) pullStoredSnapshot(snapshot, group.id, hint) else null
+    }
   }
 
-  @Synchronized
-  private fun rescale(newParameters: RGraphicsUtils.ScreenParameters, strategy: RescaleStrategy) {
-    if (rInterop.isAlive) {
-      devicePromise.onSuccess {
-        ApplicationManager.getApplication().executeOnPooledThread {
-          val result = strategy.rescale(rInterop, RGraphicsUtils.scaleForRetina(newParameters))
+  private fun rescaleInMemoryAsync(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters): Promise<Unit> {
+    val promise = executeWithLogAsync(createHintFor(snapshotNumber)) {
+      rInterop.graphicsRescale(snapshotNumber, parameters)
+    }
+    return promise.thenIfTrue {
+      val pulled = pullInMemorySnapshots()
+      onNewSnapshots(pulled, snapshotNumber)
+    }
+  }
+
+  private fun executeWithLogAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
+    return executeAsync(hint, task).onError { e ->
+      LOGGER.error("Cannot execute task for <$hint>", e)
+    }
+  }
+
+  private fun executeAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
+    return if (rInterop.isAlive) {
+      devicePromise.thenAsync {
+        runAsync {
+          val result = task()
           if (result.stderr.isNotBlank()) {
             // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
-            LOGGER.warn("Rescale for <${strategy.hint}> has failed:\n${result.stderr}")
+            LOGGER.warn("Task for <$hint> has failed:\n${result.stderr}")
           }
           if (result.stdout.isNotBlank()) {
             val output = result.stdout.let { it.substring(4, it.length - 1) }
-            if (output == "TRUE") {
-              strategy.onSuccessfulRescale()
+            return@runAsync output == "TRUE"
+          } else {
+            if (result.stderr.isNotBlank()) {
+              throw RuntimeException("Cannot get stdout from graphics device. Stderr was:\n${result.stderr}")
+            } else {
+              throw RuntimeException("Cannot get any output from graphics device")
             }
-          } else if (result.stderr.isBlank() && rInterop.isAlive) {
-            LOGGER.error("Cannot get any output from graphics device")
           }
         }
       }
+    } else {
+      rejectedPromise("Interop has already terminated")
     }
   }
 
-  private fun lookForNewSnapshots(tracedSnapshotNumber: Int?) {
-    try {
-      rInterop.graphicsPullChangedNumbers()?.let { numbers ->
-        pullAndUpdateInMemorySnapshots(numbers)
-        lastNormal = collectLatestSnapshots()
-        postSnapshotNumber(tracedSnapshotNumber)
-        notifyListenersOnUpdate()
-      }
-    } catch (e: Exception) {
-      LOGGER.error("Cannot pull numbers of rescaled snapshots", e)
+  private fun onNewSnapshots(pulledSnapshots: List<RSnapshot>, tracedSnapshotNumber: Int?) {
+    for (snapshot in pulledSnapshots) {
+      val snapshotInfo = SnapshotInfo(snapshot, configuration.screenParameters)
+      number2SnapshotInfos[snapshot.number] = snapshotInfo
     }
+    lastNormal = collectLatestSnapshots()
+    postSnapshotNumber(tracedSnapshotNumber)
+    notifyListenersOnUpdate()
   }
 
   private fun collectLatestSnapshots(): List<RSnapshot> {
     return number2SnapshotInfos.values.map { it.snapshot }.sortedBy { it.number }
   }
 
-  private fun pullAndUpdateInMemorySnapshots(numbers: List<Int>) {
-    for (number in numbers) {
-      pullInMemorySnapshot(number)?.let { snapshot ->
-        val snapshotInfo = SnapshotInfo(snapshot, configuration.screenParameters)
-        number2SnapshotInfos[number] = snapshotInfo
+  private fun pullInMemorySnapshots(): List<RSnapshot> {
+    return try {
+      rInterop.graphicsPullChangedNumbers().mapNotNull { number ->
+        pullInMemorySnapshot(number)
       }
+    } catch (e: Exception) {
+      LOGGER.error("Cannot pull numbers of rescaled snapshots", e)
+      emptyList()
     }
   }
 
@@ -245,12 +250,6 @@ class RGraphicsDevice(
   )
 
   private data class SnapshotInfo(val snapshot: RSnapshot, val parameters: RGraphicsUtils.ScreenParameters)
-
-  private interface RescaleStrategy {
-    val hint: String
-    fun rescale(interop: RInterop, parameters: RGraphicsUtils.ScreenParameters): RIExecutionResult
-    fun onSuccessfulRescale()
-  }
 
   companion object {
     private val LOGGER = Logger.getInstance(RGraphicsDevice::class.java)
@@ -321,6 +320,12 @@ class RGraphicsDevice(
     private fun createHintFor(snapshotNumber: Int?): String {
       // Note: for error logging only. Not intended to be moved to RBundle
       return if (snapshotNumber != null) "In-Memory snapshot #${snapshotNumber}" else "Last in-memory snapshots"
+    }
+
+    private fun Promise<Boolean>.thenIfTrue(task: () -> Unit) = then { isDone ->
+      if (isDone) {
+        task()
+      }
     }
   }
 }

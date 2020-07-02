@@ -36,6 +36,7 @@ import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
@@ -175,20 +176,29 @@ object RunChunkHandler {
 
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
-      graphicsDeviceRef.set(beforeRunChunk(rInterop, rMarkdownParameters, chunkText, cacheDirectory, screenParameters, imagesDirectory))
+      beforeRunChunk(rInterop, rMarkdownParameters, chunkText, cacheDirectory)
+      if (imagesDirectory != null) {
+        val device = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, inMemory = false)
+        graphicsDeviceRef.set(device)
+      }
     }
 
     updateProgressBar(editor, inlayElement)
     executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
       InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
     }.onProcessed { result ->
-      runAsync {
-        graphicsDeviceRef.get()?.shutdown()
-        afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+      dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
+        runAsync {
+          afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+        }
       }
     }
 
     return promise
+  }
+
+  private fun dumpAndShutdownAsync(device: RGraphicsDevice?): Promise<Unit> {
+    return device?.dumpAndShutdownAsync() ?: resolvedPromise()
   }
 
   private fun createRMarkdownParameters(file: PsiFile) =
@@ -203,13 +213,8 @@ object RunChunkHandler {
   private fun beforeRunChunk(rInterop: RInterop,
                              rmarkdownParameters: String,
                              chunkText: String,
-                             cacheDirectory: String,
-                             screenParameters: RGraphicsUtils.ScreenParameters,
-                             imagesDirectory: String?): RGraphicsDevice? {
-    logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory, screenParameters))
-    return if (imagesDirectory != null) {
-      RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, false)
-    } else null
+                             cacheDirectory: String) {
+    logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory))
   }
 
   private fun createScreenParameters(editor: EditorEx,
