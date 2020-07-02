@@ -36,19 +36,4 @@ public interface ChunkParametersOrBuilder extends
    */
   com.google.protobuf.ByteString
       getOutputDirectoryBytes();
-
-  /**
-   * <code>int32 width = 4;</code>
-   */
-  int getWidth();
-
-  /**
-   * <code>int32 height = 5;</code>
-   */
-  int getHeight();
-
-  /**
-   * <code>int32 resolution = 6;</code>
-   */
-  int getResolution();
 }

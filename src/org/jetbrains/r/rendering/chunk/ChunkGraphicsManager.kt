@@ -100,7 +100,11 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       imagePath.toSnapshot()?.let { snapshot ->
         val resolution = newResolution ?: snapshot.resolutionOrDefault
         val newParameters = RGraphicsUtils.ScreenParameters(newSize, resolution)
-        repository.rescale(snapshot, group, newParameters, onResize)
+        repository.rescaleStoredAsync(snapshot, group, newParameters).onSuccess { rescaled ->
+          if (rescaled != null) {
+            onResize(rescaled.file)
+          }
+        }
       }
     }
   }

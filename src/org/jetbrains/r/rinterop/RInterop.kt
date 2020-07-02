@@ -522,19 +522,20 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): ScreenParameters {
+    val scaled = RGraphicsUtils.scaleForRetina(parameters)
     return ScreenParameters.newBuilder()
-      .setWidth(parameters.width)
-      .setHeight(parameters.height)
-      .setResolution(parameters.resolution ?: -1)
+      .setResolution(scaled.resolution ?: -1)
+      .setHeight(scaled.height)
+      .setWidth(scaled.width)
       .build()
   }
 
-  fun graphicsPullChangedNumbers(): List<Int>? {
+  fun graphicsPullChangedNumbers(): List<Int> {
     val response = executeWithCheckCancel(asyncStub::graphicsPullChangedNumbers, Empty.getDefaultInstance())
     if (response.message.isNotBlank()) {
       throw RuntimeException(response.message)
     }
-    return response.valueList.takeIf { it.isNotEmpty() }
+    return response.valueList
   }
 
   class GraphicsPullResponse(val name: String, val content: ByteArray, val recorded: ByteArray? = null)
@@ -597,13 +598,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String, screenParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
+  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String): RIExecutionResult {
     val request = ChunkParameters.newBuilder().setRmarkdownParameters(rmarkdownParameters)
                                                       .setChunkText(chunkText)
                                                       .setOutputDirectory(outputDirectory)
-                                                      .setWidth(screenParameters.width)
-                                                      .setHeight(screenParameters.height)
-                                                      .setResolution(screenParameters.resolution ?: -1)
                                                       .build()
     return executeRequest(RPIServiceGrpc.getBeforeChunkExecutionMethod(), request)
   }
