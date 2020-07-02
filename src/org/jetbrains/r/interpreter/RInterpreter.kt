@@ -77,6 +77,11 @@ interface RInterpreter : RInterpreterInfo {
    */
   fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)? = null): String
 
+  fun runMultiOutputHelper(helper: File,
+                           workingDirectory: String?,
+                           args: List<String>,
+                           processor: RMultiOutputProcessor)
+
   fun getSkeletonFileByPackageName(name: String): PsiFile?
 
   fun updateState(): Promise<Unit>

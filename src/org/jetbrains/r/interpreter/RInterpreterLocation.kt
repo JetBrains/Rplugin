@@ -16,6 +16,11 @@ interface RInterpreterLocation {
 
   fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)? = null): String
 
+  fun runMultiOutputHelper(helper: File,
+                           workingDirectory: String?,
+                           args: List<String>,
+                           processor: RMultiOutputProcessor)
+
   fun runHelperScript(helper: File, args: List<String>, timeout: Int = RInterpreterUtil.DEFAULT_TIMEOUT): ProcessOutput
 
   fun createInterpreter(project: Project): RInterpreterBase
@@ -33,6 +38,13 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
 
   override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
     return RInterpreterUtil.runHelper(path, helper, workingDirectory, args, errorHandler)
+  }
+
+  override fun runMultiOutputHelper(helper: File,
+                                    workingDirectory: String?,
+                                    args: List<String>,
+                                    processor: RMultiOutputProcessor) {
+    RInterpreterUtil.runMultiOutputHelper(path, helper, workingDirectory, args, processor)
   }
 
   override fun runHelperScript(helper: File, args: List<String>, timeout: Int): ProcessOutput {

@@ -7,11 +7,12 @@ package org.jetbrains.r.console.jobs
 import com.intellij.execution.filters.InputFilter
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Pair
+import org.jetbrains.r.lexer.SingleStringTokenLexer
 
 class RSourceProgressInputFilter(private val onProgressEvent: (String) -> Unit) : InputFilter {
-  private val lexer = Lexer()
   private val output = StringBuffer()
   private val command = StringBuffer()
+  private val lexer = SingleStringTokenLexer(MARKER, output)
   private var markerOccurred: Boolean = false
 
   override fun applyFilter(text: String, contentType: ConsoleViewContentType): MutableList<Pair<String, ConsoleViewContentType>>? {
@@ -26,11 +27,9 @@ class RSourceProgressInputFilter(private val onProgressEvent: (String) -> Unit) 
 
   private fun processCharacter(char: Char) {
     if (!markerOccurred) {
-      consumeChar(char)
-      if (command.length == MARKER.length) {
+      if (lexer.advanceChar(char)) {
         markerOccurred = true
-        lexer.pos = 0
-        command.setLength(0)
+        lexer.restore()
       }
     } else {
       if (char == '\n') {
@@ -43,32 +42,7 @@ class RSourceProgressInputFilter(private val onProgressEvent: (String) -> Unit) 
     }
   }
 
-  private fun consumeChar(char: Char) {
-    if (lexer.consume(char)) {
-      command.append(char)
-    } else {
-      output.append(command)
-      command.setLength(0)
-      if (lexer.pos == 1) {
-        command.append(char)
-      } else {
-        output.append(char)
-      }
-    }
-  }
-
   companion object {
     private const val MARKER = ">__jb_rplugin_progress__"
   }
-
-  private class Lexer {
-    var pos: Int = 0
-
-    fun consume(c: Char): Boolean {
-      val match = MARKER[pos] == c
-      pos = if (match) pos + 1 else (if (MARKER[0] == c) 1 else 0)
-      return match
-    }
-  }
-
 }

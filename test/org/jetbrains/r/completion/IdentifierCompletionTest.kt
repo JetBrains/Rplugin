@@ -321,6 +321,16 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "xxxxx", "xxxxxy")
   }
 
+  fun testQualifiedCallExtraNamedArgs() {
+    doTest("""
+      foo <- function(fileLocal, ...) {
+        utils::read.csv(...)
+      }
+      
+      foo(fil<caret>)
+    """.trimIndent(), "file", "fileEncoding", "fileLocal", withRuntimeInfo = true)
+  }
+
   fun testS3LapplyExtraNamedArgs() {
     doTest("""
       lapply(list, print, dig<caret>)
