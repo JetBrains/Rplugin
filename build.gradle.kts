@@ -1,12 +1,21 @@
 import com.google.protobuf.gradle.*
+import groovy.util.Node
+import groovy.util.NodeList
+import groovy.util.XmlNodePrinter
 import org.gradle.api.JavaVersion.VERSION_11
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.intellij.Utils
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
+import java.io.PrintWriter
+import java.nio.charset.StandardCharsets
 
 val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
 
@@ -101,12 +110,33 @@ allprojects {
         }
 
         tasks.withType<PatchPluginXmlTask> {
+            fun writePatchedPluginXml(pluginXml: Node, outputFile: File) {
+                BufferedOutputStream(FileOutputStream(outputFile)).use { binaryOutputStream ->
+                    val writer = PrintWriter(OutputStreamWriter(binaryOutputStream, StandardCharsets.UTF_8))
+                    val printer = XmlNodePrinter(writer)
+                    printer.isPreserveWhitespace = true
+                    printer.print(pluginXml)
+                }
+            }
+
+            fun patchPluginXml(inputFile: File) {
+                val file = File(getDestinationDir(), inputFile.getName())
+                val pluginXml = Utils.parseXml(file)
+                val qName = groovy.xml.QName("http://www.w3.org/2001/XInclude", "include", "xi")
+                pluginXml.appendNode(qName,
+                                     mapOf("href" to "/META-INF/visualisation.xml",
+                                           "xpointer" to "xpointer(/idea-plugin/*)"))
+                val dependency = (pluginXml["depends"] as NodeList)
+                  .first { ((it as Node).value() as NodeList)[0] == "org.intellij.datavis.r.inlays.visualisation" } as Node
+                pluginXml.remove(dependency)
+                writePatchedPluginXml(pluginXml, file)
+            }
+
             sinceBuild("${ideMajorVersion()}.${ideMinorVersion()}")
             untilBuild("${ideMajorVersion()}.*")
+            doLast { pluginXmlFiles.forEach { file -> patchPluginXml(file) } }
         }
     }
-
-
 
     tasks.withType<PublishTask> {
         username(prop("publishUsername"))
@@ -185,11 +215,8 @@ project(":") {
             srcDirs += "visualisation/src"
             if (isPyCharm()) srcDirs += "src-python"
             java.srcDirs(*srcDirs.toTypedArray())
-
             val resourcesSrcDirs = mutableListOf("resources")
-            resourcesSrcDirs.add("resources-gradle")
             resourcesSrcDirs.add("visualisation/resources")
-            resourcesSrcDirs.add("visualisation/resources-gradle")
             resources.srcDirs(*resourcesSrcDirs.toTypedArray())
         }
         test {
