@@ -151,7 +151,7 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     return false
   }
 
-  override fun invokeTestRunnable(testRunnable: ThrowableRunnable<Throwable>) {
+  override fun runTestRunnable(testRunnable: ThrowableRunnable<Throwable>) {
     myTester.runWithAutoPopupEnabled(testRunnable)
   }
 
