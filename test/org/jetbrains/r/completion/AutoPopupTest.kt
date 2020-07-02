@@ -6,6 +6,7 @@ package org.jetbrains.r.completion
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
+import com.intellij.util.ThrowableRunnable
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfo
@@ -150,8 +151,8 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     return false
   }
 
-  override fun invokeTestRunnable(runnable: Runnable) {
-    myTester.runWithAutoPopupEnabled(runnable)
+  override fun invokeTestRunnable(testRunnable: ThrowableRunnable<Throwable>) {
+    myTester.runWithAutoPopupEnabled(testRunnable)
   }
 
   private class DummyRuntimeInfo : RConsoleRuntimeInfo {
