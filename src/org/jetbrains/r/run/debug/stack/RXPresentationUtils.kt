@@ -12,6 +12,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
+import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.exception.RDebuggerException
@@ -51,6 +52,7 @@ private open class RXValuePresentation(v: RXVar, val text: String) : RXValuePres
 
 internal object RXPresentationUtils {
   fun setPresentation(node: XValueNode, rxVar: RXVar) {
+    if (rxVar.markChanged) (node as? XValueNodeImpl)?.markChanged()
     when (val value = rxVar.rVar.value) {
       is RValueUnevaluated -> setPromisePresentation(node, value, rxVar)
       is RValueSimple -> setVarPresentation(node, value, rxVar)

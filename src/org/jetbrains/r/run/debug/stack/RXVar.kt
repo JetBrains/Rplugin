@@ -13,7 +13,8 @@ import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.CancellationException
 
 internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStackFrame,
-                                          private val isChildOfRoot: Boolean = false) : XNamedValue(rVar.name) {
+                                          private val isChildOfRoot: Boolean = false,
+                                          var markChanged: Boolean = false) : XNamedValue(rVar.name) {
   private val listBuilder by lazy {
     val loader = if ((rVar.value as? RValueSimple)?.isS4 == true) {
       rVar.ref.getAttributesRef().createVariableLoader()
@@ -56,7 +57,10 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
           }
           .onSuccess {
             rInterop.invalidateCaches()
-            if (it is RValueFunction && isChildOfRoot) stackFrame.expandFunctionGroup = true
+            if (it is RValueFunction && isChildOfRoot) {
+              stackFrame.expandFunctionGroup = true
+              stackFrame.functionToMarkAsChanged = rVar.name
+            }
             callback.valueModified()
           }
           .onError {
