@@ -92,15 +92,16 @@ open class RReference internal constructor(internal val proto: RRef, internal va
     return rInterop.executeWithCheckCancel(rInterop.asyncStub::getEqualityObject, proto).value
   }
 
-  fun setValue(value: RReference): CancellablePromise<Unit> {
+  fun setValue(value: RReference): CancellablePromise<RValue> {
     val request = SetValueRequest.newBuilder()
       .setRef(proto)
       .setValue(value.proto)
       .build()
     return rInterop.executeAsync(rInterop.asyncStub::setValue, request).thenCancellable {
-      if (it.responseCase == SetValueResponse.ResponseCase.ERROR) {
-        throw RDebuggerException(it.error)
+      if (it.hasError()) {
+        throw RDebuggerException(it.error.text)
       }
+      ProtoUtil.rValueFromProto(it)
     }
   }
 

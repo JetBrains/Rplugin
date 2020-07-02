@@ -91,7 +91,12 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
 
   override fun doCreateNewRootNode(stackFrame: XStackFrame?): XValueContainerNode<*> {
     val watchExpressions = rootNode?.watchChildren.orEmpty().map { it.expression }
-    val node = WatchesRootNode(tree, this, watchExpressions, stackFrame, true)
+    val node = object : WatchesRootNode(tree, this, watchExpressions, stackFrame, true) {
+      override fun clearChildren() {
+        this@RXVariablesView.stackFrame?.resetOffset()
+        super.clearChildren()
+      }
+    }
     rootNode = node
     return node
   }
