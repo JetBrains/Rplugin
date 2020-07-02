@@ -3,7 +3,6 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.xdebugger</depends>
     <depends>org.intellij.plugins.markdown</depends>
-    <depends>org.intellij.datavis.r.inlays.visualisation</depends>
 
     <description><![CDATA[
 <html>
