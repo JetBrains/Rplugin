@@ -13,7 +13,7 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.skip"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.skip"/>
         </properties>
       </component>
       <vspacer id="1c2e8">
@@ -37,7 +37,7 @@
         </constraints>
         <properties>
           <selected value="true"/>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.column.names"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.column.names"/>
         </properties>
       </component>
       <component id="3a1ef" class="javax.swing.JCheckBox" binding="trimSpacesCheckBox">
@@ -46,7 +46,7 @@
         </constraints>
         <properties>
           <selected value="true"/>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.trim.spaces"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.trim.spaces"/>
         </properties>
       </component>
       <component id="58230" class="javax.swing.JLabel">
@@ -54,7 +54,7 @@
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.delimiter"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.delimiter"/>
         </properties>
       </component>
       <component id="e1617" class="javax.swing.JLabel">
@@ -62,7 +62,7 @@
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.quotes"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.quotes"/>
         </properties>
       </component>
       <component id="7fcb2" class="javax.swing.JLabel">
@@ -70,7 +70,7 @@
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.escape"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.escape"/>
         </properties>
       </component>
       <component id="cbfdd" class="javax.swing.JLabel">
@@ -78,7 +78,7 @@
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.comment"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.comment"/>
         </properties>
       </component>
       <component id="e8732" class="javax.swing.JComboBox" binding="delimiterComboBox">
@@ -110,7 +110,7 @@
           <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text resource-bundle="messages/RBundle" key="import.data.dialog.form.na"/>
+          <text resource-bundle="messages/RPluginBundle" key="import.data.dialog.form.na"/>
         </properties>
       </component>
       <component id="899f2" class="javax.swing.JComboBox" binding="naComboBox">
