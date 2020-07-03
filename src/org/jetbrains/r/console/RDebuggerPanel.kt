@@ -10,6 +10,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.keymap.KeymapManager
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
@@ -310,7 +311,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     actionId: String? = null,
     private val isActive: (() -> Boolean)? = null,
     private val callback: (AnActionEvent) -> Unit
-  ): AnAction(text, null, icon) {
+  ): DumbAwareAction(text, null, icon) {
     init {
       if (actionId != null) {
         registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(actionId) },
