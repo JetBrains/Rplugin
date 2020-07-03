@@ -196,8 +196,8 @@ allprojects {
 project(":") {
     version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
     intellij {
-        val plugins = arrayOf("markdown", "yaml") +
-                      (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
+        val plugins = arrayOf("markdown", "yaml", "remote-run", "webDeployment") +
+                      (if (isPyCharm()) arrayOf("python") else emptyArray()) +
                       arrayOf("platform-images")
         pluginName = "rplugin"
         setPlugins(*plugins)
@@ -213,10 +213,14 @@ project(":") {
         main {
             val srcDirs = mutableListOf("src", "gen")
             srcDirs += "visualisation/src"
+            srcDirs += "remote/src"
+            srcDirs += "../python/ds/core-api/src"
             if (isPyCharm()) srcDirs += "src-python"
             java.srcDirs(*srcDirs.toTypedArray())
             val resourcesSrcDirs = mutableListOf("resources")
             resourcesSrcDirs.add("visualisation/resources")
+            resourcesSrcDirs.add("remote/resources")
+            resourcesSrcDirs.add("../python/ds/core-api/resources")
             resources.srcDirs(*resourcesSrcDirs.toTypedArray())
         }
         test {

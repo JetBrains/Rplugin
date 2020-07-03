@@ -13,7 +13,7 @@
     <orderEntry type="module" module-name="intellij.platform.lang.impl" />
     <orderEntry type="module" module-name="intellij.remoteRun" />
     <orderEntry type="module" module-name="intellij.webDeployment" />
-    <orderEntry type="module" module-name="intellij.pycharm.ds.jupyter" />
+    <orderEntry type="module" module-name="intellij.pycharm.ds.core" />
     <orderEntry type="library" name="kotlinx-coroutines-jdk8" level="project" />
   </component>
 </module>
