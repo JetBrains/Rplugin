@@ -93,7 +93,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
     firstRowAsNamesCheckBox = new JCheckBox();
     firstRowAsNamesCheckBox.setSelected(true);
     this.$$$loadButtonText$$$(firstRowAsNamesCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.column.names"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.column.names"));
     contentPane.add(firstRowAsNamesCheckBox, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK |
                                                                  GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
@@ -101,13 +101,13 @@ public class RImportBaseOptionPanelForm extends JDialog {
     stringsAsFactorsCheckBox = new JCheckBox();
     stringsAsFactorsCheckBox.setSelected(true);
     this.$$$loadButtonText$$$(stringsAsFactorsCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.strings.as.factors"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.strings.as.factors"));
     contentPane.add(stringsAsFactorsCheckBox, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                                   GridConstraints.SIZEPOLICY_CAN_SHRINK |
                                                                   GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
                                                                   null, null, null, 0, false));
     final JLabel label1 = new JLabel();
-    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.row.names"));
+    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.row.names"));
     contentPane.add(label1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -116,7 +116,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                           GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                           null, 0, false));
     final JLabel label2 = new JLabel();
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.delimiter"));
+    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.delimiter"));
     contentPane.add(label2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -125,7 +125,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                            GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
                                                            null, null, 0, false));
     final JLabel label3 = new JLabel();
-    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.decimal"));
+    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.decimal"));
     contentPane.add(label3, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -134,7 +134,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                          GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                          null, 0, false));
     final JLabel label4 = new JLabel();
-    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.quotes"));
+    this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.quotes"));
     contentPane.add(label4, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -143,7 +143,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                         GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                         null, 0, false));
     final JLabel label5 = new JLabel();
-    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.comment"));
+    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.comment"));
     contentPane.add(label5, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -152,7 +152,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                          GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                                                          null, 0, false));
     final JLabel label6 = new JLabel();
-    this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.na"));
+    this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.na"));
     contentPane.add(label6, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
@@ -162,7 +162,7 @@ public class RImportBaseOptionPanelForm extends JDialog {
                                                      GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
                                                      new Dimension(150, -1), null, 0, false));
     final JLabel label7 = new JLabel();
-    this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("messages/RBundle").getString("import.data.dialog.form.encoding"));
+    this.$$$loadLabelText$$$(label7, ResourceBundle.getBundle("messages/RPluginBundle").getString("import.data.dialog.form.encoding"));
     contentPane.add(label7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
                                                 false));
