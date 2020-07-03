@@ -4,6 +4,10 @@
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceImplementation="org.jetbrains.r.remote.filesystem.RRemoteHostViewManager"/>
 
+    <postStartupActivity implementation="org.jetbrains.r.remote.filesystem.ROpenedRemoteFilesActivity"/>
+
+    <projectService serviceImplementation="org.jetbrains.r.remote.filesystem.ROpenedRemoteFilesState"/>
+
     <applicationService serviceImplementation="org.jetbrains.r.remote.host.RRemoteHostManager"/>
 
     <toolWindow id="R Remote Host" anchor="left" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
@@ -13,6 +17,8 @@
 
     <virtualFileSystem implementationClass="org.jetbrains.r.remote.filesystem.RRemoteVFS"
                        key="rplugin-remote" physical="false"/>
+
+    <editorTabTitleProvider implementation="org.jetbrains.r.remote.filesystem.RRemoteFileEditorTabTitleProvider"/>
   </extensions>
 
   <!-- Remote host view actions -->

@@ -14,6 +14,7 @@ import java.util.*
 import javax.swing.JComponent
 
 interface RJobDescriptor {
+  val project: Project
   val outputComponent: JComponent
   val processTerminated: Boolean
   val processFailed: Boolean
@@ -28,7 +29,7 @@ interface RJobDescriptor {
 }
 
 class RJobDescriptorImpl(
-  private val project: Project,
+  override val project: Project,
   private val task: RJobTask,
   private val progressProvider: RJobProgressProvider,
   private val processHandler: ProcessHandler,
