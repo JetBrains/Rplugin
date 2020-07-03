@@ -236,7 +236,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       if (toolWindow.contentManager.contents.count { isConsole(it) } == 0) {
         if (RInterpreterManager.getInstance(project).interpreterPath.isBlank()) {
           val contentFactory = ContentFactory.SERVICE.getInstance()
-          val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component, NO_INTERPRETER_FOUND_DISPLAY_NAME, true)
+          val console = contentFactory.createContent(createNoInterpreterConsoleView(project).component,
+                                                     NO_INTERPRETER_FOUND_DISPLAY_NAME,
+                                                     true)
+          console.putUserData(CONSOLE_CONTENT_KEY, Unit)
           console.isCloseable = false
           toolWindow.contentManager.addContent(console, 0)
         } else {
