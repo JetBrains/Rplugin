@@ -34,6 +34,7 @@ import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.RInterpreterManager
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -321,8 +322,19 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
 
   private var paintUnbounded: Boolean = false
   private val filename = jobDescriptor.scriptFile.name
-  private val directoryName = FileUtil.getLocationRelativeToUserHome(
-    LocalFileSystem.getInstance().extractPresentableUrl(PathUtil.getParentPath(jobDescriptor.scriptFile.path).orEmpty()))
+  private val directoryName = jobDescriptor.scriptFile.let { file ->
+    if (file.isInLocalFileSystem) {
+      return@let FileUtil.getLocationRelativeToUserHome(
+        LocalFileSystem.getInstance().extractPresentableUrl(PathUtil.getParentPath(jobDescriptor.scriptFile.path)))
+    }
+    val interpreter = RInterpreterManager.getInterpreterOrNull(jobDescriptor.project)
+    val pathAtHost = interpreter?.getFilePathAtHost(file)
+    if (pathAtHost != null) {
+      PathUtil.getParentPath(pathAtHost)
+    } else {
+      PathUtil.getParentPath(jobDescriptor.scriptFile.path)
+    }
+  }
 
 
   private val progressBar = JProgressBar().apply {

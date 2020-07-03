@@ -38,7 +38,7 @@ class RRemoteHostManager {
   }
 
   fun getRemoteHostByConfigId(id: String): RRemoteHost? {
-    return remoteHostsById[id]
+    return remoteHostsById[id] ?: SshConfigManager.getInstance(null).findConfigById(id)?.let { getRemoteHostBySshConfig(it) }
   }
 
   companion object {

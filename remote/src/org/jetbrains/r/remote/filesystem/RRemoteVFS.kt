@@ -51,6 +51,10 @@ class RRemoteVFS : JupyterRemoteFileSystem(RRemoteFileStrategy) {
       return host to path
     }
 
+    internal fun getHostAndPath(remotePath: String): Pair<RRemoteHost, String>? {
+      return getHostAndPath(JupyterRemotePath.parse(remotePath) ?: return null)
+    }
+
     fun getHostAndPath(file: VirtualFile): Pair<RRemoteHost, String>? {
       if (file.fileSystem != instance) return null
       return getHostAndPath((file as JupyterRemoteVirtualFile).remotePath)
