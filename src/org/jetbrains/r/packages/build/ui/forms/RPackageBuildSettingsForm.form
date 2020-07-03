@@ -22,7 +22,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.install.options"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.install.options"/>
             </properties>
           </component>
           <vspacer id="846c5">
@@ -35,7 +35,7 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.keep.sources"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.keep.sources"/>
               <toolTipText value="--with-keep.source" noi18n="true"/>
             </properties>
           </component>
@@ -45,7 +45,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.general"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.general"/>
             </properties>
           </component>
           <component id="654f0" class="javax.swing.JCheckBox" binding="useDevToolsCheckBox">
@@ -53,7 +53,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.use.dev.tools"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.use.dev.tools"/>
             </properties>
           </component>
           <component id="edd01" class="javax.swing.JSeparator">
@@ -67,7 +67,7 @@
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.clean.build"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.clean.build"/>
               <toolTipText value="--clean, --preclean" noi18n="true"/>
             </properties>
           </component>
@@ -83,7 +83,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.check.options"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.check.options"/>
             </properties>
           </component>
           <component id="7ecc4" class="javax.swing.JCheckBox" binding="asCranCheckBox">
@@ -91,7 +91,7 @@
               <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.as.cran"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.as.cran"/>
               <toolTipText value="--as-cran" noi18n="true"/>
             </properties>
           </component>
@@ -126,7 +126,7 @@
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/RBundle" key="packages.build.settings.main.architecture.only"/>
+              <text resource-bundle="messages/RPluginBundle" key="packages.build.settings.main.architecture.only"/>
               <toolTipText value="--no-multiarch" noi18n="true"/>
             </properties>
           </component>

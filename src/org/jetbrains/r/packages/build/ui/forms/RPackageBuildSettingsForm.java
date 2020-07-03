@@ -86,7 +86,7 @@ public class RPackageBuildSettingsForm extends JDialog {
     final JLabel label1 = new JLabel();
     Font label1Font = this.$$$getFont$$$(null, Font.BOLD, -1, label1.getFont());
     if (label1Font != null) label1.setFont(label1Font);
-    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.install.options"));
+    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.install.options"));
     panel1.add(label1,
                new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -95,7 +95,7 @@ public class RPackageBuildSettingsForm extends JDialog {
                                             GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     keepSourcesCheckBox = new JCheckBox();
     this.$$$loadButtonText$$$(keepSourcesCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.keep.sources"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.keep.sources"));
     keepSourcesCheckBox.setToolTipText("--with-keep.source");
     panel1.add(keepSourcesCheckBox, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
@@ -103,13 +103,13 @@ public class RPackageBuildSettingsForm extends JDialog {
     final JLabel label2 = new JLabel();
     Font label2Font = this.$$$getFont$$$(null, Font.BOLD, -1, label2.getFont());
     if (label2Font != null) label2.setFont(label2Font);
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.general"));
+    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.general"));
     panel1.add(label2,
                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     useDevToolsCheckBox = new JCheckBox();
     this.$$$loadButtonText$$$(useDevToolsCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.use.dev.tools"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.use.dev.tools"));
     panel1.add(useDevToolsCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -119,7 +119,7 @@ public class RPackageBuildSettingsForm extends JDialog {
                                                0, false));
     cleanBuildCheckBox = new JCheckBox();
     this.$$$loadButtonText$$$(cleanBuildCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.clean.build"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.clean.build"));
     cleanBuildCheckBox.setToolTipText("--clean, --preclean");
     panel1.add(cleanBuildCheckBox, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
@@ -131,12 +131,12 @@ public class RPackageBuildSettingsForm extends JDialog {
     final JLabel label3 = new JLabel();
     Font label3Font = this.$$$getFont$$$(null, Font.BOLD, -1, label3.getFont());
     if (label3Font != null) label3.setFont(label3Font);
-    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.check.options"));
+    this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.check.options"));
     panel1.add(label3,
                new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     asCranCheckBox = new JCheckBox();
-    this.$$$loadButtonText$$$(asCranCheckBox, ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.as.cran"));
+    this.$$$loadButtonText$$$(asCranCheckBox, ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.as.cran"));
     asCranCheckBox.setToolTipText("--as-cran");
     panel1.add(asCranCheckBox, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
@@ -159,7 +159,7 @@ public class RPackageBuildSettingsForm extends JDialog {
     panel3.add(checkArgsTextField, BorderLayout.CENTER);
     mainArchitectureCheckBox = new JCheckBox();
     this.$$$loadButtonText$$$(mainArchitectureCheckBox,
-                              ResourceBundle.getBundle("messages/RBundle").getString("packages.build.settings.main.architecture.only"));
+                              ResourceBundle.getBundle("messages/RPluginBundle").getString("packages.build.settings.main.architecture.only"));
     mainArchitectureCheckBox.setToolTipText("--no-multiarch");
     panel1.add(mainArchitectureCheckBox, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
