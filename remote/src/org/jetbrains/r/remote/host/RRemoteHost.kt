@@ -77,7 +77,7 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
 
   private val remoteBasePathValue = object : AtomicClearableLazyValue<String>() {
     override fun compute(): String {
-      return useSftpChannel {  channel ->
+      return useSftpChannel { channel ->
         val home = channel.home.let { if (operatingSystem == OperatingSystem.WINDOWS && it.startsWith('/')) it.substring(1) else it }
         RPathUtil.join(home, "jetbrains_rplugin")
       }

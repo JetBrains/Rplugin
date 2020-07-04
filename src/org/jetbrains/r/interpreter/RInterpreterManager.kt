@@ -34,6 +34,8 @@ import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RStatistics
+import java.io.IOException
+import java.nio.file.Paths
 
 interface RInterpreterManager {
   /**
@@ -91,6 +93,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   init {
     if (!ApplicationManager.getApplication().isUnitTestMode) {
       invalidateRSkeletonCaches()
+      removeLocalRDataTmpFiles()
     }
   }
 
@@ -217,6 +220,17 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
+  private fun removeLocalRDataTmpFiles() {
+    try {
+      val dir = Paths.get(project.basePath ?: return, ".RDataFiles").toFile()
+      if (dir.isDirectory) {
+        dir.listFiles()?.filter { ".RDataTmp" in it.name }?.forEach { it.delete() }
+      }
+    } catch (e: IOException) {
+      RInterpreterBase.LOG.error(e)
+    }
+  }
+
   companion object {
     private const val DOWNLOAD_R_PAGE = "https://cloud.r-project.org/"
 
@@ -254,4 +268,3 @@ private fun invalidateRSkeletonCaches() {
     FileBasedIndex.getInstance().requestRebuild(StubUpdatingIndex.INDEX_ID)
   }
 }
-
