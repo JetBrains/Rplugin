@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.run.graphics
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
@@ -66,16 +67,16 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun rescaleStoredAsync(snapshot: RSnapshot, group: RDeviceGroup, newParameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
+  fun rescaleStoredAsync(snapshot: RSnapshot, newParameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
     return notNullDevicePromise.thenAsync {
-      currentDevice?.rescaleStoredAsync(snapshot, group, newParameters)
+      currentDevice?.rescaleStoredAsync(snapshot, newParameters)
     }
   }
 
   @Synchronized
-  fun createDeviceGroupAsync(snapshot: RSnapshot): Promise<RDeviceGroup> {
+  fun createDeviceGroupAsync(): Promise<Disposable> {
     return notNullDevicePromise.thenAsync {
-      currentDevice?.createDeviceGroupAsync(snapshot)
+      currentDevice?.createDeviceGroupAsync()
     }
   }
 
