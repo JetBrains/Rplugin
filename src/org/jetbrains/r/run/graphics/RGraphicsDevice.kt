@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.run.graphics
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RIExecutionResult
@@ -19,6 +20,7 @@ class RGraphicsDevice(
 
   private var lastNormal = emptyList<RSnapshot>()
 
+  private val directory2GroupPromises = mutableMapOf<String, Promise<DeviceGroup>>()
   private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
   private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
@@ -89,26 +91,33 @@ class RGraphicsDevice(
     listeners.remove(listener)
   }
 
-  fun createDeviceGroupAsync(snapshot: RSnapshot): Promise<RDeviceGroup> {
-    if (!rInterop.isAlive) {
-      return rejectedPromise("Interop has already terminated")
+  fun createDeviceGroupAsync(): Promise<Disposable> {
+    return createEmptyGroupAsync().then { group ->
+      Disposable {
+        if (rInterop.isAlive) {  // Note: the group is removed automatically on interop termination
+          runAsync {  // Note: prevent execution on EDT
+            rInterop.graphicsRemoveGroup(group.id)
+          }
+        }
+      }
     }
-    val promise = createEmptyGroupAsync().then { groupId ->
-      val recorded = snapshot.recordedFile.readBytes()
-      rInterop.graphicsPushSnapshot(groupId, snapshot.number, recorded)
-      RDeviceGroup(groupId, rInterop)
+  }
+
+  private fun createEmptyGroupAsync(): Promise<DeviceGroup> {
+    if (!rInterop.isAlive) {
+      return cancelledPromise()
+    }
+    val promise = runAsync {
+      val result = rInterop.graphicsCreateGroup()
+      if (result.stderr.isNotBlank()) {
+        throw RuntimeException("Cannot create empty group. Stderr was:\n${result.stderr}")
+      }
+      val id = extractGroupIdFrom(result.stdout)
+      DeviceGroup(id)
     }
     return promise.onError { e ->
       LOGGER.error("Cannot create device group", e)
     }
-  }
-
-  private fun createEmptyGroupAsync() = runAsync {
-    val result = rInterop.graphicsCreateGroup()
-    if (result.stderr.isNotBlank()) {
-      throw RuntimeException("Cannot create empty group. Stderr was:\n${result.stderr}")
-    }
-    extractGroupIdFrom(result.stdout)
   }
 
   private fun extractGroupIdFrom(stdout: String): String {
@@ -128,13 +137,31 @@ class RGraphicsDevice(
     }
   }
 
-  fun rescaleStoredAsync(snapshot: RSnapshot, group: RDeviceGroup, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
-    val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
-    val promise = executeWithLogAsync(hint) {
-      rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
+  fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
+    return createDeviceGroupIfNeededAsync(snapshot).thenAsync { group ->
+      val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
+      val promise = executeWithLogAsync(hint) {
+        pushStoredSnapshotIfNeeded(snapshot, group)
+        rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
+      }
+      promise.then { isRescaled ->
+        if (isRescaled) pullStoredSnapshot(snapshot, group.id, hint) else null
+      }
     }
-    return promise.then { isRescaled ->
-      if (isRescaled) pullStoredSnapshot(snapshot, group.id, hint) else null
+  }
+
+  @Synchronized
+  private fun createDeviceGroupIfNeededAsync(snapshot: RSnapshot): Promise<DeviceGroup> {
+    return directory2GroupPromises.getOrPut(snapshot.file.parent) {
+      createEmptyGroupAsync()
+    }
+  }
+
+  @Synchronized
+  private fun pushStoredSnapshotIfNeeded(snapshot: RSnapshot, group: DeviceGroup) {
+    if (group.snapshotNumbers.add(snapshot.number)) {
+      val recorded = snapshot.recordedFile.readBytes()
+      rInterop.graphicsPushSnapshot(group.id, snapshot.number, recorded)
     }
   }
 
@@ -149,34 +176,34 @@ class RGraphicsDevice(
   }
 
   private fun executeWithLogAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
+    if (!rInterop.isAlive) {
+      // Note: `rejectedPromise()` will spam the error log
+      return cancelledPromise()
+    }
     return executeAsync(hint, task).onError { e ->
       LOGGER.error("Cannot execute task for <$hint>", e)
     }
   }
 
   private fun executeAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
-    return if (rInterop.isAlive) {
-      devicePromise.thenAsync {
-        runAsync {
-          val result = task()
+    return devicePromise.thenAsync {
+      runAsync {
+        val result = task()
+        if (result.stderr.isNotBlank()) {
+          // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
+          LOGGER.warn("Task for <$hint> has failed:\n${result.stderr}")
+        }
+        if (result.stdout.isNotBlank()) {
+          val output = result.stdout.let { it.substring(4, it.length - 1) }
+          return@runAsync output == "TRUE"
+        } else {
           if (result.stderr.isNotBlank()) {
-            // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
-            LOGGER.warn("Task for <$hint> has failed:\n${result.stderr}")
-          }
-          if (result.stdout.isNotBlank()) {
-            val output = result.stdout.let { it.substring(4, it.length - 1) }
-            return@runAsync output == "TRUE"
+            throw RuntimeException("Cannot get stdout from graphics device. Stderr was:\n${result.stderr}")
           } else {
-            if (result.stderr.isNotBlank()) {
-              throw RuntimeException("Cannot get stdout from graphics device. Stderr was:\n${result.stderr}")
-            } else {
-              throw RuntimeException("Cannot get any output from graphics device")
-            }
+            throw RuntimeException("Cannot get any output from graphics device")
           }
         }
       }
-    } else {
-      rejectedPromise("Interop has already terminated")
     }
   }
 
@@ -250,6 +277,12 @@ class RGraphicsDevice(
   )
 
   private data class SnapshotInfo(val snapshot: RSnapshot, val parameters: RGraphicsUtils.ScreenParameters)
+
+  /*
+   * Abstraction of (potentially remote) directory where a graphics device
+   * can store its plots
+   */
+  private data class DeviceGroup(val id: String, val snapshotNumbers: MutableSet<Int> = mutableSetOf())
 
   companion object {
     private val LOGGER = Logger.getInstance(RGraphicsDevice::class.java)
