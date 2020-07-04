@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.remote.BaseRemoteProcessHandler
+import com.intellij.ssh.SftpChannelException
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.PathUtil
 import com.jetbrains.plugins.remotesdk.ui.RemoteBrowseActionListener
@@ -26,6 +27,8 @@ import org.jetbrains.r.remote.host.mkDirs
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.util.RPathUtil
 import java.io.File
+import java.io.IOException
+import java.nio.file.Paths
 
 class RRemoteInterpreterImpl(
   override val interpreterLocation: RRemoteInterpreterLocation,
@@ -41,6 +44,10 @@ class RRemoteInterpreterImpl(
       val remoteHostName = PathUtil.suggestFileName(remoteHost.presentableName, true, false)
       return "Remote_${remoteHostName}_${super.interpreterName}"
     }
+
+  init {
+    removeLocalRDataTmpFiles()
+  }
 
   override fun getProcessOutput(scriptText: String): ProcessOutput? {
     val commandLine = arrayOf<String>(remotePath, "--no-restore", "--quiet", "--slave", "-e", scriptText)
@@ -148,6 +155,19 @@ class RRemoteInterpreterImpl(
 
   override fun registersRootsToWatch() {
     // TODO: remote library watcher
+  }
+
+  private fun removeLocalRDataTmpFiles() {
+    try {
+      remoteHost.useSftpChannel { channel ->
+        val dir = channel.file(RPathUtil.join(basePath, ".RDataFiles"))
+        if (dir.isDir()) {
+          dir.list().filter { ".RDataTmp" in it.name() }.forEach { it.rm() }
+        }
+      }
+    } catch (e: SftpChannelException) {
+      LOG.error(e)
+    }
   }
 
   companion object {
