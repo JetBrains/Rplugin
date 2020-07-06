@@ -153,10 +153,6 @@ class RRemoteInterpreterImpl(
     }
   }
 
-  override fun registersRootsToWatch() {
-    // TODO: remote library watcher
-  }
-
   private fun removeLocalRDataTmpFiles() {
     try {
       remoteHost.useSftpChannel { channel ->

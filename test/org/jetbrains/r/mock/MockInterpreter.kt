@@ -151,11 +151,4 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
       Pair(userPath, File(userPath).mkdirs())
     }
   }
-
-  override fun registersRootsToWatch() {
-    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
-    })
-    RLibraryWatcher.getInstance(project).refresh()
-  }
 }

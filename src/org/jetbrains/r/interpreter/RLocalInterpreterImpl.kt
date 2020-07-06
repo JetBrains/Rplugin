@@ -106,13 +106,6 @@ class RLocalInterpreterImpl(
     }
   }
 
-  override fun registersRootsToWatch() {
-    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
-    })
-    RLibraryWatcher.getInstance(project).refresh()
-  }
-
   companion object {
     val LOG = Logger.getInstance(RLocalInterpreterImpl::class.java)
 

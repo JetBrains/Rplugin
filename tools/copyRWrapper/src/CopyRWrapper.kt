@@ -34,7 +34,8 @@ fun main(args: Array<String>) {
 
   rwrapperDirectory
     .takeIf { it.exists() && it.isDirectory }
-    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("R-") || name == "R" }
+    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("R-") ||
+                        name == "R" || name.startsWith("fsnotifier-") }
     ?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }
     ?.forEach {
     if (it.isDirectory) {

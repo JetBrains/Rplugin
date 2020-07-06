@@ -4,52 +4,137 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.application.subscribe
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.openapi.vfs.newvfs.BulkFileListener
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.util.messages.Topic
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
+import java.lang.IllegalArgumentException
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 class RLibraryWatcher(private val project: Project) : Disposable {
-  private val bulkFileListener: BulkFileListener
-  private val rootsToWatch = HashSet<LocalFileSystem.WatchRequest>()
-  private val files4Watching = ArrayList<VirtualFile>()
-  private val libraryPaths = ArrayList<VirtualFile>()
   private val switch = RLibraryWatcherSwitch()
+  private var interpreter: RInterpreter? = null
+  private var fsNotifierProcess: ProcessHandler? = null
+  private val changed = AtomicBoolean(false)
 
-  init {
-    bulkFileListener = object: BulkFileListener {
-      override fun after(events: List<VFileEvent>) {
-        if (events.any { it.isLibraryEvent() }) {
-          onLibraryChanged()
-        }
-      }
+  internal fun setCurrentInterpreter(newInterpreter: RInterpreter?) {
+    fsNotifierProcess?.let {
+      it.destroyProcess()
+      fsNotifierProcess = null
     }
-    VirtualFileManager.VFS_CHANGES.subscribe(project, bulkFileListener)
+    interpreter = newInterpreter
+    if (newInterpreter == null) return
+    runBackgroundableTask(RBundle.message("library.watcher.initializing"), project) {
+      fsNotifierProcess = runFsNotifier(newInterpreter)
+      updateRootsToWatch()
+    }
   }
 
-  private fun VFileEvent.isLibraryEvent(): Boolean {
-    return file?.isLibraryFile() == true
+  @Synchronized
+  fun updateRootsToWatch() {
+    val roots = interpreter?.libraryPaths?.map { it.path } ?: return
+    fsNotifierProcess?.processInput?.bufferedWriter()?.let { writer ->
+      writer.write("ROOTS")
+      writer.newLine()
+      roots.forEach {
+        writer.write(it)
+        writer.newLine()
+      }
+      writer.write("#")
+      writer.newLine()
+      writer.flush()
+    }
   }
 
-  private fun VirtualFile.isLibraryFile(): Boolean {
-    return libraryPaths.any { ancestor -> VfsUtil.isAncestor(ancestor, this, true) }
+  private enum class WatcherOp { GIVEUP, RESET, UNWATCHEABLE, REMAP, MESSAGE, CREATE, DELETE, STATS, CHANGE, DIRTY, RECDIRTY }
+
+  private fun runFsNotifier(interpreter: RInterpreter): ProcessHandler? {
+    val executableName = when (interpreter.hostOS) {
+      OperatingSystem.WINDOWS -> "fsnotifier-win.exe"
+      OperatingSystem.LINUX -> "fsnotifier-linux"
+      OperatingSystem.MAC_OS -> "fsnotifier-osx"
+    }
+    val fsNotifierExecutable = RPluginUtil.findFileInRHelpers(executableName)
+    if (!fsNotifierExecutable.exists()) {
+      LOG.error("fsNotifier: '$executableName' not found in helpers")
+      return null
+    }
+    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadHelperToHost(fsNotifierExecutable)))
+    Disposer.register(project, Disposable { process.destroyProcess() })
+
+    process.addProcessListener(object : ProcessListener {
+      var lastOp: WatcherOp? = null
+
+      override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+        val line = event.text.trim().takeIf { it.isNotEmpty() } ?: return
+        if (outputType == ProcessOutputType.STDERR) {
+          LOG.warn("fsNotifier: $line")
+          return
+        }
+        if (outputType != ProcessOutputType.STDOUT) return
+
+        when (lastOp) {
+          WatcherOp.UNWATCHEABLE -> {
+            if (line != "#") {
+              LOG.warn("fsNotifier: UNWATCHABLE $line")
+              return
+            }
+          }
+          WatcherOp.REMAP -> if (line != "#") return
+          WatcherOp.MESSAGE -> {
+            LOG.warn("fsNotifier: MESSAGE $line")
+          }
+          WatcherOp.CREATE, WatcherOp.DELETE, WatcherOp.STATS, WatcherOp.CHANGE -> {
+            changed.set(true)
+          }
+          else -> {
+            lastOp = try {
+              WatcherOp.valueOf(line)
+            } catch (e: IllegalArgumentException) {
+              LOG.warn("fsNotifier: unknown command $line")
+              null
+            }
+            if (lastOp == WatcherOp.GIVEUP || lastOp == WatcherOp.RESET) {
+              LOG.warn("fsNotifier: $line")
+            } else {
+              return
+            }
+          }
+        }
+        lastOp = null
+      }
+
+      override fun processTerminated(event: ProcessEvent) {
+      }
+
+      override fun startNotified(event: ProcessEvent) {
+      }
+    }, project)
+
+    process.startNotify()
+    return process
   }
 
-  private fun onLibraryChanged() {
-    switch.onActive {
-      project.messageBus.syncPublisher(TOPIC).libraryChanged()
+  fun refresh() {
+    if (changed.compareAndSet(true, false)) {
+      switch.onActive {
+        project.messageBus.syncPublisher(TOPIC).libraryChanged()
+      }
     }
   }
 
@@ -59,42 +144,6 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 
   fun enable() {
     switch.enable()
-  }
-
-  @Synchronized
-  fun registerRootsToWatch(libraryRoots: List<VirtualFile>) {
-    libraryPaths.clear()
-    libraryPaths.addAll(libraryRoots)
-    val localFileSystem = LocalFileSystem.getInstance()
-    localFileSystem.removeWatchedRoots(rootsToWatch)
-    rootsToWatch.clear()
-    refresh()
-    rootsToWatch.addAll(localFileSystem.addRootsToWatch(libraryRoots.map { it.path }, true))
-  }
-
-  /**
-   * the method shouldn't be called from read action
-   */
-  @Synchronized
-  fun refresh() {
-    files4Watching.clear()
-    libraryPaths.filter { it.isDirectory }.forEach { root ->
-      root.refresh(false, false)
-      val libraries = VfsUtil.getChildren(root)
-      for (library in libraries.filter { it.isDirectory }) {
-        if (!library.isValid) {
-          continue
-        }
-        if (!library.isValid) {
-          continue
-        }
-        val relativeFile = VfsUtil.findRelativeFile(library, "R")
-        if (relativeFile != null && relativeFile.isDirectory) {
-          files4Watching.addAll(VfsUtil.getChildren(relativeFile))
-        }
-        files4Watching.add(library)
-      }
-    }
   }
 
   override fun dispose() {}
@@ -112,7 +161,8 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 
   companion object {
     // Note: ::class.java doesn't allow to use lambdas instead of full-weight interface implementations
-    private val TOPIC = Topic<RLibraryListener>("R Library Changes", RLibraryListener::class.java)
+    private val LOG = Logger.getInstance(RLibraryWatcher::class.java)
+    private val TOPIC = Topic("R Library Changes", RLibraryListener::class.java)
     private val LOGGER = Logger.getInstance(RLibraryWatcher::class.java)
 
     private class SlottedListenerDispatcher(project: Project) {

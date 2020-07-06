@@ -305,8 +305,8 @@ fun buildRWrapper(project: Project) {
 
 fun doCopyRWrapperTask(prepareSandboxTask: PrepareSandboxTask, project: Project) {
     prepareSandboxTask.inputs.files(*(File("rwrapper").takeIf { it.exists() && it.isDirectory }?.list { _, name ->
-        name.startsWith("rwrapper") || name.startsWith("R-") || name == "R"
-    }?.map { "rwrapper/" + it }?.toTypedArray() ?: emptyArray<String>()))
+        name.startsWith("rwrapper") || name.startsWith("R-") || name == "R" || name.startsWith("fsnotifier-")
+    }?.map { "rwrapper/$it" }?.toTypedArray() ?: emptyArray<String>()))
     prepareSandboxTask.doLast {
         project.copy {
             from("rwrapper/R")
