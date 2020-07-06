@@ -79,6 +79,7 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 
   private boolean acceptRowString() {
     int minusPrefixLength = 0;
+    char quote = zzBuffer.charAt(zzMarkedPos - 1);
     while(zzMarkedPos < zzEndRead && zzBuffer.charAt(zzMarkedPos) == '-') {
       minusPrefixLength++;
       zzMarkedPos++;
@@ -103,7 +104,7 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
           minusSuffixLength++;
           zzMarkedPos++;
         }
-        if (zzMarkedPos < zzEndRead && minusPrefixLength == minusSuffixLength && zzBuffer.charAt(zzMarkedPos) == '"') {
+        if (zzMarkedPos < zzEndRead && minusPrefixLength == minusSuffixLength && zzBuffer.charAt(zzMarkedPos) == quote) {
           zzMarkedPos++;
           return true;
         }
@@ -144,7 +145,7 @@ STRING_WITHOUT_END=({QUOTED_LITERAL_WITHOUT_END} | {DOUBLE_QUOTED_LITERAL_WITHOU
 {STRING}                    { return R_STRING; }
 {STRING_WITHOUT_END}        { return R_INVALID_STRING; }
 
-(r|R)\"                     {
+(r|R)(\"|\')                {
         if (acceptRowString()) return R_STRING;
         else return R_INVALID_STRING;
       }
