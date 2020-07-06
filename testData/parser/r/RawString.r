@@ -9,3 +9,6 @@ z <- R"{hello
 
 a <- r"--(hello
 "[wor)---"--)--"
+
+a <- R'("hello
+"[wor)---"--")'

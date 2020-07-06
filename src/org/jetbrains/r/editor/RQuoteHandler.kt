@@ -6,7 +6,6 @@ package org.jetbrains.r.editor
 
 import com.intellij.codeInsight.editorActions.MultiCharQuoteHandler
 import com.intellij.codeInsight.editorActions.SimpleTokenSetQuoteHandler
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.highlighter.HighlighterIterator
@@ -14,18 +13,19 @@ import org.jetbrains.r.parsing.RElementTypes
 
 class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiCharQuoteHandler {
   override fun isOpeningQuote(iterator: HighlighterIterator?, offset: Int): Boolean {
-    if (isRawString(iterator, offset)) return true
+    if (getRawStringQuote(iterator, offset) != null) return true
     return super.isOpeningQuote(iterator, offset)
   }
 
   override fun getClosingQuote(iterator: HighlighterIterator, offset: Int): CharSequence? {
-    return if (isRawString(iterator, offset)) "()\""
+    val quote = getRawStringQuote(iterator, offset)
+    return if (quote != null) "()$quote"
     else iterator.document.charsSequence[iterator.start].takeIf { it == '"' || it == '\'' }?.toString()
   }
 
   override fun insertClosingQuote(editor: Editor, offset: Int, closingQuote: CharSequence) {
     super.insertClosingQuote(editor, offset, closingQuote)
-    if (isRawString(editor.document, offset)) {
+    if (getRawStringQuote(editor.document, offset) != null) {
       editor.caretModel.moveToOffset(offset + 1)
     }
   }
@@ -50,12 +50,14 @@ class RQuoteHandler : SimpleTokenSetQuoteHandler(RElementTypes.R_STRING), MultiC
   }
 }
 
-private fun isRawString(iterator: HighlighterIterator?, offset: Int): Boolean {
-  val document = iterator?.document ?: return false
-  return isRawString(document, offset)
+private fun getRawStringQuote(iterator: HighlighterIterator?, offset: Int): Char? {
+  val document = iterator?.document ?: return null
+  return getRawStringQuote(document, offset)
 }
 
-private fun isRawString(document: Document, offset: Int): Boolean {
+private fun getRawStringQuote(document: Document, offset: Int): Char? {
   val text: CharSequence = document.charsSequence
-  return text.length >= 2 && offset > 2 && text[offset - 1] == '"' && text[offset - 2] == 'r'
+  if(text.length >= 2 && offset > 2 && (text[offset - 1] == '"' || text[offset - 1] == '\'') && text[offset - 2] == 'r')
+    return text[offset - 1]
+  return null
 }
