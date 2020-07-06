@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.misc
 
-import com.intellij.openapi.vfs.LocalFileSystem
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterTestUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
@@ -15,7 +14,7 @@ class LibraryWatcherTest : RUsefulTestCase() {
   private val packagePath = "$testDataPath/packages/$packageName.tar.gz"
 
   override fun tearDown() {
-    RLibraryWatcher.getInstance(project).registerRootsToWatch(emptyList())
+    RLibraryWatcher.getInstance(project).setCurrentInterpreter(null)
     super.tearDown()
   }
 
@@ -24,11 +23,9 @@ class LibraryWatcherTest : RUsefulTestCase() {
     val interpreter = RInterpreterTestUtil.makeSlaveInterpreter(project)
     RInterpreterTestUtil.removePackage(interpreter, packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
+    libraryWatcher.setCurrentInterpreter(interpreter)
     assertNotEmpty(interpreter.libraryPaths)
-
-    libraryWatcher.registerRootsToWatch(interpreter.libraryPaths.mapNotNull {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
-    })
+    libraryWatcher.updateRootsToWatch()
 
     val atomicInteger = AtomicInteger(0)
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {

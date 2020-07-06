@@ -103,8 +103,6 @@ interface RInterpreter : RInterpreterInfo {
   // Note: returns pair of writable path and indicator whether new library path was created
   fun getGuaranteedWritableLibraryPath(libraryPaths: List<LibraryPath> = this.libraryPaths,
                                        userPath: String = userLibraryPath): Pair<String, Boolean>
-
-  fun registersRootsToWatch()
 }
 
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation

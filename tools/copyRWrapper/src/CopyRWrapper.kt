@@ -31,9 +31,12 @@ fun main(args: Array<String>) {
 
   destinationDirectory.mkdirs()
 
-  rwrapperDirectory.takeIf { it.exists() && it.isDirectory }?.list { _, name ->
-    name.startsWith("rwrapper") || name.startsWith("R-") || name == "R"
-  }?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }?.forEach {
+  rwrapperDirectory
+    .takeIf { it.exists() && it.isDirectory }
+    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("R-") ||
+                        name == "R" || name.startsWith("fsnotifier-") }
+    ?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }
+    ?.forEach {
     if (it.isDirectory) {
       FileUtils.copyDirectoryToDirectory(it, destinationDirectory)
     } else {

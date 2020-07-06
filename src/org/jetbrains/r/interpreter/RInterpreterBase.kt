@@ -13,9 +13,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.util.PathUtil
 import com.intellij.util.containers.ContainerUtil
-import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RPluginUtil
@@ -93,21 +91,11 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
   }
 
   open fun onSetAsProjectInterpreter() {
+    RLibraryWatcher.getInstance(project).setCurrentInterpreter(this)
   }
 
   open fun onUnsetAsProjectInterpreter() {
-  }
-
-  private fun getHelpersRoot(): File {
-    @NonNls val jarPath = PathUtil.getJarPathForClass(RPluginUtil::class.java)
-    if (jarPath.endsWith(".jar")) {
-      val jarFile = File(jarPath)
-
-      LOG.assertTrue(jarFile.exists(), "jar file cannot be null")
-      return jarFile.parentFile.parentFile
-    }
-
-    return File(jarPath)
+    RLibraryWatcher.getInstance(project).setCurrentInterpreter(null)
   }
 
   @Synchronized

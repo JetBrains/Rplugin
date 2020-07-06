@@ -13,7 +13,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -150,12 +149,5 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
     } else {
       Pair(userPath, File(userPath).mkdirs())
     }
-  }
-
-  override fun registersRootsToWatch() {
-    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
-    })
-    RLibraryWatcher.getInstance(project).refresh()
   }
 }

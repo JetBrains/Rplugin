@@ -185,7 +185,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
           .onSuccess {
             val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
               override fun run(indicator: ProgressIndicator) {
-                interpreter.registersRootsToWatch()
+                RLibraryWatcher.getInstance(project).updateRootsToWatch()
                 updateSkeletons(interpreter)
               }
             }

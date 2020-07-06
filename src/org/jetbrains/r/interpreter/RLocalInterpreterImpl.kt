@@ -14,7 +14,6 @@ import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
@@ -98,13 +97,6 @@ class RLocalInterpreterImpl(
     } else {
       Pair(userPath, File(userPath).mkdirs())
     }
-  }
-
-  override fun registersRootsToWatch() {
-    RLibraryWatcher.getInstance(project).registerRootsToWatch(libraryPaths.mapNotNull {
-      LocalFileSystem.getInstance().refreshAndFindFileByPath(it.path)
-    })
-    RLibraryWatcher.getInstance(project).refresh()
   }
 
   companion object {
