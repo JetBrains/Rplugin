@@ -598,16 +598,28 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String, outputDirectory: String): RIExecutionResult {
-    val request = ChunkParameters.newBuilder().setRmarkdownParameters(rmarkdownParameters)
-                                                      .setChunkText(chunkText)
-                                                      .setOutputDirectory(outputDirectory)
-                                                      .build()
+  fun runBeforeChunk(rmarkdownParameters: String, chunkText: String): RIExecutionResult {
+    val request = ChunkParameters.newBuilder()
+      .setRmarkdownParameters(rmarkdownParameters)
+      .setChunkText(chunkText)
+      .build()
     return executeRequest(RPIServiceGrpc.getBeforeChunkExecutionMethod(), request)
   }
 
   fun runAfterChunk(): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getAfterChunkExecutionMethod(), Empty.getDefaultInstance())
+  }
+
+  fun pullChunkOutputRelativePaths(): List<String> {
+    return executeWithCheckCancel(asyncStub::pullChunkOutputRelativePaths, Empty.getDefaultInstance()).listList
+  }
+
+  fun pullChunkOutputFile(relativePath: String): ByteArray {
+    val response = executeWithCheckCancel(asyncStub::pullChunkOutputFile, StringValue.of(relativePath))
+    if (response.message.isNotBlank()) {
+      throw RuntimeException(response.message)
+    }
+    return response.content.toByteArray()
   }
 
   fun repoGetPackageVersion(packageName: String): RIExecutionResult {

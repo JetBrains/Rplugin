@@ -55,6 +55,8 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -176,7 +178,7 @@ object RunChunkHandler {
 
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
-      beforeRunChunk(rInterop, rMarkdownParameters, chunkText, cacheDirectory)
+      beforeRunChunk(rInterop, rMarkdownParameters, chunkText)
       if (imagesDirectory != null) {
         val device = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, inMemory = false)
         graphicsDeviceRef.set(device)
@@ -188,7 +190,7 @@ object RunChunkHandler {
       InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
     }.onProcessed { result ->
       dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
-        runAsync {
+        pullOutputsWithLogAsync(rInterop, cacheDirectory).onProcessed {
           afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
         }
       }
@@ -201,20 +203,45 @@ object RunChunkHandler {
     return device?.dumpAndShutdownAsync() ?: resolvedPromise()
   }
 
+  private fun pullOutputsWithLogAsync(rInterop: RInterop, cacheDirectory: String): Promise<Unit> {
+    return pullOutputsAsync(rInterop, cacheDirectory).onError { e ->
+      LOGGER.error("Run Chunk: cannot pull outputs", e)
+    }
+  }
+
+  private fun pullOutputsAsync(rInterop: RInterop, cacheDirectory: String) = runAsync {
+    for (relativePath in rInterop.pullChunkOutputRelativePaths()) {
+      val content = rInterop.pullChunkOutputFile(relativePath)
+      createFileWith(content, relativePath, cacheDirectory)
+    }
+  }
+
+  private fun createFileWith(content: ByteArray, relativePath: String, basePath: String) {
+    val path = Paths.get(basePath, relativePath)
+    path.toFile().parentFile.mkdirs()
+    Files.write(path, content)
+  }
+
   private fun createRMarkdownParameters(file: PsiFile) =
     "---${System.lineSeparator()}${RMarkdownUtil.findMarkdownParagraph(file)?.text ?: ""}${System.lineSeparator()}---"
 
-  private fun createCacheDirectory(inlayElement: PsiElement) =
-    ChunkPathManager.getCacheDirectory(inlayElement)?.also { FileUtil.delete(File(it)) }
+  private fun createCacheDirectory(inlayElement: PsiElement): String? {
+    return ChunkPathManager.getCacheDirectory(inlayElement)?.also { cacheDirectoryPath ->
+      createCleanDirectory(File(cacheDirectoryPath))
+      ChunkPathManager.getNestedDirectories(inlayElement).forEach { File(it).mkdir() }
+    }
+  }
+
+  private fun createCleanDirectory(directory: File) {
+    FileUtil.delete(directory)
+    directory.mkdirs()
+  }
 
   private fun findCodeElement(parent: PsiElement?) =
     SyntaxTraverser.psiTraverser(parent).firstOrNull { it.elementType == R_FENCE_ELEMENT_TYPE }
 
-  private fun beforeRunChunk(rInterop: RInterop,
-                             rmarkdownParameters: String,
-                             chunkText: String,
-                             cacheDirectory: String) {
-    logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText, cacheDirectory))
+  private fun beforeRunChunk(rInterop: RInterop, rmarkdownParameters: String, chunkText: String) {
+    logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText))
   }
 
   private fun createScreenParameters(editor: EditorEx,
