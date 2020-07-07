@@ -5,6 +5,6 @@
 package org.jetbrains.r.rendering.settings
 
 class RMarkdownRenderProfile {
-  var knitRootDirectory: String = ""
+  var outputDirectoryUrl: String = ""
   var lastOutput: String = ""
 }

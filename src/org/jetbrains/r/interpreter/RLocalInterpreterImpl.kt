@@ -17,7 +17,6 @@ import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.BaseOutputReader
 import org.jetbrains.r.rinterop.RInterop
@@ -67,7 +66,7 @@ class RLocalInterpreterImpl(
     }
   }
 
-  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
+  override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
     return file.path
   }
 
@@ -96,6 +95,8 @@ class RLocalInterpreterImpl(
     content?.let { file.writeBytes(it) }
     return file.path
   }
+
+  override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
 
   override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
     val writable = libraryPaths.find { it.isWritable }

@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
@@ -69,6 +70,12 @@ interface RInterpreter : RInterpreterInfo {
     return LocalFileSystem.getInstance().findFileByPath(path)
   }
 
+  fun downloadFileFromHost(path: String, localPath: String) {
+    File(path).takeIf { it.exists() }?.copyTo(File(localPath))
+  }
+
+  fun getHelpersRootOnHost(): String = RPluginUtil.helpersPath
+
   fun uploadHelperToHost(helper: File): String
 
   fun runProcessOnHost(command: GeneralCommandLine): ProcessHandler
@@ -94,11 +101,13 @@ interface RInterpreter : RInterpreterInfo {
 
   fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop
 
-  fun uploadFileToHostIfNeeded(file: VirtualFile): String
+  fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean = false): String
 
   fun createFileChooserForHost(value: String = "", selectFolder: Boolean = false): TextFieldWithBrowseButton
 
   fun createTempFileOnHost(name: String = "a", content: ByteArray? = null): String
+
+  fun createTempDirOnHost(name: String = "a"): String
 
   // Note: returns pair of writable path and indicator whether new library path was created
   fun getGuaranteedWritableLibraryPath(libraryPaths: List<LibraryPath> = this.libraryPaths,

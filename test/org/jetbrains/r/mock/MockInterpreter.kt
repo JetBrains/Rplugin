@@ -13,7 +13,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -22,7 +21,10 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.OperatingSystem
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -118,7 +120,7 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
     return helper.absolutePath
   }
 
-  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
+  override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
     return file.path
   }
 
@@ -136,6 +138,8 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
     content?.let { file.writeBytes(it) }
     return file.path
   }
+
+  override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
 
   override fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler {
     val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, script, args)

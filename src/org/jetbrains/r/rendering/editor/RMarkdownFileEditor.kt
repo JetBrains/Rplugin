@@ -20,6 +20,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -36,7 +37,6 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.settings.REditorSettings
 import java.awt.BorderLayout
 import java.io.File
-import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import javax.swing.Icon
@@ -202,7 +202,7 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
     }
 
     private fun openDocument() {
-      val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report.path)
+      val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report)
       val file = File(profileLastOutput)
       if (profileLastOutput.isNotEmpty() && file.exists()) {
         BrowserLauncher.instance.browse(file)
@@ -265,19 +265,19 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
     }
 
     override fun update(e: AnActionEvent) {
-      e.presentation.text = knitRootDirectoryName
+      e.presentation.text = outputDirectoryName
     }
 
     override fun createPopupActionGroup(button: JComponent?): DefaultActionGroup =
       DefaultActionGroup(
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.documentDirectory")) {
           override fun actionPerformed(e: AnActionEvent) {
-            knitRootDirectory(report.parent?.path)
+            outputDirectory(report.parent)
           }
         },
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.projectDirectory")) {
           override fun actionPerformed(e: AnActionEvent) {
-            knitRootDirectory(project.basePath)
+            outputDirectory(project.basePath)
           }
         },
         object : AnAction(RBundle.message("rmarkdown.editor.toolbar.customDirectory")) {
@@ -285,18 +285,21 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
             val fileDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
             val dir = FileChooser.chooseFile(fileDescriptor, project, null)
             if (dir != null && dir.isValid) {
-              knitRootDirectory(dir.path)
+              outputDirectory(dir)
             }
           }
         })
 
-
-    private fun knitRootDirectory(path: String?) {
-      RMarkdownSettings.getInstance(project).state.setKnitRootDirectory(report.path, path ?: return)
+    private fun outputDirectory(dir: VirtualFile?) {
+      RMarkdownSettings.getInstance(project).state.setKnitRootDirectory(report, dir ?: return)
     }
 
-    private val knitRootDirectoryName
-      get() = Paths.get(RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(report.path)).fileName.toString()
+    private fun outputDirectory(dir: String?) {
+      outputDirectory(LocalFileSystem.getInstance().findFileByPath(dir ?: return))
+    }
+
+    private val outputDirectoryName
+      get() = RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(report)?.name.orEmpty()
   }
 
 private abstract class SameTextAction(text: String, icon: Icon? = null) : DumbAwareAction(text, text, icon)

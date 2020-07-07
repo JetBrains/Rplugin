@@ -198,7 +198,7 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
     }
   }
 
-  fun uploadTmpFile(name: String, content: ByteArray): String {
+  fun uploadTmpFile(name: String, content: ByteArray, preserveName: Boolean = false): String {
     return ExecuteExpressionUtils.getSynchronously("Uploading file $name to $presentableName") {
       useSftpChannel { channel ->
         val nameNoExt = FileUtil.getNameWithoutExtension(name)
@@ -209,11 +209,16 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
         while (true) {
           val remoteName = if (iter == 0) "$nameNoExt$extension" else "$nameNoExt-$iter$extension"
           remotePath = RPathUtil.join(remoteDir, remoteName)
-          val remoteFile = channel.file(remotePath)
+          var remoteFile = channel.file(remotePath)
           if (remoteFile.exists()) {
             ++iter
           } else {
             LOG.debug { "Uploading file $name to $presentableName : $remotePath" }
+            if (preserveName) {
+              remoteFile.mkdir()
+              remotePath = RPathUtil.join(remotePath, name)
+              remoteFile = channel.file(remotePath)
+            }
             remoteFile.outputStream(false).use {
               it.write(content)
             }
@@ -225,23 +230,43 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
     }
   }
 
-  private fun uploadTmpFile(file: File): String {
+  fun createTmpDir(name: String): String {
+    return useSftpChannel { channel ->
+      var iter = 0
+      val parentDir = remoteTempDir
+      var remotePath: String
+      while (true) {
+        val remoteName = if (iter == 0) name else "$name-$iter"
+        remotePath = RPathUtil.join(parentDir, remoteName)
+        val remoteFile = channel.file(remotePath)
+        if (remoteFile.exists()) {
+          ++iter
+        } else {
+          remoteFile.mkdir()
+          break
+        }
+      }
+      remotePath
+    }
+  }
+
+  private fun uploadTmpFile(file: File, preserveName: Boolean = false): String {
     if (FileUtil.isAncestor(RPluginUtil.helpersPath, file.path, false)) {
       return uploadRHelper(file)
     }
-    return uploadTmpFile(file.name, file.readBytes())
+    return uploadTmpFile(file.name, file.readBytes(), preserveName)
   }
 
-  fun uploadFileIfNeeded(file: VirtualFile): String {
+  fun uploadFileIfNeeded(file: VirtualFile, preserveName: Boolean = false): String {
     RRemoteVFS.getHostAndPath(file)?.let { (host, path) ->
       if (host == this) {
         return path
       }
     }
     if (file.isInLocalFileSystem) {
-      return uploadTmpFile(File(file.path))
+      return uploadTmpFile(File(file.path), preserveName)
     }
-    return uploadTmpFile(file.name, file.contentsToByteArray())
+    return uploadTmpFile(file.name, file.contentsToByteArray(), preserveName)
   }
 
   fun createProcess(command: GeneralCommandLine, timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS, workingDir: String? = null): SshExecProcess {
