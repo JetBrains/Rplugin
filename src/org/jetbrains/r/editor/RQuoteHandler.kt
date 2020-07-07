@@ -57,7 +57,7 @@ private fun getRawStringQuote(iterator: HighlighterIterator?, offset: Int): Char
 
 private fun getRawStringQuote(document: Document, offset: Int): Char? {
   val text: CharSequence = document.charsSequence
-  if(text.length >= 2 && offset > 2 && (text[offset - 1] == '"' || text[offset - 1] == '\'') && text[offset - 2] == 'r')
+  if(text.length >= 2 && offset > 2 && text[offset - 1].let { it == '"' || it == '\''} && text[offset - 2].let { it == 'R' || it == 'r'})
     return text[offset - 1]
   return null
 }
