@@ -32,8 +32,22 @@ object ChunkPathManager {
     return getCacheDirectory(psi)
   }
 
+  fun getHtmlLibrariesDirectory(psi: PsiElement): String? {
+    return findInCache(psi, "lib")
+  }
+
   fun getDataDirectory(psi: PsiElement): String? {
     return findInCache(psi, "data")
+  }
+
+  fun getNestedDirectories(psi: PsiElement): List<String> {
+    val paths = listOf(
+      getImagesDirectory(psi),
+      getExternalImagesDirectory(psi),
+      getHtmlLibrariesDirectory(psi),
+      getDataDirectory(psi)
+    )
+    return paths.filterNotNull()
   }
 
   fun getOutputFile(psi: PsiElement): String? {

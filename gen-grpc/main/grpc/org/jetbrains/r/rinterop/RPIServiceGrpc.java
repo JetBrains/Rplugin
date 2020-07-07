@@ -1050,6 +1050,68 @@ public final class RPIServiceGrpc {
     return getAfterChunkExecutionMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.StringList> getPullChunkOutputRelativePathsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "pullChunkOutputRelativePaths",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = org.jetbrains.r.rinterop.StringList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.StringList> getPullChunkOutputRelativePathsMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.StringList> getPullChunkOutputRelativePathsMethod;
+    if ((getPullChunkOutputRelativePathsMethod = RPIServiceGrpc.getPullChunkOutputRelativePathsMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getPullChunkOutputRelativePathsMethod = RPIServiceGrpc.getPullChunkOutputRelativePathsMethod) == null) {
+          RPIServiceGrpc.getPullChunkOutputRelativePathsMethod = getPullChunkOutputRelativePathsMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.StringList>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pullChunkOutputRelativePaths"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.StringList.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("pullChunkOutputRelativePaths"))
+              .build();
+        }
+      }
+    }
+    return getPullChunkOutputRelativePathsMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponse> getPullChunkOutputFileMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "pullChunkOutputFile",
+      requestType = com.google.protobuf.StringValue.class,
+      responseType = org.jetbrains.r.rinterop.PullChunkOutputFileResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponse> getPullChunkOutputFileMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.PullChunkOutputFileResponse> getPullChunkOutputFileMethod;
+    if ((getPullChunkOutputFileMethod = RPIServiceGrpc.getPullChunkOutputFileMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getPullChunkOutputFileMethod = RPIServiceGrpc.getPullChunkOutputFileMethod) == null) {
+          RPIServiceGrpc.getPullChunkOutputFileMethod = getPullChunkOutputFileMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.PullChunkOutputFileResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pullChunkOutputFile"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.PullChunkOutputFileResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("pullChunkOutputFile"))
+              .build();
+        }
+      }
+    }
+    return getPullChunkOutputFileMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
       org.jetbrains.r.rinterop.CommandOutput> getRepoGetPackageVersionMethod;
 
@@ -2837,6 +2899,20 @@ public final class RPIServiceGrpc {
     }
 
     /**
+     */
+    public void pullChunkOutputRelativePaths(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
+      asyncUnimplementedUnaryCall(getPullChunkOutputRelativePathsMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void pullChunkOutputFile(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.PullChunkOutputFileResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getPullChunkOutputFileMethod(), responseObserver);
+    }
+
+    /**
      * <pre>
      * Repo utils service points
      * </pre>
@@ -3430,6 +3506,20 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty,
                 org.jetbrains.r.rinterop.CommandOutput>(
                   this, METHODID_AFTER_CHUNK_EXECUTION)))
+          .addMethod(
+            getPullChunkOutputRelativePathsMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                org.jetbrains.r.rinterop.StringList>(
+                  this, METHODID_PULL_CHUNK_OUTPUT_RELATIVE_PATHS)))
+          .addMethod(
+            getPullChunkOutputFileMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.StringValue,
+                org.jetbrains.r.rinterop.PullChunkOutputFileResponse>(
+                  this, METHODID_PULL_CHUNK_OUTPUT_FILE)))
           .addMethod(
             getRepoGetPackageVersionMethod(),
             asyncServerStreamingCall(
@@ -4066,6 +4156,22 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
       asyncServerStreamingCall(
           getChannel().newCall(getAfterChunkExecutionMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void pullChunkOutputRelativePaths(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getPullChunkOutputRelativePathsMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void pullChunkOutputFile(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.PullChunkOutputFileResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getPullChunkOutputFileMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4749,6 +4855,20 @@ public final class RPIServiceGrpc {
     }
 
     /**
+     */
+    public org.jetbrains.r.rinterop.StringList pullChunkOutputRelativePaths(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getPullChunkOutputRelativePathsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.PullChunkOutputFileResponse pullChunkOutputFile(com.google.protobuf.StringValue request) {
+      return blockingUnaryCall(
+          getChannel(), getPullChunkOutputFileMethod(), getCallOptions(), request);
+    }
+
+    /**
      * <pre>
      * Repo utils service points
      * </pre>
@@ -5317,6 +5437,22 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.StringList> pullChunkOutputRelativePaths(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getPullChunkOutputRelativePathsMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.PullChunkOutputFileResponse> pullChunkOutputFile(
+        com.google.protobuf.StringValue request) {
+      return futureUnaryCall(
+          getChannel().newCall(getPullChunkOutputFileMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> repoInstallPackage(
         org.jetbrains.r.rinterop.RepoInstallPackageRequest request) {
       return futureUnaryCall(
@@ -5686,55 +5822,57 @@ public final class RPIServiceGrpc {
   private static final int METHODID_GRAPHICS_SHUTDOWN = 30;
   private static final int METHODID_BEFORE_CHUNK_EXECUTION = 31;
   private static final int METHODID_AFTER_CHUNK_EXECUTION = 32;
-  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 33;
-  private static final int METHODID_REPO_INSTALL_PACKAGE = 34;
-  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 35;
-  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 36;
-  private static final int METHODID_REPO_REMOVE_PACKAGE = 37;
-  private static final int METHODID_PREVIEW_DATA_IMPORT = 38;
-  private static final int METHODID_COMMIT_DATA_IMPORT = 39;
-  private static final int METHODID_COPY_TO_PERSISTENT_REF = 40;
-  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 41;
-  private static final int METHODID_LOADER_GET_PARENT_ENVS = 42;
-  private static final int METHODID_LOADER_GET_VARIABLES = 43;
-  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 44;
-  private static final int METHODID_LOADER_GET_VALUE_INFO = 45;
-  private static final int METHODID_EVALUATE_AS_TEXT = 46;
-  private static final int METHODID_EVALUATE_AS_BOOLEAN = 47;
-  private static final int METHODID_GET_DISTINCT_STRINGS = 48;
-  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 49;
-  private static final int METHODID_GET_SOURCE_FILE_TEXT = 50;
-  private static final int METHODID_GET_SOURCE_FILE_NAME = 51;
-  private static final int METHODID_LOAD_OBJECT_NAMES = 52;
-  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 53;
-  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 54;
-  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 55;
-  private static final int METHODID_GET_FORMAL_ARGUMENTS = 56;
-  private static final int METHODID_GET_EQUALITY_OBJECT = 57;
-  private static final int METHODID_SET_VALUE = 58;
-  private static final int METHODID_GET_OBJECT_SIZES = 59;
-  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 60;
-  private static final int METHODID_DATA_FRAME_REGISTER = 61;
-  private static final int METHODID_DATA_FRAME_GET_INFO = 62;
-  private static final int METHODID_DATA_FRAME_GET_DATA = 63;
-  private static final int METHODID_DATA_FRAME_SORT = 64;
-  private static final int METHODID_DATA_FRAME_FILTER = 65;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 66;
-  private static final int METHODID_CONVERT_RD2HTML = 67;
-  private static final int METHODID_MAKE_RD_FROM_ROXYGEN = 68;
-  private static final int METHODID_FIND_PACKAGE_PATH_BY_TOPIC = 69;
-  private static final int METHODID_FIND_PACKAGE_PATH_BY_PACKAGE_NAME = 70;
-  private static final int METHODID_HTTPD_REQUEST = 71;
-  private static final int METHODID_GET_WORKING_DIR = 72;
-  private static final int METHODID_SET_WORKING_DIR = 73;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 74;
-  private static final int METHODID_LOAD_LIBRARY = 75;
-  private static final int METHODID_UNLOAD_LIBRARY = 76;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 77;
-  private static final int METHODID_LOAD_ENVIRONMENT = 78;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 79;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 80;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 81;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_RELATIVE_PATHS = 33;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_FILE = 34;
+  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 35;
+  private static final int METHODID_REPO_INSTALL_PACKAGE = 36;
+  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 37;
+  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 38;
+  private static final int METHODID_REPO_REMOVE_PACKAGE = 39;
+  private static final int METHODID_PREVIEW_DATA_IMPORT = 40;
+  private static final int METHODID_COMMIT_DATA_IMPORT = 41;
+  private static final int METHODID_COPY_TO_PERSISTENT_REF = 42;
+  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 43;
+  private static final int METHODID_LOADER_GET_PARENT_ENVS = 44;
+  private static final int METHODID_LOADER_GET_VARIABLES = 45;
+  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 46;
+  private static final int METHODID_LOADER_GET_VALUE_INFO = 47;
+  private static final int METHODID_EVALUATE_AS_TEXT = 48;
+  private static final int METHODID_EVALUATE_AS_BOOLEAN = 49;
+  private static final int METHODID_GET_DISTINCT_STRINGS = 50;
+  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 51;
+  private static final int METHODID_GET_SOURCE_FILE_TEXT = 52;
+  private static final int METHODID_GET_SOURCE_FILE_NAME = 53;
+  private static final int METHODID_LOAD_OBJECT_NAMES = 54;
+  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 55;
+  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 56;
+  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 57;
+  private static final int METHODID_GET_FORMAL_ARGUMENTS = 58;
+  private static final int METHODID_GET_EQUALITY_OBJECT = 59;
+  private static final int METHODID_SET_VALUE = 60;
+  private static final int METHODID_GET_OBJECT_SIZES = 61;
+  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 62;
+  private static final int METHODID_DATA_FRAME_REGISTER = 63;
+  private static final int METHODID_DATA_FRAME_GET_INFO = 64;
+  private static final int METHODID_DATA_FRAME_GET_DATA = 65;
+  private static final int METHODID_DATA_FRAME_SORT = 66;
+  private static final int METHODID_DATA_FRAME_FILTER = 67;
+  private static final int METHODID_DATA_FRAME_DISPOSE = 68;
+  private static final int METHODID_CONVERT_RD2HTML = 69;
+  private static final int METHODID_MAKE_RD_FROM_ROXYGEN = 70;
+  private static final int METHODID_FIND_PACKAGE_PATH_BY_TOPIC = 71;
+  private static final int METHODID_FIND_PACKAGE_PATH_BY_PACKAGE_NAME = 72;
+  private static final int METHODID_HTTPD_REQUEST = 73;
+  private static final int METHODID_GET_WORKING_DIR = 74;
+  private static final int METHODID_SET_WORKING_DIR = 75;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 76;
+  private static final int METHODID_LOAD_LIBRARY = 77;
+  private static final int METHODID_UNLOAD_LIBRARY = 78;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 79;
+  private static final int METHODID_LOAD_ENVIRONMENT = 80;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 81;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 82;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 83;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -5884,6 +6022,14 @@ public final class RPIServiceGrpc {
         case METHODID_AFTER_CHUNK_EXECUTION:
           serviceImpl.afterChunkExecution((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
+          break;
+        case METHODID_PULL_CHUNK_OUTPUT_RELATIVE_PATHS:
+          serviceImpl.pullChunkOutputRelativePaths((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList>) responseObserver);
+          break;
+        case METHODID_PULL_CHUNK_OUTPUT_FILE:
+          serviceImpl.pullChunkOutputFile((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.PullChunkOutputFileResponse>) responseObserver);
           break;
         case METHODID_REPO_GET_PACKAGE_VERSION:
           serviceImpl.repoGetPackageVersion((com.google.protobuf.StringValue) request,
@@ -6175,6 +6321,8 @@ public final class RPIServiceGrpc {
               .addMethod(getGraphicsShutdownMethod())
               .addMethod(getBeforeChunkExecutionMethod())
               .addMethod(getAfterChunkExecutionMethod())
+              .addMethod(getPullChunkOutputRelativePathsMethod())
+              .addMethod(getPullChunkOutputFileMethod())
               .addMethod(getRepoGetPackageVersionMethod())
               .addMethod(getRepoInstallPackageMethod())
               .addMethod(getRepoAddLibraryPathMethod())

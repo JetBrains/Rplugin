@@ -4,27 +4,27 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.ChunkParameters}
+ * Protobuf type {@code rplugininterop.PullChunkOutputFileResponse}
  */
-public  final class ChunkParameters extends
+public  final class PullChunkOutputFileResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.ChunkParameters)
-    ChunkParametersOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.PullChunkOutputFileResponse)
+    PullChunkOutputFileResponseOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use ChunkParameters.newBuilder() to construct.
-  private ChunkParameters(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use PullChunkOutputFileResponse.newBuilder() to construct.
+  private PullChunkOutputFileResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private ChunkParameters() {
-    rmarkdownParameters_ = "";
-    chunkText_ = "";
+  private PullChunkOutputFileResponse() {
+    message_ = "";
+    content_ = com.google.protobuf.ByteString.EMPTY;
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new ChunkParameters();
+    return new PullChunkOutputFileResponse();
   }
 
   @java.lang.Override
@@ -32,7 +32,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private ChunkParameters(
+  private PullChunkOutputFileResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -53,13 +53,12 @@ private static final long serialVersionUID = 0L;
           case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            rmarkdownParameters_ = s;
+            message_ = s;
             break;
           }
           case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
 
-            chunkText_ = s;
+            content_ = input.readBytes();
             break;
           }
           default: {
@@ -83,83 +82,58 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ChunkParameters_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_PullChunkOutputFileResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ChunkParameters_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_PullChunkOutputFileResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.ChunkParameters.class, org.jetbrains.r.rinterop.ChunkParameters.Builder.class);
+            org.jetbrains.r.rinterop.PullChunkOutputFileResponse.class, org.jetbrains.r.rinterop.PullChunkOutputFileResponse.Builder.class);
   }
 
-  public static final int RMARKDOWNPARAMETERS_FIELD_NUMBER = 1;
-  private volatile java.lang.Object rmarkdownParameters_;
+  public static final int MESSAGE_FIELD_NUMBER = 1;
+  private volatile java.lang.Object message_;
   /**
-   * <code>string rmarkdownParameters = 1;</code>
+   * <code>string message = 1;</code>
    */
-  public java.lang.String getRmarkdownParameters() {
-    java.lang.Object ref = rmarkdownParameters_;
+  public java.lang.String getMessage() {
+    java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      rmarkdownParameters_ = s;
+      message_ = s;
       return s;
     }
   }
   /**
-   * <code>string rmarkdownParameters = 1;</code>
+   * <code>string message = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getRmarkdownParametersBytes() {
-    java.lang.Object ref = rmarkdownParameters_;
+      getMessageBytes() {
+    java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      rmarkdownParameters_ = b;
+      message_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
   }
 
-  public static final int CHUNKTEXT_FIELD_NUMBER = 2;
-  private volatile java.lang.Object chunkText_;
+  public static final int CONTENT_FIELD_NUMBER = 2;
+  private com.google.protobuf.ByteString content_;
   /**
-   * <code>string chunkText = 2;</code>
+   * <code>bytes content = 2;</code>
    */
-  public java.lang.String getChunkText() {
-    java.lang.Object ref = chunkText_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      chunkText_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string chunkText = 2;</code>
-   */
-  public com.google.protobuf.ByteString
-      getChunkTextBytes() {
-    java.lang.Object ref = chunkText_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      chunkText_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public com.google.protobuf.ByteString getContent() {
+    return content_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -176,11 +150,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getRmarkdownParametersBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, rmarkdownParameters_);
+    if (!getMessageBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
     }
-    if (!getChunkTextBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, chunkText_);
+    if (!content_.isEmpty()) {
+      output.writeBytes(2, content_);
     }
     unknownFields.writeTo(output);
   }
@@ -191,11 +165,12 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getRmarkdownParametersBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, rmarkdownParameters_);
+    if (!getMessageBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
     }
-    if (!getChunkTextBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, chunkText_);
+    if (!content_.isEmpty()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBytesSize(2, content_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -207,15 +182,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.ChunkParameters)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.PullChunkOutputFileResponse)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.ChunkParameters other = (org.jetbrains.r.rinterop.ChunkParameters) obj;
+    org.jetbrains.r.rinterop.PullChunkOutputFileResponse other = (org.jetbrains.r.rinterop.PullChunkOutputFileResponse) obj;
 
-    if (!getRmarkdownParameters()
-        .equals(other.getRmarkdownParameters())) return false;
-    if (!getChunkText()
-        .equals(other.getChunkText())) return false;
+    if (!getMessage()
+        .equals(other.getMessage())) return false;
+    if (!getContent()
+        .equals(other.getContent())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -227,78 +202,78 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + RMARKDOWNPARAMETERS_FIELD_NUMBER;
-    hash = (53 * hash) + getRmarkdownParameters().hashCode();
-    hash = (37 * hash) + CHUNKTEXT_FIELD_NUMBER;
-    hash = (53 * hash) + getChunkText().hashCode();
+    hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+    hash = (53 * hash) + getMessage().hashCode();
+    hash = (37 * hash) + CONTENT_FIELD_NUMBER;
+    hash = (53 * hash) + getContent().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.ChunkParameters parseFrom(
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -311,7 +286,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.ChunkParameters prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.PullChunkOutputFileResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -327,26 +302,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.ChunkParameters}
+   * Protobuf type {@code rplugininterop.PullChunkOutputFileResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.ChunkParameters)
-      org.jetbrains.r.rinterop.ChunkParametersOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.PullChunkOutputFileResponse)
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ChunkParameters_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_PullChunkOutputFileResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ChunkParameters_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_PullChunkOutputFileResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.ChunkParameters.class, org.jetbrains.r.rinterop.ChunkParameters.Builder.class);
+              org.jetbrains.r.rinterop.PullChunkOutputFileResponse.class, org.jetbrains.r.rinterop.PullChunkOutputFileResponse.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.ChunkParameters.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.PullChunkOutputFileResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -364,9 +339,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      rmarkdownParameters_ = "";
+      message_ = "";
 
-      chunkText_ = "";
+      content_ = com.google.protobuf.ByteString.EMPTY;
 
       return this;
     }
@@ -374,17 +349,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_ChunkParameters_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_PullChunkOutputFileResponse_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.ChunkParameters getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.ChunkParameters.getDefaultInstance();
+    public org.jetbrains.r.rinterop.PullChunkOutputFileResponse getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.PullChunkOutputFileResponse.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.ChunkParameters build() {
-      org.jetbrains.r.rinterop.ChunkParameters result = buildPartial();
+    public org.jetbrains.r.rinterop.PullChunkOutputFileResponse build() {
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -392,10 +367,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.ChunkParameters buildPartial() {
-      org.jetbrains.r.rinterop.ChunkParameters result = new org.jetbrains.r.rinterop.ChunkParameters(this);
-      result.rmarkdownParameters_ = rmarkdownParameters_;
-      result.chunkText_ = chunkText_;
+    public org.jetbrains.r.rinterop.PullChunkOutputFileResponse buildPartial() {
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponse result = new org.jetbrains.r.rinterop.PullChunkOutputFileResponse(this);
+      result.message_ = message_;
+      result.content_ = content_;
       onBuilt();
       return result;
     }
@@ -434,23 +409,22 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.ChunkParameters) {
-        return mergeFrom((org.jetbrains.r.rinterop.ChunkParameters)other);
+      if (other instanceof org.jetbrains.r.rinterop.PullChunkOutputFileResponse) {
+        return mergeFrom((org.jetbrains.r.rinterop.PullChunkOutputFileResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.ChunkParameters other) {
-      if (other == org.jetbrains.r.rinterop.ChunkParameters.getDefaultInstance()) return this;
-      if (!other.getRmarkdownParameters().isEmpty()) {
-        rmarkdownParameters_ = other.rmarkdownParameters_;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.PullChunkOutputFileResponse other) {
+      if (other == org.jetbrains.r.rinterop.PullChunkOutputFileResponse.getDefaultInstance()) return this;
+      if (!other.getMessage().isEmpty()) {
+        message_ = other.message_;
         onChanged();
       }
-      if (!other.getChunkText().isEmpty()) {
-        chunkText_ = other.chunkText_;
-        onChanged();
+      if (other.getContent() != com.google.protobuf.ByteString.EMPTY) {
+        setContent(other.getContent());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -467,11 +441,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.ChunkParameters parsedMessage = null;
+      org.jetbrains.r.rinterop.PullChunkOutputFileResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.ChunkParameters) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.PullChunkOutputFileResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -481,140 +455,100 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object rmarkdownParameters_ = "";
+    private java.lang.Object message_ = "";
     /**
-     * <code>string rmarkdownParameters = 1;</code>
+     * <code>string message = 1;</code>
      */
-    public java.lang.String getRmarkdownParameters() {
-      java.lang.Object ref = rmarkdownParameters_;
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        rmarkdownParameters_ = s;
+        message_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>string rmarkdownParameters = 1;</code>
+     * <code>string message = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getRmarkdownParametersBytes() {
-      java.lang.Object ref = rmarkdownParameters_;
+        getMessageBytes() {
+      java.lang.Object ref = message_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        rmarkdownParameters_ = b;
+        message_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string rmarkdownParameters = 1;</code>
+     * <code>string message = 1;</code>
      */
-    public Builder setRmarkdownParameters(
+    public Builder setMessage(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      rmarkdownParameters_ = value;
+      message_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string rmarkdownParameters = 1;</code>
+     * <code>string message = 1;</code>
      */
-    public Builder clearRmarkdownParameters() {
+    public Builder clearMessage() {
       
-      rmarkdownParameters_ = getDefaultInstance().getRmarkdownParameters();
+      message_ = getDefaultInstance().getMessage();
       onChanged();
       return this;
     }
     /**
-     * <code>string rmarkdownParameters = 1;</code>
+     * <code>string message = 1;</code>
      */
-    public Builder setRmarkdownParametersBytes(
+    public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      rmarkdownParameters_ = value;
+      message_ = value;
       onChanged();
       return this;
     }
 
-    private java.lang.Object chunkText_ = "";
+    private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>string chunkText = 2;</code>
+     * <code>bytes content = 2;</code>
      */
-    public java.lang.String getChunkText() {
-      java.lang.Object ref = chunkText_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        chunkText_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    public com.google.protobuf.ByteString getContent() {
+      return content_;
     }
     /**
-     * <code>string chunkText = 2;</code>
+     * <code>bytes content = 2;</code>
      */
-    public com.google.protobuf.ByteString
-        getChunkTextBytes() {
-      java.lang.Object ref = chunkText_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        chunkText_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string chunkText = 2;</code>
-     */
-    public Builder setChunkText(
-        java.lang.String value) {
+    public Builder setContent(com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      chunkText_ = value;
+      content_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string chunkText = 2;</code>
+     * <code>bytes content = 2;</code>
      */
-    public Builder clearChunkText() {
+    public Builder clearContent() {
       
-      chunkText_ = getDefaultInstance().getChunkText();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string chunkText = 2;</code>
-     */
-    public Builder setChunkTextBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      chunkText_ = value;
+      content_ = getDefaultInstance().getContent();
       onChanged();
       return this;
     }
@@ -631,41 +565,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.ChunkParameters)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.PullChunkOutputFileResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.ChunkParameters)
-  private static final org.jetbrains.r.rinterop.ChunkParameters DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.PullChunkOutputFileResponse)
+  private static final org.jetbrains.r.rinterop.PullChunkOutputFileResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.ChunkParameters();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.PullChunkOutputFileResponse();
   }
 
-  public static org.jetbrains.r.rinterop.ChunkParameters getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.PullChunkOutputFileResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<ChunkParameters>
-      PARSER = new com.google.protobuf.AbstractParser<ChunkParameters>() {
+  private static final com.google.protobuf.Parser<PullChunkOutputFileResponse>
+      PARSER = new com.google.protobuf.AbstractParser<PullChunkOutputFileResponse>() {
     @java.lang.Override
-    public ChunkParameters parsePartialFrom(
+    public PullChunkOutputFileResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new ChunkParameters(input, extensionRegistry);
+      return new PullChunkOutputFileResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<ChunkParameters> parser() {
+  public static com.google.protobuf.Parser<PullChunkOutputFileResponse> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<ChunkParameters> getParserForType() {
+  public com.google.protobuf.Parser<PullChunkOutputFileResponse> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.ChunkParameters getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.PullChunkOutputFileResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

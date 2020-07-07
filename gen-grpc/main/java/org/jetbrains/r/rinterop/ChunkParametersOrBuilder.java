@@ -26,14 +26,4 @@ public interface ChunkParametersOrBuilder extends
    */
   com.google.protobuf.ByteString
       getChunkTextBytes();
-
-  /**
-   * <code>string outputDirectory = 3;</code>
-   */
-  java.lang.String getOutputDirectory();
-  /**
-   * <code>string outputDirectory = 3;</code>
-   */
-  com.google.protobuf.ByteString
-      getOutputDirectoryBytes();
 }
