@@ -8,6 +8,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.project.stateStore
 import com.intellij.psi.PsiFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -25,6 +26,7 @@ import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.debug.RLineBreakpointType
+import java.nio.file.Files
 
 abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   protected lateinit var rInterop: RInterop
@@ -33,6 +35,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
 
   override fun setUp() {
     super.setUp()
+    Files.createDirectories(project.stateStore.projectBasePath)
     project.putUserData(RInterop.DEADLINE_TEST_KEY, customDeadline)
     setupMockInterpreterManager()
     interpreter = RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)!!
