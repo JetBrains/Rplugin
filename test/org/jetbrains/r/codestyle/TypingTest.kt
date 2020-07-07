@@ -225,6 +225,22 @@ class TypingTest : RUsefulTestCase() {
     """, "'")
   }
 
+  fun testBigRDoubleQuotedRawString() {
+    doTest("""
+      hello <- R<caret>
+    """, """
+      hello <- R"(<caret>)"
+    """, "\"")
+  }
+
+  fun testBigRSingleQuotedRawString() {
+    doTest("""
+      hello <- R<caret>
+    """, """
+      hello <- R'(<caret>)'
+    """, "'")
+  }
+
   fun testNoAutoQuoteInComment() {
     doTest("""
       #hello <- <caret>
