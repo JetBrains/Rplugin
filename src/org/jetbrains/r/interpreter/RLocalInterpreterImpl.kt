@@ -60,7 +60,7 @@ class RLocalInterpreterImpl(
     }
   }
 
-  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
+  override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
     return file.path
   }
 
@@ -89,6 +89,8 @@ class RLocalInterpreterImpl(
     content?.let { file.writeBytes(it) }
     return file.path
   }
+
+  override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
 
   override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
     val writable = libraryPaths.find { it.isWritable }

@@ -9,7 +9,8 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.project.Project
-import java.io.File
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 
 @State(name="RMarkdownSettings")
 class RMarkdownSettings: SimplePersistentStateComponent<RMarkdownSettingsState>(RMarkdownSettingsState()) {
@@ -24,32 +25,34 @@ class RMarkdownSettingsState: BaseState() {
   var renderProfiles by map<String, RMarkdownRenderProfile>()
 
   @Synchronized
-  fun getKnitRootDirectory(path: String): String = getOrCreateProfile(path).knitRootDirectory
+  fun getKnitRootDirectory(file: VirtualFile): VirtualFile? {
+    return VirtualFileManager.getInstance().findFileByUrl(getOrCreateProfile(file).outputDirectoryUrl)
+  }
 
   @Synchronized
-  fun getProfileLastOutput(path: String): String = getOrCreateProfile(path).lastOutput
+  fun getProfileLastOutput(file: VirtualFile) = getOrCreateProfile(file).lastOutput
 
   @Synchronized
-  fun setKnitRootDirectory(path: String, value: String) {
-    getOrCreateProfile(path).knitRootDirectory = value
+  fun setKnitRootDirectory(file: VirtualFile, value: VirtualFile?) {
+    getOrCreateProfile(file).outputDirectoryUrl = value?.url.orEmpty()
     incrementModificationCount()
   }
 
   @Synchronized
-  fun setProfileLastOutput(path: String, value: String) {
-    getOrCreateProfile(path).lastOutput = value
+  fun setProfileLastOutput(file: VirtualFile, value: String) {
+    getOrCreateProfile(file).lastOutput = value
     incrementModificationCount()
   }
 
-  private fun getOrCreateProfile(path: String): RMarkdownRenderProfile {
-    val profile = renderProfiles.computeIfAbsent(path) { RMarkdownRenderProfile() }
-    return profile.ensureNotBlankDirectory(path)
+  private fun getOrCreateProfile(file: VirtualFile): RMarkdownRenderProfile {
+    val profile = renderProfiles.computeIfAbsent(file.url) { RMarkdownRenderProfile() }
+    return profile.ensureNotBlankDirectory(file)
   }
 
-  private fun RMarkdownRenderProfile.ensureNotBlankDirectory(path: String): RMarkdownRenderProfile {
+  private fun RMarkdownRenderProfile.ensureNotBlankDirectory(file: VirtualFile): RMarkdownRenderProfile {
     return this.also {
-      if (it.knitRootDirectory.isBlank()) {
-        it.knitRootDirectory = File(path).parent
+      if (it.outputDirectoryUrl.isBlank()) {
+        it.outputDirectoryUrl = file.parent.url
         incrementModificationCount()
       }
     }

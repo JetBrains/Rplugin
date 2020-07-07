@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.remote.BaseRemoteProcessHandler
 import com.intellij.ssh.SftpChannelException
+import com.intellij.ssh.SftpChannelNoSuchFileException
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.PathUtil
 import com.jetbrains.plugins.remotesdk.ui.RemoteBrowseActionListener
@@ -94,6 +95,15 @@ class RRemoteInterpreterImpl(
     return RRemoteVFS.instance.findFileByPath(remoteHost, path)
   }
 
+  override fun downloadFileFromHost(path: String, localPath: String) = remoteHost.useSftpChannel { channel ->
+    try {
+      channel.downloadFileOrDir(path, localPath)
+    } catch (e: SftpChannelNoSuchFileException) {
+    }
+  }
+
+  override fun getHelpersRootOnHost() = remoteHost.remoteHelpersRoot
+
   override fun uploadHelperToHost(helper: File): String {
     return remoteHost.uploadRHelper(helper)
   }
@@ -120,8 +130,8 @@ class RRemoteInterpreterImpl(
     return rInterop
   }
 
-  override fun uploadFileToHostIfNeeded(file: VirtualFile): String {
-    return remoteHost.uploadFileIfNeeded(file)
+  override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
+    return remoteHost.uploadFileIfNeeded(file, preserveName)
   }
 
   override fun createFileChooserForHost(value: String, selectFolder: Boolean): TextFieldWithBrowseButton {
@@ -137,6 +147,8 @@ class RRemoteInterpreterImpl(
   override fun createTempFileOnHost(name: String, content: ByteArray?): String {
     return remoteHost.uploadTmpFile(name, content ?: ByteArray(0))
   }
+
+  override fun createTempDirOnHost(name: String): String = remoteHost.createTmpDir(name)
 
   override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
     val writable = libraryPaths.find { it.isWritable }
