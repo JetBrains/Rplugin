@@ -241,6 +241,14 @@ class TypingTest : RUsefulTestCase() {
     """, "'")
   }
 
+  fun testRawStringInEmptyFile() {
+    doTest("""
+      R<caret>
+    """, """
+      R'(<caret>)'
+    """, "'")
+  }
+
   fun testNoAutoQuoteInComment() {
     doTest("""
       #hello <- <caret>
