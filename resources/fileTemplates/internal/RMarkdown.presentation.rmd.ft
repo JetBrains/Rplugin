@@ -5,20 +5,33 @@ date: ${DATE}
 output: ioslides_presentation
 ---
 
+# First section
+
+## First slide
+
 The [R plugin](https://www.jetbrains.com/help/pycharm/r-plugin-support.html) for IntelliJ-based IDEs provides
 handy capabilities to work with the [R Markdown](https://www.jetbrains.com/help/pycharm/r-markdown.html) files.
 To [add](https://www.jetbrains.com/help/pycharm/r-markdown.html#add-code-chunk) a new R chunk,
 position the caret at any line or the code chunk, then click "+".
 
-The code chunk appears:
-```{r}
+## Second slide
+
+Type any R code in the chunk and check the result:
+
+```{r, echo = FALSE}
+Ixos <- rnorm(4000 , 120 , 30)
+Primadur <- rnorm(4000 , 200 , 30)
+
+hist(Ixos, breaks=30, xlim=c(0,300), col=rgb(1,0,0,0.5), xlab="height",
+     ylab="nbr of plants", main="distribution of height" )
+hist(Primadur, breaks=30, xlim=c(0,300), col=rgb(0,0,1,0.5), add=T)
+legend("topright", legend=c("Ixos","Primadur"), col=c(rgb(1,0,0,0.5),
+                                                      rgb(0,0,1,0.5)), pt.cex=2, pch=15 )
 ```
 
-Type any R code in the chunk, for example:
-```{r}
-mycars <- within (mtcars, {cyl <- ordered (cyl)})
-mycars
-```
+# Second section
+
+## Third slide
 
 Now, click the **Run** button on the chunk toolbar to [execute](https://www.jetbrains.com/help/pycharm/r-markdown.html#run-r-code) the chunk code. The result should be placed under the chunk.
 Click the **Knit and Open Document** to built and preview an output.
