@@ -12,6 +12,7 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 import org.jetbrains.r.inspections.MissingPackageInspection;
 import org.jetbrains.r.interpreter.RInterpreter;
 import org.jetbrains.r.interpreter.RInterpreterManager;
+import org.jetbrains.r.interpreter.RInterpreterUtil;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RepoUtils;
 
@@ -57,7 +58,8 @@ public class InstallLibraryFixTest extends LightPlatformCodeInsightFixtureTestCa
 
         RInterpreter interpreter = RInterpreterManager.Companion.getInterpreterAsync(myFixture.getProject()).blockingGet(Integer.MAX_VALUE);
         assertNotNull(interpreter);
-        String commandResult = interpreter.runCommand("require(pals) ==TRUE");
+        String commandResult =
+          RInterpreterUtil.INSTANCE.runScript("require(pals) == TRUE", interpreter.getInterpreterLocation()).getStdout();
         assertNotNull(commandResult);
         assertTrue(commandResult.contains("TRUE"));
     }

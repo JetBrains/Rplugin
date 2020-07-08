@@ -31,13 +31,12 @@ import org.jetbrains.concurrency.isRejected
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.OperatingSystem
-import org.jetbrains.r.remote.RRemoteUtil
 import org.jetbrains.r.remote.filesystem.RRemoteVFS
 import org.jetbrains.r.util.RPathUtil
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
+class RRemoteHost internal constructor(val sshConfig: SshConfig) {
   lateinit var configId: String
     private set
   lateinit var credentials: RemoteCredentials
@@ -132,7 +131,7 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
     channel.use { return f(it) }
   }
 
-  fun uploadRHelper(helper: File): String {
+  private fun uploadRHelper(helper: File): String {
     val helpersRoot = File(RPluginUtil.helpersPath)
     if (!FileUtil.isAncestor(helpersRoot, helper, false)) {
       throw IllegalArgumentException("Helper should be located in helpers directory")
@@ -250,7 +249,7 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
     }
   }
 
-  private fun uploadTmpFile(file: File, preserveName: Boolean = false): String {
+  fun uploadFile(file: File, preserveName: Boolean = false): String {
     if (FileUtil.isAncestor(RPluginUtil.helpersPath, file.path, false)) {
       return uploadRHelper(file)
     }
@@ -264,14 +263,14 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
       }
     }
     if (file.isInLocalFileSystem) {
-      return uploadTmpFile(File(file.path), preserveName)
+      return uploadFile(File(file.path), preserveName)
     }
     return uploadTmpFile(file.name, file.contentsToByteArray(), preserveName)
   }
 
   fun createProcess(command: GeneralCommandLine, timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS, workingDir: String? = null): SshExecProcess {
     workingDir?.let { mkDirs(it) }
-    val commandLine = buildCommand(command, workingDir)
+    val commandLine = buildCommand(command, workingDir ?: remoteBasePath)
     return ExecBuilder(sessionConfig, commandLine).execute(timeoutMillis.toInt())
   }
 
@@ -324,7 +323,7 @@ class RRemoteHost internal constructor(private val sshConfig: SshConfig) {
   }
 
   companion object {
-    private const val DEFAULT_TIMEOUT_MILLIS = RRemoteUtil.DEFAULT_TIMEOUT_MILLIS
+    private const val DEFAULT_TIMEOUT_MILLIS = 60000L
     private const val REMOTE_HELPERS_HASH_SUFFIX = ".file_hash"
     private val LOG = Logger.getInstance(RRemoteHost::class.java)
   }

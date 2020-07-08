@@ -22,6 +22,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
@@ -206,7 +207,8 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   private fun findAllInstallPackages(rInterpreterPath: String?): Set<String> {
     rInterpreterPath ?: return emptySet()
 
-    val packagesList = RInterpreterUtil.runHelper(rInterpreterPath, SCRIPT_PATH, null, emptyList()).lines().drop(1)
+    val packagesList =
+      RInterpreterUtil.runHelper(RLocalInterpreterLocation(rInterpreterPath), SCRIPT_PATH, null, emptyList()).lines().drop(1)
     return HashSet(packagesList)
   }
 

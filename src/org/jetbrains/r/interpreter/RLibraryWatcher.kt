@@ -73,7 +73,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
       LOG.error("fsNotifier: '$executableName' not found in helpers")
       return null
     }
-    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadHelperToHost(fsNotifierExecutable)))
+    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadFileToHost(fsNotifierExecutable)))
     Disposer.register(project, Disposable { process.destroyProcess() })
 
     process.addProcessListener(object : ProcessListener {

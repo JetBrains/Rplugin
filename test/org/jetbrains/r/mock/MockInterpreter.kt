@@ -4,11 +4,7 @@
 
 package org.jetbrains.r.mock
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.ColoredProcessHandler
-import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
@@ -21,10 +17,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.interpreter.OperatingSystem
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -71,24 +64,11 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
     throw NotImplementedError()
   }
 
-  override fun getProcessOutput(scriptText: String): ProcessOutput? = throw NotImplementedError()
-
   override val libraryPaths: List<RInterpreter.LibraryPath>
     get() = provider.libraryPaths
 
   override val skeletonsDirectory: String
     get() = RUsefulTestCase.SKELETON_LIBRARY_PATH
-
-  override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
-    return RInterpreterUtil.runHelper(interpreterLocation.path, helper, workingDirectory, args, errorHandler)
-  }
-
-  override fun runMultiOutputHelper(helper: File,
-                                    workingDirectory: String?,
-                                    args: List<String>,
-                                    processor: RMultiOutputProcessor) {
-    RInterpreterUtil.runMultiOutputHelper(interpreterLocation.path, helper, workingDirectory, args, processor)
-  }
 
   override fun findLibraryPathBySkeletonPath(skeletonPath: String): String? = ""
 
@@ -108,16 +88,6 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
     return RInteropUtil.createRInteropForLocalProcess(this, process, port)
-  }
-
-  override fun runProcessOnHost(command: GeneralCommandLine): ProcessHandler {
-    return ColoredProcessHandler(command.withWorkDirectory(basePath)).apply {
-      setShouldDestroyProcessRecursively(true)
-    }
-  }
-
-  override fun uploadHelperToHost(helper: File): String {
-    return helper.absolutePath
   }
 
   override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
@@ -140,12 +110,6 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
   }
 
   override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
-
-  override fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler {
-    val commands = RInterpreterUtil.getRunHelperCommands(interpreterPath, script, args)
-    val commandLine = RInterpreterUtil.createCommandLine(interpreterPath, commands, workingDirectory)
-    return OSProcessHandler(commandLine)
-  }
 
   override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
     val writable = libraryPaths.find { it.isWritable }

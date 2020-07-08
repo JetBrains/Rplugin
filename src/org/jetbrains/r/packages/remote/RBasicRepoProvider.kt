@@ -12,6 +12,7 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.packages.RPackageService
 import org.jetbrains.r.packages.remote.RepoUtils.CRAN_URL_PLACEHOLDER
 import java.io.File
@@ -260,7 +261,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
 
   private fun runHelper(helper: File, args: List<String> = emptyList()): List<String> {
     val interpreter = RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT) ?: return emptyList()
-    return interpreter.runHelper(helper, project.basePath, args).lines()
+    return interpreter.runHelper(helper, args).lines()
   }
 
   companion object {

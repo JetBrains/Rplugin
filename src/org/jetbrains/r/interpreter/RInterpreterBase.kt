@@ -136,7 +136,7 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
     }
   }
 
-  private fun runHelperLines(helper: File, vararg args: String) = runHelper(helper, basePath, args.toList()).lines()
+  private fun runHelperLines(helper: File, vararg args: String) = runHelper(helper, args.toList()).lines()
 
   private fun loadPaths(): Pair<List<RInterpreter.LibraryPath>, String> {
     val libraryPaths = loadLibraryPaths().toMutableList()
@@ -184,7 +184,7 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
   }
 
   private fun loadInstalledPackages(): List<RInstalledPackage> {
-    val text = runHelper(INSTALLED_PACKAGES_HELPER, null, arrayOf<String>().toList())
+    val text = runHelper(INSTALLED_PACKAGES_HELPER, arrayOf<String>().toList())
     val lines = text.split("!!!JETBRAINS_RPLUGIN!!!")
     return if (lines.isNotEmpty()) {
       val obtained = lines.asSequence()

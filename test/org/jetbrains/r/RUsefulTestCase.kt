@@ -156,8 +156,9 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
     val interpreterPath = RInterpreterUtil.suggestHomePath()
     check(!(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
-    val versionInfo = RLocalInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
-    val rInterpreter = RLocalInterpreterImpl(RLocalInterpreterLocation(interpreterPath), versionInfo, project)
+    val location = RLocalInterpreterLocation(interpreterPath)
+    val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
+    val rInterpreter = RLocalInterpreterImpl(location, versionInfo, project)
     rInterpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
     val packagesForTest = missingTestSkeletons.map {
       rInterpreter.getPackageByName(it)?.run { RPackage(name, version) }

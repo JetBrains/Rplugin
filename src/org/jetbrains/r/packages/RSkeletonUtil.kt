@@ -18,9 +18,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RMultiOutputProcessor
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.skeleton.RSkeletonFileType
@@ -250,7 +248,7 @@ object RSkeletonUtil {
 
     private val resPromise = AsyncPromise<Boolean>()
     private var curPackage: Int = -1
-    private val extraNamedArgumentsHelperPath = rInterpreter.uploadHelperToHost(extraNamedArgumentsHelper)
+    private val extraNamedArgumentsHelperPath = rInterpreter.uploadFileToHost(extraNamedArgumentsHelper)
     private val packageNames = rPackages.map { it.name }
     private var hasGeneratedSkeletons = false
 

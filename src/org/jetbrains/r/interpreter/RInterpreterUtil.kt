@@ -30,10 +30,8 @@ import org.jetbrains.r.lexer.SingleStringTokenLexer
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
-import java.io.InputStream
 import java.nio.file.Paths
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 interface RMultiOutputProcessor {
   fun beforeStart()
@@ -73,7 +71,7 @@ object RInterpreterUtil {
     return if (pathEntry.first() == '"' && pathEntry.last() == '"') pathEntry.substring(1, pathEntry.length - 1) else pathEntry
   }
 
-  fun parseVersion(line: String?): Version? {
+  private fun parseVersion(line: String?): Version? {
     return if (line?.startsWith("R version") == true) {
       val items = line.split(' ')
       items.getOrNull(2)?.let { Version.parseVersion(it) }
@@ -82,29 +80,17 @@ object RInterpreterUtil {
     }
   }
 
-  fun getVersionByPath(interpreterPath: String): Version? {
-    fun checkOutput(inputStream: InputStream): Version? {
-      return inputStream.bufferedReader().use {
-        val line = it.readLine()
-        parseVersion(line)
-      }
-    }
-    val version = if (SystemInfo.isWindows) {
-      val result = runRInterpreter(interpreterPath, listOf(interpreterPath, "--version"), null)
-      parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
-    } else {
-      // that's fine just to run R normally on Unix because it's a script
-      val commandLine = GeneralCommandLine().withExePath(interpreterPath).withParameters("--version")
-      val process = commandLine.createProcess()
-      if (process.waitFor(RWRAPPER_INITIALIZED_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)) {
-        checkOutput(process.inputStream) ?: checkOutput(process.errorStream)
-      } else {
-        null
-      }
-    }
+  fun getVersionByPath(path: String): Version? {
+    return getVersionByLocation(RLocalInterpreterLocation(path))
+  }
+
+  fun getVersionByLocation(interpreterLocation: RInterpreterLocation): Version? {
+    val result = runRInterpreter(interpreterLocation, listOf("--version"), null)
+    val version = parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
     if (version != null) return version
+
     val script = RPluginUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
-    val output = runHelper(interpreterPath, script, null, emptyList())
+    val output = runHelper(interpreterLocation, script, null, emptyList())
     return parseVersion(output.lineSequence().firstOrNull())
   }
 
@@ -230,13 +216,13 @@ object RInterpreterUtil {
    * @param errorHandler if errorHelper is not null, it could be called instead of throwing the exception.
    * @throws RuntimeException if errorHandler is null and the helper exited with non-zero code or produced zero length output.
    */
-  fun runHelper(interpreterPath: String,
+  fun runHelper(interpreterLocation: RInterpreterLocation,
                 helper: File,
                 workingDirectory: String?,
                 args: List<String>,
                 errorHandler: ((ProcessOutput) -> Unit)? = null): String {
     val scriptName = helper.name
-    val result = runHelperBase(interpreterPath, helper, workingDirectory, args) { CapturingProcessAdapter(it) }
+    val result = runHelperBase(interpreterLocation, helper, workingDirectory, args) { CapturingProcessAdapter(it) }
     if (result.exitCode != 0) {
       if (errorHandler != null) {
         errorHandler(result)
@@ -260,15 +246,15 @@ object RInterpreterUtil {
     return getScriptStdout(result.stdout)
   }
 
-  fun runMultiOutputHelper(interpreterPath: String,
+  fun runMultiOutputHelper(interpreterLocation: RInterpreterLocation,
                            helper: File,
                            workingDirectory: String?,
                            args: List<String>,
                            processor: RMultiOutputProcessor) {
-    runHelperBase(interpreterPath, helper, workingDirectory, args) { RMultiOutputProcessAdapter.createProcessAdapter(it, processor) }
+    runHelperBase(interpreterLocation, helper, workingDirectory, args) { RMultiOutputProcessAdapter.createProcessAdapter(it, processor) }
   }
 
-  private fun runHelperBase(interpreterPath: String,
+  private fun runHelperBase(interpreterLocation: RInterpreterLocation,
                             helper: File,
                             workingDirectory: String?,
                             args: List<String>,
@@ -276,7 +262,7 @@ object RInterpreterUtil {
     val scriptName = helper.name
     val time = System.currentTimeMillis()
     try {
-      return runAsync { runHelperWithArgs(interpreterPath, helper, workingDirectory, args, processAdapterProducer) }
+      return runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer) }
                .onError { RInterpreterBase.LOG.error(it) }
                .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
     }
@@ -285,22 +271,22 @@ object RInterpreterUtil {
     }
   }
 
-  fun createProcessHandlerForHelper(
+  fun createLocalProcessHandlerForHelper(
     interpreterPath: String,
     helper: File,
     workingDirectory: String?,
     args: List<String>
   ): CapturingProcessHandler {
-    val commands = getRunHelperCommands(interpreterPath, helper, args)
-    return createProcessHandler(interpreterPath, commands, workingDirectory)
+    val commands = getRunHelperArgs(helper.path, args)
+    return createLocalProcessHandler(interpreterPath, commands, workingDirectory)
   }
 
-  fun createProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler =
+  fun createLocalProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler =
     CapturingProcessHandler(createCommandLine(interpreterPath, commands, workingDirectory))
 
-  fun createCommandLine(interpreterPath: String,
-                        commands: List<String>,
-                        workingDirectory: String?): GeneralCommandLine {
+  private fun createCommandLine(interpreterPath: String,
+                                commands: List<String>,
+                                workingDirectory: String?): GeneralCommandLine {
     val interpreterFile = Paths.get(interpreterPath).toFile()
     val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
     val command = if (conda != null) {
@@ -316,7 +302,7 @@ object RInterpreterUtil {
     return GeneralCommandLine(command).withWorkDirectory(workingDirectory)
   }
 
-  fun getScriptStdout(lines: String): String {
+  private fun getScriptStdout(lines: String): String {
     val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
                 ?: throw RuntimeException("Cannot find start marker, output '$lines'")
     val end = lines.indexOf(RPLUGIN_OUTPUT_END).takeIf { it != -1 }
@@ -324,28 +310,25 @@ object RInterpreterUtil {
     return lines.substring(start + RPLUGIN_OUTPUT_BEGIN.length, end)
   }
 
-  private fun runHelperWithArgs(interpreterPath: String,
+  private fun runHelperWithArgs(interpreterLocation: RInterpreterLocation,
                                 helper: File,
                                 workingDirectory: String?,
                                 args: List<String>,
                                 processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
-    val commands = getRunHelperCommands(interpreterPath, helper, args)
-    return runRInterpreter(interpreterPath, commands, workingDirectory, processAdapterProducer)
+    val helperOnHost = interpreterLocation.uploadFileToHost(helper)
+    val interpreterArgs = getRunHelperArgs(helperOnHost, args)
+    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
   }
 
-  fun getRunHelperCommands(interpreterPath: String, helper: File, args: List<String>): List<String> {
-    return getRunHelperCommands(interpreterPath, helper.absolutePath, args)
+  fun getRunHelperArgs(helper: String, args: List<String>): List<String> {
+    return listOf("--slave", "--no-restore", "-f", helper, "--args", *args.toTypedArray())
   }
 
-  fun getRunHelperCommands(interpreterPath: String, helper: String, args: List<String>): List<String> {
-    return mutableListOf(interpreterPath, "--slave", "--no-restore", "-f", helper, "--args").apply { addAll(args) }
-  }
-
-  private fun runRInterpreter(interpreterPath: String,
-                              defaultCommands: List<String>,
+  private fun runRInterpreter(interpreterLocation: RInterpreterLocation,
+                              args: List<String>,
                               workingDirectory: String?,
                               processAdapterProducer: (ProcessOutput) -> ProcessAdapter = { CapturingProcessAdapter(it) }): ProcessOutput {
-    val processHandler = OSProcessHandler(createCommandLine(interpreterPath, defaultCommands, workingDirectory))
+    val processHandler = interpreterLocation.runInterpreterOnHost(args, workingDirectory)
     val processRunner = CapturingProcessRunner(processHandler, processAdapterProducer)
     val output = processRunner.runProcess(DEFAULT_TIMEOUT)
     if (output.exitCode != 0) {
@@ -353,6 +336,25 @@ object RInterpreterUtil {
       RInterpreterBase.LOG.warn(output.stderr)
     }
     return output
+  }
+
+  // TODO: run via helper
+  fun loadInterpreterVersionInfo(interpreterLocation: RInterpreterLocation): Map<String, String> {
+    return runScript("version", interpreterLocation)?.stdoutLines?.map { it.split(' ', limit = 2) }
+             ?.filter { it.size == 2 }?.map { it[0] to it[1].trim() }?.toMap() ?: emptyMap()
+  }
+
+  fun runScript(scriptText: String, interpreterLocation: RInterpreterLocation): ProcessOutput? {
+    val args = listOf("--no-restore", "--quiet", "--slave", "-e", scriptText)
+    try {
+      val processHandler = interpreterLocation.runInterpreterOnHost(args)
+      return CapturingProcessRunner(processHandler).runProcess(DEFAULT_TIMEOUT)
+    } catch (e: Throwable) {
+      RLocalInterpreterImpl.LOG.info("Failed to run R executable: \n" +
+                                     "Interpreter " + interpreterLocation + "\n" +
+                                     "Exception occurred: " + e.message)
+    }
+    return null
   }
 
   private data class CondaPath(val path: String, val environment: String)

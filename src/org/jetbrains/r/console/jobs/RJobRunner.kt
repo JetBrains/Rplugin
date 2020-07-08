@@ -22,6 +22,7 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.runHelperProcess
 import org.jetbrains.r.rinterop.RInterop
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier

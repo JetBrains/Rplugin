@@ -15,6 +15,7 @@ import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RBasicInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.getVersion
 import org.jetbrains.r.remote.host.RRemoteHostManager
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -100,7 +101,7 @@ object RAddRemoteInterpreterDialog {
 
     val sshConfig = dialog.sshConfigComboBox.selectedSshConfig ?: return
     val interpreterPath = dialog.pathField.text
-    val location = RRemoteInterpreterLocation(sshConfig.name, interpreterPath)
+    val location = RRemoteInterpreterLocation(RRemoteHostManager.getInstance().getRemoteHostBySshConfig(sshConfig), interpreterPath)
     if (existingInterpreters.any { it.interpreterLocation == location }) {
       Messages.showErrorDialog(RBundle.message("project.settings.interpreter.duplicate.description"),
                                RBundle.message("project.settings.interpreter.duplicate.title"))
@@ -108,7 +109,7 @@ object RAddRemoteInterpreterDialog {
     }
     val version = try {
       ExecuteExpressionUtils.getSynchronously(RBundle.message("project.settings.check.interpreter")) {
-        RRemoteUtil.getInterpreterVersion(RRemoteHostManager.getInstance().getRemoteHostBySshConfig(sshConfig), interpreterPath)
+        location.getVersion()
       }
     } catch (e: Exception) {
       val details = e.message?.let { m -> ":\n$m" } ?: ""
