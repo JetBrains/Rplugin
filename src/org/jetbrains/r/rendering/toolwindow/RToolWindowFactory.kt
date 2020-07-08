@@ -44,7 +44,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
       Triple(createPackages(project), PACKAGES, RIcons.ToolWindow.RPackages),
       Triple(RGraphicsToolWindow(project), PLOTS, RIcons.ToolWindow.RGraph),
       Triple(createHelp(project), HELP, AllIcons.Toolwindows.Documentation),
-      Triple(RViewerToolWindow(), VIEWER, RIcons.ToolWindow.RHtml)
+      Triple(RViewerToolWindow(project), VIEWER, RIcons.ToolWindow.RHtml)
     )
     if (RPackageBuildUtil.isPackage(project)) {
       val holder = Triple(RPackageBuildToolWindow(project), BUILD, AllIcons.Toolwindows.ToolWindowBuild)
