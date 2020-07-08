@@ -7,12 +7,15 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.common.ExpiringList
@@ -89,6 +92,15 @@ interface RInterpreter : RInterpreterInfo {
   // Note: returns pair of writable path and indicator whether new library path was created
   fun getGuaranteedWritableLibraryPath(libraryPaths: List<LibraryPath> = this.libraryPaths,
                                        userPath: String = userLibraryPath): Pair<String, Boolean>
+
+  fun prepareForExecution(): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    invokeLater {
+      FileDocumentManager.getInstance().saveAllDocuments()
+      promise.setResult(Unit)
+    }
+    return promise
+  }
 }
 
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation

@@ -42,7 +42,6 @@ const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
 const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
-const val INTERRUPT_CHUNK_EXECUTION_ID = "org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
 
 class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {

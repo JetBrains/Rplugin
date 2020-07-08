@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.util.PathUtil
@@ -283,21 +284,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           RConsoleEnterHandler.analyzePrompt(consoleView)
 
           ConsoleHistoryController.addToHistory(consoleView, document.text)
-          return splitCodeForExecution(consoleView.project, document.text)
-            .map { (text, _) ->
-              {
-                executeLater {
-                  fireBeforeExecution()
-                  consoleView.appendCommandText(text)
-                  fireBusy()
-                  consoleView.rInterop.replExecute(text, setLastValue = true).then { it.exception == null }
-                }.thenAsync { it }
-              }
-            }
-            .let { PromiseUtil.runChain(it).then {
-              refreshLocalFileSystem()
-              Unit
-            } }
+          return splitAndExecute(document.text)
         }
       }
       State.READ_LN -> {
@@ -307,15 +294,17 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         }
         val text = consoleView.prepareExecuteAction(true, false, true)
         (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
-          DocumentReferenceManager.getInstance().create(consoleView.getCurrentEditor().document))
-        rInterop.replSendReadLn(text)
+          DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
+        consoleView.interpreter.prepareForExecution().onProcessed { rInterop.replSendReadLn(text) }
         fireBusy()
       }
       State.SUBPROCESS_INPUT -> {
         val text = consoleView.prepareExecuteAction(true, false, true)
         (UndoManager.getInstance(consoleView.project) as UndoManagerImpl).invalidateActionsFor(
-          DocumentReferenceManager.getInstance().create(consoleView.getCurrentEditor().document))
-        rInterop.replSendReadLn(text + System.lineSeparator())
+          DocumentReferenceManager.getInstance().create(consoleView.currentEditor.document))
+        consoleView.interpreter.prepareForExecution().onProcessed {
+          rInterop.replSendReadLn(text + System.lineSeparator())
+        }
       }
       State.BUSY -> {
         throwExceptionInTests()
@@ -326,7 +315,43 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         HintManager.getInstance().showErrorHint(consoleView.consoleEditor, RBundle.message("console.process.terminated"))
       }
     }
-    return resolvedPromise<Unit>()
+    return resolvedPromise()
+  }
+
+  fun splitAndExecute(code: String, isDebug: Boolean = false,
+                      sourceFile: VirtualFile? = null, sourceStartOffset: Int? = null,
+                      firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE): Promise<Unit> {
+    return splitCodeForExecution(consoleView.project, code)
+      .mapIndexed { index, (text, range) ->
+        {
+          executeLater {
+            if (isDebug && state == State.DEBUG_PROMPT) {
+              return@executeLater resolvedPromise(false)
+            }
+            fireBeforeExecution()
+            consoleView.appendCommandText(text.trim { it <= ' ' })
+            fireBusy()
+            val prepare = if (index == 0) consoleView.interpreter.prepareForExecution() else resolvedPromise()
+            prepare.thenAsync {
+              if (sourceFile == null || sourceStartOffset == null) {
+                consoleView.rInterop.replExecute(text, setLastValue = true, isDebug = isDebug).then { it.exception == null }
+              } else {
+                val newRange = TextRange(range.startOffset + sourceStartOffset, range.endOffset + sourceStartOffset)
+                val debugCommand = if (index == 0) firstDebugCommand else ExecuteCodeRequest.DebugCommand.KEEP_PREVIOUS
+                rInterop.replSourceFile(sourceFile, textRange = newRange, debug = isDebug,
+                                        firstDebugCommand = debugCommand, setLastValue = true)
+                  .then { it.exception == null }
+              }
+            }
+          }.thenAsync { it }
+        }
+      }
+      .let {
+        PromiseUtil.runChain(it).then {
+          refreshLocalFileSystem()
+          Unit
+        }
+      }
   }
 
   private fun throwExceptionInTests() {

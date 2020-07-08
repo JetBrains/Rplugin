@@ -65,8 +65,6 @@ private val LOGGER = Logger.getInstance(RunChunkHandler::class.java)
 private val UNKNOWN_ERROR_MESSAGE = RBundle.message("notification.unknown.error.message")
 private val CHUNK_EXECUTOR_NAME = RBundle.message("run.chunk.executor.name")
 
-private const val RUN_CHUNK_GROUP_ID = "org.jetbrains.r.rendering.chunk.RunChunkActions"
-
 object RunChunkHandler {
 
   fun runAllChunks(psiFile: PsiFile,
@@ -98,14 +96,15 @@ object RunChunkHandler {
                 }
               }
           }
-          for (element in chunks) {
+          for ((index, element) in chunks.withIndex()) {
             if (terminationRequired.get()) {
               continue
             }
             currentElement.set(element)
             val proceed = invokeAndWaitIfNeeded { execute(element, isDebug = isDebug, isBatchMode = true,
+                                                          isFirstChunk = index == 0,
                                                           textRange = if (runSelectedCode) TextRange(start, end) else null) }
-              .onError { LOGGER.error("Cannot execute chunk: " + it) }
+              .onError { LOGGER.error("Cannot execute chunk: $it") }
               .blockingGet(Int.MAX_VALUE) ?: false
             currentElement.set(null)
             if (!proceed) break
@@ -129,12 +128,13 @@ object RunChunkHandler {
     }
   }
 
-  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, textRange: TextRange? = null) : Promise<Boolean> {
+  fun execute(element: PsiElement, isDebug: Boolean = false, isBatchMode: Boolean = false, isFirstChunk: Boolean = true,
+              textRange: TextRange? = null) : Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
       RMarkdownUtil.checkOrInstallPackages(element.project, CHUNK_EXECUTOR_NAME)
         .onSuccess {
           runInEdt {
-            executeAsync(element, isDebug, isBatchMode, textRange).processed(promise)
+            executeAsync(element, isDebug, isBatchMode, isFirstChunk, textRange).processed(promise)
           }
         }
         .onError {
@@ -143,14 +143,17 @@ object RunChunkHandler {
     }
   }
 
-  private fun executeAsync(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, textRange: TextRange? = null): Promise<Boolean> {
+  private fun executeAsync(element: PsiElement, isDebug: Boolean, isBatchMode: Boolean, isFirstChunk: Boolean,
+                           textRange: TextRange? = null): Promise<Boolean> {
     return AsyncPromise<Boolean>().also { promise ->
       if (element.containingFile == null || element.context == null) return promise.apply { setError("parent not found") }
       val fileEditor = FileEditorManager.getInstance(element.project).getSelectedEditor(element.containingFile.originalFile.virtualFile)
       val editor = EditorUtil.getEditorEx(fileEditor) ?: return promise.apply { setError("editor not found") }
       RConsoleManager.getInstance(element.project).currentConsoleAsync.onSuccess {
         runAsync {
-          runReadAction { runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode, textRange) }.processed(promise)
+          runReadAction {
+            runHandlersAndExecuteChunk(it, element, editor, isDebug, isBatchMode, isFirstChunk, textRange)
+          }.processed(promise)
         }
       }
     }
@@ -159,7 +162,7 @@ object RunChunkHandler {
   @VisibleForTesting
   internal fun runHandlersAndExecuteChunk(console: RConsoleView, element: PsiElement, editor: EditorEx,
                                           isDebug: Boolean = false, isBatchMode: Boolean = false,
-                                          textRange: TextRange? = null): Promise<Boolean> {
+                                          isFirstChunk: Boolean = true, textRange: TextRange? = null): Promise<Boolean> {
     val promise = AsyncPromise<Boolean>()
     val rInterop = console.rInterop
     val parent = element.parent
@@ -186,12 +189,16 @@ object RunChunkHandler {
     }
 
     updateProgressBar(editor, inlayElement)
-    executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
-      InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
-    }.onProcessed { result ->
-      dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
-        pullOutputsWithLogAsync(rInterop, cacheDirectory).onProcessed {
-          afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+
+    val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
+    prepare.onProcessed {
+      executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
+        InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
+      }.onProcessed { result ->
+        dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
+          pullOutputsWithLogAsync(rInterop, cacheDirectory).onProcessed {
+            afterRunChunk(element, rInterop, result, promise, console, editor, inlayElement, isBatchMode)
+          }
         }
       }
     }

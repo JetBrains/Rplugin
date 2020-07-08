@@ -11,18 +11,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
-import org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
-import org.jetbrains.r.util.PromiseUtil
 
 
 /**
@@ -36,39 +32,22 @@ abstract class RunSelectionBase : REditorActionBase() {
     val project = e.project ?: return
     val editor = e.editor ?: return
     val selection = REditorActionUtil.getSelectedCode(editor) ?: return
-    RConsoleManager.getInstance(project).currentConsoleAsync
-      .onSuccess { console ->
-        ConsoleHistoryController.addToHistory(console, selection.code)
-        when (selection.file.fileType) {
-          RFileType -> executeForRFile(console, selection)
-          RMarkdownFileType -> executeForRMarkdownFile(project, selection.file, editor, selection.range)
-        }
+    RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
+      ConsoleHistoryController.addToHistory(console, selection.code)
+      when (selection.file.fileType) {
+        RFileType -> executeForRFile(console, selection)
+        RMarkdownFileType -> executeForRMarkdownFile(project, selection.file, editor, selection.range)
       }
-      .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
+    }
+    .onError { ex -> RNotificationUtil.notifyConsoleError(project, ex.message) }
     RConsoleToolWindowFactory.focusOnCurrentConsole(project)
   }
 
   private fun executeForRFile(console: RConsoleView, selection: REditorActionUtil.SelectedCode) {
-    var debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, selection.file, selection.range)
-    RConsoleExecuteActionHandler.splitCodeForExecution(console.project, selection.code)
-      .map { (text, range) ->
-        {
-          console.executeActionHandler.executeLater {
-            if (isDebug && console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT) {
-              return@executeLater resolvedPromise(false)
-            }
-            console.executeActionHandler.fireBeforeExecution()
-            console.appendCommandText(text.trim { it <= ' ' })
-            console.executeActionHandler.fireBusy()
-            val newRange = TextRange(range.startOffset + selection.range.startOffset, range.endOffset + selection.range.startOffset)
-            console.rInterop.replSourceFile(selection.file, textRange = newRange, debug = isDebug, firstDebugCommand = debugCommand,
-                                            setLastValue = true)
-              .also { debugCommand = DebugCommand.KEEP_PREVIOUS }
-              .then { it.exception == null }
-          }.thenAsync { it }
-        }
-      }
-      .let { PromiseUtil.runChain(it) }
+    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, selection.file, selection.range)
+    console.executeActionHandler.splitAndExecute(selection.code, isDebug = isDebug, sourceFile = selection.file,
+                                                 sourceStartOffset = selection.range.startOffset,
+                                                 firstDebugCommand = debugCommand)
   }
 
   private fun executeForRMarkdownFile(project: Project, virtualFile: VirtualFile, editor: Editor, range: TextRange) {
