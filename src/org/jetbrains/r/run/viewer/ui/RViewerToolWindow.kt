@@ -4,12 +4,13 @@
 
 package org.jetbrains.r.run.viewer.ui
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 
-class RViewerToolWindow : SimpleToolWindowPanel(true, true) {
-  private val viewerPanel = RViewerPanel()
+class RViewerToolWindow(parentDisposable: Disposable) : SimpleToolWindowPanel(true, true) {
+  private val viewerPanel = RViewerPanel(parentDisposable)
 
   init {
     setContent(viewerPanel.component)

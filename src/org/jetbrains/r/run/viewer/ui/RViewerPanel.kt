@@ -4,7 +4,10 @@
 
 package org.jetbrains.r.run.viewer.ui
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.EmptyComponentPanel
 import org.jetbrains.concurrency.Promise
@@ -17,9 +20,10 @@ import javax.swing.JLabel
 import javax.swing.JTextArea
 import javax.swing.border.EmptyBorder
 
-class RViewerPanel {
+class RViewerPanel(disposable: Disposable) {
   private val label = JLabel(NO_CONTENT, JLabel.CENTER)
   private val rootPanel = EmptyComponentPanel(label)
+  private val jbBrowser: JBCefBrowser by lazy { JBCefBrowser().also { Disposer.register(disposable, it) } }
 
   private val multilineLabel = MultilineLabel().apply {
     border = EmptyBorder(JBUI.insets(5))
@@ -44,9 +48,10 @@ class RViewerPanel {
 
   private fun loadHtmlOrText(file: File, qualifiedUrl: String): Promise<Unit> {
     return if (file.extension.isNotEmpty()) {
-      //htmlPanel.load(qualifiedUrl).onSuccess {
-      //  rootPanel.contentComponent = htmlPanel.component
-      //}
+      jbBrowser.loadURL(qualifiedUrl)
+      if (rootPanel.contentComponent != jbBrowser.component) {
+        rootPanel.contentComponent = jbBrowser.component
+      }
       resolvedPromise()
     } else {
       multilineLabel.text = file.readText()
