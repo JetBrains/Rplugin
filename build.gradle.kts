@@ -327,6 +327,11 @@ fun doCopyRWrapperTask(prepareSandboxTask: PrepareSandboxTask, project: Project)
             include("rwrapper*")
             into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
         }
+        project.copy {
+            from("rwrapper")
+            include("fsnotifier-*")
+            into(prepareSandboxTask.destinationDir.toString() + "/" + prepareSandboxTask.pluginName)
+        }
     }
 }
 
