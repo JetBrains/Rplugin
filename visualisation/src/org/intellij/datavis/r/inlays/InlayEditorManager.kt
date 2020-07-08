@@ -231,7 +231,9 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       private val regions = ArrayList<Region>()
 
       override fun onFoldRegionStateChange(region: FoldRegion) {
-        regions.add(Region(TextRange.create(region.startOffset, region.endOffset), region.isExpanded))
+        if(region.isValid) {
+          regions.add(Region(TextRange.create(region.startOffset, region.endOffset), region.isExpanded))
+        }
       }
 
       override fun onFoldProcessingEnd() {
