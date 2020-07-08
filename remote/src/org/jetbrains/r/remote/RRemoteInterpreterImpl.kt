@@ -5,7 +5,9 @@
 package org.jetbrains.r.remote
 
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
@@ -15,6 +17,8 @@ import com.intellij.ssh.SftpChannelNoSuchFileException
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.PathUtil
 import com.jetbrains.plugins.remotesdk.ui.RemoteBrowseActionListener
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterBase
@@ -122,6 +126,17 @@ class RRemoteInterpreterImpl(
         Pair(userPath, !existed)
       }
     }
+  }
+
+  override fun prepareForExecution(): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    invokeLater {
+      FileDocumentManager.getInstance().saveAllDocuments()
+      remoteHost.virtualFileUploadingListener.ensureCurrentUploadsFinished().onProcessed {
+        promise.setResult(Unit)
+      }
+    }
+    return promise
   }
 
   private fun removeLocalRDataTmpFiles() {

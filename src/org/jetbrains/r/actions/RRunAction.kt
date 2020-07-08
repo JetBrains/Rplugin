@@ -5,7 +5,6 @@
 package org.jetbrains.r.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AppUIUtil
 import org.jetbrains.r.RBundle
@@ -20,7 +19,6 @@ abstract class RRunActionBase : REditorActionBase() {
     val project = e.project ?: return
     val file = e.virtualFile ?: return
     AppUIUtil.invokeOnEdt {
-      FileDocumentManager.getInstance().saveAllDocuments()
       RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
     }
     RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess { console ->
@@ -28,8 +26,10 @@ abstract class RRunActionBase : REditorActionBase() {
         RNotificationUtil.notifyConsoleError(project, RBundle.message("notification.console.busy"))
       }
       console.executeActionHandler.fireBeforeExecution()
-      doExecute(console, file)
       console.executeActionHandler.fireBusy()
+      console.interpreter.prepareForExecution().onProcessed {
+        doExecute(console, file)
+      }
     }.onError {
       RNotificationUtil.notifyConsoleError(project, it.message)
     }

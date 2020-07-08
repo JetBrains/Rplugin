@@ -7,6 +7,7 @@ package org.jetbrains.r.remote.host
 import com.intellij.execution.CommandLineUtil
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.util.AtomicClearableLazyValue
@@ -14,6 +15,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.remote.RemoteCredentials
 import com.intellij.ssh.ExecBuilder
 import com.intellij.ssh.SessionConfig
@@ -32,6 +34,7 @@ import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.remote.filesystem.RRemoteVFS
+import org.jetbrains.r.remote.filesystem.RVirtualFileUploadingListener
 import org.jetbrains.r.util.RPathUtil
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -99,6 +102,10 @@ class RRemoteHost internal constructor(val sshConfig: SshConfig) {
     }
   }
   private val remoteTempDir get() = remoteTempDirValue.value
+
+  val virtualFileUploadingListener = RVirtualFileUploadingListener(this).also {
+    ApplicationManager.getApplication().messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, it)
+  }
 
   init {
     refresh()
