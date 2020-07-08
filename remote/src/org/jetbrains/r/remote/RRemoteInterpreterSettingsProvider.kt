@@ -6,36 +6,35 @@ package org.jetbrains.r.remote
 
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
+import org.jetbrains.r.remote.host.RRemoteHostManager
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSerializableInterpreter
 import org.jetbrains.r.settings.RSettings
 
 class RRemoteInterpreterSettingsProvider : RInterpreterSettingsProvider {
   override fun getLocationFromState(state: RSettings.State): RInterpreterLocation? {
-    val interpreterPath = state.interpreterPath
-    val remoteHost = state.remoteHost
-    if (interpreterPath.isNullOrEmpty() || remoteHost.isNullOrEmpty()) return null
+    val interpreterPath = state.interpreterPath?.takeIf { it.isNotEmpty() } ?: return null
+    val remoteHost = state.remoteHost?.let { RRemoteHostManager.getInstance().getRemoteHostBySshConfigName(it) } ?: return null
     return RRemoteInterpreterLocation(remoteHost, interpreterPath)
   }
 
   override fun putLocationToState(state: RSettings.State, location: RInterpreterLocation): Boolean {
     if (location !is RRemoteInterpreterLocation) return false
     state.interpreterPath = location.remotePath
-    state.remoteHost = location.sshConfigName
+    state.remoteHost = location.remoteHost.sshConfig.name
     return true
   }
 
   override fun deserializeLocation(serializable: RSerializableInterpreter): RInterpreterLocation? {
-    val interpreterPath = serializable.path
-    val remoteHost = serializable.remoteHost
-    if (interpreterPath.isEmpty() || remoteHost.isEmpty()) return null
+    val interpreterPath = serializable.path.takeIf { it.isNotEmpty() } ?: return null
+    val remoteHost = RRemoteHostManager.getInstance().getRemoteHostBySshConfigName(serializable.remoteHost) ?: return null
     return RRemoteInterpreterLocation(remoteHost, interpreterPath)
   }
 
   override fun serializeLocation(location: RInterpreterLocation, serializable: RSerializableInterpreter): Boolean {
     if (location !is RRemoteInterpreterLocation) return false
     serializable.path = location.remotePath
-    serializable.remoteHost = location.sshConfigName
+    serializable.remoteHost = location.remoteHost.sshConfig.name
     return true
   }
 

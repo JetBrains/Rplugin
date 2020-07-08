@@ -18,8 +18,9 @@ object RInterpreterTestUtil {
 
   fun makeSlaveInterpreter(project: Project): RLocalInterpreterImpl {
     val interpreterPath = RInterpreterUtil.suggestHomePath()
-    val versionInfo = RLocalInterpreterImpl.loadInterpreterVersionInfo(interpreterPath, project.basePath!!)
-    return RLocalInterpreterImpl(RLocalInterpreterLocation(interpreterPath), versionInfo, project).apply {
+    val location = RLocalInterpreterLocation(interpreterPath)
+    val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
+    return RLocalInterpreterImpl(location, versionInfo, project).apply {
       updateState().blockingGet(DEFAULT_TIMEOUT)
     }
   }

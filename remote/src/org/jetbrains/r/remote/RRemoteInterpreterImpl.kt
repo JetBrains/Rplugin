@@ -4,9 +4,7 @@
 
 package org.jetbrains.r.remote
 
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -20,21 +18,18 @@ import com.jetbrains.plugins.remotesdk.ui.RemoteBrowseActionListener
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterBase
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.remote.filesystem.RRemoteHostViewManager
 import org.jetbrains.r.remote.filesystem.RRemoteVFS
 import org.jetbrains.r.remote.host.RRemoteHost
 import org.jetbrains.r.remote.host.mkDirs
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.util.RPathUtil
-import java.io.File
 
 class RRemoteInterpreterImpl(
   override val interpreterLocation: RRemoteInterpreterLocation,
   private val remoteHost: RRemoteHost,
   versionInfo: Map<String, String>,
   project: Project) : RInterpreterBase(versionInfo, project) {
-  private val remotePath get() = interpreterLocation.remotePath
   override val basePath = remoteHost.remoteBasePath
   override val hostOS get() = remoteHost.operatingSystem
 
@@ -46,31 +41,6 @@ class RRemoteInterpreterImpl(
 
   init {
     removeLocalRDataTmpFiles()
-  }
-
-  override fun getProcessOutput(scriptText: String): ProcessOutput? {
-    val commandLine = arrayOf<String>(remotePath, "--no-restore", "--quiet", "--slave", "-e", scriptText)
-    try {
-      return remoteHost.runCommand(GeneralCommandLine(*commandLine))
-    } catch (e: Throwable) {
-      LOG.info("""
-        Failed to run R executable on remote host ${remoteHost.presentableName}
-        Remote interpreter path: $remotePath
-        Exception occurred: ${e.message}
-      """.trimIndent())
-    }
-    return null
-  }
-
-  override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
-    return RRemoteUtil.runHelper(remoteHost, remotePath, helper, args, errorHandler)
-  }
-
-  override fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler {
-    val commands = RInterpreterUtil.getRunHelperCommands(remotePath, script, args)
-    val commandLine = RInterpreterUtil.createCommandLine(remotePath, commands, workingDirectory)
-    return BaseRemoteProcessHandler<SshExecProcess>(remoteHost.createProcess(commandLine, workingDir = workingDirectory),
-                                                    commandLine.commandLineString, null)
   }
 
   override fun suggestConsoleName(workingDirectory: String): String = "[ ${remoteHost.presentableName}:$workingDirectory ]"
@@ -103,15 +73,6 @@ class RRemoteInterpreterImpl(
   }
 
   override fun getHelpersRootOnHost() = remoteHost.remoteHelpersRoot
-
-  override fun uploadHelperToHost(helper: File): String {
-    return remoteHost.uploadRHelper(helper)
-  }
-
-  override fun runProcessOnHost(command: GeneralCommandLine): ProcessHandler {
-    val process = remoteHost.createProcess(command, 0, remoteHost.remoteBasePath)
-    return BaseRemoteProcessHandler<SshExecProcess>(process, command.exePath, null)
-  }
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
     val session = ((process as? BaseRemoteProcessHandler<*>)?.process as? SshExecProcess)?.session

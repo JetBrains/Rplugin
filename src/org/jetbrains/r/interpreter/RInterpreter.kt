@@ -5,8 +5,8 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
@@ -38,8 +38,6 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getLibraryPathByName(name: String): LibraryPath?
 
-  fun getProcessOutput(scriptText: String): ProcessOutput?
-
   /**
    * @return a system-dependant paths to the skeleton roots
    */
@@ -54,10 +52,6 @@ interface RInterpreter : RInterpreterInfo {
   /** A place where all skeleton-related data will be stored */
   val skeletonsDirectory: String
 
-  fun runCommand(cmd: String): String? {
-    return getProcessOutput(cmd)?.stdout
-  }
-  
   fun suggestConsoleName(workingDirectory: String): String {
     return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
   }
@@ -75,23 +69,6 @@ interface RInterpreter : RInterpreterInfo {
   }
 
   fun getHelpersRootOnHost(): String = RPluginUtil.helpersPath
-
-  fun uploadHelperToHost(helper: File): String
-
-  fun runProcessOnHost(command: GeneralCommandLine): ProcessHandler
-
-  fun runHelperProcess(script: String, args: List<String>, workingDirectory: String?): ProcessHandler
-
-  /**
-   * @param errorHandler if errorHelper is not null, it could be called instead of throwing the exception.
-   * @throws RuntimeException if errorHandler is null and the helper exited with non-zero code or produced zero length output.
-   */
-  fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)? = null): String
-
-  fun runMultiOutputHelper(helper: File,
-                           workingDirectory: String?,
-                           args: List<String>,
-                           processor: RMultiOutputProcessor)
 
   fun getSkeletonFileByPackageName(name: String): PsiFile?
 
@@ -115,3 +92,20 @@ interface RInterpreter : RInterpreterInfo {
 }
 
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
+
+fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) =
+  RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args)
+
+fun RInterpreter.uploadFileToHost(file: File, preserveName: Boolean = false) = interpreterLocation.uploadFileToHost(file, preserveName)
+
+fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory: String = basePath) =
+  interpreterLocation.runProcessOnHost(command, workingDirectory)
+
+fun RInterpreter.runHelperProcess(script: String, args: List<String>, workingDirectory: String = basePath): BaseProcessHandler<*> {
+  val interpreterArgs= RInterpreterUtil.getRunHelperArgs(script, args)
+  return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory)
+}
+
+fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
+  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor)
+}

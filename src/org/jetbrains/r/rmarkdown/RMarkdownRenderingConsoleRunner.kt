@@ -24,9 +24,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
@@ -92,7 +90,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
         val resultTmpFile = interpreter.createTempFileOnHost("rmd-output-path.txt")
 
         val args = arrayListOf(libraryPath, rmdFileOnHost, knitRootDirectory, resultTmpFile)
-        val processHandler = interpreter.runHelperProcess(interpreter.uploadHelperToHost(R_MARKDOWN_HELPER), args,
+        val processHandler = interpreter.runHelperProcess(interpreter.uploadFileToHost(R_MARKDOWN_HELPER), args,
                                                           knitRootDirectory)
         currentProcessHandler = processHandler
         val knitListener = makeKnitListener(interpreter, rMarkdownFile, promise, resultTmpFile, outputDirectory, isShiny)

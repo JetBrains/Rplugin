@@ -11,6 +11,7 @@ import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.getVersion
 import java.awt.BorderLayout
 
 class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RInterpreterPanel() {

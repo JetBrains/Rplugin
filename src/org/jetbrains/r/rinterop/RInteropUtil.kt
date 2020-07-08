@@ -24,10 +24,7 @@ import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.OperatingSystem
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.isLocal
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.util.RPathUtil
 import java.io.File
 import java.io.FileInputStream
@@ -190,7 +187,7 @@ object RInteropUtil {
     if (!rwrapper.canExecute()) {
       rwrapper.setExecutable(true)
     }
-    val wrapperPathOnHost = interpreter.uploadHelperToHost(rwrapper)
+    val wrapperPathOnHost = interpreter.uploadFileToHost(rwrapper)
     var command = GeneralCommandLine()
       .withExePath(wrapperPathOnHost)
       .withParameters("--with-timeout")
@@ -271,7 +268,7 @@ object RInteropUtil {
   private fun getRPaths(interpreter: RInterpreter): RPaths {
     val script = RPluginUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
                  ?: throw RuntimeException("GetEnvVars.R not found")
-    val output = interpreter.runHelper(script, null, emptyList())
+    val output = interpreter.runHelper(script, emptyList())
     val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     if (paths.size < 5) {
       LOG.error("cannot get rwrapper parameters, output: `$output`")

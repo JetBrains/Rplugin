@@ -144,13 +144,13 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
       val commands = mutableListOf(interpreterPath, "CMD", command, ".").apply {
         addAll(args)
       }
-      RInterpreterUtil.createProcessHandler(interpreterPath, commands, project.basePath)
+      RInterpreterUtil.createLocalProcessHandler(interpreterPath, commands, project.basePath)
     }
   }
 
   private fun runHelperAsync(helper: File, args: List<String> = emptyList()): Promise<Unit> {
     return runProcessAsync { interpreterPath ->
-      RInterpreterUtil.createProcessHandlerForHelper(interpreterPath, helper, project.basePath, args)
+      RInterpreterUtil.createLocalProcessHandlerForHelper(interpreterPath, helper, project.basePath, args)
     }
   }
 

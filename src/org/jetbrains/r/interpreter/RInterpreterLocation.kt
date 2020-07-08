@@ -5,23 +5,19 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.execution.process.ProcessOutput
+import com.intellij.execution.process.BaseProcessHandler
+import com.intellij.execution.process.OSProcessHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import java.io.File
 
 interface RInterpreterLocation {
-  fun getVersion(): Version?
+  // workingDirectory is a separate parameter and not a part of GeneralCommandLine because it does not work well with remote paths
+  fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String? = null): BaseProcessHandler<*>
 
-  fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)? = null): String
+  fun runInterpreterOnHost(args: List<String>, workingDirectory: String? = null): BaseProcessHandler<*>
 
-  fun runMultiOutputHelper(helper: File,
-                           workingDirectory: String?,
-                           args: List<String>,
-                           processor: RMultiOutputProcessor)
-
-  fun runHelperScript(helper: File, args: List<String>, timeout: Int = RInterpreterUtil.DEFAULT_TIMEOUT): ProcessOutput
+  fun uploadFileToHost(file: File, preserveName: Boolean = false): String
 
   fun createInterpreter(project: Project): RInterpreterBase
 
@@ -31,29 +27,20 @@ interface RInterpreterLocation {
 data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
   override fun toString(): String = path
 
-  override fun getVersion(): Version? {
-    if (path.isBlank()) return null
-    return RInterpreterUtil.getVersionByPath(path)
+  override fun runInterpreterOnHost(args: List<String>, workingDirectory: String?): BaseProcessHandler<*> {
+    return runProcessOnHost(GeneralCommandLine().withExePath(path).withParameters(args), workingDirectory)
   }
 
-  override fun runHelper(helper: File, workingDirectory: String?, args: List<String>, errorHandler: ((ProcessOutput) -> Unit)?): String {
-    return RInterpreterUtil.runHelper(path, helper, workingDirectory, args, errorHandler)
+  override fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String?): BaseProcessHandler<*> {
+    return OSProcessHandler(command.withWorkDirectory(workingDirectory)).apply {
+      setShouldDestroyProcessRecursively(true)
+    }
   }
 
-  override fun runMultiOutputHelper(helper: File,
-                                    workingDirectory: String?,
-                                    args: List<String>,
-                                    processor: RMultiOutputProcessor) {
-    RInterpreterUtil.runMultiOutputHelper(path, helper, workingDirectory, args, processor)
-  }
-
-  override fun runHelperScript(helper: File, args: List<String>, timeout: Int): ProcessOutput {
-    val generalCommandLine = GeneralCommandLine(*RInterpreterUtil.getRunHelperCommands(path, helper, args).toTypedArray())
-    return CapturingProcessHandler(generalCommandLine).runProcess(timeout)
-  }
+  override fun uploadFileToHost(file: File, preserveName: Boolean): String = file.path
 
   override fun createInterpreter(project: Project): RInterpreterBase {
-    val versionInfo = RLocalInterpreterImpl.loadInterpreterVersionInfo(path, project.basePath!!)
+    val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(this)
     return RLocalInterpreterImpl(this, versionInfo, project)
   }
 
@@ -64,4 +51,8 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
 
 fun RInterpreterLocation.toLocalPathOrNull(): String? {
   return (this as? RLocalInterpreterLocation)?.path
+}
+
+fun RInterpreterLocation.getVersion(): Version? {
+  return RInterpreterUtil.getVersionByLocation(this)
 }

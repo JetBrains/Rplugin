@@ -22,7 +22,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -74,7 +73,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
       LOG.error("fsNotifier: '$executableName' not found in helpers")
       return null
     }
-    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadHelperToHost(fsNotifierExecutable)))
+    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadFileToHost(fsNotifierExecutable)))
     Disposer.register(project, Disposable { process.destroyProcess() })
 
     process.addProcessListener(object : ProcessListener {

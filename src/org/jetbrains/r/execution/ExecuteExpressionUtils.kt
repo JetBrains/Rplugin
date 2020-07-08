@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.execution
 
+import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
@@ -11,6 +12,7 @@ import com.intellij.openapi.util.ThrowableComputable
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RInterpreterLocation
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import java.nio.file.Paths
 
@@ -45,7 +47,7 @@ object ExecuteExpressionUtils {
                                 args: List<String>,
                                 title: String,
                                 timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
-    return getSynchronously<ProcessOutput>(title) {
+    return getSynchronously(title) {
       executeScript(interpreterLocation, relativeScriptPath, args, timeout)
     }
   }
@@ -55,6 +57,9 @@ object ExecuteExpressionUtils {
                     args: List<String>,
                     timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
     val helper = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString())
-    return interpreterLocation.runHelperScript(helper, args, timeout)
+    val helperOnHost = interpreterLocation.uploadFileToHost(helper)
+    val interpreterArgs = RInterpreterUtil.getRunHelperArgs(helperOnHost, args)
+    val process = interpreterLocation.runInterpreterOnHost(interpreterArgs)
+    return CapturingProcessRunner(process).runProcess(timeout)
   }
 }
