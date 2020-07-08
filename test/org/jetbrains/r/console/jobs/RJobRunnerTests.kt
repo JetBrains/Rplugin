@@ -88,7 +88,7 @@ class RJobRunnerTests : RConsoleBaseTestCase() {
   }
 
   private fun createProcessHandler(task: RJobTask): ProcessHandler {
-    val processHandler = RJobRunner.getInstance(project).run(task).blockingGet(Int.MAX_VALUE)!!
+    val processHandler = RJobRunner.getInstance(project).run(task).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!
     processHandler.installListener()
     processHandler.startNotify()
     return processHandler
