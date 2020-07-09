@@ -31,11 +31,8 @@ import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
-import javax.imageio.ImageIO
 import javax.swing.JComponent
 import javax.swing.JLabel
 
@@ -217,39 +214,8 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private fun createInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
-    val defaultForeground = globalScheme.defaultForeground
-    val defaultBackground  = globalScheme.defaultBackground
-    val rgb = FloatArray(3)
-    val whiteHSL = FloatArray(3)
-    val blackHSL = FloatArray(3)
-    val currentHSL = FloatArray(3)
-    val saturation = 1
-    val luminance = 2
-
-    defaultForeground.getRGBColorComponents(rgb)
-    convertRGBtoHSL(rgb, whiteHSL)
-    defaultBackground.getRGBColorComponents(rgb)
-    convertRGBtoHSL(rgb, blackHSL)
-
-    val bufferedImage = ImageIO.read(ByteArrayInputStream(content)) ?: return content
-    for (x in 0 until bufferedImage.getWidth()) {
-      for (y in 0 until bufferedImage.getHeight()) {
-        val rgba: Int = bufferedImage.getRGB(x, y)
-        val alpha = ((rgba shr 24) and 255) / 255f
-        rgb[0] = ((rgba shr 16) and 255) / 255f
-        rgb[1] = ((rgba shr 8) and 255) / 255f
-        rgb[2] = ((rgba) and 255) / 255f
-        convertRGBtoHSL(rgb, currentHSL)
-        currentHSL[saturation] = currentHSL[saturation] * (50.0f + whiteHSL[saturation]) / 1.5f / 100f
-        currentHSL[luminance] = (100 - currentHSL[luminance]) * (whiteHSL[luminance] - blackHSL[luminance]) / 100f  + blackHSL[luminance]
-        bufferedImage.setRGB(x, y, convertHCLtoRGB(currentHSL, alpha))
-      }
-    }
-    ByteArrayOutputStream().use { outputStream ->
-      ImageIO.write(bufferedImage, "png", outputStream)
-      outputStream.flush()
-      return outputStream.toByteArray()
-    }
+    val inverter = ImageInverter(globalScheme.defaultForeground, globalScheme.defaultBackground)
+    return inverter.invert(content)
   }
 
   private fun openEditor(file: VirtualFile) {
