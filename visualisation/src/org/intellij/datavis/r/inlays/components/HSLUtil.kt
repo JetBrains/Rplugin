@@ -50,7 +50,7 @@ fun convertRGBtoHSL(rgb: FloatArray, result: FloatArray) { //  Get RGB values in
  *
  * @returns the integer RGB value
  */
-fun convertHCLtoRGB(hslFloats: FloatArray, alpha: Float): Int {
+fun convertHSLtoRGB(hslFloats: FloatArray, alpha: Float): Int {
   var h = hslFloats[0]
   var s = hslFloats[1]
   var l = hslFloats[2]
