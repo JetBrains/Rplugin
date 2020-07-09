@@ -17,6 +17,8 @@ import com.intellij.ssh.SftpChannelNoSuchFileException
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.PathUtil
 import com.jetbrains.plugins.remotesdk.ui.RemoteBrowseActionListener
+import com.jetbrains.plugins.webDeployment.config.FileTransferConfig
+import com.jetbrains.plugins.webDeployment.ui.ServerBrowserDialog
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
@@ -107,6 +109,15 @@ class RRemoteInterpreterImpl(
         consumer.consume(remoteHost.credentials)
       }.withFoldersOnly(selectFolder))
     }
+  }
+
+  override fun showFileChooserDialogForHost(selectFolder: Boolean): String? {
+    val dialog = ServerBrowserDialog(project, remoteHost.config,
+                                     RRemoteBundle.message("remote.file.chooser.title"), selectFolder,
+                                     FileTransferConfig.Origin.Default, null)
+    dialog.show()
+    if (!dialog.isOK) return null
+    return dialog.path?.path
   }
 
   override fun createTempFileOnHost(name: String, content: ByteArray?): String {

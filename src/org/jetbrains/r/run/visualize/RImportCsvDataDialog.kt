@@ -7,11 +7,12 @@ package org.jetbrains.r.run.visualize
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.forms.RImportCsvOptionPanelForm
 import javax.swing.JComponent
 
-class RImportCsvDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: String)
+class RImportCsvDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: LocalOrRemotePath)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
   private val form = RImportCsvOptionPanelForm()
@@ -117,8 +118,8 @@ class RImportCsvDataDialog private constructor(project: Project, interop: RInter
       ComboBoxEntry<String?>(OPTION_EMPTY_STRING, "")
     )
 
-    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null) {
-      initialPath.orChooseFile(project, RImportDataUtil.supportedTextFormats)?.let { path ->
+    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: LocalOrRemotePath? = null) {
+      initialPath.orChooseFile(interop.interpreter, RImportDataUtil.supportedTextFormats)?.let { path ->
         RImportCsvDataDialog(project, interop, parent, path).show()
       }
     }

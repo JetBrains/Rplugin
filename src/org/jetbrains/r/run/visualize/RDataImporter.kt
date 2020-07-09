@@ -6,23 +6,41 @@ package org.jetbrains.r.run.visualize
 
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.interpreter.LocalOrRemotePath
+import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RReference
+import java.io.File
 
 data class RImportOptions(val mode: String, val additional: Map<String, String>)
 
 class RDataImporter(private val interop: RInterop) {
-  fun importData(name: String, path: String, options: RImportOptions): RReference {
-    interop.commitDataImport(name, path, options.mode, options.additional)
+  @Volatile
+  private var lastLocalAndHostPath: Pair<String, String>? = null
+
+  fun importData(name: String, path: LocalOrRemotePath, options: RImportOptions): RReference {
+    val pathOnHost = getPathOnHost(path)
+    interop.commitDataImport(name, pathOnHost, options.mode, options.additional)
     return refOf(name)
   }
 
-  fun previewDataAsync(path: String, rowCount: Int, options: RImportOptions): Promise<Pair<RReference, Int>> {
+  fun previewDataAsync(path: LocalOrRemotePath, rowCount: Int, options: RImportOptions): Promise<Pair<RReference, Int>> {
     return runAsync {
-      val result = interop.previewDataImport(path, options.mode, rowCount, options.additional)
+      val pathOnHost = getPathOnHost(path)
+      val result = interop.previewDataImport(pathOnHost, options.mode, rowCount, options.additional)
       val errorCount = parseErrorCount(result.stdout, result.stderr)
       val ref = refOf(PREVIEW_DATA_VARIABLE_NAME)
       Pair(ref, errorCount)
+    }
+  }
+
+  private fun getPathOnHost(path: LocalOrRemotePath): String {
+    if (path.isRemote) return path.path
+    lastLocalAndHostPath?.let {
+      if (it.first == path.path) return it.second
+    }
+    return interop.interpreter.uploadFileToHost(File(path.path)).also {
+      lastLocalAndHostPath = path.path to it
     }
   }
 

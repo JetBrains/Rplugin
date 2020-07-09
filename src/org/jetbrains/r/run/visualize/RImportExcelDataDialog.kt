@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBTextField
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.forms.RImportExcelOptionPanelForm
@@ -16,7 +17,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.reflect.KProperty
 
-class RImportExcelDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: String)
+class RImportExcelDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: LocalOrRemotePath)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
   private val form = RImportExcelOptionPanelForm()
@@ -143,8 +144,8 @@ class RImportExcelDataDialog private constructor(project: Project, interop: RInt
 
     private val DEFAULT_SHEET_ENTRIES = listOf(ComboBoxEntry<String?>(OPTION_DEFAULT, null))
 
-    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: String? = null) {
-      initialPath.orChooseFile(project, RImportDataUtil.supportedExcelFormats)?.let { path ->
+    fun show(project: Project, interop: RInterop, parent: Disposable, initialPath: LocalOrRemotePath? = null) {
+      initialPath.orChooseFile(interop.interpreter, RImportDataUtil.supportedExcelFormats)?.let { path ->
         RImportExcelDataDialog(project, interop, parent, path).show()
       }
     }

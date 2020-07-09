@@ -31,7 +31,6 @@ import com.jetbrains.plugins.remotesdk.transport.remoteCredentialsToSessionConfi
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.isRejected
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.remote.filesystem.RRemoteVFS
 import org.jetbrains.r.remote.filesystem.RVirtualFileUploadingListener
@@ -190,12 +189,10 @@ class RRemoteHost internal constructor(val sshConfig: SshConfig) {
         ?.inputStream()?.bufferedReader()?.use { it.readText().trim() }
       if (remoteHash != localHash) {
         LOG.debug { "Uploading R helper $relativePath to $presentableName : $remotePath" }
-        ExecuteExpressionUtils.getSynchronously("Uploading $relativePath to $presentableName") {
-          channel.file(remoteHashPath).rm()
-          channel.uploadFileOrDir(localFile, PathUtil.getParentPath(remotePath), PathUtil.getFileName(remotePath))
-          channel.file(remoteHashPath).outputStream(false).bufferedWriter().use {
-            it.write(localHash)
-          }
+        channel.file(remoteHashPath).rm()
+        channel.uploadFileOrDir(localFile, PathUtil.getParentPath(remotePath), PathUtil.getFileName(remotePath))
+        channel.file(remoteHashPath).outputStream(false).bufferedWriter().use {
+          it.write(localHash)
         }
       } else {
         LOG.debug { "R helper $relativePath is up-to-date on $presentableName : $remotePath" }
@@ -205,34 +202,32 @@ class RRemoteHost internal constructor(val sshConfig: SshConfig) {
   }
 
   fun uploadTmpFile(name: String, content: ByteArray, preserveName: Boolean = false): String {
-    return ExecuteExpressionUtils.getSynchronously("Uploading file $name to $presentableName") {
-      useSftpChannel { channel ->
-        val nameNoExt = FileUtil.getNameWithoutExtension(name)
-        val extension = FileUtilRt.getExtension(name).takeIf { it.isNotEmpty() }?.let { ".$it" } ?: ""
-        var iter = 0
-        val remoteDir = remoteTempDir
-        var remotePath: String
-        while (true) {
-          val remoteName = if (iter == 0) "$nameNoExt$extension" else "$nameNoExt-$iter$extension"
-          remotePath = RPathUtil.join(remoteDir, remoteName)
-          var remoteFile = channel.file(remotePath)
-          if (remoteFile.exists()) {
-            ++iter
-          } else {
-            LOG.debug { "Uploading file $name to $presentableName : $remotePath" }
-            if (preserveName) {
-              remoteFile.mkdir()
-              remotePath = RPathUtil.join(remotePath, name)
-              remoteFile = channel.file(remotePath)
-            }
-            remoteFile.outputStream(false).use {
-              it.write(content)
-            }
-            break
+    return useSftpChannel { channel ->
+      val nameNoExt = FileUtil.getNameWithoutExtension(name)
+      val extension = FileUtilRt.getExtension(name).takeIf { it.isNotEmpty() }?.let { ".$it" } ?: ""
+      var iter = 0
+      val remoteDir = remoteTempDir
+      var remotePath: String
+      while (true) {
+        val remoteName = if (iter == 0) "$nameNoExt$extension" else "$nameNoExt-$iter$extension"
+        remotePath = RPathUtil.join(remoteDir, remoteName)
+        var remoteFile = channel.file(remotePath)
+        if (remoteFile.exists()) {
+          ++iter
+        } else {
+          LOG.debug { "Uploading file $name to $presentableName : $remotePath" }
+          if (preserveName) {
+            remoteFile.mkdir()
+            remotePath = RPathUtil.join(remotePath, name)
+            remoteFile = channel.file(remotePath)
           }
+          remoteFile.outputStream(false).use {
+            it.write(content)
+          }
+          break
         }
-        remotePath
       }
+      remotePath
     }
   }
 
