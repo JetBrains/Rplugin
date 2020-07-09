@@ -6,6 +6,7 @@ package org.jetbrains.r.run
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RReference
@@ -56,13 +57,13 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun checkPreview(path: String, options: RImportOptions, expected: DataFrame) {
-    val (ref, errorCount) = importer.previewDataAsync(path, PREVIEW_ROW_COUNT, options).wait()
+    val (ref, errorCount) = importer.previewDataAsync(LocalOrRemotePath(path, false), PREVIEW_ROW_COUNT, options).wait()
     TestCase.assertEquals(0, errorCount)
     checkEqual(ref, expected)
   }
 
   private fun checkImport(path: String, options: RImportOptions, expected: DataFrame) {
-    val ref = importer.importData("dataset", path, options)
+    val ref = importer.importData("dataset", LocalOrRemotePath(path, false), options)
     checkEqual(ref, expected)
   }
 

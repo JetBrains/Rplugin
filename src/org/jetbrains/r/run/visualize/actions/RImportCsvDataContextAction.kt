@@ -7,6 +7,7 @@ package org.jetbrains.r.run.visualize.actions
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.getLocalOrRemotePath
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.visualize.RImportCsvDataDialog
@@ -16,7 +17,7 @@ class RImportCsvDataContextAction : RImportDataContextAction(TITLE, DESCRIPTION)
   override val supportedFormats = RImportDataUtil.supportedTextFormats
 
   override fun applyTo(project: Project, interop: RInterop, file: VirtualFile) {
-    RImportCsvDataDialog.show(project, interop, project, file.path)
+    RImportCsvDataDialog.show(project, interop, project, file.getLocalOrRemotePath(interop.interpreter))
   }
 
   override fun isEnabled(project: Project): Boolean {

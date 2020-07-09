@@ -98,6 +98,10 @@ class MockInterpreter(override val project: Project, var provider: MockInterpret
     throw NotImplementedError()
   }
 
+  override fun showFileChooserDialogForHost(selectFolder: Boolean): String? {
+    throw NotImplementedError()
+  }
+
   override fun createTempFileOnHost(name: String, content: ByteArray?): String {
     val i = name.indexOfLast { it == '.' }
     val file = if (i == -1) {

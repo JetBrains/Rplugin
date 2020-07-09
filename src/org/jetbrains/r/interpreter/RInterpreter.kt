@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.AsyncPromise
@@ -22,6 +23,7 @@ import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
+import java.nio.file.Paths
 
 interface RInterpreter : RInterpreterInfo {
   val project: Project
@@ -85,6 +87,8 @@ interface RInterpreter : RInterpreterInfo {
 
   fun createFileChooserForHost(value: String = "", selectFolder: Boolean = false): TextFieldWithBrowseButton
 
+  fun showFileChooserDialogForHost(selectFolder: Boolean = false): String?
+
   fun createTempFileOnHost(name: String = "a", content: ByteArray? = null): String
 
   fun createTempDirOnHost(name: String = "a"): String
@@ -103,6 +107,8 @@ interface RInterpreter : RInterpreterInfo {
   }
 }
 
+data class LocalOrRemotePath(val path: String, val isRemote: Boolean)
+
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
 
 fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) =
@@ -120,4 +126,19 @@ fun RInterpreter.runHelperProcess(script: String, args: List<String>, workingDir
 
 fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
   return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor)
+}
+
+fun RInterpreter.uploadFileToHostIfNeeded(path: LocalOrRemotePath, preserveName: Boolean = false): String {
+  if (isLocal() || path.isRemote) return path.path
+  return uploadFileToHost(File(path.path), preserveName)
+}
+
+fun VirtualFile.getLocalOrRemotePath(interpreter: RInterpreter): LocalOrRemotePath? {
+  if (isInLocalFileSystem) return LocalOrRemotePath(path, false)
+  return interpreter.getFilePathAtHost(this)?.let { LocalOrRemotePath(it, true) }
+}
+
+fun LocalOrRemotePath.findFile(interpreter: RInterpreter, refreshIfNeeded: Boolean = false): VirtualFile? {
+  if (isRemote) return interpreter.findFileByPathAtHost(path)
+  return VfsUtil.findFile(Paths.get(path), refreshIfNeeded)
 }

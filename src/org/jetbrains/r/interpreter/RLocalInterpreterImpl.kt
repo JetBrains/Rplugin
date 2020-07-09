@@ -6,8 +6,10 @@ package org.jetbrains.r.interpreter
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileChooserFactory
+import com.intellij.openapi.fileChooser.ex.FileChooserDialogImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.TextComponentAccessor
@@ -46,6 +48,14 @@ class RLocalInterpreterImpl(
           null, null, component, project, descriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT))
       FileChooserFactory.getInstance().installFileCompletion(component.textField, descriptor, true, null)
     }
+  }
+
+  override fun showFileChooserDialogForHost(selectFolder: Boolean): String? {
+    val descriptor = FileChooserDescriptor(
+      !selectFolder, selectFolder, false, false, false, false)
+    val dialog = FileChooserDialogImpl(descriptor, project)
+    val choice = dialog.choose(project)
+    return choice.firstOrNull()?.path
   }
 
   override fun createTempFileOnHost(name: String, content: ByteArray?): String {
