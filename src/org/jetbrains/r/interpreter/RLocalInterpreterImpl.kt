@@ -5,9 +5,13 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.*
+import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.execution.process.ColoredProcessHandler
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.util.io.BaseOutputReader
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
@@ -41,7 +45,9 @@ class RLocalInterpreterImpl(
   }
 
   override fun runProcessOnHost(command: GeneralCommandLine): ColoredProcessHandler {
-    return ColoredProcessHandler(command.withWorkDirectory(basePath)).apply {
+    return object : ColoredProcessHandler(command.withWorkDirectory(basePath)) {
+      override fun readerOptions(): BaseOutputReader.Options = BaseOutputReader.Options.forMostlySilentProcess()
+    }.apply {
       setShouldDestroyProcessRecursively(true)
     }
   }
