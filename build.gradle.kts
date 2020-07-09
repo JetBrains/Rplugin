@@ -228,7 +228,7 @@ project(":") {
             delete(prepareSandboxTask.destinationDir.toString() + "/" + name + "/" + name.toLowerCase() + ".jar")
         }
         jvmArgs = listOf("-Dsun.java2d.uiScale.enabled=false", "-Xmx1024M")
-        jbrVersion("11_0_5b674.2")
+        jbrVersion("11_0_7b944.21")
     }
 
     tasks.buildPlugin {

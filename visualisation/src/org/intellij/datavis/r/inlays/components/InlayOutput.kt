@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -16,8 +17,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.ui.IdeBorderFactory
+import com.intellij.ui.jcef.JBCefBrowser
+import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import org.cef.browser.CefBrowser
+import org.cef.handler.CefLoadHandlerAdapter
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
@@ -356,6 +361,86 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
       destination.bufferedWriter().use { out ->
         out.write(console.text)
       }
+    }
+  }
+}
+
+class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
+
+  private val jbBrowser: JBCefBrowser = JBCefBrowser().also { Disposer.register(parent, it) }
+  private val heightJsCallback = JBCefJSQuery.create(jbBrowser)
+  private val saveJsCallback = JBCefJSQuery.create(jbBrowser)
+  private var height: Int = 0
+
+  init {
+    MouseWheelUtils.wrapMouseWheelListeners(jbBrowser.component, parent)
+    heightJsCallback.addHandler {
+      val height = it.toInt()
+      if (this.height != height) {
+        this.height = height
+        invokeLater {
+          SwingUtilities.invokeLater {
+            onHeightCalculated?.invoke(height)
+          }
+        }
+      }
+      JBCefJSQuery.Response("OK")
+    }
+    Disposer.register(jbBrowser, heightJsCallback)
+    toolbarPane.centralComponent = jbBrowser.component
+  }
+
+  override fun acceptType(type: String): Boolean {
+    return  type == "HTML" || type == "URL"
+  }
+
+  override fun clear() {}
+
+  private fun notifySize() {
+    jbBrowser.cefBrowser.executeJavaScript(heightJsCallback.inject(
+      "String(Math.max(document.body.scrollHeight, document.body.offsetHeight,"+
+                                            "document.documentElement.clientHeight, document.documentElement.scrollHeight," +
+                                            "document.documentElement.offsetHeight))"),
+      jbBrowser.cefBrowser.url, 0
+    )
+  }
+
+  override fun addData(data: String, type: String) {
+    val isUrl = data.startsWith("file://") || data.startsWith("http://") || data.startsWith("https://")
+    if (isUrl) {
+      jbBrowser.loadURL(data)
+    }
+    else {
+      jbBrowser.loadHTML("<head><style>" + GithubMarkdownCss.css + " </style></head><body>" + data + "</body>")
+    }
+    jbBrowser.jbCefClient.addLoadHandler( object : CefLoadHandlerAdapter() {
+      override fun onLoadingStateChange(browser: CefBrowser?, isLoading: Boolean, canGoBack: Boolean, canGoForward: Boolean) {
+        notifySize()
+      }
+    }, jbBrowser.cefBrowser)
+  }
+
+  // For HTML component no need to scroll to top, because it is not scrolling to end.
+  override fun scrollToTop() {}
+
+  override fun getCollapsedDescription(): String {
+    return "html output"
+  }
+
+  override fun saveAs() {
+    val title = "Export as txt"
+    val description = "Exports the selected range or whole table if nothing is selected as csv or tsv file"
+    saveWithFileChooser(title, description, arrayOf("txt"), "output") { destination ->
+      saveJsCallback.addHandler(object : java.util.function.Function<String, JBCefJSQuery.Response> {
+        override fun apply(selection: String): JBCefJSQuery.Response {
+          destination.bufferedWriter().use { out ->
+            out.write(selection)
+          }
+          saveJsCallback.removeHandler(this)
+          return JBCefJSQuery.Response("OK")
+        }
+      })
+      saveJsCallback.inject("window.getSelection().toString()")
     }
   }
 }
