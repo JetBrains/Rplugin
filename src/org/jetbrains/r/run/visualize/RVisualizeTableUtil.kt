@@ -17,6 +17,7 @@ import javax.swing.table.TableColumn
 import kotlin.math.max
 
 object RVisualizeTableUtil {
+  private const val MAX_ITEMS_FOR_SIZE_CALCULATION = 256
   private val DEFAULT_ROW_HEIGHT = JBUI.scale(22)
 
   @JvmStatic
@@ -42,6 +43,7 @@ object RVisualizeTableUtil {
     }
     val model = RDataFrameTableModel(viewer)
     val materialTable = RMaterialTable(model, columnModel)
+    materialTable.setMaxItemsForSizeCalculation(MAX_ITEMS_FOR_SIZE_CALCULATION)
     val connect = ApplicationManager.getApplication().messageBus.connect(viewer)
     connect.subscribe(EditorColorsManager.TOPIC, EditorColorsListener { globalColorScheme ->
       globalColorScheme?.defaultBackground?.let { materialTable.background = it }
