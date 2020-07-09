@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.AppUIUtil
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*
@@ -107,7 +108,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
 
   private fun getPagesCount() = max(1, (rowSorter.modelRowCount + currentPageSize - 1) / currentPageSize)
 
-  private fun updateInfo() {
+  private fun updateInfo() = AppUIUtil.invokeOnEdt {
     currentPageChanging = true
     val rowCount = rowSorter.modelRowCount
     val pagesCount = getPagesCount()
