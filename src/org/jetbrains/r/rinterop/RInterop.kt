@@ -513,7 +513,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   ): RIExecutionResult {
     val newParametersMessage = buildScreenParametersMessage(newParameters)
     val request = GraphicsRescaleStoredRequest.newBuilder()
-      .setGroupId(groupId)
+      .setGroupId(FileUtil.toSystemIndependentName(groupId))
       .setSnapshotNumber(snapshotNumber)
       .setSnapshotVersion(snapshotVersion)
       .setNewParameters(newParametersMessage)
@@ -552,7 +552,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     val request = GraphicsPullSnapshotRequest.newBuilder()
       .setWithRecorded(withRecorded)
       .setSnapshotNumber(number)
-      .setGroupId(groupId)
+      .setGroupId(FileUtil.toSystemIndependentName(groupId))
       .build()
     val response = executeWithCheckCancel(asyncStub::graphicsPullSnapshot, request)
     if (response.message.isNotBlank()) {
@@ -566,7 +566,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     val request = GraphicsPushSnapshotRequest.newBuilder()
       .setRecorded(ByteString.copyFrom(recorded))
       .setSnapshotNumber(number)
-      .setGroupId(groupId)
+      .setGroupId(FileUtil.toSystemIndependentName(groupId))
       .build()
     val response = executeWithCheckCancel(asyncStub::graphicsPushSnapshot, request)
     if (response.value.isNotBlank()) {
@@ -579,7 +579,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun graphicsRemoveGroup(groupId: String): RIExecutionResult {
-    return executeRequest(RPIServiceGrpc.getGraphicsRemoveGroupMethod(), StringValue.of(groupId))
+    return executeRequest(RPIServiceGrpc.getGraphicsRemoveGroupMethod(), StringValue.of(FileUtil.toSystemIndependentName(groupId)))
   }
 
   fun graphicsShutdown(): RIExecutionResult {
@@ -615,7 +615,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun pullChunkOutputFile(relativePath: String): ByteArray {
-    val response = executeWithCheckCancel(asyncStub::pullChunkOutputFile, StringValue.of(relativePath))
+    val response = executeWithCheckCancel(asyncStub::pullChunkOutputFile, StringValue.of(FileUtil.toSystemIndependentName(relativePath)))
     if (response.message.isNotBlank()) {
       throw RuntimeException(response.message)
     }
