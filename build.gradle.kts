@@ -197,7 +197,7 @@ project(":") {
     version = "${ideMajorVersion()}.${ideMinorVersion()}.${prop("buildNumber")}"
     intellij {
         val plugins = arrayOf("markdown", "yaml") +
-                      (if (isPyCharm()) arrayOf("python") else emptyArray()) +
+                      (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
                       arrayOf("platform-images")
         pluginName = "rplugin"
         setPlugins(*plugins)
