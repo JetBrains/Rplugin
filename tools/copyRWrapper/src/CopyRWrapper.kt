@@ -24,6 +24,7 @@ private fun String.runCommand(workingDir: File) {
 fun main(args: Array<String>) {
   val rwrapperDirectory = File(args[0])
   val destinationDirectory = File(args[1])
+  val customRWrapperPath = if (args.size > 2) File(args[2]) else null
 
   if (SystemUtils.IS_OS_UNIX) {
     "./build_rwrapper.sh".runCommand(rwrapperDirectory)
@@ -43,4 +44,12 @@ fun main(args: Array<String>) {
       FileUtils.copyFileToDirectory(it, destinationDirectory)
     }
   } ?: check(false) { "cannot find directory: ${rwrapperDirectory}" }
+
+  customRWrapperPath
+    ?.takeIf { it.exists() && it.isDirectory }
+    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("fsnotifier-") }
+    ?.map { Paths.get(customRWrapperPath.toString(), it).toFile() }
+    ?.forEach {
+      FileUtils.copyFileToDirectory(it, destinationDirectory)
+    } ?: check(customRWrapperPath == null ) { "cannot find directory: ${customRWrapperPath}" }
 }
