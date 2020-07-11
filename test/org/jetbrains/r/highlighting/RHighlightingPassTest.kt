@@ -17,7 +17,7 @@ class RHighlightingPassTest : RConsoleBaseTestCase() {
   }
 
   fun testIdentifierHighlighting() {
-    IdentifierHighlighterPassFactory.doWithHighlightingEnabled {
+    IdentifierHighlighterPassFactory.doWithHighlightingEnabled(project, testRootDisposable, Runnable {
       myFixture.setReadEditorMarkupModel(true)
       myFixture.configureByText("foo.R", """
         library(ggplot2)
@@ -26,6 +26,6 @@ class RHighlightingPassTest : RConsoleBaseTestCase() {
       """.trimIndent())
       val infos = myFixture.doHighlighting()
       TestCase.assertEquals(2, infos.count{  info -> info.severity === HighlightInfoType.ELEMENT_UNDER_CARET_SEVERITY })
-    }
+    })
   }
 }
