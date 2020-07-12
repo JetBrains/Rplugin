@@ -5,6 +5,7 @@
 package org.jetbrains.r.console
 
 import com.intellij.testFramework.UsefulTestCase
+import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.packages.RPackageProjectManager
 
 class RPackageDependenciesTest : RConsoleBaseTestCase() {
@@ -34,6 +35,7 @@ class RPackageDependenciesTest : RConsoleBaseTestCase() {
     assertDoesntContain(beforeRefresh, "dplyr", "ggplot2", "R", "somePackage")
 
     RPackageProjectManager.getInstance(myFixture.project).getProjectPackageDescriptionInfo()
+    UIUtil.dispatchAllInvocationEvents()
     val afterRefresh = getLoadedPackages()
     assertDoesntContain(afterRefresh, "R", "somePackage")
     UsefulTestCase.assertContainsElements(afterRefresh, "dplyr", "ggplot2")
