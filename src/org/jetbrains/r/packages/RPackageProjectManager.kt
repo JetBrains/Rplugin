@@ -4,8 +4,7 @@
 
 package org.jetbrains.r.packages
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
@@ -59,7 +58,6 @@ class RPackageProjectManager(private val project: Project) {
 
   private val rConsoleManager = RConsoleManager.getInstance(project)
   private val requiredPackageInstaller = RequiredPackageInstaller.getInstance(project)
-  private val rPackageManagementService = RPackageManagementService(project)
   private val lastReceivedInfo = AtomicReference<PackageDescriptionInfo?>(null)
   private val lastConsoles = AtomicReference<List<RConsoleView>>(emptyList())
 
@@ -85,8 +83,8 @@ class RPackageProjectManager(private val project: Project) {
     }
   }
 
-  fun loadOrSuggestToInstallMissedPackages(packageInfo: PackageDescriptionInfo? = getProjectPackageDescriptionInfo()) {
-    if (packageInfo == null) return
+  fun loadOrSuggestToInstallMissedPackages(packageInfo: PackageDescriptionInfo? = getProjectPackageDescriptionInfo()) = invokeLater {
+    if (packageInfo == null) return@invokeLater
     val consoles =
       if (ApplicationManager.getApplication().isUnitTestMode) {
         rConsoleManager.currentConsoleOrNull?.let { listOf(it) } ?: emptyList()
@@ -100,15 +98,15 @@ class RPackageProjectManager(private val project: Project) {
       if (lastConsolesValue != consoles && lastConsoles.compareAndSet(lastConsolesValue, consoles)) {
         loadMissingPackagesToConsoles(consoles - lastConsolesValue, packageInfo)
       }
-      return
+      return@invokeLater
     }
-    if (!lastReceivedInfo.compareAndSet(lastValue, packageInfo)) return
+    if (!lastReceivedInfo.compareAndSet(lastValue, packageInfo)) return@invokeLater
 
     val missingPackages = loadMissingPackagesToConsoles(consoles, packageInfo).mapNotNull {
       if (it.name == "R") null
       else RequiredPackage(it.name, it.lowerBound?.version ?: "", it.lowerBound?.strict ?: false)
     }
-    if (ApplicationManager.getApplication().isUnitTestMode) return
+    if (ApplicationManager.getApplication().isUnitTestMode) return@invokeLater
     if (missingPackages.isNotEmpty()) {
       /* Try to install missing package requirements.
          Doesn't handle case when the installed version is higher than the requested version.
@@ -122,7 +120,8 @@ class RPackageProjectManager(private val project: Project) {
   }
 
   private fun loadMissingPackagesToConsoles(consoles: List<RConsoleView>, packageInfo: PackageDescriptionInfo): List<DependencyPackage> {
-    val installedPackages = rPackageManagementService.installedPackages.map { it.name to it.packageVersion }.toMap()
+    if (consoles.isEmpty()) return emptyList()
+    val installedPackages = consoles.first().interpreter.installedPackages.map { it.name to it.packageVersion }.toMap()
     val allPackagesToLoad = packageInfo.depends + packageInfo.imports + packageInfo.suggests
     val possibleToLoad = allPackagesToLoad.filter { rPackage ->
       val name = rPackage.name
@@ -208,9 +207,9 @@ class RPackageProjectManager(private val project: Project) {
         .split(',')
         .mapNotNull { packageWithVersion ->
           val groups = PACKAGE_DEPENDENCY_REGEX.matchEntire(packageWithVersion)?.groupValues ?: return@mapNotNull null
-          val name = groups.getOrNull(1) ?: return@mapNotNull null
-          val comparisonOp = groups.getOrNull(3) ?: ""
-          val version = groups.getOrNull(4) ?: ""
+          val name = groups.getOrNull(1)?.trim() ?: return@mapNotNull null
+          val comparisonOp = groups.getOrNull(3)?.trim() ?: ""
+          val version = groups.getOrNull(4)?.trim() ?: ""
           SplitPackageInfo(name, comparisonOp, version)
         }
         .groupBy { it.name }
