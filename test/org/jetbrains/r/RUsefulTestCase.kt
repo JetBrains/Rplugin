@@ -50,7 +50,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   private var mockInterpreterManagerSet = false
   private var isLibraryAdded = false
 
-  override fun getTestDataPath() : String {
+  override fun getTestDataPath(): String {
     return TEST_DATA_PATH
   }
 
@@ -83,7 +83,11 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return myFixture
   }
 
-  fun doApplyCompletionTest(text: String, elementName: String, expected: String, fileIsRConsole: Boolean = false, fileExtension: String = "R") {
+  fun doApplyCompletionTest(text: String,
+                            elementName: String,
+                            expected: String,
+                            fileIsRConsole: Boolean = false,
+                            fileExtension: String = "R") {
     myFixture.configureByText("foo.$fileExtension", text)
     if (fileIsRConsole) {
       myFixture.file.putUserData(RConsoleView.IS_R_CONSOLE_KEY, true)
@@ -127,7 +131,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val reference = myFixture.file.findReferenceAt(myFixture.caretOffset) ?: return emptyArray()
     return if (reference is PsiPolyVariantReference) {
       reference.multiResolve(false)
-    } else {
+    }
+    else {
       val result = reference.resolve() ?: return emptyArray()
       arrayOf(PsiElementResolveResult(result))
     }
@@ -155,7 +160,8 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     System.err.println("Generate binary summary for: " + missingTestSkeletons)
 
     val interpreterPath = RInterpreterUtil.suggestHomePath()
-    check(!(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
+    check(
+      !(interpreterPath.isBlank() || RInterpreterUtil.getVersionByPath(interpreterPath) == null)) { "No interpreter to build skeletons" }
     val location = RLocalInterpreterLocation(interpreterPath)
     val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
     val rInterpreter = RLocalInterpreterImpl(location, versionInfo, project)
@@ -178,7 +184,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       return packageNamesForTests
     }
 
-    val foundSkeletons =  existedSkeletons.map { it }.map { nameOfBinSummary(it) }.toSet()
+    val foundSkeletons = existedSkeletons.map { it }.map { nameOfBinSummary(it) }.toSet()
 
     existedSkeletons.forEach {
       if (!packageNamesForTests.contains(nameOfBinSummary(it))) {
@@ -225,22 +231,21 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       readxl
       readr
     """.trimIndent().split("\n").toSet()
-
-    fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 300): T? {
-      val time = System.currentTimeMillis()
-      while (System.currentTimeMillis() - time < timeout && isPending) {
-        PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
-        var writeActionTime = System.currentTimeMillis()
-        runWriteAction {
-          writeActionTime = System.currentTimeMillis() - writeActionTime
-        }
-        // No UI Freezes
-        TestCase.assertTrue("Timeout: $writeActionTime > $edtTimeout", writeActionTime < edtTimeout)
-        Thread.sleep(5)
-      }
-      TestCase.assertTrue(isSucceeded)
-      return blockingGet(1)
-    }
   }
 }
 
+fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 300): T? {
+  val time = System.currentTimeMillis()
+  while (System.currentTimeMillis() - time < timeout && isPending) {
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+    var writeActionTime = System.currentTimeMillis()
+    runWriteAction {
+      writeActionTime = System.currentTimeMillis() - writeActionTime
+    }
+    // No UI Freezes
+    TestCase.assertTrue("Timeout: $writeActionTime > $edtTimeout", writeActionTime < edtTimeout)
+    Thread.sleep(5)
+  }
+  TestCase.assertTrue(isSucceeded)
+  return blockingGet(1)
+}

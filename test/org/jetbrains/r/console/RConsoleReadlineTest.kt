@@ -6,6 +6,7 @@ package org.jetbrains.r.console
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.rinterop.RInterop
 
 class RConsoleReadlineTest : RConsoleBaseTestCase() {

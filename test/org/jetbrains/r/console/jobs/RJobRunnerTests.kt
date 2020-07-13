@@ -12,6 +12,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
 
 class RJobRunnerTests : RConsoleBaseTestCase() {

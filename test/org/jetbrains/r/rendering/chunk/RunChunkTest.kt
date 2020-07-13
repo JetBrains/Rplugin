@@ -11,6 +11,7 @@ import junit.framework.TestCase
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes.FENCE_LANG
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rinterop.RDebuggerTestHelper

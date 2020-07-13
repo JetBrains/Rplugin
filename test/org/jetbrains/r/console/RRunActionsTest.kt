@@ -7,6 +7,8 @@ package org.jetbrains.r.console
 import com.intellij.openapi.actionSystem.ActionManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.r.blockingGetAndDispatchEvents
+import org.jetbrains.r.rinterop.RDebuggerTestHelper
 
 class RRunActionsTest : RConsoleBaseTestCase() {
   fun testRunAction() {
@@ -22,11 +24,11 @@ class RRunActionsTest : RConsoleBaseTestCase() {
       }
     })
     ActionManager.getInstance().getAction("org.jetbrains.r.actions.RRunAction").actionPerformed(createAnActionEvent())
-    promise.blockingGet(DEFAULT_TIMEOUT)
+    promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals((123 * 456).toString(), rInterop.executeCode("cat(z)").stdout)
   }
 
-  /*fun testDebugAction() {
+  fun testDebugAction() {
     loadFileWithBreakpointsFromText(name = "dd.R", text = """
       abc = 123
       abc = 456 # BREAKPOINT
@@ -38,15 +40,18 @@ class RRunActionsTest : RConsoleBaseTestCase() {
         promise.setResult(Unit)
       }
     })
-    ActionManager.getInstance().getAction("org.jetbrains.r.actions.RDebugAction").actionPerformed(createAnActionEvent())
-    promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertTrue(console.debugger.isEnabled)
+    val helper = RDebuggerTestHelper(rInterop)
+    helper.invokeAndWait(true) {
+      ActionManager.getInstance().getAction("org.jetbrains.r.actions.RDebugAction").actionPerformed(createAnActionEvent())
+    }
     TestCase.assertEquals("123", rInterop.executeCode("cat(abc)").stdout)
-    console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertTrue(console.debugger.isEnabled)
+    helper.invokeAndWait(true) {
+      rInterop.debugCommandStepOver()
+    }
     TestCase.assertEquals("456", rInterop.executeCode("cat(abc)").stdout)
-    console.debugger.stepOver().blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertFalse(console.debugger.isEnabled)
+    helper.invokeAndWait(false) {
+      rInterop.debugCommandStepOver()
+    }
     TestCase.assertEquals("789", rInterop.executeCode("cat(abc)").stdout)
-  }*/
+  }
 }

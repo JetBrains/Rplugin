@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.psi.PsiDocumentManager
 import junit.framework.TestCase
+import org.jetbrains.r.blockingGetAndDispatchEvents
 
 
 class RConsoleHistoryTest : RConsoleBaseTestCase() {

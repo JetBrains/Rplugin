@@ -6,6 +6,7 @@ package org.jetbrains.r.run
 
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
