@@ -6,6 +6,7 @@ package org.jetbrains.r.console
 
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.PlatformTestUtil
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RConsoleBaseTestCase : RProcessHandlerBaseTestCase() {

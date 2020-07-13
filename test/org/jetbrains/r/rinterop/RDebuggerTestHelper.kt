@@ -7,6 +7,7 @@ package org.jetbrains.r.rinterop
 import com.intellij.execution.process.ProcessOutputType
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.r.blockingGetAndDispatchEvents
 
 class RDebuggerTestHelper(rInterop: RInterop) {
   private var promise = AsyncPromise<Boolean>()
@@ -34,8 +35,8 @@ class RDebuggerTestHelper(rInterop: RInterop) {
 
   fun <R> invokeAndWait(expectedDebug: Boolean, f: () -> R): R {
     val result = f()
-    TestCase.assertEquals(expectedDebug, promise.blockingGet(DEFAULT_TIMEOUT))
-    promise = AsyncPromise<Boolean>()
+    TestCase.assertEquals(expectedDebug, promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT))
+    promise = AsyncPromise()
     return result
   }
 
