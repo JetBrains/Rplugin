@@ -10,6 +10,7 @@ import com.google.protobuf.*
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
@@ -202,7 +203,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
-    initRequest.setRScriptsPath(rScriptsPath).setProjectDir(baseDir)
+    initRequest.setRScriptsPath(rScriptsPath).projectDir = baseDir
+    initRequest.httpUserAgent = "Rkernel/" + ApplicationInfo.getInstance().build.asStringWithoutProductCode()
+
     val initOutput = executeRequest(RPIServiceGrpc.getInitMethod(), initRequest.build())
     if (initOutput.stdout.isNotBlank()) {
       LOG.warn(initOutput.stdout)

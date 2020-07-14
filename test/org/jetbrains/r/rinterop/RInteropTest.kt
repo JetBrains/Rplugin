@@ -318,4 +318,9 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     val (stdoutGlobal, _, _) = rInterop.executeCode("cat(x + y)")
     assertEquals("3", stdoutGlobal)
   }
+
+  fun testUserAgent() {
+    val stdout = rInterop.executeCode("cat(getOption('HTTPUserAgent'))").stdout
+    assertTrue("Actual results: $stdout", stdout.startsWith("Rkernel"))
+  }
 }

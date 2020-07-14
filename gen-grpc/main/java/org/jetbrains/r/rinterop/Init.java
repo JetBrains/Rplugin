@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     projectDir_ = "";
     rScriptsPath_ = "";
     workspaceFile_ = "";
+    httpUserAgent_ = "";
   }
 
   @java.lang.Override
@@ -77,6 +78,12 @@ private static final long serialVersionUID = 0L;
           case 40: {
 
             saveOnExit_ = input.readBool();
+            break;
+          }
+          case 50: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            httpUserAgent_ = s;
             break;
           }
           default: {
@@ -231,6 +238,40 @@ private static final long serialVersionUID = 0L;
     return saveOnExit_;
   }
 
+  public static final int HTTPUSERAGENT_FIELD_NUMBER = 6;
+  private volatile java.lang.Object httpUserAgent_;
+  /**
+   * <code>string httpUserAgent = 6;</code>
+   */
+  public java.lang.String getHttpUserAgent() {
+    java.lang.Object ref = httpUserAgent_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      httpUserAgent_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string httpUserAgent = 6;</code>
+   */
+  public com.google.protobuf.ByteString
+      getHttpUserAgentBytes() {
+    java.lang.Object ref = httpUserAgent_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      httpUserAgent_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -260,6 +301,9 @@ private static final long serialVersionUID = 0L;
     if (saveOnExit_ != false) {
       output.writeBool(5, saveOnExit_);
     }
+    if (!getHttpUserAgentBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, httpUserAgent_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -286,6 +330,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(5, saveOnExit_);
     }
+    if (!getHttpUserAgentBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, httpUserAgent_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -311,6 +358,8 @@ private static final long serialVersionUID = 0L;
         != other.getLoadWorkspace()) return false;
     if (getSaveOnExit()
         != other.getSaveOnExit()) return false;
+    if (!getHttpUserAgent()
+        .equals(other.getHttpUserAgent())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -334,6 +383,8 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + SAVEONEXIT_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getSaveOnExit());
+    hash = (37 * hash) + HTTPUSERAGENT_FIELD_NUMBER;
+    hash = (53 * hash) + getHttpUserAgent().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -477,6 +528,8 @@ private static final long serialVersionUID = 0L;
 
       saveOnExit_ = false;
 
+      httpUserAgent_ = "";
+
       return this;
     }
 
@@ -508,6 +561,7 @@ private static final long serialVersionUID = 0L;
       result.workspaceFile_ = workspaceFile_;
       result.loadWorkspace_ = loadWorkspace_;
       result.saveOnExit_ = saveOnExit_;
+      result.httpUserAgent_ = httpUserAgent_;
       onBuilt();
       return result;
     }
@@ -573,6 +627,10 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getSaveOnExit() != false) {
         setSaveOnExit(other.getSaveOnExit());
+      }
+      if (!other.getHttpUserAgent().isEmpty()) {
+        httpUserAgent_ = other.httpUserAgent_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -858,6 +916,75 @@ private static final long serialVersionUID = 0L;
     public Builder clearSaveOnExit() {
       
       saveOnExit_ = false;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object httpUserAgent_ = "";
+    /**
+     * <code>string httpUserAgent = 6;</code>
+     */
+    public java.lang.String getHttpUserAgent() {
+      java.lang.Object ref = httpUserAgent_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        httpUserAgent_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string httpUserAgent = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHttpUserAgentBytes() {
+      java.lang.Object ref = httpUserAgent_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        httpUserAgent_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string httpUserAgent = 6;</code>
+     */
+    public Builder setHttpUserAgent(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      httpUserAgent_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string httpUserAgent = 6;</code>
+     */
+    public Builder clearHttpUserAgent() {
+      
+      httpUserAgent_ = getDefaultInstance().getHttpUserAgent();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string httpUserAgent = 6;</code>
+     */
+    public Builder setHttpUserAgentBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      httpUserAgent_ = value;
       onChanged();
       return this;
     }

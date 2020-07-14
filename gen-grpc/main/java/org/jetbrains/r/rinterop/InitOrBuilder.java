@@ -46,4 +46,14 @@ public interface InitOrBuilder extends
    * <code>bool saveOnExit = 5;</code>
    */
   boolean getSaveOnExit();
+
+  /**
+   * <code>string httpUserAgent = 6;</code>
+   */
+  java.lang.String getHttpUserAgent();
+  /**
+   * <code>string httpUserAgent = 6;</code>
+   */
+  com.google.protobuf.ByteString
+      getHttpUserAgentBytes();
 }
