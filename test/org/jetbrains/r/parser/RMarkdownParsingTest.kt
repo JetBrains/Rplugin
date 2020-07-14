@@ -10,6 +10,7 @@ import org.jetbrains.r.RUsefulTestCase
 
 private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/rmd/"
 
+/** IMPORTANT: PSI has standard TokenType.WHITE_SPACE but lexical level use MARKDOWN_EOL. */
 @TestDataPath("/testData/parser/rmd")
 class RMarkdownParsingTest : RUsefulTestCase() {
   override fun getTestDataPath(): String {
