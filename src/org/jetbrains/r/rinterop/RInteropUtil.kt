@@ -247,7 +247,7 @@ object RInteropUtil {
     return RPluginUtil.findFileInRHelpers("crashpad_handler-" + getSystemSuffix(operatingSystem))
   }
 
-  private fun getWrapperPath(operatingSystem: OperatingSystem): String {
+  fun getWrapperPath(operatingSystem: OperatingSystem): String {
     val filename = "rwrapper-" + getSystemSuffix(operatingSystem)
     return RPluginUtil.findFileInRHelpers(filename).absolutePath
   }

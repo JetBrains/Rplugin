@@ -63,11 +63,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   private enum class WatcherOp { GIVEUP, RESET, UNWATCHEABLE, REMAP, MESSAGE, CREATE, DELETE, STATS, CHANGE, DIRTY, RECDIRTY }
 
   private fun runFsNotifier(interpreter: RInterpreter): ProcessHandler? {
-    val executableName = when (interpreter.hostOS) {
-      OperatingSystem.WINDOWS -> "fsnotifier-win.exe"
-      OperatingSystem.LINUX -> "fsnotifier-linux"
-      OperatingSystem.MAC_OS -> "fsnotifier-osx"
-    }
+    val executableName = getFsNotifierExecutableName(interpreter.hostOS)
     val fsNotifierExecutable = RPluginUtil.findFileInRHelpers(executableName)
     if (!fsNotifierExecutable.exists()) {
       LOG.error("fsNotifier: '$executableName' not found in helpers")
@@ -236,6 +232,12 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     }
 
     fun getInstance(project: Project): RLibraryWatcher = ServiceManager.getService(project, RLibraryWatcher::class.java)
+
+    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem) = when (operatingSystem) {
+      OperatingSystem.WINDOWS -> "fsnotifier-win.exe"
+      OperatingSystem.LINUX -> "fsnotifier-linux"
+      OperatingSystem.MAC_OS -> "fsnotifier-osx"
+    }
   }
 }
 
