@@ -34,6 +34,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.intentions.DependencyManagementFix
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -203,6 +204,13 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> {
       val promise = AsyncPromise<Unit>()
+      if (consoleView.rInterop.interpreter.isLocal()) {
+        invokeLater {
+          RToolWindowFactory.showFile(consoleView.project, filePath)
+          promise.setResult(Unit)
+        }
+        return promise
+      }
       val fileName = PathUtil.getFileName(filePath)
       val tmpFile = FileUtil.createTempFile(
         fileName.substringBeforeLast('.'),
