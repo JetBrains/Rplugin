@@ -51,6 +51,7 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
   class State : BaseState() {
     var interpreterPath by string()
     var remoteHost by string()
+    var remoteBasePath by string()
     var loadWorkspace by property(false)
     var saveWorkspace by property(false)
     var packageBuildSettingsState by property<RPackageBuildSettings.State>()

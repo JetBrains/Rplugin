@@ -133,6 +133,7 @@ class RSerializableInterpreter {
   var name: String = ""
   var path: String = ""
   var remoteHost: String = ""
+  var remoteBasePath: String = ""
   var version: String = ""
   var timestamp: Long = 0L
 
