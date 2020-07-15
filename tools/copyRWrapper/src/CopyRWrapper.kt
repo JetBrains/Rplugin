@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
   rwrapperDirectory
     .takeIf { it.exists() && it.isDirectory }
     ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("R-") ||
-                        name == "R" || name.startsWith("fsnotifier-") }
+                        name == "R" || name.startsWith("fsnotifier-") || name == "rkernelVersion.txt" }
     ?.map { Paths.get(rwrapperDirectory.toString(), it).toFile() }
     ?.forEach {
     if (it.isDirectory) {
@@ -47,7 +47,7 @@ fun main(args: Array<String>) {
 
   customRWrapperPath
     ?.takeIf { it.exists() && it.isDirectory }
-    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("fsnotifier-") }
+    ?.list { _, name -> name.startsWith("rwrapper") || name.startsWith("fsnotifier-") || name == "rkernelVersion.txt" }
     ?.map { Paths.get(customRWrapperPath.toString(), it).toFile() }
     ?.forEach {
       FileUtils.copyFileToDirectory(it, destinationDirectory)
