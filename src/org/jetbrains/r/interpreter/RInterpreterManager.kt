@@ -10,7 +10,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -28,8 +27,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.configuration.RSettingsProjectConfigurable
-import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
@@ -129,25 +126,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     }
   }
 
-  private fun checkInterpreterLocation(location: RInterpreterLocation?): Boolean {
-    val (isViable, e) = try {
-      Pair(location?.getVersion() != null, null)
-    } catch (e: Exception) {
-      Pair(false, e)
-    }
-    if (!isViable) {
-      val message = createInvalidLocationErrorMessage(location, e?.message)
-      val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
-      }
-      val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
-        openDownloadRPage()
-      }
-      RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
-    }
-    return isViable
-  }
-
   private fun ensureInterpreterStored(interpreter: RInterpreter) {
     val info = RBasicInterpreterInfo(SUGGESTED_INTERPRETER_NAME, interpreter.interpreterLocation, interpreter.version)
     RInterpreterSettings.addOrEnableInterpreter(info)
@@ -156,10 +134,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
   private fun setupInterpreter(location: RInterpreterLocation): Promise<RInterpreter> {
     val promise = AsyncPromise<RInterpreter>()
     runBackgroundableTask("Initializing R interpreter", project) {
-      if (!checkInterpreterLocation(location)) {
-        promise.setError("Invalid R Interpreter")
-        return@runBackgroundableTask
-      }
       try {
         location.createInterpreter(project).let {
           interpreterOrNull = it
@@ -235,17 +209,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
     private const val DOWNLOAD_R_PAGE = "https://cloud.r-project.org/"
 
     private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
-    private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
-    private val DOWNLOAD_R_HINT = RBundle.message("interpreter.manager.download.r.hint")
-
-    private fun createInvalidLocationErrorMessage(location: RInterpreterLocation?, details: String?): String {
-      val additional = details?.let { ":\n$it" }
-      return if (location == null) {
-        RBundle.message("interpreter.manager.no.interpreter")
-      } else {
-        RBundle.message("interpreter.manager.invalid.location", location, additional ?: "")
-      }
-    }
 
     fun openDownloadRPage() {
       BrowserLauncher.instance.browse(DOWNLOAD_R_PAGE)

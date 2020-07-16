@@ -40,6 +40,9 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
   override fun uploadFileToHost(file: File, preserveName: Boolean): String = file.path
 
   override fun createInterpreter(project: Project): RInterpreterBase {
+    if (!RInterpreterUtil.checkInterpreterLocation(project, this)) {
+      throw RuntimeException("Invalid R Interpreter")
+    }
     val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(this)
     return RLocalInterpreterImpl(this, versionInfo, project)
   }
