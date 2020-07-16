@@ -408,13 +408,23 @@ class RCompletionContributor : CompletionContributor() {
   companion object {
     private val rCompletionElementFactory = RLookupElementFactory(RFunctionCompletionInsertHandler)
 
+    private fun findParentheses(text: String, offset: Int): Int? {
+      var whitespaceNo = 0
+      while (offset + whitespaceNo < text.length && text[offset + whitespaceNo] == ' ') whitespaceNo += 1
+      return whitespaceNo.takeIf { (offset + whitespaceNo< text.length && text[offset + whitespaceNo ] == '(') }
+    }
+
     private object RFunctionCompletionInsertHandler : RLookupElementInsertHandler {
       override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement): InsertHandler<LookupElement> {
         val noArgs = assignment.functionParameters == "()"
-        return InsertHandler<LookupElement> { context, _ ->
+        return InsertHandler { context, _ ->
           val document = context.document
-          document.insertString(context.tailOffset, "()")
-          context.editor.caretModel.moveCaretRelatively(if (noArgs) 2 else 1, 0, false, false, false)
+          val findParentheses = findParentheses(document.text, context.tailOffset)
+          if (findParentheses == null) {
+            document.insertString(context.tailOffset, "()")
+          }
+          val relativeCaretOffset = (if (noArgs) 2 else 1) + (findParentheses ?: 0)
+          context.editor.caretModel.moveCaretRelatively(relativeCaretOffset, 0, false, false, false)
         }
       }
     }
