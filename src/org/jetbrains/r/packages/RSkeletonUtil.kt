@@ -79,10 +79,6 @@ object RSkeletonUtil {
       val outdatedPackages = currentPackages.subtract(installedPackages)
       val newPackages = installedPackages.subtract(currentPackages).filterNot { isBanned(it.name) }
 
-      if (newPackages.isEmpty() && outdatedPackages.isEmpty()) {
-        continue
-      }
-
       outdatedPackages.forEach {
         FileUtil.asyncDelete(package2skeletonFile[it] ?: return@forEach)
       }
@@ -103,6 +99,7 @@ object RSkeletonUtil {
     val promises = mutableListOf<AsyncPromise<Boolean>>()
     val fullSize = generationMap.values.map { it.size }.sum()
     for ((skeletonPath, _newPackages) in generationMap) {
+      if (_newPackages.isEmpty()) continue
       val newPackages = _newPackages.shuffled() // to increase the probability of uniform distribution between threads
       val skeletonsDir = File(skeletonPath)
       var bucketSize = newPackages.size / MAX_THREAD_POOL_SIZE
