@@ -9,6 +9,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -26,7 +27,9 @@ import com.intellij.util.io.isDirectory
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.lexer.SingleStringTokenLexer
+import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import java.io.File
@@ -48,6 +51,8 @@ object RInterpreterUtil {
   private const val RPLUGIN_OUTPUT_BEGIN = ">>>RPLUGIN>>>"
   private const val RPLUGIN_OUTPUT_END = "<<<RPLUGIN<<<"
   private val SUGGESTED_INTERPRETER_NAME = RBundle.message("project.settings.suggested.interpreter")
+  private val GO_TO_SETTINGS_HINT = RBundle.message("interpreter.manager.go.to.settings.hint")
+  private val DOWNLOAD_R_HINT = RBundle.message("interpreter.manager.download.r.hint")
 
   private val fromPathVariable: ArrayList<String>
     get() {
@@ -336,6 +341,30 @@ object RInterpreterUtil {
       RInterpreterBase.LOG.warn(output.stderr)
     }
     return output
+  }
+
+  fun checkInterpreterLocation(project: Project, location: RInterpreterLocation): Boolean {
+    val (isViable, e) = try {
+      Pair(location.getVersion() != null, null)
+    } catch (e: Exception) {
+      Pair(false, e)
+    }
+    if (!isViable) {
+      val message = createInvalidLocationErrorMessage(location, e?.message)
+      val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
+      }
+      val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
+        RInterpreterManagerImpl.openDownloadRPage()
+      }
+      RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
+    }
+    return isViable
+  }
+
+  private fun createInvalidLocationErrorMessage(location: RInterpreterLocation, details: String?): String {
+    val additional = details?.let { ":\n$it" }
+    return RBundle.message("interpreter.manager.invalid.location", location, additional ?: "")
   }
 
   // TODO: run via helper
