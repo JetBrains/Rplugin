@@ -382,11 +382,32 @@ class IdentifierCompletionTest : RProcessHandlerBaseTestCase() {
       foo(<caret>)
     """.trimIndent())
     doApplyCompletionTest("""
+      foo <- function(x, y, z) 0
+      f<caret>(1, 2, 3)
+    """.trimIndent(), "foo", """
+      foo <- function(x, y, z) 0
+      foo(<caret>1, 2, 3)
+    """.trimIndent())
+    doApplyCompletionTest("""
       foo <- function() 0
       f<caret>
     """.trimIndent(), "foo", """
       foo <- function() 0
       foo()<caret>
+    """.trimIndent())
+    doApplyCompletionTest("""
+      foo <- function() 0
+      f<caret>()
+    """.trimIndent(), "foo", """
+      foo <- function() 0
+      foo()<caret>
+    """.trimIndent())
+    doApplyCompletionTest("""
+      foo <- function() 0
+      f<caret>    ()
+    """.trimIndent(), "foo", """
+      foo <- function() 0
+      foo    ()<caret>
     """.trimIndent())
   }
 
