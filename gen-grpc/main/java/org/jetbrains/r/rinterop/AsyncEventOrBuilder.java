@@ -160,5 +160,18 @@ public interface AsyncEventOrBuilder extends
   com.google.protobuf.ByteString
       getBrowseURLRequestBytes();
 
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  boolean hasRStudioApiRequest();
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest();
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder();
+
   public org.jetbrains.r.rinterop.AsyncEvent.EventCase getEventCase();
 }

@@ -2693,6 +2693,37 @@ public final class RPIServiceGrpc {
     return getClientRequestFinishedMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RObject,
+      com.google.protobuf.Empty> getRStudioApiResponseMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "rStudioApiResponse",
+      requestType = org.jetbrains.r.rinterop.RObject.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RObject,
+      com.google.protobuf.Empty> getRStudioApiResponseMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RObject, com.google.protobuf.Empty> getRStudioApiResponseMethod;
+    if ((getRStudioApiResponseMethod = RPIServiceGrpc.getRStudioApiResponseMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getRStudioApiResponseMethod = RPIServiceGrpc.getRStudioApiResponseMethod) == null) {
+          RPIServiceGrpc.getRStudioApiResponseMethod = getRStudioApiResponseMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RObject, com.google.protobuf.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "rStudioApiResponse"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.RObject.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("rStudioApiResponse"))
+              .build();
+        }
+      }
+    }
+    return getRStudioApiResponseMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.BoolValue,
       com.google.protobuf.Empty> getSetSaveOnExitMethod;
 
@@ -3413,6 +3444,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void rStudioApiResponse(org.jetbrains.r.rinterop.RObject request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getRStudioApiResponseMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void setSaveOnExit(com.google.protobuf.BoolValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getSetSaveOnExitMethod(), responseObserver);
@@ -4029,6 +4067,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty,
                 com.google.protobuf.Empty>(
                   this, METHODID_CLIENT_REQUEST_FINISHED)))
+          .addMethod(
+            getRStudioApiResponseMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.RObject,
+                com.google.protobuf.Empty>(
+                  this, METHODID_R_STUDIO_API_RESPONSE)))
           .addMethod(
             getSetSaveOnExitMethod(),
             asyncUnaryCall(
@@ -4782,6 +4827,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void rStudioApiResponse(org.jetbrains.r.rinterop.RObject request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getRStudioApiResponseMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void setSaveOnExit(com.google.protobuf.BoolValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
@@ -5462,6 +5515,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.protobuf.Empty rStudioApiResponse(org.jetbrains.r.rinterop.RObject request) {
+      return blockingUnaryCall(
+          getChannel(), getRStudioApiResponseMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public com.google.protobuf.Empty setSaveOnExit(com.google.protobuf.BoolValue request) {
       return blockingUnaryCall(
           getChannel(), getSetSaveOnExitMethod(), getCallOptions(), request);
@@ -6070,6 +6130,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> rStudioApiResponse(
+        org.jetbrains.r.rinterop.RObject request) {
+      return futureUnaryCall(
+          getChannel().newCall(getRStudioApiResponseMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> setSaveOnExit(
         com.google.protobuf.BoolValue request) {
       return futureUnaryCall(
@@ -6171,8 +6239,9 @@ public final class RPIServiceGrpc {
   private static final int METHODID_LOAD_ENVIRONMENT = 83;
   private static final int METHODID_SET_OUTPUT_WIDTH = 84;
   private static final int METHODID_CLIENT_REQUEST_FINISHED = 85;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 86;
-  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 87;
+  private static final int METHODID_R_STUDIO_API_RESPONSE = 86;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 87;
+  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 88;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6535,6 +6604,10 @@ public final class RPIServiceGrpc {
           serviceImpl.clientRequestFinished((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
+        case METHODID_R_STUDIO_API_RESPONSE:
+          serviceImpl.rStudioApiResponse((org.jetbrains.r.rinterop.RObject) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
         case METHODID_SET_SAVE_ON_EXIT:
           serviceImpl.setSaveOnExit((com.google.protobuf.BoolValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
@@ -6690,6 +6763,7 @@ public final class RPIServiceGrpc {
               .addMethod(getLoadEnvironmentMethod())
               .addMethod(getSetOutputWidthMethod())
               .addMethod(getClientRequestFinishedMethod())
+              .addMethod(getRStudioApiResponseMethod())
               .addMethod(getSetSaveOnExitMethod())
               .addMethod(getGetLoadedShortS4ClassInfosMethod())
               .build();

@@ -208,6 +208,20 @@ private static final long serialVersionUID = 0L;
             event_ = s;
             break;
           }
+          case 106: {
+            org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder subBuilder = null;
+            if (eventCase_ == 13) {
+              subBuilder = ((org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_).toBuilder();
+            }
+            event_ =
+                input.readMessage(org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_);
+              event_ = subBuilder.buildPartial();
+            }
+            eventCase_ = 13;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -3905,6 +3919,680 @@ private static final long serialVersionUID = 0L;
 
   }
 
+  public interface RStudioApiRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:rplugininterop.AsyncEvent.RStudioApiRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 functionID = 1;</code>
+     */
+    int getFunctionID();
+
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    boolean hasArgs();
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    org.jetbrains.r.rinterop.RObject getArgs();
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    org.jetbrains.r.rinterop.RObjectOrBuilder getArgsOrBuilder();
+  }
+  /**
+   * Protobuf type {@code rplugininterop.AsyncEvent.RStudioApiRequest}
+   */
+  public  static final class RStudioApiRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.RStudioApiRequest)
+      RStudioApiRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RStudioApiRequest.newBuilder() to construct.
+    private RStudioApiRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RStudioApiRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RStudioApiRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RStudioApiRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              functionID_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              org.jetbrains.r.rinterop.RObject.Builder subBuilder = null;
+              if (args_ != null) {
+                subBuilder = args_.toBuilder();
+              }
+              args_ = input.readMessage(org.jetbrains.r.rinterop.RObject.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(args_);
+                args_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_RStudioApiRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_RStudioApiRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.class, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder.class);
+    }
+
+    public static final int FUNCTIONID_FIELD_NUMBER = 1;
+    private int functionID_;
+    /**
+     * <code>int32 functionID = 1;</code>
+     */
+    public int getFunctionID() {
+      return functionID_;
+    }
+
+    public static final int ARGS_FIELD_NUMBER = 2;
+    private org.jetbrains.r.rinterop.RObject args_;
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    public boolean hasArgs() {
+      return args_ != null;
+    }
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject getArgs() {
+      return args_ == null ? org.jetbrains.r.rinterop.RObject.getDefaultInstance() : args_;
+    }
+    /**
+     * <code>.rplugininterop.RObject args = 2;</code>
+     */
+    public org.jetbrains.r.rinterop.RObjectOrBuilder getArgsOrBuilder() {
+      return getArgs();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (functionID_ != 0) {
+        output.writeInt32(1, functionID_);
+      }
+      if (args_ != null) {
+        output.writeMessage(2, getArgs());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (functionID_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, functionID_);
+      }
+      if (args_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getArgs());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest)) {
+        return super.equals(obj);
+      }
+      org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest other = (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) obj;
+
+      if (getFunctionID()
+          != other.getFunctionID()) return false;
+      if (hasArgs() != other.hasArgs()) return false;
+      if (hasArgs()) {
+        if (!getArgs()
+            .equals(other.getArgs())) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + FUNCTIONID_FIELD_NUMBER;
+      hash = (53 * hash) + getFunctionID();
+      if (hasArgs()) {
+        hash = (37 * hash) + ARGS_FIELD_NUMBER;
+        hash = (53 * hash) + getArgs().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code rplugininterop.AsyncEvent.RStudioApiRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:rplugininterop.AsyncEvent.RStudioApiRequest)
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_RStudioApiRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_RStudioApiRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.class, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder.class);
+      }
+
+      // Construct using org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        functionID_ = 0;
+
+        if (argsBuilder_ == null) {
+          args_ = null;
+        } else {
+          args_ = null;
+          argsBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_RStudioApiRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getDefaultInstanceForType() {
+        return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest build() {
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest buildPartial() {
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest result = new org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest(this);
+        result.functionID_ = functionID_;
+        if (argsBuilder_ == null) {
+          result.args_ = args_;
+        } else {
+          result.args_ = argsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) {
+          return mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest other) {
+        if (other == org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance()) return this;
+        if (other.getFunctionID() != 0) {
+          setFunctionID(other.getFunctionID());
+        }
+        if (other.hasArgs()) {
+          mergeArgs(other.getArgs());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int functionID_ ;
+      /**
+       * <code>int32 functionID = 1;</code>
+       */
+      public int getFunctionID() {
+        return functionID_;
+      }
+      /**
+       * <code>int32 functionID = 1;</code>
+       */
+      public Builder setFunctionID(int value) {
+        
+        functionID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 functionID = 1;</code>
+       */
+      public Builder clearFunctionID() {
+        
+        functionID_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private org.jetbrains.r.rinterop.RObject args_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.rinterop.RObject, org.jetbrains.r.rinterop.RObject.Builder, org.jetbrains.r.rinterop.RObjectOrBuilder> argsBuilder_;
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public boolean hasArgs() {
+        return argsBuilder_ != null || args_ != null;
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public org.jetbrains.r.rinterop.RObject getArgs() {
+        if (argsBuilder_ == null) {
+          return args_ == null ? org.jetbrains.r.rinterop.RObject.getDefaultInstance() : args_;
+        } else {
+          return argsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public Builder setArgs(org.jetbrains.r.rinterop.RObject value) {
+        if (argsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          args_ = value;
+          onChanged();
+        } else {
+          argsBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public Builder setArgs(
+          org.jetbrains.r.rinterop.RObject.Builder builderForValue) {
+        if (argsBuilder_ == null) {
+          args_ = builderForValue.build();
+          onChanged();
+        } else {
+          argsBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public Builder mergeArgs(org.jetbrains.r.rinterop.RObject value) {
+        if (argsBuilder_ == null) {
+          if (args_ != null) {
+            args_ =
+              org.jetbrains.r.rinterop.RObject.newBuilder(args_).mergeFrom(value).buildPartial();
+          } else {
+            args_ = value;
+          }
+          onChanged();
+        } else {
+          argsBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public Builder clearArgs() {
+        if (argsBuilder_ == null) {
+          args_ = null;
+          onChanged();
+        } else {
+          args_ = null;
+          argsBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public org.jetbrains.r.rinterop.RObject.Builder getArgsBuilder() {
+        
+        onChanged();
+        return getArgsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      public org.jetbrains.r.rinterop.RObjectOrBuilder getArgsOrBuilder() {
+        if (argsBuilder_ != null) {
+          return argsBuilder_.getMessageOrBuilder();
+        } else {
+          return args_ == null ?
+              org.jetbrains.r.rinterop.RObject.getDefaultInstance() : args_;
+        }
+      }
+      /**
+       * <code>.rplugininterop.RObject args = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.rinterop.RObject, org.jetbrains.r.rinterop.RObject.Builder, org.jetbrains.r.rinterop.RObjectOrBuilder> 
+          getArgsFieldBuilder() {
+        if (argsBuilder_ == null) {
+          argsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.jetbrains.r.rinterop.RObject, org.jetbrains.r.rinterop.RObject.Builder, org.jetbrains.r.rinterop.RObjectOrBuilder>(
+                  getArgs(),
+                  getParentForChildren(),
+                  isClean());
+          args_ = null;
+        }
+        return argsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:rplugininterop.AsyncEvent.RStudioApiRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:rplugininterop.AsyncEvent.RStudioApiRequest)
+    private static final org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest();
+    }
+
+    public static org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RStudioApiRequest>
+        PARSER = new com.google.protobuf.AbstractParser<RStudioApiRequest>() {
+      @java.lang.Override
+      public RStudioApiRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RStudioApiRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RStudioApiRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RStudioApiRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private int eventCase_ = 0;
   private java.lang.Object event_;
   public enum EventCase
@@ -3921,6 +4609,7 @@ private static final long serialVersionUID = 0L;
     SHOWHELPREQUEST(10),
     SUBPROCESSINPUT(11),
     BROWSEURLREQUEST(12),
+    RSTUDIOAPIREQUEST(13),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -3948,6 +4637,7 @@ private static final long serialVersionUID = 0L;
         case 10: return SHOWHELPREQUEST;
         case 11: return SUBPROCESSINPUT;
         case 12: return BROWSEURLREQUEST;
+        case 13: return RSTUDIOAPIREQUEST;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -4292,6 +4982,32 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int RSTUDIOAPIREQUEST_FIELD_NUMBER = 13;
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  public boolean hasRStudioApiRequest() {
+    return eventCase_ == 13;
+  }
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest() {
+    if (eventCase_ == 13) {
+       return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
+    }
+    return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   */
+  public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder() {
+    if (eventCase_ == 13) {
+       return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
+    }
+    return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -4341,6 +5057,9 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 12) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, event_);
+    }
+    if (eventCase_ == 13) {
+      output.writeMessage(13, (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_);
     }
     unknownFields.writeTo(output);
   }
@@ -4397,6 +5116,10 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 12) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, event_);
+    }
+    if (eventCase_ == 13) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(13, (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -4463,6 +5186,10 @@ private static final long serialVersionUID = 0L;
         if (!getBrowseURLRequest()
             .equals(other.getBrowseURLRequest())) return false;
         break;
+      case 13:
+        if (!getRStudioApiRequest()
+            .equals(other.getRStudioApiRequest())) return false;
+        break;
       case 0:
       default:
     }
@@ -4525,6 +5252,10 @@ private static final long serialVersionUID = 0L;
       case 12:
         hash = (37 * hash) + BROWSEURLREQUEST_FIELD_NUMBER;
         hash = (53 * hash) + getBrowseURLRequest().hashCode();
+        break;
+      case 13:
+        hash = (37 * hash) + RSTUDIOAPIREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getRStudioApiRequest().hashCode();
         break;
       case 0:
       default:
@@ -4770,6 +5501,13 @@ private static final long serialVersionUID = 0L;
       if (eventCase_ == 12) {
         result.event_ = event_;
       }
+      if (eventCase_ == 13) {
+        if (rStudioApiRequestBuilder_ == null) {
+          result.event_ = event_;
+        } else {
+          result.event_ = rStudioApiRequestBuilder_.build();
+        }
+      }
       result.eventCase_ = eventCase_;
       onBuilt();
       return result;
@@ -4868,6 +5606,10 @@ private static final long serialVersionUID = 0L;
           eventCase_ = 12;
           event_ = other.event_;
           onChanged();
+          break;
+        }
+        case RSTUDIOAPIREQUEST: {
+          mergeRStudioApiRequest(other.getRStudioApiRequest());
           break;
         }
         case EVENT_NOT_SET: {
@@ -6492,6 +7234,142 @@ private static final long serialVersionUID = 0L;
       event_ = value;
       onChanged();
       return this;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder> rStudioApiRequestBuilder_;
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public boolean hasRStudioApiRequest() {
+      return eventCase_ == 13;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest() {
+      if (rStudioApiRequestBuilder_ == null) {
+        if (eventCase_ == 13) {
+          return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+      } else {
+        if (eventCase_ == 13) {
+          return rStudioApiRequestBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public Builder setRStudioApiRequest(org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest value) {
+      if (rStudioApiRequestBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        event_ = value;
+        onChanged();
+      } else {
+        rStudioApiRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 13;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public Builder setRStudioApiRequest(
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder builderForValue) {
+      if (rStudioApiRequestBuilder_ == null) {
+        event_ = builderForValue.build();
+        onChanged();
+      } else {
+        rStudioApiRequestBuilder_.setMessage(builderForValue.build());
+      }
+      eventCase_ = 13;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public Builder mergeRStudioApiRequest(org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest value) {
+      if (rStudioApiRequestBuilder_ == null) {
+        if (eventCase_ == 13 &&
+            event_ != org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance()) {
+          event_ = org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.newBuilder((org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          event_ = value;
+        }
+        onChanged();
+      } else {
+        if (eventCase_ == 13) {
+          rStudioApiRequestBuilder_.mergeFrom(value);
+        }
+        rStudioApiRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 13;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public Builder clearRStudioApiRequest() {
+      if (rStudioApiRequestBuilder_ == null) {
+        if (eventCase_ == 13) {
+          eventCase_ = 0;
+          event_ = null;
+          onChanged();
+        }
+      } else {
+        if (eventCase_ == 13) {
+          eventCase_ = 0;
+          event_ = null;
+        }
+        rStudioApiRequestBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder getRStudioApiRequestBuilder() {
+      return getRStudioApiRequestFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder() {
+      if ((eventCase_ == 13) && (rStudioApiRequestBuilder_ != null)) {
+        return rStudioApiRequestBuilder_.getMessageOrBuilder();
+      } else {
+        if (eventCase_ == 13) {
+          return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder> 
+        getRStudioApiRequestFieldBuilder() {
+      if (rStudioApiRequestBuilder_ == null) {
+        if (!(eventCase_ == 13)) {
+          event_ = org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
+        }
+        rStudioApiRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder>(
+                (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_,
+                getParentForChildren(),
+                isClean());
+        event_ = null;
+      }
+      eventCase_ = 13;
+      onChanged();;
+      return rStudioApiRequestBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -214,6 +214,19 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       consoleView.interpreter.showUrlInViewer(consoleView.rInterop, url)
     }
 
+    override fun onRStudioApiRequest(functionId: Int, args: RObject): Promise<RObject> {
+      val promise = AsyncPromise<RObject>()
+      when (functionId) {
+        GET_SOURCE_EDITOR_CONTEXT_ID -> {
+          invokeLater {
+            promise.setResult(getSourceEditorContext(rInterop))
+          }
+        }
+        else -> TODO("Not yet implemented")
+      }
+      return promise
+    }
+
     private fun pollExecuteLaterQueue() {
       assert(Thread.currentThread().name == RINTEROP_THREAD_NAME)
       while (!isRunningCommand && executeLaterQueue.isNotEmpty()) executeLaterQueue.poll().invoke()
