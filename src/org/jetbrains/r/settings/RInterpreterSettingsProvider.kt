@@ -5,6 +5,8 @@
 package org.jetbrains.r.settings
 
 import com.intellij.openapi.extensions.ExtensionPointName
+import com.intellij.openapi.options.UnnamedConfigurable
+import com.intellij.openapi.project.Project
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
 
@@ -21,9 +23,11 @@ interface RInterpreterSettingsProvider {
 
   fun showAddInterpreterDialog(existingInterpreters: List<RInterpreterInfo>, onAdded: (RInterpreterInfo) -> Unit)
 
+  fun createSettingsConfigurable(project: Project): UnnamedConfigurable? = null
+
   companion object {
     private val EP_NAME: ExtensionPointName<RInterpreterSettingsProvider>
-      = ExtensionPointName.create<RInterpreterSettingsProvider>("com.intellij.rInterpreterSettingsProvider")
+      = ExtensionPointName.create("com.intellij.rInterpreterSettingsProvider")
 
     fun getProviders(): List<RInterpreterSettingsProvider> = EP_NAME.extensionList
   }

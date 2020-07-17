@@ -19,9 +19,11 @@ import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSettings
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import java.awt.Insets
 import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -32,6 +34,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
   private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
   private val component = JPanel()
+  private val extensionConfigurables = RInterpreterSettingsProvider.getProviders().mapNotNull { it.createSettingsConfigurable(project) }
 
   init {
     fun createConstraints(gridY: Int, weightY: Double = 0.0) = GridBagConstraints().apply {
@@ -46,13 +49,23 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     component.layout = GridBagLayout()
     component.add(interpreterPanel.component, createConstraints(0))
     component.add(loadWorkspaceCheckBox, createConstraints(1))
-    component.add(saveWorkspaceCheckBox, createConstraints(2, 1.0))
+    component.add(saveWorkspaceCheckBox, createConstraints(2))
+    var gridY = 3
+    extensionConfigurables
+      .mapNotNull { it.createComponent() }
+      .forEach { newComponent ->
+        component.add(newComponent, createConstraints(gridY++).also {
+          it.insets = Insets(30, 6, 0, 6)
+        })
+      }
+    component.add(JPanel(), createConstraints(gridY, 1.0))
   }
 
   override fun isModified(): Boolean {
     return interpreterPanel.isModified() ||
            loadWorkspaceCheckBox.isSelected != settings.loadWorkspace ||
-           saveWorkspaceCheckBox.isSelected != settings.saveWorkspace
+           saveWorkspaceCheckBox.isSelected != settings.saveWorkspace ||
+           extensionConfigurables.any { it.isModified }
   }
 
   override fun reset() {
@@ -60,6 +73,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       return existing.find { it.interpreterLocation == this }
     }
 
+    extensionConfigurables.forEach { it.reset() }
     val existing = getSynchronously(LOADING_INTERPRETERS_TEXT) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
@@ -72,6 +86,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   }
 
   override fun apply() {
+    extensionConfigurables.forEach { it.apply() }
     RInterpreterSettings.setEnabledInterpreters(interpreterPanel.currentInterpreters)
     val location = interpreterPanel.currentSelection?.interpreterLocation
     val previousLocation = settings.interpreterLocation
