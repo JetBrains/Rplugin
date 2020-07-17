@@ -57,6 +57,10 @@ class RPackageManagementService(private val project: Project,
         .onError { LOGGER.warn("Unable to initialize interpreter") }
         .silentlyBlockingGet(DEFAULT_TIMEOUT)
     }
+  private val interpreterAsync: Promise<RInterpreter>
+    get() = interpreterManager.getInterpreterAsync()
+  private val interpreterIfReady: RInterpreter?
+    get() = interpreterManager.interpreterOrNull
 
   private val interop: RInterop?
     get() = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
@@ -154,14 +158,16 @@ class RPackageManagementService(private val project: Project,
   fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
     provider.mappedEnabledRepositoryUrlsAsync.onSuccess { repoUrls ->
       val packageNames = packages.map { it.name }
-      val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
-      onOperationStart()
-      packages.map { resolvePackage(it) }.let { them ->
-        if (forceUpgrade) {
-          manager.update(them, repoUrls)
-        }
-        else {
-          manager.install(them, repoUrls)
+      interpreterAsync.onSuccess { interpreter ->
+        val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
+        onOperationStart()
+        packages.map { resolvePackage(it) }.let { them ->
+          if (forceUpgrade) {
+            manager.update(them, repoUrls)
+          }
+          else {
+            manager.install(them, repoUrls)
+          }
         }
       }
     }
@@ -183,16 +189,18 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun canUninstallPackage(installedPackage: RInstalledPackage): Boolean {
-    return interpreter?.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
+    return interpreterIfReady?.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
   }
 
   override fun uninstallPackages(installedPackages: List<InstalledPackage>, listener: Listener) {
     val packageNames = installedPackages.map { it.name }
     val multiListener = convertToUninstallMultiListener(listener)
-    val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, multiListener))
-    onOperationStart()
-    val rInstalledPackages = installedPackages.map { it as RInstalledPackage }
-    manager.uninstall(rInstalledPackages)
+    interpreterAsync.onSuccess { interpreter ->
+      val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, multiListener))
+      onOperationStart()
+      val rInstalledPackages = installedPackages.map { it as RInstalledPackage }
+      manager.uninstall(rInstalledPackages)
+    }
   }
 
   override fun fetchPackageVersions(s: String, consumer: CatchingConsumer<List<String>, Exception>) {
