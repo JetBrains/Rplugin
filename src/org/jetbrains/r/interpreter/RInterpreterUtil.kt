@@ -364,7 +364,7 @@ object RInterpreterUtil {
 
   private fun createInvalidLocationErrorMessage(location: RInterpreterLocation, details: String?): String {
     val additional = details?.let { ":\n$it" }
-    return RBundle.message("interpreter.manager.invalid.location", location, additional ?: "")
+    return RBundle.message("interpreter.manager.invalid.location", location, additional ?: ".")
   }
 
   // TODO: run via helper
