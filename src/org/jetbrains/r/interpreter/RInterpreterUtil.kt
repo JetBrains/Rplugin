@@ -350,21 +350,21 @@ object RInterpreterUtil {
       Pair(false, e)
     }
     if (!isViable) {
-      val message = createInvalidLocationErrorMessage(location, e?.message)
-      val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
-      }
-      val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
-        RInterpreterManagerImpl.openDownloadRPage()
-      }
-      RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
+      showInvalidLocationErrorMessage(project, location, e?.message)
     }
     return isViable
   }
 
-  private fun createInvalidLocationErrorMessage(location: RInterpreterLocation, details: String?): String {
+  fun showInvalidLocationErrorMessage(project: Project, location: RInterpreterLocation, details: String?) {
     val additional = details?.let { ":\n$it" }
-    return RBundle.message("interpreter.manager.invalid.location", location, additional ?: ".")
+    val message = RBundle.message("interpreter.manager.invalid.location", location, additional ?: ".")
+    val settingsAction = RNotificationUtil.createNotificationAction(GO_TO_SETTINGS_HINT) {
+      ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
+    }
+    val downloadAction = RNotificationUtil.createNotificationAction(DOWNLOAD_R_HINT) {
+      RInterpreterManagerImpl.openDownloadRPage()
+    }
+    RNotificationUtil.notifyInterpreterError(project, message, settingsAction, downloadAction)
   }
 
   // TODO: run via helper
