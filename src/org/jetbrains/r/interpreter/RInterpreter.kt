@@ -116,8 +116,8 @@ fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: S
 
 fun RInterpreter.uploadFileToHost(file: File, preserveName: Boolean = false) = interpreterLocation.uploadFileToHost(file, preserveName)
 
-fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory: String = basePath) =
-  interpreterLocation.runProcessOnHost(command, workingDirectory)
+fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory: String = basePath, isSilent: Boolean = false) =
+  interpreterLocation.runProcessOnHost(command, workingDirectory, isSilent)
 
 fun RInterpreter.runHelperProcess(script: String, args: List<String>, workingDirectory: String = basePath): BaseProcessHandler<*> {
   val interpreterArgs= RInterpreterUtil.getRunHelperArgs(script, args)
