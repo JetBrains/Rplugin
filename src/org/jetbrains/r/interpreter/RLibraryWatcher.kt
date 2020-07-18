@@ -70,7 +70,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
       return null
     }
     if (!fsNotifierExecutable.canExecute()) fsNotifierExecutable.setExecutable(true)
-    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadFileToHost(fsNotifierExecutable)))
+    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadFileToHost(fsNotifierExecutable)), isSilent = true)
     Disposer.register(project, Disposable { process.destroyProcess() })
 
     process.addProcessListener(object : ProcessListener {

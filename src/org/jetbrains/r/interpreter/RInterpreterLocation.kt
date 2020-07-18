@@ -13,7 +13,7 @@ import java.io.File
 
 interface RInterpreterLocation {
   // workingDirectory is a separate parameter and not a part of GeneralCommandLine because it does not work well with remote paths
-  fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String? = null): BaseProcessHandler<*>
+  fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String? = null, isSilent: Boolean = false): BaseProcessHandler<*>
 
   fun runInterpreterOnHost(args: List<String>, workingDirectory: String? = null): BaseProcessHandler<*>
 
@@ -31,8 +31,10 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
     return runProcessOnHost(GeneralCommandLine().withExePath(path).withParameters(args), workingDirectory)
   }
 
-  override fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String?): BaseProcessHandler<*> {
-    return OSProcessHandler(command.withWorkDirectory(workingDirectory)).apply {
+  override fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String?, isSilent: Boolean): BaseProcessHandler<*> {
+    val commandWithWD = command.withWorkDirectory(workingDirectory)
+    val handler = if (isSilent) OSProcessHandler.Silent(commandWithWD) else OSProcessHandler(commandWithWD)
+    return handler.apply {
       setShouldDestroyProcessRecursively(true)
     }
   }
