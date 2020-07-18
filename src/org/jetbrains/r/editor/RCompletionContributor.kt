@@ -23,7 +23,7 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
@@ -102,8 +102,7 @@ class RCompletionContributor : CompletionContributor() {
   private class InstalledPackageCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val interpreter = RInterpreterManager.getInterpreterOrNull(position.project) ?: return
-      val installedPackages = interpreter.installedPackages
+      val installedPackages = RInterpreterStateManager.getCurrentStateOrNull(position.project)?.installedPackages ?: return
       installedPackages.filter { it.isUser }.forEach {
         result.consume(rCompletionElementFactory.createPackageLookupElement(it.packageName, true))
       }

@@ -14,7 +14,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.psi.RPsiUtil
@@ -33,8 +33,8 @@ object RResolver {
                            name: String,
                            namespace: String,
                            result: MutableList<ResolveResult>) {
-    val interpreter = RInterpreterManager.getInterpreterOrNull(project) ?: return
-    val psiFile = interpreter.getSkeletonFileByPackageName(namespace) ?: return
+    val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
+    val psiFile = state.getSkeletonFileByPackageName(namespace) ?: return
     val statements = RAssignmentNameIndex.find(name, project, GlobalSearchScope.fileScope(psiFile))
     for (statement in statements) {
       if (statement.name == name) {

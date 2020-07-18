@@ -86,7 +86,8 @@ class RInlayParameterHintsProvider : InlayParameterHintsProvider {
     if (element !is RArgumentList) return null
     val assignment = RPsiUtil.resolveCall(element.parent as RCallExpression).firstOrNull() ?: return null
     val fullName = if (assignment is RSkeletonAssignmentStatement) {
-      RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(assignment.containingFile.name)!!.first + "::" + assignment.name
+      val rPackage = RSkeletonUtil.skeletonFileToRPackage(assignment.containingFile) ?: return null
+      rPackage.name + "::" + assignment.name
     }
     else assignment.name
     return HintInfo.MethodInfo(fullName, assignment.parameterNameList)

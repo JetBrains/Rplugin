@@ -11,9 +11,7 @@ import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
-  override val isSkeletonInitialized: Boolean = true
-
-  override val interpreterOrNull: RInterpreter = MockInterpreter(project, MockInterpreterProvider.DUMMY)
+  override val interpreterOrNull: RInterpreter = MockInterpreter(project)
 
   override val interpreterLocation: RInterpreterLocation
     get() = interpreterOrNull.interpreterLocation

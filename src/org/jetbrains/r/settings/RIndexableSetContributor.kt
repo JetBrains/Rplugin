@@ -7,11 +7,11 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 
 class RIndexableSetContributor : IndexableSetContributor() {
   override fun getAdditionalProjectRootsToIndex(project: Project): Set<VirtualFile> {
-    return RInterpreterManager.getInterpreterOrNull(project)?.skeletonRoots ?: emptySet()
+    return RInterpreterStateManager.getCurrentStateOrNull(project)?.skeletonFiles ?: emptySet()
   }
 
   override fun getAdditionalRootsToIndex(): Set<VirtualFile> {

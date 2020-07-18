@@ -15,12 +15,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
 import java.nio.file.Paths
@@ -28,34 +25,9 @@ import java.nio.file.Paths
 interface RInterpreter : RInterpreterInfo {
   val project: Project
 
-  val isUpdating: Boolean
-
-  val installedPackages: ExpiringList<RInstalledPackage>
-
-  data class LibraryPath(val path: String, val isWritable: Boolean)
-  val libraryPaths: List<LibraryPath>
-
-  val userLibraryPath: String
-
-  val interop: RInterop
-
-  fun getPackageByName(name: String): RInstalledPackage?
-
-  fun getLibraryPathByName(name: String): LibraryPath?
-
-  /**
-   * @return a system-dependant paths to the skeleton roots
-   */
-  val skeletonPaths: List<String>
-
-  val skeletonRoots: Set<VirtualFile>
-
   val basePath: String
 
   val hostOS: OperatingSystem
-
-  /** A place where all skeleton-related data will be stored */
-  val skeletonsDirectory: String
 
   fun suggestConsoleName(workingDirectory: String): String {
     return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
@@ -75,12 +47,6 @@ interface RInterpreter : RInterpreterInfo {
 
   fun getHelpersRootOnHost(): String = RPluginUtil.helpersPath
 
-  fun getSkeletonFileByPackageName(name: String): PsiFile?
-
-  fun updateState(): Promise<Unit>
-
-  fun findLibraryPathBySkeletonPath(skeletonPath: String): String?
-
   fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop
 
   fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean = false): String
@@ -94,8 +60,7 @@ interface RInterpreter : RInterpreterInfo {
   fun createTempDirOnHost(name: String = "a"): String
 
   // Note: returns pair of writable path and indicator whether new library path was created
-  fun getGuaranteedWritableLibraryPath(libraryPaths: List<LibraryPath> = this.libraryPaths,
-                                       userPath: String = userLibraryPath): Pair<String, Boolean>
+  fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): Pair<String, Boolean>
 
   fun prepareForExecution(): Promise<Unit> {
     val promise = AsyncPromise<Unit>()

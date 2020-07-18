@@ -227,7 +227,7 @@ fun RCallExpression.isFunctionFromLibrary(functionName: String, packageName: Str
   if (targets != null &&
       targets.any {
         RPsiUtil.isLibraryElement(it) &&
-        RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(it.containingFile.name)?.first == packageName
+        RSkeletonUtil.skeletonFileToRPackage(it.containingFile)?.name == packageName
       }) {
     return true
   }

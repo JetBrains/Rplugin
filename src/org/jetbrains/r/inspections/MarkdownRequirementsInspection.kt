@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.intentions.InstallLibrariesFix
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 
@@ -25,7 +25,7 @@ class MarkdownRequirementsInspection : RInspection() {
   }
 
   private fun checkRMarkdownPackages(file: PsiFile, project: Project, problemsHolder: ProblemsHolder) {
-    if (RInterpreterManager.getInterpreterOrNull(project)?.isUpdating == false) {
+    if (RInterpreterStateManager.getCurrentStateOrNull(project)?.isUpdating == false) {
       RMarkdownUtil.getMissingPackages(project)?.let { missing ->
         if (missing.isNotEmpty()) {
           problemsHolder.registerProblem(file, PROBLEM_DESCRIPTION, InstallLibrariesFix(missing))
