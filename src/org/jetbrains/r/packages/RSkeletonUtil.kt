@@ -12,7 +12,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
@@ -21,18 +22,21 @@ import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
+import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Integer.min
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 7
+  private const val CUR_SKELETON_VERSION = 8
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -58,56 +62,44 @@ object RSkeletonUtil {
     }
   }
 
-  fun updateSkeletons(rInterpreter: RInterpreter, progressIndicator: ProgressIndicator? = null): Boolean {
-    checkVersion(rInterpreter.skeletonsDirectory)
-    val generationMap = HashMap<String, List<RPackage>>()
-    for (skeletonPath in rInterpreter.skeletonPaths) {
-      File(skeletonPath).takeIf { !it.exists() }?.let { FileUtil.createDirectory(it) }
-      val libraryPath = rInterpreter.findLibraryPathBySkeletonPath(skeletonPath)
-      if (libraryPath == null) {
-        LOG.error("Cannot find library path for $skeletonPath")
-        continue
+  fun updateSkeletons(interop: RInterop, progressIndicator: ProgressIndicator? = null): Boolean {
+    val state = interop.state
+    checkVersion(state.skeletonsDirectory)
+    val generationList = mutableListOf<Pair<RPackage, Path>>()
+    val installedPackages = state.installedPackages
+
+    for (installedPackage in installedPackages) {
+      val skeletonPath = installedPackageToSkeletonPath(state.skeletonsDirectory, installedPackage, interop.interpreter.interpreterLocation)
+      val skeletonFile = skeletonPath.toFile()
+      if (!skeletonFile.exists() && !isBanned(installedPackage.name)) {
+        val rPackage = RPackage(installedPackage.name, installedPackage.version)
+        Files.createDirectories(skeletonPath.parent)
+        generationList.add(rPackage to skeletonPath)
       }
-      val package2skeletonFile = getSkeletonFiles(skeletonPath)
-      val currentPackages = package2skeletonFile.keys
-      val installedPackages = rInterpreter.installedPackages.filter { it.libraryPath == libraryPath }
-                                                            .map { RPackage(it.packageName, it.packageVersion) }
-
-      val outdatedPackages = currentPackages.subtract(installedPackages)
-      val newPackages = installedPackages.subtract(currentPackages).filterNot { isBanned(it.name) }
-
-      outdatedPackages.forEach {
-        FileUtil.asyncDelete(package2skeletonFile[it] ?: return@forEach)
-      }
-
-      generationMap[skeletonPath] = newPackages
     }
-    return generateSkeletons(generationMap, rInterpreter, progressIndicator)
+    return generateSkeletons(generationList, interop, progressIndicator)
   }
 
-  internal fun generateSkeletons(generationMap: Map<String, List<RPackage>>,
-                                 rInterpreter: RInterpreter,
+  internal fun generateSkeletons(generationList: List<Pair<RPackage, Path>>,
+                                 interop: RInterop,
                                  progressIndicator: ProgressIndicator? = null): Boolean {
+    if (generationList.isEmpty()) return false
     var result = false
 
     val es = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE)
 
     val promises = mutableListOf<AsyncPromise<Boolean>>()
-    val fullSize = generationMap.values.map { it.size }.sum()
-    for ((skeletonPath, _newPackages) in generationMap) {
-      if (_newPackages.isEmpty()) continue
-      val newPackages = _newPackages.shuffled() // to increase the probability of uniform distribution between threads
-      val skeletonsDir = File(skeletonPath)
-      var bucketSize = newPackages.size / MAX_THREAD_POOL_SIZE
-      if (newPackages.size % MAX_THREAD_POOL_SIZE != 0) ++bucketSize
-      bucketSize = min(bucketSize, MAX_BUCKET_SIZE)
-      for (i in newPackages.indices step bucketSize) {
-        val rPackages = (i until i + bucketSize).mapNotNull { newPackages.getOrNull(it) }
-        val skeletonFiles = rPackages.map { File(skeletonsDir, it.skeletonFileName) }
-        val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
-        val skeletonProcessor = RSkeletonProcessor(es, rInterpreter, indicator, fullSize, rPackages, skeletonFiles)
-        promises.add(skeletonProcessor.runSkeletonHelper())
-      }
+    val fullSize = generationList.size
+    val newPackages = generationList.shuffled() // to increase the probability of uniform distribution between threads
+    var bucketSize = newPackages.size / MAX_THREAD_POOL_SIZE
+    if (newPackages.size % MAX_THREAD_POOL_SIZE != 0) ++bucketSize
+    bucketSize = min(bucketSize, MAX_BUCKET_SIZE)
+    for (i in newPackages.indices step bucketSize) {
+      val rPackages = (i until i + bucketSize).mapNotNull { newPackages.getOrNull(it) }
+      val skeletonFiles = rPackages.map { it.second.toFile() }
+      val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
+      val skeletonProcessor = RSkeletonProcessor(es, interop.interpreter, indicator, fullSize, rPackages.map { it.first }, skeletonFiles)
+      promises.add(skeletonProcessor.runSkeletonHelper())
     }
 
     for (promise in promises) {
@@ -124,21 +116,33 @@ object RSkeletonUtil {
     return result
   }
 
-  fun parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension: String): Pair<String, String>? =
-    nameWithoutExtension.takeIf { it.contains('-') }
-                        ?.split('-', limit = 2)
-                        ?.takeIf { it.size == 2 }
-                        ?.let { Pair(it[0], it[1])}
+  private fun hash(libraryPath: String): String {
+    return Path.of(libraryPath).joinToString(separator = "", postfix = "-${libraryPath.hashCode()}") { it.toString().subSequence(0, 1) }
+  }
 
-  internal fun getSkeletonFiles(skeletonPath: String): Map<RPackage, File> {
-    val skeletonDirectory = File(skeletonPath)
-    if (!skeletonDirectory.exists() || !skeletonDirectory.isDirectory) {
-      return emptyMap()
-    }
-    return skeletonDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }?.mapNotNull {
-      val (name, version) = RPackage.createRPackageBySkeletonFileName(it.name) ?: return@mapNotNull null
-      RPackage(name, version) to it
-    }?.toMap() ?: mapOf()
+  fun installedPackageToSkeletonPath(skeletonsDirectory: String,
+                                     installedPackage: RInstalledPackage,
+                                     interpreterLocation: RInterpreterLocation): Path {
+    val libPath = Path.of(installedPackage.libraryPath, installedPackage.packageName).toString()
+    val realLibPath = interpreterLocation.canonicalPath(libPath)
+    val dirName = installedPackage.packageName + "-" + installedPackage.version
+    return Path.of(skeletonsDirectory, dirName, hash(realLibPath) + "." + RSkeletonFileType.EXTENSION)
+  }
+
+  fun installedPackageToSkeletonFile(skeletonsDirectory: String,
+                                     installedPackage: RInstalledPackage,
+                                     interpreterLocation: RInterpreterLocation): VirtualFile? {
+    val skeletonPath = installedPackageToSkeletonPath(skeletonsDirectory, installedPackage, interpreterLocation)
+    return VfsUtil.findFile(skeletonPath, false)
+  }
+
+  fun skeletonFileToRPackage(skeletonFile: PsiFile): RPackage? = RPackage.getOrCreateRPackageBySkeletonFile(skeletonFile)
+
+  fun skeletonFileToRPackage(skeletonFile: VirtualFile): RPackage? {
+    val (name, version) = skeletonFile.parent.name.split('-', limit = 2)
+                            .takeIf { it.size == 2 }
+                            ?.let { Pair(it[0], it[1]) } ?: return null
+    return RPackage(name, version)
   }
 
   fun getPriorityFromSkeletonFile(file: File): RPackagePriority? {
@@ -296,7 +300,7 @@ object RSkeletonUtil {
       val resPromise = resPromise
       es.submit {
         val packageNames = packageNames.subList(curPackage + 1, packageNames.size)
-        rInterpreter.runMultiOutputHelper(RepoUtils.PACKAGE_SUMMARY, null,
+        rInterpreter.runMultiOutputHelper(RepoUtils.PACKAGE_SUMMARY, rInterpreter.basePath,
                                           listOf(extraNamedArgumentsHelperPath) + packageNames, this)
       }
       return resPromise
@@ -318,24 +322,15 @@ object RSkeletonUtil {
 }
 
 data class RPackage(val name: String, val version: String) {
-  val skeletonFileName
-    get() = "$name-${version}.${RSkeletonFileType.EXTENSION}"
-
   companion object {
-    private val SKELETON_FILE_REGEX = "([^-]*)-(.*)\\.${RSkeletonFileType.EXTENSION}".toRegex()
-
     /**
      * if [file] type is Skeleton File Type, returns package and version which was used for its generation or null otherwise
      */
     fun getOrCreateRPackageBySkeletonFile(file: PsiFile): RPackage? {
       if (file.virtualFile.fileType != RSkeletonFileType) return null
       return CachedValuesManager.getCachedValue(file) {
-        CachedValueProvider.Result<RPackage>(createRPackageBySkeletonFileName(file.virtualFile.name), file)
+        CachedValueProvider.Result(RSkeletonUtil.skeletonFileToRPackage(file.virtualFile), file)
       }
-    }
-
-    fun createRPackageBySkeletonFileName(name: String): RPackage? = SKELETON_FILE_REGEX.matchEntire(name)?.let {
-      RPackage(it.groupValues[1], it.groupValues[2])
     }
   }
 }

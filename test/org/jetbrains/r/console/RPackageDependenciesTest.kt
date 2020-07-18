@@ -12,7 +12,7 @@ class RPackageDependenciesTest : RConsoleBaseTestCase() {
 
   fun testLoadDependencies() {
     addLibraries()
-    val packages = interpreter.installedPackages
+    val packages = rInterop.state.installedPackages
     val packageMap = packages.map { it.packageName to it.packageVersion }.toMap()
     val dplyrVersion = packageMap["dplyr"] ?: error("Package 'dplyr' not found")
     val ggplot2Version = packageMap["ggplot2"] ?: error("Package 'ggplot2' not found")

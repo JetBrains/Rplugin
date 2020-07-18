@@ -46,7 +46,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 
   @Synchronized
   fun updateRootsToWatch() {
-    val roots = interpreter?.libraryPaths?.map { it.path } ?: return
+    val roots = RInterpreterStateManager.getCurrentStateOrNull(project)?.libraryPaths?.map { it.path } ?: return
     fsNotifierProcess?.processInput?.bufferedWriter()?.let { writer ->
       writer.write("ROOTS")
       writer.newLine()

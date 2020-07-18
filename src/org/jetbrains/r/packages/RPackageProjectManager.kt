@@ -4,7 +4,9 @@
 
 package org.jetbrains.r.packages
 
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
@@ -15,7 +17,6 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiUtilCore
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.packages.remote.RPackageManagementService
 import java.util.concurrent.atomic.AtomicReference
 
 data class DependencyVersionBound(
@@ -121,7 +122,7 @@ class RPackageProjectManager(private val project: Project) {
 
   private fun loadMissingPackagesToConsoles(consoles: List<RConsoleView>, packageInfo: PackageDescriptionInfo): List<DependencyPackage> {
     if (consoles.isEmpty()) return emptyList()
-    val installedPackages = consoles.first().interpreter.installedPackages.map { it.name to it.packageVersion }.toMap()
+    val installedPackages = consoles.first().rInterop.state.installedPackages.map { it.name to it.packageVersion }.toMap()
     val allPackagesToLoad = packageInfo.depends + packageInfo.imports + packageInfo.suggests
     val possibleToLoad = allPackagesToLoad.filter { rPackage ->
       val name = rPackage.name

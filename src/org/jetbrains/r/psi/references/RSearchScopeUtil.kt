@@ -16,7 +16,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiUtilBase
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -48,8 +48,8 @@ object RSearchScopeUtil {
         if (myBaseScope.contains(file)) {
           return true
         }
-        val interpreter = RInterpreterManager.getInterpreterOrNull(project) ?: return false
-        return interpreter.skeletonRoots.contains(file.parent)
+        val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return false
+        return state.skeletonFiles.contains(file)
       }
     }
   }

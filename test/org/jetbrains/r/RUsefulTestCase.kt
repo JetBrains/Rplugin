@@ -12,6 +12,7 @@ import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReference
@@ -30,24 +31,26 @@ import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
-import org.jetbrains.r.interpreter.RLocalInterpreterImpl
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.mock.MockInterpreterManager
+import org.jetbrains.r.mock.MockInterpreterStateManager
 import org.jetbrains.r.mock.MockRepoProvider
+import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.packages.remote.RepoProvider
+import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.nio.file.Files
+import java.nio.file.Path
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   private var mockInterpreterManagerSet = false
+  private var mockInterpreterStateManagerSet = false
   private var isLibraryAdded = false
 
   override fun getTestDataPath(): String {
@@ -67,7 +70,9 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   fun addLibraries() {
     prepareTestSkeletons(project)
+    VfsUtil.markDirtyAndRefresh(false, true, true, File(SKELETON_LIBRARY_PATH))
     setupMockInterpreterManager()
+    setupMockInterpreterStateManager()
     val dumbService = DumbServiceImpl.getInstance(project)
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
       dumbService.queueTask(UnindexedFilesUpdater(project))
@@ -148,6 +153,12 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     project.registerServiceInstance(RInterpreterManager::class.java, MockInterpreterManager(project))
   }
 
+  fun setupMockInterpreterStateManager() {
+    if (mockInterpreterStateManagerSet) return
+    mockInterpreterStateManagerSet = true
+    project.registerServiceInstance(RInterpreterStateManager::class.java, MockInterpreterStateManager(project))
+  }
+
   private fun setupMockRepoProvider() {
     project.registerServiceInstance(RepoProvider::class.java, MockRepoProvider())
   }
@@ -165,39 +176,54 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     val location = RLocalInterpreterLocation(interpreterPath)
     val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
     val rInterpreter = RLocalInterpreterImpl(location, versionInfo, project)
-    rInterpreter.updateState().blockingGet(DEFAULT_TIMEOUT)
-    val packagesForTest = missingTestSkeletons.map {
-      rInterpreter.getPackageByName(it)?.run { RPackage(name, version) }
-      ?: throw IllegalStateException("No package $it found for $interpreterPath")
+    val rInterop = RInteropUtil.runRWrapperAndInterop(rInterpreter).blockingGet(DEFAULT_TIMEOUT)!!.apply {
+      updateState().blockingGet(DEFAULT_TIMEOUT)
     }
-    RSkeletonUtil.generateSkeletons(Collections.singletonMap(SKELETON_LIBRARY_PATH, packagesForTest), rInterpreter)
+    val packagesForTest = mutableListOf<Pair<RPackage, Path>>()
+    missingTestSkeletons.map {
+      val installedPackage = rInterop.state.getPackageByName(it)
+                             ?: throw IllegalStateException("No package $it found for $interpreterPath")
+      val rPackage = RPackage(installedPackage.name, installedPackage.version)
+
+      // Base skeleton
+      val skeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, installedPackage, location)
+      Files.createDirectories(skeletonPath.parent)
+      packagesForTest.add(rPackage to skeletonPath)
+
+      // Mock skeleton
+      val mockInstalledPackage =
+        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, SKELETON_LIBRARY_PATH, emptyMap())
+      val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, mockInstalledPackage, location)
+      packagesForTest.add(rPackage to mockSkeletonPath)
+    }
+    RSkeletonUtil.generateSkeletons(packagesForTest, rInterop)
   }
 
   private fun missingTestSkeletons(): Set<String> {
     val skeletonsDirectory = File(SKELETON_LIBRARY_PATH)
-    val existedSkeletons = skeletonsDirectory.listFiles { _, name -> name.endsWith(".${RSkeletonFileType.EXTENSION}") }
-
-    if (existedSkeletons == null) {
+    if (!skeletonsDirectory.exists()) {
       if (!skeletonsDirectory.mkdirs()) {
         throw IOException("Can't create $skeletonsDirectory")
       }
       return packageNamesForTests
     }
 
-    val foundSkeletons = existedSkeletons.map { it }.map { nameOfBinSummary(it) }.toSet()
-
+    val existedSkeletons = skeletonsDirectory.walkTopDown().filter { it.extension == RSkeletonFileType.EXTENSION }
+    val foundSkeletons = packageNamesForTests.map { it to 2 }.toMap().toMutableMap()
     existedSkeletons.forEach {
-      if (!packageNamesForTests.contains(nameOfBinSummary(it))) {
+      val name = nameOfBinSummary(it)
+      if (!packageNamesForTests.contains(name)) {
         it.delete()
       }
+      else foundSkeletons.computeIfPresent(name) { _, v -> v - 1 }
     }
 
-    return packageNamesForTests.minus(foundSkeletons)
+    return packageNamesForTests.minus(foundSkeletons.filter { it.value == 0 }.keys)
   }
 
   private fun nameOfBinSummary(file: File): String {
-    val fileName = file.nameWithoutExtension
-    return fileName.indexOf('-').takeIf { it != -1 }?.let { fileName.substring(0, it) } ?: fileName
+    val dirName = file.parentFile.name
+    return dirName.indexOf('-').takeIf { it != -1 }?.let { dirName.substring(0, it) } ?: dirName
   }
 
   protected fun doActionTest(expected: String, actionId: String) {

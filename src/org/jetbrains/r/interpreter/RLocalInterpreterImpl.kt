@@ -71,7 +71,7 @@ class RLocalInterpreterImpl(
 
   override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
 
-  override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreter.LibraryPath>, userPath: String): Pair<String, Boolean> {
+  override fun getGuaranteedWritableLibraryPath(libraryPaths: List<RInterpreterState.LibraryPath>, userPath: String): Pair<String, Boolean> {
     val writable = libraryPaths.find { it.isWritable }
     return if (writable != null) {
       Pair(writable.path, false)

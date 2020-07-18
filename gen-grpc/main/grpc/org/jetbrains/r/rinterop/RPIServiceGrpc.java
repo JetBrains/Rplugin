@@ -2383,6 +2383,99 @@ public final class RPIServiceGrpc {
     return getClearEnvironmentMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GetSysEnvRequest,
+      org.jetbrains.r.rinterop.StringList> getGetSysEnvMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getSysEnv",
+      requestType = org.jetbrains.r.rinterop.GetSysEnvRequest.class,
+      responseType = org.jetbrains.r.rinterop.StringList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GetSysEnvRequest,
+      org.jetbrains.r.rinterop.StringList> getGetSysEnvMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GetSysEnvRequest, org.jetbrains.r.rinterop.StringList> getGetSysEnvMethod;
+    if ((getGetSysEnvMethod = RPIServiceGrpc.getGetSysEnvMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetSysEnvMethod = RPIServiceGrpc.getGetSysEnvMethod) == null) {
+          RPIServiceGrpc.getGetSysEnvMethod = getGetSysEnvMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.GetSysEnvRequest, org.jetbrains.r.rinterop.StringList>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getSysEnv"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.GetSysEnvRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.StringList.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getSysEnv"))
+              .build();
+        }
+      }
+    }
+    return getGetSysEnvMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.RInstalledPackageList> getLoadInstalledPackagesMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "loadInstalledPackages",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = org.jetbrains.r.rinterop.RInstalledPackageList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.RInstalledPackageList> getLoadInstalledPackagesMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.RInstalledPackageList> getLoadInstalledPackagesMethod;
+    if ((getLoadInstalledPackagesMethod = RPIServiceGrpc.getLoadInstalledPackagesMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getLoadInstalledPackagesMethod = RPIServiceGrpc.getLoadInstalledPackagesMethod) == null) {
+          RPIServiceGrpc.getLoadInstalledPackagesMethod = getLoadInstalledPackagesMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.RInstalledPackageList>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "loadInstalledPackages"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.RInstalledPackageList.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("loadInstalledPackages"))
+              .build();
+        }
+      }
+    }
+    return getLoadInstalledPackagesMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.RLibraryPathList> getLoadLibPathsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "loadLibPaths",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = org.jetbrains.r.rinterop.RLibraryPathList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.RLibraryPathList> getLoadLibPathsMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.RLibraryPathList> getLoadLibPathsMethod;
+    if ((getLoadLibPathsMethod = RPIServiceGrpc.getLoadLibPathsMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getLoadLibPathsMethod = RPIServiceGrpc.getLoadLibPathsMethod) == null) {
+          RPIServiceGrpc.getLoadLibPathsMethod = getLoadLibPathsMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.RLibraryPathList>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "loadLibPaths"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.RLibraryPathList.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("loadLibPaths"))
+              .build();
+        }
+      }
+    }
+    return getLoadLibPathsMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
       com.google.protobuf.Empty> getLoadLibraryMethod;
 
@@ -3188,6 +3281,27 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void getSysEnv(org.jetbrains.r.rinterop.GetSysEnvRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetSysEnvMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void loadInstalledPackages(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RInstalledPackageList> responseObserver) {
+      asyncUnimplementedUnaryCall(getLoadInstalledPackagesMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void loadLibPaths(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RLibraryPathList> responseObserver) {
+      asyncUnimplementedUnaryCall(getLoadLibPathsMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void loadLibrary(com.google.protobuf.StringValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getLoadLibraryMethod(), responseObserver);
@@ -3769,6 +3883,27 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.RRef,
                 com.google.protobuf.Empty>(
                   this, METHODID_CLEAR_ENVIRONMENT)))
+          .addMethod(
+            getGetSysEnvMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.GetSysEnvRequest,
+                org.jetbrains.r.rinterop.StringList>(
+                  this, METHODID_GET_SYS_ENV)))
+          .addMethod(
+            getLoadInstalledPackagesMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                org.jetbrains.r.rinterop.RInstalledPackageList>(
+                  this, METHODID_LOAD_INSTALLED_PACKAGES)))
+          .addMethod(
+            getLoadLibPathsMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                org.jetbrains.r.rinterop.RLibraryPathList>(
+                  this, METHODID_LOAD_LIB_PATHS)))
           .addMethod(
             getLoadLibraryMethod(),
             asyncUnaryCall(
@@ -4477,6 +4612,30 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void getSysEnv(org.jetbrains.r.rinterop.GetSysEnvRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetSysEnvMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void loadInstalledPackages(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RInstalledPackageList> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getLoadInstalledPackagesMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void loadLibPaths(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RLibraryPathList> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getLoadLibPathsMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void loadLibrary(com.google.protobuf.StringValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
@@ -5126,6 +5285,27 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public org.jetbrains.r.rinterop.StringList getSysEnv(org.jetbrains.r.rinterop.GetSysEnvRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getGetSysEnvMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.RInstalledPackageList loadInstalledPackages(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getLoadInstalledPackagesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.RLibraryPathList loadLibPaths(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getLoadLibPathsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public com.google.protobuf.Empty loadLibrary(com.google.protobuf.StringValue request) {
       return blockingUnaryCall(
           getChannel(), getLoadLibraryMethod(), getCallOptions(), request);
@@ -5697,6 +5877,30 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.StringList> getSysEnv(
+        org.jetbrains.r.rinterop.GetSysEnvRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetSysEnvMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.RInstalledPackageList> loadInstalledPackages(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getLoadInstalledPackagesMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.RLibraryPathList> loadLibPaths(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getLoadLibPathsMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> loadLibrary(
         com.google.protobuf.StringValue request) {
       return futureUnaryCall(
@@ -5828,13 +6032,16 @@ public final class RPIServiceGrpc {
   private static final int METHODID_GET_WORKING_DIR = 73;
   private static final int METHODID_SET_WORKING_DIR = 74;
   private static final int METHODID_CLEAR_ENVIRONMENT = 75;
-  private static final int METHODID_LOAD_LIBRARY = 76;
-  private static final int METHODID_UNLOAD_LIBRARY = 77;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 78;
-  private static final int METHODID_LOAD_ENVIRONMENT = 79;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 80;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 81;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 82;
+  private static final int METHODID_GET_SYS_ENV = 76;
+  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 77;
+  private static final int METHODID_LOAD_LIB_PATHS = 78;
+  private static final int METHODID_LOAD_LIBRARY = 79;
+  private static final int METHODID_UNLOAD_LIBRARY = 80;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 81;
+  private static final int METHODID_LOAD_ENVIRONMENT = 82;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 83;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 84;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 85;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6157,6 +6364,18 @@ public final class RPIServiceGrpc {
           serviceImpl.clearEnvironment((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
+        case METHODID_GET_SYS_ENV:
+          serviceImpl.getSysEnv((org.jetbrains.r.rinterop.GetSysEnvRequest) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList>) responseObserver);
+          break;
+        case METHODID_LOAD_INSTALLED_PACKAGES:
+          serviceImpl.loadInstalledPackages((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RInstalledPackageList>) responseObserver);
+          break;
+        case METHODID_LOAD_LIB_PATHS:
+          serviceImpl.loadLibPaths((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.RLibraryPathList>) responseObserver);
+          break;
         case METHODID_LOAD_LIBRARY:
           serviceImpl.loadLibrary((com.google.protobuf.StringValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
@@ -6322,6 +6541,9 @@ public final class RPIServiceGrpc {
               .addMethod(getGetWorkingDirMethod())
               .addMethod(getSetWorkingDirMethod())
               .addMethod(getClearEnvironmentMethod())
+              .addMethod(getGetSysEnvMethod())
+              .addMethod(getLoadInstalledPackagesMethod())
+              .addMethod(getLoadLibPathsMethod())
               .addMethod(getLoadLibraryMethod())
               .addMethod(getUnloadLibraryMethod())
               .addMethod(getSaveGlobalEnvironmentMethod())

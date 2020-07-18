@@ -89,9 +89,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
   }
 
   internal fun createRVar(consoleView: RConsoleView): RVar {
-    val nameWithoutExtension = containingFile.virtualFile.nameWithoutExtension
-    val (packageName, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(nameWithoutExtension)
-                           ?: throw IllegalStateException("bad filename")
+    val (packageName, _) = RSkeletonUtil.skeletonFileToRPackage(containingFile) ?: throw IllegalStateException("bad filename")
 
     val accessOperator = if (stub.exported) "::" else ":::"
     val expressionRef = RReference.expressionRef("$packageName$accessOperator${RNamesValidator.quoteIfNeeded(getName())}", consoleView.rInterop)

@@ -7,6 +7,7 @@ package org.jetbrains.r.rendering.toolwindow
 import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -91,6 +92,13 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
     fun showFile(project: Project, path: String): Promise<Unit> {
       return getViewerComponent(project).refresh(path).also {
         RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+      }
+    }
+
+    fun refreshPackagePanel(project: Project) {
+      runInEdt {
+        val panel = ToolWindowManager.getInstance(project).getToolWindow(ID)?.contentManager?.findContent(PACKAGES)?.component
+        (panel as? RInstalledPackagesPanel)?.scheduleRefresh()
       }
     }
 

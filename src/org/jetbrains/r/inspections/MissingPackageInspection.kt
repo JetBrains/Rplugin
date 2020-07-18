@@ -18,7 +18,7 @@ import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.intentions.InstallAllFileLibraryFix
 import org.jetbrains.r.intentions.InstallLibrariesFix
 import org.jetbrains.r.intentions.InstallLibraryFix
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RPsiUtil
@@ -83,11 +83,11 @@ class MissingPackageInspection : RInspection() {
       else -> return
     }
 
-    val rInterpreter = RInterpreterManager.getInterpreterOrNull(packageExpression.project) ?: return
-    if (rInterpreter.isUpdating || packageName == null) {  // Note: also prevents false positives during interpreter's update
+    val state = RInterpreterStateManager.getCurrentStateOrNull(packageExpression.project) ?: return
+    if (state.isUpdating || packageName == null) {  // Note: also prevents false positives during interpreter's state update
       return
     }
-    val byName = rInterpreter.getPackageByName(packageName)
+    val byName = state.getPackageByName(packageName)
 
     if (byName == null) {
       val descriptionTemplate = RBundle.message("inspection.missingPackage.description", packageName)

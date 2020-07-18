@@ -20,11 +20,10 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
-import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getListBlocking
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterState
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.remote.ui.RPackageServiceListener
@@ -48,22 +47,20 @@ class UnresolvedPackageDetailsException(message: String) : PackageDetailsExcepti
 
 class RPackageManagementService(private val project: Project,
                                 private val serviceListener: RPackageServiceListener? = null) : PackageManagementService() {
-  private val interpreterManager: RInterpreterManager  // Should be evaluated lazily otherwise it will break unit tests
-    get() = RInterpreterManager.getInstance(project)
-
-  private val interpreter: RInterpreter?
+  private val rInterpreterState: RInterpreterState?
     get() {
-      return interpreterManager.getInterpreterAsync()
-        .onError { LOGGER.warn("Unable to initialize interpreter") }
+      return RInterpreterStateManager.getCurrentStateAsync(project)
+        .onError { LOGGER.warn("Unable to initialize interpreter state") }
         .silentlyBlockingGet(DEFAULT_TIMEOUT)
     }
-  private val interpreterAsync: Promise<RInterpreter>
-    get() = interpreterManager.getInterpreterAsync()
-  private val interpreterIfReady: RInterpreter?
-    get() = interpreterManager.interpreterOrNull
+  private val rStateAsync: Promise<RInterpreterState>
+    get() = RInterpreterStateManager.getCurrentStateAsync(project)
+
+  private val rStateIfReady: RInterpreterState?
+    get() = RInterpreterStateManager.getCurrentStateOrNull(project)
 
   private val interop: RInterop?
-    get() = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+    get() = rInterpreterState?.rInterop
 
   private val provider: RepoProvider
     get() = RepoProvider.getInstance(project)
@@ -120,12 +117,12 @@ class RPackageManagementService(private val project: Project,
   }
 
   private fun loadInstalledPackages(): ExpiringList<RInstalledPackage> {
-    val installed = interpreter?.withAutoUpdate { installedPackages } ?: emptyExpiringList()
+    val installed = rInterpreterState?.withAutoUpdate { installedPackages } ?: emptyExpiringList()
     return installed.filter { it.isUser }.map { it }
   }
 
   fun findInstalledPackageByName(name: String): RInstalledPackage? {
-    return interpreter?.getPackageByName(name)
+    return rInterpreterState?.getPackageByName(name)
   }
 
   private fun onOperationStart() {
@@ -158,8 +155,8 @@ class RPackageManagementService(private val project: Project,
   fun installPackages(packages: List<RepoPackage>, forceUpgrade: Boolean, listener: MultiListener) {
     provider.mappedEnabledRepositoryUrlsAsync.onSuccess { repoUrls ->
       val packageNames = packages.map { it.name }
-      interpreterAsync.onSuccess { interpreter ->
-        val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, listener))
+      rStateAsync.onSuccess { state ->
+        val manager = RPackageTaskManager(state.rInterop, project, getTaskListener(packageNames, listener))
         onOperationStart()
         packages.map { resolvePackage(it) }.let { them ->
           if (forceUpgrade) {
@@ -189,14 +186,14 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun canUninstallPackage(installedPackage: RInstalledPackage): Boolean {
-    return interpreterIfReady?.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
+    return rStateIfReady?.getLibraryPathByName(installedPackage.name)?.isWritable ?: false
   }
 
   override fun uninstallPackages(installedPackages: List<InstalledPackage>, listener: Listener) {
     val packageNames = installedPackages.map { it.name }
     val multiListener = convertToUninstallMultiListener(listener)
-    interpreterAsync.onSuccess { interpreter ->
-      val manager = RPackageTaskManager(interpreter, project, getTaskListener(packageNames, multiListener))
+    rStateAsync.onSuccess { state ->
+      val manager = RPackageTaskManager(state.rInterop, project, getTaskListener(packageNames, multiListener))
       onOperationStart()
       val rInstalledPackages = installedPackages.map { it as RInstalledPackage }
       manager.uninstall(rInstalledPackages)
@@ -260,7 +257,7 @@ class RPackageManagementService(private val project: Project,
       }
     }
 
-    private fun <E, C : List<E>>RInterpreter.withAutoUpdate(property: RInterpreter.() -> C): C {
+    private fun <E, C : List<E>> RInterpreterState.withAutoUpdate(property: RInterpreterState.() -> C): C {
       return property().let { values ->
         if (values.isEmpty()) {
           updateState().blockingGet(DEFAULT_TIMEOUT)

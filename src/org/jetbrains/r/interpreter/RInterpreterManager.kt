@@ -7,19 +7,8 @@ package org.jetbrains.r.interpreter
 import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.WriteAction
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.progress.runBackgroundableTask
-import com.intellij.openapi.project.DumbModeTask
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
 import org.jetbrains.concurrency.AsyncPromise
@@ -27,7 +16,6 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RStatistics
@@ -35,10 +23,6 @@ import java.io.IOException
 import java.nio.file.Paths
 
 interface RInterpreterManager {
-  /**
-   *  true if skeletons update was performed at least once.
-   */
-  val isSkeletonInitialized: Boolean
   val interpreterOrNull: RInterpreter?
   val interpreterLocation: RInterpreterLocation?
 
@@ -67,9 +51,6 @@ interface RInterpreterManager {
 }
 
 class RInterpreterManagerImpl(private val project: Project): RInterpreterManager {
-  @Volatile
-  override var isSkeletonInitialized: Boolean = false
-    private set
   @Volatile
   private var interpreterPromise: Promise<RInterpreter> = rejectedPromise("No R Interpreter")
   @Volatile
@@ -106,7 +87,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
                      ?: return rejectedPromise<RInterpreter>("No R Interpreter").also { interpreterPromise = it }
       if (!initialized) {
         RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
-          scheduleSkeletonUpdate()
+          RInterpreterStateManager.getCurrentStateAsync(project).onSuccess { it.scheduleSkeletonUpdate() }.then { }
         }
       }
       initialized = true
@@ -138,7 +119,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         location.createInterpreter(project).let {
           interpreterOrNull = it
           ensureInterpreterStored(it)
-          scheduleSkeletonUpdate()
+          RInterpreterStateManager.getCurrentStateAsync(project).onSuccess { state -> state.scheduleSkeletonUpdate() }
           promise.setResult(it)
           RStatistics.logSetupInterpreter(it)
         }
@@ -148,50 +129,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       }
     }
     return promise
-  }
-
-  private fun scheduleSkeletonUpdate(): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      val interpreter = interpreterOrNull
-      if (interpreter != null) {
-        interpreter.updateState()
-          .onProcessed { promise.setResult(Unit) }
-          .onSuccess {
-            val updater = object : Task.Backgroundable(project, "Update skeletons", false) {
-              override fun run(indicator: ProgressIndicator) {
-                RLibraryWatcher.getInstance(project).updateRootsToWatch()
-                updateSkeletons(interpreter)
-              }
-            }
-            ProgressManager.getInstance().run(updater)
-          }
-      } else {
-        promise.setResult(Unit)
-      }
-    }
-  }
-
-  private fun updateSkeletons(interpreter: RInterpreterBase) {
-    val dumbModeTask = object : DumbModeTask(interpreter) {
-      override fun performInDumbMode(indicator: ProgressIndicator) {
-        if (!project.isOpen || project.isDisposed) return
-        if (RSkeletonUtil.updateSkeletons(interpreter, indicator)) {
-          runInEdt { runWriteAction { refreshSkeletons(interpreter) } }
-        }
-        isSkeletonInitialized = true
-        RInterpreterUtil.updateIndexableSet(project)
-      }
-    }
-    DumbService.getInstance(project).queueTask(dumbModeTask)
-  }
-
-  private fun refreshSkeletons(interpreter: RInterpreterBase) {
-    if (!project.isOpen || project.isDisposed) return
-    interpreter.skeletonPaths.forEach { skeletonPath ->
-      val libraryRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonPath) ?: return@forEach
-      VfsUtil.markDirtyAndRefresh(false, true, true, libraryRoot)
-      WriteAction.runAndWait<Exception> { PsiDocumentManagerImpl.getInstance(project).commitAllDocuments() }
-    }
   }
 
   private fun removeLocalRDataTmpFiles() {

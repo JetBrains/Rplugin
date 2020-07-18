@@ -19,14 +19,14 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropTerminated
 import java.util.concurrent.ConcurrentSkipListSet
 
 class RPackageTaskManager(
-  private val interpreter: RInterpreter?,
+  private val rInterop: RInterop?,
   private val project: Project,
   private val listener: TaskListener
 ) {
@@ -37,17 +37,17 @@ class RPackageTaskManager(
   fun install(packages: List<RepoPackage>, repoUrls: List<String>) {
     val installPackages = packages.filter { !packagesInProgress.contains(it.name) }
     packagesInProgress.addAll(installPackages.map { it.name })
-    runTask(RBundle.message("package.task.manager.install.title"), installPackages.map { InstallTaskAction(interpreter, project, it, repoUrls) })
+    runTask(RBundle.message("package.task.manager.install.title"), installPackages.map { InstallTaskAction(rInterop, project, it, repoUrls) })
   }
 
   fun update(packages: List<RepoPackage>, repoUrls: List<String>) {
     val updatePackages = packages.filter { !packagesInProgress.contains(it.name) }
     packagesInProgress.addAll(updatePackages.map { it.name })
-    runTask(RBundle.message("package.task.manager.update.title"), updatePackages.map { UpdateTaskAction(interpreter, project, it, repoUrls) })
+    runTask(RBundle.message("package.task.manager.update.title"), updatePackages.map { UpdateTaskAction(rInterop, project, it, repoUrls) })
   }
 
   fun uninstall(packages: List<RInstalledPackage>) {
-    runTask(RBundle.message("package.task.manager.uninstall.title"), listOf(UninstallTaskAction(interpreter, project, packages)))
+    runTask(RBundle.message("package.task.manager.uninstall.title"), listOf(UninstallTaskAction(rInterop, project, packages)))
   }
 
   private fun runTask(title: String, actions: List<PackagingTaskAction>) {
@@ -171,7 +171,7 @@ class RPackageTaskManager(
   }
 
   private class InstallTaskAction(
-    private val interpreter: RInterpreter?,
+    private val rInterop: RInterop?,
     private val project: Project,
     private val repoPackage: RepoPackage,
     private val repoUrls: List<String>
@@ -185,7 +185,7 @@ class RPackageTaskManager(
 
     override fun doAction() {
       try {
-        RepoUtils.installPackage(interpreter, project, repoPackage, repoUrls)
+        RepoUtils.installPackage(rInterop, project, repoPackage, repoUrls)
       }
       finally {
         project.getUserData(KEY)!!.remove(repoPackage.name)
@@ -194,7 +194,7 @@ class RPackageTaskManager(
   }
 
   private class UpdateTaskAction(
-    private val interpreter: RInterpreter?,
+    private val rInterop: RInterop?,
     private val project: Project,
     private val repoPackage: RepoPackage,
     private val repoUrls: List<String>
@@ -208,7 +208,7 @@ class RPackageTaskManager(
 
     override fun doAction() {
       try {
-        RepoUtils.updatePackage(interpreter, project, repoPackage, repoUrls)
+        RepoUtils.updatePackage(rInterop, project, repoPackage, repoUrls)
       }
       finally {
         project.getUserData(KEY)!!.remove(repoPackage.name)
@@ -217,7 +217,7 @@ class RPackageTaskManager(
   }
 
   private class UninstallTaskAction(
-    private val interpreter: RInterpreter?,
+    private val rInterop: RInterop?,
     private val project: Project,
     private val packages: List<RInstalledPackage>
   ) : PackagingTaskAction {
@@ -229,7 +229,7 @@ class RPackageTaskManager(
     override val failureDescription = RBundle.message("uninstall.task.action.failure.description", packages.joinToString(", ") { it.name })
 
     override fun doAction() {
-      packages.forEach { RepoUtils.uninstallPackage(interpreter, project, it) }
+      packages.forEach { RepoUtils.uninstallPackage(rInterop, project, it) }
     }
   }
 

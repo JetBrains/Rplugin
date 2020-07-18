@@ -14,15 +14,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
 
 object RPackageCompletionUtil {
 
   fun addPackageCompletion(position: PsiElement, result: CompletionResultSet) {
-    val interpreter = RInterpreterManager.getInterpreterOrNull(position.project) ?: return
-    val installedPackages = interpreter.installedPackages
+    val state = RInterpreterStateManager.getCurrentStateOrNull(position.project) ?: return
+    val installedPackages = state.installedPackages
     installedPackages.forEach { result.consume(RLookupElementFactory().createPackageLookupElement(it.packageName, false)) }
   }
 
@@ -32,8 +32,8 @@ object RPackageCompletionUtil {
                              result: CompletionResultSet,
                              elementFactory: RLookupElementFactory) {
     val project = parameters.position.project
-    val interpreter = RInterpreterManager.getInterpreterOrNull(project) ?: return
-    val packageFile = interpreter.getSkeletonFileByPackageName(namespaceName) ?: return
+    val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
+    val packageFile = state.getSkeletonFileByPackageName(namespaceName) ?: return
     val scope = GlobalSearchScope.fileScope(packageFile)
     addCompletionFromIndices(project, scope, parameters.originalFile, "", HashSet(), result, elementFactory, isInternalAccess)
   }
@@ -47,11 +47,11 @@ object RPackageCompletionUtil {
                                elementFactory: RLookupElementFactory,
                                isInternalAccess: Boolean = false) {
     val runtimeInfo = originFile.runtimeInfo
-    val interpreter = RInterpreterManager.getInterpreterOrNull(originFile.project)
+    val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
     var hasElementsWithPrefix = false
-    if (runtimeInfo != null && interpreter != null) {
+    if (runtimeInfo != null) {
       val loadedPackages = runtimeInfo.loadedPackages
-        .mapNotNull { interpreter.getSkeletonFileByPackageName(it.key)?.virtualFile?.to(it.value) }
+        .mapNotNull { state.getSkeletonFileByPackageName(it.key)?.virtualFile?.to(it.value) }
         .toMap()
       val runtimeScope = GlobalSearchScope.filesScope(originFile.project, loadedPackages.keys).intersectWith(scope)
       val lookupElements = mutableMapOf<String, Pair<LookupElement, Int?>>()

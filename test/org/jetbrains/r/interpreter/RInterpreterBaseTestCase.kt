@@ -4,12 +4,14 @@
 
 package org.jetbrains.r.interpreter
 
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.registerServiceInstance
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.mock.MockInterpreter
-import org.jetbrains.r.mock.MockInterpreterProvider
+import org.jetbrains.r.interpreter.RInterpreterTestUtil.makeChildInterpreter
+import org.jetbrains.r.mock.MockInterpreterState
+import org.jetbrains.r.mock.MockInterpreterStateProvider
 import org.jetbrains.r.mock.MockRepoProvider
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RequiredPackage
@@ -21,13 +23,15 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
-  private lateinit var slaveInterpreter: RLocalInterpreterImpl
+  private lateinit var childInterpreter: RLocalInterpreterImpl
+  private lateinit var childInterpreterState: RInterpreterStateImpl
   private lateinit var localRepoProvider: LocalRepoProvider
 
   override fun setUp() {
     super.setUp()
     addLibraries()
-    setupMockInterpreter()
+    childInterpreter = makeChildInterpreter(project)
+    setupMockInterpreterState()
     setupMockRepoProvider()
   }
 
@@ -51,7 +55,7 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   }
 
   fun updateInterpreter() {
-    slaveInterpreter.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
+    childInterpreterState.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
   }
 
   private fun removeAllLocalPackages(packages: List<RequiredPackage>) {
@@ -61,14 +65,14 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   }
 
   private fun removeLocalPackage(aPackage: RequiredPackage) {
-    RInterpreterTestUtil.removePackage(slaveInterpreter, aPackage.name)
+    RInterpreterTestUtil.removePackage(childInterpreter, aPackage.name)
   }
 
-  private fun setupMockInterpreter() {
-    RInterpreterManager.getInterpreterAsync(project).blockingGet(DEFAULT_TIMEOUT)?.let { interpreter ->
-      val mock = interpreter as MockInterpreter
-      slaveInterpreter = RInterpreterTestUtil.makeSlaveInterpreter(project)
-      mock.provider = LocalInterpreterProvider(rInterop, slaveInterpreter)
+  private fun setupMockInterpreterState() {
+    RInterpreterStateManager.getCurrentStateBlocking(project, DEFAULT_TIMEOUT)?.let { state ->
+      val mock = state as MockInterpreterState
+      childInterpreterState = rInterop.state as RInterpreterStateImpl
+      mock.provider = LocalInterpreterStateProvider(childInterpreterState)
     }
   }
 
@@ -77,22 +81,24 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
     project.registerServiceInstance(RepoProvider::class.java, localRepoProvider)
   }
 
-  private class LocalInterpreterProvider(
-    override val interop: RInterop,
-    private val slaveInterpreter: RInterpreter
-  ) : MockInterpreterProvider {
+  private class LocalInterpreterStateProvider(private val childState: RInterpreterState) : MockInterpreterStateProvider {
+    override val rInterop: RInterop
+      get() = childState.rInterop
 
     override val isUpdating: Boolean?
-      get() = slaveInterpreter.isUpdating
+      get() = childState.isUpdating
 
     override val userLibraryPath: String
-      get() = slaveInterpreter.userLibraryPath
+      get() = childState.userLibraryPath
 
-    override val libraryPaths: List<RInterpreter.LibraryPath>
-      get() = slaveInterpreter.libraryPaths
+    override val libraryPaths: List<RInterpreterState.LibraryPath>
+      get() = childState.libraryPaths
 
     override val installedPackages: ExpiringList<RInstalledPackage>
-      get() = slaveInterpreter.installedPackages
+      get() = childState.installedPackages
+
+    override val skeletonFiles: Set<VirtualFile>
+      get() = childState.skeletonFiles
   }
 
   private class LocalRepoProvider : RepoProvider by MockRepoProvider() {

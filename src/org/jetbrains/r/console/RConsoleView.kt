@@ -10,8 +10,8 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.UnixProcessManager
 import com.intellij.execution.process.OSProcessUtil
+import com.intellij.execution.process.UnixProcessManager
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
@@ -61,6 +61,7 @@ import org.jetbrains.r.annotator.RAnnotatorVisitor
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.psi.RRecursiveElementVisitor
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jvnet.winp.WinProcess
@@ -178,6 +179,8 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     for (listener in onSelectListeners) {
       listener()
     }
+    rInterop.state.scheduleSkeletonUpdate()
+    RToolWindowFactory.refreshPackagePanel(project)
   }
 
   private fun splitWindow(splitView: JComponent) {

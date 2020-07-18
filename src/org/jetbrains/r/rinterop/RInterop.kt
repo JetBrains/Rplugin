@@ -40,7 +40,11 @@ import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterState
+import org.jetbrains.r.interpreter.RInterpreterStateImpl
 import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.packages.RInstalledPackage
+import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableManipulationColumn
@@ -110,6 +114,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     get() = !terminationPromise.isDone
   @Volatile
   internal var killedByUsed = false
+
+  val state: RInterpreterState = RInterpreterStateImpl(project, this)
+  fun updateState() = state.updateState()
 
   internal fun <Request : GeneratedMessageV3, Response : GeneratedMessageV3> executeAsync(
     f: KFunction1<Request, ListenableFuture<Response>>,
@@ -649,6 +656,44 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .putAllArguments(arguments)
       .build()
     execute(asyncStub::repoInstallPackage, request)
+  }
+
+  fun getSysEnv(envName: String, vararg flags: String): List<String> {
+    return try {
+      val request = GetSysEnvRequest.newBuilder().setEnvName(envName).addAllFlags(flags.toList()).build()
+      executeWithCheckCancel(asyncStub::getSysEnv, request).listList
+    }
+    catch (e: RInteropTerminated) {
+      emptyList()
+    }
+  }
+
+  fun loadLibPaths(): List<RInterpreterState.LibraryPath> {
+    return try {
+      executeWithCheckCancel(asyncStub::loadLibPaths, Empty.getDefaultInstance()).libPathsList.map {
+        RInterpreterState.LibraryPath(it.path, it.isWritable)
+      }
+    }
+    catch (e: RInteropTerminated) {
+      emptyList()
+    }
+  }
+
+  fun loadInstalledPackages(): List<RInstalledPackage> {
+    return try {
+      executeWithCheckCancel(asyncStub::loadInstalledPackages, Empty.getDefaultInstance()).packagesList.map {
+        val priority = when (it.priority) {
+          RInstalledPackageList.RInstalledPackage.RPackagePriority.BASE -> RPackagePriority.BASE
+          RInstalledPackageList.RInstalledPackage.RPackagePriority.RECOMMENDED -> RPackagePriority.RECOMMENDED
+          else -> RPackagePriority.NA
+        }
+        val description = it.descriptionList.map { entry -> entry.key to entry.value }.toMap()
+        RInstalledPackage(it.packageName, it.packageVersion, priority, it.libraryPath, description)
+      }
+    }
+    catch (e: RInteropTerminated) {
+      emptyList()
+    }
   }
 
   fun repoAddLibraryPath(path: String): RIExecutionResult {

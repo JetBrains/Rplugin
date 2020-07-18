@@ -219,6 +219,7 @@ object RInterpreterUtil {
 
   /**
    * @param errorHandler if errorHelper is not null, it could be called instead of throwing the exception.
+   * @param workingDirectory try not pass `null` if you are not sure that the execution is the same for all possible working directories
    * @throws RuntimeException if errorHandler is null and the helper exited with non-zero code or produced zero length output.
    */
   fun runHelper(interpreterLocation: RInterpreterLocation,
@@ -251,6 +252,9 @@ object RInterpreterUtil {
     return getScriptStdout(result.stdout)
   }
 
+  /**
+   * @see [runHelper]
+   */
   fun runMultiOutputHelper(interpreterLocation: RInterpreterLocation,
                            helper: File,
                            workingDirectory: String?,

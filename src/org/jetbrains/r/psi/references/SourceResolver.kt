@@ -188,7 +188,7 @@ private fun getSourceDeclaration(sourceIdentifier: PsiElement): RAssignmentState
   RResolver.resolveInFilesOrLibrary(sourceIdentifier, "source", result)
   return result.mapNotNull { it.element }.firstOrNull {
     val file = it.containingFile
-    val (name, _) = RSkeletonUtil.parsePackageAndVersionFromSkeletonFilename(file.name) ?: return@firstOrNull false
+    val (name, _) = RSkeletonUtil.skeletonFileToRPackage(file) ?: return@firstOrNull false
     name == "base"
   } as? RAssignmentStatement
 }

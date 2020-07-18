@@ -13,7 +13,10 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.OperatingSystem
+import org.jetbrains.r.interpreter.RInterpreterStateManager
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
 import org.jetbrains.r.rinterop.RInterop
@@ -157,9 +160,9 @@ object RepoUtils {
     return if (System.currentTimeMillis() - cache.lastUpdate < refreshInterval && values.isNotEmpty()) values else null
   }
 
-  private fun getInterpreter(suggested: RInterpreter?, project: Project): RInterpreter {
-    return suggested ?: RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT) ?:
-           throw ExecutionException("Cannot get interpreter for packaging task. Please, specify path to the R executable")
+  private fun getInterop(suggested: RInterop?, project: Project): RInterop {
+    return suggested ?: RInterpreterStateManager.getCurrentStateBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT)?.rInterop ?:
+           throw ExecutionException("Cannot get rInterop for packaging task. Please, specify path to the R executable")
   }
 
   private fun getPackageVersion(packageName: String, rInterop: RInterop): String? {
@@ -173,20 +176,22 @@ object RepoUtils {
     }
   }
 
-  fun installPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
-    updatePackage(rInterpreter, project, repoPackage, repoUrls)
+  fun installPackage(interop: RInterop?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
+    updatePackage(interop, project, repoPackage, repoUrls)
   }
 
-  fun updatePackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
-    val interpreter = getInterpreter(rInterpreter, project)
-    val rInterop = interpreter.interop
+  fun updatePackage(interop: RInterop?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
+    val rInterop = getInterop(interop, project)
     if (repoUrls.isEmpty()) {
       throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
     }
     val urls = repoUrls.map { trimRepoUrlSuffix(it) }
 
     // Ensure writable library path exists => interpreter won't ask during package installation
-    val (libraryPath, isUserDirectoryCreated) = interpreter.getGuaranteedWritableLibraryPath()
+    val interpreter = rInterop.interpreter
+    val state = rInterop.state
+    val (libraryPath, isUserDirectoryCreated) =
+      interpreter.getGuaranteedWritableLibraryPath(state.libraryPaths, state.userLibraryPath)
 
     val fallbackMethod = getFallbackDownloadMethod(interpreter.hostOS)
     val arguments = getInstallArguments(urls, libraryPath)
@@ -196,7 +201,7 @@ object RepoUtils {
 
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
-      interpreter.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
+      state.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
       RLibraryWatcher.getInstance(project).updateRootsToWatch()
     }
 
@@ -270,14 +275,13 @@ object RepoUtils {
   }
 
   @Throws(ExecutionException::class)
-  fun uninstallPackage(rInterpreter: RInterpreter?, project: Project, repoPackage: RInstalledPackage) {
+  fun uninstallPackage(interop: RInterop?, project: Project, repoPackage: RInstalledPackage) {
     val packageName = repoPackage.name
-    val interpreter = getInterpreter(rInterpreter, project)
-    val rInterop = interpreter.interop
+    val rInterop = getInterop(interop, project)
     if (!checkPackageInstalled(packageName, rInterop)) {
       throw ExecutionException("Cannot remove package '$packageName'. It is not installed")
     }
-    val libraryPath = interpreter.getLibraryPathByName(packageName)
+    val libraryPath = rInterop.state.getLibraryPathByName(packageName)
                       ?: throw ExecutionException("Cannot get library path for package '$packageName'")
     if (!libraryPath.isWritable) {
       throw ExecutionException("Cannot remove package '$packageName'. Library path is not writable")

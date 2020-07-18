@@ -506,6 +506,9 @@ You can find the source code in the following repositories:
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
 
+        <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterStateManager"
+                        serviceImplementation="org.jetbrains.r.interpreter.RInterpreterStateManagerImpl"/>
+
         <projectService serviceImplementation="org.jetbrains.r.settings.RGraphicsSettings"/>
 
         <projectService serviceImplementation="org.jetbrains.r.settings.REditorSettings"/>
