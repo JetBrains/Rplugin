@@ -34,11 +34,11 @@ import java.util.concurrent.TimeoutException
 
 object RInteropUtil {
   val LOG = Logger.getInstance(RInteropUtil.javaClass)
-  fun runRWrapperAndInterop(interpreter: RInterpreter): Promise<RInterop> {
+  fun runRWrapperAndInterop(interpreter: RInterpreter, workingDirectory: String = interpreter.basePath): Promise<RInterop> {
     val promise = AsyncPromise<RInterop>()
     var createdProcess: ProcessHandler? = null
     ProcessIOExecutorService.INSTANCE.execute {
-      runRWrapper(interpreter).onError {
+      runRWrapper(interpreter, workingDirectory).onError {
         promise.setError(it)
       }.onSuccess { (process, paths) ->
         createdProcess = process
@@ -175,7 +175,7 @@ object RInteropUtil {
     LOG.error(message, *attachments)
   }
 
-  private fun runRWrapper(interpreter: RInterpreter): Promise<Pair<ProcessHandler, RPaths>> {
+  private fun runRWrapper(interpreter: RInterpreter, workingDirectory: String): Promise<Pair<ProcessHandler, RPaths>> {
     val result = AsyncPromise<Pair<ProcessHandler, RPaths>>()
     val paths = getRPaths(interpreter)
     val version = interpreter.version
@@ -235,7 +235,7 @@ object RInteropUtil {
         command.withEnvironment("PATH", RPathUtil.join(paths.home, "bin", "x64") + ";" + paths.path)
       }
     }
-    result.setResult(interpreter.runProcessOnHost(command).apply {
+    result.setResult(interpreter.runProcessOnHost(command, workingDirectory, true).apply {
       this.putUserData(PROCESS_CRASH_REPORT_FILE, crashReportFile)
     } to paths)
     return result
