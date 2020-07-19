@@ -59,5 +59,31 @@ public interface RObjectOrBuilder extends
    */
   org.jetbrains.r.rinterop.RObject.ListOrBuilder getListOrBuilder();
 
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  boolean hasRnull();
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.RNull getRnull();
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder();
+
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  boolean hasRboolean();
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.RBoolean getRboolean();
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder();
+
   public org.jetbrains.r.rinterop.RObject.ObjectCase getObjectCase();
 }

@@ -214,15 +214,24 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       consoleView.interpreter.showUrlInViewer(consoleView.rInterop, url)
     }
 
-    override fun onRStudioApiRequest(functionId: Int, args: RObject): Promise<RObject> {
+    override fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> {
       val promise = AsyncPromise<RObject>()
-      when (functionId) {
-        GET_SOURCE_EDITOR_CONTEXT_ID -> {
-          invokeLater {
+      invokeLater {
+        when (functionId) {
+          RStudioApiFunctionId.GET_SOURCE_EDITOR_CONTEXT_ID -> {
             promise.setResult(getSourceEditorContext(rInterop))
           }
+          RStudioApiFunctionId.INSERT_TEXT_ID -> {
+            promise.setResult(insertText(rInterop, args))
+          }
+          RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
+            promise.setResult(RObject.newBuilder().setRnull(RObject.RNull.getDefaultInstance()).build())
+            sendToConsole(rInterop, args)
+          }
+          RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
+            promise.setResult(getConsoleEditorContext(rInterop))
+          }
         }
-        else -> TODO("Not yet implemented")
       }
       return promise
     }

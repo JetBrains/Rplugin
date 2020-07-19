@@ -104,6 +104,34 @@ private static final long serialVersionUID = 0L;
             objectCase_ = 4;
             break;
           }
+          case 42: {
+            org.jetbrains.r.rinterop.RObject.RNull.Builder subBuilder = null;
+            if (objectCase_ == 5) {
+              subBuilder = ((org.jetbrains.r.rinterop.RObject.RNull) object_).toBuilder();
+            }
+            object_ =
+                input.readMessage(org.jetbrains.r.rinterop.RObject.RNull.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.RObject.RNull) object_);
+              object_ = subBuilder.buildPartial();
+            }
+            objectCase_ = 5;
+            break;
+          }
+          case 50: {
+            org.jetbrains.r.rinterop.RObject.RBoolean.Builder subBuilder = null;
+            if (objectCase_ == 6) {
+              subBuilder = ((org.jetbrains.r.rinterop.RObject.RBoolean) object_).toBuilder();
+            }
+            object_ =
+                input.readMessage(org.jetbrains.r.rinterop.RObject.RBoolean.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.RObject.RBoolean) object_);
+              object_ = subBuilder.buildPartial();
+            }
+            objectCase_ = 6;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -2442,6 +2470,905 @@ private static final long serialVersionUID = 0L;
 
   }
 
+  public interface RNullOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:rplugininterop.RObject.RNull)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code rplugininterop.RObject.RNull}
+   */
+  public  static final class RNull extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RNull)
+      RNullOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RNull.newBuilder() to construct.
+    private RNull(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RNull() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RNull();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RNull(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RNull_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RNull_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.jetbrains.r.rinterop.RObject.RNull.class, org.jetbrains.r.rinterop.RObject.RNull.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.jetbrains.r.rinterop.RObject.RNull)) {
+        return super.equals(obj);
+      }
+      org.jetbrains.r.rinterop.RObject.RNull other = (org.jetbrains.r.rinterop.RObject.RNull) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RNull parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.jetbrains.r.rinterop.RObject.RNull prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code rplugininterop.RObject.RNull}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:rplugininterop.RObject.RNull)
+        org.jetbrains.r.rinterop.RObject.RNullOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RNull_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RNull_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.rinterop.RObject.RNull.class, org.jetbrains.r.rinterop.RObject.RNull.Builder.class);
+      }
+
+      // Construct using org.jetbrains.r.rinterop.RObject.RNull.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RNull_descriptor;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RNull getDefaultInstanceForType() {
+        return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RNull build() {
+        org.jetbrains.r.rinterop.RObject.RNull result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RNull buildPartial() {
+        org.jetbrains.r.rinterop.RObject.RNull result = new org.jetbrains.r.rinterop.RObject.RNull(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.jetbrains.r.rinterop.RObject.RNull) {
+          return mergeFrom((org.jetbrains.r.rinterop.RObject.RNull)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.jetbrains.r.rinterop.RObject.RNull other) {
+        if (other == org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.jetbrains.r.rinterop.RObject.RNull parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.jetbrains.r.rinterop.RObject.RNull) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:rplugininterop.RObject.RNull)
+    }
+
+    // @@protoc_insertion_point(class_scope:rplugininterop.RObject.RNull)
+    private static final org.jetbrains.r.rinterop.RObject.RNull DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.RObject.RNull();
+    }
+
+    public static org.jetbrains.r.rinterop.RObject.RNull getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RNull>
+        PARSER = new com.google.protobuf.AbstractParser<RNull>() {
+      @java.lang.Override
+      public RNull parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RNull(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RNull> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RNull> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.RObject.RNull getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface RBooleanOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:rplugininterop.RObject.RBoolean)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool boolean = 1;</code>
+     */
+    boolean getBoolean();
+  }
+  /**
+   * Protobuf type {@code rplugininterop.RObject.RBoolean}
+   */
+  public  static final class RBoolean extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RBoolean)
+      RBooleanOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RBoolean.newBuilder() to construct.
+    private RBoolean(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RBoolean() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RBoolean();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RBoolean(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              boolean_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RBoolean_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RBoolean_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.jetbrains.r.rinterop.RObject.RBoolean.class, org.jetbrains.r.rinterop.RObject.RBoolean.Builder.class);
+    }
+
+    public static final int BOOLEAN_FIELD_NUMBER = 1;
+    private boolean boolean_;
+    /**
+     * <code>bool boolean = 1;</code>
+     */
+    public boolean getBoolean() {
+      return boolean_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (boolean_ != false) {
+        output.writeBool(1, boolean_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (boolean_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, boolean_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.jetbrains.r.rinterop.RObject.RBoolean)) {
+        return super.equals(obj);
+      }
+      org.jetbrains.r.rinterop.RObject.RBoolean other = (org.jetbrains.r.rinterop.RObject.RBoolean) obj;
+
+      if (getBoolean()
+          != other.getBoolean()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + BOOLEAN_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getBoolean());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.RObject.RBoolean parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.jetbrains.r.rinterop.RObject.RBoolean prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code rplugininterop.RObject.RBoolean}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:rplugininterop.RObject.RBoolean)
+        org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RBoolean_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RBoolean_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.rinterop.RObject.RBoolean.class, org.jetbrains.r.rinterop.RObject.RBoolean.Builder.class);
+      }
+
+      // Construct using org.jetbrains.r.rinterop.RObject.RBoolean.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        boolean_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_RObject_RBoolean_descriptor;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RBoolean getDefaultInstanceForType() {
+        return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RBoolean build() {
+        org.jetbrains.r.rinterop.RObject.RBoolean result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.RObject.RBoolean buildPartial() {
+        org.jetbrains.r.rinterop.RObject.RBoolean result = new org.jetbrains.r.rinterop.RObject.RBoolean(this);
+        result.boolean_ = boolean_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.jetbrains.r.rinterop.RObject.RBoolean) {
+          return mergeFrom((org.jetbrains.r.rinterop.RObject.RBoolean)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.jetbrains.r.rinterop.RObject.RBoolean other) {
+        if (other == org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance()) return this;
+        if (other.getBoolean() != false) {
+          setBoolean(other.getBoolean());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.jetbrains.r.rinterop.RObject.RBoolean parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.jetbrains.r.rinterop.RObject.RBoolean) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private boolean boolean_ ;
+      /**
+       * <code>bool boolean = 1;</code>
+       */
+      public boolean getBoolean() {
+        return boolean_;
+      }
+      /**
+       * <code>bool boolean = 1;</code>
+       */
+      public Builder setBoolean(boolean value) {
+        
+        boolean_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool boolean = 1;</code>
+       */
+      public Builder clearBoolean() {
+        
+        boolean_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:rplugininterop.RObject.RBoolean)
+    }
+
+    // @@protoc_insertion_point(class_scope:rplugininterop.RObject.RBoolean)
+    private static final org.jetbrains.r.rinterop.RObject.RBoolean DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.RObject.RBoolean();
+    }
+
+    public static org.jetbrains.r.rinterop.RObject.RBoolean getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RBoolean>
+        PARSER = new com.google.protobuf.AbstractParser<RBoolean>() {
+      @java.lang.Override
+      public RBoolean parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RBoolean(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RBoolean> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RBoolean> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.RObject.RBoolean getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private int objectCase_ = 0;
   private java.lang.Object object_;
   public enum ObjectCase
@@ -2450,6 +3377,8 @@ private static final long serialVersionUID = 0L;
     RINT(2),
     RDOUBLE(3),
     LIST(4),
+    RNULL(5),
+    RBOOLEAN(6),
     OBJECT_NOT_SET(0);
     private final int value;
     private ObjectCase(int value) {
@@ -2469,6 +3398,8 @@ private static final long serialVersionUID = 0L;
         case 2: return RINT;
         case 3: return RDOUBLE;
         case 4: return LIST;
+        case 5: return RNULL;
+        case 6: return RBOOLEAN;
         case 0: return OBJECT_NOT_SET;
         default: return null;
       }
@@ -2588,6 +3519,58 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.RObject.List.getDefaultInstance();
   }
 
+  public static final int RNULL_FIELD_NUMBER = 5;
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  public boolean hasRnull() {
+    return objectCase_ == 5;
+  }
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  public org.jetbrains.r.rinterop.RObject.RNull getRnull() {
+    if (objectCase_ == 5) {
+       return (org.jetbrains.r.rinterop.RObject.RNull) object_;
+    }
+    return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   */
+  public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder() {
+    if (objectCase_ == 5) {
+       return (org.jetbrains.r.rinterop.RObject.RNull) object_;
+    }
+    return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+  }
+
+  public static final int RBOOLEAN_FIELD_NUMBER = 6;
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  public boolean hasRboolean() {
+    return objectCase_ == 6;
+  }
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  public org.jetbrains.r.rinterop.RObject.RBoolean getRboolean() {
+    if (objectCase_ == 6) {
+       return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
+    }
+    return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   */
+  public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder() {
+    if (objectCase_ == 6) {
+       return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
+    }
+    return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -2614,6 +3597,12 @@ private static final long serialVersionUID = 0L;
     if (objectCase_ == 4) {
       output.writeMessage(4, (org.jetbrains.r.rinterop.RObject.List) object_);
     }
+    if (objectCase_ == 5) {
+      output.writeMessage(5, (org.jetbrains.r.rinterop.RObject.RNull) object_);
+    }
+    if (objectCase_ == 6) {
+      output.writeMessage(6, (org.jetbrains.r.rinterop.RObject.RBoolean) object_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -2638,6 +3627,14 @@ private static final long serialVersionUID = 0L;
     if (objectCase_ == 4) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(4, (org.jetbrains.r.rinterop.RObject.List) object_);
+    }
+    if (objectCase_ == 5) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(5, (org.jetbrains.r.rinterop.RObject.RNull) object_);
+    }
+    if (objectCase_ == 6) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(6, (org.jetbrains.r.rinterop.RObject.RBoolean) object_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -2672,6 +3669,14 @@ private static final long serialVersionUID = 0L;
         if (!getList()
             .equals(other.getList())) return false;
         break;
+      case 5:
+        if (!getRnull()
+            .equals(other.getRnull())) return false;
+        break;
+      case 6:
+        if (!getRboolean()
+            .equals(other.getRboolean())) return false;
+        break;
       case 0:
       default:
     }
@@ -2702,6 +3707,14 @@ private static final long serialVersionUID = 0L;
       case 4:
         hash = (37 * hash) + LIST_FIELD_NUMBER;
         hash = (53 * hash) + getList().hashCode();
+        break;
+      case 5:
+        hash = (37 * hash) + RNULL_FIELD_NUMBER;
+        hash = (53 * hash) + getRnull().hashCode();
+        break;
+      case 6:
+        hash = (37 * hash) + RBOOLEAN_FIELD_NUMBER;
+        hash = (53 * hash) + getRboolean().hashCode();
         break;
       case 0:
       default:
@@ -2895,6 +3908,20 @@ private static final long serialVersionUID = 0L;
           result.object_ = listBuilder_.build();
         }
       }
+      if (objectCase_ == 5) {
+        if (rnullBuilder_ == null) {
+          result.object_ = object_;
+        } else {
+          result.object_ = rnullBuilder_.build();
+        }
+      }
+      if (objectCase_ == 6) {
+        if (rbooleanBuilder_ == null) {
+          result.object_ = object_;
+        } else {
+          result.object_ = rbooleanBuilder_.build();
+        }
+      }
       result.objectCase_ = objectCase_;
       onBuilt();
       return result;
@@ -2959,6 +3986,14 @@ private static final long serialVersionUID = 0L;
         }
         case LIST: {
           mergeList(other.getList());
+          break;
+        }
+        case RNULL: {
+          mergeRnull(other.getRnull());
+          break;
+        }
+        case RBOOLEAN: {
+          mergeRboolean(other.getRboolean());
           break;
         }
         case OBJECT_NOT_SET: {
@@ -3551,6 +4586,278 @@ private static final long serialVersionUID = 0L;
       objectCase_ = 4;
       onChanged();;
       return listBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> rnullBuilder_;
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public boolean hasRnull() {
+      return objectCase_ == 5;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RNull getRnull() {
+      if (rnullBuilder_ == null) {
+        if (objectCase_ == 5) {
+          return (org.jetbrains.r.rinterop.RObject.RNull) object_;
+        }
+        return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+      } else {
+        if (objectCase_ == 5) {
+          return rnullBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public Builder setRnull(org.jetbrains.r.rinterop.RObject.RNull value) {
+      if (rnullBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        object_ = value;
+        onChanged();
+      } else {
+        rnullBuilder_.setMessage(value);
+      }
+      objectCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public Builder setRnull(
+        org.jetbrains.r.rinterop.RObject.RNull.Builder builderForValue) {
+      if (rnullBuilder_ == null) {
+        object_ = builderForValue.build();
+        onChanged();
+      } else {
+        rnullBuilder_.setMessage(builderForValue.build());
+      }
+      objectCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public Builder mergeRnull(org.jetbrains.r.rinterop.RObject.RNull value) {
+      if (rnullBuilder_ == null) {
+        if (objectCase_ == 5 &&
+            object_ != org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance()) {
+          object_ = org.jetbrains.r.rinterop.RObject.RNull.newBuilder((org.jetbrains.r.rinterop.RObject.RNull) object_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          object_ = value;
+        }
+        onChanged();
+      } else {
+        if (objectCase_ == 5) {
+          rnullBuilder_.mergeFrom(value);
+        }
+        rnullBuilder_.setMessage(value);
+      }
+      objectCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public Builder clearRnull() {
+      if (rnullBuilder_ == null) {
+        if (objectCase_ == 5) {
+          objectCase_ = 0;
+          object_ = null;
+          onChanged();
+        }
+      } else {
+        if (objectCase_ == 5) {
+          objectCase_ = 0;
+          object_ = null;
+        }
+        rnullBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RNull.Builder getRnullBuilder() {
+      return getRnullFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder() {
+      if ((objectCase_ == 5) && (rnullBuilder_ != null)) {
+        return rnullBuilder_.getMessageOrBuilder();
+      } else {
+        if (objectCase_ == 5) {
+          return (org.jetbrains.r.rinterop.RObject.RNull) object_;
+        }
+        return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> 
+        getRnullFieldBuilder() {
+      if (rnullBuilder_ == null) {
+        if (!(objectCase_ == 5)) {
+          object_ = org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
+        }
+        rnullBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder>(
+                (org.jetbrains.r.rinterop.RObject.RNull) object_,
+                getParentForChildren(),
+                isClean());
+        object_ = null;
+      }
+      objectCase_ = 5;
+      onChanged();;
+      return rnullBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> rbooleanBuilder_;
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public boolean hasRboolean() {
+      return objectCase_ == 6;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RBoolean getRboolean() {
+      if (rbooleanBuilder_ == null) {
+        if (objectCase_ == 6) {
+          return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
+        }
+        return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+      } else {
+        if (objectCase_ == 6) {
+          return rbooleanBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public Builder setRboolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
+      if (rbooleanBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        object_ = value;
+        onChanged();
+      } else {
+        rbooleanBuilder_.setMessage(value);
+      }
+      objectCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public Builder setRboolean(
+        org.jetbrains.r.rinterop.RObject.RBoolean.Builder builderForValue) {
+      if (rbooleanBuilder_ == null) {
+        object_ = builderForValue.build();
+        onChanged();
+      } else {
+        rbooleanBuilder_.setMessage(builderForValue.build());
+      }
+      objectCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public Builder mergeRboolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
+      if (rbooleanBuilder_ == null) {
+        if (objectCase_ == 6 &&
+            object_ != org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance()) {
+          object_ = org.jetbrains.r.rinterop.RObject.RBoolean.newBuilder((org.jetbrains.r.rinterop.RObject.RBoolean) object_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          object_ = value;
+        }
+        onChanged();
+      } else {
+        if (objectCase_ == 6) {
+          rbooleanBuilder_.mergeFrom(value);
+        }
+        rbooleanBuilder_.setMessage(value);
+      }
+      objectCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public Builder clearRboolean() {
+      if (rbooleanBuilder_ == null) {
+        if (objectCase_ == 6) {
+          objectCase_ = 0;
+          object_ = null;
+          onChanged();
+        }
+      } else {
+        if (objectCase_ == 6) {
+          objectCase_ = 0;
+          object_ = null;
+        }
+        rbooleanBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RBoolean.Builder getRbooleanBuilder() {
+      return getRbooleanFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder() {
+      if ((objectCase_ == 6) && (rbooleanBuilder_ != null)) {
+        return rbooleanBuilder_.getMessageOrBuilder();
+      } else {
+        if (objectCase_ == 6) {
+          return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
+        }
+        return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> 
+        getRbooleanFieldBuilder() {
+      if (rbooleanBuilder_ == null) {
+        if (!(objectCase_ == 6)) {
+          object_ = org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
+        }
+        rbooleanBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder>(
+                (org.jetbrains.r.rinterop.RObject.RBoolean) object_,
+                getParentForChildren(),
+                isClean());
+        object_ = null;
+      }
+      objectCase_ = 6;
+      onChanged();;
+      return rbooleanBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

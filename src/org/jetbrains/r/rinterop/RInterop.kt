@@ -1017,7 +1017,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         lateinit var rStudioApiResponse: RObject
         fireListenersAsync(
           {
-            val response = it.onRStudioApiRequest(request.functionID, request.args)
+            val response = it.onRStudioApiRequest(RStudioApiFunctionId.fromInt(request.functionID), request.args)
             response.then { result ->
               rStudioApiResponse = result
             }
@@ -1250,7 +1250,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
-    fun onRStudioApiRequest(functionId: Int, args: RObject): Promise<RObject> = resolvedPromise()
+    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
   }
