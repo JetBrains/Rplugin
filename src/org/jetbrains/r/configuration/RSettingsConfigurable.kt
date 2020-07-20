@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
@@ -21,44 +22,28 @@ import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSettings
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
 import javax.swing.JCheckBox
 import javax.swing.JComponent
-import javax.swing.JPanel
 
 class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable {
   private val settings = RSettings.getInstance(project)
   private val interpreterPanel = RManageInterpreterPanel(RBundle.message("project.settings.interpreter.label"), false, null)
   private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
   private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
-  private val component = JPanel()
+  private val component: JComponent
   private val extensionConfigurables = RInterpreterSettingsProvider.getProviders().mapNotNull { it.createSettingsConfigurable(project) }
 
   init {
-    fun createConstraints(gridY: Int, weightY: Double = 0.0) = GridBagConstraints().apply {
-      gridx = 0
-      gridy = gridY
-      anchor = GridBagConstraints.NORTHWEST
-      weightx = 1.0
-      weighty = weightY
-      fill = GridBagConstraints.HORIZONTAL
+    component = panel(LCFlags.fillX) {
+      row { component(interpreterPanel.component).constraints(growX) }
+      row { component(loadWorkspaceCheckBox) }
+      row { component(saveWorkspaceCheckBox) }
+      extensionConfigurables
+        .mapNotNull { it.createComponent() }
+        .forEach { newComponent ->
+          row { component(newComponent).constraints(growX) }
+        }
     }
-    reset()
-    component.layout = GridBagLayout()
-    component.add(interpreterPanel.component, createConstraints(0))
-    component.add(loadWorkspaceCheckBox, createConstraints(1))
-    component.add(saveWorkspaceCheckBox, createConstraints(2))
-    var gridY = 3
-    extensionConfigurables
-      .mapNotNull { it.createComponent() }
-      .forEach { newComponent ->
-        component.add(newComponent, createConstraints(gridY++).also {
-          it.insets = Insets(30, 6, 0, 6)
-        })
-      }
-    component.add(JPanel(), createConstraints(gridY, 1.0))
   }
 
   override fun isModified(): Boolean {
