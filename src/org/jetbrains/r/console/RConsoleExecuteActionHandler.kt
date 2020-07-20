@@ -225,7 +225,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             promise.setResult(insertText(rInterop, args))
           }
           RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
-            promise.setResult(RObject.newBuilder().setRnull(RObject.RNull.getDefaultInstance()).build())
+            promise.setResult(RObject.getDefaultInstance())
             sendToConsole(rInterop, args)
           }
           RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {

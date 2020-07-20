@@ -85,5 +85,18 @@ public interface RObjectOrBuilder extends
    */
   org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder();
 
+  /**
+   * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   */
+  boolean hasNamedList();
+  /**
+   * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.NamedList getNamedList();
+  /**
+   * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   */
+  org.jetbrains.r.rinterop.RObject.NamedListOrBuilder getNamedListOrBuilder();
+
   public org.jetbrains.r.rinterop.RObject.ObjectCase getObjectCase();
 }
