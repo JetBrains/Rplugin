@@ -4,12 +4,14 @@
 
 package org.jetbrains.r.projectGenerator.template
 
+import com.intellij.facet.ui.ValidationResult
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.panel.packageManager.*
+import java.nio.file.Path
 import java.util.function.Consumer
 import javax.swing.JComponent
 
@@ -28,6 +30,16 @@ class RPackageProjectGenerator : RProjectGenerator() {
 
   override val requiredPackageList = true
   private var settingsPanel: RPackageManagerGroupPanel? = null
+
+  override fun validate(baseDirPath: String): ValidationResult {
+    val packageName = Path.of(baseDirPath).fileName.toString()
+    return if (R_PACKAGE_NAME_REGEX.matchEntire(packageName) == null) {
+      ValidationResult(RBundle.message("project.setting.incorrect.package.name"))
+    }
+    else {
+      ValidationResult.OK
+    }
+  }
 
   override fun getSettingsPanel(): JComponent? {
     val defaultPanel = RDefaultPackagePanel(rProjectSettings)
@@ -50,5 +62,9 @@ class RPackageProjectGenerator : RProjectGenerator() {
 
   fun setErrorAction(action: Consumer<List<ValidationInfo>>) {
     settingsPanel!!.setErrorAction(action)
+  }
+
+  companion object {
+    private val R_PACKAGE_NAME_REGEX = Regex("[a-zA-Z][a-zA-Z0-9.]*[a-zA-Z0-9]")
   }
 }
