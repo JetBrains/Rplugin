@@ -21,7 +21,7 @@ class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
   @Throws(IOException::class)
   private fun doTest() {
     val filename = getTestName(false)
-    val fullPath = testDataPath + filename
+    val fullPath = File(testDataPath, filename).path
     val file = myFixture.configureByFile(filename + ".r") as RFile
     val functionExpressions = PsiTreeUtil.collectElementsOfType(file, org.jetbrains.r.psi.api.RFunctionExpression::class.java).sortedBy { it.textOffset }
 
