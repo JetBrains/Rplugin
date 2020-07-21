@@ -8,7 +8,6 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.DocumentBasedFormattingModel
@@ -23,10 +22,11 @@ import org.jetbrains.r.rmarkdown.RmdFenceProvider
 private val MARKDOWN_CODE_FENCE: IElementType = MarkdownElementType.platformType(MarkdownElementTypes.CODE_FENCE)
 
 class RMarkdownFormattingModelBuilder : FormattingModelBuilder {
-  override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
-    val rmdFile = element.containingFile!!
-    val files: List<PsiFile> = element.containingFile.viewProvider.allFiles
+  override fun createModel(formattingContext: FormattingContext): FormattingModel {
+    val rmdFile = formattingContext.containingFile
+    val files: List<PsiFile> = formattingContext.containingFile.viewProvider.allFiles
     val rmdRoot = rmdFile.node!!
+    val settings = formattingContext.codeStyleSettings
     val context = TemplateContext(files, settings)
     val rootBlock = TemplateAbstractBlock(rmdRoot, context)
     return DocumentBasedFormattingModel(rootBlock, settings, rmdFile)

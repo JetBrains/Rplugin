@@ -5,19 +5,19 @@
 
 package org.jetbrains.r.editor.formatting
 
+import com.intellij.formatting.FormattingContext
 import com.intellij.formatting.FormattingModel
 import com.intellij.formatting.FormattingModelBuilder
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.DocumentBasedFormattingModel
 
 class RFormattingModelBuilder : FormattingModelBuilder {
-  override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
-    val containingFile = element.containingFile
-    val astNode = containingFile.node!!
+  override fun createModel(formattingContext: FormattingContext): FormattingModel {
+    val containingFile = formattingContext.containingFile
+    val astNode = formattingContext.node
+    val settings = formattingContext.codeStyleSettings
 
     val root = RFormatterBlock(RFormattingContext(settings), astNode)
     return DocumentBasedFormattingModel(root, settings, containingFile)
