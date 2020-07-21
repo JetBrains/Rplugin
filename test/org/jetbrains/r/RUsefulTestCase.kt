@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.DumbServiceImpl
@@ -26,6 +27,7 @@ import com.intellij.testFramework.registerServiceInstance
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexImpl
 import com.intellij.util.indexing.UnindexedFilesUpdater
+import com.intellij.util.io.exists
 import junit.framework.TestCase
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.isPending
@@ -43,6 +45,7 @@ import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.skeleton.RSkeletonFileType
 import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
 import java.util.*
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
@@ -212,8 +215,11 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   companion object {
-    val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
-    val SKELETON_LIBRARY_PATH = TEST_DATA_PATH + "/skeletons"
+    val TEST_DATA_PATH : String
+      get() = Paths.get(File(PathManager.getHomePath(), "/rplugin/testData").path).takeIf { it.exists() }?.toString() ?:
+              Paths.get(File("testData").absolutePath.replace(File.pathSeparatorChar, '/')).takeIf { it.exists() }?.toString() ?:
+              throw IllegalStateException("Could not find testData path")
+    val SKELETON_LIBRARY_PATH = File(TEST_DATA_PATH, "/skeletons").path
     private val packageNamesForTests: Set<String> = """
       base
       datasets

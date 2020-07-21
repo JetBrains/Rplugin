@@ -8,8 +8,7 @@ import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
 import com.jetbrains.python.psi.LanguageLevel
 import org.jetbrains.r.RUsefulTestCase
-
-private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/rmd/"
+import java.io.File
 
 @TestDataPath("/testData/parser/rmd")
 class RMarkdownParsingPythonTest : RUsefulTestCase() {
@@ -20,9 +19,7 @@ class RMarkdownParsingPythonTest : RUsefulTestCase() {
     LanguageLevel.FORCE_LANGUAGE_LEVEL = LanguageLevel.PYTHON27
   }
 
-  override fun getTestDataPath(): String {
-    return DATA_PATH
-  }
+  override fun getTestDataPath(): String = File(super.getTestDataPath(), "/parser/rmd/").path
 
   fun testDifferentCells() {
     doTest()

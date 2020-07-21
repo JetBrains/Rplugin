@@ -7,15 +7,12 @@ package org.jetbrains.r.parser
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
 import org.jetbrains.r.RUsefulTestCase
-
-private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/rmd/"
+import java.io.File
 
 /** IMPORTANT: PSI has standard TokenType.WHITE_SPACE but lexical level use MARKDOWN_EOL. */
 @TestDataPath("/testData/parser/rmd")
 class RMarkdownParsingTest : RUsefulTestCase() {
-  override fun getTestDataPath(): String {
-    return DATA_PATH
-  }
+  override fun getTestDataPath(): String = File(super.getTestDataPath(), "/parser/rmd/").path
 
   fun testSimple() {
     doTest()

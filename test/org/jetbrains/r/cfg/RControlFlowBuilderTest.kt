@@ -8,6 +8,7 @@ import com.intellij.internal.cfgView.ShowControlFlowHandler
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.psi.api.RFile
+import java.io.File
 import java.io.IOException
 
 
@@ -15,7 +16,7 @@ private const val GENERATE_SVG = false
 
 class RControlFlowTest: RLightCodeInsightFixtureTestCase() {
 
-  override fun getTestDataPath(): String = System.getProperty("user.dir") + "/testData/parser/r/"
+  override fun getTestDataPath(): String = File(super.getTestDataPath(), "/parser/r/").path
 
   @Throws(IOException::class)
   private fun doTest() {

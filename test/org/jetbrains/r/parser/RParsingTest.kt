@@ -7,13 +7,12 @@ package org.jetbrains.r.parser
 import com.intellij.testFramework.ParsingTestCase
 import com.intellij.testFramework.TestDataPath
 import org.jetbrains.r.RUsefulTestCase
-
-private val DATA_PATH = System.getProperty("user.dir") + "/testData/parser/r/"
+import java.io.File
 
 @TestDataPath("/testData/parser/r")
 class RParsingTest : RUsefulTestCase() {
 
-  override fun getTestDataPath(): String = DATA_PATH
+  override fun getTestDataPath(): String = File(super.getTestDataPath(), "/parser/r/").path
 
   fun testIdentifierLexing() = doTest()
 
