@@ -29,6 +29,10 @@ interface RInterpreter : RInterpreterInfo {
 
   val hostOS: OperatingSystem
 
+  /** This method is called when interpreter location is changed in settings. If it's possible to update location of the interpreter
+   * without setting up a new RInterpreter, this method should do so and return true. */
+  fun tryRefreshLocation(newLocation: RInterpreterLocation): Boolean = false
+
   fun suggestConsoleName(workingDirectory: String): String {
     return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
   }

@@ -12,6 +12,7 @@ import com.intellij.util.ui.JBUI
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.sdk.RInterpreterDetailsStep
 import org.jetbrains.r.sdk.RInterpreterListCellRenderer
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -33,6 +34,21 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
       }
     }
   }
+  private val editButton = FixedSizeButton().apply {
+    icon = AllIcons.Actions.Edit
+    val preferredHeight = comboBox.height
+    preferredSize = Dimension(preferredHeight, preferredHeight)
+    addActionListener {
+      val selection = currentSelection ?: return@addActionListener
+      val index = currentInterpreters.indexOf(selection).takeIf { it >= 0 } ?: return@addActionListener
+      RInterpreterSettingsProvider.getProviders()
+        .firstOrNull { it.canEditInterpreter(selection) }
+        ?.showEditInterpreterDialog(selection, currentInterpreters) {
+          currentInterpreters[index] = it
+          changeSelection(it)
+        }
+    }
+  }
 
   private var isModified = false
 
@@ -43,7 +59,11 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
   var initialSelection: RInterpreterInfo? = null
 
   var currentSelection: RInterpreterInfo? = null
-    private set
+    private set(value) {
+      field = value
+      editButton.isEnabled =
+        value != null && RInterpreterSettingsProvider.getProviders().any { it.canEditInterpreter(value) }
+    }
 
   init {
     fun createLabel() = JLabel(text)
@@ -70,6 +90,7 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
     addComponentToPanel(createLabel(), 0, 0)
     addComponentToPanel(comboBox, 1, 0, 0.1)
     addComponentToPanel(createDetailsButton(comboBox.height), 2, 0, 0.0)
+    if (!addOnly) addComponentToPanel(editButton, 3, 0, 0.0)
   }
 
   private fun addComponentToPanel(
