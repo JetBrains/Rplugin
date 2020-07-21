@@ -100,10 +100,12 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
 
   private fun onInterpreterLocationChanged(location: RInterpreterLocation?) {
     if (project.isDefault) return
-    restartInterpreter()
-    RConsoleManager.runConsole(project).onSuccess {
-      runInEdt {
-        RConsoleManager.closeMismatchingConsoles(project, location)
+    if (location == null || RInterpreterManager.getInterpreterOrNull(project)?.tryRefreshLocation(location) != true) {
+      restartInterpreter()
+      RConsoleManager.runConsole(project).onSuccess {
+        runInEdt {
+          RConsoleManager.closeMismatchingConsoles(project, location)
+        }
       }
     }
   }

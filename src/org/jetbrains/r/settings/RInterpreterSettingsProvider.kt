@@ -25,6 +25,11 @@ interface RInterpreterSettingsProvider {
 
   fun createSettingsConfigurable(project: Project): UnnamedConfigurable? = null
 
+  fun canEditInterpreter(info: RInterpreterInfo): Boolean = false
+
+  fun showEditInterpreterDialog(info: RInterpreterInfo, existingInterpreters: List<RInterpreterInfo>,
+                                onEdited: (RInterpreterInfo) -> Unit) {}
+
   companion object {
     private val EP_NAME: ExtensionPointName<RInterpreterSettingsProvider>
       = ExtensionPointName.create("com.intellij.rInterpreterSettingsProvider")
