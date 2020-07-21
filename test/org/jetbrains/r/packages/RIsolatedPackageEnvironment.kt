@@ -10,11 +10,6 @@ import java.nio.file.Path
 
 class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
 
-  override fun setUp() {
-    super.setUp()
-    setupTempDir()
-  }
-
   fun testSymlinkPackages() {
     val state = RInterpreterStateManager.getCurrentStateBlocking(myFixture.project, DEFAULT_TIMEOUT)!!
     val interpreterLocation = state.rInterop.interpreter.interpreterLocation
