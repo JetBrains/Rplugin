@@ -138,7 +138,11 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
   private fun createUpdatePromise(): Promise<Unit> {
     return runAsync { doUpdateState() }
       .onProcessed { resetUpdatePromise() }
-      .onError { LOG.error("Unable to update state", it) }
+      .onError {
+        if (it !is IllegalStateException) {
+          LOG.error("Unable to update state", it)
+        }
+      }
   }
 
   @Synchronized
@@ -146,7 +150,9 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     updatePromise = null
   }
 
+  @Throws(IllegalStateException::class)
   private fun doUpdateState() {
+    if (!rInterop.isAlive) throw IllegalStateException("RInterop is dead")
     val installedPackages = makeExpiring(rInterop.loadInstalledPackages())
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
     val (libraryPaths, userLibraryPath) = loadPaths()

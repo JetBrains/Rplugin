@@ -59,7 +59,7 @@ class RPackageManagementService(private val project: Project,
     get() = RInterpreterStateManager.getCurrentStateOrNull(project)
 
   private val interopIfReady: RInterop?
-    get() = rStateIfReady?.rInterop
+    get() = rStateIfReady?.rInterop?.takeIf { it.isAlive }
 
   private val provider: RepoProvider
     get() = RepoProvider.getInstance(project)
