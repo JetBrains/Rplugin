@@ -6,20 +6,22 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
 import java.lang.IllegalArgumentException
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.streams.toList
 
 enum class RStudioApiFunctionId {
   GET_SOURCE_EDITOR_CONTEXT_ID,
   INSERT_TEXT_ID,
   SEND_TO_CONSOLE_ID,
-  GET_CONSOLE_EDITOR_CONTEXT_ID;
+  GET_CONSOLE_EDITOR_CONTEXT_ID,
+  NAVIGATE_TO_FILE_ID,
+  GET_ACTIVE_PROJECT_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -28,6 +30,8 @@ enum class RStudioApiFunctionId {
         1 -> INSERT_TEXT_ID
         2 -> SEND_TO_CONSOLE_ID
         3 -> GET_CONSOLE_EDITOR_CONTEXT_ID
+        4 -> NAVIGATE_TO_FILE_ID
+        5 -> GET_ACTIVE_PROJECT_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -66,7 +70,7 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
   }
   val editors = EditorFactory.getInstance().editors(document, rInterop.project)
   val selections = editors.toList().map { e ->
-    e.caretModel.allCarets.filter { it.hasSelection() }.map {
+    e.caretModel.allCarets.map {
       val startLine = document.getLineNumber(it.selectionStart)
       val endLine = document.getLineNumber(it.selectionEnd)
       val documentPosition = RObject.newBuilder().setRInt(RObject.RInt.newBuilder().addAllInts(listOf(
@@ -77,7 +81,7 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
       ))).build()
       RObject.newBuilder().setList(RObject.List.newBuilder().addAllRObjects(listOf(
         documentPosition,
-        it.selectedText!!.toRString()
+        (it.selectedText ?: "").toRString()
       ))).build()
     }
   }.flatten().toRList()
@@ -114,31 +118,51 @@ fun insertText(rInterop: RInterop, args: RObject): RObject {
     { -it.list.getRObjects(0).rInt.intsList[2].toInt() },
     { -it.list.getRObjects(0).rInt.intsList[3].toInt() }
   ))
+
+  // Insert at the current selection
+  if (insertions.size == 1 && insertions[0].list.getRObjects(0).rInt.intsList.all { it == -1L }) {
+    val editor = EditorFactory.getInstance().editors(document, rInterop.project).toList().first() ?: return RObject.getDefaultInstance()
+    WriteCommandAction.runWriteCommandAction(rInterop.project) {
+      document.replaceString(editor.selectionModel.selectionStart, editor.selectionModel.selectionEnd,
+                             insertions[0].list.getRObjects(1).rString.getStrings(0))
+    }
+    return RObject.getDefaultInstance()
+  }
+
   for (insertion in insertions) {
     val range = insertion.list.getRObjects(0).rInt.intsList
     WriteCommandAction.runWriteCommandAction(rInterop.project) {
-      val (startPos, endPos) = listOf(0, 2).map {
-        if (document.getLineEndOffset(range[it].toInt()) <
-            range[it + 1].toInt()) {
-          document.getLineEndOffset(range[it].toInt())
+      when {
+        range[0] >= document.lineCount -> {
+          document.insertString(document.getLineEndOffset(if (document.lineCount == 0) 0 else document.lineCount - 1),
+                                insertion.list.getRObjects(1).rString.getStrings(0))
         }
-        else {
-          range[it + 1].toInt()
+        range[2] >= document.lineCount -> {
+          document.setText(insertion.list.getRObjects(1).rString.getStrings(0))
+        }
+        else -> {
+          val (startPos, endPos) = listOf(0, 2).map {
+            if (document.getLineEndOffset(range[it].toInt()) - document.getLineStartOffset(range[it].toInt()) <
+                range[it + 1].toInt()) {
+              document.getLineEndOffset(range[it].toInt()) - document.getLineStartOffset(range[it].toInt())
+            }
+            else {
+              range[it + 1].toInt()
+            }
+          }
+          document.replaceString(
+            document.getLineStartOffset(range[0].toInt()) +
+            startPos,
+            document.getLineStartOffset(range[2].toInt()) +
+            endPos,
+            insertion.list.getRObjects(1).rString.getStrings(0)
+          )
         }
       }
-      document.replaceString(
-        document.getLineStartOffset(range[0].toInt()) +
-        startPos,
-        document.getLineStartOffset(range[2].toInt()) +
-        endPos,
-        insertion.list.getRObjects(1).rString.getStrings(0)
-      )
     }
   }
   return RObject.getDefaultInstance()
 }
-
-private val sendToConsoleHelper = AtomicBoolean(false)
 
 fun sendToConsole(rInterop: RInterop, args: RObject): Promise<Unit> {
   val code = args.list.getRObjects(0).rString.getStrings(0)
@@ -148,12 +172,21 @@ fun sendToConsole(rInterop: RInterop, args: RObject): Promise<Unit> {
 
   val asStr = { it: Boolean -> if (it) "TRUE" else "FALSE" }
 
-  val result = if (echo && !sendToConsoleHelper.get()) {
-    sendToConsoleHelper.set(true)
+  if (echo) {
+    if (rInterop.isInSourceFileExecution.get()) {
+      RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeText(
+        "rstudioapi::sendToConsole(\"$code\", ${asStr(execute)}, ${asStr(echo)}, ${asStr(focus)})")
+    }
+  }
+
+  if (focus) {
+    //TODO
+  }
+
+  return if (execute) {
     val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
     if (currentConsole != null) {
-      currentConsole.executeText(
-        "rstudioapi::sendToConsole(\"$code\", ${asStr(execute)}, ${asStr(echo)}, ${asStr(focus)})")
+      currentConsole.executeText(code)
     }
     else {
       val promise = AsyncPromise<Unit>()
@@ -162,38 +195,35 @@ fun sendToConsole(rInterop: RInterop, args: RObject): Promise<Unit> {
     }
   }
   else {
-    sendToConsoleHelper.set(false)
-    if (execute) {
-      val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
-      if (currentConsole != null) {
-        currentConsole.executeText(code)
-      }
-      else {
-        val promise = AsyncPromise<Unit>()
-        promise.setResult(Unit)
-        promise
-      }
-    }
-    else {
-      val promise = AsyncPromise<Unit>()
-      invokeLater {
-        val consoleEditor = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.consoleEditor
-        consoleEditor?.let {
-          runWriteAction {
-            it.document.setText(code)
-            PsiDocumentManager.getInstance(rInterop.project).commitDocument(it.document)
-          }
-          it.caretModel.moveToOffset(it.document.textLength)
+    val promise = AsyncPromise<Unit>()
+    invokeLater {
+      val consoleEditor = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.consoleEditor
+      consoleEditor?.let {
+        runWriteAction {
+          it.document.setText(code)
+          PsiDocumentManager.getInstance(rInterop.project).commitDocument(it.document)
         }
-        promise.setResult(Unit)
+        it.caretModel.moveToOffset(it.document.textLength)
       }
-      promise
+      promise.setResult(Unit)
     }
+    promise
   }
-  if (focus) {
-    //TODO
-  }
-  return result
+}
+
+fun navigateToFile(rInterop: RInterop, args: RObject): RObject {
+  val filename = args.list.getRObjects(0).rString.getStrings(0)
+  val line = args.list.getRObjects(1).rInt.getInts(0).toInt() - 1
+  val column = args.list.getRObjects(1).rInt.getInts(1).toInt() - 1
+  val file = LocalFileSystem.getInstance().findFileByPath(filename) ?: return RObject.getDefaultInstance()
+  FileEditorManager.getInstance(rInterop.project)
+    .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
+  return RObject.getDefaultInstance()
+}
+
+fun getActiveProject(rInterop: RInterop): RObject {
+  val path = rInterop.project.basePath ?: return RObject.getDefaultInstance()
+  return path.toRString()
 }
 
 private fun String.toRString(): RObject {

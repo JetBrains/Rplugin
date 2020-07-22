@@ -231,6 +231,12 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
             promise.setResult(getConsoleEditorContext(rInterop))
           }
+          RStudioApiFunctionId.NAVIGATE_TO_FILE_ID -> {
+            promise.setResult(navigateToFile(rInterop, args))
+          }
+          RStudioApiFunctionId.GET_ACTIVE_PROJECT_ID -> {
+            promise.setResult(getActiveProject(rInterop))
+          }
         }
       }
       return promise

@@ -58,6 +58,7 @@ import org.jetbrains.r.util.thenCancellable
 import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.*
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.RowSorter
 import javax.swing.SortOrder
@@ -95,6 +96,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   private val cacheIndex = AtomicInteger(0)
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
   internal val sourceFileManager = RSourceFileManager(this)
+  internal var isInSourceFileExecution = AtomicBoolean(false)
 
   val rInteropGrpcLogger = RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
@@ -286,6 +288,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun replExecute(code: String, setLastValue: Boolean = false, isDebug: Boolean = false): CancellablePromise<RIExecutionResult> {
+    isInSourceFileExecution.set(false)
     return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue, isDebug = isDebug)
   }
 
@@ -309,6 +312,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
                                    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
   ): ReplSourceFileRequest {
     return runReadAction {
+      isInSourceFileExecution.set(true)
       val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !isDebug) {
         ExecuteCodeRequest.DebugCommand.CONTINUE
       } else {
