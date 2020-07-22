@@ -16,9 +16,9 @@ import javax.swing.JComponent
 
 class RInterpreterDetailsStep(
   private val existingInterpreters: List<RInterpreterInfo>,
-  private val allDialog: DialogWrapper,
+  private val allDialog: DialogWrapper?,
   private val onAdded: (RInterpreterInfo) -> Unit
-) : BaseListPopupStep<String>(null, getEntries()) {
+) : BaseListPopupStep<String>(null, getEntries(allDialog != null)) {
 
   override fun onChosen(selectedValue: String?, finalChoice: Boolean): PopupStep<*>? {
     return doFinalStep {
@@ -27,7 +27,7 @@ class RInterpreterDetailsStep(
   }
 
   private fun onSelection(selectedValue: String?) {
-    if (selectedValue == SHOW_ALL) allDialog.show()
+    if (selectedValue == SHOW_ALL) allDialog?.show()
     RInterpreterSettingsProvider.getProviders().forEach {
       if (it.getAddInterpreterActionName() == selectedValue) {
         it.showAddInterpreterDialog(existingInterpreters, onAdded)
@@ -39,13 +39,20 @@ class RInterpreterDetailsStep(
   companion object {
     private val SHOW_ALL = RBundle.message("project.settings.details.step.show.all")
 
-    private fun getEntries(): List<String> {
-      return RInterpreterSettingsProvider.getProviders().map { it.getAddInterpreterActionName() }.plus(SHOW_ALL)
+    private fun getEntries(withShowAll: Boolean): List<String> {
+      return RInterpreterSettingsProvider.getProviders().map { it.getAddInterpreterActionName() }
+        .let {
+          if (withShowAll) {
+            it.plus(SHOW_ALL)
+          } else {
+            it
+          }
+        }
     }
 
     fun show(
       existingInterpreters: List<RInterpreterInfo>,
-      allDialog: DialogWrapper,
+      allDialog: DialogWrapper?,
       owner: JComponent,
       point: Point,
       onAdded: (RInterpreterInfo) -> Unit

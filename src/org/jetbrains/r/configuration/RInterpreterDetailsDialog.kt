@@ -11,7 +11,9 @@ import com.intellij.ui.components.JBList
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.sdk.RInterpreterDetailsStep
 import org.jetbrains.r.sdk.RInterpreterListCellRenderer
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import javax.swing.JComponent
 import javax.swing.ListSelectionModel
 
@@ -39,6 +41,8 @@ class RInterpreterDetailsDialog(
 
   private var isModified = false
 
+  private lateinit var component: JComponent
+
   init {
     title = TITLE
     currentInterpreters.addAll(interpreters)
@@ -48,17 +52,46 @@ class RInterpreterDetailsDialog(
   override fun createCenterPanel(): JComponent? {
     val decorator = ToolbarDecorator.createDecorator(interpreterList).apply {
       disableUpDownActions()
-      setAddAction {
-        addInterpreter()
+      setAddAction { button ->
+        val onAdded = { info: RInterpreterInfo ->
+          currentInterpreters.add(info)
+          refresh(true)
+          currentSelection = info
+        }
+        if (RInterpreterSettingsProvider.getProviders().size > 1) {
+          val popupPoint = button.preferredPopupPoint?.screenPoint ?: button.contextComponent.locationOnScreen
+          RInterpreterDetailsStep.show(currentInterpreters, null, component, popupPoint, onAdded)
+        } else {
+          addInterpreter(onAdded)
+        }
       }
       setRemoveAction {
         removeInterpreter()
       }
+
+      if (RInterpreterSettingsProvider.getProviders().any { it.isEditingSupported() }) {
+        setEditAction {
+          val selection = currentSelection ?: return@setEditAction
+          val index = currentInterpreters.indexOf(selection).takeIf { it >= 0 } ?: return@setEditAction
+          RInterpreterSettingsProvider.getProviders()
+            .firstOrNull { it.canEditInterpreter(selection) }
+            ?.showEditInterpreterDialog(selection, currentInterpreters) {
+              currentInterpreters[index] = it
+              refresh(true)
+              currentSelection = it
+            }
+        }
+        setEditActionUpdater {
+          val selection = currentSelection
+          selection != null && RInterpreterSettingsProvider.getProviders().any { provider -> provider.canEditInterpreter(selection) }
+        }
+      }
+
       setPreferredSize(DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.NARROW, DialogUtil.SizePreference.MODERATE))
     }
     refresh(false)
     currentSelection = initialSelection
-    return decorator.createPanel()
+    return decorator.createPanel().also { component = it }
   }
 
   override fun doOKAction() {
@@ -66,12 +99,8 @@ class RInterpreterDetailsDialog(
     super.doOKAction()
   }
 
-  private fun addInterpreter() {
-    RAddInterpreterDialog.show(currentInterpreters) {
-      currentInterpreters.add(it)
-      refresh(true)
-      currentSelection = it
-    }
+  private fun addInterpreter(onAdded: (RInterpreterInfo) -> Unit) {
+    RAddInterpreterDialog.show(currentInterpreters, onAdded)
   }
 
   private fun removeInterpreter() {
