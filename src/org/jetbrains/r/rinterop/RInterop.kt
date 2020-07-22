@@ -110,6 +110,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     private set
 
   private val terminationPromise = AsyncPromise<Unit>()
+    .also { it.onSuccess { fireListeners { listener -> listener.onTermination() } } }
   val isAlive: Boolean
     get() = !terminationPromise.isDone
   @Volatile
@@ -955,9 +956,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
         val info = exceptionInfoFromProto(event.exception.exception)
         fireListeners { it.onException(info) }
-      }
-      AsyncEvent.EventCase.TERMINATION -> {
-        fireListeners { it.onTermination() }
       }
       AsyncEvent.EventCase.VIEWREQUEST -> {
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
