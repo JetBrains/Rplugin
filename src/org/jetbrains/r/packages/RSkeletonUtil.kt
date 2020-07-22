@@ -98,7 +98,7 @@ object RSkeletonUtil {
       val rPackages = (i until i + bucketSize).mapNotNull { newPackages.getOrNull(it) }
       val skeletonFiles = rPackages.map { it.second.toFile() }
       val indicator: ProgressIndicator? = progressIndicator ?: ProgressIndicatorProvider.getInstance().progressIndicator
-      val skeletonProcessor = RSkeletonProcessor(es, interop.interpreter, indicator, fullSize, rPackages.map { it.first }, skeletonFiles)
+      val skeletonProcessor = RSkeletonProcessor(es, interop, indicator, fullSize, rPackages.map { it.first }, skeletonFiles)
       promises.add(skeletonProcessor.runSkeletonHelper())
     }
 
@@ -244,7 +244,7 @@ object RSkeletonUtil {
   }
 
   private class RSkeletonProcessor(private val es: ExecutorService,
-                                   private val rInterpreter: RInterpreter,
+                                   rInterop: RInterop,
                                    private val indicator: ProgressIndicator?,
                                    private val allNewPackagesCnt: Int,
                                    private val rPackages: List<RPackage>,
@@ -252,6 +252,8 @@ object RSkeletonUtil {
 
     private val resPromise = AsyncPromise<Boolean>()
     private var curPackage: Int = -1
+    private val rInterpreter = rInterop.interpreter
+    private val workingDir = rInterop.workingDir.takeIf { it.isNotEmpty() } ?: rInterpreter.basePath
     private val extraNamedArgumentsHelperPath = rInterpreter.uploadFileToHost(extraNamedArgumentsHelper)
     private val packageNames = rPackages.map { it.name }
     private var hasGeneratedSkeletons = false
@@ -300,7 +302,7 @@ object RSkeletonUtil {
       val resPromise = resPromise
       es.submit {
         val packageNames = packageNames.subList(curPackage + 1, packageNames.size)
-        rInterpreter.runMultiOutputHelper(RepoUtils.PACKAGE_SUMMARY, rInterpreter.basePath,
+        rInterpreter.runMultiOutputHelper(RepoUtils.PACKAGE_SUMMARY, workingDir,
                                           listOf(extraNamedArgumentsHelperPath) + packageNames, this)
       }
       return resPromise
