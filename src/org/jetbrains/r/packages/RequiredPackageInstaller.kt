@@ -157,7 +157,7 @@ class RequiredPackageInstaller(private val project: Project) {
 
   /**
    * Use it instead of [getMissingPackages] when a result should be returned immediately.
-   * This method is **not** waiting for [interpreter][org.jetbrains.r.interpreter.RInterpreter] to be initialized
+   * This method is **not** waiting for [console][org.jetbrains.r.console.RConsoleView] to be initialized
    * which can be useful in order to prevent both UI freezes and deadlocks (especially on IDE startup).
    * @return list of currently missing packages
    * or `null` if [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet
