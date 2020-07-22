@@ -6,6 +6,7 @@
 package org.jetbrains.r.packages.remote.ui
 
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.showInfoMessage
 import com.intellij.ui.AnActionButton
@@ -17,6 +18,7 @@ import com.intellij.webcore.packaging.PackagesNotificationPanel
 import com.intellij.webcore.packaging.RepoPackage
 import icons.RIcons
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
@@ -73,15 +75,19 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
 
   private fun upgradeAllPackages() {
     rPackageManagementService?.let { service ->
-      val outdated = findOutdatedPackages(service)
-      if (outdated.isNotEmpty()) {
-        RUpdateAllConfirmDialog(outdated) {
-          val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
-          val multiListener = RPackageManagementService.convertToInstallMultiListener(listener)
-          service.installPackages(packages, true, multiListener)
-        }.show()
-      } else {
-        showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)
+      runAsync {
+        val outdated = findOutdatedPackages(service)
+        invokeLater {
+          if (outdated.isNotEmpty()) {
+            RUpdateAllConfirmDialog(outdated) {
+              val packages = outdated.map { RepoPackage(it.installedPackage.name, null, null) }
+              val multiListener = RPackageManagementService.convertToInstallMultiListener(listener)
+              service.installPackages(packages, true, multiListener)
+            }.show()
+          } else {
+            showInfoMessage(NOTHING_TO_UPGRADE_MESSAGE, NOTHING_TO_UPGRADE_TITLE)
+          }
+        }
       }
     }
   }

@@ -15,7 +15,6 @@ import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
@@ -59,8 +58,8 @@ class RPackageManagementService(private val project: Project,
   private val rStateIfReady: RInterpreterState?
     get() = RInterpreterStateManager.getCurrentStateOrNull(project)
 
-  private val interop: RInterop?
-    get() = rInterpreterState?.rInterop
+  private val interopIfReady: RInterop?
+    get() = rStateIfReady?.rInterop
 
   private val provider: RepoProvider
     get() = RepoProvider.getInstance(project)
@@ -74,15 +73,15 @@ class RPackageManagementService(private val project: Project,
     get() = provider.name2AvailablePackages != null
 
   fun isPackageLoaded(packageName: String): Boolean {
-    return interop?.isLibraryLoaded(packageName) ?: false
+    return interopIfReady?.isLibraryLoaded(packageName) ?: false
   }
 
   fun loadPackage(packageName: String): Promise<Unit> {
-    return interop?.loadLibrary(packageName) ?: resolvedPromise()
+    return rStateAsync.thenAsync { it.rInterop.loadLibrary(packageName) }
   }
 
   fun unloadPackage(packageName: String, withDynamicLibrary: Boolean): Promise<Unit> {
-    return interop?.unloadLibrary(packageName, withDynamicLibrary) ?: resolvedPromise()
+    return rStateAsync.thenAsync { it.rInterop.unloadLibrary(packageName, withDynamicLibrary) }
   }
 
   override fun getAllRepositories(): List<String> {
@@ -122,7 +121,7 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun findInstalledPackageByName(name: String): RInstalledPackage? {
-    return rInterpreterState?.getPackageByName(name)
+    return rStateIfReady?.getPackageByName(name)
   }
 
   private fun onOperationStart() {
@@ -229,11 +228,13 @@ class RPackageManagementService(private val project: Project,
   }
 
   fun navigateToPackageDocumentation(pkg: RInstalledPackage) {
-    val rInterop = interop ?: return
-    rInterop.getDocumentationForPackage(pkg.name).then {
-      if (it != null) {
-        invokeLater {
-          RToolWindowFactory.showDocumentation(RDocumentationProvider.makeElementForText(rInterop, it))
+    rStateAsync.then { state ->
+      val rInterop = state.rInterop
+      rInterop.getDocumentationForPackage(pkg.name).then {
+        if (it != null) {
+          invokeLater {
+            RToolWindowFactory.showDocumentation(RDocumentationProvider.makeElementForText(rInterop, it))
+          }
         }
       }
     }
