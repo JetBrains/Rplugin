@@ -68,10 +68,10 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
 
   override fun createImageGroup(imagePath: String): Pair<File, Disposable>? {
     return imagePath.toSnapshot()?.let { snapshot ->
-      val groupPromise = repository.createDeviceGroupAsync()
       val directory = createLocalGroupDirectory(snapshot)
       copyFileTo(snapshot.recordedFile, directory)
       val copy = copyFileTo(snapshot.file, directory)
+      val groupPromise = repository.createDeviceGroupAsync(directory)
       val disposable = Disposable {
         directory.deleteRecursively()
         groupPromise.onSuccess {
