@@ -9,6 +9,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import java.io.File
 
 class RGraphicsRepository(private val project: Project) {
   private val devices = mutableSetOf<RGraphicsDevice>()
@@ -74,9 +75,9 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun createDeviceGroupAsync(): Promise<Disposable> {
+  fun createDeviceGroupAsync(directory: File): Promise<Disposable> {
     return notNullDevicePromise.thenAsync {
-      currentDevice?.createDeviceGroupAsync()
+      currentDevice?.createDeviceGroupAsync(directory)
     }
   }
 

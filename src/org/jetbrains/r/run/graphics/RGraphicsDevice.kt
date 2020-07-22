@@ -91,8 +91,8 @@ class RGraphicsDevice(
     listeners.remove(listener)
   }
 
-  fun createDeviceGroupAsync(): Promise<Disposable> {
-    return createEmptyGroupAsync().then { group ->
+  fun createDeviceGroupAsync(directory: File): Promise<Disposable> {
+    return createDeviceGroupIfNeededAsync(directory).then { group ->
       Disposable {
         if (rInterop.isAlive) {  // Note: the group is removed automatically on interop termination
           runAsync {  // Note: prevent execution on EDT
@@ -138,7 +138,7 @@ class RGraphicsDevice(
   }
 
   fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
-    return createDeviceGroupIfNeededAsync(snapshot).thenAsync { group ->
+    return createDeviceGroupIfNeededAsync(snapshot.file.parentFile).thenAsync { group ->
       val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
       val promise = executeWithLogAsync(hint) {
         pushStoredSnapshotIfNeeded(snapshot, group)
@@ -151,8 +151,8 @@ class RGraphicsDevice(
   }
 
   @Synchronized
-  private fun createDeviceGroupIfNeededAsync(snapshot: RSnapshot): Promise<DeviceGroup> {
-    return directory2GroupPromises.getOrPut(snapshot.file.parent) {
+  private fun createDeviceGroupIfNeededAsync(directory: File): Promise<DeviceGroup> {
+    return directory2GroupPromises.getOrPut(directory.absolutePath) {
       createEmptyGroupAsync()
     }
   }
