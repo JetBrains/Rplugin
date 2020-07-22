@@ -28,6 +28,13 @@ import org.jetbrains.r.rmarkdown.RMarkdownFileType
 abstract class RunSelectionBase : REditorActionBase() {
   abstract val isDebug: Boolean
 
+  override fun update(e: AnActionEvent) {
+    super.update(e)
+    val project = e.project ?: return
+    e.presentation.isEnabled = e.presentation.isEnabled &&
+                               RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop?.isAlive != false
+  }
+
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val editor = e.editor ?: return

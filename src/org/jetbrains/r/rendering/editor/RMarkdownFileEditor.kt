@@ -31,6 +31,7 @@ import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
+import org.jetbrains.r.rendering.chunk.canRunChunk
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
@@ -236,7 +237,7 @@ private fun createRunAllAction(project: Project): AnAction =
     override fun update(e: AnActionEvent) {
       val state = e.editor?.chunkExecutionState
       e.presentation.icon = if (state == null) AllIcons.Actions.RunAll else AllIcons.Actions.Suspend
-      e.presentation.isEnabled = RMarkdownUtil.areRequirementsSatisfied(project)
+      e.presentation.isEnabled = state != null || canRunChunk(project)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
