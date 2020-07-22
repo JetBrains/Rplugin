@@ -160,7 +160,7 @@ class RequiredPackageInstaller(private val project: Project) {
    * This method is **not** waiting for [console][org.jetbrains.r.console.RConsoleView] to be initialized
    * which can be useful in order to prevent both UI freezes and deadlocks (especially on IDE startup).
    * @return list of currently missing packages
-   * or `null` if [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet
+   * or `null` if [console][org.jetbrains.r.console.RConsoleView] hasn't been initialized yet
    */
   fun getMissingPackagesOrNull(packages: List<RequiredPackage>): List<RequiredPackage>? {
     return RConsoleManager.getInstance(project).currentConsoleOrNull?.let {
