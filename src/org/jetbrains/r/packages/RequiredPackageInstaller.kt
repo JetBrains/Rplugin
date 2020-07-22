@@ -18,7 +18,7 @@ import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.remote.MissingPackageDetailsException
 import org.jetbrains.r.packages.remote.PackageDetailsException
@@ -163,7 +163,7 @@ class RequiredPackageInstaller(private val project: Project) {
    * or `null` if [interpreter][org.jetbrains.r.interpreter.RInterpreter] hasn't been initialized yet
    */
   fun getMissingPackagesOrNull(packages: List<RequiredPackage>): List<RequiredPackage>? {
-    return RInterpreterManager.getInterpreterOrNull(project)?.let {
+    return RConsoleManager.getInstance(project).currentConsoleOrNull?.let {
       getMissingPackages(packages)
     }
   }
