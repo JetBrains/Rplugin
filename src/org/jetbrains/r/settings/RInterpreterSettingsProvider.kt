@@ -25,6 +25,8 @@ interface RInterpreterSettingsProvider {
 
   fun createSettingsConfigurable(project: Project): UnnamedConfigurable? = null
 
+  fun isEditingSupported(): Boolean = false
+
   fun canEditInterpreter(info: RInterpreterInfo): Boolean = false
 
   fun showEditInterpreterDialog(info: RInterpreterInfo, existingInterpreters: List<RInterpreterInfo>,
