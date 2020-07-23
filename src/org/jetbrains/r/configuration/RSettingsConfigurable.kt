@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
@@ -101,9 +102,10 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   private fun onInterpreterLocationChanged(location: RInterpreterLocation?) {
     if (project.isDefault) return
     restartInterpreter()
-    RConsoleManager.runConsole(project).onSuccess {
+    RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
       runInEdt {
         RConsoleManager.closeMismatchingConsoles(project, location)
+        RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
       }
     }
   }
