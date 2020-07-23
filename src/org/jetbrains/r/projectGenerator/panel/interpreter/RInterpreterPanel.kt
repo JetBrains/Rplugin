@@ -12,4 +12,6 @@ abstract class RInterpreterPanel : RPanel() {
   open val interpreterLocation: RInterpreterLocation? = null
 
   open fun validateInterpreter(): List<ValidationInfo> = emptyList()
+
+  open fun fetchInstalledPackages(): List<String> = emptyList()
 }
