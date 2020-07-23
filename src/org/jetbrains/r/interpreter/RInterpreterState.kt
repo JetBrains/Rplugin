@@ -153,6 +153,9 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
   @Throws(IllegalStateException::class)
   private fun doUpdateState() {
     if (!rInterop.isAlive) throw IllegalStateException("RInterop is dead")
+    if (interpreterLocation != RInterpreterManager.getInterpreterOrNull(project)?.interpreterLocation) {
+      throw IllegalStateException("RInterop is out of date")
+    }
     val installedPackages = makeExpiring(rInterop.loadInstalledPackages())
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
     val (libraryPaths, userLibraryPath) = loadPaths()
