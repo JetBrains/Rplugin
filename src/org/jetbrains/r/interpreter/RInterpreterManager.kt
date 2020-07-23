@@ -143,7 +143,6 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
         location.createInterpreter(project).let {
           interpreterOrNull = it
           ensureInterpreterStored(it)
-          RInterpreterStateManager.getCurrentStateAsync(project).onSuccess { state -> state.scheduleSkeletonUpdate() }
           promise.setResult(it)
           RStatistics.logSetupInterpreter(it)
         }
