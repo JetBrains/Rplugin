@@ -34,7 +34,13 @@ class RChooseInterpreterGroupPanel(name: String,
     add(contentPanel, BorderLayout.NORTH)
   }
 
-  override fun validateInterpreter(): List<ValidationInfo> = panels.filter { it.isEnabled }.flatMap { it.validateInterpreter() }
+  override fun validateInterpreter(): List<ValidationInfo> = flatMapEnabledPanels { validateInterpreter() }
+
+  override fun fetchInstalledPackages(): List<String> = flatMapEnabledPanels { fetchInstalledPackages() }
+
+  private fun <T> flatMapEnabledPanels(mapFun: RInterpreterPanel.() -> List<T>): List<T> {
+    return panels.filter { it.isEnabled }.flatMap { it.mapFun() }
+  }
 
   override val interpreterLocation: RInterpreterLocation?
     get() = mySelectedPanel.interpreterLocation

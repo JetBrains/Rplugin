@@ -6,6 +6,7 @@ package org.jetbrains.r.projectGenerator.panel.interpreter
 
 import com.intellij.openapi.ui.ValidationInfo
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RManageInterpreterPanel
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.RInterpreterInfo
@@ -31,6 +32,14 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     manageInterpreterPanel.initialSelection = existingInterpreters.firstOrNull()
     manageInterpreterPanel.reset()
     add(manageInterpreterPanel.component, BorderLayout.NORTH)
+  }
+
+  override fun fetchInstalledPackages(): List<String> {
+    val location = interpreterLocation ?: return emptyList()
+    return ExecuteExpressionUtils.getSynchronously(FETCH_INSTALLED_PACKAGES) {
+      location.uploadFileToHost(FETCH_PACKAGES_PATH)
+      RInterpreterUtil.runHelper(location, FETCH_PACKAGES_PATH, null, emptyList()).lines().drop(1)
+    }
   }
 
   override fun validateInterpreter(): List<ValidationInfo> {
@@ -65,5 +74,8 @@ class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RI
     private val CHECK_INTERPRETER_TITLE = RBundle.message("project.settings.check.interpreter")
     private val MISSING_INTERPRETER_TEXT = RBundle.message("project.settings.missing.interpreter")
     private val INVALID_INTERPRETER_TEXT = RBundle.message("project.settings.invalid.interpreter")
+    private val FETCH_INSTALLED_PACKAGES = RBundle.message("project.settings.fetch.installed.packages")
+
+    private val FETCH_PACKAGES_PATH by lazy { RPluginUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R") }
   }
 }

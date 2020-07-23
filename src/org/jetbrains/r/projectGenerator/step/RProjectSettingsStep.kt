@@ -22,7 +22,6 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
@@ -115,7 +114,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
           return false
         }
       }
-      rProjectSettings.installedPackages = findAllInstallPackages(rProjectSettings.interpreterPath)
+      rProjectSettings.installedPackages = interpreterPanel.fetchInstalledPackages().toSet()
       rProjectSettings.isInstalledPackagesSetUpToDate = true
     }
     checkForError(rProjectGenerator.validateGeneratorSettings()) { return false }
@@ -204,20 +203,11 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     return decoratorPanel
   }
 
-  private fun findAllInstallPackages(rInterpreterPath: String?): Set<String> {
-    rInterpreterPath ?: return emptySet()
-
-    val packagesList =
-      RInterpreterUtil.runHelper(RLocalInterpreterLocation(rInterpreterPath), SCRIPT_PATH, null, emptyList()).lines().drop(1)
-    return HashSet(packagesList)
-  }
-
   private fun getProjectInterpreterTitle(panel: RInterpreterPanel): String {
     return RBundle.message("project.settings.interpreter", panel.panelName)
   }
 
   companion object {
-    private val SCRIPT_PATH by lazy { RPluginUtil.findFileInRHelpers("R/projectGenerator/getAllInstalledPackages.R") }
     private val MISSING_RSCRIPT = RBundle.message("project.settings.missing.rscript")
   }
 }
