@@ -682,7 +682,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun loadInstalledPackages(): List<RInstalledPackage> {
     return try {
-      executeWithCheckCancel(asyncStub::loadInstalledPackages, Empty.getDefaultInstance()).packagesList.map {
+      val obtained = executeWithCheckCancel(asyncStub::loadInstalledPackages, Empty.getDefaultInstance()).packagesList.asSequence().map {
         val priority = when (it.priority) {
           RInstalledPackageList.RInstalledPackage.RPackagePriority.BASE -> RPackagePriority.BASE
           RInstalledPackageList.RInstalledPackage.RPackagePriority.RECOMMENDED -> RPackagePriority.RECOMMENDED
@@ -691,6 +691,14 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         val description = it.descriptionList.map { entry -> entry.key to entry.value }.toMap()
         RInstalledPackage(it.packageName, it.packageVersion, priority, it.libraryPath, description)
       }
+      // Obtained sequence contains duplicates of the same packages but for different versions.
+      // The ones which will be used by R's functions go first.
+      // Also it's not sorted by package names
+      val name2Packages = TreeMap<String, RInstalledPackage>(String.CASE_INSENSITIVE_ORDER)
+      for (rPackage in obtained) {
+        name2Packages.putIfAbsent(rPackage.packageName, rPackage)
+      }
+      name2Packages.values.toList()
     }
     catch (e: RInteropTerminated) {
       emptyList()
