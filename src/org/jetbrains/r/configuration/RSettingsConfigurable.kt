@@ -4,22 +4,16 @@
 
 package org.jetbrains.r.configuration
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.packages.remote.RepoProvider
-import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
-import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSettings
@@ -78,7 +72,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     val previousLocation = settings.interpreterLocation
     if (location != previousLocation) {
       settings.interpreterLocation = location
-      onInterpreterLocationChanged(location)
+      onInterpreterLocationChanged()
     }
     settings.loadWorkspace = loadWorkspaceCheckBox.isSelected
     if (settings.saveWorkspace != saveWorkspaceCheckBox.isSelected) {
@@ -99,30 +93,12 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     }
   }
 
-  private fun onInterpreterLocationChanged(location: RInterpreterLocation?) {
+  private fun onInterpreterLocationChanged() {
     if (project.isDefault) return
-    restartInterpreter()
-    RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
-      runInEdt {
-        RConsoleManager.closeMismatchingConsoles(project, location)
-        RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
-      }
-    }
-  }
-
-  private fun restartInterpreter() {
-    RInterpreterManager.getInterpreterAsync(project, true).onSuccess {
-      RepoProvider.getInstance(project).onInterpreterVersionChange()
-      ApplicationManager.getApplication().invokeLater {
-        getPackagesPanel(project).scheduleRefresh()
-      }
-    }
+    RInterpreterManager.restartInterpreter(project)
   }
 
   companion object {
     private val LOADING_INTERPRETERS_TEXT = RBundle.message("project.settings.interpreters.loading")
-
-    private fun getPackagesPanel(project: Project) =
-      RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
   }
 }

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.RInterpreterLocation
+import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
 import java.util.concurrent.atomic.AtomicInteger
@@ -144,12 +144,12 @@ class RConsoleManager(private val project: Project) {
     }
 
     /**
-     * Close all consoles that has interpreter different than [interpreterLocation]
+     * Close all consoles that has interpreter different than [interpreter]
      */
-    fun closeMismatchingConsoles(project: Project, interpreterLocation: RInterpreterLocation?) {
+    fun closeMismatchingConsoles(project: Project, interpreter: RInterpreter?) {
       getContentDescription(project)?.let { description ->
         for ((content, console) in description.contentConsolePairs) {
-          if (console.interpreter.interpreterLocation != interpreterLocation) {
+          if (console.interpreter != interpreter) {
             description.contentManager.removeContent(content, true)
           }
         }

@@ -7,6 +7,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.stubs.StubUpdatingIndex
@@ -16,6 +17,11 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.packages.remote.RepoProvider
+import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.statistics.RStatistics
@@ -47,6 +53,24 @@ interface RInterpreterManager {
 
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
+
+    fun restartInterpreter(project: Project) {
+      getInterpreterAsync(project, true).onProcessed { interpreter ->
+        if (interpreter != null) {
+          RepoProvider.getInstance(project).onInterpreterVersionChange()
+          ApplicationManager.getApplication().invokeLater {
+            val packagesPanel = RToolWindowFactory.findContent(project, RToolWindowFactory.PACKAGES).component as RInstalledPackagesPanel
+            packagesPanel.scheduleRefresh()
+          }
+        }
+        RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
+          runInEdt {
+            RConsoleManager.closeMismatchingConsoles(project, interpreter)
+            RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
+          }
+        }
+      }
+    }
   }
 }
 
