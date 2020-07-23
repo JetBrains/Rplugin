@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.execution
 
+import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
@@ -52,14 +53,21 @@ object ExecuteExpressionUtils {
     }
   }
 
+  fun launchScript(interpreterLocation: RInterpreterLocation,
+                   relativeScriptPath: String,
+                   args: List<String>,
+                   workingDirectory: String? = null): BaseProcessHandler<*> {
+    val helper = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString())
+    val helperOnHost = interpreterLocation.uploadFileToHost(helper)
+    val interpreterArgs = RInterpreterUtil.getRunHelperArgs(helperOnHost, args)
+    return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory)
+  }
+
   fun executeScript(interpreterLocation: RInterpreterLocation,
                     relativeScriptPath: String,
                     args: List<String>,
                     timeout: Int = DEFAULT_TIMEOUT): ProcessOutput {
-    val helper = RPluginUtil.findFileInRHelpers(Paths.get("R", relativeScriptPath).toString())
-    val helperOnHost = interpreterLocation.uploadFileToHost(helper)
-    val interpreterArgs = RInterpreterUtil.getRunHelperArgs(helperOnHost, args)
-    val process = interpreterLocation.runInterpreterOnHost(interpreterArgs)
+    val process = launchScript(interpreterLocation, relativeScriptPath, args)
     return CapturingProcessRunner(process).runProcess(timeout)
   }
 }

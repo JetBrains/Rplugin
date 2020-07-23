@@ -5,9 +5,7 @@
 package org.jetbrains.r.packages.build.ui
 
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.CapturingProcessHandler
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.*
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
@@ -17,16 +15,16 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.execution.ExecuteExpressionUtils.launchScript
+import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.packages.remote.RPackageManagementService
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.settings.RPackageBuildSettings
 import java.awt.BorderLayout
-import java.io.File
+import java.nio.file.Paths
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -45,7 +43,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   private val manager = RPackageBuildTaskManager(project, this::onReset, this::updateExportsAsync, this::onInterrupted)
 
   @Volatile
-  private var currentProcessHandler: CapturingProcessHandler? = null
+  private var currentProcessHandler: BaseProcessHandler<*>? = null
 
   @Volatile
   private var isInterrupted: Boolean = false
@@ -77,7 +75,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private fun updateExportsAsync(): Promise<Unit> {
-    return if (RPackageBuildUtil.usesRcpp(project)) runHelperAsync(UPDATE_EXPORTS_HELPER) else resolvedPromise()
+    return if (RPackageBuildUtil.usesRcpp(project)) runHelperAsync(UPDATE_EXPORTS_HELPER_NAME) else resolvedPromise()
   }
 
   private fun installAndReloadPackageAsync(hasDevTools: Boolean): Promise<Unit> {
@@ -97,7 +95,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   private fun installPackageAsync(hasDevTools: Boolean): Promise<Unit> {
     val args = getInstallArguments()
     val useDevTools = hasDevTools && settings.useDevTools
-    return if (useDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER, args) else runCommandAsync("INSTALL", args)
+    return if (useDevTools) runHelperAsync(INSTALL_PACKAGE_HELPER_NAME, args) else runCommandAsync("INSTALL", args)
   }
 
   private fun getInstallArguments(): List<String> {
@@ -119,7 +117,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   private fun checkPackageAsync(hasDevTools: Boolean): Promise<Unit> {
     val args = getCheckArguments()
     val useDevTools = hasDevTools && settings.useDevTools
-    return if (useDevTools) runHelperAsync(CHECK_PACKAGE_HELPER, args) else runCommandAsync("check", args)
+    return if (useDevTools) runHelperAsync(CHECK_PACKAGE_HELPER_NAME, args) else runCommandAsync("check", args)
   }
 
   private fun getCheckArguments(): List<String> {
@@ -132,38 +130,35 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   }
 
   private fun testPackageAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(TEST_PACKAGE_HELPER) else resolvedPromise()
+    return if (hasDevTools) runHelperAsync(TEST_PACKAGE_HELPER_NAME) else resolvedPromise()
   }
 
   private fun setupTestThatAsync(hasDevTools: Boolean): Promise<Unit> {
-    return if (hasDevTools) runHelperAsync(SETUP_TESTS_HELPER) else resolvedPromise()
+    return if (hasDevTools) runHelperAsync(SETUP_TESTS_HELPER_NAME) else resolvedPromise()
   }
 
   private fun runCommandAsync(command: String, args: List<String> = emptyList()): Promise<Unit> {
-    return runProcessAsync { interpreterPath ->
-      val commands = mutableListOf(interpreterPath, "CMD", command, ".").apply {
-        addAll(args)
-      }
-      RInterpreterUtil.createLocalProcessHandler(interpreterPath, commands, project.basePath)
+    return runProcessAsync { interpreterLocation ->
+      val interpreterArgs = listOf("CMD", command, ".", *args.toTypedArray())
+      interpreterLocation.runInterpreterOnHost(interpreterArgs, project.basePath)
     }
   }
 
-  private fun runHelperAsync(helper: File, args: List<String> = emptyList()): Promise<Unit> {
-    return runProcessAsync { interpreterPath ->
-      RInterpreterUtil.createLocalProcessHandlerForHelper(interpreterPath, helper, project.basePath, args)
+  private fun runHelperAsync(helperName: String, args: List<String> = emptyList()): Promise<Unit> {
+    return runProcessAsync { interpreterLocation ->
+      val relativeHelperPath = Paths.get("packages", helperName).toString()
+      launchScript(interpreterLocation, relativeHelperPath, args, project.basePath)
     }
   }
 
-  private fun runProcessAsync(processHandlerSupplier: (String) -> CapturingProcessHandler): Promise<Unit> {
+  private fun runProcessAsync(processHandlerSupplier: (RInterpreterLocation) -> BaseProcessHandler<*>): Promise<Unit> {
     return AsyncPromise<Unit>().also { promise ->
-      val interpreterPath = RInterpreterManager.getInstance(project).interpreterLocation.let {
-        if (it !is RLocalInterpreterLocation) {
-          promise.setError("Remote runProcess unimplemented")
-          return@also
-        }
-        it.path
+      val interpreterLocation = RInterpreterManager.getInstance(project).interpreterLocation
+      if (interpreterLocation !is RLocalInterpreterLocation) {
+        promise.setError("Remote runProcess unimplemented")
+        return@also
       }
-      val processHandler = processHandlerSupplier(interpreterPath)
+      val processHandler = processHandlerSupplier(interpreterLocation)
       currentProcessHandler = processHandler
       processHandler.addProcessListener(createProcessListener(promise))
       runInEdt {
@@ -213,10 +208,10 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
     private const val SETUP_TESTS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RSetupTestsAction"
     private const val SETTINGS_ACTION_ID = "org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
 
-    private val UPDATE_EXPORTS_HELPER = RPluginUtil.findFileInRHelpers("R/packages/update_rcpp_exports.R")
-    private val INSTALL_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/install_package.R")
-    private val CHECK_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/check_package.R")
-    private val TEST_PACKAGE_HELPER = RPluginUtil.findFileInRHelpers("R/packages/test_package.R")
-    private val SETUP_TESTS_HELPER = RPluginUtil.findFileInRHelpers("R/packages/setup_tests.R")
+    private const val UPDATE_EXPORTS_HELPER_NAME = "update_rcpp_exports.R"
+    private const val INSTALL_PACKAGE_HELPER_NAME = "install_package.R"
+    private const val CHECK_PACKAGE_HELPER_NAME = "check_package.R"
+    private const val TEST_PACKAGE_HELPER_NAME = "test_package.R"
+    private const val SETUP_TESTS_HELPER_NAME = "setup_tests.R"
   }
 }
