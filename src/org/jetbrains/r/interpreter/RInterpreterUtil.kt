@@ -280,37 +280,6 @@ object RInterpreterUtil {
     }
   }
 
-  fun createLocalProcessHandlerForHelper(
-    interpreterPath: String,
-    helper: File,
-    workingDirectory: String?,
-    args: List<String>
-  ): CapturingProcessHandler {
-    val commands = getRunHelperArgs(helper.path, args)
-    return createLocalProcessHandler(interpreterPath, commands, workingDirectory)
-  }
-
-  fun createLocalProcessHandler(interpreterPath: String, commands: List<String>, workingDirectory: String?): CapturingProcessHandler =
-    CapturingProcessHandler(createCommandLine(interpreterPath, commands, workingDirectory))
-
-  private fun createCommandLine(interpreterPath: String,
-                                commands: List<String>,
-                                workingDirectory: String?): GeneralCommandLine {
-    val interpreterFile = Paths.get(interpreterPath).toFile()
-    val conda = RCondaUtil.findCondaByRInterpreter(interpreterFile)
-    val command = if (conda != null) {
-      val environment = RCondaUtil.getEnvironmentName(interpreterFile)
-      if (environment == null) {
-        mutableListOf(conda.absolutePath, "run").apply { addAll(commands) }
-      } else {
-        mutableListOf(conda.absolutePath, "run", "-n", environment).apply { addAll(commands) }
-      }
-    } else {
-      commands
-    }
-    return GeneralCommandLine(command).withWorkDirectory(workingDirectory)
-  }
-
   private fun getScriptStdout(lines: String): String {
     val start = lines.indexOf(RPLUGIN_OUTPUT_BEGIN).takeIf { it != -1 }
                 ?: throw RuntimeException("Cannot find start marker, output '$lines'")
