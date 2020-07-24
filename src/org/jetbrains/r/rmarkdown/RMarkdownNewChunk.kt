@@ -12,7 +12,6 @@ import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.impl.source.tree.TreeUtil.findLastLeaf
 import com.intellij.psi.util.PsiTreeUtil
@@ -40,13 +39,13 @@ class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
 
       whereToInsert = when {
         markdownCodeFence != null -> markdownCodeFence.textRange.endOffset
-        isMarkdownEol(TreeUtil.prevLeaf(leafAtCaret.node)) && offset == leafAtCaret.textRange.startOffset -> offset
+        TreeUtil.prevLeaf(leafAtCaret.node)?.elementType == MARKDOWN_EOL && offset == leafAtCaret.textRange.startOffset -> offset
         else -> findNextEol(leafAtCaret)
       }
     }
 
-    val endOfInsertString = if (isMarkdownEol(atOffset(whereToInsert))) "" else "\n"
-    val startOfInsertString = if (whereToInsert >= 1 && !isMarkdownEol(atOffset(whereToInsert - 1))) "\n" else ""
+    val endOfInsertString = if (atOffset(whereToInsert)?.elementType == MARKDOWN_EOL) "" else "\n"
+    val startOfInsertString = if (whereToInsert >= 1 && atOffset(whereToInsert - 1)?.elementType != MARKDOWN_EOL) "\n" else ""
 
     runWriteAction {
       val startStr = startOfInsertString + "```{r}\n"
@@ -58,14 +57,11 @@ class RMarkdownNewChunk : DumbAwareAction(), RPromotedAction {
     }
   }
 
-  /** IMPORTANT: PSI has standard TokenType.WHITE_SPACE but lexical level use MARKDOWN_EOL. */
-  private fun isMarkdownEol(psi: ASTNode?): Boolean = psi != null && psi.elementType == TokenType.WHITE_SPACE && psi.textContains('\n')
-
   private fun findNextEol(start: PsiElement): Int {
     var node: ASTNode = start.node
 
     while (true) {
-      if (isMarkdownEol(node)) {
+      if (node.elementType == MARKDOWN_EOL) {
         return node.textRange.startOffset
       }
       node = TreeUtil.nextLeaf(node) ?: return node.textRange.endOffset
