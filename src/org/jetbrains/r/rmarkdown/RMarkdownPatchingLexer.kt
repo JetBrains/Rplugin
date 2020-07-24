@@ -13,13 +13,10 @@ import java.util.*
 
 val R_FENCE_ELEMENT_TYPE = IElementType("R Fence", RMarkdownLanguage)
 
-/** IMPORTANT: this element type is used only on lexical level. PSI has standard TokenType.WHITE_SPACE */
 val MARKDOWN_EOL: IElementType = MarkdownElementType.platformType(MarkdownTokenTypes.EOL)
 
 private val FenceLangType = MarkdownElementType.platformType(MarkdownTokenTypes.FENCE_LANG)
 private val FenceEndType = MarkdownElementType.platformType(MarkdownTokenTypes.CODE_FENCE_END)
-
-/** IMPORTANT: this element type is used only on lexical level. PSI has standard TokenType.WHITE_SPACE */
 private val WhiteSpaceType = MarkdownElementType.platformType(MarkdownTokenTypes.WHITE_SPACE)
 
 
