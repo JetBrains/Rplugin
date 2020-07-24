@@ -6,6 +6,7 @@ package org.jetbrains.r.console.jobs
 
 import com.intellij.codeInsight.hint.HintUtil.RECENT_LOCATIONS_SELECTION_KEY
 import com.intellij.icons.AllIcons
+import com.intellij.ide.ui.AntialiasingType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
@@ -442,6 +443,7 @@ private class JobEntity(val jobDescriptor: RJobDescriptor,
     val height = leftPanel.height
 
     val graphics = g.create() as Graphics2D
+    graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, AntialiasingType.getKeyForCurrentScope(false))
     val unbounded = paintUnbounded
     try {
       val logoWidth = rLogo.width + rLogo.insets.left + rLogo.insets.right
