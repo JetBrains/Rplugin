@@ -75,7 +75,7 @@ const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
                address: String, port: Int, val project: Project) : Disposable {
-  private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().build()
+  private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
     get() = project.getUserData(DEADLINE_TEST_KEY) ?: DEADLINE_TEST_DEFAULT
@@ -1218,6 +1218,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     private const val HEARTBEAT_PERIOD = 20000
     private const val EXECUTE_CODE_TEST_TIMEOUT = 20000
     private const val GRPC_LOGGER_MAX_MESSAGES = 30
+    private const val MAX_MESSAGE_SIZE = 16 * 1024 * 1024  // 16 MiB (default is 4)
 
     internal val DEADLINE_TEST_KEY = Key<Long>("org.jetbrains.r.rinterop.RInterop.DeadlineTest")
   }
