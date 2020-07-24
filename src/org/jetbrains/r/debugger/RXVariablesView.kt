@@ -226,12 +226,20 @@ class RXVariablesView(private val console: RConsoleView, private val debuggerPan
       ActionManager.getInstance().getAction("XDebugger.NewWatch"),
       ActionManager.getInstance().getAction("XDebugger.RemoveWatch"),
       object : XMoveWatchUp() {
+        init {
+          this.templatePresentation.text = ActionsBundle.message("action.XDebugger.MoveWatchUp.text")
+        }
+
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {
           (watchesView as? RXVariablesView)?.moveWatchUp(
             ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes<WatchNodeImpl>(tree, WatchNodeImpl::class.java)))
         }
       },
       object : XMoveWatchDown() {
+        init {
+          this.templatePresentation.text = ActionsBundle.message("action.XDebugger.MoveWatchDown.text")
+        }
+
         override fun perform(e: AnActionEvent, tree: XDebuggerTree, watchesView: XWatchesView) {
           (watchesView as? RXVariablesView)?.moveWatchDown(
             ContainerUtil.getFirstItem(XWatchesTreeActionBase.getSelectedNodes<WatchNodeImpl>(tree, WatchNodeImpl::class.java)))
