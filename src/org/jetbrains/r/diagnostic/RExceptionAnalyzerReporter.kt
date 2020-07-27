@@ -22,4 +22,4 @@ class RExceptionAnalyzerReporter : ITNReporter() {
   override fun getPluginDescriptor() = pluginDescriptor
 }
 
-private const val EXPIRING_DATE = "2020-06-30"
+private const val EXPIRING_DATE = "2020-08-30"
