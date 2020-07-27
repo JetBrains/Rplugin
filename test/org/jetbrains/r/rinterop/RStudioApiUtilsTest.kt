@@ -25,7 +25,6 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     myFixture.editor.selectionModel.setSelection(0, 1)
     console.executeText("""
       |cntx <- rstudioapi::getSourceEditorContext()
-      |idEqPath <- cntx${"$"}id == cntx${"$"}path
       |path <- cntx${"$"}path
       |content <- cntx${"$"}contents
       |selectionSize <- length(cntx${"$"}selection)
@@ -36,7 +35,6 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       |selectionRange2 <- unlist(cntx${"$"}selection[[2]]${"$"}range)
       |names(selectionRange2) <- NULL
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals("[1] TRUE", (console.consoleRuntimeInfo.variables["idEqPath"] as RValueSimple).text)
     TestCase.assertEquals("[1] \"${myFixture.file.virtualFile.path}\"", (console.consoleRuntimeInfo.variables["path"] as RValueSimple).text)
     TestCase.assertEquals("[1] \"a <- 3\" \"# b\"", (console.consoleRuntimeInfo.variables["content"] as RValueSimple).text)
     TestCase.assertEquals("[1] 2", (console.consoleRuntimeInfo.variables["selectionSize"] as RValueSimple).text)
@@ -94,17 +92,18 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
   }
 
   fun testBasic_insertTextWithId() {
-    rInterop.setWorkingDir(myFixture.testDataPath)
+    myFixture.configureByText("foo.R", """
+      a <- 3<caret>
+      # b
+    """.trimIndent())
     console.executeText("""
-      |rstudioapi::navigateToFile("resolve/foo2.R", 1, 3)
       |cntx <- rstudioapi::getSourceEditorContext()
       |rstudioapi::insertText(c(1,1,5,Inf), "# line1", cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor!!
-    TestCase.assertEquals("# line1", FileDocumentManager.getInstance().getDocument(editor.file!!)!!.text)
+    TestCase.assertEquals("# line1", myFixture.editor.document.text)
   }
 
-  fun testBasic_insertTextAtCurrectSelection() {
+  fun testBasic_insertTextAtCurrentSelection() {
     myFixture.configureByText("foo.R", """
       a <- 3
       # b
@@ -151,7 +150,8 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
 
   fun testBasic_InsertTextToConsole() {
     console.executeText("""
-      |rstudioapi::insertText(c(1,1,1,1), "a <- 3", "")
+      |cntx <- rstudioapi::getConsoleEditorContext()
+      |rstudioapi::insertText(c(1,1,1,1), "a <- 3", cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("a <- 3", console.consoleEditor.document.text)
   }
@@ -160,7 +160,6 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.consoleEditor.caretModel.addCaret(VisualPosition(0, 0))
     console.executeText("""
       |cntx <- rstudioapi::getConsoleEditorContext()
-      |idEqPath <- cntx${"$"}id == cntx${"$"}path
       |path <- cntx${"$"}path
       |content <- cntx${"$"}contents
       |selectionSize <- length(cntx${"$"}selection)
@@ -168,7 +167,6 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       |selectionRange <- unlist(cntx${"$"}selection[[1]]${"$"}range)
       |names(selectionRange) <- NULL
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals("[1] TRUE", (console.consoleRuntimeInfo.variables["idEqPath"] as RValueSimple).text)
     TestCase.assertEquals("[1] \"\"", (console.consoleRuntimeInfo.variables["path"] as RValueSimple).text)
     TestCase.assertEquals("[1] \"\"", (console.consoleRuntimeInfo.variables["content"] as RValueSimple).text)
     TestCase.assertEquals("[1] 1", (console.consoleRuntimeInfo.variables["selectionSize"] as RValueSimple).text)

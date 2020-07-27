@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -52,19 +51,22 @@ private enum class ContextType {
 }
 
 private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
+  val id: String
   val (document, content, path) = when (type) {
     ContextType.SOURCE -> {
       val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor ?: return RObject.getDefaultInstance()
       val file = editor.file ?: return RObject.getDefaultInstance()
       val document = FileDocumentManager.getInstance().getDocument(file) ?: return RObject.getDefaultInstance()
       val content = file.inputStream.bufferedReader(file.charset).lines().toList()
-      val id = file.path
-      Triple(document, content, id)
+      val path = rInterop.interpreter.getFilePathAtHost(file) ?: return RObject.getDefaultInstance()
+      id = "s${editor.hashCode()}"
+      Triple(document, content, path)
     }
     ContextType.CONSOLE -> {
       val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull ?: return RObject.getDefaultInstance()
       val document = currentConsole.consoleEditor.document
       val content = document.text.split(System.lineSeparator())
+      id = "c${currentConsole.hashCode()}"
       Triple(document, content, "")
     }
   }
@@ -87,7 +89,7 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
   }.flatten().toRList()
   return RObject.newBuilder()
     .setNamedList(RObject.NamedList.newBuilder()
-                    .addRObjects(0, RObject.KeyValue.newBuilder().setKey("id").setValue(getRNull()))
+                    .addRObjects(0, RObject.KeyValue.newBuilder().setKey("id").setValue(id.toRString()))
                     .addRObjects(1, RObject.KeyValue.newBuilder().setKey("path").setValue(path.toRString()))
                     .addRObjects(2, RObject.KeyValue.newBuilder().setKey("contents").setValue(
                       RObject.newBuilder().setRString(RObject.RString.newBuilder().addAllStrings(content))))
@@ -103,12 +105,21 @@ fun insertText(rInterop: RInterop, args: RObject): RObject {
   }
   else {
     val id = args.list.getRObjects(1).rString.getStrings(0)
-    if (id == "") {
-      val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull ?: return RObject.getDefaultInstance()
-      currentConsole.consoleEditor.document
-    }
-    else {
-      val file = LocalFileSystem.getInstance().findFileByPath(id) ?: return RObject.getDefaultInstance()
+    val type = id[0]
+    val numId = (id.drop(1)).toInt()
+    if (type == 'c') {
+      if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.hashCode() == numId) {
+        RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull!!.consoleEditor.document
+      }
+      else {
+        val console = RConsoleManager.getInstance(rInterop.project).consoles.find { it.hashCode() == numId }
+                      ?: return RObject.getDefaultInstance()
+        console.consoleEditor.document
+      }
+    } else {
+      val editor = FileEditorManager.getInstance(rInterop.project).allEditors.find { it.hashCode() == numId }
+                   ?: return RObject.getDefaultInstance()
+      val file = editor.file ?: return RObject.getDefaultInstance()
       FileDocumentManager.getInstance().getDocument(file) ?: return RObject.getDefaultInstance()
     }
   }
@@ -212,17 +223,17 @@ fun sendToConsole(rInterop: RInterop, args: RObject): Promise<Unit> {
 }
 
 fun navigateToFile(rInterop: RInterop, args: RObject): RObject {
-  val filename = args.list.getRObjects(0).rString.getStrings(0)
+  val filePath = args.list.getRObjects(0).rString.getStrings(0)
   val line = args.list.getRObjects(1).rInt.getInts(0).toInt() - 1
   val column = args.list.getRObjects(1).rInt.getInts(1).toInt() - 1
-  val file = LocalFileSystem.getInstance().findFileByPath(filename) ?: return RObject.getDefaultInstance()
+  val file = rInterop.interpreter.findFileByPathAtHost(filePath) ?: return RObject.getDefaultInstance()
   FileEditorManager.getInstance(rInterop.project)
     .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
   return RObject.getDefaultInstance()
 }
 
 fun getActiveProject(rInterop: RInterop): RObject {
-  val path = rInterop.project.basePath ?: return RObject.getDefaultInstance()
+  val path = rInterop.interpreter.basePath
   return path.toRString()
 }
 
