@@ -4,15 +4,19 @@
 
 package org.jetbrains.r.help
 
+import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.help.WebHelpProvider
 import org.jetbrains.r.RPluginUtil
 
 class RWebHelpProvider : WebHelpProvider() {
-  override fun getHelpPageUrl(helpTopicId: String): String? =
-    when (helpTopicId) {
-      R_CONSOLE_ID -> "https://www.jetbrains.com/help/pycharm/2019.3/r-plugin-support.html"
+  override fun getHelpPageUrl(helpTopicId: String): String? {
+    val info = ApplicationInfoEx.getInstanceEx()
+    val productVersion = info.majorVersion + "." + info.minorVersionMainPart
+    return when (helpTopicId) {
+      R_CONSOLE_ID -> "https://www.jetbrains.com/help/pycharm/$productVersion/r-plugin-support.html"
       else -> null
     }
+  }
 
   companion object {
     const val R_CONSOLE_ID = "${RPluginUtil.PLUGIN_ID}.RConsoleHelp"
