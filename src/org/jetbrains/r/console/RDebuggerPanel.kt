@@ -41,6 +41,19 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   private val framesViewScrollPane: JBScrollPane
   private var variablesAndFramesView: JBSplitter? = null
   private val actionToolbar: ActionToolbar
+  private var isActionToolbarShown: Boolean = false
+    set(value) {
+      if (field != value) {
+        field = value
+        invokeLater {
+          if (value) {
+            add(actionToolbar.component, BorderLayout.NORTH)
+          } else {
+            remove(actionToolbar.component)
+          }
+        }
+      }
+    }
   private var currentRXStackFrames = listOf<RXStackFrame>()
 
   private val positionHighlighter = ExecutionPointHighlighter(console.project)
@@ -88,8 +101,6 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
     val toolbarActions = createDebugActions()
     actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, true)
-    actionToolbar.component.isVisible = false
-    add(actionToolbar.component, BorderLayout.NORTH)
     onCommandExecuted()
   }
 
@@ -223,11 +234,11 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   override fun onCommandExecuted() {
     if (rInterop.isDebug) {
       isFrameViewShown = true
-      actionToolbar.component.isVisible = true
+      isActionToolbarShown = true
       updateStack(createRXStackFrames(rInterop.debugStack))
     } else {
       isFrameViewShown = false
-      actionToolbar.component.isVisible = false
+      isActionToolbarShown = false
       val stackFrame = RXStackFrame(
         RBundle.message("debugger.global.stack.frame"), null, rInterop.globalEnvLoader, false, variablesView.settings,
         rInterop.globalEnvEqualityObject)
@@ -237,7 +248,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   override fun onBusy() {
     updateStack(emptyList())
-    actionToolbar.component.isVisible = rInterop.isDebug
+    isActionToolbarShown = rInterop.isDebug
   }
 
   override fun beforeExecution() {
@@ -264,7 +275,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     }.reversed()
   }
 
-  private fun updateStack(stack: List<RXStackFrame>) {
+  private fun updateStack(stack: List<RXStackFrame>) = invokeLater {
     bottomComponent?.let {
       bottomComponent = null
       remove(it)

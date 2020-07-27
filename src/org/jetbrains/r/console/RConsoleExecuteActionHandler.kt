@@ -410,10 +410,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   @Synchronized
   fun fireBusy() {
-    if (state != State.BUSY) {
-      state = State.BUSY
-      listeners.forEach { it.onBusy() }
-    }
+    state = State.BUSY
+    listeners.forEach { it.onBusy() }
   }
 
   interface Listener {
