@@ -99,7 +99,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
           WatcherOp.CREATE, WatcherOp.DELETE, WatcherOp.STATS, WatcherOp.CHANGE -> {
             changed.set(true)
           }
-          WatcherOp.DIRTY -> {
+          WatcherOp.DIRTY, WatcherOp.RECDIRTY -> {
             if (roots.any { line.startsWith(it) }) {
               changed.set(true)
             }
