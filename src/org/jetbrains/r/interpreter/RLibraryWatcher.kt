@@ -30,6 +30,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   private var interpreter: RInterpreter? = null
   private var fsNotifierProcess: ProcessHandler? = null
   private val changed = AtomicBoolean(false)
+  private var roots : List<String> = emptyList()
 
   internal fun setCurrentInterpreter(newInterpreter: RInterpreter?) {
     fsNotifierProcess?.let {
@@ -46,7 +47,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 
   @Synchronized
   fun updateRootsToWatch() {
-    val roots = RInterpreterStateManager.getCurrentStateOrNull(project)?.libraryPaths?.map { it.path } ?: return
+    roots = RInterpreterStateManager.getCurrentStateOrNull(project)?.libraryPaths?.map { it.path } ?: return
     fsNotifierProcess?.processInput?.bufferedWriter()?.let { writer ->
       writer.write("ROOTS")
       writer.newLine()
@@ -97,6 +98,11 @@ class RLibraryWatcher(private val project: Project) : Disposable {
           }
           WatcherOp.CREATE, WatcherOp.DELETE, WatcherOp.STATS, WatcherOp.CHANGE -> {
             changed.set(true)
+          }
+          WatcherOp.DIRTY -> {
+            if (roots.any { line.startsWith(it) }) {
+              changed.set(true)
+            }
           }
           else -> {
             lastOp = try {
