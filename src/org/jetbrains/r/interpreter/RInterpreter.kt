@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
@@ -70,6 +71,8 @@ interface RInterpreter : RInterpreterInfo {
     }
     return promise
   }
+
+  fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> = resolvedPromise()
 }
 
 data class LocalOrRemotePath(val path: String, val isRemote: Boolean)

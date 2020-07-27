@@ -16,7 +16,16 @@ class RViewerToolWindow(parentDisposable: Disposable) : SimpleToolWindowPanel(tr
     setContent(viewerPanel.component)
   }
 
-  fun refresh(url: String?): Promise<Unit> {
+  fun refreshFile(file: String?): Promise<Unit> {
+    return if (file != null) {
+      viewerPanel.loadFile(file)
+    } else {
+      viewerPanel.reset()
+      resolvedPromise()
+    }
+  }
+
+  fun refreshUrl(url: String?): Promise<Unit> {
     return if (url != null) {
       viewerPanel.loadUrl(url)
     } else {

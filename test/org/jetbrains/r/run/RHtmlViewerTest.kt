@@ -62,7 +62,7 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
     var actualPath: String? = null
     var actualTitle: String? = null
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
         actualPath = filePath
         actualTitle = title
         return resolvedPromise()
@@ -78,7 +78,7 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
   private fun browseLocalUrl(expectedUrl: String) {
     var actualUrl: String? = null
     val listener = object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
         actualUrl = filePath
         return resolvedPromise()
       }
@@ -91,7 +91,7 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
   private fun browseWebUrl(expectedUrl: String) {
     var wasShowFileRequest = false
     val listener = object : RInterop.AsyncEventsListener {
-      override fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> {
+      override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
         wasShowFileRequest = true
         return resolvedPromise()
       }

@@ -21,10 +21,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.AtomicClearableLazyValue
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.*
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -74,7 +71,7 @@ val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated"
 const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
-               address: String, port: Int, val project: Project) : Disposable {
+               address: String, port: Int, val project: Project) : UserDataHolderBase(), Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
@@ -622,6 +619,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
+  fun startHttpd(): Promise<Int> {
+    return executeAsync(asyncStub::startHttpd, Empty.getDefaultInstance()).then { it.value }
+  }
+
   fun runBeforeChunk(rmarkdownParameters: String, chunkText: String): RIExecutionResult {
     val request = ChunkParameters.newBuilder()
       .setRmarkdownParameters(rmarkdownParameters)
@@ -974,7 +975,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
-        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title, request.content.toByteArray()) }) {
+        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title) }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -1209,7 +1210,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
-    fun onShowFileRequest(filePath: String, title: String, content: ByteArray): Promise<Unit> = resolvedPromise()
+    fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
   }

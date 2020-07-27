@@ -106,7 +106,7 @@ allprojects {
             downloadSources = false
         }
         else {
-            downloadSources = !isTeamCity
+            downloadSources = false
         }
 
         tasks.withType<PatchPluginXmlTask> {
