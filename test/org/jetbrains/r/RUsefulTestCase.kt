@@ -72,9 +72,9 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   fun addLibraries() {
+    setupMockInterpreterManager()
     prepareTestSkeletons(project)
     VfsUtil.markDirtyAndRefresh(false, true, true, File(SKELETON_LIBRARY_PATH))
-    setupMockInterpreterManager()
     setupMockInterpreterStateManager()
     val dumbService = DumbServiceImpl.getInstance(project)
     if (FileBasedIndex.getInstance() is FileBasedIndexImpl) {
