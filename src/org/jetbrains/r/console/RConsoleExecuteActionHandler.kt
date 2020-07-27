@@ -237,6 +237,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           RStudioApiFunctionId.GET_ACTIVE_PROJECT_ID -> {
             promise.setResult(getActiveProject(rInterop))
           }
+          RStudioApiFunctionId.GET_ACTIVE_DOCUMENT_CONTEXT_ID -> {
+            promise.setResult(getActiveDocumentContext(rInterop))
+          }
         }
       }
       return promise

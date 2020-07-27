@@ -11,6 +11,7 @@ import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import java.lang.IllegalArgumentException
 import kotlin.streams.toList
 
@@ -20,7 +21,8 @@ enum class RStudioApiFunctionId {
   SEND_TO_CONSOLE_ID,
   GET_CONSOLE_EDITOR_CONTEXT_ID,
   NAVIGATE_TO_FILE_ID,
-  GET_ACTIVE_PROJECT_ID;
+  GET_ACTIVE_PROJECT_ID,
+  GET_ACTIVE_DOCUMENT_CONTEXT_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -31,6 +33,7 @@ enum class RStudioApiFunctionId {
         3 -> GET_CONSOLE_EDITOR_CONTEXT_ID
         4 -> NAVIGATE_TO_FILE_ID
         5 -> GET_ACTIVE_PROJECT_ID
+        6 -> GET_ACTIVE_DOCUMENT_CONTEXT_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -45,14 +48,24 @@ fun getConsoleEditorContext(rInterop: RInterop): RObject {
   return getDocumentContext(rInterop, ContextType.CONSOLE)
 }
 
+fun getActiveDocumentContext(rInterop: RInterop): RObject {
+  return getDocumentContext(rInterop, ContextType.ACTIVE)
+}
+
 private enum class ContextType {
   CONSOLE,
-  SOURCE
+  SOURCE,
+  ACTIVE
 }
 
 private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
   val id: String
-  val (document, content, path) = when (type) {
+  val newType = if (type == ContextType.ACTIVE) {
+    if (rInterop.isInSourceFileExecution.get()) {
+      ContextType.SOURCE
+    } else ContextType.CONSOLE
+  } else type
+  val (document, content, path) = when (newType) {
     ContextType.SOURCE -> {
       val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor ?: return RObject.getDefaultInstance()
       val file = editor.file ?: return RObject.getDefaultInstance()
@@ -62,7 +75,7 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
       id = "s${editor.hashCode()}"
       Triple(document, content, path)
     }
-    ContextType.CONSOLE -> {
+    ContextType.CONSOLE, ContextType.ACTIVE -> {
       val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull ?: return RObject.getDefaultInstance()
       val document = currentConsole.consoleEditor.document
       val content = document.text.split(System.lineSeparator())
@@ -99,9 +112,14 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
 
 fun insertText(rInterop: RInterop, args: RObject): RObject {
   val document = if (args.list.getRObjects(1).hasRnull()) {
-    val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor ?: return RObject.getDefaultInstance()
-    val file = editor.file ?: return RObject.getDefaultInstance()
-    FileDocumentManager.getInstance().getDocument(file) ?: return RObject.getDefaultInstance()
+    if (rInterop.isInSourceFileExecution.get()) {
+      val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor ?: return RObject.getDefaultInstance()
+      val file = editor.file ?: return RObject.getDefaultInstance()
+      FileDocumentManager.getInstance().getDocument(file) ?: return RObject.getDefaultInstance()
+    } else {
+      val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull ?: return RObject.getDefaultInstance()
+      currentConsole.editorDocument
+    }
   }
   else {
     val id = args.list.getRObjects(1).rString.getStrings(0)
@@ -190,12 +208,20 @@ fun sendToConsole(rInterop: RInterop, args: RObject): Promise<Unit> {
     }
   }
 
-  if (focus) {
-    //TODO
+  val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
+
+  if (focus && currentConsole != null) {
+    val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(currentConsole.project)
+    if (toolWindow != null) {
+      RConsoleToolWindowFactory.getConsoleContent(currentConsole)?.let { content ->
+        toolWindow.activate {
+          toolWindow.contentManager.setSelectedContent(content)
+        }
+      }
+    }
   }
 
   return if (execute) {
-    val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
     if (currentConsole != null) {
       currentConsole.executeText(code)
     }
@@ -243,8 +269,4 @@ private fun String.toRString(): RObject {
 
 private fun <T : Iterable<RObject>> T.toRList(): RObject {
   return RObject.newBuilder().setList(RObject.List.newBuilder().addAllRObjects(this)).build()
-}
-
-private fun getRNull(): RObject {
-  return RObject.newBuilder().setRnull(RObject.RNull.getDefaultInstance()).build()
 }

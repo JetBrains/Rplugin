@@ -59,7 +59,8 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       # b
     """.trimIndent())
     console.executeText("""
-      |rstudioapi::insertText(list(c(1,1,1,1), c(2,1,2,1)), c("# line1\n", "# line2\n"))
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::insertText(list(c(1,1,1,1), c(2,1,2,1)), c("# line1\n", "# line2\n"), cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("""
       # line1
@@ -75,14 +76,15 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       # b
     """.trimIndent())
     console.executeText("""
-      |rstudioapi::insertText(c(1,1,Inf,1), "# line1\n")
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::insertText(c(1,1,Inf,1), "# line1\n", cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("""
       # line1
       
     """.trimIndent(), myFixture.editor.document.text)
     console.executeText("""
-      |rstudioapi::insertText(c(Inf,1,Inf,1), "# line1\n")
+      |rstudioapi::insertText(c(Inf,1,Inf,1), "# line1\n", cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("""
       # line1
@@ -103,28 +105,14 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     TestCase.assertEquals("# line1", myFixture.editor.document.text)
   }
 
-  fun testBasic_insertTextAtCurrentSelection() {
-    myFixture.configureByText("foo.R", """
-      a <- 3
-      # b
-    """.trimIndent())
-    myFixture.editor.selectionModel.setSelection(0, 1)
-    console.executeText("""
-      |rstudioapi::insertText("b")
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals("""
-      b <- 3
-      # b
-    """.trimIndent(), myFixture.editor.document.text)
-  }
-
   fun testBasic_insertTextWithReplacement() {
     myFixture.configureByText("foo.R", """
       a <- 3<caret>
       # b
     """.trimIndent())
     console.executeText("""
-      |rstudioapi::insertText(list(c(1,1,1,Inf), c(2,1,2,1)), c("# line1", "# line2\n"))
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::insertText(list(c(1,1,1,Inf), c(2,1,2,1)), c("# line1", "# line2\n"), cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("""
       # line1
@@ -139,7 +127,8 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       # b
     """.trimIndent())
     console.executeText("""
-      |rstudioapi::insertText(list(c(1,1,1,2), c(2,1,2,1)), c("line1", "# line2\n"))
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::insertText(list(c(1,1,1,2), c(2,1,2,1)), c("line1", "# line2\n"), cntx${"$"}id)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals("""
       line1 <- 3
