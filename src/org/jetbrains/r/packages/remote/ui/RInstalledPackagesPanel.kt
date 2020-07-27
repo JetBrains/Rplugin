@@ -21,6 +21,7 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackageVersion
@@ -52,7 +53,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
   init {
     updateUninstallUpgrade()
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {
-      scheduleRefresh()
+      RInterpreterStateManager.getCurrentStateAsync(project).thenAsync { it.updateState() }.onSuccess { scheduleRefresh() }
     }
   }
 
