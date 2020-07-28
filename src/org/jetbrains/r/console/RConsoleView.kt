@@ -9,9 +9,6 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.SeverityRegistrar
 import com.intellij.execution.console.LanguageConsoleImpl
-import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.OSProcessUtil
-import com.intellij.execution.process.UnixProcessManager
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.lang.annotation.AnnotationSession
 import com.intellij.lang.annotation.HighlightSeverity
@@ -39,7 +36,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -64,7 +60,6 @@ import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
-import org.jvnet.winp.WinProcess
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.event.KeyEvent
@@ -397,22 +392,20 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
 
   class TerminateRWithReportAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
-      val processHandler = getConsole(e)?.rInterop?.processHandler as? OSProcessHandler ?: return
+      val console = getConsole(e) ?: return
+      val handler = console.rInterop.getUserData(RInteropUtil.TERMINATE_WITH_REPORT_HANDLER) ?: return
       val yesNo = Messages.showYesNoDialog(e.project, RBundle.message("console.terminate.with.report.message"),
                                            RBundle.message("console.terminate.with.report.title"), null)
       if (yesNo == Messages.YES) {
-        processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
-        if (SystemInfo.isWindows) {
-          WinProcess(processHandler.process).sendCtrlC()
-        } else {
-          UnixProcessManager.sendSignal(OSProcessUtil.getProcessID(processHandler.process), UnixProcessManager.SIGABRT)
-        }
+        console.rInterop.processHandler.putUserData(RInteropUtil.PROCESS_TERMINATED_WITH_REPORT, true)
+        handler()
       }
     }
 
     override fun update(e: AnActionEvent) {
       val console = getConsole(e)
-      e.presentation.isEnabled = console?.rInterop?.isAlive == true && console.rInterop.processHandler is OSProcessHandler
+      e.presentation.isEnabled = console?.rInterop?.isAlive == true &&
+                                 console.rInterop.getUserData(RInteropUtil.TERMINATE_WITH_REPORT_HANDLER) != null
     }
   }
 }

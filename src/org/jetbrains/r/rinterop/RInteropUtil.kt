@@ -26,6 +26,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.util.RPathUtil
+import org.jvnet.winp.WinProcess
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -150,8 +151,15 @@ object RInteropUtil {
       val grpcLog = it.toJson(true)
       attachments = attachments.plus(Attachment("grpc_log.json", grpcLog).apply { isIncluded = true })
     }
-    if (crashReportFile != null) {
-      val file = File(crashReportFile)
+    val interpreter = rInterop?.interpreter
+    if (crashReportFile != null && interpreter != null) {
+      val file = if (interpreter.isLocal()) {
+        File(crashReportFile)
+      } else {
+        FileUtil.createTempFile("rwrapper-crash-report", ".txt", true).also {
+          interpreter.downloadFileFromHost(crashReportFile, it.absolutePath)
+        }
+      }
       if (file.exists() && file.isFile) {
         val content = file.readText(Charsets.UTF_8)
         file.delete()
@@ -200,7 +208,6 @@ object RInteropUtil {
       command = command.withParameters("--is-remote")
     }
 
-    val crashReportFile: String?
     if (interpreter.isLocal()) {
       val crashpadHandler = getCrashpadHandler(interpreter.hostOS)
       if (crashpadHandler.exists()) {
@@ -213,12 +220,9 @@ object RInteropUtil {
         command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
           .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
       }
-
-      crashReportFile = FileUtil.createTempFile("rwrapper-crash-report", ".txt", true).absolutePath
-      command = command.withParameters("--crash-report-file", crashReportFile)
-    } else {
-      crashReportFile = null
     }
+    val crashReportFile = interpreter.createTempFileOnHost("rwrapper-crash-report.txt")
+    command = command.withParameters("--crash-report-file", crashReportFile)
 
     command = command.withEnvironment("PATH", paths.path)
     command = when (interpreter.hostOS) {
@@ -300,9 +304,9 @@ object RInteropUtil {
     return newCrashes
   }
 
-  fun createRInteropForLocalProcess(interpreter: RInterpreter, process: ProcessHandler, port: Int): RInterop {
+  fun createRInteropForLocalProcess(interpreter: RInterpreter, processHandler: ProcessHandler, port: Int): RInterop {
     val project = interpreter.project
-    val rInterop = RInterop(interpreter, process, "127.0.0.1", port, project)
+    val rInterop = RInterop(interpreter, processHandler, "127.0.0.1", port, project)
     val workspaceFile = if (ApplicationManager.getApplication().isUnitTestMode) {
       project.getUserData(WORKSPACE_FILE_FOR_TESTS)
     } else {
@@ -313,6 +317,14 @@ object RInteropUtil {
                        ?: throw RuntimeException("R Scripts not found")
     val projectDir = project.basePath ?: throw RuntimeException("Project dir is null")
     rInterop.init(rScriptsPath, projectDir, workspaceFile)
+    rInterop.putUserData(TERMINATE_WITH_REPORT_HANDLER) {
+      val process = (processHandler as? OSProcessHandler)?.process ?: return@putUserData
+      if (SystemInfo.isWindows) {
+        WinProcess(process).sendCtrlC()
+      } else {
+        UnixProcessManager.sendSignal(OSProcessUtil.getProcessID(process), UnixProcessManager.SIGABRT)
+      }
+    }
     return rInterop
   }
 
@@ -347,4 +359,5 @@ operating systems, but generally includes the following:
   private val PROCESS_CRASH_REPORT_FILE = Key<String>("org.jetbrains.r.rinterop.RInteropUtil.crashReportFile")
   val PROCESS_TERMINATED_WITH_REPORT = Key<Boolean>("org.jetbrains.r.rinterop.RInteropUtil.terminatedWithReport")
   val WORKSPACE_FILE_FOR_TESTS = Key<String>("org.jetbrains.r.rinterop.RInteropUtil.workspaceFileForTests")
+  val TERMINATE_WITH_REPORT_HANDLER = Key<() -> Unit>("org.jetbrains.r.rinterop.RInteropUtil.terminateWithReportHandler")
 }
