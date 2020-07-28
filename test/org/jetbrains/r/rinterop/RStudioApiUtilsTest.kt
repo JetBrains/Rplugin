@@ -220,4 +220,17 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     val offset = editors.first().caretModel.offset
     TestCase.assertEquals(3, offset)
   }
+
+  fun testBasic_setSelectionRanges() {
+    myFixture.configureByText("foo.R", """
+      a <- 3
+      # b
+    """.trimIndent())
+    console.executeText("""
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::setSelectionRanges(list(c(1,1,1,2), c(1,3,1,5)), cntx${"$"}id)
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals(myFixture.editor.caretModel.allCarets.filter { it.hasSelection() }.map { it.selectionStart to it.selectionEnd },
+                          listOf(0 to 1, 2 to 4))
+  }
 }

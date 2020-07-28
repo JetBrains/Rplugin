@@ -1018,15 +1018,17 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.RSTUDIOAPIREQUEST -> {
         val request = event.rStudioApiRequest
-        lateinit var rStudioApiResponse: RObject
+        var rStudioApiResponse: RObject? = null
         fireListenersAsync(
           {
             val response = it.onRStudioApiRequest(RStudioApiFunctionId.fromInt(request.functionID), request.args)
             response.then { result ->
               rStudioApiResponse = result
+            }.onError {
+              rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
             }
           }) {
-          executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)
+          rStudioApiResponse?.let { executeAsync(asyncStub::rStudioApiResponse, it) }
         }
       }
       else -> {
@@ -1254,7 +1256,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
-    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> = resolvedPromise()
+    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject?> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
   }

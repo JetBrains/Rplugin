@@ -214,32 +214,75 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       consoleView.interpreter.showUrlInViewer(consoleView.rInterop, url)
     }
 
-    override fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> {
-      val promise = AsyncPromise<RObject>()
+    override fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject?> {
+      val promise = AsyncPromise<RObject?>()
       invokeLater {
-        when (functionId) {
-          RStudioApiFunctionId.GET_SOURCE_EDITOR_CONTEXT_ID -> {
-            promise.setResult(getSourceEditorContext(rInterop))
+        try {
+          when (functionId) {
+            RStudioApiFunctionId.GET_SOURCE_EDITOR_CONTEXT_ID -> {
+              promise.setResult(getSourceEditorContext(rInterop))
+            }
+            RStudioApiFunctionId.INSERT_TEXT_ID -> {
+              promise.setResult(insertText(rInterop, args))
+            }
+            RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
+              promise.setResult(RObject.getDefaultInstance())
+              sendToConsole(rInterop, args)
+            }
+            RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
+              promise.setResult(getConsoleEditorContext(rInterop))
+            }
+            RStudioApiFunctionId.NAVIGATE_TO_FILE_ID -> {
+              promise.setResult(navigateToFile(rInterop, args))
+            }
+            RStudioApiFunctionId.GET_ACTIVE_PROJECT_ID -> {
+              promise.setResult(getActiveProject(rInterop))
+            }
+            RStudioApiFunctionId.GET_ACTIVE_DOCUMENT_CONTEXT_ID -> {
+              promise.setResult(getActiveDocumentContext(rInterop))
+            }
+            RStudioApiFunctionId.SET_SELECTION_RANGES_ID -> {
+              promise.setResult(setSelectionRanges(rInterop, args))
+            }
+            RStudioApiFunctionId.ASK_FOR_PASSWORD_ID -> {
+              promise.setResult(null)
+              askForPassword(rInterop, args)
+            }
+            RStudioApiFunctionId.SHOW_QUESTION_ID -> {
+              promise.setResult(null)
+              showQuestion(rInterop, args)
+            }
+            RStudioApiFunctionId.SHOW_PROMPT_ID -> {
+              promise.setResult(null)
+              showPrompt(rInterop, args)
+            }
+            RStudioApiFunctionId.ASK_FOR_SECRET_ID -> {
+              promise.setResult(null)
+              askForSecret(rInterop, args)
+            }
+            RStudioApiFunctionId.SELECT_FILE_ID -> {
+              promise.setResult(null)
+              selectFile(rInterop, args)
+            }
+            RStudioApiFunctionId.SELECT_DIRECTORY_ID -> {
+              promise.setResult(null)
+              selectDirectory(rInterop, args)
+            }
+            RStudioApiFunctionId.SHOW_DIALOG_ID -> {
+              promise.setResult(null)
+              showDialog(rInterop, args)
+            }
+            RStudioApiFunctionId.UPDATE_DIALOG_ID -> {
+              promise.setResult(null)
+              updateDialog(rInterop, args)
+            }
+            RStudioApiFunctionId.GET_THEME_INFO -> {
+              promise.setResult(getThemeInfo())
+            }
           }
-          RStudioApiFunctionId.INSERT_TEXT_ID -> {
-            promise.setResult(insertText(rInterop, args))
-          }
-          RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
-            promise.setResult(RObject.getDefaultInstance())
-            sendToConsole(rInterop, args)
-          }
-          RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
-            promise.setResult(getConsoleEditorContext(rInterop))
-          }
-          RStudioApiFunctionId.NAVIGATE_TO_FILE_ID -> {
-            promise.setResult(navigateToFile(rInterop, args))
-          }
-          RStudioApiFunctionId.GET_ACTIVE_PROJECT_ID -> {
-            promise.setResult(getActiveProject(rInterop))
-          }
-          RStudioApiFunctionId.GET_ACTIVE_DOCUMENT_CONTEXT_ID -> {
-            promise.setResult(getActiveDocumentContext(rInterop))
-          }
+        } catch (e: Throwable) {
+          promise.setError(e)
+          throw e
         }
       }
       return promise

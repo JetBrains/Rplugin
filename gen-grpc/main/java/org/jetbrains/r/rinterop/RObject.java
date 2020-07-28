@@ -146,6 +146,12 @@ private static final long serialVersionUID = 0L;
             objectCase_ = 7;
             break;
           }
+          case 66: {
+            java.lang.String s = input.readStringRequireUtf8();
+            objectCase_ = 8;
+            object_ = s;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -5318,6 +5324,7 @@ private static final long serialVersionUID = 0L;
     RNULL(5),
     RBOOLEAN(6),
     NAMEDLIST(7),
+    ERROR(8),
     OBJECT_NOT_SET(0);
     private final int value;
     private ObjectCase(int value) {
@@ -5340,6 +5347,7 @@ private static final long serialVersionUID = 0L;
         case 5: return RNULL;
         case 6: return RBOOLEAN;
         case 7: return NAMEDLIST;
+        case 8: return ERROR;
         case 0: return OBJECT_NOT_SET;
         default: return null;
       }
@@ -5537,6 +5545,49 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.RObject.NamedList.getDefaultInstance();
   }
 
+  public static final int ERROR_FIELD_NUMBER = 8;
+  /**
+   * <code>string error = 8;</code>
+   */
+  public java.lang.String getError() {
+    java.lang.Object ref = "";
+    if (objectCase_ == 8) {
+      ref = object_;
+    }
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      if (objectCase_ == 8) {
+        object_ = s;
+      }
+      return s;
+    }
+  }
+  /**
+   * <code>string error = 8;</code>
+   */
+  public com.google.protobuf.ByteString
+      getErrorBytes() {
+    java.lang.Object ref = "";
+    if (objectCase_ == 8) {
+      ref = object_;
+    }
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      if (objectCase_ == 8) {
+        object_ = b;
+      }
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -5571,6 +5622,9 @@ private static final long serialVersionUID = 0L;
     }
     if (objectCase_ == 7) {
       output.writeMessage(7, (org.jetbrains.r.rinterop.RObject.NamedList) object_);
+    }
+    if (objectCase_ == 8) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 8, object_);
     }
     unknownFields.writeTo(output);
   }
@@ -5608,6 +5662,9 @@ private static final long serialVersionUID = 0L;
     if (objectCase_ == 7) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(7, (org.jetbrains.r.rinterop.RObject.NamedList) object_);
+    }
+    if (objectCase_ == 8) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, object_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -5654,6 +5711,10 @@ private static final long serialVersionUID = 0L;
         if (!getNamedList()
             .equals(other.getNamedList())) return false;
         break;
+      case 8:
+        if (!getError()
+            .equals(other.getError())) return false;
+        break;
       case 0:
       default:
     }
@@ -5696,6 +5757,10 @@ private static final long serialVersionUID = 0L;
       case 7:
         hash = (37 * hash) + NAMEDLIST_FIELD_NUMBER;
         hash = (53 * hash) + getNamedList().hashCode();
+        break;
+      case 8:
+        hash = (37 * hash) + ERROR_FIELD_NUMBER;
+        hash = (53 * hash) + getError().hashCode();
         break;
       case 0:
       default:
@@ -5910,6 +5975,9 @@ private static final long serialVersionUID = 0L;
           result.object_ = namedListBuilder_.build();
         }
       }
+      if (objectCase_ == 8) {
+        result.object_ = object_;
+      }
       result.objectCase_ = objectCase_;
       onBuilt();
       return result;
@@ -5986,6 +6054,12 @@ private static final long serialVersionUID = 0L;
         }
         case NAMEDLIST: {
           mergeNamedList(other.getNamedList());
+          break;
+        }
+        case ERROR: {
+          objectCase_ = 8;
+          object_ = other.object_;
+          onChanged();
           break;
         }
         case OBJECT_NOT_SET: {
@@ -6986,6 +7060,86 @@ private static final long serialVersionUID = 0L;
       objectCase_ = 7;
       onChanged();;
       return namedListBuilder_;
+    }
+
+    /**
+     * <code>string error = 8;</code>
+     */
+    public java.lang.String getError() {
+      java.lang.Object ref = "";
+      if (objectCase_ == 8) {
+        ref = object_;
+      }
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (objectCase_ == 8) {
+          object_ = s;
+        }
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string error = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getErrorBytes() {
+      java.lang.Object ref = "";
+      if (objectCase_ == 8) {
+        ref = object_;
+      }
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        if (objectCase_ == 8) {
+          object_ = b;
+        }
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string error = 8;</code>
+     */
+    public Builder setError(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  objectCase_ = 8;
+      object_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string error = 8;</code>
+     */
+    public Builder clearError() {
+      if (objectCase_ == 8) {
+        objectCase_ = 0;
+        object_ = null;
+        onChanged();
+      }
+      return this;
+    }
+    /**
+     * <code>string error = 8;</code>
+     */
+    public Builder setErrorBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      objectCase_ = 8;
+      object_ = value;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

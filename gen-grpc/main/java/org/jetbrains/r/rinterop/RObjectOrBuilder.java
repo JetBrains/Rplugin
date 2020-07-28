@@ -98,5 +98,15 @@ public interface RObjectOrBuilder extends
    */
   org.jetbrains.r.rinterop.RObject.NamedListOrBuilder getNamedListOrBuilder();
 
+  /**
+   * <code>string error = 8;</code>
+   */
+  java.lang.String getError();
+  /**
+   * <code>string error = 8;</code>
+   */
+  com.google.protobuf.ByteString
+      getErrorBytes();
+
   public org.jetbrains.r.rinterop.RObject.ObjectCase getObjectCase();
 }
