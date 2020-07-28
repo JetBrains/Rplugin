@@ -55,6 +55,11 @@ private static final long serialVersionUID = 0L;
             rVersion_ = s;
             break;
           }
+          case 16: {
+
+            pid_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -121,6 +126,15 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int PID_FIELD_NUMBER = 2;
+  private int pid_;
+  /**
+   * <code>int32 pid = 2;</code>
+   */
+  public int getPid() {
+    return pid_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -138,6 +152,9 @@ private static final long serialVersionUID = 0L;
     if (!getRVersionBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, rVersion_);
     }
+    if (pid_ != 0) {
+      output.writeInt32(2, pid_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -149,6 +166,10 @@ private static final long serialVersionUID = 0L;
     size = 0;
     if (!getRVersionBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, rVersion_);
+    }
+    if (pid_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, pid_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -167,6 +188,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getRVersion()
         .equals(other.getRVersion())) return false;
+    if (getPid()
+        != other.getPid()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -180,6 +203,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + RVERSION_FIELD_NUMBER;
     hash = (53 * hash) + getRVersion().hashCode();
+    hash = (37 * hash) + PID_FIELD_NUMBER;
+    hash = (53 * hash) + getPid();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -315,6 +340,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       rVersion_ = "";
 
+      pid_ = 0;
+
       return this;
     }
 
@@ -342,6 +369,7 @@ private static final long serialVersionUID = 0L;
     public org.jetbrains.r.rinterop.GetInfoResponse buildPartial() {
       org.jetbrains.r.rinterop.GetInfoResponse result = new org.jetbrains.r.rinterop.GetInfoResponse(this);
       result.rVersion_ = rVersion_;
+      result.pid_ = pid_;
       onBuilt();
       return result;
     }
@@ -393,6 +421,9 @@ private static final long serialVersionUID = 0L;
       if (!other.getRVersion().isEmpty()) {
         rVersion_ = other.rVersion_;
         onChanged();
+      }
+      if (other.getPid() != 0) {
+        setPid(other.getPid());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -488,6 +519,32 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       rVersion_ = value;
+      onChanged();
+      return this;
+    }
+
+    private int pid_ ;
+    /**
+     * <code>int32 pid = 2;</code>
+     */
+    public int getPid() {
+      return pid_;
+    }
+    /**
+     * <code>int32 pid = 2;</code>
+     */
+    public Builder setPid(int value) {
+      
+      pid_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 pid = 2;</code>
+     */
+    public Builder clearPid() {
+      
+      pid_ = 0;
       onChanged();
       return this;
     }

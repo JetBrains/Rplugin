@@ -171,6 +171,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   private val getInfoResponse = execute(asyncStub::getInfo, Empty.getDefaultInstance())
   val rVersion = RVersion.forceParse(getInfoResponse.rVersion)
+  val processPid = getInfoResponse.pid
   var workspaceFile: String? = null
     private set
   private var saveOnExitValue = false

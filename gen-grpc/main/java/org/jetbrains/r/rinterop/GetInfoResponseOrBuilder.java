@@ -16,4 +16,9 @@ public interface GetInfoResponseOrBuilder extends
    */
   com.google.protobuf.ByteString
       getRVersionBytes();
+
+  /**
+   * <code>int32 pid = 2;</code>
+   */
+  int getPid();
 }
