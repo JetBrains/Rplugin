@@ -51,6 +51,12 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
       Disposer.dispose(rInterop)
     }
+    runWriteAction {
+      XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
+        val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+        manager.getBreakpoints(breakpointType).forEach { manager.removeBreakpoint(it) }
+      }
+    }
     super.tearDown()
   }
 
@@ -86,6 +92,8 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         var suspend = true
         var condition: String? = null
         var evaluate: String? = null
+        var logMessage: Boolean = false
+        var logStack: Boolean = false
         runReadAction {
           val psi = RElementFactory.createRPsiElementFromText(project, "BREAKPOINT" + line.substringAfter("BREAKPOINT"))
           if (psi is RCallExpression) {
@@ -95,6 +103,8 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
                 "suspend" -> suspend = (it.assignedValue as RBooleanLiteral).isTrue
                 "condition" -> condition = it.assignedValue?.text
                 "evaluate" -> evaluate = it.assignedValue?.text
+                "logMessage" -> logMessage = (it.assignedValue as RBooleanLiteral).isTrue
+                "logStack" -> logStack = (it.assignedValue as RBooleanLiteral).isTrue
                 else -> TestCase.fail("Invalid breakpoint description on line $index")
               }
             }
@@ -109,6 +119,8 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         if (evaluate != null) {
           breakpoint.logExpressionObject = XExpressionImpl.fromText(evaluate)
         }
+        breakpoint.isLogMessage = logMessage
+        breakpoint.isLogStack = logStack
       }
     }
   }
