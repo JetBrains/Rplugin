@@ -91,7 +91,6 @@ class RPackageManagementService(private val project: Project,
     return repositorySelections.map { it.first.url }
   }
 
-  @Deprecated("")
   override fun getAllPackages(): List<RepoPackage> {
     val cached = allPackagesCached
     return if (cached.isNotEmpty()) cached else reloadAllPackages()
