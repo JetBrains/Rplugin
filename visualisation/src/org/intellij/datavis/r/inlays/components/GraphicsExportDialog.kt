@@ -11,7 +11,8 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.*
+import com.intellij.openapi.ui.MessageDialogBuilder
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBTextField
@@ -28,7 +29,9 @@ import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.imageio.ImageIO
-import javax.swing.*
+import javax.swing.Icon
+import javax.swing.JComponent
+import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.text.AbstractDocument
 import javax.swing.text.AttributeSet
@@ -172,8 +175,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
       return true
     }
     val description = createConfirmReplaceDescription(location)
-    val choice = Messages.showYesNoDialog(description, CONFIRM_REPLACE_TITLE, AllIcons.General.WarningDialog)
-    return choice == Messages.YES
+    return MessageDialogBuilder.yesNo(CONFIRM_REPLACE_TITLE, description)
+      .icon(AllIcons.General.WarningDialog).ask(project)
   }
 
   private fun onImageResize(targetWidth: Int, targetHeight: Int, dx: Int, dy: Int) {
