@@ -32,6 +32,7 @@ import javax.swing.JComponent
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
   private var lastNormal = listOf<RSnapshot>()
   private var lastIndex = -1
+  private var maxNumber = -1
 
   private val lastSnapshot: RSnapshot?
     get() = if (lastIndex in lastNormal.indices) lastNormal[lastIndex] else null
@@ -74,7 +75,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun refresh(normal: List<RSnapshot>) {
     if (normal.isNotEmpty()) {
-      lastIndex = suggestSnapshotIndex(normal)
+      val newMaxNumber = normal.last().number
+      // Note: `newMaxNumber` is bigger if there is a new plot
+      lastIndex = if (maxNumber == newMaxNumber) suggestSnapshotIndex(normal) else normal.lastIndex
+      maxNumber = newMaxNumber
       lastNormal = normal
       showCurrent()
     } else {
@@ -99,6 +103,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun reset() {
     lastNormal = listOf()
     lastIndex = -1
+    maxNumber = -1
     graphicsPanel.reset()
   }
 
