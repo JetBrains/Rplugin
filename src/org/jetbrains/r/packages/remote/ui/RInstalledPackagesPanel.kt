@@ -20,6 +20,7 @@ import icons.RIcons
 import org.intellij.datavis.r.ui.ToolbarUtil
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.interpreter.RLibraryWatcher
@@ -76,6 +77,9 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
 
   private fun upgradeAllPackages() {
     rPackageManagementService?.let { service ->
+      getSynchronously(GETTING_AVAILABLE_PACKAGES_TITLE) {
+        service.allPackages
+      }
       runAsync {
         val outdated = findOutdatedPackages(service)
         invokeLater {
@@ -93,9 +97,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
     }
   }
 
-  private fun canUpgradeAllPackages(): Boolean {
-    return isReady && rPackageManagementService?.arePackageDetailsLoaded == true
-  }
+  private fun canUpgradeAllPackages() = isReady
 
   private fun findOutdatedPackages(service: RPackageManagementService): List<RPackageUpdateInfo> {
     return service.installedPackages.mapNotNull { installed ->
@@ -150,6 +152,7 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
     private const val REFRESH_ACTION_ID = "org.jetbrains.r.packages.remote.ui.RRefreshAction"
     private const val REFRESH_TIME_SPAN = 500
 
+    private val GETTING_AVAILABLE_PACKAGES_TITLE = RBundle.message("packages.panel.getting.available.packages.title")
     private val NOTHING_TO_UPGRADE_TITLE = RBundle.message("packages.panel.nothing.to.upgrade.title")
     private val NOTHING_TO_UPGRADE_MESSAGE = RBundle.message("packages.panel.nothing.to.upgrade.message")
     private val REFRESH_TASK_IDENTITY = RBundle.message("packages.panel.refresh.task.identity")
