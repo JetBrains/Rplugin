@@ -24,6 +24,7 @@ class RGraphicsDevice(
   private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
   private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
+  private val queue = RGraphicsRescaleQueue()
 
   val lastUpdate: List<RSnapshot>
     get() = lastNormal
@@ -166,12 +167,14 @@ class RGraphicsDevice(
   }
 
   private fun rescaleInMemoryAsync(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters): Promise<Unit> {
-    val promise = executeWithLogAsync(createHintFor(snapshotNumber)) {
-      rInterop.graphicsRescale(snapshotNumber, parameters)
-    }
-    return promise.thenIfTrue {
-      val pulled = pullInMemorySnapshots()
-      onNewSnapshots(pulled, snapshotNumber)
+    return queue.submit(snapshotNumber, parameters) {
+      val promise = executeWithLogAsync(createHintFor(snapshotNumber)) {
+        rInterop.graphicsRescale(snapshotNumber, parameters)
+      }
+      promise.thenIfTrue {
+        val pulled = pullInMemorySnapshots()
+        onNewSnapshots(pulled, snapshotNumber)
+      }
     }
   }
 
