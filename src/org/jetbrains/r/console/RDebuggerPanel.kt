@@ -227,7 +227,6 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   override fun dispose() {
-    updateStack(listOf())
     positionHighlighter.hide()
   }
 
@@ -275,21 +274,24 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     }.reversed()
   }
 
-  private fun updateStack(stack: List<RXStackFrame>) = invokeLater {
-    bottomComponent?.let {
-      bottomComponent = null
-      remove(it)
-    }
-    variablesView.stackFrame?.let {
-      wasSelected = it.equalityObject?.takeIf { framesView.selectedIndex != 0 }
-    }
-    currentRXStackFrames.forEach { Disposer.dispose(it) }
-    currentRXStackFrames = stack
-    framesView.model.replaceAll(stack)
-    if (stack.isEmpty()) {
-      variablesView.stackFrame = null
-    } else {
-      framesView.selectedIndex = stack.indexOfFirst { wasSelected != null && it.equalityObject == wasSelected }.takeIf { it != -1 } ?: 0
+  private fun updateStack(stack: List<RXStackFrame>) {
+    stack.forEach { Disposer.register(this, it) }
+    invokeLater {
+      bottomComponent?.let {
+        bottomComponent = null
+        remove(it)
+      }
+      variablesView.stackFrame?.let {
+        wasSelected = it.equalityObject?.takeIf { framesView.selectedIndex != 0 }
+      }
+      currentRXStackFrames.forEach { Disposer.dispose(it) }
+      currentRXStackFrames = stack
+      framesView.model.replaceAll(stack)
+      if (stack.isEmpty()) {
+        variablesView.stackFrame = null
+      } else {
+        framesView.selectedIndex = stack.indexOfFirst { wasSelected != null && it.equalityObject == wasSelected }.takeIf { it != -1 } ?: 0
+      }
     }
   }
 
