@@ -5,6 +5,7 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.testFramework.PlatformTestUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.blockingGetAndDispatchEvents
@@ -34,6 +35,7 @@ class RDebuggerTestHelper(rInterop: RInterop) {
   }
 
   fun <R> invokeAndWait(expectedDebug: Boolean, f: () -> R): R {
+    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     val result = f()
     TestCase.assertEquals(expectedDebug, promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT))
     promise = AsyncPromise()

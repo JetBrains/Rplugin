@@ -33,49 +33,21 @@ object RDebuggerUtil {
   fun createBreakpointListener(rInterop: RInterop, parentDisposable: Disposable? = rInterop) {
     val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
     val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
-    val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
-    val enabledSlaveBreakpoints = getEnabledSlaveBreakpoints(rInterop)
-
-    fun shouldSuspendInRWrapper(breakpoint: XLineBreakpoint<*>): Boolean {
-      return breakpoint.suspendPolicy != SuspendPolicy.NONE || breakpoint.isLogStack || breakpoint.isLogMessage ||
-             !dependentBreakpointManager?.getSlaveBreakpoints(breakpoint).isNullOrEmpty()
-    }
 
     val listener = object : XBreakpointListener<XLineBreakpoint<XBreakpointProperties<*>>> {
-      override fun breakpointAdded(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) = breakpointAddedImpl(breakpoint)
-
-      override fun breakpointRemoved(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) = breakpointRemovedImpl(breakpoint)
-
-      override fun breakpointChanged(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) = breakpointChangedImpl(breakpoint)
-
-      fun breakpointAddedImpl(breakpoint: XLineBreakpoint<*>) {
+      override fun breakpointAdded(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
         if (RSourceFileManager.isInvalid(breakpoint.fileUrl)) {
           runWriteAction { breakpointManager.removeBreakpoint(breakpoint) }
           return
         }
-        val sourcePosition = breakpoint.sourcePosition ?: return
-        val position = RSourcePosition(sourcePosition.file, sourcePosition.line)
-        breakpoint.putUserData(BREAKPOINT_POSITION, position)
-        if (breakpoint.isEnabled) {
-          rInterop.debugAddBreakpoint(
-            position.file, position.line,
-            suspend = shouldSuspendInRWrapper(breakpoint),
-            evaluateAndLog = breakpoint.logExpressionObject?.expression,
-            condition = breakpoint.conditionExpression?.expression
-          )
-        }
+        rInterop.executeTask { updateBreakpoint(rInterop, breakpoint) }
       }
-
-      fun breakpointRemovedImpl(breakpoint: XLineBreakpoint<*>) {
-        rInterop.executeTask { enabledSlaveBreakpoints.remove(breakpoint) }
-        val position = breakpoint.getUserData(BREAKPOINT_POSITION) ?: return
-        rInterop.debugRemoveBreakpoint(position.file, position.line)
+      override fun breakpointRemoved(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+        if (RSourceFileManager.isInvalid(breakpoint.fileUrl)) return
+        rInterop.executeTask { updateBreakpoint(rInterop, breakpoint, true) }
       }
-
-      fun breakpointChangedImpl(breakpoint: XLineBreakpoint<*>) {
-        val position = breakpoint.getUserData(BREAKPOINT_POSITION) ?: return
-        rInterop.debugRemoveBreakpoint(position.file, position.line)
-        breakpointAddedImpl(breakpoint)
+      override fun breakpointChanged(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+        rInterop.executeTask { updateBreakpoint(rInterop, breakpoint) }
       }
     }
     breakpointManager.addBreakpointListener(breakpointType, listener, parentDisposable ?: rInterop)
@@ -84,15 +56,59 @@ object RDebuggerUtil {
       .subscribe(XDependentBreakpointListener.TOPIC, object : XDependentBreakpointListener {
         override fun dependencyCleared(breakpoint: XBreakpoint<*>?) {
           if (breakpoint?.type !is RLineBreakpointType) return
-          rInterop.executeTask { enabledSlaveBreakpoints.remove(breakpoint) }
+          rInterop.executeTask { updateBreakpoint(rInterop, breakpoint) }
         }
 
         override fun dependencySet(slave: XBreakpoint<*>, master: XBreakpoint<*>) {
-          if (slave.type !is RLineBreakpointType) return
-          if (master.type !is RLineBreakpointType || master !is XLineBreakpoint<*>) return
-          listener.breakpointChangedImpl(master)
+          if (master.type is RLineBreakpointType) {
+            rInterop.executeTask { updateBreakpoint(rInterop, master) }
+          }
+          if (slave.type is RLineBreakpointType) {
+            rInterop.executeTask { updateBreakpoint(rInterop, slave) }
+          }
         }
       })
+  }
+
+  private fun updateBreakpoint(rInterop: RInterop, breakpoint: XBreakpoint<*>, remove: Boolean = false) {
+    val breakpointInfo = getRInteropBreakpointInfo(rInterop)
+    var shouldSuspendInRWrapper = false
+    var isEnabled = false
+    var isDependent = false
+    var evaluateAndLog: String? = null
+    var condition: String? = null
+    val sourcePosition = runReadAction {
+      val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
+      val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
+      isDependent = dependentBreakpointManager?.getMasterBreakpoint(breakpoint)?.type is RLineBreakpointType
+      shouldSuspendInRWrapper = breakpoint.suspendPolicy != SuspendPolicy.NONE || breakpoint.isLogStack || breakpoint.isLogMessage ||
+                                isDependent ||
+                                dependentBreakpointManager?.getSlaveBreakpoints(breakpoint).orEmpty().any { it.type is RLineBreakpointType }
+      isEnabled = breakpoint.isEnabled
+      condition = breakpoint.conditionExpression?.expression
+      evaluateAndLog = breakpoint.logExpressionObject?.expression
+      breakpoint.sourcePosition
+    } ?: return
+    val position = RSourcePosition(sourcePosition.file, sourcePosition.line)
+    if (remove) {
+      breakpointInfo.remove(breakpoint)?.uploadedAs?.let {
+        rInterop.debugRemoveBreakpoint(it.file, it.line)
+      }
+      return
+    }
+    val info = breakpointInfo.getOrPut(breakpoint) { RInteropBreakpointInfo() }
+    info.uploadedAs?.let {
+      rInterop.debugRemoveBreakpoint(it.file, it.line)
+      info.uploadedAs = null
+    }
+    if (isEnabled && !(isDependent && !info.slaveBreakpointEnabled)) {
+      rInterop.debugAddBreakpoint(
+        position.file, position.line,
+        suspend = shouldSuspendInRWrapper,
+        evaluateAndLog = evaluateAndLog,
+        condition = condition)
+      info.uploadedAs = position
+    }
   }
 
   private fun haveBreakpoints(project: Project, file: VirtualFile, range: TextRange? = null): Boolean {
@@ -135,14 +151,15 @@ object RDebuggerUtil {
     var logStack = false
     var suspend = false
     var leaveEnabled = false
-    val enabledSlaveBreakpoints = getEnabledSlaveBreakpoints(rInterop)
+    val breakpointInfo = getRInteropBreakpointInfo(rInterop)
     val breakpoint = runReadAction {
       val breakpoint = frame?.position?.let { position ->
         breakpointManager.findBreakpointAtLine(breakpointType, position.file, position.line)
       }
       breakpoint?.also {
-        masterBreakpoint = dependentBreakpointManager?.getMasterBreakpoint(it)
-        slaveBreakpoints = dependentBreakpointManager?.getSlaveBreakpoints(it)?.toList().orEmpty()
+        masterBreakpoint = dependentBreakpointManager?.getMasterBreakpoint(it)?.takeIf { master -> master.type is RLineBreakpointType }
+        slaveBreakpoints = dependentBreakpointManager?.getSlaveBreakpoints(it).orEmpty()
+          .filter { slave -> slave.type is RLineBreakpointType }
         logMessage = it.isLogMessage
         logStack = it.isLogStack
         suspend = it.suspendPolicy != SuspendPolicy.NONE
@@ -150,10 +167,16 @@ object RDebuggerUtil {
       }
     }
     if (breakpoint == null) return false
-    if (masterBreakpoint != null && breakpoint !in enabledSlaveBreakpoints) return false
+    if (masterBreakpoint != null && breakpointInfo[breakpoint]?.slaveBreakpointEnabled != true) return false
 
-    if (masterBreakpoint != null && !leaveEnabled) enabledSlaveBreakpoints.remove(breakpoint)
-    enabledSlaveBreakpoints.addAll(slaveBreakpoints.filter { it.type is RLineBreakpointType })
+    if (masterBreakpoint != null && !leaveEnabled) {
+      breakpointInfo[breakpoint]?.let { it.slaveBreakpointEnabled = false }
+      updateBreakpoint(rInterop, breakpoint)
+    }
+    slaveBreakpoints.forEach {
+      breakpointInfo[it]?.let { info -> info.slaveBreakpointEnabled = true }
+      updateBreakpoint(rInterop, it)
+    }
 
     invokeLater {
       fun printPosition(position: RSourcePosition) {
@@ -191,12 +214,14 @@ object RDebuggerUtil {
     return suspend
   }
 
-  private fun getEnabledSlaveBreakpoints(rInterop: RInterop): MutableSet<XBreakpoint<*>> {
-    return rInterop.getUserData(ENABLED_SLAVE_BREAKPOINTS) ?: mutableSetOf<XBreakpoint<*>>().also {
-      rInterop.putUserData(ENABLED_SLAVE_BREAKPOINTS, it)
+  private fun getRInteropBreakpointInfo(rInterop: RInterop): MutableMap<XBreakpoint<*>, RInteropBreakpointInfo> {
+    return rInterop.getUserData(RINTEROP_BREAKPOINT_INFO) ?: mutableMapOf<XBreakpoint<*>, RInteropBreakpointInfo>().also {
+      rInterop.putUserData(RINTEROP_BREAKPOINT_INFO, it)
     }
   }
 
-  private val BREAKPOINT_POSITION = Key<RSourcePosition>("org.jetbrains.r.debugger.RDebuggerUtil.RSourcePosition")
-  private val ENABLED_SLAVE_BREAKPOINTS = Key<MutableSet<XBreakpoint<*>>>("org.jetbrains.r.debugger.RDebuggerUtil.enabledSlaveBreakpoints")
+  data class RInteropBreakpointInfo(var uploadedAs: RSourcePosition? = null, var slaveBreakpointEnabled: Boolean = false)
+
+  private val RINTEROP_BREAKPOINT_INFO = Key<MutableMap<XBreakpoint<*>, RInteropBreakpointInfo>>(
+    "org.jetbrains.r.debugger.RDebuggerUtil.rInteropBreakpointInfo")
 }
