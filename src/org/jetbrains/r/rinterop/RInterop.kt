@@ -21,10 +21,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.AtomicClearableLazyValue
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.*
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -74,7 +71,7 @@ val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated"
 const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
-               address: String, port: Int, val project: Project) : Disposable {
+               address: String, port: Int, val project: Project) : UserDataHolderBase(), Disposable {
   private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
@@ -457,6 +454,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun debugCommandContinue() = executeTask {
     execute(asyncStub::debugCommandContinue, Empty.getDefaultInstance())
+  }
+
+  fun debugCommandKeepPrevious() = executeTask {
+    execute(asyncStub::debugCommandKeepPrevious, Empty.getDefaultInstance())
   }
 
   fun debugCommandPause() = executeTask {
@@ -956,7 +957,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         if (event.debugPrompt.changed) {
           debugStack = stackFromProto(event.debugPrompt.stack)
         }
-        fireListeners { it.onPrompt(true) }
+        fireListeners { it.onPrompt(true, event.debugPrompt.isStep, event.debugPrompt.isBreakpoint) }
       }
       AsyncEvent.EventCase.EXCEPTION -> {
         if (!event.exception.exception.hasInterrupted()) {
@@ -1204,7 +1205,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onText(text: String, type: ProcessOutputType) {}
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
-    fun onPrompt(isDebug: Boolean = false) {}
+    fun onPrompt(isDebug: Boolean = false, isDebugStep: Boolean = false, isBreakpoint: Boolean = false) {}
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()

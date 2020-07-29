@@ -496,7 +496,7 @@ public final class Service {
       "position\030\001 \001(\0132\036.rplugininterop.SourcePo" +
       "sition\022\024\n\014functionName\030\002 \001(\t\022\026\n\016equality" +
       "Object\030\003 \001(\003\"<\n\016StackFrameList\022*\n\006frames" +
-      "\030\001 \003(\0132\032.rplugininterop.StackFrame\"\230\010\n\nA" +
+      "\030\001 \003(\0132\032.rplugininterop.StackFrame\"\276\010\n\nA" +
       "syncEvent\022&\n\004busy\030\001 \001(\0132\026.google.protobu" +
       "f.EmptyH\000\022-\n\004text\030\002 \001(\0132\035.rplugininterop" +
       ".CommandOutputH\000\022A\n\rrequestReadLn\030\003 \001(\0132" +
@@ -513,377 +513,380 @@ public final class Service {
       "Request\030\n \001(\0132\035.rplugininterop.HttpdResp" +
       "onseH\000\0221\n\017subprocessInput\030\013 \001(\0132\026.google" +
       ".protobuf.EmptyH\000\022\032\n\020browseURLRequest\030\014 " +
-      "\001(\tH\000\032\037\n\rRequestReadLn\022\016\n\006prompt\030\001 \001(\t\032M" +
+      "\001(\tH\000\032\037\n\rRequestReadLn\022\016\n\006prompt\030\001 \001(\t\032s" +
       "\n\013DebugPrompt\022\017\n\007changed\030\001 \001(\010\022-\n\005stack\030" +
-      "\002 \001(\0132\036.rplugininterop.StackFrameList\032b\n" +
-      "\013ViewRequest\022\032\n\022persistentRefIndex\030\001 \001(\005" +
-      "\022\r\n\005title\030\002 \001(\t\022(\n\005value\030\003 \001(\0132\031.rplugin" +
-      "interop.ValueInfo\032l\n\tException\0220\n\texcept" +
-      "ion\030\001 \001(\0132\035.rplugininterop.ExceptionInfo" +
-      "\022-\n\005stack\030\002 \001(\0132\036.rplugininterop.StackFr" +
-      "ameList\032C\n\017ShowFileRequest\022\020\n\010filePath\030\001" +
-      " \001(\t\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\014B\007\n\005" +
-      "event\".\n\016SourcePosition\022\016\n\006fileId\030\001 \001(\t\022" +
-      "\014\n\004line\030\002 \001(\005\"\211\001\n\031DebugAddBreakpointRequ" +
-      "est\0220\n\010position\030\001 \001(\0132\036.rplugininterop.S" +
-      "ourcePosition\022\017\n\007suspend\030\002 \001(\010\022\026\n\016evalua" +
-      "teAndLog\030\003 \001(\t\022\021\n\tcondition\030\004 \001(\t\"\272\005\n\004RR" +
-      "ef\022\031\n\017persistentIndex\030\001 \001(\005H\000\022+\n\tglobalE" +
-      "nv\030\002 \001(\0132\026.google.protobuf.EmptyH\000\022,\n\ncu" +
-      "rrentEnv\030\003 \001(\0132\026.google.protobuf.EmptyH\000" +
-      "\022\027\n\rsysFrameIndex\030\004 \001(\005H\000\022-\n\006member\030\005 \001(" +
-      "\0132\033.rplugininterop.RRef.MemberH\000\0223\n\tpare" +
-      "ntEnv\030\006 \001(\0132\036.rplugininterop.RRef.Parent" +
-      "EnvH\000\0225\n\nexpression\030\007 \001(\0132\037.rplugininter" +
-      "op.RRef.ExpressionH\000\0227\n\013listElement\030\010 \001(" +
-      "\0132 .rplugininterop.RRef.ListElementH\000\022!\n" +
-      "\027errorStackSysFrameIndex\030\t \001(\005H\000\022*\n\nattr" +
-      "ibutes\030\n \001(\0132\024.rplugininterop.RRefH\000\0329\n\006" +
-      "Member\022!\n\003env\030\001 \001(\0132\024.rplugininterop.RRe" +
-      "f\022\014\n\004name\030\002 \001(\t\032=\n\tParentEnv\022!\n\003env\030\001 \001(" +
-      "\0132\024.rplugininterop.RRef\022\r\n\005index\030\002 \001(\005\032=" +
-      "\n\nExpression\022!\n\003env\030\001 \001(\0132\024.rplugininter" +
-      "op.RRef\022\014\n\004code\030\002 \001(\t\032@\n\013ListElement\022\"\n\004" +
-      "list\030\001 \001(\0132\024.rplugininterop.RRef\022\r\n\005inde" +
-      "x\030\002 \001(\003B\005\n\003ref\"U\n\033CopyToPersistentRefRes" +
-      "ponse\022\031\n\017persistentIndex\030\001 \001(\005H\000\022\017\n\005erro" +
-      "r\030\002 \001(\tH\000B\n\n\010response\"$\n\021PersistentRefLi" +
-      "st\022\017\n\007indices\030\001 \003(\005\"g\n\022ParentEnvsRespons" +
-      "e\0228\n\004envs\030\001 \003(\0132*.rplugininterop.ParentE" +
-      "nvsResponse.EnvInfo\032\027\n\007EnvInfo\022\014\n\004name\030\001" +
-      " \001(\t\"\222\001\n\023GetVariablesRequest\022!\n\003obj\030\001 \001(" +
-      "\0132\024.rplugininterop.RRef\022\r\n\005start\030\002 \001(\003\022\013" +
-      "\n\003end\030\003 \001(\003\022\020\n\010noHidden\030\004 \001(\010\022\023\n\013noFunct" +
-      "ions\030\005 \001(\010\022\025\n\ronlyFunctions\030\006 \001(\010\"\264\001\n\021Va" +
-      "riablesResponse\022\r\n\005isEnv\030\001 \001(\010\022\022\n\ntotalC" +
-      "ount\030\002 \001(\003\0228\n\004vars\030\003 \003(\0132*.rpluginintero" +
-      "p.VariablesResponse.Variable\032B\n\010Variable" +
-      "\022\014\n\004name\030\001 \001(\t\022(\n\005value\030\002 \001(\0132\031.rplugini" +
-      "nterop.ValueInfo\"\224\006\n\tValueInfo\022\013\n\003cls\030\001 " +
-      "\003(\t\022<\n\013unevaluated\030\002 \001(\0132%.rpluginintero" +
-      "p.ValueInfo.UnevaluatedH\000\0220\n\005value\030\003 \001(\013" +
-      "2\037.rplugininterop.ValueInfo.ValueH\000\022.\n\004l" +
-      "ist\030\004 \001(\0132\036.rplugininterop.ValueInfo.Lis" +
-      "tH\000\0228\n\tdataFrame\030\005 \001(\0132#.rplugininterop." +
-      "ValueInfo.DataFrameH\000\0226\n\010function\030\006 \001(\0132" +
-      "\".rplugininterop.ValueInfo.FunctionH\000\022<\n" +
-      "\013environment\030\007 \001(\0132%.rplugininterop.Valu" +
-      "eInfo.EnvironmentH\000\022\'\n\005graph\030\010 \001(\0132\026.goo" +
-      "gle.protobuf.EmptyH\000\0220\n\005error\030\t \001(\0132\037.rp" +
-      "lugininterop.ValueInfo.ErrorH\000\0222\n\006matrix" +
-      "\030\n \001(\0132 .rplugininterop.ValueInfo.Matrix" +
-      "H\000\032\033\n\013Unevaluated\022\014\n\004code\030\001 \001(\t\032N\n\005Value" +
-      "\022\021\n\ttextValue\030\001 \001(\t\022\022\n\nisComplete\030\002 \001(\010\022" +
-      "\020\n\010isVector\030\003 \001(\010\022\014\n\004isS4\030\004 \001(\010\032\026\n\004List\022" +
-      "\016\n\006length\030\001 \001(\003\032\'\n\tDataFrame\022\014\n\004rows\030\001 \001" +
-      "(\005\022\014\n\004cols\030\002 \001(\005\032\032\n\010Function\022\016\n\006header\030\001" +
-      " \001(\t\032\033\n\013Environment\022\014\n\004name\030\001 \001(\t\032\025\n\005Err" +
-      "or\022\014\n\004text\030\001 \001(\t\032\025\n\006Matrix\022\013\n\003dim\030\001 \003(\005B" +
-      "\006\n\004info\"\032\n\nStringList\022\014\n\004list\030\001 \003(\t\"+\n\tI" +
-      "nt32List\022\017\n\007message\030\001 \001(\t\022\r\n\005value\030\002 \003(\005" +
-      "\"W\n\026GraphicsInstallRequest\022\023\n\013packagePat" +
-      "h\030\001 \001(\t\022\023\n\013libraryPath\030\002 \001(\t\022\023\n\013packageT" +
-      "ype\030\003 \001(\t\"E\n\020ScreenParameters\022\r\n\005width\030\001" +
-      " \001(\005\022\016\n\006height\030\002 \001(\005\022\022\n\nresolution\030\003 \001(\005" +
-      "\"c\n\023GraphicsInitRequest\022:\n\020screenParamet" +
-      "ers\030\001 \001(\0132 .rplugininterop.ScreenParamet" +
-      "ers\022\020\n\010inMemory\030\002 \001(\010\"i\n\026GraphicsRescale" +
-      "Request\022\026\n\016snapshotNumber\030\001 \001(\005\0227\n\rnewPa" +
-      "rameters\030\002 \001(\0132 .rplugininterop.ScreenPa" +
-      "rameters\"\231\001\n\034GraphicsRescaleStoredReques" +
-      "t\022\017\n\007groupId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001" +
-      "(\005\022\027\n\017snapshotVersion\030\003 \001(\005\0227\n\rnewParame" +
-      "ters\030\004 \001(\0132 .rplugininterop.ScreenParame" +
-      "ters\"\\\n\033GraphicsPullSnapshotRequest\022\017\n\007g" +
-      "roupId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005\022\024\n\014" +
-      "withRecorded\030\003 \001(\010\"h\n\034GraphicsPullSnapsh" +
-      "otResponse\022\017\n\007message\030\001 \001(\t\022\024\n\014snapshotN" +
-      "ame\030\002 \001(\t\022\017\n\007content\030\003 \001(\014\022\020\n\010recorded\030\004" +
-      " \001(\014\"X\n\033GraphicsPushSnapshotRequest\022\017\n\007g" +
-      "roupId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005\022\020\n\010" +
-      "recorded\030\003 \001(\014\"A\n\017ChunkParameters\022\033\n\023rma" +
-      "rkdownParameters\030\001 \001(\t\022\021\n\tchunkText\030\002 \001(" +
-      "\t\"?\n\033PullChunkOutputFileResponse\022\017\n\007mess" +
-      "age\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"\307\001\n\031RepoInsta" +
-      "llPackageRequest\022\023\n\013packageName\030\001 \001(\t\022\026\n" +
-      "\016fallbackMethod\030\002 \001(\t\022K\n\targuments\030\003 \003(\013" +
-      "28.rplugininterop.RepoInstallPackageRequ" +
-      "est.ArgumentsEntry\0320\n\016ArgumentsEntry\022\013\n\003" +
-      "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"D\n\030RepoRemo" +
-      "vePackageRequest\022\023\n\013packageName\030\001 \001(\t\022\023\n" +
-      "\013libraryPath\030\002 \001(\t\"\300\001\n\030PreviewDataImport" +
-      "Request\022\014\n\004path\030\001 \001(\t\022\014\n\004mode\030\002 \001(\t\022\020\n\010r" +
-      "owCount\030\003 \001(\005\022F\n\007options\030\004 \003(\01325.rplugin" +
-      "interop.PreviewDataImportRequest.Options" +
-      "Entry\032.\n\014OptionsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va" +
-      "lue\030\002 \001(\t:\0028\001\"\272\001\n\027CommitDataImportReques" +
-      "t\022\014\n\004name\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\014\n\004mode\030\003 " +
-      "\001(\t\022E\n\007options\030\004 \003(\01324.rplugininterop.Co" +
-      "mmitDataImportRequest.OptionsEntry\032.\n\014Op" +
-      "tionsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\002" +
-      "8\001\"<\n\027TableColumnsInfoRequest\022!\n\003ref\030\001 \001" +
-      "(\0132\024.rplugininterop.RRef\"\366\001\n\020TableColumn" +
-      "sInfo\0228\n\007columns\030\001 \003(\0132\'.rplugininterop." +
-      "TableColumnsInfo.Column\022=\n\ttableType\030\002 \001" +
-      "(\0162*.rplugininterop.TableColumnsInfo.Tab" +
-      "leType\032$\n\006Column\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002" +
-      " \001(\t\"C\n\tTableType\022\013\n\007UNKNOWN\020\000\022\t\n\005DPLYR\020" +
-      "\001\022\016\n\nDATA_TABLE\020\002\022\016\n\nDATA_FRAME\020\003\"\243\002\n\025Da" +
-      "taFrameInfoResponse\022\r\n\005nRows\030\001 \001(\005\022=\n\007co" +
-      "lumns\030\002 \003(\0132,.rplugininterop.DataFrameIn" +
-      "foResponse.Column\032|\n\006Column\022\014\n\004name\030\001 \001(" +
-      "\t\022>\n\004type\030\002 \001(\01620.rplugininterop.DataFra" +
-      "meInfoResponse.ColumnType\022\020\n\010sortable\030\003 " +
-      "\001(\010\022\022\n\nisRowNames\030\004 \001(\010\">\n\nColumnType\022\013\n" +
-      "\007INTEGER\020\000\022\n\n\006DOUBLE\020\001\022\013\n\007BOOLEAN\020\003\022\n\n\006S" +
-      "TRING\020\004\"X\n\027DataFrameGetDataRequest\022!\n\003re" +
-      "f\030\001 \001(\0132\024.rplugininterop.RRef\022\r\n\005start\030\002" +
-      " \001(\005\022\013\n\003end\030\003 \001(\005\"\271\002\n\030DataFrameGetDataRe" +
-      "sponse\022@\n\007columns\030\001 \003(\0132/.rplugininterop" +
-      ".DataFrameGetDataResponse.Column\032\220\001\n\005Val" +
-      "ue\022$\n\002na\030\001 \001(\0132\026.google.protobuf.EmptyH\000" +
-      "\022\022\n\010intValue\030\002 \001(\005H\000\022\025\n\013doubleValue\030\003 \001(" +
-      "\001H\000\022\026\n\014booleanValue\030\004 \001(\010H\000\022\025\n\013stringVal" +
-      "ue\030\005 \001(\tH\000B\007\n\005value\032H\n\006Column\022>\n\006values\030" +
-      "\001 \003(\0132..rplugininterop.DataFrameGetDataR" +
-      "esponse.Value\"\251\001\n\024DataFrameSortRequest\022!" +
-      "\n\003ref\030\001 \001(\0132\024.rplugininterop.RRef\022:\n\004key" +
-      "s\030\002 \003(\0132,.rplugininterop.DataFrameSortRe" +
-      "quest.SortKey\0322\n\007SortKey\022\023\n\013columnIndex\030" +
-      "\001 \001(\005\022\022\n\ndescending\030\002 \001(\010\"\325\006\n\026DataFrameF" +
-      "ilterRequest\022!\n\003ref\030\001 \001(\0132\024.rplugininter" +
-      "op.RRef\022=\n\006filter\030\002 \001(\0132-.rplugininterop" +
-      ".DataFrameFilterRequest.Filter\032\330\005\n\006Filte" +
-      "r\022&\n\004true\030\001 \001(\0132\026.google.protobuf.EmptyH" +
-      "\000\022P\n\010composed\030\002 \001(\0132<.rplugininterop.Dat" +
-      "aFrameFilterRequest.Filter.ComposedFilte" +
-      "rH\000\022J\n\010operator\030\003 \001(\01326.rplugininterop.D" +
-      "ataFrameFilterRequest.Filter.OperatorH\000\022" +
-      "J\n\010naFilter\030\004 \001(\01326.rplugininterop.DataF" +
-      "rameFilterRequest.Filter.NaFilterH\000\032\303\001\n\016" +
-      "ComposedFilter\022O\n\004type\030\001 \001(\0162A.rpluginin" +
-      "terop.DataFrameFilterRequest.Filter.Comp" +
-      "osedFilter.Type\022>\n\007filters\030\002 \003(\0132-.rplug" +
-      "ininterop.DataFrameFilterRequest.Filter\"" +
-      " \n\004Type\022\007\n\003AND\020\000\022\006\n\002OR\020\001\022\007\n\003NOT\020\002\032\301\001\n\010Op" +
-      "erator\022\016\n\006column\030\001 \001(\005\022I\n\004type\030\002 \001(\0162;.r" +
-      "plugininterop.DataFrameFilterRequest.Fil" +
-      "ter.Operator.Type\022\r\n\005value\030\003 \001(\t\"K\n\004Type" +
-      "\022\006\n\002EQ\020\000\022\007\n\003NEQ\020\001\022\010\n\004LESS\020\002\022\013\n\007GREATER\020\003" +
-      "\022\007\n\003LEQ\020\004\022\007\n\003GEQ\020\005\022\t\n\005REGEX\020\006\032(\n\010NaFilte" +
-      "r\022\016\n\006column\030\001 \001(\005\022\014\n\004isNa\030\002 \001(\010B\010\n\006filte" +
-      "r\"I\n\033ConvertRoxygenToHTMLRequest\022\024\n\014func" +
-      "tionName\030\001 \001(\t\022\024\n\014functionText\030\002 \001(\t\"I\n\034" +
-      "ConvertRoxygenToHTMLResponse\022\016\n\004text\030\001 \001" +
-      "(\tH\000\022\017\n\005error\030\002 \001(\tH\000B\010\n\006result\"G\n\024Unloa" +
-      "dLibraryRequest\022\023\n\013packageName\030\001 \001(\t\022\032\n\022" +
-      "withDynamicLibrary\030\002 \001(\010\">\n\rHttpdRespons" +
-      "e\022\017\n\007success\030\001 \001(\010\022\017\n\007content\030\002 \001(\t\022\013\n\003u" +
-      "rl\030\003 \001(\t\"@\n\035DocumentationForSymbolReques" +
-      "t\022\016\n\006symbol\030\001 \001(\t\022\017\n\007package\030\002 \001(\t\"Y\n\017Se" +
-      "tValueRequest\022!\n\003ref\030\001 \001(\0132\024.rplugininte" +
-      "rop.RRef\022#\n\005value\030\002 \001(\0132\024.rplugininterop" +
-      ".RRef\"8\n\026LoadEnvironmentRequest\022\014\n\004file\030" +
-      "\001 \001(\t\022\020\n\010variable\030\002 \001(\t\".\n\010RRefList\022\"\n\004r" +
-      "efs\030\001 \003(\0132\024.rplugininterop.RRef\"\031\n\tInt64" +
-      "List\022\014\n\004list\030\001 \003(\003\";\n\rStringOrError\022\017\n\005v" +
-      "alue\030\001 \001(\tH\000\022\017\n\005error\030\002 \001(\tH\000B\010\n\006result\"" +
-      "<\n\023ExtraNamedArguments\022\020\n\010argNames\030\001 \003(\t" +
-      "\022\023\n\013funArgNames\030\002 \003(\t\"2\n\020GetSysEnvReques" +
-      "t\022\017\n\007envName\030\001 \001(\t\022\r\n\005flags\030\002 \003(\t\"\205\001\n\020RL" +
-      "ibraryPathList\022?\n\010libPaths\030\001 \003(\0132-.rplug" +
-      "ininterop.RLibraryPathList.RLibraryPath\032" +
-      "0\n\014RLibraryPath\022\014\n\004path\030\001 \001(\t\022\022\n\nisWrita" +
-      "ble\030\002 \001(\010\"\314\003\n\025RInstalledPackageList\022I\n\010p" +
-      "ackages\030\001 \003(\01327.rplugininterop.RInstalle" +
-      "dPackageList.RInstalledPackage\032\347\002\n\021RInst" +
-      "alledPackage\022\023\n\013packageName\030\001 \001(\t\022\026\n\016pac" +
-      "kageVersion\030\002 \001(\t\022Z\n\010priority\030\003 \001(\0162H.rp" +
-      "lugininterop.RInstalledPackageList.RInst" +
-      "alledPackage.RPackagePriority\022\023\n\013library" +
-      "Path\030\004 \001(\t\022U\n\013description\030\005 \003(\0132@.rplugi" +
-      "ninterop.RInstalledPackageList.RInstalle" +
-      "dPackage.MapEntry\032&\n\010MapEntry\022\013\n\003key\030\001 \001" +
-      "(\t\022\r\n\005value\030\002 \001(\t\"5\n\020RPackagePriority\022\010\n" +
-      "\004BASE\020\000\022\017\n\013RECOMMENDED\020\001\022\006\n\002NA\020\0022\2367\n\nRPI" +
-      "Service\022D\n\007getInfo\022\026.google.protobuf.Emp" +
-      "ty\032\037.rplugininterop.GetInfoResponse\"\000\022>\n" +
-      "\006isBusy\022\026.google.protobuf.Empty\032\032.google" +
-      ".protobuf.BoolValue\"\000\022?\n\004init\022\024.rplugini" +
-      "nterop.Init\032\035.rplugininterop.CommandOutp" +
-      "ut\"\0000\001\0228\n\004quit\022\026.google.protobuf.Empty\032\026" +
-      ".google.protobuf.Empty\"\000\022?\n\013quitProceed\022" +
+      "\002 \001(\0132\036.rplugininterop.StackFrameList\022\016\n" +
+      "\006isStep\030\003 \001(\010\022\024\n\014isBreakpoint\030\004 \001(\010\032b\n\013V" +
+      "iewRequest\022\032\n\022persistentRefIndex\030\001 \001(\005\022\r" +
+      "\n\005title\030\002 \001(\t\022(\n\005value\030\003 \001(\0132\031.rpluginin" +
+      "terop.ValueInfo\032l\n\tException\0220\n\texceptio" +
+      "n\030\001 \001(\0132\035.rplugininterop.ExceptionInfo\022-" +
+      "\n\005stack\030\002 \001(\0132\036.rplugininterop.StackFram" +
+      "eList\032C\n\017ShowFileRequest\022\020\n\010filePath\030\001 \001" +
+      "(\t\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\014B\007\n\005ev" +
+      "ent\".\n\016SourcePosition\022\016\n\006fileId\030\001 \001(\t\022\014\n" +
+      "\004line\030\002 \001(\005\"\211\001\n\031DebugAddBreakpointReques" +
+      "t\0220\n\010position\030\001 \001(\0132\036.rplugininterop.Sou" +
+      "rcePosition\022\017\n\007suspend\030\002 \001(\010\022\026\n\016evaluate" +
+      "AndLog\030\003 \001(\t\022\021\n\tcondition\030\004 \001(\t\"\272\005\n\004RRef" +
+      "\022\031\n\017persistentIndex\030\001 \001(\005H\000\022+\n\tglobalEnv" +
+      "\030\002 \001(\0132\026.google.protobuf.EmptyH\000\022,\n\ncurr" +
+      "entEnv\030\003 \001(\0132\026.google.protobuf.EmptyH\000\022\027" +
+      "\n\rsysFrameIndex\030\004 \001(\005H\000\022-\n\006member\030\005 \001(\0132" +
+      "\033.rplugininterop.RRef.MemberH\000\0223\n\tparent" +
+      "Env\030\006 \001(\0132\036.rplugininterop.RRef.ParentEn" +
+      "vH\000\0225\n\nexpression\030\007 \001(\0132\037.rplugininterop" +
+      ".RRef.ExpressionH\000\0227\n\013listElement\030\010 \001(\0132" +
+      " .rplugininterop.RRef.ListElementH\000\022!\n\027e" +
+      "rrorStackSysFrameIndex\030\t \001(\005H\000\022*\n\nattrib" +
+      "utes\030\n \001(\0132\024.rplugininterop.RRefH\000\0329\n\006Me" +
+      "mber\022!\n\003env\030\001 \001(\0132\024.rplugininterop.RRef\022" +
+      "\014\n\004name\030\002 \001(\t\032=\n\tParentEnv\022!\n\003env\030\001 \001(\0132" +
+      "\024.rplugininterop.RRef\022\r\n\005index\030\002 \001(\005\032=\n\n" +
+      "Expression\022!\n\003env\030\001 \001(\0132\024.rplugininterop" +
+      ".RRef\022\014\n\004code\030\002 \001(\t\032@\n\013ListElement\022\"\n\004li" +
+      "st\030\001 \001(\0132\024.rplugininterop.RRef\022\r\n\005index\030" +
+      "\002 \001(\003B\005\n\003ref\"U\n\033CopyToPersistentRefRespo" +
+      "nse\022\031\n\017persistentIndex\030\001 \001(\005H\000\022\017\n\005error\030" +
+      "\002 \001(\tH\000B\n\n\010response\"$\n\021PersistentRefList" +
+      "\022\017\n\007indices\030\001 \003(\005\"g\n\022ParentEnvsResponse\022" +
+      "8\n\004envs\030\001 \003(\0132*.rplugininterop.ParentEnv" +
+      "sResponse.EnvInfo\032\027\n\007EnvInfo\022\014\n\004name\030\001 \001" +
+      "(\t\"\222\001\n\023GetVariablesRequest\022!\n\003obj\030\001 \001(\0132" +
+      "\024.rplugininterop.RRef\022\r\n\005start\030\002 \001(\003\022\013\n\003" +
+      "end\030\003 \001(\003\022\020\n\010noHidden\030\004 \001(\010\022\023\n\013noFunctio" +
+      "ns\030\005 \001(\010\022\025\n\ronlyFunctions\030\006 \001(\010\"\264\001\n\021Vari" +
+      "ablesResponse\022\r\n\005isEnv\030\001 \001(\010\022\022\n\ntotalCou" +
+      "nt\030\002 \001(\003\0228\n\004vars\030\003 \003(\0132*.rplugininterop." +
+      "VariablesResponse.Variable\032B\n\010Variable\022\014" +
+      "\n\004name\030\001 \001(\t\022(\n\005value\030\002 \001(\0132\031.rpluginint" +
+      "erop.ValueInfo\"\224\006\n\tValueInfo\022\013\n\003cls\030\001 \003(" +
+      "\t\022<\n\013unevaluated\030\002 \001(\0132%.rplugininterop." +
+      "ValueInfo.UnevaluatedH\000\0220\n\005value\030\003 \001(\0132\037" +
+      ".rplugininterop.ValueInfo.ValueH\000\022.\n\004lis" +
+      "t\030\004 \001(\0132\036.rplugininterop.ValueInfo.ListH" +
+      "\000\0228\n\tdataFrame\030\005 \001(\0132#.rplugininterop.Va" +
+      "lueInfo.DataFrameH\000\0226\n\010function\030\006 \001(\0132\"." +
+      "rplugininterop.ValueInfo.FunctionH\000\022<\n\013e" +
+      "nvironment\030\007 \001(\0132%.rplugininterop.ValueI" +
+      "nfo.EnvironmentH\000\022\'\n\005graph\030\010 \001(\0132\026.googl" +
+      "e.protobuf.EmptyH\000\0220\n\005error\030\t \001(\0132\037.rplu" +
+      "gininterop.ValueInfo.ErrorH\000\0222\n\006matrix\030\n" +
+      " \001(\0132 .rplugininterop.ValueInfo.MatrixH\000" +
+      "\032\033\n\013Unevaluated\022\014\n\004code\030\001 \001(\t\032N\n\005Value\022\021" +
+      "\n\ttextValue\030\001 \001(\t\022\022\n\nisComplete\030\002 \001(\010\022\020\n" +
+      "\010isVector\030\003 \001(\010\022\014\n\004isS4\030\004 \001(\010\032\026\n\004List\022\016\n" +
+      "\006length\030\001 \001(\003\032\'\n\tDataFrame\022\014\n\004rows\030\001 \001(\005" +
+      "\022\014\n\004cols\030\002 \001(\005\032\032\n\010Function\022\016\n\006header\030\001 \001" +
+      "(\t\032\033\n\013Environment\022\014\n\004name\030\001 \001(\t\032\025\n\005Error" +
+      "\022\014\n\004text\030\001 \001(\t\032\025\n\006Matrix\022\013\n\003dim\030\001 \003(\005B\006\n" +
+      "\004info\"\032\n\nStringList\022\014\n\004list\030\001 \003(\t\"+\n\tInt" +
+      "32List\022\017\n\007message\030\001 \001(\t\022\r\n\005value\030\002 \003(\005\"W" +
+      "\n\026GraphicsInstallRequest\022\023\n\013packagePath\030" +
+      "\001 \001(\t\022\023\n\013libraryPath\030\002 \001(\t\022\023\n\013packageTyp" +
+      "e\030\003 \001(\t\"E\n\020ScreenParameters\022\r\n\005width\030\001 \001" +
+      "(\005\022\016\n\006height\030\002 \001(\005\022\022\n\nresolution\030\003 \001(\005\"c" +
+      "\n\023GraphicsInitRequest\022:\n\020screenParameter" +
+      "s\030\001 \001(\0132 .rplugininterop.ScreenParameter" +
+      "s\022\020\n\010inMemory\030\002 \001(\010\"i\n\026GraphicsRescaleRe" +
+      "quest\022\026\n\016snapshotNumber\030\001 \001(\005\0227\n\rnewPara" +
+      "meters\030\002 \001(\0132 .rplugininterop.ScreenPara" +
+      "meters\"\231\001\n\034GraphicsRescaleStoredRequest\022" +
+      "\017\n\007groupId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005" +
+      "\022\027\n\017snapshotVersion\030\003 \001(\005\0227\n\rnewParamete" +
+      "rs\030\004 \001(\0132 .rplugininterop.ScreenParamete" +
+      "rs\"\\\n\033GraphicsPullSnapshotRequest\022\017\n\007gro" +
+      "upId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005\022\024\n\014wi" +
+      "thRecorded\030\003 \001(\010\"h\n\034GraphicsPullSnapshot" +
+      "Response\022\017\n\007message\030\001 \001(\t\022\024\n\014snapshotNam" +
+      "e\030\002 \001(\t\022\017\n\007content\030\003 \001(\014\022\020\n\010recorded\030\004 \001" +
+      "(\014\"X\n\033GraphicsPushSnapshotRequest\022\017\n\007gro" +
+      "upId\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005\022\020\n\010re" +
+      "corded\030\003 \001(\014\"A\n\017ChunkParameters\022\033\n\023rmark" +
+      "downParameters\030\001 \001(\t\022\021\n\tchunkText\030\002 \001(\t\"" +
+      "?\n\033PullChunkOutputFileResponse\022\017\n\007messag" +
+      "e\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"\307\001\n\031RepoInstall" +
+      "PackageRequest\022\023\n\013packageName\030\001 \001(\t\022\026\n\016f" +
+      "allbackMethod\030\002 \001(\t\022K\n\targuments\030\003 \003(\01328" +
+      ".rplugininterop.RepoInstallPackageReques" +
+      "t.ArgumentsEntry\0320\n\016ArgumentsEntry\022\013\n\003ke" +
+      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"D\n\030RepoRemove" +
+      "PackageRequest\022\023\n\013packageName\030\001 \001(\t\022\023\n\013l" +
+      "ibraryPath\030\002 \001(\t\"\300\001\n\030PreviewDataImportRe" +
+      "quest\022\014\n\004path\030\001 \001(\t\022\014\n\004mode\030\002 \001(\t\022\020\n\010row" +
+      "Count\030\003 \001(\005\022F\n\007options\030\004 \003(\01325.rpluginin" +
+      "terop.PreviewDataImportRequest.OptionsEn" +
+      "try\032.\n\014OptionsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu" +
+      "e\030\002 \001(\t:\0028\001\"\272\001\n\027CommitDataImportRequest\022" +
+      "\014\n\004name\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\014\n\004mode\030\003 \001(" +
+      "\t\022E\n\007options\030\004 \003(\01324.rplugininterop.Comm" +
+      "itDataImportRequest.OptionsEntry\032.\n\014Opti" +
+      "onsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
+      "\"<\n\027TableColumnsInfoRequest\022!\n\003ref\030\001 \001(\013" +
+      "2\024.rplugininterop.RRef\"\366\001\n\020TableColumnsI" +
+      "nfo\0228\n\007columns\030\001 \003(\0132\'.rplugininterop.Ta" +
+      "bleColumnsInfo.Column\022=\n\ttableType\030\002 \001(\016" +
+      "2*.rplugininterop.TableColumnsInfo.Table" +
+      "Type\032$\n\006Column\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001" +
+      "(\t\"C\n\tTableType\022\013\n\007UNKNOWN\020\000\022\t\n\005DPLYR\020\001\022" +
+      "\016\n\nDATA_TABLE\020\002\022\016\n\nDATA_FRAME\020\003\"\243\002\n\025Data" +
+      "FrameInfoResponse\022\r\n\005nRows\030\001 \001(\005\022=\n\007colu" +
+      "mns\030\002 \003(\0132,.rplugininterop.DataFrameInfo" +
+      "Response.Column\032|\n\006Column\022\014\n\004name\030\001 \001(\t\022" +
+      ">\n\004type\030\002 \001(\01620.rplugininterop.DataFrame" +
+      "InfoResponse.ColumnType\022\020\n\010sortable\030\003 \001(" +
+      "\010\022\022\n\nisRowNames\030\004 \001(\010\">\n\nColumnType\022\013\n\007I" +
+      "NTEGER\020\000\022\n\n\006DOUBLE\020\001\022\013\n\007BOOLEAN\020\003\022\n\n\006STR" +
+      "ING\020\004\"X\n\027DataFrameGetDataRequest\022!\n\003ref\030" +
+      "\001 \001(\0132\024.rplugininterop.RRef\022\r\n\005start\030\002 \001" +
+      "(\005\022\013\n\003end\030\003 \001(\005\"\271\002\n\030DataFrameGetDataResp" +
+      "onse\022@\n\007columns\030\001 \003(\0132/.rplugininterop.D" +
+      "ataFrameGetDataResponse.Column\032\220\001\n\005Value" +
+      "\022$\n\002na\030\001 \001(\0132\026.google.protobuf.EmptyH\000\022\022" +
+      "\n\010intValue\030\002 \001(\005H\000\022\025\n\013doubleValue\030\003 \001(\001H" +
+      "\000\022\026\n\014booleanValue\030\004 \001(\010H\000\022\025\n\013stringValue" +
+      "\030\005 \001(\tH\000B\007\n\005value\032H\n\006Column\022>\n\006values\030\001 " +
+      "\003(\0132..rplugininterop.DataFrameGetDataRes" +
+      "ponse.Value\"\251\001\n\024DataFrameSortRequest\022!\n\003" +
+      "ref\030\001 \001(\0132\024.rplugininterop.RRef\022:\n\004keys\030" +
+      "\002 \003(\0132,.rplugininterop.DataFrameSortRequ" +
+      "est.SortKey\0322\n\007SortKey\022\023\n\013columnIndex\030\001 " +
+      "\001(\005\022\022\n\ndescending\030\002 \001(\010\"\325\006\n\026DataFrameFil" +
+      "terRequest\022!\n\003ref\030\001 \001(\0132\024.rplugininterop" +
+      ".RRef\022=\n\006filter\030\002 \001(\0132-.rplugininterop.D" +
+      "ataFrameFilterRequest.Filter\032\330\005\n\006Filter\022" +
+      "&\n\004true\030\001 \001(\0132\026.google.protobuf.EmptyH\000\022" +
+      "P\n\010composed\030\002 \001(\0132<.rplugininterop.DataF" +
+      "rameFilterRequest.Filter.ComposedFilterH" +
+      "\000\022J\n\010operator\030\003 \001(\01326.rplugininterop.Dat" +
+      "aFrameFilterRequest.Filter.OperatorH\000\022J\n" +
+      "\010naFilter\030\004 \001(\01326.rplugininterop.DataFra" +
+      "meFilterRequest.Filter.NaFilterH\000\032\303\001\n\016Co" +
+      "mposedFilter\022O\n\004type\030\001 \001(\0162A.rplugininte" +
+      "rop.DataFrameFilterRequest.Filter.Compos" +
+      "edFilter.Type\022>\n\007filters\030\002 \003(\0132-.rplugin" +
+      "interop.DataFrameFilterRequest.Filter\" \n" +
+      "\004Type\022\007\n\003AND\020\000\022\006\n\002OR\020\001\022\007\n\003NOT\020\002\032\301\001\n\010Oper" +
+      "ator\022\016\n\006column\030\001 \001(\005\022I\n\004type\030\002 \001(\0162;.rpl" +
+      "ugininterop.DataFrameFilterRequest.Filte" +
+      "r.Operator.Type\022\r\n\005value\030\003 \001(\t\"K\n\004Type\022\006" +
+      "\n\002EQ\020\000\022\007\n\003NEQ\020\001\022\010\n\004LESS\020\002\022\013\n\007GREATER\020\003\022\007" +
+      "\n\003LEQ\020\004\022\007\n\003GEQ\020\005\022\t\n\005REGEX\020\006\032(\n\010NaFilter\022" +
+      "\016\n\006column\030\001 \001(\005\022\014\n\004isNa\030\002 \001(\010B\010\n\006filter\"" +
+      "I\n\033ConvertRoxygenToHTMLRequest\022\024\n\014functi" +
+      "onName\030\001 \001(\t\022\024\n\014functionText\030\002 \001(\t\"I\n\034Co" +
+      "nvertRoxygenToHTMLResponse\022\016\n\004text\030\001 \001(\t" +
+      "H\000\022\017\n\005error\030\002 \001(\tH\000B\010\n\006result\"G\n\024UnloadL" +
+      "ibraryRequest\022\023\n\013packageName\030\001 \001(\t\022\032\n\022wi" +
+      "thDynamicLibrary\030\002 \001(\010\">\n\rHttpdResponse\022" +
+      "\017\n\007success\030\001 \001(\010\022\017\n\007content\030\002 \001(\t\022\013\n\003url" +
+      "\030\003 \001(\t\"@\n\035DocumentationForSymbolRequest\022" +
+      "\016\n\006symbol\030\001 \001(\t\022\017\n\007package\030\002 \001(\t\"Y\n\017SetV" +
+      "alueRequest\022!\n\003ref\030\001 \001(\0132\024.rpluginintero" +
+      "p.RRef\022#\n\005value\030\002 \001(\0132\024.rplugininterop.R" +
+      "Ref\"8\n\026LoadEnvironmentRequest\022\014\n\004file\030\001 " +
+      "\001(\t\022\020\n\010variable\030\002 \001(\t\".\n\010RRefList\022\"\n\004ref" +
+      "s\030\001 \003(\0132\024.rplugininterop.RRef\"\031\n\tInt64Li" +
+      "st\022\014\n\004list\030\001 \003(\003\";\n\rStringOrError\022\017\n\005val" +
+      "ue\030\001 \001(\tH\000\022\017\n\005error\030\002 \001(\tH\000B\010\n\006result\"<\n" +
+      "\023ExtraNamedArguments\022\020\n\010argNames\030\001 \003(\t\022\023" +
+      "\n\013funArgNames\030\002 \003(\t\"2\n\020GetSysEnvRequest\022" +
+      "\017\n\007envName\030\001 \001(\t\022\r\n\005flags\030\002 \003(\t\"\205\001\n\020RLib" +
+      "raryPathList\022?\n\010libPaths\030\001 \003(\0132-.rplugin" +
+      "interop.RLibraryPathList.RLibraryPath\0320\n" +
+      "\014RLibraryPath\022\014\n\004path\030\001 \001(\t\022\022\n\nisWritabl" +
+      "e\030\002 \001(\010\"\314\003\n\025RInstalledPackageList\022I\n\010pac" +
+      "kages\030\001 \003(\01327.rplugininterop.RInstalledP" +
+      "ackageList.RInstalledPackage\032\347\002\n\021RInstal" +
+      "ledPackage\022\023\n\013packageName\030\001 \001(\t\022\026\n\016packa" +
+      "geVersion\030\002 \001(\t\022Z\n\010priority\030\003 \001(\0162H.rplu" +
+      "gininterop.RInstalledPackageList.RInstal" +
+      "ledPackage.RPackagePriority\022\023\n\013libraryPa" +
+      "th\030\004 \001(\t\022U\n\013description\030\005 \003(\0132@.rplugini" +
+      "nterop.RInstalledPackageList.RInstalledP" +
+      "ackage.MapEntry\032&\n\010MapEntry\022\013\n\003key\030\001 \001(\t" +
+      "\022\r\n\005value\030\002 \001(\t\"5\n\020RPackagePriority\022\010\n\004B" +
+      "ASE\020\000\022\017\n\013RECOMMENDED\020\001\022\006\n\002NA\020\0022\3547\n\nRPISe" +
+      "rvice\022D\n\007getInfo\022\026.google.protobuf.Empty" +
+      "\032\037.rplugininterop.GetInfoResponse\"\000\022>\n\006i" +
+      "sBusy\022\026.google.protobuf.Empty\032\032.google.p" +
+      "rotobuf.BoolValue\"\000\022?\n\004init\022\024.rpluginint" +
+      "erop.Init\032\035.rplugininterop.CommandOutput" +
+      "\"\0000\001\0228\n\004quit\022\026.google.protobuf.Empty\032\026.g" +
+      "oogle.protobuf.Empty\"\000\022?\n\013quitProceed\022\026." +
+      "google.protobuf.Empty\032\026.google.protobuf." +
+      "Empty\"\000\022Z\n\013executeCode\022\".rplugininterop." +
+      "ExecuteCodeRequest\032#.rplugininterop.Exec" +
+      "uteCodeResponse\"\0000\001\022D\n\nsendReadLn\022\034.goog" +
+      "le.protobuf.StringValue\032\026.google.protobu" +
+      "f.Empty\"\000\022;\n\007sendEof\022\026.google.protobuf.E" +
+      "mpty\032\026.google.protobuf.Empty\"\000\022A\n\rreplIn" +
+      "terrupt\022\026.google.protobuf.Empty\032\026.google" +
+      ".protobuf.Empty\"\000\022I\n\021getNextAsyncEvent\022\026" +
+      ".google.protobuf.Empty\032\032.rplugininterop." +
+      "AsyncEvent\"\000\022Y\n\022debugAddBreakpoint\022).rpl" +
+      "ugininterop.DebugAddBreakpointRequest\032\026." +
+      "google.protobuf.Empty\"\000\022Q\n\025debugRemoveBr" +
+      "eakpoint\022\036.rplugininterop.SourcePosition" +
+      "\032\026.google.protobuf.Empty\"\000\022H\n\024debugComma" +
+      "ndContinue\022\026.google.protobuf.Empty\032\026.goo" +
+      "gle.protobuf.Empty\"\000\022L\n\030debugCommandKeep" +
+      "Previous\022\026.google.protobuf.Empty\032\026.googl" +
+      "e.protobuf.Empty\"\000\022E\n\021debugCommandPause\022" +
       "\026.google.protobuf.Empty\032\026.google.protobu" +
-      "f.Empty\"\000\022Z\n\013executeCode\022\".rpluginintero" +
-      "p.ExecuteCodeRequest\032#.rplugininterop.Ex" +
-      "ecuteCodeResponse\"\0000\001\022D\n\nsendReadLn\022\034.go" +
-      "ogle.protobuf.StringValue\032\026.google.proto" +
-      "buf.Empty\"\000\022;\n\007sendEof\022\026.google.protobuf" +
-      ".Empty\032\026.google.protobuf.Empty\"\000\022A\n\rrepl" +
-      "Interrupt\022\026.google.protobuf.Empty\032\026.goog" +
-      "le.protobuf.Empty\"\000\022I\n\021getNextAsyncEvent" +
-      "\022\026.google.protobuf.Empty\032\032.rpluginintero" +
-      "p.AsyncEvent\"\000\022Y\n\022debugAddBreakpoint\022).r" +
-      "plugininterop.DebugAddBreakpointRequest\032" +
-      "\026.google.protobuf.Empty\"\000\022Q\n\025debugRemove" +
-      "Breakpoint\022\036.rplugininterop.SourcePositi" +
-      "on\032\026.google.protobuf.Empty\"\000\022H\n\024debugCom" +
-      "mandContinue\022\026.google.protobuf.Empty\032\026.g" +
-      "oogle.protobuf.Empty\"\000\022E\n\021debugCommandPa" +
-      "use\022\026.google.protobuf.Empty\032\026.google.pro" +
-      "tobuf.Empty\"\000\022D\n\020debugCommandStop\022\026.goog" +
-      "le.protobuf.Empty\032\026.google.protobuf.Empt" +
-      "y\"\000\022H\n\024debugCommandStepOver\022\026.google.pro" +
-      "tobuf.Empty\032\026.google.protobuf.Empty\"\000\022H\n" +
-      "\024debugCommandStepInto\022\026.google.protobuf." +
-      "Empty\032\026.google.protobuf.Empty\"\000\022M\n\031debug" +
-      "CommandForceStepInto\022\026.google.protobuf.E" +
-      "mpty\032\026.google.protobuf.Empty\"\000\022G\n\023debugC" +
-      "ommandStepOut\022\026.google.protobuf.Empty\032\026." +
-      "google.protobuf.Empty\"\000\022U\n\031debugCommandR" +
-      "unToPosition\022\036.rplugininterop.SourcePosi" +
-      "tion\032\026.google.protobuf.Empty\"\000\022L\n\024debugM" +
-      "uteBreakpoints\022\032.google.protobuf.BoolVal" +
-      "ue\032\026.google.protobuf.Empty\"\000\022V\n\014graphics" +
-      "Init\022#.rplugininterop.GraphicsInitReques" +
-      "t\032\035.rplugininterop.CommandOutput\"\0000\001\022I\n\014" +
-      "graphicsDump\022\026.google.protobuf.Empty\032\035.r" +
-      "plugininterop.CommandOutput\"\0000\001\022\\\n\017graph" +
-      "icsRescale\022&.rplugininterop.GraphicsResc" +
-      "aleRequest\032\035.rplugininterop.CommandOutpu" +
-      "t\"\0000\001\022h\n\025graphicsRescaleStored\022,.rplugin" +
-      "interop.GraphicsRescaleStoredRequest\032\035.r" +
-      "plugininterop.CommandOutput\"\0000\001\022Q\n\032graph" +
-      "icsPullChangedNumbers\022\026.google.protobuf." +
-      "Empty\032\031.rplugininterop.Int32List\"\000\022s\n\024gr" +
-      "aphicsPullSnapshot\022+.rplugininterop.Grap" +
-      "hicsPullSnapshotRequest\032,.rplugininterop" +
-      ".GraphicsPullSnapshotResponse\"\000\022c\n\024graph" +
-      "icsPushSnapshot\022+.rplugininterop.Graphic" +
-      "sPushSnapshotRequest\032\034.google.protobuf.S" +
-      "tringValue\"\000\022P\n\023graphicsCreateGroup\022\026.go" +
-      "ogle.protobuf.Empty\032\035.rplugininterop.Com" +
-      "mandOutput\"\0000\001\022V\n\023graphicsRemoveGroup\022\034." +
-      "google.protobuf.StringValue\032\035.rpluginint" +
-      "erop.CommandOutput\"\0000\001\022M\n\020graphicsShutdo" +
-      "wn\022\026.google.protobuf.Empty\032\035.rplugininte" +
-      "rop.CommandOutput\"\0000\001\022Z\n\024beforeChunkExec" +
-      "ution\022\037.rplugininterop.ChunkParameters\032\035" +
-      ".rplugininterop.CommandOutput\"\0000\001\022P\n\023aft" +
-      "erChunkExecution\022\026.google.protobuf.Empty" +
-      "\032\035.rplugininterop.CommandOutput\"\0000\001\022T\n\034p" +
-      "ullChunkOutputRelativePaths\022\026.google.pro" +
-      "tobuf.Empty\032\032.rplugininterop.StringList\"" +
-      "\000\022b\n\023pullChunkOutputFile\022\034.google.protob" +
-      "uf.StringValue\032+.rplugininterop.PullChun" +
-      "kOutputFileResponse\"\000\022X\n\025repoGetPackageV" +
-      "ersion\022\034.google.protobuf.StringValue\032\035.r" +
-      "plugininterop.CommandOutput\"\0000\001\022Y\n\022repoI" +
-      "nstallPackage\022).rplugininterop.RepoInsta" +
-      "llPackageRequest\032\026.google.protobuf.Empty" +
-      "\"\000\022U\n\022repoAddLibraryPath\022\034.google.protob" +
-      "uf.StringValue\032\035.rplugininterop.CommandO" +
-      "utput\"\0000\001\022\\\n\031repoCheckPackageInstalled\022\034" +
-      ".google.protobuf.StringValue\032\035.rpluginin" +
-      "terop.CommandOutput\"\0000\001\022W\n\021repoRemovePac" +
-      "kage\022(.rplugininterop.RepoRemovePackageR" +
-      "equest\032\026.google.protobuf.Empty\"\000\022`\n\021prev" +
-      "iewDataImport\022(.rplugininterop.PreviewDa" +
-      "taImportRequest\032\035.rplugininterop.Command" +
-      "Output\"\0000\001\022U\n\020commitDataImport\022\'.rplugin" +
-      "interop.CommitDataImportRequest\032\026.google" +
-      ".protobuf.Empty\"\000\022Z\n\023copyToPersistentRef" +
-      "\022\024.rplugininterop.RRef\032+.rplugininterop." +
-      "CopyToPersistentRefResponse\"\000\022T\n\025dispose" +
-      "PersistentRefs\022!.rplugininterop.Persiste" +
-      "ntRefList\032\026.google.protobuf.Empty\"\000\022Q\n\023l" +
-      "oaderGetParentEnvs\022\024.rplugininterop.RRef" +
-      "\032\".rplugininterop.ParentEnvsResponse\"\000\022^" +
-      "\n\022loaderGetVariables\022#.rplugininterop.Ge" +
-      "tVariablesRequest\032!.rplugininterop.Varia" +
-      "blesResponse\"\000\022Q\n\031loaderGetLoadedNamespa" +
-      "ces\022\026.google.protobuf.Empty\032\032.rpluginint" +
-      "erop.StringList\"\000\022G\n\022loaderGetValueInfo\022" +
-      "\024.rplugininterop.RRef\032\031.rplugininterop.V" +
-      "alueInfo\"\000\022G\n\016evaluateAsText\022\024.rpluginin" +
-      "terop.RRef\032\035.rplugininterop.StringOrErro" +
-      "r\"\000\022G\n\021evaluateAsBoolean\022\024.rpluginintero" +
-      "p.RRef\032\032.google.protobuf.BoolValue\"\000\022H\n\022" +
-      "getDistinctStrings\022\024.rplugininterop.RRef" +
-      "\032\032.rplugininterop.StringList\"\000\022S\n\031getFun" +
-      "ctionSourcePosition\022\024.rplugininterop.RRe" +
-      "f\032\036.rplugininterop.SourcePosition\"\000\022Q\n\021g" +
-      "etSourceFileText\022\034.google.protobuf.Strin" +
-      "gValue\032\034.google.protobuf.StringValue\"\000\022Q" +
-      "\n\021getSourceFileName\022\034.google.protobuf.St" +
-      "ringValue\032\034.google.protobuf.StringValue\"" +
-      "\000\022E\n\017loadObjectNames\022\024.rplugininterop.RR" +
-      "ef\032\032.rplugininterop.StringList\"\000\022Q\n\033find" +
-      "InheritorNamedArguments\022\024.rplugininterop" +
-      ".RRef\032\032.rplugininterop.StringList\"\000\022V\n\027f" +
-      "indExtraNamedArguments\022\024.rplugininterop." +
-      "RRef\032#.rplugininterop.ExtraNamedArgument" +
-      "s\"\000\022b\n\023getTableColumnsInfo\022\'.rplugininte" +
-      "rop.TableColumnsInfoRequest\032 .rpluginint" +
-      "erop.TableColumnsInfo\"\000\022H\n\022getFormalArgu" +
-      "ments\022\024.rplugininterop.RRef\032\032.rpluginint" +
-      "erop.StringList\"\000\022H\n\021getEqualityObject\022\024" +
-      ".rplugininterop.RRef\032\033.google.protobuf.I" +
-      "nt64Value\"\000\022H\n\010setValue\022\037.rplugininterop" +
-      ".SetValueRequest\032\031.rplugininterop.ValueI" +
-      "nfo\"\000\022G\n\016getObjectSizes\022\030.rplugininterop" +
-      ".RRefList\032\031.rplugininterop.Int64List\"\000\022P" +
-      "\n\030getRMarkdownChunkOptions\022\026.google.prot" +
-      "obuf.Empty\032\032.rplugininterop.StringList\"\000" +
-      "\022H\n\021dataFrameRegister\022\024.rplugininterop.R" +
-      "Ref\032\033.google.protobuf.Int32Value\"\000\022Q\n\020da" +
-      "taFrameGetInfo\022\024.rplugininterop.RRef\032%.r" +
-      "plugininterop.DataFrameInfoResponse\"\000\022g\n" +
-      "\020dataFrameGetData\022\'.rplugininterop.DataF" +
-      "rameGetDataRequest\032(.rplugininterop.Data" +
-      "FrameGetDataResponse\"\000\022T\n\rdataFrameSort\022" +
-      "$.rplugininterop.DataFrameSortRequest\032\033." +
-      "google.protobuf.Int32Value\"\000\022X\n\017dataFram" +
-      "eFilter\022&.rplugininterop.DataFrameFilter" +
-      "Request\032\033.google.protobuf.Int32Value\"\000\022I" +
-      "\n\020dataFrameDispose\022\033.google.protobuf.Int" +
-      "32Value\032\026.google.protobuf.Empty\"\000\022s\n\024con" +
-      "vertRoxygenToHTML\022+.rplugininterop.Conve" +
-      "rtRoxygenToHTMLRequest\032,.rplugininterop." +
-      "ConvertRoxygenToHTMLResponse\"\000\022M\n\014httpdR" +
-      "equest\022\034.google.protobuf.StringValue\032\035.r" +
-      "plugininterop.HttpdResponse\"\000\022[\n\032getDocu" +
-      "mentationForPackage\022\034.google.protobuf.St" +
-      "ringValue\032\035.rplugininterop.HttpdResponse" +
-      "\"\000\022k\n\031getDocumentationForSymbol\022-.rplugi" +
-      "ninterop.DocumentationForSymbolRequest\032\035" +
-      ".rplugininterop.HttpdResponse\"\000\022G\n\rgetWo" +
-      "rkingDir\022\026.google.protobuf.Empty\032\034.googl" +
-      "e.protobuf.StringValue\"\000\022G\n\rsetWorkingDi" +
-      "r\022\034.google.protobuf.StringValue\032\026.google" +
-      ".protobuf.Empty\"\000\022B\n\020clearEnvironment\022\024." +
-      "rplugininterop.RRef\032\026.google.protobuf.Em" +
-      "pty\"\000\022K\n\tgetSysEnv\022 .rplugininterop.GetS" +
-      "ysEnvRequest\032\032.rplugininterop.StringList" +
-      "\"\000\022X\n\025loadInstalledPackages\022\026.google.pro" +
-      "tobuf.Empty\032%.rplugininterop.RInstalledP" +
-      "ackageList\"\000\022J\n\014loadLibPaths\022\026.google.pr",
-      "otobuf.Empty\032 .rplugininterop.RLibraryPa" +
-      "thList\"\000\022E\n\013loadLibrary\022\034.google.protobu" +
-      "f.StringValue\032\026.google.protobuf.Empty\"\000\022" +
-      "O\n\runloadLibrary\022$.rplugininterop.Unload" +
-      "LibraryRequest\032\026.google.protobuf.Empty\"\000" +
-      "\022O\n\025saveGlobalEnvironment\022\034.google.proto" +
-      "buf.StringValue\032\026.google.protobuf.Empty\"" +
-      "\000\022S\n\017loadEnvironment\022&.rplugininterop.Lo" +
-      "adEnvironmentRequest\032\026.google.protobuf.E" +
-      "mpty\"\000\022G\n\016setOutputWidth\022\033.google.protob" +
-      "uf.Int32Value\032\026.google.protobuf.Empty\"\000\022" +
-      "I\n\025clientRequestFinished\022\026.google.protob" +
-      "uf.Empty\032\026.google.protobuf.Empty\"\000\022E\n\rse" +
-      "tSaveOnExit\022\032.google.protobuf.BoolValue\032" +
-      "\026.google.protobuf.Empty\"\000B\034\n\030org.jetbrai" +
-      "ns.r.rinteropP\001b\006proto3"
+      "f.Empty\"\000\022D\n\020debugCommandStop\022\026.google.p" +
+      "rotobuf.Empty\032\026.google.protobuf.Empty\"\000\022" +
+      "H\n\024debugCommandStepOver\022\026.google.protobu" +
+      "f.Empty\032\026.google.protobuf.Empty\"\000\022H\n\024deb" +
+      "ugCommandStepInto\022\026.google.protobuf.Empt" +
+      "y\032\026.google.protobuf.Empty\"\000\022M\n\031debugComm" +
+      "andForceStepInto\022\026.google.protobuf.Empty" +
+      "\032\026.google.protobuf.Empty\"\000\022G\n\023debugComma" +
+      "ndStepOut\022\026.google.protobuf.Empty\032\026.goog" +
+      "le.protobuf.Empty\"\000\022U\n\031debugCommandRunTo" +
+      "Position\022\036.rplugininterop.SourcePosition" +
+      "\032\026.google.protobuf.Empty\"\000\022L\n\024debugMuteB" +
+      "reakpoints\022\032.google.protobuf.BoolValue\032\026" +
+      ".google.protobuf.Empty\"\000\022V\n\014graphicsInit" +
+      "\022#.rplugininterop.GraphicsInitRequest\032\035." +
+      "rplugininterop.CommandOutput\"\0000\001\022I\n\014grap" +
+      "hicsDump\022\026.google.protobuf.Empty\032\035.rplug" +
+      "ininterop.CommandOutput\"\0000\001\022\\\n\017graphicsR" +
+      "escale\022&.rplugininterop.GraphicsRescaleR" +
+      "equest\032\035.rplugininterop.CommandOutput\"\0000" +
+      "\001\022h\n\025graphicsRescaleStored\022,.rplugininte" +
+      "rop.GraphicsRescaleStoredRequest\032\035.rplug" +
+      "ininterop.CommandOutput\"\0000\001\022Q\n\032graphicsP" +
+      "ullChangedNumbers\022\026.google.protobuf.Empt" +
+      "y\032\031.rplugininterop.Int32List\"\000\022s\n\024graphi" +
+      "csPullSnapshot\022+.rplugininterop.Graphics" +
+      "PullSnapshotRequest\032,.rplugininterop.Gra" +
+      "phicsPullSnapshotResponse\"\000\022c\n\024graphicsP" +
+      "ushSnapshot\022+.rplugininterop.GraphicsPus" +
+      "hSnapshotRequest\032\034.google.protobuf.Strin" +
+      "gValue\"\000\022P\n\023graphicsCreateGroup\022\026.google" +
+      ".protobuf.Empty\032\035.rplugininterop.Command" +
+      "Output\"\0000\001\022V\n\023graphicsRemoveGroup\022\034.goog" +
+      "le.protobuf.StringValue\032\035.rplugininterop" +
+      ".CommandOutput\"\0000\001\022M\n\020graphicsShutdown\022\026" +
+      ".google.protobuf.Empty\032\035.rplugininterop." +
+      "CommandOutput\"\0000\001\022Z\n\024beforeChunkExecutio" +
+      "n\022\037.rplugininterop.ChunkParameters\032\035.rpl" +
+      "ugininterop.CommandOutput\"\0000\001\022P\n\023afterCh" +
+      "unkExecution\022\026.google.protobuf.Empty\032\035.r" +
+      "plugininterop.CommandOutput\"\0000\001\022T\n\034pullC" +
+      "hunkOutputRelativePaths\022\026.google.protobu" +
+      "f.Empty\032\032.rplugininterop.StringList\"\000\022b\n" +
+      "\023pullChunkOutputFile\022\034.google.protobuf.S" +
+      "tringValue\032+.rplugininterop.PullChunkOut" +
+      "putFileResponse\"\000\022X\n\025repoGetPackageVersi" +
+      "on\022\034.google.protobuf.StringValue\032\035.rplug" +
+      "ininterop.CommandOutput\"\0000\001\022Y\n\022repoInsta" +
+      "llPackage\022).rplugininterop.RepoInstallPa" +
+      "ckageRequest\032\026.google.protobuf.Empty\"\000\022U" +
+      "\n\022repoAddLibraryPath\022\034.google.protobuf.S" +
+      "tringValue\032\035.rplugininterop.CommandOutpu" +
+      "t\"\0000\001\022\\\n\031repoCheckPackageInstalled\022\034.goo" +
+      "gle.protobuf.StringValue\032\035.rpluginintero" +
+      "p.CommandOutput\"\0000\001\022W\n\021repoRemovePackage" +
+      "\022(.rplugininterop.RepoRemovePackageReque" +
+      "st\032\026.google.protobuf.Empty\"\000\022`\n\021previewD" +
+      "ataImport\022(.rplugininterop.PreviewDataIm" +
+      "portRequest\032\035.rplugininterop.CommandOutp" +
+      "ut\"\0000\001\022U\n\020commitDataImport\022\'.rplugininte" +
+      "rop.CommitDataImportRequest\032\026.google.pro" +
+      "tobuf.Empty\"\000\022Z\n\023copyToPersistentRef\022\024.r" +
+      "plugininterop.RRef\032+.rplugininterop.Copy" +
+      "ToPersistentRefResponse\"\000\022T\n\025disposePers" +
+      "istentRefs\022!.rplugininterop.PersistentRe" +
+      "fList\032\026.google.protobuf.Empty\"\000\022Q\n\023loade" +
+      "rGetParentEnvs\022\024.rplugininterop.RRef\032\".r" +
+      "plugininterop.ParentEnvsResponse\"\000\022^\n\022lo" +
+      "aderGetVariables\022#.rplugininterop.GetVar" +
+      "iablesRequest\032!.rplugininterop.Variables" +
+      "Response\"\000\022Q\n\031loaderGetLoadedNamespaces\022" +
+      "\026.google.protobuf.Empty\032\032.rplugininterop" +
+      ".StringList\"\000\022G\n\022loaderGetValueInfo\022\024.rp" +
+      "lugininterop.RRef\032\031.rplugininterop.Value" +
+      "Info\"\000\022G\n\016evaluateAsText\022\024.rpluginintero" +
+      "p.RRef\032\035.rplugininterop.StringOrError\"\000\022" +
+      "G\n\021evaluateAsBoolean\022\024.rplugininterop.RR" +
+      "ef\032\032.google.protobuf.BoolValue\"\000\022H\n\022getD" +
+      "istinctStrings\022\024.rplugininterop.RRef\032\032.r" +
+      "plugininterop.StringList\"\000\022S\n\031getFunctio" +
+      "nSourcePosition\022\024.rplugininterop.RRef\032\036." +
+      "rplugininterop.SourcePosition\"\000\022Q\n\021getSo" +
+      "urceFileText\022\034.google.protobuf.StringVal" +
+      "ue\032\034.google.protobuf.StringValue\"\000\022Q\n\021ge" +
+      "tSourceFileName\022\034.google.protobuf.String" +
+      "Value\032\034.google.protobuf.StringValue\"\000\022E\n" +
+      "\017loadObjectNames\022\024.rplugininterop.RRef\032\032" +
+      ".rplugininterop.StringList\"\000\022Q\n\033findInhe" +
+      "ritorNamedArguments\022\024.rplugininterop.RRe" +
+      "f\032\032.rplugininterop.StringList\"\000\022V\n\027findE" +
+      "xtraNamedArguments\022\024.rplugininterop.RRef" +
+      "\032#.rplugininterop.ExtraNamedArguments\"\000\022" +
+      "b\n\023getTableColumnsInfo\022\'.rplugininterop." +
+      "TableColumnsInfoRequest\032 .rplugininterop" +
+      ".TableColumnsInfo\"\000\022H\n\022getFormalArgument" +
+      "s\022\024.rplugininterop.RRef\032\032.rplugininterop" +
+      ".StringList\"\000\022H\n\021getEqualityObject\022\024.rpl" +
+      "ugininterop.RRef\032\033.google.protobuf.Int64" +
+      "Value\"\000\022H\n\010setValue\022\037.rplugininterop.Set" +
+      "ValueRequest\032\031.rplugininterop.ValueInfo\"" +
+      "\000\022G\n\016getObjectSizes\022\030.rplugininterop.RRe" +
+      "fList\032\031.rplugininterop.Int64List\"\000\022P\n\030ge" +
+      "tRMarkdownChunkOptions\022\026.google.protobuf" +
+      ".Empty\032\032.rplugininterop.StringList\"\000\022H\n\021" +
+      "dataFrameRegister\022\024.rplugininterop.RRef\032" +
+      "\033.google.protobuf.Int32Value\"\000\022Q\n\020dataFr" +
+      "ameGetInfo\022\024.rplugininterop.RRef\032%.rplug" +
+      "ininterop.DataFrameInfoResponse\"\000\022g\n\020dat" +
+      "aFrameGetData\022\'.rplugininterop.DataFrame" +
+      "GetDataRequest\032(.rplugininterop.DataFram" +
+      "eGetDataResponse\"\000\022T\n\rdataFrameSort\022$.rp" +
+      "lugininterop.DataFrameSortRequest\032\033.goog" +
+      "le.protobuf.Int32Value\"\000\022X\n\017dataFrameFil" +
+      "ter\022&.rplugininterop.DataFrameFilterRequ" +
+      "est\032\033.google.protobuf.Int32Value\"\000\022I\n\020da" +
+      "taFrameDispose\022\033.google.protobuf.Int32Va" +
+      "lue\032\026.google.protobuf.Empty\"\000\022s\n\024convert" +
+      "RoxygenToHTML\022+.rplugininterop.ConvertRo" +
+      "xygenToHTMLRequest\032,.rplugininterop.Conv" +
+      "ertRoxygenToHTMLResponse\"\000\022M\n\014httpdReque" +
+      "st\022\034.google.protobuf.StringValue\032\035.rplug" +
+      "ininterop.HttpdResponse\"\000\022[\n\032getDocument" +
+      "ationForPackage\022\034.google.protobuf.String" +
+      "Value\032\035.rplugininterop.HttpdResponse\"\000\022k" +
+      "\n\031getDocumentationForSymbol\022-.rpluginint" +
+      "erop.DocumentationForSymbolRequest\032\035.rpl" +
+      "ugininterop.HttpdResponse\"\000\022G\n\rgetWorkin" +
+      "gDir\022\026.google.protobuf.Empty\032\034.google.pr" +
+      "otobuf.StringValue\"\000\022G\n\rsetWorkingDir\022\034." +
+      "google.protobuf.StringValue\032\026.google.pro" +
+      "tobuf.Empty\"\000\022B\n\020clearEnvironment\022\024.rplu" +
+      "gininterop.RRef\032\026.google.protobuf.Empty\"" +
+      "\000\022K\n\tgetSysEnv\022 .rplugininterop.GetSysEn" +
+      "vRequest\032\032.rplugininterop.StringList\"\000\022X",
+      "\n\025loadInstalledPackages\022\026.google.protobu" +
+      "f.Empty\032%.rplugininterop.RInstalledPacka" +
+      "geList\"\000\022J\n\014loadLibPaths\022\026.google.protob" +
+      "uf.Empty\032 .rplugininterop.RLibraryPathLi" +
+      "st\"\000\022E\n\013loadLibrary\022\034.google.protobuf.St" +
+      "ringValue\032\026.google.protobuf.Empty\"\000\022O\n\ru" +
+      "nloadLibrary\022$.rplugininterop.UnloadLibr" +
+      "aryRequest\032\026.google.protobuf.Empty\"\000\022O\n\025" +
+      "saveGlobalEnvironment\022\034.google.protobuf." +
+      "StringValue\032\026.google.protobuf.Empty\"\000\022S\n" +
+      "\017loadEnvironment\022&.rplugininterop.LoadEn" +
+      "vironmentRequest\032\026.google.protobuf.Empty" +
+      "\"\000\022G\n\016setOutputWidth\022\033.google.protobuf.I" +
+      "nt32Value\032\026.google.protobuf.Empty\"\000\022I\n\025c" +
+      "lientRequestFinished\022\026.google.protobuf.E" +
+      "mpty\032\026.google.protobuf.Empty\"\000\022E\n\rsetSav" +
+      "eOnExit\022\032.google.protobuf.BoolValue\032\026.go" +
+      "ogle.protobuf.Empty\"\000B\034\n\030org.jetbrains.r" +
+      ".rinteropP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -956,7 +959,7 @@ public final class Service {
     internal_static_rplugininterop_AsyncEvent_DebugPrompt_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rplugininterop_AsyncEvent_DebugPrompt_descriptor,
-        new java.lang.String[] { "Changed", "Stack", });
+        new java.lang.String[] { "Changed", "Stack", "IsStep", "IsBreakpoint", });
     internal_static_rplugininterop_AsyncEvent_ViewRequest_descriptor =
       internal_static_rplugininterop_AsyncEvent_descriptor.getNestedTypes().get(2);
     internal_static_rplugininterop_AsyncEvent_ViewRequest_fieldAccessorTable = new

@@ -185,7 +185,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
             wasOutput = true
           }
         }
-        override fun onPrompt(isDebug: Boolean) {
+        override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
           promise.setResult(Unit)
         }
       }
@@ -276,7 +276,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     rInterop.executeCode("f <- function() f()")
     var promptPromise = AsyncPromise<Unit>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onPrompt(isDebug: Boolean) {
+      override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
         promptPromise.setResult(Unit)
       }
     })
@@ -292,7 +292,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     rInterop.executeCode("f <- function() f()")
     var promptPromise = AsyncPromise<Unit>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onPrompt(isDebug: Boolean) {
+      override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
         promptPromise.setResult(Unit)
       }
     })
