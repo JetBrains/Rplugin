@@ -816,6 +816,16 @@ private static final long serialVersionUID = 0L;
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
      */
     org.jetbrains.r.rinterop.StackFrameListOrBuilder getStackOrBuilder();
+
+    /**
+     * <code>bool isStep = 3;</code>
+     */
+    boolean getIsStep();
+
+    /**
+     * <code>bool isBreakpoint = 4;</code>
+     */
+    boolean getIsBreakpoint();
   }
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.DebugPrompt}
@@ -880,6 +890,16 @@ private static final long serialVersionUID = 0L;
 
               break;
             }
+            case 24: {
+
+              isStep_ = input.readBool();
+              break;
+            }
+            case 32: {
+
+              isBreakpoint_ = input.readBool();
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -942,6 +962,24 @@ private static final long serialVersionUID = 0L;
       return getStack();
     }
 
+    public static final int ISSTEP_FIELD_NUMBER = 3;
+    private boolean isStep_;
+    /**
+     * <code>bool isStep = 3;</code>
+     */
+    public boolean getIsStep() {
+      return isStep_;
+    }
+
+    public static final int ISBREAKPOINT_FIELD_NUMBER = 4;
+    private boolean isBreakpoint_;
+    /**
+     * <code>bool isBreakpoint = 4;</code>
+     */
+    public boolean getIsBreakpoint() {
+      return isBreakpoint_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -962,6 +1000,12 @@ private static final long serialVersionUID = 0L;
       if (stack_ != null) {
         output.writeMessage(2, getStack());
       }
+      if (isStep_ != false) {
+        output.writeBool(3, isStep_);
+      }
+      if (isBreakpoint_ != false) {
+        output.writeBool(4, isBreakpoint_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -978,6 +1022,14 @@ private static final long serialVersionUID = 0L;
       if (stack_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getStack());
+      }
+      if (isStep_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, isStep_);
+      }
+      if (isBreakpoint_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, isBreakpoint_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1001,6 +1053,10 @@ private static final long serialVersionUID = 0L;
         if (!getStack()
             .equals(other.getStack())) return false;
       }
+      if (getIsStep()
+          != other.getIsStep()) return false;
+      if (getIsBreakpoint()
+          != other.getIsBreakpoint()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1019,6 +1075,12 @@ private static final long serialVersionUID = 0L;
         hash = (37 * hash) + STACK_FIELD_NUMBER;
         hash = (53 * hash) + getStack().hashCode();
       }
+      hash = (37 * hash) + ISSTEP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsStep());
+      hash = (37 * hash) + ISBREAKPOINT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsBreakpoint());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1160,6 +1222,10 @@ private static final long serialVersionUID = 0L;
           stack_ = null;
           stackBuilder_ = null;
         }
+        isStep_ = false;
+
+        isBreakpoint_ = false;
+
         return this;
       }
 
@@ -1192,6 +1258,8 @@ private static final long serialVersionUID = 0L;
         } else {
           result.stack_ = stackBuilder_.build();
         }
+        result.isStep_ = isStep_;
+        result.isBreakpoint_ = isBreakpoint_;
         onBuilt();
         return result;
       }
@@ -1245,6 +1313,12 @@ private static final long serialVersionUID = 0L;
         }
         if (other.hasStack()) {
           mergeStack(other.getStack());
+        }
+        if (other.getIsStep() != false) {
+          setIsStep(other.getIsStep());
+        }
+        if (other.getIsBreakpoint() != false) {
+          setIsBreakpoint(other.getIsBreakpoint());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1416,6 +1490,58 @@ private static final long serialVersionUID = 0L;
           stack_ = null;
         }
         return stackBuilder_;
+      }
+
+      private boolean isStep_ ;
+      /**
+       * <code>bool isStep = 3;</code>
+       */
+      public boolean getIsStep() {
+        return isStep_;
+      }
+      /**
+       * <code>bool isStep = 3;</code>
+       */
+      public Builder setIsStep(boolean value) {
+        
+        isStep_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool isStep = 3;</code>
+       */
+      public Builder clearIsStep() {
+        
+        isStep_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean isBreakpoint_ ;
+      /**
+       * <code>bool isBreakpoint = 4;</code>
+       */
+      public boolean getIsBreakpoint() {
+        return isBreakpoint_;
+      }
+      /**
+       * <code>bool isBreakpoint = 4;</code>
+       */
+      public Builder setIsBreakpoint(boolean value) {
+        
+        isBreakpoint_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool isBreakpoint = 4;</code>
+       */
+      public Builder clearIsBreakpoint() {
+        
+        isBreakpoint_ = false;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(

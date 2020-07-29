@@ -431,6 +431,37 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "debugCommandKeepPrevious",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod;
+    if ((getDebugCommandKeepPreviousMethod = RPIServiceGrpc.getDebugCommandKeepPreviousMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getDebugCommandKeepPreviousMethod = RPIServiceGrpc.getDebugCommandKeepPreviousMethod) == null) {
+          RPIServiceGrpc.getDebugCommandKeepPreviousMethod = getDebugCommandKeepPreviousMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugCommandKeepPrevious"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugCommandKeepPrevious"))
+              .build();
+        }
+      }
+    }
+    return getDebugCommandKeepPreviousMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
       com.google.protobuf.Empty> getDebugCommandPauseMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
@@ -2847,6 +2878,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void debugCommandKeepPrevious(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getDebugCommandKeepPreviousMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void debugCommandPause(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getDebugCommandPauseMethod(), responseObserver);
@@ -3480,6 +3518,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty,
                 com.google.protobuf.Empty>(
                   this, METHODID_DEBUG_COMMAND_CONTINUE)))
+          .addMethod(
+            getDebugCommandKeepPreviousMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                com.google.protobuf.Empty>(
+                  this, METHODID_DEBUG_COMMAND_KEEP_PREVIOUS)))
           .addMethod(
             getDebugCommandPauseMethod(),
             asyncUnaryCall(
@@ -4125,6 +4170,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getDebugCommandContinueMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void debugCommandKeepPrevious(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getDebugCommandKeepPreviousMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4860,6 +4913,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.protobuf.Empty debugCommandKeepPrevious(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getDebugCommandKeepPreviousMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public com.google.protobuf.Empty debugCommandPause(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getDebugCommandPauseMethod(), getCallOptions(), request);
@@ -5525,6 +5585,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugCommandKeepPrevious(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getDebugCommandKeepPreviousMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugCommandPause(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
@@ -6037,80 +6105,81 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DEBUG_ADD_BREAKPOINT = 10;
   private static final int METHODID_DEBUG_REMOVE_BREAKPOINT = 11;
   private static final int METHODID_DEBUG_COMMAND_CONTINUE = 12;
-  private static final int METHODID_DEBUG_COMMAND_PAUSE = 13;
-  private static final int METHODID_DEBUG_COMMAND_STOP = 14;
-  private static final int METHODID_DEBUG_COMMAND_STEP_OVER = 15;
-  private static final int METHODID_DEBUG_COMMAND_STEP_INTO = 16;
-  private static final int METHODID_DEBUG_COMMAND_FORCE_STEP_INTO = 17;
-  private static final int METHODID_DEBUG_COMMAND_STEP_OUT = 18;
-  private static final int METHODID_DEBUG_COMMAND_RUN_TO_POSITION = 19;
-  private static final int METHODID_DEBUG_MUTE_BREAKPOINTS = 20;
-  private static final int METHODID_GRAPHICS_INIT = 21;
-  private static final int METHODID_GRAPHICS_DUMP = 22;
-  private static final int METHODID_GRAPHICS_RESCALE = 23;
-  private static final int METHODID_GRAPHICS_RESCALE_STORED = 24;
-  private static final int METHODID_GRAPHICS_PULL_CHANGED_NUMBERS = 25;
-  private static final int METHODID_GRAPHICS_PULL_SNAPSHOT = 26;
-  private static final int METHODID_GRAPHICS_PUSH_SNAPSHOT = 27;
-  private static final int METHODID_GRAPHICS_CREATE_GROUP = 28;
-  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 29;
-  private static final int METHODID_GRAPHICS_SHUTDOWN = 30;
-  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 31;
-  private static final int METHODID_AFTER_CHUNK_EXECUTION = 32;
-  private static final int METHODID_PULL_CHUNK_OUTPUT_RELATIVE_PATHS = 33;
-  private static final int METHODID_PULL_CHUNK_OUTPUT_FILE = 34;
-  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 35;
-  private static final int METHODID_REPO_INSTALL_PACKAGE = 36;
-  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 37;
-  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 38;
-  private static final int METHODID_REPO_REMOVE_PACKAGE = 39;
-  private static final int METHODID_PREVIEW_DATA_IMPORT = 40;
-  private static final int METHODID_COMMIT_DATA_IMPORT = 41;
-  private static final int METHODID_COPY_TO_PERSISTENT_REF = 42;
-  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 43;
-  private static final int METHODID_LOADER_GET_PARENT_ENVS = 44;
-  private static final int METHODID_LOADER_GET_VARIABLES = 45;
-  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 46;
-  private static final int METHODID_LOADER_GET_VALUE_INFO = 47;
-  private static final int METHODID_EVALUATE_AS_TEXT = 48;
-  private static final int METHODID_EVALUATE_AS_BOOLEAN = 49;
-  private static final int METHODID_GET_DISTINCT_STRINGS = 50;
-  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 51;
-  private static final int METHODID_GET_SOURCE_FILE_TEXT = 52;
-  private static final int METHODID_GET_SOURCE_FILE_NAME = 53;
-  private static final int METHODID_LOAD_OBJECT_NAMES = 54;
-  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 55;
-  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 56;
-  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 57;
-  private static final int METHODID_GET_FORMAL_ARGUMENTS = 58;
-  private static final int METHODID_GET_EQUALITY_OBJECT = 59;
-  private static final int METHODID_SET_VALUE = 60;
-  private static final int METHODID_GET_OBJECT_SIZES = 61;
-  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 62;
-  private static final int METHODID_DATA_FRAME_REGISTER = 63;
-  private static final int METHODID_DATA_FRAME_GET_INFO = 64;
-  private static final int METHODID_DATA_FRAME_GET_DATA = 65;
-  private static final int METHODID_DATA_FRAME_SORT = 66;
-  private static final int METHODID_DATA_FRAME_FILTER = 67;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 68;
-  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 69;
-  private static final int METHODID_HTTPD_REQUEST = 70;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 71;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 72;
-  private static final int METHODID_START_HTTPD = 73;
-  private static final int METHODID_GET_WORKING_DIR = 74;
-  private static final int METHODID_SET_WORKING_DIR = 75;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 76;
-  private static final int METHODID_GET_SYS_ENV = 77;
-  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 78;
-  private static final int METHODID_LOAD_LIB_PATHS = 79;
-  private static final int METHODID_LOAD_LIBRARY = 80;
-  private static final int METHODID_UNLOAD_LIBRARY = 81;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 82;
-  private static final int METHODID_LOAD_ENVIRONMENT = 83;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 84;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 85;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 86;
+  private static final int METHODID_DEBUG_COMMAND_KEEP_PREVIOUS = 13;
+  private static final int METHODID_DEBUG_COMMAND_PAUSE = 14;
+  private static final int METHODID_DEBUG_COMMAND_STOP = 15;
+  private static final int METHODID_DEBUG_COMMAND_STEP_OVER = 16;
+  private static final int METHODID_DEBUG_COMMAND_STEP_INTO = 17;
+  private static final int METHODID_DEBUG_COMMAND_FORCE_STEP_INTO = 18;
+  private static final int METHODID_DEBUG_COMMAND_STEP_OUT = 19;
+  private static final int METHODID_DEBUG_COMMAND_RUN_TO_POSITION = 20;
+  private static final int METHODID_DEBUG_MUTE_BREAKPOINTS = 21;
+  private static final int METHODID_GRAPHICS_INIT = 22;
+  private static final int METHODID_GRAPHICS_DUMP = 23;
+  private static final int METHODID_GRAPHICS_RESCALE = 24;
+  private static final int METHODID_GRAPHICS_RESCALE_STORED = 25;
+  private static final int METHODID_GRAPHICS_PULL_CHANGED_NUMBERS = 26;
+  private static final int METHODID_GRAPHICS_PULL_SNAPSHOT = 27;
+  private static final int METHODID_GRAPHICS_PUSH_SNAPSHOT = 28;
+  private static final int METHODID_GRAPHICS_CREATE_GROUP = 29;
+  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 30;
+  private static final int METHODID_GRAPHICS_SHUTDOWN = 31;
+  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 32;
+  private static final int METHODID_AFTER_CHUNK_EXECUTION = 33;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_RELATIVE_PATHS = 34;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_FILE = 35;
+  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 36;
+  private static final int METHODID_REPO_INSTALL_PACKAGE = 37;
+  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 38;
+  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 39;
+  private static final int METHODID_REPO_REMOVE_PACKAGE = 40;
+  private static final int METHODID_PREVIEW_DATA_IMPORT = 41;
+  private static final int METHODID_COMMIT_DATA_IMPORT = 42;
+  private static final int METHODID_COPY_TO_PERSISTENT_REF = 43;
+  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 44;
+  private static final int METHODID_LOADER_GET_PARENT_ENVS = 45;
+  private static final int METHODID_LOADER_GET_VARIABLES = 46;
+  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 47;
+  private static final int METHODID_LOADER_GET_VALUE_INFO = 48;
+  private static final int METHODID_EVALUATE_AS_TEXT = 49;
+  private static final int METHODID_EVALUATE_AS_BOOLEAN = 50;
+  private static final int METHODID_GET_DISTINCT_STRINGS = 51;
+  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 52;
+  private static final int METHODID_GET_SOURCE_FILE_TEXT = 53;
+  private static final int METHODID_GET_SOURCE_FILE_NAME = 54;
+  private static final int METHODID_LOAD_OBJECT_NAMES = 55;
+  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 56;
+  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 57;
+  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 58;
+  private static final int METHODID_GET_FORMAL_ARGUMENTS = 59;
+  private static final int METHODID_GET_EQUALITY_OBJECT = 60;
+  private static final int METHODID_SET_VALUE = 61;
+  private static final int METHODID_GET_OBJECT_SIZES = 62;
+  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 63;
+  private static final int METHODID_DATA_FRAME_REGISTER = 64;
+  private static final int METHODID_DATA_FRAME_GET_INFO = 65;
+  private static final int METHODID_DATA_FRAME_GET_DATA = 66;
+  private static final int METHODID_DATA_FRAME_SORT = 67;
+  private static final int METHODID_DATA_FRAME_FILTER = 68;
+  private static final int METHODID_DATA_FRAME_DISPOSE = 69;
+  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 70;
+  private static final int METHODID_HTTPD_REQUEST = 71;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 73;
+  private static final int METHODID_START_HTTPD = 74;
+  private static final int METHODID_GET_WORKING_DIR = 75;
+  private static final int METHODID_SET_WORKING_DIR = 76;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 77;
+  private static final int METHODID_GET_SYS_ENV = 78;
+  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 79;
+  private static final int METHODID_LOAD_LIB_PATHS = 80;
+  private static final int METHODID_LOAD_LIBRARY = 81;
+  private static final int METHODID_UNLOAD_LIBRARY = 82;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 83;
+  private static final int METHODID_LOAD_ENVIRONMENT = 84;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 85;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 86;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 87;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6179,6 +6248,10 @@ public final class RPIServiceGrpc {
           break;
         case METHODID_DEBUG_COMMAND_CONTINUE:
           serviceImpl.debugCommandContinue((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_DEBUG_COMMAND_KEEP_PREVIOUS:
+          serviceImpl.debugCommandKeepPrevious((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_DEBUG_COMMAND_PAUSE:
@@ -6551,6 +6624,7 @@ public final class RPIServiceGrpc {
               .addMethod(getDebugAddBreakpointMethod())
               .addMethod(getDebugRemoveBreakpointMethod())
               .addMethod(getDebugCommandContinueMethod())
+              .addMethod(getDebugCommandKeepPreviousMethod())
               .addMethod(getDebugCommandPauseMethod())
               .addMethod(getDebugCommandStopMethod())
               .addMethod(getDebugCommandStepOverMethod())

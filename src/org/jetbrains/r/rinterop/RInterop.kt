@@ -457,6 +457,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::debugCommandContinue, Empty.getDefaultInstance())
   }
 
+  fun debugCommandKeepPrevious() = executeTask {
+    execute(asyncStub::debugCommandKeepPrevious, Empty.getDefaultInstance())
+  }
+
   fun debugCommandPause() = executeTask {
     execute(asyncStub::debugCommandPause, Empty.getDefaultInstance())
   }
@@ -958,7 +962,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         if (event.debugPrompt.changed) {
           debugStack = stackFromProto(event.debugPrompt.stack)
         }
-        fireListeners { it.onPrompt(true) }
+        fireListeners { it.onPrompt(true, event.debugPrompt.isStep, event.debugPrompt.isBreakpoint) }
       }
       AsyncEvent.EventCase.EXCEPTION -> {
         if (!event.exception.exception.hasInterrupted()) {
@@ -1206,7 +1210,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onText(text: String, type: ProcessOutputType) {}
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
-    fun onPrompt(isDebug: Boolean = false) {}
+    fun onPrompt(isDebug: Boolean = false, isDebugStep: Boolean = false, isBreakpoint: Boolean = false) {}
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()

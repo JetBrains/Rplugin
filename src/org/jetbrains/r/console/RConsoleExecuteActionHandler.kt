@@ -29,6 +29,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.documentation.RDocumentationProvider
 import org.jetbrains.r.intentions.DependencyManagementFix
 import org.jetbrains.r.interpreter.RLibraryWatcher
@@ -121,7 +122,14 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       state = State.SUBPROCESS_INPUT
     }
 
-    override fun onPrompt(isDebug: Boolean) {
+    override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
+      if (isDebug) {
+        val suspend = isBreakpoint && RDebuggerUtil.processBreakpoint(consoleView)
+        if (!isDebugStep && !suspend) {
+          rInterop.debugCommandKeepPrevious()
+          return
+        }
+      }
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
       runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
       fireCommandExecuted()
