@@ -4,132 +4,40 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
 import com.intellij.util.messages.Topic
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
-import org.jetbrains.r.RBundle
-import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 class RLibraryWatcher(private val project: Project) : Disposable {
   private val switch = RLibraryWatcherSwitch()
-  private var interpreter: RInterpreter? = null
-  private var fsNotifierProcess: ProcessHandler? = null
   private val changed = AtomicBoolean(false)
-  private var roots : List<String> = emptyList()
-
-  internal fun setCurrentInterpreter(newInterpreter: RInterpreter?) {
-    fsNotifierProcess?.let {
-      it.destroyProcess()
-      fsNotifierProcess = null
-    }
-    interpreter = newInterpreter
-    if (newInterpreter == null) return
-    runBackgroundableTask(RBundle.message("library.watcher.initializing"), project) {
-      fsNotifierProcess = runFsNotifier(newInterpreter)
-      updateRootsToWatch()
-    }
-  }
+  private var currentDisposable: Disposable? = null
 
   @Synchronized
   fun updateRootsToWatch() {
-    roots = RInterpreterStateManager.getCurrentStateOrNull(project)?.libraryPaths?.map { it.path } ?: return
-    fsNotifierProcess?.processInput?.bufferedWriter()?.let { writer ->
-      writer.write("ROOTS")
-      writer.newLine()
-      roots.forEach {
-        writer.write(it)
-        writer.newLine()
-      }
-      writer.write("#")
-      writer.newLine()
-      writer.flush()
+    currentDisposable?.let {
+      Disposer.dispose(it)
+      currentDisposable = null
     }
-  }
-
-  private enum class WatcherOp { GIVEUP, RESET, UNWATCHEABLE, REMAP, MESSAGE, CREATE, DELETE, STATS, CHANGE, DIRTY, RECDIRTY }
-
-  private fun runFsNotifier(interpreter: RInterpreter): ProcessHandler? {
-    val executableName = getFsNotifierExecutableName(interpreter.hostOS)
-    val fsNotifierExecutable = RPluginUtil.findFileInRHelpers(executableName)
-    if (!fsNotifierExecutable.exists()) {
-      LOG.error("fsNotifier: '$executableName' not found in helpers")
-      return null
+    val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
+    val roots = state.libraryPaths.map { it.path }
+    if (roots.isNotEmpty()) {
+      val disposable = Disposer.newDisposable()
+      currentDisposable = disposable
+      state.rInterop.tryRegisterDisposable(disposable)
+      state.rInterop.interpreter.addFsNotifierListenerForHost(roots, disposable) {
+        changed.set(true)
+      }
     }
-    if (!fsNotifierExecutable.canExecute()) fsNotifierExecutable.setExecutable(true)
-    val process = interpreter.runProcessOnHost(GeneralCommandLine(interpreter.uploadFileToHost(fsNotifierExecutable)), isSilent = true)
-    Disposer.register(project, Disposable { process.destroyProcess() })
-
-    process.addProcessListener(object : ProcessListener {
-      var lastOp: WatcherOp? = null
-
-      override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-        val line = event.text.trim().takeIf { it.isNotEmpty() } ?: return
-        if (outputType == ProcessOutputType.STDERR) {
-          LOG.warn("fsNotifier: $line")
-          return
-        }
-        if (outputType != ProcessOutputType.STDOUT) return
-
-        when (lastOp) {
-          WatcherOp.UNWATCHEABLE -> {
-            if (line != "#") {
-              LOG.warn("fsNotifier: UNWATCHABLE $line")
-              return
-            }
-          }
-          WatcherOp.REMAP -> if (line != "#") return
-          WatcherOp.MESSAGE -> {
-            LOG.warn("fsNotifier: MESSAGE $line")
-          }
-          WatcherOp.CREATE, WatcherOp.DELETE, WatcherOp.STATS, WatcherOp.CHANGE -> {
-            changed.set(true)
-          }
-          WatcherOp.DIRTY, WatcherOp.RECDIRTY -> {
-            if (roots.any { line.startsWith(it) }) {
-              changed.set(true)
-            }
-          }
-          else -> {
-            lastOp = try {
-              WatcherOp.valueOf(line)
-            } catch (e: IllegalArgumentException) {
-              LOG.warn("fsNotifier: unknown command $line")
-              null
-            }
-            if (lastOp == WatcherOp.GIVEUP || lastOp == WatcherOp.RESET) {
-              LOG.warn("fsNotifier: $line")
-            } else {
-              return
-            }
-          }
-        }
-        lastOp = null
-      }
-
-      override fun processTerminated(event: ProcessEvent) {
-      }
-
-      override fun startNotified(event: ProcessEvent) {
-      }
-    }, project)
-
-    process.startNotify()
-    return process
   }
 
   fun refresh() {
@@ -238,12 +146,6 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     }
 
     fun getInstance(project: Project): RLibraryWatcher = ServiceManager.getService(project, RLibraryWatcher::class.java)
-
-    fun getFsNotifierExecutableName(operatingSystem: OperatingSystem) = when (operatingSystem) {
-      OperatingSystem.WINDOWS -> "fsnotifier-win.exe"
-      OperatingSystem.LINUX -> "fsnotifier-linux"
-      OperatingSystem.MAC_OS -> "fsnotifier-osx"
-    }
   }
 }
 

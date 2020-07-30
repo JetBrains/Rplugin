@@ -13,17 +13,11 @@ class LibraryWatcherTest : RInterpreterBaseTestCase() {
   private val packageName = "rplugin.test.package"
   private val packagePath = "$testDataPath/packages/$packageName.tar.gz"
 
-  override fun tearDown() {
-    RLibraryWatcher.getInstance(project).setCurrentInterpreter(null)
-    super.tearDown()
-  }
-
   fun testPackageInstallUninstall() {
     val project = myFixture.project
     val interpreter = RInterpreterTestUtil.makeChildInterpreter(project)
     RInterpreterTestUtil.removePackage(interpreter, packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
-    libraryWatcher.setCurrentInterpreter(interpreter)
     assertNotEmpty(rInterop.state.libraryPaths)
     libraryWatcher.updateRootsToWatch()
 
