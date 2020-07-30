@@ -5,6 +5,7 @@
 package org.jetbrains.r.mock
 
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Version
@@ -28,6 +29,8 @@ class MockInterpreter(override val project: Project) : RInterpreter {
 
   override val hostOS: OperatingSystem
     get() = OperatingSystem.current()
+
+  private val fsNotifier by lazy { RFsNotifier(this) }
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
     return RInteropUtil.createRInteropForLocalProcess(this, process, port)
@@ -65,5 +68,9 @@ class MockInterpreter(override val project: Project) : RInterpreter {
     } else {
       Pair(userPath, File(userPath).mkdirs())
     }
+  }
+
+  override fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit) {
+    fsNotifier.addListener(roots, parentDisposable, listener)
   }
 }

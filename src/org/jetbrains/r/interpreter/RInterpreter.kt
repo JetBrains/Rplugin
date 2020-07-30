@@ -7,6 +7,7 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
@@ -73,6 +74,8 @@ interface RInterpreter : RInterpreterInfo {
   }
 
   fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> = resolvedPromise()
+
+  fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
 }
 
 data class LocalOrRemotePath(val path: String, val isRemote: Boolean)

@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.interpreter
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
@@ -13,13 +14,12 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
 
   override val version: Version = buildVersion(versionInfo)
   override val interpreterName: String get() = versionInfo["version.string"]?.replace(' ', '_')  ?: "unnamed"
+  private val fsNotifier by lazy { RFsNotifier(this) }
 
   open fun onSetAsProjectInterpreter() {
-    RLibraryWatcher.getInstance(project).setCurrentInterpreter(this)
   }
 
   open fun onUnsetAsProjectInterpreter() {
-    RLibraryWatcher.getInstance(project).setCurrentInterpreter(null)
   }
 
   private fun buildVersion(versionInfo: Map<String, String>): Version {
@@ -28,6 +28,10 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
     val minor = if (minorAndUpdate?.size == 2) minorAndUpdate[0].toInt() else 0
     val update = if (minorAndUpdate?.size == 2) minorAndUpdate[1].toInt() else 0
     return Version(major, minor, update)
+  }
+
+  override fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit) {
+    fsNotifier.addListener(roots, parentDisposable, listener)
   }
 
   companion object {

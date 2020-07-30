@@ -144,6 +144,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
                   }
                 }
                 RMarkdownSettings.getInstance(project).state.setProfileLastOutput(file, outputPath)
+                outputDir.refresh(true, false)
               }
               promise.setResult(Unit)
             } catch (e: IOException) {
