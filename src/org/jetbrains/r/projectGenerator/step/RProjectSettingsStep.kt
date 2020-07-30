@@ -8,6 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
@@ -72,8 +73,8 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
   }
 
   override fun onPanelSelected() {
-    setErrorText(null)
-    checkValid()
+    setErrorText("") // Block the "Create" button before checkValid execute
+    invokeLater { checkValid() }
     super.onPanelSelected()
   }
 
@@ -144,8 +145,6 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
       panel.add(locationPanel)
     }
     panel.add(createInterpretersPanel())
-
-    interpreterPanel.runListeners()
     return panel
   }
 
@@ -191,7 +190,8 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     })
 
     interpreterPanel.addChangeListener(Runnable {
-      checkValid() // Most likely it should be the last listener
+      setErrorText("") // Block the "Create" button before checkValid execute
+      invokeLater { checkValid() } // Most likely it should be the last listener
     })
 
     container.add(interpreterPanel, BorderLayout.NORTH)
