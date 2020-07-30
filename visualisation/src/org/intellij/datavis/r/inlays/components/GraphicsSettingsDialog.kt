@@ -5,104 +5,65 @@
 package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.DocumentAdapter
-import org.intellij.datavis.r.inlays.components.forms.GraphicsSettingsDialogForm
-import javax.swing.JCheckBox
+import com.intellij.ui.layout.*
+import org.intellij.datavis.r.VisualizationBundle
 import javax.swing.JComponent
-import javax.swing.JTextField
-import javax.swing.event.DocumentEvent
-import kotlin.reflect.KProperty
 
 class GraphicsSettingsDialog(
   private val initialSettings: Settings,
   private val onSettingsChange: (Settings) -> Unit
 ) : DialogWrapper(null, true) {
 
-  private val form = GraphicsSettingsDialogForm()
-
-  private val isAutoResizeEnabled: Boolean
-    get() = form.autoResizeCheckBox.isSelected
-
-  private val isDarkModeEnabled: Boolean?
-    get() = with(form.darkModeCheckBox) {
-      isSelected.takeIf { isVisible }
-    }
-
   private val settings: Settings
-    get() = Settings(isAutoResizeEnabled, isDarkModeEnabled, globalResolution, localResolution)
+    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution)
 
-  private var localResolution by ResolutionField(form.localResolutionTextField)
-  private var globalResolution by ResolutionField(form.globalResolutionTextField)
+  private val isDarkModeEnabledOrNull
+    get() = isDarkModeEnabled.takeIf { isDarkModeVisible }
+
+  private val isDarkModeVisible
+    get() = initialSettings.isDarkModeEnabled != null
+
+  private var isAutoResizeEnabled = initialSettings.isAutoResizedEnabled
+  private var isDarkModeEnabled = initialSettings.isDarkModeEnabled ?: false
+
+  private var localResolution = initialSettings.localResolution ?: DEFAULT_RESOLUTION
+  private var globalResolution = initialSettings.globalResolution ?: DEFAULT_RESOLUTION
 
   init {
+    setResizable(false)
     title = TITLE
     init()
-    localResolution = initialSettings.localResolution
-    globalResolution = initialSettings.globalResolution
-    form.localResolutionTextField.setupResolutionField(initialSettings.localResolution)
-    form.globalResolutionTextField.setupResolutionField(initialSettings.globalResolution)
-    form.autoResizeCheckBox.setupCheckBox(initialSettings.isAutoResizedEnabled)
-    form.darkModeCheckBox.setupCheckBox(initialSettings.isDarkModeEnabled)
-    updateOkAction()
   }
 
   override fun createCenterPanel(): JComponent? {
-    return form.contentPane
+    val self = this
+    return panel {
+      titledRow(LOCAL_SETTINGS_TITLE) {
+        row {
+          checkBox(AUTO_RESIZE_TEXT, self::isAutoResizeEnabled)
+        }
+        row(RESOLUTION_TEXT) {
+          intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
+          label(DPI_TEXT)
+        }
+      }
+      titledRow(GLOBAL_SETTINGS_TITLE) {
+        row(RESOLUTION_TEXT) {
+          intTextField(self::globalResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
+          label(DPI_TEXT)
+        }
+        if (isDarkModeVisible) {
+          row {
+            checkBox(DARK_MODE_TEXT, self::isDarkModeEnabled)
+          }
+        }
+      }
+    }
   }
 
   override fun doOKAction() {
     super.doOKAction()
     onSettingsChange(settings)
-  }
-
-  private fun updateOkAction() {
-    isOKActionEnabled = checkGlobalResolution() && checkLocalResolution() && settings != initialSettings
-  }
-
-  private fun checkGlobalResolution(): Boolean {
-    return initialSettings.globalResolution == null || globalResolution != null
-  }
-
-  private fun checkLocalResolution(): Boolean {
-    return initialSettings.localResolution == null || localResolution != null
-  }
-
-  private fun JCheckBox.setupCheckBox(isInitialSelected: Boolean?) {
-    if (isInitialSelected != null) {
-      isSelected = isInitialSelected
-      addItemListener {
-        updateOkAction()
-      }
-    } else {
-      isVisible = false
-    }
-  }
-
-  private fun JTextField.setupResolutionField(initialResolution: Int?) {
-    isEnabled = initialResolution != null
-    addInputValidator { input ->
-      INVALID_INTEGER_INPUT_TEXT.takeIf { input.toResolutionOrNull() == null }
-    }
-  }
-
-  private fun JTextField.addInputValidator(validator: (String) -> String?) {
-    document.addDocumentListener(object : DocumentAdapter() {
-      override fun textChanged(e: DocumentEvent) {
-        val errorText = validator(text)
-        setErrorText(errorText, this@addInputValidator)
-        updateOkAction()
-      }
-    })
-  }
-
-  private class ResolutionField(private val field: JTextField) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Int? {
-      return field.text.toResolutionOrNull()
-    }
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int?) {
-      field.text = value?.toString() ?: ""
-    }
   }
 
   data class Settings(
@@ -113,12 +74,17 @@ class GraphicsSettingsDialog(
   )
 
   companion object {
-    private const val TITLE = "Graphics settings"
-    private const val CHECKBOX_TEXT = "Auto resize"
-    private const val INVALID_INTEGER_INPUT_TEXT = "Expected positive integer"
+    private const val DEFAULT_RESOLUTION = 75  // It's never required in practice and for backward compatibility purposes only
+    private const val INPUT_COLUMN_COUNT = 7
+    private val INPUT_RANGE = IntRange(1, 9999)
 
-    private fun String.toResolutionOrNull(): Int? {
-      return toIntOrNull()?.takeIf { it > 0 }
-    }
+    private val TITLE = VisualizationBundle.message("graphics.setting.title")
+    private val LOCAL_SETTINGS_TITLE = VisualizationBundle.message("graphics.settings.for.current.plot")
+    private val AUTO_RESIZE_TEXT = VisualizationBundle.message("graphics.settings.auto.resize")
+    private val RESOLUTION_TEXT = VisualizationBundle.message("graphics.settings.resolution")
+    private val DPI_TEXT = VisualizationBundle.message("graphics.settings.dpi")
+
+    private val GLOBAL_SETTINGS_TITLE = VisualizationBundle.message("graphics.settings.for.all.plots")
+    private val DARK_MODE_TEXT = VisualizationBundle.message("graphics.settings.adapt.to.dark.theme")
   }
 }
