@@ -96,7 +96,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   private val cacheIndex = AtomicInteger(0)
   private val dataFrameViewerCache = ConcurrentHashMap<Int, RDataFrameViewer>()
   internal val sourceFileManager = RSourceFileManager(this)
-  internal var isInSourceFileExecution = AtomicBoolean(false)
+  internal val isInSourceFileExecution = AtomicBoolean(false)
 
   val rInteropGrpcLogger = RInteropGrpcLogger(if (ApplicationManager.getApplication().isInternal) null else GRPC_LOGGER_MAX_MESSAGES)
 
@@ -288,7 +288,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun replExecute(code: String, setLastValue: Boolean = false, isDebug: Boolean = false): CancellablePromise<RIExecutionResult> {
-    isInSourceFileExecution.set(false)
     return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue, isDebug = isDebug)
   }
 
@@ -343,7 +342,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       isRepl = true, isDebug = request.debug,
       firstDebugCommand = request.firstDebugCommand,
       setLastValue = true,
-      outputConsumer = consumer
+      outputConsumer = consumer,
+      isSource = true
     )
   }
 
@@ -365,7 +365,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0, isRepl: Boolean = false,
     returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
-    setLastValue: Boolean = false,
+    setLastValue: Boolean = false, isSource: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
     CancellablePromise<RIExecutionResult> {
     val request = ExecuteCodeRequest.newBuilder()
@@ -398,6 +398,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     var exception: String? = null
 
     executeTask {
+      val isInSourceFileExecutionPrev = isInSourceFileExecution.get()
+      isInSourceFileExecution.set(isSource)
+
       ClientCalls.asyncServerStreamingCall(call, request, object : StreamObserver<ExecuteCodeResponse> {
         override fun onNext(value: ExecuteCodeResponse) {
           when (value.msgCase) {
@@ -428,6 +431,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
 
         override fun onCompleted() {
+          isInSourceFileExecution.set(isInSourceFileExecutionPrev)
           rInteropGrpcLogger.onExecuteRequestFinish(number)
           promise.setResult(RIExecutionResult(stdoutBuffer.toString(), stderrBuffer.toString(), exception))
         }
@@ -1018,7 +1022,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.RSTUDIOAPIREQUEST -> {
         val request = event.rStudioApiRequest
-        var rStudioApiResponse: RObject? = null
+        lateinit var rStudioApiResponse: RObject
         fireListenersAsync(
           {
             val response = it.onRStudioApiRequest(RStudioApiFunctionId.fromInt(request.functionID), request.args)
@@ -1028,7 +1032,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
               rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
             }
           }) {
-          rStudioApiResponse?.let { executeAsync(asyncStub::rStudioApiResponse, it) }
+          executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)
         }
       }
       else -> {
@@ -1256,7 +1260,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
-    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject?> = resolvedPromise()
+    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
   }

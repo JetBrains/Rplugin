@@ -2,6 +2,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.icons.AllIcons.General.QuestionDialog
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
@@ -12,10 +13,13 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.ui.components.*
 import com.intellij.ui.layout.*
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import javax.swing.JPasswordField
@@ -283,15 +287,17 @@ fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
   return getRNull()
 }
 
-fun askForPassword(rInterop: RInterop, args: RObject) {
+fun askForPassword(args: RObject): Promise<RObject> {
   val message = args.list.getRObjects(0).rString.getStrings(0)
   val passwordField = JPasswordField()
   val panel = panel {
     noteRow(message)
     row { passwordField().focused() }
   }
-  invokeLater {
+  val promise = AsyncPromise<RObject>()
+  runInEdt {
     val dialog = dialog("", panel)
+    dialog.isOKActionEnabled = false
     val validate: () -> Unit = {
       dialog.isOKActionEnabled = passwordField.password.isNotEmpty()
     }
@@ -303,20 +309,25 @@ fun askForPassword(rInterop: RInterop, args: RObject) {
     val result = if (dialog.showAndGet()) {
       passwordField.password.joinToString("").toRString()
     }
-    else getRNull()
-    rInterop.executeAsync(rInterop.asyncStub::rStudioApiResponse, result)
+    else {
+      getRNull()
+    }
+    promise.setResult(result)
   }
+  return promise
 }
 
-fun showQuestion(rInterop: RInterop, args: RObject) {
+fun showQuestion(args: RObject): Promise<RObject> {
   val (title, message, ok, cancel) = args.list.getRObjects(0).rString.stringsList
-  invokeLater {
+  val promise = AsyncPromise<RObject>()
+  runInEdt {
     val result = showOkCancelDialog(title, message, ok, cancel, QuestionDialog)
-    rInterop.executeAsync(rInterop.asyncStub::rStudioApiResponse, (result == Messages.OK).toRBoolean())
+    promise.setResult((result == Messages.OK).toRBoolean())
   }
+  return promise
 }
 
-fun showPrompt(rInterop: RInterop, args: RObject) {
+fun showPrompt(args: RObject): Promise<RObject> {
   val (title, message, default) = args.list.getRObjects(0).rString.stringsList
   val textField = JBTextField()
   textField.text = default
@@ -324,16 +335,18 @@ fun showPrompt(rInterop: RInterop, args: RObject) {
     noteRow(message)
     row { textField().focused() }
   }
-  invokeLater {
+  val promise = AsyncPromise<RObject>()
+  runInEdt {
     val result = if (dialog(title, panel).showAndGet()) {
       textField.text.toRString()
     }
     else getRNull()
-    rInterop.executeAsync(rInterop.asyncStub::rStudioApiResponse, result)
+    promise.setResult(result)
   }
+  return promise
 }
 
-fun askForSecret(rInterop: RInterop, args: RObject) {
+fun askForSecret(args: RObject): Promise<RObject> {
   val (name, message, title) = args.list.getRObjects(0).rString.stringsList
   val secretField = JPasswordField()
   val checkBox = JBCheckBox("Remember with keyring")
@@ -343,8 +356,10 @@ fun askForSecret(rInterop: RInterop, args: RObject) {
     row { checkBox() }
     noteRow("""<a href="https://support.rstudio.com/hc/en-us/articles/360000969634">Using Keyring</a>""")
   }.withPreferredWidth(350)
-  invokeLater {
+  val promise = AsyncPromise<RObject>()
+  runInEdt {
     val dialog = dialog(title, panel)
+    dialog.isOKActionEnabled = false
     val validate: () -> Unit = {
       dialog.isOKActionEnabled = secretField.password.isNotEmpty()
     }
@@ -360,28 +375,31 @@ fun askForSecret(rInterop: RInterop, args: RObject) {
       secretField.password.joinToString("").toRString()
     }
     else getRNull()
-    rInterop.executeAsync(rInterop.asyncStub::rStudioApiResponse, result)
+    promise.setResult(result)
   }
+  return promise
 }
 
-fun selectFile(rInterop: RInterop, args: RObject) {
+fun selectFile(args: RObject): Promise<RObject> {
   TODO()
 }
 
-fun selectDirectory(rInterop: RInterop, args: RObject) {
+fun selectDirectory(args: RObject): Promise<RObject> {
   TODO()
 }
 
-fun showDialog(rInterop: RInterop, args: RObject) {
+fun showDialog(args: RObject): Promise<RObject> {
   val (title, message, url) = args.list.getRObjects(0).rString.stringsList
   val msg = "$message\n<a href=\"$url\">$url</a>"
-  invokeLater {
+  val promise = AsyncPromise<RObject>()
+  runInEdt {
     Messages.showInfoMessage(msg, title)
-    rInterop.executeAsync(rInterop.asyncStub::rStudioApiResponse, getRNull())
+    promise.setResult(getRNull())
   }
+  return promise
 }
 
-fun updateDialog(rInterop: RInterop, args: RObject) {
+fun updateDialog(args: RObject): Promise<RObject> {
   TODO()
 }
 

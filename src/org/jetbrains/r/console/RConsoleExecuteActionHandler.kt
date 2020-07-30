@@ -214,8 +214,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       consoleView.interpreter.showUrlInViewer(consoleView.rInterop, url)
     }
 
-    override fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject?> {
-      val promise = AsyncPromise<RObject?>()
+    override fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> {
+      val promise = AsyncPromise<RObject>()
       invokeLater {
         try {
           when (functionId) {
@@ -245,36 +245,36 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
               promise.setResult(setSelectionRanges(rInterop, args))
             }
             RStudioApiFunctionId.ASK_FOR_PASSWORD_ID -> {
-              promise.setResult(null)
-              askForPassword(rInterop, args)
+              askForPassword(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_QUESTION_ID -> {
-              promise.setResult(null)
-              showQuestion(rInterop, args)
+              showQuestion(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_PROMPT_ID -> {
-              promise.setResult(null)
-              showPrompt(rInterop, args)
+              showPrompt(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.ASK_FOR_SECRET_ID -> {
-              promise.setResult(null)
-              askForSecret(rInterop, args)
+              askForSecret(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_FILE_ID -> {
-              promise.setResult(null)
-              selectFile(rInterop, args)
+              selectFile(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_DIRECTORY_ID -> {
-              promise.setResult(null)
-              selectDirectory(rInterop, args)
+              selectDirectory(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_DIALOG_ID -> {
-              promise.setResult(null)
-              showDialog(rInterop, args)
+              showDialog(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.UPDATE_DIALOG_ID -> {
-              promise.setResult(null)
-              updateDialog(rInterop, args)
+              updateDialog(args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.GET_THEME_INFO -> {
               promise.setResult(getThemeInfo())
