@@ -292,7 +292,7 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
         })
 
     private fun outputDirectory(dir: VirtualFile?) {
-      RMarkdownSettings.getInstance(project).state.setKnitRootDirectory(report, dir ?: return)
+      RMarkdownSettings.getInstance(project).state.setOutputDirectory(report, dir ?: return)
     }
 
     private fun outputDirectory(dir: String?) {
@@ -300,7 +300,7 @@ private fun createOutputDirectoryAction(project: Project, report: VirtualFile): 
     }
 
     private val outputDirectoryName
-      get() = RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(report)?.name.orEmpty()
+      get() = RMarkdownSettings.getInstance(project).state.getOutputDirectory(report)?.name.orEmpty()
   }
 
 private abstract class SameTextAction(text: String, icon: Icon? = null) : DumbAwareAction(text, text, icon)

@@ -25,7 +25,7 @@ class RMarkdownSettingsState: BaseState() {
   var renderProfiles by map<String, RMarkdownRenderProfile>()
 
   @Synchronized
-  fun getKnitRootDirectory(file: VirtualFile): VirtualFile? {
+  fun getOutputDirectory(file: VirtualFile): VirtualFile? {
     return VirtualFileManager.getInstance().findFileByUrl(getOrCreateProfile(file).outputDirectoryUrl)
   }
 
@@ -33,7 +33,7 @@ class RMarkdownSettingsState: BaseState() {
   fun getProfileLastOutput(file: VirtualFile) = getOrCreateProfile(file).lastOutput
 
   @Synchronized
-  fun setKnitRootDirectory(file: VirtualFile, value: VirtualFile?) {
+  fun setOutputDirectory(file: VirtualFile, value: VirtualFile?) {
     getOrCreateProfile(file).outputDirectoryUrl = value?.url.orEmpty()
     incrementModificationCount()
   }

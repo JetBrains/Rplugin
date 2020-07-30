@@ -80,28 +80,30 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
 
   private fun doRender(project: Project, rMarkdownFile: VirtualFile, promise: AsyncPromise<Unit>, isShiny: Boolean) {
     RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
-      runAsync {
-        val rmdFileOnHost = interpreter.uploadFileToHostIfNeeded(rMarkdownFile, preserveName = true)
-        val outputDirectory = RMarkdownSettings.getInstance(project).state.getKnitRootDirectory(rMarkdownFile) ?:
-                              rMarkdownFile.parent
-        val knitRootDirectory = interpreter.getFilePathAtHost(outputDirectory) ?:
-                                interpreter.createTempDirOnHost("knot-root")
-        val libraryPath = RPathUtil.join(interpreter.getHelpersRootOnHost(), "pandoc")
-        val resultTmpFile = interpreter.createTempFileOnHost("rmd-output-path.txt")
+      interpreter.prepareForExecution().onProcessed {
+        runAsync {
+          val rmdFileOnHost = interpreter.uploadFileToHostIfNeeded(rMarkdownFile, preserveName = true)
+          val knitRootDirectory = PathUtil.getParentPath(rmdFileOnHost)
+          val outputDirectory = RMarkdownSettings.getInstance(project).state.getOutputDirectory(rMarkdownFile)
+                                ?: rMarkdownFile.parent
+          val outputDirOnHost = interpreter.getFilePathAtHost(outputDirectory) ?: knitRootDirectory
+          val libraryPath = RPathUtil.join(interpreter.getHelpersRootOnHost(), "pandoc")
+          val resultTmpFile = interpreter.createTempFileOnHost("rmd-output-path.txt")
 
-        val args = arrayListOf(libraryPath, rmdFileOnHost, knitRootDirectory, resultTmpFile)
-        val processHandler = interpreter.runHelperProcess(interpreter.uploadFileToHost(R_MARKDOWN_HELPER), args,
-                                                          knitRootDirectory)
-        currentProcessHandler = processHandler
-        val knitListener = makeKnitListener(interpreter, rMarkdownFile, promise, resultTmpFile, outputDirectory, isShiny)
-        processHandler.addProcessListener(knitListener)
-        runInEdt {
-          if (!ApplicationManager.getApplication().isUnitTestMode) {
-            val consoleView = createConsoleView(processHandler)
-            consoleView.attachToProcess(processHandler)
-            consoleView.scrollToEnd()
+          val args = arrayListOf(libraryPath, rmdFileOnHost, knitRootDirectory, outputDirOnHost, resultTmpFile)
+          val processHandler = interpreter.runHelperProcess(interpreter.uploadFileToHost(R_MARKDOWN_HELPER), args,
+                                                            knitRootDirectory)
+          currentProcessHandler = processHandler
+          val knitListener = makeKnitListener(interpreter, rMarkdownFile, promise, resultTmpFile, outputDirectory, isShiny)
+          processHandler.addProcessListener(knitListener)
+          runInEdt {
+            if (!ApplicationManager.getApplication().isUnitTestMode) {
+              val consoleView = createConsoleView(processHandler)
+              consoleView.attachToProcess(processHandler)
+              consoleView.scrollToEnd()
+            }
+            processHandler.startNotify()
           }
-          processHandler.startNotify()
         }
       }
     }.onError {
