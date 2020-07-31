@@ -6,12 +6,10 @@ package org.jetbrains.r.mock
 
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterLocation
-import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.*
 
 class MockInterpreterManager(project: Project) : RInterpreterManager {
-  override val interpreterOrNull: RInterpreter = MockInterpreter(project)
+  override val interpreterOrNull: RInterpreter = RLocalInterpreterLocation(RInterpreterUtil.suggestHomePath()).createInterpreter(project)
 
   override val interpreterLocation: RInterpreterLocation
     get() = interpreterOrNull.interpreterLocation
