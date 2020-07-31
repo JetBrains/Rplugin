@@ -26,7 +26,7 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
   private val comboBox = ComboBox<RInterpreterInfo>().apply {
     renderer = RInterpreterListCellRenderer()
     addItemListener { e ->
-      if (e.stateChange == ItemEvent.SELECTED || e.stateChange == ItemEvent.DESELECTED) {
+      if (e.stateChange == ItemEvent.SELECTED) {
         currentSelection = selectedItem as RInterpreterInfo?
         isModified = true
         onSelected?.invoke()
