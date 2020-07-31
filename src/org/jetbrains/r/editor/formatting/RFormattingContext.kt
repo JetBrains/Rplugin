@@ -11,6 +11,7 @@ import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.impl.source.tree.SharedImplUtil
 import com.intellij.psi.tree.TokenSet
 import com.intellij.util.containers.FactoryMap
 import org.jetbrains.r.RLanguage
@@ -58,8 +59,10 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
                            node.elementType == RElementTypes.R_COMMA ||
                            isCommentAtEmptyLine(node))
 
-    val alignCallArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
-                         (node.firstChildNode != null || isCommentAtEmptyLine(node))
+    val alignCallArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS &&
+                             nodeParent.elementType == RElementTypes.R_ARGUMENT_LIST &&
+                             (node.firstChildNode != null || isCommentAtEmptyLine(node))
+                             && !hasMultilineBlock(nodeParent)
 
     val alignSubscriptionArguments = common.ALIGN_MULTILINE_PARAMETERS_IN_CALLS && nodeParent.elementType == RElementTypes.R_SUBSCRIPTION_EXPRESSION &&
                              (node != nodeParent.firstChildNode && node.firstChildNode != null || isCommentAtEmptyLine(node))
@@ -94,6 +97,9 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
     }
     return null
   }
+
+  private fun hasMultilineBlock(node: ASTNode): Boolean =
+    SharedImplUtil.getChildrenOfType(node, RElementTypes.R_BLOCK_EXPRESSION).any { it.textContains('\n') }
 
   private fun isCommentAtEmptyLine(node: ASTNode) =
     node.elementType == RParserDefinition.END_OF_LINE_COMMENT &&

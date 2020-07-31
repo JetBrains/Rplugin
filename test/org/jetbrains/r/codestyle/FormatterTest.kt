@@ -566,6 +566,51 @@ class FormatterTest : RUsefulTestCase() {
     """)
   }
 
+
+  fun testBlockArgumentAlignment() {
+    doTest("""
+      #No blocks -> align
+      long_function(100, 200,
+      30, 40)
+
+      #single-line block -> align
+      long_function(100, {200},
+      30, 40)
+
+      #multy-line block -> no align
+      long_function(100, {
+      200
+      }, 30, 40,
+      50, 60)
+
+      #multy-line block -> no align
+      long_function({
+      100
+      }, 200, 30, 40,
+      50, 60)
+    """, """
+      #No blocks -> align
+      long_function(100, 200,
+                    30, 40)
+
+      #single-line block -> align
+      long_function(100, { 200 },
+                    30, 40)
+
+      #multy-line block -> no align
+      long_function(100, {
+        200
+      }, 30, 40,
+          50, 60)
+
+      #multy-line block -> no align
+      long_function({
+        100
+      }, 200, 30, 40,
+          50, 60)
+    """)
+  }
+
   private fun doOptTest(@Language("R") falseText: String,
                         @Language("R") trueText: String,
                         config: SCtx.(parameter: Boolean) -> Unit) {
