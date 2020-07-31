@@ -24,6 +24,10 @@ private val NON_INDENT_PARTS = TokenSet.create(
   RElementTypes.R_RBRACE,
   RElementTypes.R_RBRACKET,
   RElementTypes.R_RDBRACKET,
+  RElementTypes.R_LPAR,
+  RElementTypes.R_LBRACE,
+  RElementTypes.R_LBRACKET,
+  RElementTypes.R_LDBRACKET,
   RElementTypes.R_ELSE
 )
 
@@ -184,15 +188,17 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
 
   fun computeBlockIndent(node: ASTNode): Indent? {
     val psi = node.psi
+    val parent = psi.parent
     return when {
-      psi.parent is RFile -> Indent.getNoneIndent()
+      parent is RFile -> Indent.getNoneIndent()
       node.elementType == RElementTypes.R_COMMA -> Indent.getContinuationIndent()
       NON_INDENT_PARTS.contains(node.elementType) -> Indent.getNoneIndent()
       psi is RParameter -> Indent.getContinuationIndent()
       psi is RBlockExpression -> Indent.getNoneIndent()
-      psi is RExpression && psi.parent is RArgumentList -> Indent.getContinuationIndent()
-      psi.parent is RBlockExpression -> Indent.getNormalIndent()
-      psi.parent is RExpression -> Indent.getContinuationWithoutFirstIndent()
+      psi is RArgumentList -> Indent.getNoneIndent()
+      psi is RExpression && parent is RArgumentList -> Indent.getContinuationIndent()
+      parent is RBlockExpression-> Indent.getIndent(Indent.Type.NORMAL, false, false)
+      parent is RExpression && parent.firstChild != psi -> Indent.getContinuationWithoutFirstIndent()
       else -> Indent.getNoneIndent()
     }
   }
