@@ -62,8 +62,9 @@ class RFsNotifier(private val interpreter: RInterpreter) {
   }
 
   private fun fireListeners(path: String) = synchronized(listeners) {
+    val pathFixed = fixPath(path)
     listeners.forEach { (root, listener) ->
-      if (path.startsWith(root)) {
+      if (pathFixed.startsWith(fixPath(root))) {
         try {
           listener(path)
         } catch (t: Throwable) {
@@ -71,6 +72,10 @@ class RFsNotifier(private val interpreter: RInterpreter) {
         }
       }
     }
+  }
+
+  private fun fixPath(path: String): String {
+    return if (interpreter.hostOS == OperatingSystem.WINDOWS) path.replace('\\', '/') else path
   }
 
   private fun runProcess(): ProcessHandler {
