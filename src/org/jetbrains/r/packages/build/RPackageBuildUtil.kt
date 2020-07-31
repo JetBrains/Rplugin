@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import org.jetbrains.r.packages.RPackageProjectManager
 
 object RPackageBuildUtil {
   private val KEY = Key.create<Unit>("org.jetbrains.r.packages.build.RPackageBuildUtil")
@@ -45,7 +46,7 @@ object RPackageBuildUtil {
   }
 
   fun getPackageName(project: Project): String? {
-    return project.guessProjectDir()?.name
+    return RPackageProjectManager.getInstance(project).getProjectPackageDescriptionInfo()?.packageName
   }
 
   private fun isMarkedAsPackage(project: Project): Boolean {
