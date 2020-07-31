@@ -34,7 +34,7 @@ interface MockInterpreterStateProvider {
         get() = throw NotImplementedError()
 
       override val installedPackages: ExpiringList<RInstalledPackage>
-        get() = emptyExpiringList(false)  // Note: exception is not thrown intentionally (see `MockInterpreter.installedPackages`)
+        get() = emptyExpiringList(false)  // Note: exception is not thrown intentionally
 
       override val skeletonFiles: Set<VirtualFile>
         get() = emptySet()
