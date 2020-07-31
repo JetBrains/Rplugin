@@ -436,7 +436,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun debugAddBreakpoint(file: VirtualFile, line: Int,
                          suspend: Boolean = true,
                          evaluateAndLog: String? = null,
-                         condition: String? = null) = executeTask {
+                         condition: String? = null) {
     val position = SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build()
     execute(asyncStub::debugAddBreakpoint, DebugAddBreakpointRequest.newBuilder()
@@ -448,7 +448,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     )
   }
 
-  fun debugRemoveBreakpoint(file: VirtualFile, line: Int) = executeTask {
+  fun debugRemoveBreakpoint(file: VirtualFile, line: Int) {
     execute(asyncStub::debugRemoveBreakpoint, SourcePosition.newBuilder()
       .setFileId(sourceFileManager.getFileId(file)).setLine(line).build())
   }
