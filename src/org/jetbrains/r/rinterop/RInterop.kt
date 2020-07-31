@@ -706,7 +706,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   fun repoAddLibraryPath(path: String): RIExecutionResult {
-    return executeRequest(RPIServiceGrpc.getRepoAddLibraryPathMethod(), StringValue.of(path))
+    return executeRequest(RPIServiceGrpc.getRepoAddLibraryPathMethod(), StringValue.of(FileUtil.toSystemIndependentName(path)))
   }
 
   fun repoCheckPackageInstalled(packageName: String): RIExecutionResult {
