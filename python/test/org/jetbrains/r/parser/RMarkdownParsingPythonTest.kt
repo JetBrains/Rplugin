@@ -10,6 +10,7 @@ import com.jetbrains.python.psi.LanguageLevel
 import org.jetbrains.r.RUsefulTestCase
 import java.io.File
 
+/** IMPORTANT: PSI has standard TokenType.WHITE_SPACE but lexical level use MARKDOWN_EOL. */
 @TestDataPath("/testData/parser/rmd")
 class RMarkdownParsingPythonTest : RUsefulTestCase() {
 
