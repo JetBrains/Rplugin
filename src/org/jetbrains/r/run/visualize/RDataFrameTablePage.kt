@@ -9,6 +9,8 @@ import com.intellij.codeInsight.hints.presentation.mouseButton
 import com.intellij.icons.AllIcons
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.DataManager
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
@@ -16,6 +18,8 @@ import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.FileSaverDialog
 import com.intellij.openapi.ide.CopyPasteManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.ProjectManager
@@ -30,6 +34,7 @@ import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.table.filters.gui.TableFilterHeader
 import org.intellij.datavis.r.ui.MaterialTableUtils
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.RBundle
 import java.awt.BorderLayout
 import java.awt.Event
 import java.awt.FlowLayout
@@ -39,11 +44,13 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.io.BufferedWriter
 import java.io.File
+import java.io.IOException
 import javax.swing.*
 import kotlin.math.min
 
 class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout()) {
   private val table = RVisualizeTableUtil.createMaterialTableFromViewer(viewer)
+  private val tableModel = table.model as RDataFrameTableModel
 
   private val scrollPane = JBScrollPane(table)
   private var paginator: RDataFrameTablePaginator? = null
@@ -216,7 +223,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath!!))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
-    fun saveSelection(out: BufferedWriter, cellBreak: String) {
+    fun saveSelection(out: BufferedWriter, cellBreak: String, pi: ProgressIndicator) {
       val selectedColumnCount = table.selectedColumnCount
       val selectedRowCount = table.selectedRowCount
       val selectedRows = table.selectedRows
@@ -224,39 +231,55 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
       for (i in 0 until selectedRowCount) {
         for (j in 0 until selectedColumnCount) {
-          table.getValueAt(selectedRows[i], selectedColumns[j])?.let { out.write(ClipboardUtils.escape(it)) }
+          tableModel.viewer.ensureLoaded(selectedRows[i], selectedColumns[j]).blockingGet(Int.MAX_VALUE)
+          tableModel.viewer.getValueAt(selectedRows[i], selectedColumns[j])?.let { out.write(ClipboardUtils.escape(it)) }
 
           if (j < selectedColumnCount - 1) {
             out.write(cellBreak)
           }
+          pi.checkCanceled()
         }
         if (i < table.rowCount - 1) {
           out.append(ClipboardUtils.LINE_BREAK)
         }
+        pi.fraction = (i + 1).toDouble() / selectedRowCount
       }
     }
 
-    fun saveAll(out: BufferedWriter, cellBreak: String) {
+    fun saveAll(out: BufferedWriter, cellBreak: String, pi: ProgressIndicator) {
       for (i in 0 until table.rowCount) {
         for (j in 0 until table.columnCount) {
-          table.getValueAt(i, j)?.let { out.write(ClipboardUtils.escape(it)) }
+          tableModel.viewer.ensureLoaded(i, j).blockingGet(Int.MAX_VALUE)
+          tableModel.viewer.getValueAt(i, j)?.let { out.write(ClipboardUtils.escape(it)) }
 
           if (j < table.columnCount - 1) {
             out.write(cellBreak)
           }
+          pi.checkCanceled()
         }
         if (i < table.rowCount - 1) {
           out.append(ClipboardUtils.LINE_BREAK)
         }
+        pi.fraction = (i + 1).toDouble() / table.rowCount
       }
     }
 
-    fileWrapper.file.bufferedWriter().use { out ->
-      val cellBreak = if (fileWrapper.file.extension == "csv") ";" else "\t"
-      if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
-        saveAll(out, cellBreak)
-      } else {
-        saveSelection(out, cellBreak)
+    runBackgroundableTask(RBundle.message("data.frame.export.title", fileWrapper.file.path), viewer.project) { pi ->
+      try {
+        fileWrapper.file.bufferedWriter().use { out ->
+          val cellBreak = if (fileWrapper.file.extension == "csv") ";" else "\t"
+          if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
+            saveAll(out, cellBreak, pi)
+          } else {
+            saveSelection(out, cellBreak, pi)
+          }
+        }
+      } catch (e: IOException) {
+        val details = e.message?.takeIf { it.isNotEmpty() }?.let { ":\n$it" }.orEmpty()
+        Notification("RDataFrameViewer", RBundle.message("data.frame.viewer.error.title"),
+                     RBundle.message("data.frame.export.error.message") + details,
+                     NotificationType.ERROR, null)
+          .notify(viewer.project)
       }
     }
   }
