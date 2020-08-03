@@ -14,6 +14,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
@@ -93,7 +94,8 @@ class RJobRunner(private val project: Project) {
     return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
-  fun runRJob(task: RJobTask) {
+  fun runRJob(task: RJobTask): Promise<RJobDescriptor> {
+    val promise = AsyncPromise<RJobDescriptor>()
     run(task).then { processHandler ->
       val consoleView = ConsoleViewImpl(project, true)
       consoleView.attachToProcess(processHandler)
@@ -107,7 +109,9 @@ class RJobRunner(private val project: Project) {
         RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
         RConsoleToolWindowFactory.focusOnJobs(project)
       }
+      promise.setResult(rJobDescriptor)
     }
+    return promise
   }
 
   companion object {

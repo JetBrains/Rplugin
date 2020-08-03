@@ -42,7 +42,7 @@ import java.awt.event.MouseEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.*
 
-private interface SplitterApi {
+internal interface SplitterApi {
   fun setLeftComponent(component: JComponent)
   fun setRightComponent(component: JComponent)
   fun restoreDefaults()
@@ -85,7 +85,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
       jbSplitter.invalidate()
     }
   }
-  private val jobList = JobList(splitterApi, project, popupActionGrouping)
+  internal val jobList = JobList(splitterApi, project, popupActionGrouping)
   private val emptyLeftComponent = object : JPanel(GridBagLayout()) {
     init {
       background = backgroundColor()
@@ -183,7 +183,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
   }
 }
 
-private class JobList(private val splitter: SplitterApi,
+internal class JobList(private val splitter: SplitterApi,
                       private val project: Project,
                       val popupActionGroup: ActionGroup) {
   private val panel =  object : JPanel(GridBagLayout()) {
@@ -310,7 +310,7 @@ private class JobList(private val splitter: SplitterApi,
   private fun jobEntityCount() = panel.components.count { it is JobEntity }
 }
 
-private class JobEntity(val jobDescriptor: RJobDescriptor,
+internal class JobEntity(val jobDescriptor: RJobDescriptor,
                         private val jobList: JobList)
   : JPanel(MigLayout("insets 0 0 0 0", "[grow][][]", "[]")) {
 

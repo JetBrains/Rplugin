@@ -22,6 +22,9 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
+import org.jetbrains.r.console.jobs.RJobRunner
+import org.jetbrains.r.console.jobs.RJobTask
 import javax.swing.JPasswordField
 import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
@@ -45,7 +48,9 @@ enum class RStudioApiFunctionId {
   SELECT_DIRECTORY_ID,
   SHOW_DIALOG_ID,
   UPDATE_DIALOG_ID,
-  GET_THEME_INFO;
+  GET_THEME_INFO,
+  JOB_RUN_SCRIPT_ID,
+  JOB_REMOVE_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -67,6 +72,8 @@ enum class RStudioApiFunctionId {
         14 -> SHOW_DIALOG_ID
         15 -> UPDATE_DIALOG_ID
         16 -> GET_THEME_INFO
+        17 -> JOB_RUN_SCRIPT_ID
+        18 -> JOB_REMOVE_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -413,6 +420,41 @@ fun getThemeInfo(): RObject {
                     .addRObjects(3, RObject.KeyValue.newBuilder().setKey("foreground").setValue(getRNull()))
                     .addRObjects(4, RObject.KeyValue.newBuilder().setKey("background").setValue(getRNull()))
     ).build()
+}
+
+fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
+  val file = rInterop.interpreter.findFileByPathAtHost(args.list.getRObjects(0).rString.getStrings(0))
+  val workingDir = if (args.list.getRObjects(3).hasRnull()) {
+    file?.parent?.path
+  } else {
+    args.list.getRObjects(3).rString.getStrings(0)
+  }
+  val importEnv = args.list.getRObjects(4).rboolean.getBooleans(0)
+  val exportEnv = when (args.list.getRObjects(5).rString.getStrings(0)) {
+    "" -> ExportGlobalEnvPolicy.DO_NO_EXPORT
+    "R_GlobalEnv" -> ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV
+    else -> ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE
+  }
+  val promise = AsyncPromise<RObject>()
+  if (file != null && workingDir != null) {
+    RJobRunner.getInstance(rInterop.project).runRJob(RJobTask(file, workingDir, importEnv, exportEnv)).then {
+      promise.setResult("${it.startedAt.time} ${it.scriptFile.name}".toRString())
+    }
+  } else {
+    promise.setResult(getRNull())
+  }
+  return promise
+}
+
+fun jobRemove(rInterop: RInterop, args: RObject): RObject {
+  val id = args.rString.getStrings(0).split(" ", limit = 2)
+  val time = id[0].toLong()
+  val name = id[1]
+  val jobList = RConsoleToolWindowFactory.getJobsPanel(rInterop.project)?.jobList ?: return getRNull()
+  jobList.removeJobEntity(jobList.jobEntities.find {
+    it.jobDescriptor.startedAt.time == time && it.jobDescriptor.scriptFile.name == name
+  } ?: return getRNull())
+  return getRNull()
 }
 
 private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {

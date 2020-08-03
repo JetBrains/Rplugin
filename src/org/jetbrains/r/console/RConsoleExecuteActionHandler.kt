@@ -279,6 +279,13 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             RStudioApiFunctionId.GET_THEME_INFO -> {
               promise.setResult(getThemeInfo())
             }
+            RStudioApiFunctionId.JOB_RUN_SCRIPT_ID -> {
+              jobRunScript(rInterop, args).then { promise.setResult(it) }
+                .onError { promise.setError(it) }
+            }
+            RStudioApiFunctionId.JOB_REMOVE_ID -> {
+              promise.setResult(jobRemove(rInterop, args))
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)
