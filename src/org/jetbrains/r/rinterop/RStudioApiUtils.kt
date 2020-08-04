@@ -13,15 +13,16 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.ui.components.*
 import com.intellij.ui.layout.*
+import com.intellij.util.PathUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
@@ -118,10 +119,10 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
       Triple(document, content, path)
     }
     ContextType.CONSOLE, ContextType.ACTIVE -> {
-      val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull ?: return getRNull()
-      val document = currentConsole.consoleEditor.document
+      val console = getConsoleView(rInterop) ?: return getRNull()
+      val document = console.consoleEditor.document
       val content = document.text.split(System.lineSeparator())
-      id = "c${currentConsole.hashCode()}"
+      id = "c"
       Triple(document, content, "")
     }
   }
@@ -217,22 +218,20 @@ fun sendToConsole(rInterop: RInterop, args: RObject) {
   val execute = args.list.getRObjects(1).rboolean.getBooleans(0)
   val echo = args.list.getRObjects(2).rboolean.getBooleans(0)
   val focus = args.list.getRObjects(3).rboolean.getBooleans(0)
+  val call = args.list.getRObjects(4).rString.getStrings(0)
 
-  val asStr = { it: Boolean -> if (it) "TRUE" else "FALSE" }
+  val console = getConsoleView(rInterop) ?: return
 
   if (echo) {
     if (rInterop.isInSourceFileExecution.get()) {
-      RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.executeText(
-        "rstudioapi::sendToConsole(\"$code\", ${asStr(execute)}, ${asStr(echo)}, ${asStr(focus)})")
+      console.executeText(call)
     }
   }
 
-  val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
-
-  if (focus && currentConsole != null) {
-    val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(currentConsole.project)
+  if (focus) {
+    val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
     if (toolWindow != null) {
-      RConsoleToolWindowFactory.getConsoleContent(currentConsole)?.let { content ->
+      RConsoleToolWindowFactory.getConsoleContent(console)?.let { content ->
         toolWindow.activate {
           toolWindow.contentManager.setSelectedContent(content)
         }
@@ -241,18 +240,26 @@ fun sendToConsole(rInterop: RInterop, args: RObject) {
   }
 
   if (execute) {
-    currentConsole?.executeText(code)
+    val text = console.editorDocument.text
+    console.executeText(code).then {
+      invokeLater {
+        val consoleEditor = console.consoleEditor
+        runWriteAction {
+          consoleEditor.document.setText(text)
+          PsiDocumentManager.getInstance(rInterop.project).commitDocument(consoleEditor.document)
+        }
+        consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
+      }
+    }
   }
   else {
     invokeLater {
-      val consoleEditor = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.consoleEditor
-      consoleEditor?.let {
-        runWriteAction {
-          it.document.setText(code)
-          PsiDocumentManager.getInstance(rInterop.project).commitDocument(it.document)
-        }
-        it.caretModel.moveToOffset(it.document.textLength)
+      val consoleEditor = console.consoleEditor
+      runWriteAction {
+        consoleEditor.document.setText(code)
+        PsiDocumentManager.getInstance(rInterop.project).commitDocument(consoleEditor.document)
       }
+      consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
     }
   }
 }
@@ -423,10 +430,12 @@ fun getThemeInfo(): RObject {
 }
 
 fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
-  val file = rInterop.interpreter.findFileByPathAtHost(args.list.getRObjects(0).rString.getStrings(0))
+  val path = args.list.getRObjects(0).rString.getStrings(0)
+  val file = rInterop.interpreter.findFileByPathAtHost(path)
   val workingDir = if (args.list.getRObjects(3).hasRnull()) {
-    file?.parent?.path
-  } else {
+    PathUtil.getParentPath(path)
+  }
+  else {
     args.list.getRObjects(3).rString.getStrings(0)
   }
   val importEnv = args.list.getRObjects(4).rboolean.getBooleans(0)
@@ -440,7 +449,8 @@ fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
     RJobRunner.getInstance(rInterop.project).runRJob(RJobTask(file, workingDir, importEnv, exportEnv)).then {
       promise.setResult("${it.startedAt.time} ${it.scriptFile.name}".toRString())
     }
-  } else {
+  }
+  else {
     promise.setResult(getRNull())
   }
   return promise
@@ -465,22 +475,17 @@ private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {
       file?.let { FileDocumentManager.getInstance().getDocument(file) }
     }
     else {
-      val currentConsole = RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
-      currentConsole?.editorDocument
+      val console = getConsoleView(rInterop)
+      console?.editorDocument
     }
   }
   val type = id[0]
-  val numId = (id.drop(1)).toInt()
   return if (type == 'c') {
-    if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.hashCode() == numId) {
-      RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull!!.consoleEditor.document
-    }
-    else {
-      val console = RConsoleManager.getInstance(rInterop.project).consoles.find { it.hashCode() == numId }
-      console?.consoleEditor?.document
-    }
+    val console = getConsoleView(rInterop)
+    console?.consoleEditor?.document
   }
   else {
+    val numId = (id.drop(1)).toInt()
     val editor = FileEditorManager.getInstance(rInterop.project).allEditors.find { it.hashCode() == numId }
     val file = editor?.file
     file?.let { FileDocumentManager.getInstance().getDocument(file) }
@@ -501,4 +506,13 @@ private fun Boolean.toRBoolean(): RObject {
 
 private fun getRNull(): RObject {
   return RObject.newBuilder().setRnull(RObject.RNull.getDefaultInstance()).build()
+}
+
+private fun getConsoleView(rInterop: RInterop): RConsoleView? {
+  return if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
+    RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
+  }
+  else {
+    RConsoleManager.getInstance(rInterop.project).consoles.find { it.rInterop == rInterop }
+  }
 }
