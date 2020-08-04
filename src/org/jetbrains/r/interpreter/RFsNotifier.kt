@@ -13,14 +13,10 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.util.tryRegisterDisposable
 
-class RFsNotifier(private val interpreter: RInterpreter) {
+class RFsNotifier(private val interpreter: RInterpreter): Disposable {
   private var processHandler: ProcessHandler? = null
   private val listeners = mutableListOf<Pair<String, (String) -> Unit>>()
   private val processLock = Any()
-
-  init {
-    Disposer.register(interpreter.project, Disposable { processHandler?.destroyProcess() })
-  }
 
   fun addListener(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit) {
     if (roots.isEmpty()) return
@@ -36,10 +32,18 @@ class RFsNotifier(private val interpreter: RInterpreter) {
     })
   }
 
+  override fun dispose() {
+    synchronized(processLock) {
+      processHandler?.destroyProcess()
+      processHandler = null
+    }
+  }
+
   private fun updateProcess() {
     runAsync {
       val listenersCopy = synchronized(listeners) { listeners.toList() }
       synchronized(processLock) {
+        if (Disposer.isDisposed(this)) return@runAsync
         if (listenersCopy.isEmpty()) {
           processHandler?.destroyProcess()
           processHandler = null
@@ -89,15 +93,26 @@ class RFsNotifier(private val interpreter: RInterpreter) {
 
     process.addProcessListener(object : ProcessListener {
       var lastOp: WatcherOp? = null
+      val stdoutBuf = StringBuilder()
 
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-        val line = event.text.trim().takeIf { it.isNotEmpty() } ?: return
-        if (outputType == ProcessOutputType.STDERR) {
-          LOG.warn("STDERR: $line")
-          return
+        val text = event.text
+        when (outputType) {
+          ProcessOutputType.STDERR -> LOG.warn("STDERR: $text")
+          ProcessOutputType.STDOUT -> {
+            text.forEach { c ->
+              if (c == '\n') {
+                stdoutBuf.toString().trim().takeIf { it.isNotEmpty() }?.let { processLine(it) }
+                stdoutBuf.clear()
+              } else {
+                stdoutBuf.append(c)
+              }
+            }
+          }
         }
-        if (outputType != ProcessOutputType.STDOUT) return
+      }
 
+      fun processLine(line: String) {
         when (lastOp) {
           WatcherOp.UNWATCHEABLE -> {
             if (line != "#") {

@@ -8,13 +8,16 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
+import org.jetbrains.r.util.tryRegisterDisposable
 
 abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
                                 override val project: Project) : RInterpreter {
 
   override val version: Version = buildVersion(versionInfo)
   override val interpreterName: String get() = versionInfo["version.string"]?.replace(' ', '_')  ?: "unnamed"
-  private val fsNotifier by lazy { RFsNotifier(this) }
+  private val fsNotifier by lazy {
+    RFsNotifier(this).also { project.tryRegisterDisposable(it) }
+  }
 
   open fun onSetAsProjectInterpreter() {
   }
