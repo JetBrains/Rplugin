@@ -1,6 +1,8 @@
 R Language support for Intellij IDEA
 ====================================
 
+[![official JetBrains project](https://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
 With the plugin for the [R language](https://www.r-project.org) you
 can perform various statistical computing and enjoy your favorite
 features of the integrated development environment:
