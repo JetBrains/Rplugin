@@ -285,6 +285,10 @@ object RepoUtils {
     if (!libraryPath.isWritable) {
       throw ExecutionException("Cannot remove package '$packageName'. Library path is not writable")
     }
+    if (rInterop.isLibraryLoaded(packageName)) {
+      // Note: I guess there is no need to keep a dynamic library around since a package is deleted anyway
+      rInterop.unloadLibrary(packageName, withDynamicLibrary = true).blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
+    }
     rInterop.repoRemovePackage(packageName, libraryPath.path)
     val version = getPackageVersion(packageName, rInterop)
     if (version != null && RPackageVersion.isSame(version, repoPackage.version)) {
