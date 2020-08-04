@@ -261,7 +261,6 @@ object RepoUtils {
         it["type"] = "'source'"
       }
       it["repos"] = getInstallReposArgument(urls)
-      it["dependencies"] = "TRUE"
       //it["INSTALL_opts"] = "c('--no-lock')"  // TODO [mine]: uncomment this in case of "cannot unlock..." issues
       it["verbose"] = "FALSE"
       it["lib"] = "\"${StringUtil.escapeStringCharacters(libraryPath)}\""
