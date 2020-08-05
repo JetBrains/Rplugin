@@ -542,6 +542,8 @@ You can find the source code in the following repositories:
         <projectService serviceInterface="org.jetbrains.r.packages.remote.RepoProvider"
                         serviceImplementation="org.jetbrains.r.packages.remote.RBasicRepoProvider"/>
 
+        <projectService serviceImplementation="org.jetbrains.r.editor.WelcomeGuideManager" preload="notLightEdit"/>
+
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
         <!--- RMarkdown ui-->
