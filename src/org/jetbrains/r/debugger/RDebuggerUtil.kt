@@ -7,6 +7,7 @@ package org.jetbrains.r.debugger
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
@@ -82,7 +83,7 @@ object RDebuggerUtil {
       val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
       isDependent = dependentBreakpointManager?.getMasterBreakpoint(breakpoint)?.type is RLineBreakpointType
       shouldSuspendInRWrapper = breakpoint.suspendPolicy != SuspendPolicy.NONE || breakpoint.isLogStack || breakpoint.isLogMessage ||
-                                isDependent ||
+                                isDependent || (breakpoint as? XLineBreakpoint<*>)?.isTemporary == true ||
                                 dependentBreakpointManager?.getSlaveBreakpoints(breakpoint).orEmpty().any { it.type is RLineBreakpointType }
       isEnabled = breakpoint.isEnabled
       condition = breakpoint.conditionExpression?.expression
@@ -176,6 +177,13 @@ object RDebuggerUtil {
     slaveBreakpoints.forEach {
       breakpointInfo[it]?.let { info -> info.slaveBreakpointEnabled = true }
       updateBreakpoint(rInterop, it)
+    }
+    if (breakpoint.isTemporary) {
+      invokeAndWaitIfNeeded {
+        runWriteAction {
+          breakpointManager.removeBreakpoint(breakpoint)
+        }
+      }
     }
 
     invokeLater {

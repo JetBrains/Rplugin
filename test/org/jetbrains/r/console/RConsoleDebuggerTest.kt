@@ -139,6 +139,36 @@ class RConsoleDebuggerTest : RConsoleBaseTestCase() {
     checkConsoleText("<<5>>", exclude = true)
   }
 
+  fun testTemporaryBreakpoint() {
+    val file = loadFileWithBreakpointsFromText("""
+      for (i in 1:5) {
+        2
+        3 # BREAKPOINT(temporary = TRUE)
+        4
+      }
+    """.trimIndent())
+    val helper = RConsoleDebuggerTestHelper(console)
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, debug = true) }
+    TestCase.assertEquals("1", rInterop.executeCode("cat(i)").stdout)
+    TestCase.assertEquals(2, rInterop.debugStack.last().position?.line)
+    helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+  }
+
+  fun testTemporaryBreakpointNoSuspend() {
+    val file = loadFileWithBreakpointsFromText("""
+      for (i in 1:3) {
+        2
+        3 # BREAKPOINT(suspend = FALSE, temporary = TRUE, evaluate = paste0('<<', i, '>>'))
+        4
+      }
+    """.trimIndent())
+    val helper = RConsoleDebuggerTestHelper(console)
+    helper.invokeAndWait(false) { rInterop.replSourceFile(file, debug = true) }
+    checkConsoleText("<<1>>")
+    checkConsoleText("<<2>>", true)
+    checkConsoleText("<<3>>", true)
+  }
+
   private fun checkConsoleText(s: String, exclude: Boolean = false) {
     PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     console.flushDeferredText()
