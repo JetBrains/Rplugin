@@ -14,7 +14,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.interpreter.RInterpreterState
 import org.jetbrains.r.interpreter.RInterpreterStateManager
+import org.jetbrains.r.packages.build.RPackageBuildUtil
 import org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex
 import org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex
 
@@ -22,8 +24,20 @@ object RPackageCompletionUtil {
 
   fun addPackageCompletion(position: PsiElement, result: CompletionResultSet) {
     val state = RInterpreterStateManager.getCurrentStateOrNull(position.project) ?: return
-    val installedPackages = state.installedPackages
-    installedPackages.forEach { result.consume(RLookupElementFactory().createPackageLookupElement(it.packageName, false)) }
+    for (installedPackage in state.installedPackages) {
+      addPackageCompletion(installedPackage.packageName, result)
+    }
+    // Note: a package project can be loaded into current global environment
+    // (e.g. via `devtools::load_all()`, see R-762) but not installed
+    RPackageBuildUtil.getPackageName(state.project)?.let { packageName ->
+      if (!state.hasPackage(packageName) && state.rInterop.isLibraryLoaded(packageName)) {
+        addPackageCompletion(packageName, result)
+      }
+    }
+  }
+
+  private fun addPackageCompletion(packageName: String, result: CompletionResultSet) {
+    result.consume(RLookupElementFactory().createPackageLookupElement(packageName, inImport = false))
   }
 
   fun addNamespaceCompletion(namespaceName: String,
@@ -33,9 +47,20 @@ object RPackageCompletionUtil {
                              elementFactory: RLookupElementFactory) {
     val project = parameters.position.project
     val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
-    val packageFile = state.getSkeletonFileByPackageName(namespaceName) ?: return
-    val scope = GlobalSearchScope.fileScope(packageFile)
+    val scope = getSearchScopeFor(namespaceName, state) ?: return
     addCompletionFromIndices(project, scope, parameters.originalFile, "", HashSet(), result, elementFactory, isInternalAccess)
+  }
+
+  private fun getSearchScopeFor(namespaceName: String, state: RInterpreterState): GlobalSearchScope? {
+    val packageFile = state.getSkeletonFileByPackageName(namespaceName)
+    return if (packageFile != null) {
+      GlobalSearchScope.fileScope(packageFile)
+    } else {
+      // Note: search in current project files if requested namespace refers to this package project
+      RPackageBuildUtil.getPackageName(state.project)?.let { packageName ->
+        if (packageName == namespaceName && state.rInterop.isLibraryLoaded(packageName)) GlobalSearchScope.allScope(state.project) else null
+      }
+    }
   }
 
   fun addCompletionFromIndices(project: Project,

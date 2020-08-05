@@ -63,6 +63,10 @@ interface RInterpreterState {
   fun updateState(): Promise<Unit>
 
   fun scheduleSkeletonUpdate(): Promise<Unit>
+
+  fun hasPackage(name: String): Boolean {
+    return getPackageByName(name) != null
+  }
 }
 
 
