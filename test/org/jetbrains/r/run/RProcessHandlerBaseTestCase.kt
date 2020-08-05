@@ -94,6 +94,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         var evaluate: String? = null
         var logMessage: Boolean = false
         var logStack: Boolean = false
+        var temporary = false
         runReadAction {
           val psi = RElementFactory.createRPsiElementFromText(project, "BREAKPOINT" + line.substringAfter("BREAKPOINT"))
           if (psi is RCallExpression) {
@@ -105,6 +106,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
                 "evaluate" -> evaluate = it.assignedValue?.text
                 "logMessage" -> logMessage = (it.assignedValue as RBooleanLiteral).isTrue
                 "logStack" -> logStack = (it.assignedValue as RBooleanLiteral).isTrue
+                "temporary" -> temporary = (it.assignedValue as RBooleanLiteral).isTrue
                 else -> TestCase.fail("Invalid breakpoint description on line $index")
               }
             }
@@ -121,6 +123,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         }
         breakpoint.isLogMessage = logMessage
         breakpoint.isLogStack = logStack
+        breakpoint.isTemporary = temporary
       }
     }
   }
