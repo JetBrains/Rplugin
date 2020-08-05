@@ -1,6 +1,8 @@
 package org.jetbrains.r.rinterop
 
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons.General.QuestionDialog
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
@@ -20,12 +22,18 @@ import com.intellij.util.PathUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.configuration.RSettingsConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.packages.remote.RepoProvider
+import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import javax.swing.JPasswordField
 import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
@@ -51,7 +59,9 @@ enum class RStudioApiFunctionId {
   UPDATE_DIALOG_ID,
   GET_THEME_INFO,
   JOB_RUN_SCRIPT_ID,
-  JOB_REMOVE_ID;
+  JOB_REMOVE_ID,
+  JOB_SET_STATE_ID,
+  RESTART_SESSION_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -75,6 +85,8 @@ enum class RStudioApiFunctionId {
         16 -> GET_THEME_INFO
         17 -> JOB_RUN_SCRIPT_ID
         18 -> JOB_REMOVE_ID
+        19 -> JOB_SET_STATE_ID
+        20 -> RESTART_SESSION_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -465,6 +477,12 @@ fun jobRemove(rInterop: RInterop, args: RObject): RObject {
     it.jobDescriptor.startedAt.time == time && it.jobDescriptor.scriptFile.name == name
   } ?: return getRNull())
   return getRNull()
+}
+
+fun restartSession(rInterop: RInterop): Promise<RInterpreter> {
+  // TODO
+  getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
+  return RInterpreterManager.restartInterpreter(rInterop.project)
 }
 
 private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {

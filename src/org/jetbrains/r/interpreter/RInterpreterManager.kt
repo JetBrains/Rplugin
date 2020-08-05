@@ -54,8 +54,8 @@ interface RInterpreterManager {
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
 
-    fun restartInterpreter(project: Project) {
-      getInterpreterAsync(project, true).onProcessed { interpreter ->
+    fun restartInterpreter(project: Project): Promise<RInterpreter> {
+      return getInterpreterAsync(project, true).onProcessed { interpreter ->
         if (interpreter != null) {
           RepoProvider.getInstance(project).onInterpreterVersionChange()
           ApplicationManager.getApplication().invokeLater {

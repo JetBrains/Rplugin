@@ -286,6 +286,13 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             RStudioApiFunctionId.JOB_REMOVE_ID -> {
               promise.setResult(jobRemove(rInterop, args))
             }
+            RStudioApiFunctionId.JOB_SET_STATE_ID -> TODO()
+            RStudioApiFunctionId.RESTART_SESSION_ID -> {
+              promise.setResult(RObject.getDefaultInstance())
+              restartSession(rInterop).then {
+                sendToConsole(rInterop, args)
+              }
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)
