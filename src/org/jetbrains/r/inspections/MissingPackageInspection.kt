@@ -87,9 +87,9 @@ class MissingPackageInspection : RInspection() {
     if (state.isUpdating || packageName == null) {  // Note: also prevents false positives during interpreter's state update
       return
     }
-    val byName = state.getPackageByName(packageName)
 
-    if (byName == null) {
+    // Note: don't trigger error if this package is either installed or loaded into global environment
+    if (!state.hasPackage(packageName) && !state.rInterop.isLibraryLoaded(packageName)) {
       val descriptionTemplate = RBundle.message("inspection.missingPackage.description", packageName)
       problemsHolder.registerProblem(elementForReporting, descriptionTemplate,
                                      InstallLibraryFix(packageName), InstallAllFileLibraryFix())
