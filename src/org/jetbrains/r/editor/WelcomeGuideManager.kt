@@ -1,6 +1,7 @@
 package org.jetbrains.r.editor
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
@@ -8,10 +9,14 @@ import com.intellij.testFramework.LightVirtualFile
 import org.intellij.plugins.markdown.ui.preview.MarkdownSplitEditor
 import org.intellij.plugins.markdown.ui.split.SplitFileEditor
 
-private const val KEY = "org.jetbrains.r.editor.welcomeGuide"
-
 class WelcomeGuideManager(private val project: Project) {
   init {
+    if (!(ApplicationManager.getApplication().isUnitTestMode || ApplicationManager.getApplication().isHeadlessEnvironment)) {
+      showWelcomeGuide()
+    }
+  }
+
+  internal fun showWelcomeGuide() {
     val propertiesComponent = PropertiesComponent.getInstance()
     if (!propertiesComponent.isTrueValue(KEY)) {
       propertiesComponent.setValue(KEY, true)
@@ -25,5 +30,9 @@ class WelcomeGuideManager(private val project: Project) {
         }
       }
     }
+  }
+
+  companion object {
+    internal const val KEY = "org.jetbrains.r.editor.welcomeGuide"
   }
 }
