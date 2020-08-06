@@ -149,6 +149,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
       panel.add(locationPanel)
     }
     panel.add(createInterpretersPanel())
+    interpreterPanel.runListeners()
     return panel
   }
 
@@ -184,12 +185,10 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
       rProjectSettings.useNewInterpreter = useNewInterpreter
     })
 
-    val listener = Runnable {
+    interpreterPanel.addChangeListener(Runnable {
       val location = interpreterPanel.mySelectedPanel.interpreterLocation
       rProjectSettings.interpreterPath = location?.toLocalPathOrNull()
-    }
-    interpreterPanel.addChangeListener(listener)
-    listener.run()
+    })
 
     interpreterPanel.addChangeListener(Runnable {
       rProjectSettings.isInstalledPackagesSetUpToDate = false
