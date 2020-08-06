@@ -46,7 +46,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     get() = "Packrat package manager panel"
 
   override val packageManagerName: String
-    get() = "Packat"
+    get() = "Packrat"
 
   override val rPackageName: String
     get() = "packrat"
