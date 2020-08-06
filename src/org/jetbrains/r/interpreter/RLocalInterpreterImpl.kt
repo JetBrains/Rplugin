@@ -20,6 +20,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.compute
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
@@ -90,6 +91,10 @@ class RLocalInterpreterImpl(
     } else {
       Pair(userPath, File(userPath).mkdirs())
     }
+  }
+
+  override fun getBrowsableUrlAsync(rInterop: RInterop, pathOnHost: String): Promise<String> {
+    return resolvedPromise("file://$pathOnHost")
   }
 
   override fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> {

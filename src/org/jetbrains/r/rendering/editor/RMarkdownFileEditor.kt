@@ -30,6 +30,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.chunk.canRunChunk
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
@@ -204,9 +205,19 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
 
     private fun openDocument() {
       val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report)
-      val file = File(profileLastOutput)
-      if (profileLastOutput.isNotEmpty() && file.exists()) {
-        BrowserLauncher.instance.browse(file)
+      if (profileLastOutput.isBlank()) {
+        return
+      }
+      val interop = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+      if (interop != null && !interop.interpreter.isLocal()) {
+        interop.interpreter.getBrowsableUrlAsync(interop, profileLastOutput).onSuccess { url ->
+          BrowserLauncher.instance.browse(url)
+        }
+      } else {
+        val file = File(profileLastOutput)
+        if (file.exists()) {
+          BrowserLauncher.instance.browse(file)
+        }
       }
     }
   }

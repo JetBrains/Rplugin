@@ -75,6 +75,8 @@ interface RInterpreter : RInterpreterInfo {
     return promise
   }
 
+  fun getBrowsableUrlAsync(rInterop: RInterop, pathOnHost: String): Promise<String>
+
   fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> = resolvedPromise()
 
   fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
