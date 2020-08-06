@@ -65,6 +65,8 @@ interface RInterpreter : RInterpreterInfo {
 
   fun createTempFileOnHost(name: String = "a", content: ByteArray? = null): String
 
+  fun createFileOnHost(name: String = "a", content: ByteArray? = null, directory: String): String
+
   fun createTempDirOnHost(name: String = "a"): String
 
   // Note: returns pair of writable path and indicator whether new library path was created

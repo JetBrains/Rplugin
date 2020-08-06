@@ -2,7 +2,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons.General.QuestionDialog
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
@@ -13,16 +13,21 @@ import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.fileTypes.ex.FileTypeChooser
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiManager
 import com.intellij.ui.components.*
 import com.intellij.ui.layout.*
 import com.intellij.util.PathUtil
+import com.intellij.util.PathUtilRt
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.configuration.RSettingsConfigurable
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
@@ -31,9 +36,9 @@ import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.packages.remote.RepoProvider
-import org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanel
-import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.rendering.chunk.RunChunkHandler
+import org.jetbrains.r.rendering.editor.ChunkExecutionState
+import org.jetbrains.r.rendering.editor.chunkExecutionState
 import javax.swing.JPasswordField
 import javax.swing.UIManager
 import javax.swing.event.DocumentEvent
@@ -61,7 +66,8 @@ enum class RStudioApiFunctionId {
   JOB_RUN_SCRIPT_ID,
   JOB_REMOVE_ID,
   JOB_SET_STATE_ID,
-  RESTART_SESSION_ID;
+  RESTART_SESSION_ID,
+  DOCUMENT_NEW_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -87,6 +93,7 @@ enum class RStudioApiFunctionId {
         18 -> JOB_REMOVE_ID
         19 -> JOB_SET_STATE_ID
         20 -> RESTART_SESSION_ID
+        21 -> DOCUMENT_NEW_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -314,7 +321,7 @@ fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
 }
 
 fun askForPassword(args: RObject): Promise<RObject> {
-  val message = args.list.getRObjects(0).rString.getStrings(0)
+  val message = args.rString.getStrings(0)
   val passwordField = JPasswordField()
   val panel = panel {
     noteRow(message)
@@ -344,7 +351,7 @@ fun askForPassword(args: RObject): Promise<RObject> {
 }
 
 fun showQuestion(args: RObject): Promise<RObject> {
-  val (title, message, ok, cancel) = args.list.getRObjects(0).rString.stringsList
+  val (title, message, ok, cancel) = args.rString.stringsList
   val promise = AsyncPromise<RObject>()
   runInEdt {
     val result = showOkCancelDialog(title, message, ok, cancel, QuestionDialog)
@@ -354,7 +361,7 @@ fun showQuestion(args: RObject): Promise<RObject> {
 }
 
 fun showPrompt(args: RObject): Promise<RObject> {
-  val (title, message, default) = args.list.getRObjects(0).rString.stringsList
+  val (title, message, default) = args.rString.stringsList
   val textField = JBTextField()
   textField.text = default
   val panel = panel {
@@ -373,7 +380,7 @@ fun showPrompt(args: RObject): Promise<RObject> {
 }
 
 fun askForSecret(args: RObject): Promise<RObject> {
-  val (name, message, title) = args.list.getRObjects(0).rString.stringsList
+  val (name, message, title) = args.rString.stringsList
   val secretField = JPasswordField()
   val checkBox = JBCheckBox("Remember with keyring")
   val panel = panel {
@@ -415,7 +422,7 @@ fun selectDirectory(args: RObject): Promise<RObject> {
 }
 
 fun showDialog(args: RObject): Promise<RObject> {
-  val (title, message, url) = args.list.getRObjects(0).rString.stringsList
+  val (title, message, url) = args.rString.stringsList
   val msg = "$message\n<a href=\"$url\">$url</a>"
   val promise = AsyncPromise<RObject>()
   runInEdt {
@@ -483,6 +490,79 @@ fun restartSession(rInterop: RInterop): Promise<RInterpreter> {
   // TODO
   getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
   return RInterpreterManager.restartInterpreter(rInterop.project)
+}
+
+fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
+  val type = args.list.getRObjects(0).rString.getStrings(0)
+  val text = args.list.getRObjects(1).rString.getStrings(0)
+  val line = args.list.getRObjects(2).rInt.getInts(0).toInt()
+  val column = args.list.getRObjects(2).rInt.getInts(1).toInt()
+  val execute = args.list.getRObjects(3).rboolean.getBooleans(0)
+  val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
+  val panel = panel {
+    row { component(fileChooser).focused() }
+  }
+  val dialogPromise = AsyncPromise<String?>()
+  runInEdt {
+    val dialog = dialog("Select file for new document", panel)
+    val result = if (dialog.showAndGet()) {
+      fileChooser.text
+    }
+    else null
+    dialogPromise.setResult(result)
+  }
+  val promise = AsyncPromise<Unit>()
+  dialogPromise.then {
+    if (it != null) {
+      val newFilePath = rInterop.interpreter.createFileOnHost(it, text.toByteArray(), "")
+      val name = PathUtilRt.getFileName(newFilePath)
+      ProgressManager.getInstance().run(object : Task.Backgroundable(
+        rInterop.project, "remote.host.view.opening.file.title.$name") {
+        override fun run(indicator: ProgressIndicator) {
+          val file = rInterop.interpreter.findFileByPathAtHost(newFilePath) ?: return
+          invokeAndWaitIfNeeded {
+            FileTypeChooser.getKnownFileTypeOrAssociate(newFilePath)
+            val editor = FileEditorManager.getInstance(rInterop.project)
+              .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
+            editor?.selectionModel?.setSelection(
+              editor.visualPositionToOffset(VisualPosition(line, column)),
+              editor.visualPositionToOffset(VisualPosition(line, column))
+            )
+            if (execute) {
+              when (type) {
+                "r" -> rInterop.replSourceFile(file)
+                "rmarkdown" -> invokeLater {
+                  if (editor != null) {
+                    val psiFile = PsiManager.getInstance(rInterop.project).findFile(file)
+                    psiFile?.let {
+                      val state = editor.chunkExecutionState
+                      if (state == null) {
+                        ChunkExecutionState(editor).apply {
+                          editor.chunkExecutionState = this
+                          RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement,
+                                                       terminationRequired).onProcessed { editor.chunkExecutionState = null }
+                        }
+                      }
+                      else {
+                        state.terminationRequired.set(true)
+                        val element = state.currentPsiElement.get()
+                        RunChunkHandler.interruptChunkExecution(element.project)
+                      }
+                    }
+                  }
+                }
+                "sql" -> TODO()
+                else -> {
+                }
+              }
+            }
+          }
+          promise.setResult(Unit)
+        }
+      })
+    }
+  }
+  return promise
 }
 
 private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {

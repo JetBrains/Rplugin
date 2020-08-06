@@ -293,6 +293,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                 sendToConsole(rInterop, args)
               }
             }
+            RStudioApiFunctionId.DOCUMENT_NEW_ID -> {
+              documentNew(rInterop, args).then {
+                promise.setResult(RObject.getDefaultInstance())
+              }
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)

@@ -16,6 +16,7 @@ import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -24,6 +25,7 @@ import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Paths
 
 class RLocalInterpreterImpl(
@@ -90,6 +92,14 @@ class RLocalInterpreterImpl(
     // Note: timestamps ensure the global uniqueness of file name in order to
     // avoid any issues with VFS caching when outdated file contents might be read
     return FileUtilRt.createTempFile("$name${System.currentTimeMillis()}", extension, true)
+  }
+
+  override fun createFileOnHost(name: String, content: ByteArray?, directory: String): String {
+    val path = Paths.get(directory, name)
+    path.toFile().parentFile.mkdirs()
+    Files.write(path, content ?: "".toByteArray())
+    LocalFileSystem.getInstance().refreshNioFiles(listOf(path))
+    return path.toString()
   }
 
   override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
