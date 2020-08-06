@@ -31,7 +31,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   private lateinit var graphicsDevice: RGraphicsDevice
   private lateinit var graphicsManager: ChunkGraphicsManager
   private lateinit var graphicsHandler: UpdateGraphicsHandler
-  private val expectedSnapshotDirectoryPath = File("testData").absolutePath
+  private val expectedSnapshotDirectoryPath = testDataPath
 
   @Volatile
   private var currentSnapshots: List<RSnapshot>? = null

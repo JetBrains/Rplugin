@@ -12,7 +12,6 @@ import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.*
-import java.io.File
 import java.nio.file.Paths
 import kotlin.math.sin
 
@@ -52,7 +51,7 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun checkPreviewAndImport(fileName: String, options: RImportOptions, expected: DataFrame) {
-    val path = Paths.get(TEST_DATA_PATH, "datasets", fileName).toString()
+    val path = Paths.get(testDataPath, "datasets", fileName).toString()
     checkPreview(path, options, expected.head(PREVIEW_ROW_COUNT))
     checkImport(path, options, expected)
   }
@@ -115,7 +114,6 @@ class RDataImporterTest : RProcessHandlerBaseTestCase() {
     private const val PREVIEW_ROW_COUNT = 50
     private const val CSV_FILE_NAME = "sins.csv"
     private const val EXCEL_FILE_NAME = "sins.xlsx"
-    private val TEST_DATA_PATH = File("testData").absolutePath
 
     private fun prepareExpectedIntDataFrame(): DataFrame {
       return prepareExpectedDataFrame { it }
