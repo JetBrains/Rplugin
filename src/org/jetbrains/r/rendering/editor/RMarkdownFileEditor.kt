@@ -5,7 +5,6 @@
 package org.jetbrains.r.rendering.editor
 
 import com.intellij.icons.AllIcons
-import com.intellij.ide.browsers.BrowserLauncher
 import com.intellij.ide.browsers.WebBrowserManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
@@ -30,9 +29,11 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.chunk.canRunChunk
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rmarkdown.RMarkdownRenderingConsoleRunner
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.settings.REditorSettings
@@ -204,9 +205,17 @@ private fun createBuildAndShowAction(project: Project, report: VirtualFile, mana
 
     private fun openDocument() {
       val profileLastOutput = RMarkdownSettings.getInstance(project).state.getProfileLastOutput(report)
-      val file = File(profileLastOutput)
-      if (profileLastOutput.isNotEmpty() && file.exists()) {
-        BrowserLauncher.instance.browse(file)
+      if (profileLastOutput.isBlank()) {
+        return
+      }
+      val interop = RConsoleManager.getInstance(project).currentConsoleOrNull?.rInterop
+      if (interop != null && !interop.interpreter.isLocal()) {
+        interop.interpreter.showFileInViewer(interop, profileLastOutput)
+      } else {
+        val file = File(profileLastOutput)
+        if (file.exists()) {
+          RToolWindowFactory.showFile(project, file.absolutePath)
+        }
       }
     }
   }

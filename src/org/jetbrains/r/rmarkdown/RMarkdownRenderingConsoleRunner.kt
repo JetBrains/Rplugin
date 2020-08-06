@@ -16,7 +16,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtil
 import org.jetbrains.concurrency.AsyncPromise
@@ -131,19 +130,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
               if (!isShiny) {
                 val outputPathOnHost =
                   interpreter.findFileByPathAtHost(resultTmpFileOnHost)?.contentsToByteArray()?.toString(Charsets.UTF_8).orEmpty()
-                val outputPath = if (interpreter.isLocal()) {
-                  outputPathOnHost
-                } else {
-                  val dir = if (outputDir.isInLocalFileSystem) {
-                    outputDir.path
-                  } else {
-                    FileUtilRt.createTempDirectory("rmd-output", null, true).path
-                  }
-                  RPathUtil.join(dir, PathUtil.getFileName(outputPathOnHost)).also {
-                    interpreter.downloadFileFromHost(outputPathOnHost, it)
-                  }
-                }
-                RMarkdownSettings.getInstance(project).state.setProfileLastOutput(file, outputPath)
+                RMarkdownSettings.getInstance(project).state.setProfileLastOutput(file, outputPathOnHost)
                 outputDir.refresh(true, false)
               }
               promise.setResult(Unit)
