@@ -4,7 +4,6 @@
 
 package org.intellij.datavis.r.inlays.dataframe
 
-import org.intellij.datavis.r.inlays.dataframe.aggregation.Aggregator
 import org.intellij.datavis.r.inlays.dataframe.columns.*
 import java.awt.Dimension
 
@@ -62,23 +61,6 @@ class DataFrameImpl(private val columns: ArrayList<Column<*>>) : DataFrame() {
                 else -> throw Exception("Unsupported column type ${columns[i].type} in sorting.")
             }
         }
-    }
-
-    override fun aggregate(vararg aggregators: Aggregator) : DataFrame {
-
-        val newColumns = ArrayList<Column<*>>()
-
-        // First adding columns which are not affected by aggregation
-        columns.forEach { column ->
-            if(aggregators.find { it.columnName == column.name } == null) {
-                newColumns.add(column)
-            }
-        }
-
-        // Next - aggregated columns
-        aggregators.forEach {  newColumns.add(it.process(this)) }
-
-        return DataFrameImpl(newColumns)
     }
 
     override fun groupBy(columnName: String): DataFrame {

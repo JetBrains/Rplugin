@@ -4,7 +4,6 @@
 
 package org.intellij.datavis.r.inlays.dataframe
 
-import org.intellij.datavis.r.inlays.dataframe.aggregation.Aggregator
 import org.intellij.datavis.r.inlays.dataframe.columns.Column
 import java.awt.Dimension
 
@@ -19,9 +18,6 @@ abstract class DataFrame {
   abstract fun sortBy(columnName: String, sortDescending: Boolean = false)
 
   abstract fun groupBy(columnName: String): DataFrame
-
-  /** Aggregate mast produce new data frame with aggregation results. */
-  abstract fun aggregate(vararg aggregators: Aggregator): DataFrame
 
   val columnsCount: Int
     get() {
