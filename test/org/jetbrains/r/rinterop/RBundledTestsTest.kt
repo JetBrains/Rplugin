@@ -13,10 +13,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.R_3_4
-import org.jetbrains.r.interpreter.R_3_5
-import org.jetbrains.r.interpreter.toLocalPathOrNull
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
@@ -29,6 +26,7 @@ class RBundledTestsTest : RProcessHandlerBaseTestCase() {
 
   override fun setUp() {
     super.setUp()
+    TestCase.assertTrue("RBundledTestsTest is currently not supported for remote interpreter", interpreter.isLocal())
     rInterop.asyncEventsStartProcessing()
     tempDir = FileUtil.createTempDirectory("tmpdir", null, true).absolutePath
     rInterop.setWorkingDir(tempDir)

@@ -32,6 +32,8 @@ interface RInterpreterSettingsProvider {
   fun showEditInterpreterDialog(info: RInterpreterInfo, existingInterpreters: List<RInterpreterInfo>,
                                 onEdited: (RInterpreterInfo) -> Unit) {}
 
+  fun provideInterpreterForTests(): RInterpreterLocation? = null
+
   companion object {
     private val EP_NAME: ExtensionPointName<RInterpreterSettingsProvider>
       = ExtensionPointName.create("com.intellij.rInterpreterSettingsProvider")
