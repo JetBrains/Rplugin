@@ -31,6 +31,7 @@ class RLocalInterpreterImpl(
   val interpreterPath get() = interpreterLocation.path
   override val basePath = project.basePath!!
   override val hostOS get() = OperatingSystem.current()
+  override val interpreterPathOnHost get() = interpreterPath
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
     return RInteropUtil.createRInteropForLocalProcess(this, process, port)

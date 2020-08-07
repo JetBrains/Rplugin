@@ -31,6 +31,8 @@ interface RInterpreter : RInterpreterInfo {
 
   val hostOS: OperatingSystem
 
+  val interpreterPathOnHost: String
+
   fun suggestConsoleName(workingDirectory: String): String {
     return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
   }

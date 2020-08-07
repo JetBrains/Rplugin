@@ -4,12 +4,10 @@
 
 package org.jetbrains.r.interpreter
 
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.execution.process.CapturingProcessRunner
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.PlatformTestUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil.DEFAULT_TIMEOUT
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -34,19 +32,18 @@ object RInterpreterTestUtil {
     }
   }
 
-  fun installPackage(interpreter: RLocalInterpreterImpl, packagePath: String) {
-    runCommand(interpreter.interpreterPath, "CMD", "INSTALL", packagePath)
+  fun installPackage(interpreter: RInterpreter, packagePath: String) {
+    runCommand(interpreter, "CMD", "INSTALL", packagePath)
   }
 
-  fun removePackage(interpreter: RLocalInterpreterImpl, packageName: String) {
-    runCommand(interpreter.interpreterPath, "CMD", "REMOVE", packageName)
+  fun removePackage(interpreter: RInterpreter, packageName: String) {
+    runCommand(interpreter, "CMD", "REMOVE", packageName)
   }
 
-  private fun runCommand(vararg args: String) {
+  private fun runCommand(interpreter: RInterpreter, vararg args: String) {
     LOGGER.warn("Running: " + args.joinToString())
-    val generalCommandLine = GeneralCommandLine(*args)
-    val processHandler = CapturingProcessHandler(generalCommandLine)
-    val processOutput = processHandler.runProcess(DEFAULT_TIMEOUT)
+    val process = interpreter.interpreterLocation.runInterpreterOnHost(args.toList())
+    val processOutput = CapturingProcessRunner(process).runProcess()
     LOGGER.warn("STDOUT: " + processOutput.stdout)
     LOGGER.warn("STDERR: " + processOutput.stderr)
   }

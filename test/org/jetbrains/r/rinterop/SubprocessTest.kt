@@ -5,23 +5,24 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class SubprocessTest : RProcessHandlerBaseTestCase() {
+  private val echoCommand get() = if (interpreter.hostOS == OperatingSystem.WINDOWS) "cmd /c echo" else "echo"
+
   fun testEcho() {
-    val result = rInterop.executeCodeAsync("system('$ECHO abcd123')", withEcho = false).blockingGet(DEFAULT_TIMEOUT)!!
+    val result = rInterop.executeCodeAsync("system('$echoCommand abcd123')", withEcho = false).blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals("abcd123${System.lineSeparator()}", result.stdout)
     TestCase.assertEquals("", result.stderr)
     TestCase.assertEquals(null, result.exception)
   }
 
   fun testEchoIntern() {
-    val result = rInterop.executeCodeAsync("a <- system('$ECHO abcd123', intern = TRUE)").blockingGet(DEFAULT_TIMEOUT)!!
+    val result = rInterop.executeCodeAsync("a <- system('$echoCommand abcd123', intern = TRUE)").blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals("", result.stdout)
     TestCase.assertEquals("", result.stderr)
     TestCase.assertEquals(null, result.exception)
@@ -109,14 +110,10 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun makeRCommand(code: String): String {
-    return "${RInterpreterUtil.suggestHomePath()} --no-save --no-restore --slave -e \"${StringUtil.escapeStringCharacters(code)}\""
+    return "${interpreter.interpreterPathOnHost} --no-save --no-restore --slave -e \"${StringUtil.escapeStringCharacters(code)}\""
   }
 
   private fun makeRInteractiveCommand(): String {
-    return "${RInterpreterUtil.suggestHomePath()} --no-save --no-restore --slave --interactive"
-  }
-
-  companion object {
-    private val ECHO = if (SystemInfo.isWindows) "cmd /c echo" else "echo"
+    return "${interpreter.interpreterPathOnHost} --no-save --no-restore --slave --interactive"
   }
 }

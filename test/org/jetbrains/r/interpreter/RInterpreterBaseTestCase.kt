@@ -21,6 +21,7 @@ import org.jetbrains.r.packages.remote.RRepository
 import org.jetbrains.r.packages.remote.RepoProvider
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
+import java.io.File
 
 abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   private lateinit var childInterpreter: RLocalInterpreterImpl
@@ -77,7 +78,12 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
   }
 
   private fun setupMockRepoProvider() {
-    localRepoProvider = LocalRepoProvider()
+    val repoUrl = if (interpreter.isLocal()) {
+      LOCAL_REPO_URL
+    } else {
+      "file:${interpreter.uploadFileToHost(File(LOCAL_REPO_PATH))}"
+    }
+    localRepoProvider = LocalRepoProvider(repoUrl)
     project.registerServiceInstance(RepoProvider::class.java, localRepoProvider)
   }
 
@@ -101,17 +107,17 @@ abstract class RInterpreterBaseTestCase : RProcessHandlerBaseTestCase() {
       get() = childState.skeletonFiles
   }
 
-  private class LocalRepoProvider : RepoProvider by MockRepoProvider() {
+  private class LocalRepoProvider(val repoUrl: String) : RepoProvider by MockRepoProvider() {
     val knownPackages = LOCAL_PACKAGES.toMutableList()
 
     override val name2AvailablePackages: Map<String, RRepoPackage>?
       get() = knownPackages.map { Pair(it.name, it.toRepoPackage()) }.toMap()
 
     override val mappedEnabledRepositoryUrlsAsync: Promise<List<String>>
-      get() = resolvedPromise(listOf(LOCAL_REPO_URL))
+      get() = resolvedPromise(listOf(repoUrl))
 
     override val repositorySelectionsAsync: Promise<List<Pair<RRepository, Boolean>>>
-      get() = resolvedPromise(listOf(RDefaultRepository(LOCAL_REPO_URL, false) to true))
+      get() = resolvedPromise(listOf(RDefaultRepository(repoUrl, false) to true))
 
     override fun loadAllPackagesAsync() = resolvedPromise(knownPackages.map { it.toRepoPackage() })
   }

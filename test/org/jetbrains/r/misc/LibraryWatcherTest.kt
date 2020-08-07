@@ -4,18 +4,19 @@
 
 package org.jetbrains.r.misc
 
-import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
 import org.jetbrains.r.interpreter.RInterpreterTestUtil
 import org.jetbrains.r.interpreter.RLibraryWatcher
+import org.jetbrains.r.interpreter.uploadFileToHost
+import org.jetbrains.r.run.RProcessHandlerBaseTestCase
+import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-class LibraryWatcherTest : RInterpreterBaseTestCase() {
+class LibraryWatcherTest : RProcessHandlerBaseTestCase() {
   private val packageName = "rplugin.test.package"
   private val packagePath = "$testDataPath/packages/$packageName.tar.gz"
 
   fun testPackageInstallUninstall() {
     val project = myFixture.project
-    val interpreter = RInterpreterTestUtil.makeChildInterpreter(project)
     RInterpreterTestUtil.removePackage(interpreter, packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
     assertNotEmpty(rInterop.state.libraryPaths)
@@ -25,7 +26,7 @@ class LibraryWatcherTest : RInterpreterBaseTestCase() {
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {
       atomicInteger.incrementAndGet()
     }
-    RInterpreterTestUtil.installPackage(interpreter, packagePath)
+    RInterpreterTestUtil.installPackage(interpreter, interpreter.uploadFileToHost(File(packagePath), true))
     assertEquals(0, atomicInteger.get())
     libraryWatcher.refresh()
     waitForAtomic(atomicInteger, 1)
