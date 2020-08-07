@@ -67,12 +67,18 @@ class RLocalInterpreterImpl(
   override fun createTempFileOnHost(name: String, content: ByteArray?): String {
     val i = name.indexOfLast { it == '.' }
     val file = if (i == -1) {
-      FileUtilRt.createTempFile(name, null, true)
+      createTempFileWithTimestamp(name, null)
     } else {
-      FileUtilRt.createTempFile(name.substring(0, i), name.substring(i), true)
+      createTempFileWithTimestamp(name.substring(0, i), name.substring(i))
     }
     content?.let { file.writeBytes(it) }
     return file.path
+  }
+
+  private fun createTempFileWithTimestamp(name: String, extension: String?): File {
+    // Note: timestamps ensure the global uniqueness of file name in order to
+    // avoid any issues with VFS caching when outdated file contents might be read
+    return FileUtilRt.createTempFile("$name${System.currentTimeMillis()}", extension, true)
   }
 
   override fun createTempDirOnHost(name: String): String = FileUtilRt.createTempDirectory(name, null, true).path
