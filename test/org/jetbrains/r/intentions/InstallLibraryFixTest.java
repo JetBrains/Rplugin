@@ -38,7 +38,7 @@ public class InstallLibraryFixTest extends LightPlatformCodeInsightFixtureTestCa
 
         try {
             RepoUtils.INSTANCE.uninstallPackage(null, myFixture.getProject(), new RInstalledPackage(TEST_PACKAGE, "1.0.0", null,
-                                                                                                    "",
+                                                                                                    "", "",
                                                                                                     Collections.emptyMap()));
         } catch (ExecutionException e) {
             e.printStackTrace();

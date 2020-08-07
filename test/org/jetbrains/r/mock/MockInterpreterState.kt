@@ -12,9 +12,7 @@ import com.intellij.psi.PsiManager
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
-import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rinterop.RInterop
@@ -32,7 +30,10 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
     get() = provider.installedPackages.takeIf { it.isNotEmpty() } ?: ExpiringList(
       skeletonFiles
         .mapNotNull { RSkeletonUtil.skeletonFileToRPackage(it) }
-        .map { RInstalledPackage(it.name, it.version, null, RUsefulTestCase.SKELETON_LIBRARY_PATH, emptyMap()) }) { false }
+        .map {
+          val canonicalPath = Path.of(RUsefulTestCase.SKELETON_LIBRARY_PATH, it.name).toString()
+          RInstalledPackage(it.name, it.version, null, RUsefulTestCase.SKELETON_LIBRARY_PATH, canonicalPath, emptyMap())
+        }) { false }
 
   override val skeletonFiles: Set<VirtualFile>
     get() = provider.skeletonFiles.takeIf { it.isNotEmpty() } ?: findSkeletonFiles()
@@ -68,10 +69,7 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
 
   override fun getSkeletonFileByPackageName(name: String): PsiFile? {
     val installedPackage = getPackageByName(name) ?: return null
-    val interpreterLocation =
-      RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT)?.interpreterLocation ?: return null
-    val virtualFile =
-      RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, installedPackage, interpreterLocation) ?: return null
+    val virtualFile = RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, installedPackage) ?: return null
     return PsiManager.getInstance(project).findFile(virtualFile)
   }
 

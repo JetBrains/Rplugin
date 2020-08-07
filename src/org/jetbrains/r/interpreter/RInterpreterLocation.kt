@@ -10,8 +10,6 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import java.io.File
-import java.io.IOException
-import java.nio.file.Path
 
 interface RInterpreterLocation {
   // workingDirectory is a separate parameter and not a part of GeneralCommandLine because it does not work well with remote paths
@@ -30,8 +28,6 @@ interface RInterpreterLocation {
   fun canWrite(path: String): Boolean
 
   fun canExecute(path: String): Boolean
-
-  fun canonicalPath(path: String): String
 }
 
 data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
@@ -68,15 +64,6 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
   override fun canWrite(path: String): Boolean = File(path).canWrite()
 
   override fun canExecute(path: String): Boolean = File(path).canExecute()
-
-  override fun canonicalPath(path: String): String {
-    return try {
-      Path.of(path).toRealPath().toString()
-    }
-    catch (e: IOException) {
-      path
-    }
-  }
 }
 
 fun RInterpreterLocation.toLocalPathOrNull(): String? {

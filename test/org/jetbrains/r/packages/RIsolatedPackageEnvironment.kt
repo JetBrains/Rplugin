@@ -1,10 +1,7 @@
 package org.jetbrains.r.packages
 
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.io.systemIndependentPath
-import com.intellij.util.ui.FilePathSplittingPolicy
 import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
-import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterState
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import java.nio.file.Files
@@ -14,9 +11,8 @@ class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
 
   fun testSymlinkPackages() {
     val state = RInterpreterStateManager.getCurrentStateBlocking(myFixture.project, DEFAULT_TIMEOUT)!!
-    val interpreterLocation = state.rInterop.interpreter.interpreterLocation
     val installedPackage = state.installedPackages.map { it.name to Path.of(it.libraryPath, it.name) }.toMap()
-    val skeletonPaths = getSkeletonPaths(state, interpreterLocation)
+    val skeletonPaths = getSkeletonPaths(state)
 
     rInterop.executeCode("""
       binding_replace <- function(symbol, replacement) {
@@ -40,7 +36,7 @@ class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
     // Rewrite .libPaths
     rInterop.executeCode(".libPaths('${libPath.systemIndependentPath}')")
     rInterop.updateState().blockingGet(DEFAULT_TIMEOUT)
-    val newSkeletonPaths = getSkeletonPaths(state, interpreterLocation)
+    val newSkeletonPaths = getSkeletonPaths(state)
 
     assertFalse(skeletonPaths.keys.toSet() == newSkeletonPaths.keys.toSet()) // Just in case
     assertEquals(packageNamesForTests, newSkeletonPaths.keys.toSet())
@@ -49,9 +45,9 @@ class RIsolatedPackageEnvironment : RInterpreterBaseTestCase() {
     }
   }
 
-  private fun getSkeletonPaths(state: RInterpreterState, interpreterLocation: RInterpreterLocation): Map<String, Path> {
+  private fun getSkeletonPaths(state: RInterpreterState): Map<String, Path> {
     return state.installedPackages.map {
-      it.name to RSkeletonUtil.installedPackageToSkeletonPath(state.skeletonsDirectory, it, interpreterLocation)
+      it.name to RSkeletonUtil.installedPackageToSkeletonPath(state.skeletonsDirectory, it)
     }.toMap()
   }
 
