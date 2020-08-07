@@ -121,8 +121,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
       return cached
     }
     val rInstalledPackage = getPackageByName(name) ?: return null
-    val virtualFile = RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, rInstalledPackage, interpreterLocation)
-                      ?: return null
+    val virtualFile = RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, rInstalledPackage) ?: return null
     val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
     name2PsiFile[name] = psiFile
     return psiFile
@@ -161,7 +160,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     val (libraryPaths, userLibraryPath) = loadPaths()
     val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
     val skeletonFiles = installedPackages.mapNotNull {
-      RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, it, interpreterLocation)
+      RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, it)
     }.toSet()
     synchronized(this) {
       updateEpoch.incrementAndGet()

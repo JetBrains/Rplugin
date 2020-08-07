@@ -185,16 +185,15 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       val rPackage = RPackage(installedPackage.name, installedPackage.version)
 
       // Base skeleton
-      val skeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, installedPackage,
-                                                                      rInterpreter.interpreterLocation)
+      val skeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, installedPackage)
       Files.createDirectories(skeletonPath.parent)
       packagesForTest.add(rPackage to skeletonPath)
 
       // Mock skeleton
+      val mockPath = Path.of(SKELETON_LIBRARY_PATH, it).toString()
       val mockInstalledPackage =
-        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, SKELETON_LIBRARY_PATH, emptyMap())
-      val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, mockInstalledPackage,
-                                                                          rInterpreter.interpreterLocation)
+        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, SKELETON_LIBRARY_PATH, mockPath, emptyMap())
+      val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, mockInstalledPackage)
       packagesForTest.add(rPackage to mockSkeletonPath)
     }
     RSkeletonUtil.generateSkeletons(packagesForTest, rInterop)

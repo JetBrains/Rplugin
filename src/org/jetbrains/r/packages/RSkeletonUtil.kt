@@ -19,7 +19,10 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.RMultiOutputProcessor
+import org.jetbrains.r.interpreter.runMultiOutputHelper
+import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.rinterop.RInterop
@@ -69,7 +72,7 @@ object RSkeletonUtil {
     val installedPackages = state.installedPackages
 
     for (installedPackage in installedPackages) {
-      val skeletonPath = installedPackageToSkeletonPath(state.skeletonsDirectory, installedPackage, interop.interpreter.interpreterLocation)
+      val skeletonPath = installedPackageToSkeletonPath(state.skeletonsDirectory, installedPackage)
       val skeletonFile = skeletonPath.toFile()
       if (!skeletonFile.exists() && !isBanned(installedPackage.name)) {
         val rPackage = RPackage(installedPackage.name, installedPackage.version)
@@ -120,19 +123,13 @@ object RSkeletonUtil {
     return Path.of(libraryPath).joinToString(separator = "", postfix = "-${libraryPath.hashCode()}") { it.toString().subSequence(0, 1) }
   }
 
-  fun installedPackageToSkeletonPath(skeletonsDirectory: String,
-                                     installedPackage: RInstalledPackage,
-                                     interpreterLocation: RInterpreterLocation): Path {
-    val libPath = Path.of(installedPackage.libraryPath, installedPackage.packageName).toString()
-    val realLibPath = interpreterLocation.canonicalPath(libPath)
+  fun installedPackageToSkeletonPath(skeletonsDirectory: String, installedPackage: RInstalledPackage): Path {
     val dirName = installedPackage.packageName + "-" + installedPackage.version
-    return Path.of(skeletonsDirectory, dirName, hash(realLibPath) + "." + RSkeletonFileType.EXTENSION)
+    return Path.of(skeletonsDirectory, dirName, hash(installedPackage.canonicalPackagePath) + "." + RSkeletonFileType.EXTENSION)
   }
 
-  fun installedPackageToSkeletonFile(skeletonsDirectory: String,
-                                     installedPackage: RInstalledPackage,
-                                     interpreterLocation: RInterpreterLocation): VirtualFile? {
-    val skeletonPath = installedPackageToSkeletonPath(skeletonsDirectory, installedPackage, interpreterLocation)
+  fun installedPackageToSkeletonFile(skeletonsDirectory: String, installedPackage: RInstalledPackage): VirtualFile? {
+    val skeletonPath = installedPackageToSkeletonPath(skeletonsDirectory, installedPackage)
     return VfsUtil.findFile(skeletonPath, false)
   }
 

@@ -695,7 +695,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           else -> RPackagePriority.NA
         }
         val description = it.descriptionList.map { entry -> entry.key to entry.value }.toMap()
-        RInstalledPackage(it.packageName, it.packageVersion, priority, it.libraryPath, description)
+        RInstalledPackage(it.packageName, it.packageVersion, priority, it.libraryPath, it.canonicalPackagePath, description)
       }
       // Obtained sequence contains duplicates of the same packages but for different versions.
       // The ones which will be used by R's functions go first.

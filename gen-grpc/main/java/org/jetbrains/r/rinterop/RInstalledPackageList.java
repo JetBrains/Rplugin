@@ -138,25 +138,35 @@ private static final long serialVersionUID = 0L;
         getLibraryPathBytes();
 
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>string canonicalPackagePath = 5;</code>
+     */
+    java.lang.String getCanonicalPackagePath();
+    /**
+     * <code>string canonicalPackagePath = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getCanonicalPackagePathBytes();
+
+    /**
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> 
         getDescriptionList();
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry getDescription(int index);
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     int getDescriptionCount();
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     java.util.List<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder> 
         getDescriptionOrBuilderList();
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder getDescriptionOrBuilder(
         int index);
@@ -178,6 +188,7 @@ private static final long serialVersionUID = 0L;
       packageVersion_ = "";
       priority_ = 0;
       libraryPath_ = "";
+      canonicalPackagePath_ = "";
       description_ = java.util.Collections.emptyList();
     }
 
@@ -237,6 +248,12 @@ private static final long serialVersionUID = 0L;
               break;
             }
             case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              canonicalPackagePath_ = s;
+              break;
+            }
+            case 50: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 description_ = new java.util.ArrayList<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry>();
                 mutable_bitField0_ |= 0x00000001;
@@ -1198,35 +1215,69 @@ private static final long serialVersionUID = 0L;
       }
     }
 
-    public static final int DESCRIPTION_FIELD_NUMBER = 5;
+    public static final int CANONICALPACKAGEPATH_FIELD_NUMBER = 5;
+    private volatile java.lang.Object canonicalPackagePath_;
+    /**
+     * <code>string canonicalPackagePath = 5;</code>
+     */
+    public java.lang.String getCanonicalPackagePath() {
+      java.lang.Object ref = canonicalPackagePath_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        canonicalPackagePath_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string canonicalPackagePath = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCanonicalPackagePathBytes() {
+      java.lang.Object ref = canonicalPackagePath_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        canonicalPackagePath_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int DESCRIPTION_FIELD_NUMBER = 6;
     private java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> description_;
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     public java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> getDescriptionList() {
       return description_;
     }
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     public java.util.List<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder> 
         getDescriptionOrBuilderList() {
       return description_;
     }
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     public int getDescriptionCount() {
       return description_.size();
     }
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry getDescription(int index) {
       return description_.get(index);
     }
     /**
-     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+     * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
     public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder getDescriptionOrBuilder(
         int index) {
@@ -1259,8 +1310,11 @@ private static final long serialVersionUID = 0L;
       if (!getLibraryPathBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, libraryPath_);
       }
+      if (!getCanonicalPackagePathBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, canonicalPackagePath_);
+      }
       for (int i = 0; i < description_.size(); i++) {
-        output.writeMessage(5, description_.get(i));
+        output.writeMessage(6, description_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -1284,9 +1338,12 @@ private static final long serialVersionUID = 0L;
       if (!getLibraryPathBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, libraryPath_);
       }
+      if (!getCanonicalPackagePathBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, canonicalPackagePath_);
+      }
       for (int i = 0; i < description_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, description_.get(i));
+          .computeMessageSize(6, description_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1310,6 +1367,8 @@ private static final long serialVersionUID = 0L;
       if (priority_ != other.priority_) return false;
       if (!getLibraryPath()
           .equals(other.getLibraryPath())) return false;
+      if (!getCanonicalPackagePath()
+          .equals(other.getCanonicalPackagePath())) return false;
       if (!getDescriptionList()
           .equals(other.getDescriptionList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -1331,6 +1390,8 @@ private static final long serialVersionUID = 0L;
       hash = (53 * hash) + priority_;
       hash = (37 * hash) + LIBRARYPATH_FIELD_NUMBER;
       hash = (53 * hash) + getLibraryPath().hashCode();
+      hash = (37 * hash) + CANONICALPACKAGEPATH_FIELD_NUMBER;
+      hash = (53 * hash) + getCanonicalPackagePath().hashCode();
       if (getDescriptionCount() > 0) {
         hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
         hash = (53 * hash) + getDescriptionList().hashCode();
@@ -1477,6 +1538,8 @@ private static final long serialVersionUID = 0L;
 
         libraryPath_ = "";
 
+        canonicalPackagePath_ = "";
+
         if (descriptionBuilder_ == null) {
           description_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -1514,6 +1577,7 @@ private static final long serialVersionUID = 0L;
         result.packageVersion_ = packageVersion_;
         result.priority_ = priority_;
         result.libraryPath_ = libraryPath_;
+        result.canonicalPackagePath_ = canonicalPackagePath_;
         if (descriptionBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             description_ = java.util.Collections.unmodifiableList(description_);
@@ -1584,6 +1648,10 @@ private static final long serialVersionUID = 0L;
         }
         if (!other.getLibraryPath().isEmpty()) {
           libraryPath_ = other.libraryPath_;
+          onChanged();
+        }
+        if (!other.getCanonicalPackagePath().isEmpty()) {
+          canonicalPackagePath_ = other.canonicalPackagePath_;
           onChanged();
         }
         if (descriptionBuilder_ == null) {
@@ -1894,6 +1962,75 @@ private static final long serialVersionUID = 0L;
         return this;
       }
 
+      private java.lang.Object canonicalPackagePath_ = "";
+      /**
+       * <code>string canonicalPackagePath = 5;</code>
+       */
+      public java.lang.String getCanonicalPackagePath() {
+        java.lang.Object ref = canonicalPackagePath_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          canonicalPackagePath_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string canonicalPackagePath = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCanonicalPackagePathBytes() {
+        java.lang.Object ref = canonicalPackagePath_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          canonicalPackagePath_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string canonicalPackagePath = 5;</code>
+       */
+      public Builder setCanonicalPackagePath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        canonicalPackagePath_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string canonicalPackagePath = 5;</code>
+       */
+      public Builder clearCanonicalPackagePath() {
+        
+        canonicalPackagePath_ = getDefaultInstance().getCanonicalPackagePath();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string canonicalPackagePath = 5;</code>
+       */
+      public Builder setCanonicalPackagePathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        canonicalPackagePath_ = value;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> description_ =
         java.util.Collections.emptyList();
       private void ensureDescriptionIsMutable() {
@@ -1907,7 +2044,7 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder> descriptionBuilder_;
 
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> getDescriptionList() {
         if (descriptionBuilder_ == null) {
@@ -1917,7 +2054,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public int getDescriptionCount() {
         if (descriptionBuilder_ == null) {
@@ -1927,7 +2064,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry getDescription(int index) {
         if (descriptionBuilder_ == null) {
@@ -1937,7 +2074,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder setDescription(
           int index, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry value) {
@@ -1954,7 +2091,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder setDescription(
           int index, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder builderForValue) {
@@ -1968,7 +2105,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder addDescription(org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry value) {
         if (descriptionBuilder_ == null) {
@@ -1984,7 +2121,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder addDescription(
           int index, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry value) {
@@ -2001,7 +2138,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder addDescription(
           org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder builderForValue) {
@@ -2015,7 +2152,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder addDescription(
           int index, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder builderForValue) {
@@ -2029,7 +2166,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder addAllDescription(
           java.lang.Iterable<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> values) {
@@ -2044,7 +2181,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder clearDescription() {
         if (descriptionBuilder_ == null) {
@@ -2057,7 +2194,7 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public Builder removeDescription(int index) {
         if (descriptionBuilder_ == null) {
@@ -2070,14 +2207,14 @@ private static final long serialVersionUID = 0L;
         return this;
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder getDescriptionBuilder(
           int index) {
         return getDescriptionFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder getDescriptionOrBuilder(
           int index) {
@@ -2087,7 +2224,7 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public java.util.List<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder> 
            getDescriptionOrBuilderList() {
@@ -2098,14 +2235,14 @@ private static final long serialVersionUID = 0L;
         }
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder addDescriptionBuilder() {
         return getDescriptionFieldBuilder().addBuilder(
             org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.getDefaultInstance());
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder addDescriptionBuilder(
           int index) {
@@ -2113,7 +2250,7 @@ private static final long serialVersionUID = 0L;
             index, org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.getDefaultInstance());
       }
       /**
-       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 5;</code>
+       * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
        */
       public java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry.Builder> 
            getDescriptionBuilderList() {
