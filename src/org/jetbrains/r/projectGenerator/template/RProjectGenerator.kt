@@ -14,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.*
 import icons.RIcons
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.projectGenerator.builder.RModuleBuilder
 import org.jetbrains.r.projectGenerator.step.RProjectSettingsStep
 import org.jetbrains.r.settings.RSettings
@@ -77,7 +76,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
    */
   override fun generateProject(project: Project, baseDir: VirtualFile, rProjectSettings: RProjectSettings, module: Module) {
     if (rProjectSettings.useNewInterpreter) {
-      RSettings.getInstance(project).interpreterLocation = RLocalInterpreterLocation(rProjectSettings.interpreterPath!!)
+      RSettings.getInstance(project).interpreterLocation = rProjectSettings.interpreterLocation
       RInterpreterManager.getInstance(project).getInterpreterAsync(true)
     }
   }

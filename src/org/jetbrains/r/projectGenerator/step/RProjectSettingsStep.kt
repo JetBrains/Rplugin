@@ -106,6 +106,10 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     }
 
     setErrorText("") // To prevent the "create" button from blinking
+    if (rProjectSettings.interpreterLocation == null) {
+      setErrorText(RBundle.message("project.settings.missing.interpreter"))
+      return false
+    }
     checkForError(interpreterPanel.validateInterpreter()) { return false }
     if (rProjectGenerator.requiredPackageList && !rProjectSettings.isInstalledPackagesSetUpToDate) {
       if (RPluginUtil.helperPathOrNull == null) {
@@ -180,10 +184,12 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
       rProjectSettings.useNewInterpreter = useNewInterpreter
     })
 
-    interpreterPanel.addChangeListener(Runnable {
+    val listener = Runnable {
       val location = interpreterPanel.mySelectedPanel.interpreterLocation
       rProjectSettings.interpreterPath = location?.toLocalPathOrNull()
-    })
+    }
+    interpreterPanel.addChangeListener(listener)
+    listener.run()
 
     interpreterPanel.addChangeListener(Runnable {
       rProjectSettings.isInstalledPackagesSetUpToDate = false
