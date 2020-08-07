@@ -12,9 +12,11 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.xdebugger.XDebuggerManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
+import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RDebuggerTest : RProcessHandlerBaseTestCase() {
@@ -464,7 +466,13 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testSource() {
-    val secondFile = FileUtil.createTempFile("b", ".R", true)
+    val secondFileOnHost = interpreter.createTempFileOnHost("b.R", """
+      0
+      1
+      2
+      foo()
+      4
+    """.trimIndent().toByteArray())
     val firstFile = loadFileWithBreakpointsFromText("""
       foo <- function() {
         1
@@ -472,17 +480,11 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
         3
       }
       5
-      source("${StringUtil.escapeStringCharacters(secondFile.absolutePath)}")
+      source("${StringUtil.escapeStringCharacters(secondFileOnHost)}")
       7
     """.trimIndent())
-    secondFile.writeText("""
-      0
-      1
-      2
-      foo()
-      4
-    """.trimIndent())
-    val secondVirtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(secondFile)
+    // runAsync because JupyterRemoteVirtualFile refuses to load inside read action
+    val secondVirtualFile = runAsync { interpreter.findFileByPathAtHost(secondFileOnHost) }.blockingGet(DEFAULT_TIMEOUT)!!
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(firstFile, true) }
     val stack = rInterop.debugStack.mapNotNull { it.position }

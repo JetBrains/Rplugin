@@ -226,7 +226,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
         .onSuccess {
           val updater = object : Task.Backgroundable(project, RBundle.message("interpreter.state.schedule.skeleton.update"), false) {
             override fun run(indicator: ProgressIndicator) {
-              RLibraryWatcher.getInstance(project).updateRootsToWatch()
+              RLibraryWatcher.getInstance(project).updateRootsToWatch(this@RInterpreterStateImpl)
               updateSkeletons()
             }
           }

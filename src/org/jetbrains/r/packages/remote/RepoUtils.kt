@@ -202,7 +202,7 @@ object RepoUtils {
     if (isUserDirectoryCreated) {
       rInterop.repoAddLibraryPath(libraryPath)
       state.updateState().blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)
-      RLibraryWatcher.getInstance(project).updateRootsToWatch()
+      RLibraryWatcher.getInstance(project).updateRootsToWatch(state)
     }
 
     // It's rather hard to get installation status from 'updateOutput'

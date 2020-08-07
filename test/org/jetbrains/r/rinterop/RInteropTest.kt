@@ -6,11 +6,11 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.io.FileUtil
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RInteropTest : RProcessHandlerBaseTestCase() {
@@ -307,14 +307,16 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
 
   fun testSaveLoadGlobalEnv() {
     rInterop.executeCode("x <- 1; y <- 2")
-    val tempFile = FileUtil.createTempFile("tmp-", ".RData", true)
-    rInterop.saveGlobalEnvironment(tempFile.absolutePath).blockingGet(DEFAULT_TIMEOUT)
-    assertTrue(tempFile.length() > 0)
+    val tempFile = interpreter.createTempFileOnHost("tmp.RData")
+    rInterop.saveGlobalEnvironment(tempFile).blockingGet(DEFAULT_TIMEOUT)
+    // runAsync because JupyterRemoteVirtualFile refuses to load inside read action
+    val tempVirtualFile = runAsync { interpreter.findFileByPathAtHost(tempFile) }.blockingGet(DEFAULT_TIMEOUT)
+    TestCase.assertTrue((tempVirtualFile?.length ?: 0) > 0)
     rInterop.executeCode("rm(list = ls())")
-    rInterop.loadEnvironment(tempFile.absolutePath, "foo").blockingGet(DEFAULT_TIMEOUT)
+    rInterop.loadEnvironment(tempFile, "foo").blockingGet(DEFAULT_TIMEOUT)
     val (stdoutLocal, _, _) = rInterop.executeCode("cat(foo${'$'}x + foo${'$'}y)")
     assertEquals("3", stdoutLocal)
-    rInterop.loadEnvironment(tempFile.absolutePath, "")
+    rInterop.loadEnvironment(tempFile, "")
     val (stdoutGlobal, _, _) = rInterop.executeCode("cat(x + y)")
     assertEquals("3", stdoutGlobal)
   }

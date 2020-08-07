@@ -20,7 +20,7 @@ class LibraryWatcherTest : RProcessHandlerBaseTestCase() {
     RInterpreterTestUtil.removePackage(interpreter, packageName)
     val libraryWatcher = RLibraryWatcher.getInstance(project)
     assertNotEmpty(rInterop.state.libraryPaths)
-    libraryWatcher.updateRootsToWatch()
+    libraryWatcher.updateRootsToWatch(rInterop.state)
 
     val atomicInteger = AtomicInteger(0)
     RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.LAST) {

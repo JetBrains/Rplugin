@@ -7,6 +7,7 @@ package org.jetbrains.r.run
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import junit.framework.TestCase
+import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.rinterop.RInterop
@@ -90,15 +91,24 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
 
   private fun browseWebUrl(expectedUrl: String) {
     var wasShowFileRequest = false
+    var browseUrlRequest = AsyncPromise<String>()
     val listener = object : RInterop.AsyncEventsListener {
       override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
         wasShowFileRequest = true
         return resolvedPromise()
       }
+
+      override fun onBrowseURLRequest(url: String) {
+        browseUrlRequest.setResult(url)
+      }
     }.also { rInterop.addAsyncEventsListener(it) }
     val actualUrl = rInterop.executeCode("browseURL('$expectedUrl')").stdout
     TestCase.assertFalse(wasShowFileRequest)
-    TestCase.assertEquals(expectedUrl, actualUrl)
+    if (actualUrl == "") {
+      TestCase.assertEquals(expectedUrl, browseUrlRequest.blockingGet(DEFAULT_TIMEOUT))
+    } else {
+      TestCase.assertEquals(expectedUrl, actualUrl)
+    }
     rInterop.removeAsyncEventsListener(listener)
   }
 }

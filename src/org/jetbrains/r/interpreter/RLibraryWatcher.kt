@@ -23,12 +23,11 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   private var currentDisposable: Disposable? = null
 
   @Synchronized
-  fun updateRootsToWatch() {
+  fun updateRootsToWatch(state: RInterpreterState) {
     currentDisposable?.let {
       Disposer.dispose(it)
       currentDisposable = null
     }
-    val state = RInterpreterStateManager.getCurrentStateOrNull(project) ?: return
     val roots = state.libraryPaths.map { it.path }
     if (roots.isNotEmpty()) {
       val disposable = Disposer.newDisposable()

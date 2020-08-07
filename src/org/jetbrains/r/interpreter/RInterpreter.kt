@@ -42,7 +42,7 @@ interface RInterpreter : RInterpreterInfo {
   }
   
   fun findFileByPathAtHost(path: String): VirtualFile? {
-    return LocalFileSystem.getInstance().findFileByPath(path)
+    return VfsUtil.findFile(Paths.get(path), true)
   }
 
   fun downloadFileFromHost(path: String, localPath: String) {
