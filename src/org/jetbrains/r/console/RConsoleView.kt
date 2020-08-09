@@ -82,7 +82,10 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
   private val olderCommandAction = RConsoleHistoryOlderCommandAction(this)
 
   init {
-    Disposer.register(this, rInterop)
+    // we want to dispose interop asynchronously in unit tests
+    if (!ApplicationManager.getApplication().isUnitTestMode) {
+      Disposer.register(this, rInterop)
+    }
     file.putUserData(IS_R_CONSOLE_KEY, true)
     consoleEditor.putUserData(RConsoleAutopopupBlockingHandler.REPL_KEY, this)
     EmptyAction.setupAction(olderCommandAction, "RConsole.History.Older", null)

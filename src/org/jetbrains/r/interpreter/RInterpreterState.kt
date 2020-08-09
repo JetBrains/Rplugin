@@ -18,6 +18,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
 import com.intellij.util.containers.ContainerUtil
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -175,6 +176,20 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
       this.userLibraryPath = userLibraryPath
       this.name2libraryPaths = name2libraryPaths
       this.skeletonFiles = skeletonFiles
+    }
+  }
+
+  @TestOnly
+  internal fun copyState(state: RInterpreterStateImpl) {
+    synchronized(this) {
+      updateEpoch.incrementAndGet()
+      name2PsiFile.clear()
+      this.installedPackages = state.installedPackages
+      this.name2installedPackages = state.name2installedPackages
+      this.libraryPaths = state.libraryPaths
+      this.userLibraryPath = state.userLibraryPath
+      this.name2libraryPaths = state.name2libraryPaths
+      this.skeletonFiles = state.skeletonFiles
     }
   }
 

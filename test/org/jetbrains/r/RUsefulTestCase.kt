@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
@@ -52,8 +53,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 abstract class RUsefulTestCase : BasePlatformTestCase() {
-
-  private var mockInterpreterManagerSet = false
   private var mockInterpreterStateManagerSet = false
   private var isLibraryAdded = false
 
@@ -152,8 +151,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 
   fun setupMockInterpreterManager() {
-    if (mockInterpreterManagerSet) return
-    mockInterpreterManagerSet = true
+    if (project.service<RInterpreterManager>() is MockInterpreterManager) return
     project.registerServiceInstance(RInterpreterManager::class.java, MockInterpreterManager(project))
   }
 

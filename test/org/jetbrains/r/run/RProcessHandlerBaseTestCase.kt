@@ -4,6 +4,8 @@
 
 package org.jetbrains.r.run
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Disposer
@@ -16,9 +18,12 @@ import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import junit.framework.TestCase
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterStateImpl
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RBooleanLiteral
 import org.jetbrains.r.psi.api.RCallExpression
@@ -43,13 +48,14 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
     rInterop = getRInterop(interpreter)
     // we want be sure that the interpreter is initialized
     rInterop.executeCode("1")
-    rInterop.updateState().blockingGet(DEFAULT_TIMEOUT)!!
   }
 
   override fun tearDown() {
     project.putUserData(RInterop.DEADLINE_TEST_KEY, null)
     if (this::rInterop.isInitialized && !Disposer.isDisposed(rInterop)) {
-      Disposer.dispose(rInterop)
+      runAsync {
+        Disposer.dispose(rInterop)
+      }
     }
     runWriteAction {
       XDebuggerManager.getInstance(project).breakpointManager.let { manager ->
@@ -130,9 +136,64 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
 
   companion object {
     const val DEFAULT_TIMEOUT = 20000
+    const val maxInteropNumber = 8
+    private val interopSpawner: InteropSpawner by lazy {
+      InteropSpawner().also {
+        Disposer.register(ApplicationManager.getApplication(), it)
+      }
+    }
+    @Volatile
+    private var state: RInterpreterStateImpl? = null
+
+    class InteropSpawner : Disposable {
+      private val interopCache = ArrayList<RInterop>()
+      private val interopPromises = ArrayList<Promise<RInterop>>()
+
+      fun run(interpreter: RInterpreter, workingDirectory: String): RInterop {
+        val result : Promise<RInterop>
+        synchronized(this) {
+          while (interopPromises.size + interopCache.size < maxInteropNumber) {
+            val promise = RInteropUtil.runRWrapperAndInterop(interpreter, workingDirectory)
+            promise.onSuccess {
+              synchronized(this@InteropSpawner) {
+                if (interopPromises.contains(promise)) {
+                  interopCache.add(it)
+                  interopPromises.remove(promise)
+                }
+              }
+            }
+            interopPromises.add(promise)
+          }
+          if (interopCache.isNotEmpty()) {
+            return interopCache.first().also {
+              interopCache.remove(it)
+            }
+          }
+          result = interopPromises.first().also {
+            interopPromises.remove(it)
+          }
+        }
+        return result.blockingGet(DEFAULT_TIMEOUT)!!
+      }
+
+      override fun dispose() {
+        synchronized(this) {
+          interopCache.forEach { it.dispose() }
+          interopCache.clear()
+        }
+      }
+    }
 
     private fun getRInterop(interpreter: RInterpreter): RInterop {
-      return RInteropUtil.runRWrapperAndInterop(interpreter).blockingGet(DEFAULT_TIMEOUT)!!
+      val interop = interopSpawner.run(interpreter, interpreter.basePath)
+      val currentState = state
+      if (currentState == null) {
+        interop.updateState().blockingGet(DEFAULT_TIMEOUT)
+        state = interop.state as RInterpreterStateImpl
+      } else {
+        (interop.state as RInterpreterStateImpl).copyState(currentState)
+      }
+      return interop
     }
   }
 }
