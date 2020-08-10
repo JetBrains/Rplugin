@@ -172,7 +172,7 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
                           "height", "homeworld", "mass", "name", "n", "skin_color",
                           "species", "starships", "stars", "vehicles")
     val completeBasic = myFixture.completeBasic()
-    UsefulTestCase.assertContainsElements(completeBasic.take(columns.size).map { it.toString() }, *columns)
+    UsefulTestCase.assertContainsElements(completeBasic.take(columns.size + 1).map { it.toString() }, *columns)
   }
 
   fun testNamedArgumentIsNotColumn() {
