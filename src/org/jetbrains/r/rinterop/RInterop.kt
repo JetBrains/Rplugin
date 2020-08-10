@@ -66,7 +66,7 @@ interface LoadedLibrariesListener {
   fun onLibrariesUpdated()
 }
 
-private const val DEADLINE_TEST_DEFAULT = 40L
+private const val DEADLINE_TEST_DEFAULT = 400L
 val LOADED_LIBRARIES_UPDATED = Topic.create("R Interop loaded libraries updated", LoadedLibrariesListener::class.java)
 const val RINTEROP_THREAD_NAME = "RInterop"
 
