@@ -10,8 +10,6 @@ import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.sdk.RInterpreterDetailsStep
-import org.jetbrains.r.sdk.RInterpreterListCellRenderer
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout

@@ -11,8 +11,6 @@ import com.intellij.ui.components.JBList
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.sdk.RInterpreterDetailsStep
-import org.jetbrains.r.sdk.RInterpreterListCellRenderer
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import javax.swing.JComponent
 import javax.swing.ListSelectionModel
