@@ -33,8 +33,9 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           2print(my.local.variable)
-           5print(my.local.variable + 20)
+           test.R (2 usages)
+            2print(my.local.variable)
+            5print(my.local.variable + 20)
     """)
   }
 
@@ -55,8 +56,9 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           2print(my.local.function(2, 3))
-           5print(my.local.function(4, 5))
+           test.R (2 usages)
+            2print(my.local.function(2, 3))
+            5print(my.local.function(4, 5))
      """)
   }
 
@@ -72,8 +74,9 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           1base.package <- packageDescription("base")      
-           2dplyr.package <- packageDescription("dplyr")
+           test.R (2 usages)
+            1base.package <- packageDescription("base")      
+            2dplyr.package <- packageDescription("dplyr")
      """)
   }
 
@@ -94,8 +97,9 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
-           2x + y + z
-           7func(x = p)
+           test.R (2 usages)
+            2x + y + z
+            7func(x = p)
      """)
   }
 
@@ -120,11 +124,13 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           10x + y + z
+           test.R (1 usage)
+            10x + y + z
         Usage in roxygen2 documentation (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           5#' @param x, y X and y
+           test.R (1 usage)
+            5#' @param x, y X and y
      """)
   }
 
@@ -151,11 +157,13 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         Unclassified usage (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           10bar(x) + y + z
+           test.R (1 usage)
+            10bar(x) + y + z
         Usage in roxygen2 documentation (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
-           5#' @see [bar]
+           test.R (1 usage)
+            5#' @see [bar]
      """)
   }
 
