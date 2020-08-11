@@ -25,6 +25,10 @@ interface UiCustomizer {
 
   fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent
 
+  @JvmDefault
+  val isResizeOutputToPreviewHeight: Boolean
+    get() = true
+
   val showUpdateCellSeparator: Boolean
 
   companion object {

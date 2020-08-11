@@ -290,7 +290,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     output.clearAction = cleanup
     output.addData(type, data, progressStatus)
 
-    if (size.height == InlayDimensions.smallHeight) {
+    if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
       deltaSize(0, InlayDimensions.previewHeight - size.height)
     }
   }
@@ -327,7 +327,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
           val csv = DataFrameCSVAdapter.fromCsvString(inlay.data)
           invokeLater {
             createOrSetInlayData(csv).clearAction = cleanup
-            if (size.height == InlayDimensions.smallHeight) {
+            if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
               deltaSize(0, InlayDimensions.previewHeight - size.height)
             }
           }
