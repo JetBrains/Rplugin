@@ -708,6 +708,9 @@ You can find the source code in the following repositories:
         <!-- Interpreter -->
         <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
 
-  </extensions>
+      <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
+      <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
+      <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
+    </extensions>
 
 </idea-plugin>
