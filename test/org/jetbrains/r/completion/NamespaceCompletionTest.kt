@@ -25,7 +25,7 @@ class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
   }
 
   fun testDplyrInternal() {
-    completeSingle("dplyr:::sto<caret>", "dplyr:::stop_defunct(<caret>)")
+    completeSingle("dplyr:::stop_filter_n<caret>", "dplyr:::stop_filter_named(<caret>)")
   }
 
   private fun doTest(text: String, vararg variants: String) {
