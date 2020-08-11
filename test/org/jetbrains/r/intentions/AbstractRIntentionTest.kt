@@ -5,19 +5,16 @@
 
 package org.jetbrains.r.intentions
 
-import com.intellij.testFramework.builders.ModuleFixtureBuilder
-import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
+import org.jetbrains.r.RUsefulTestCase
 
-import java.io.File
-
-abstract class AbstractRIntentionTest : CodeInsightFixtureTestCase<ModuleFixtureBuilder<*>>() {
+abstract class AbstractRIntentionTest : RUsefulTestCase() {
   protected abstract val intentionName: String
 
   @Throws(Exception::class)
   public override fun setUp() {
     super.setUp()
-    val intentionDataPath = TEST_DATA_PATH + "/intentions/" + javaClass.simpleName.replace("Test", "")
+    val intentionDataPath = testDataPath + "/intentions/" + javaClass.simpleName.replace("Test", "")
     myFixture.testDataPath = intentionDataPath
   }
 
@@ -37,10 +34,5 @@ abstract class AbstractRIntentionTest : CodeInsightFixtureTestCase<ModuleFixture
     myFixture.launchAction(intention)
 
     myFixture.checkResult(after.trimIndent())
-  }
-
-  companion object {
-
-    val TEST_DATA_PATH = File("testData").absolutePath.replace(File.pathSeparatorChar, '/')
   }
 }
