@@ -553,15 +553,15 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   class GraphicsPullResponse(val name: String, val content: ByteArray, val recorded: ByteArray? = null)
 
-  fun graphicsPullInMemorySnapshot(number: Int, withRecorded: Boolean): GraphicsPullResponse {
+  fun graphicsPullInMemorySnapshot(number: Int, withRecorded: Boolean): GraphicsPullResponse? {
     return graphicsPullSnapshot(number, withRecorded = withRecorded)
   }
 
-  fun graphicsPullStoredSnapshot(number: Int, groupId: String): GraphicsPullResponse {
+  fun graphicsPullStoredSnapshot(number: Int, groupId: String): GraphicsPullResponse? {
     return graphicsPullSnapshot(number, groupId = groupId)
   }
 
-  private fun graphicsPullSnapshot(number: Int, groupId: String = "", withRecorded: Boolean = false): GraphicsPullResponse {
+  private fun graphicsPullSnapshot(number: Int, groupId: String = "", withRecorded: Boolean = false): GraphicsPullResponse? {
     val request = GraphicsPullSnapshotRequest.newBuilder()
       .setWithRecorded(withRecorded)
       .setSnapshotNumber(number)
@@ -570,6 +570,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     val response = executeWithCheckCancel(asyncStub::graphicsPullSnapshot, request)
     if (response.message.isNotBlank()) {
       throw RuntimeException(response.message)
+    }
+    if (response.content.isEmpty) {
+      return null
     }
     val recordedContent = response.recorded.takeIf { !it.isEmpty }?.toByteArray()
     return GraphicsPullResponse(response.snapshotName, response.content.toByteArray(), recordedContent)
