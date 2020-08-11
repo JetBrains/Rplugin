@@ -173,7 +173,9 @@ class RGraphicsDevice(
       }
       promise.thenIfTrue {
         val pulled = pullInMemorySnapshots()
-        onNewSnapshots(pulled, snapshotNumber)
+        if (pulled.isNotEmpty()) {
+          onNewSnapshots(pulled, snapshotNumber)
+        }
       }
     }
   }
@@ -249,14 +251,17 @@ class RGraphicsDevice(
     }
   }
 
-  private fun pullSnapshotTo(directory: File, hint: String, previous: RSnapshot?, task: () -> RInterop.GraphicsPullResponse): RSnapshot? {
+  private fun pullSnapshotTo(directory: File, hint: String, previous: RSnapshot?, task: () -> RInterop.GraphicsPullResponse?): RSnapshot? {
     return try {
-      val response = task()
-      RSnapshot.from(response.content, response.name, directory)?.also { snapshot ->
-        response.recorded?.let { recorded ->
-          snapshot.createRecordedFile(recorded)
+      task()?.let { response ->
+        RSnapshot.from(response.content, response.name, directory)?.also { snapshot ->
+          response.recorded?.let { recorded ->
+            snapshot.createRecordedFile(recorded)
+          }
+          if (previous != null && previous.identity != snapshot.identity) {
+            previous.file.delete()
+          }
         }
-        previous?.file?.delete()
       }
     } catch (e: Error) {
       LOGGER.error("Cannot pull <$hint>", e)
@@ -289,6 +294,9 @@ class RGraphicsDevice(
 
   companion object {
     private val LOGGER = Logger.getInstance(RGraphicsDevice::class.java)
+
+    private val RSnapshot.identity: Pair<Int, Int>
+      get() = Pair(number, version)
 
     fun fetchLatestNormalSnapshots(directory: File): List<RSnapshot>? {
       return fetchLatestSnapshots(directory)?.get(RSnapshotType.NORMAL)
