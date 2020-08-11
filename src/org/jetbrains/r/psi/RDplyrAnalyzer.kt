@@ -6,6 +6,8 @@ package org.jetbrains.r.psi
 
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.joinTableAndAllDotsColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getAllDotsColumns
 import org.jetbrains.r.psi.api.*
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
@@ -87,7 +89,12 @@ enum class DplyrFunction(
   ARRANGE_ALL("arrange_all"),
   ARRANGE_AT("arrange_at"),
   ARRANGE_IF("arrange_if"),
-  COUNT("count", tableArguments = listOf("x")),
+  COUNT("count", tableArguments = listOf("x")) {
+    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return getColumnsOfCountFunction(callInfo)
+    }
+  },
   DISTINCT("distinct", tableArguments = listOf(".data")),
   DISTINCT_ALL("distinct_all"),
   DISTINCT_AT("distinct_at"),
@@ -97,7 +104,12 @@ enum class DplyrFunction(
   GROUP_BY_ALL("group_by_all"),
   GROUP_BY_AT("group_by_at"),
   GROUP_BY_IF("group_by_if"),
-  MUTATE("mutate", tableArguments = listOf(".data")),
+  MUTATE("mutate", tableArguments = listOf(".data")) {
+    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return joinTableAndAllDotsColumns(operandColumns, callInfo)
+    }
+  },
   MUTATE_ALL("mutate_all"),
   MUTATE_AT("mutate_at"),
   MUTATE_IF("mutate_if"),
@@ -113,7 +125,12 @@ enum class DplyrFunction(
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),
   SLICE("slice", tableArguments = listOf(".data")),
-  SUMMARISE("summarise", tableArguments = listOf(".data")),
+  SUMMARISE("summarise", tableArguments = listOf(".data")) {
+    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return getAllDotsColumns(callInfo)
+    }
+  },
   SUMMARISE_ALL("summarise_all"),
   SUMMARISE_AT("summarise_at"),
   SUMMARISE_IF("summarise_if"),
@@ -121,8 +138,18 @@ enum class DplyrFunction(
   SUMMARIZE_ALL("summarize_all"),
   SUMMARIZE_AT("summarize_at"),
   SUMMARIZE_IF("summarize_if"),
-  TALLY("tally", tableArguments = listOf("x")),
-  TIBBLE("tibble", tableArguments = listOf()),
+  TALLY("tally", tableArguments = listOf("x")) {
+    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return getColumnsOfCountFunction(callInfo)
+    }
+  },
+  TIBBLE("tibble", tableArguments = listOf()) {
+    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return getAllDotsColumns(callInfo)
+    }
+  },
   TOP_FRAC("top_frac", tableArguments = listOf("x")),
   TOP_N("top_n", tableArguments = listOf("x")),
   TRANSMUTE("transmute", tableArguments = listOf(".data")),
@@ -171,6 +198,25 @@ enum class DplyrFunction(
     val size = argumentInfo.expressionListWithPipeExpression.size
     val argIndex = argumentInfo.expressionListWithPipeExpression.indexOf(currentArgument)
     return !(argIndex == 0 || size > 3 || (size == 3 && argIndex == 1))
+  }
+
+  companion object {
+    /**
+     * Retrieves columns from dot arguments and the column "n" from named argument
+     */
+    fun getColumnsOfCountFunction(callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      val result = ArrayList<TableManipulationColumn>(getAllDotsColumns(callInfo))
+      val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
+      var countColumnName = "n"
+      if (nameArgument != null && nameArgument is RStringLiteralExpression) {
+        val countColumnNameFromCall = nameArgument.name
+        if (countColumnNameFromCall != null) {
+          countColumnName = countColumnNameFromCall
+        }
+      }
+      result.add(TableManipulationColumn(countColumnName))
+      return result
+    }
   }
 }
 

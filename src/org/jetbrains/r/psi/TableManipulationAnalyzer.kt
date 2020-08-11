@@ -5,12 +5,19 @@
 package org.jetbrains.r.psi
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.search.LocalSearchScope
+import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.refactoring.suggested.startOffset
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.rinterop.TableColumnsInfo
+import java.util.*
+import kotlin.collections.ArrayList
 
 interface TableManipulationFunction {
   val functionName: String?
@@ -37,6 +44,11 @@ interface TableManipulationFunction {
   }
 
   fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean
+
+  fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                      callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+    return operandColumns
+  }
 }
 
 data class TableManipulationCallInfo<T : TableManipulationFunction>(
@@ -126,7 +138,86 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     }
   }
 
-  fun getTableColumns(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
+  /**
+   * Statically calculates columns of the variable
+   * It could use runtime to get columns for expressions that are used in the definition of the variable
+   */
+  fun retrieveTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
+    val scope = LocalSearchScope(variable.containingFile)
+    var variableDefinition = variable.reference.resolve()
+    if (variableDefinition != null) {
+      val variableAssignment = ArrayList<PsiElement>()
+      variableAssignment.add(variableDefinition)
+      val identifierUsages = ReferencesSearch.search(variableDefinition, scope).findAll()
+      for (reference in identifierUsages) {
+        val parent = reference.element.parent
+        if (parent is RAssignmentStatement) {
+          if (parent.startOffset < variable.startOffset && parent.startOffset > variableDefinition!!.startOffset) {
+            variableDefinition = parent
+          }
+        }
+      }
+      if (variableDefinition is RAssignmentStatement) {
+        val assignedValue = variableDefinition.assignedValue
+        if (assignedValue != null) {
+          return getTableColumns(assignedValue, runtimeInfo)
+        }
+      }
+    }
+    return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
+  }
+
+  fun getTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
+    return CachedValuesManager.getCachedValue(variable) {
+      CachedValueProvider.Result.create(retrieveTableFromVariable(variable, runtimeInfo), variable)
+    }
+  }
+
+  fun getTableFromCall(argumentColumns: List<TableManipulationColumn>, call: RCallExpression): TableInfo {
+    val callInfo = getCallInfo(call, null)
+    if (callInfo != null) {
+      val columns = callInfo.function.getTableColumns(argumentColumns, callInfo)
+      return TableInfo(columns, TableType.UNKNOWN)
+    }
+    return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
+  }
+
+  /**
+   * Retrieve the columns for the element with runtime or statically (if expression is not loaded yet)
+   */
+  fun getTableColumns(element: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
+    val columnsFromConsole = getTableColumnsFromConsole(element, runtimeInfo)
+    if (columnsFromConsole.columns.isNotEmpty() || columnsFromConsole.type != TableType.UNKNOWN) {
+      return columnsFromConsole
+    }
+
+    if (element is RIdentifierExpression) {
+      return getTableFromVariable(element, runtimeInfo)
+    }
+    else if (element is ROperatorExpression) {
+      val operator = element.operator
+      if (operator == null || PIPE_OPERATOR != operator.text) {
+        return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
+      }
+      val columnList = ArrayList<TableManipulationColumn>()
+      val leftExpression = element.leftExpr
+      if (leftExpression != null) {
+        val tableColumns = getTableColumns(leftExpression, runtimeInfo)
+        columnList.addAll(tableColumns.columns)
+      }
+
+      val rightExpr = element.rightExpr
+      if (rightExpr is RCallExpression) {
+        return getTableFromCall(columnList, rightExpr)
+      }
+    }
+    else if (element is RCallExpression) {
+      return getTableFromCall(Collections.emptyList(), element)
+    }
+    return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
+  }
+
+  fun getTableColumnsFromConsole(table: RExpression, runtimeInfo: RConsoleRuntimeInfo): TableInfo {
     val expression = StringBuilder()
     transformExpression(table, expression, runtimeInfo)
     return runtimeInfo.loadTableColumns(expression.toString())
@@ -310,5 +401,32 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 
   companion object {
     private const val PIPE_OPERATOR = "%>%"
+
+    /**
+     * Retrieves column from call dot arguments. Columns from argument table ignored.
+     * Useful for functions like "summarize".
+     */
+    fun getAllDotsColumns(callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      val result = ArrayList<TableManipulationColumn>()
+      for (expression in callInfo.argumentInfo.allDotsArguments) {
+        if (expression is RNamedArgument) {
+          result.add(TableManipulationColumn(expression.name))
+        }
+        else if (expression is RIdentifierExpression) {
+          result.add(TableManipulationColumn(expression.name))
+        }
+      }
+      return result
+    }
+
+    /**
+     * @return joined columns from argument table and call dot arguments
+     */
+    fun joinTableAndAllDotsColumns(tableColumns: List<TableManipulationColumn>,
+                                   callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      val result = ArrayList<TableManipulationColumn>(tableColumns)
+      result.addAll(getAllDotsColumns(callInfo))
+      return result
+    }
   }
 }

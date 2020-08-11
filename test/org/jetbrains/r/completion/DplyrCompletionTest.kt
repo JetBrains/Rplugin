@@ -185,6 +185,78 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     assertEquals(1, lookupStrings.count { it == "name" })
   }
 
+  fun testStaticLoadedColumnsFromTibble() {
+    checkStaticCompletion(
+      "table <- dplyr::tibble(my_column = letters) %>% count(my<caret>)",
+
+      listOf("my_column"),
+      listOf()
+    )
+  }
+
+  fun testStaticLoadingColumnsInChainedCall() {
+    checkStaticCompletion(
+      "dplyr::tibble(my_column = letters, another_column = letters) %>% dplyr::filter(my_column == 'a') %>% count(my_column) %>% dplyr::filter(m<caret>)",
+
+      listOf("my_column"),
+      listOf("another_column")
+    )
+  }
+
+  fun testStaticLoadingColumnsInThroughVariables() {
+    checkStaticCompletion(
+      "tbl.1 <- dplyr::tibble(my_column = letters, another_column = letters)\n" +
+      "tbl.2 <- tbl.1 %>% dplyr::filter(my_column == 'a')\n" +
+      "tbl.2 %>% count(my_column) %>% dplyr::filter(<caret>)",
+
+      listOf("my_column"),
+      listOf("another_column")
+    )
+  }
+
+  fun testStaticCompletionCount() {
+    checkStaticCompletion(
+      "tbl.1 <- dplyr::tibble(my_column = letters, another_column = letters)\n" +
+      "tbl.1 %>% dplyr::count(my_column) %>% dplyr::filter(<caret>)",
+
+      listOf("my_column", "n"),
+      listOf("another_column")
+    )
+  }
+
+  fun testStaticCompletionCountWithColumnName() {
+    checkStaticCompletion(
+      "tbl.1 <- dplyr::tibble(my_column = letters, another_column = letters)\n" +
+      "tbl.1 %>% dplyr::count(my_column, name = \"count_column\") %>% dplyr::filter(<caret>)",
+
+      listOf("my_column", "count_column"),
+      listOf("n", "another_column")
+    )
+  }
+
+  fun testStaticCompletionMutate() {
+    checkStaticCompletion(
+      "mtcars %>% dplyr::mutate(cyl2 = cyl * 2) %>% dplyr::filter(<caret>)",
+
+      listOf("cyl2"),
+      listOf()
+    )
+  }
+
+  private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
+    myFixture.configureByText("a.R", text)
+    addRuntimeInfo()
+    val result = myFixture.completeBasic()
+    TestCase.assertNotNull(result)
+    val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
+    for (completionElement in expectedToBePresent) {
+      assertEquals(1, lookupStrings.count { it == completionElement })
+    }
+    for (completionElement in expectedToBeMissed) {
+      assertEquals(0, lookupStrings.count { it == completionElement })
+    }
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: List<String>? = null, initialGroups: List<String>? = null) {
     if (initial != null) {
       rInterop.executeCode("table <- dplyr::tibble(${initial.joinToString(", ") { "$it = NA" }})", false)
