@@ -421,7 +421,11 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     fun joinTableAndAllDotsColumns(tableColumns: List<TableManipulationColumn>,
                                    callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
       val result = ArrayList<TableManipulationColumn>(tableColumns)
-      result.addAll(getAllDotsColumns(callInfo))
+      for (column in getAllDotsColumns(callInfo)) {
+        if (!result.any { it.name == column.name }) {
+          result.add(column)
+        }
+      }
       return result
     }
   }
