@@ -9,9 +9,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.IncorrectOperationException
 
 fun Disposable.tryRegisterDisposable(child: Disposable) {
-  try {
-    Disposer.register(this, child)
-  } catch (e: IncorrectOperationException) {
+  if (!Disposer.tryRegister(this, child)) {
     Disposer.dispose(child)
   }
 }
