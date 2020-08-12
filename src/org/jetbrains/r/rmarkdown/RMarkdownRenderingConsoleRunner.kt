@@ -121,7 +121,7 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
     return object : ProcessAdapter() {
       override fun processTerminated(event: ProcessEvent) {
         val exitCode = event.exitCode
-        if (isInterrupted || currentConsoleView?.let { Disposer.isDisposing(it) || Disposer.isDisposed(it) } == true) {
+        if (isInterrupted || currentConsoleView?.let { Disposer.isDisposed(it) } == true) {
           isInterrupted = false
           promise.setError("Rendering was interrupted")
         } else {
