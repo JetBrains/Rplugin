@@ -5,8 +5,6 @@
 package org.jetbrains.r.psi
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.search.LocalSearchScope
-import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
@@ -143,22 +141,20 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
    * It could use runtime to get columns for expressions that are used in the definition of the variable
    */
   fun retrieveTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
-    val scope = LocalSearchScope(variable.containingFile)
-    var variableDefinition = variable.reference.resolve()
-    if (variableDefinition != null) {
-      val variableAssignment = ArrayList<PsiElement>()
-      variableAssignment.add(variableDefinition)
-      val identifierUsages = ReferencesSearch.search(variableDefinition, scope).findAll()
-      for (reference in identifierUsages) {
-        val parent = reference.element.parent
+    val variablesInfo = (variable.containingFile as RControlFlowHolder).getLocalVariableInfo(variable)
+    val variableInfo = variablesInfo?.variables?.get(variable.name)
+    if (variableInfo != null)  {
+      var lastAssignmentBeforeUsage = variableInfo.variableDescription.firstDefinition.parent
+      for (element in variableInfo.variableDescription.writes) {
+        val parent = element.parent
         if (parent is RAssignmentStatement) {
-          if (parent.startOffset < variable.startOffset && parent.startOffset > variableDefinition!!.startOffset) {
-            variableDefinition = parent
+          if (parent.startOffset < variable.startOffset && parent.startOffset > variable.startOffset) {
+            lastAssignmentBeforeUsage = parent
           }
         }
       }
-      if (variableDefinition is RAssignmentStatement) {
-        val assignedValue = variableDefinition.assignedValue
+      if (lastAssignmentBeforeUsage is RAssignmentStatement) {
+        val assignedValue = lastAssignmentBeforeUsage.assignedValue
         if (assignedValue != null) {
           return getTableColumns(assignedValue, runtimeInfo)
         }
