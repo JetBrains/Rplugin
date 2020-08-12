@@ -92,7 +92,7 @@ enum class DplyrFunction(
   COUNT("count", tableArguments = listOf("x")) {
     override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
                                  callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getColumnsOfCountFunction(callInfo)
+      return getColumnsOfCountFunction(operandColumns, callInfo)
     }
   },
   DISTINCT("distinct", tableArguments = listOf(".data")),
@@ -141,7 +141,7 @@ enum class DplyrFunction(
   TALLY("tally", tableArguments = listOf("x")) {
     override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
                                  callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getColumnsOfCountFunction(callInfo)
+      return getColumnsOfCountFunction(operandColumns, callInfo)
     }
   },
   TIBBLE("tibble", tableArguments = listOf()) {
@@ -204,10 +204,10 @@ enum class DplyrFunction(
     /**
      * Retrieves columns from dot arguments and the column "n" from named argument
      */
-    fun getColumnsOfCountFunction(callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+    fun getColumnsOfCountFunction(operandColumns: List<TableManipulationColumn>, callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
       val result = ArrayList<TableManipulationColumn>(getAllDotsColumns(callInfo))
       val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
-      var countColumnName = "n"
+      var countColumnName = getDefaultCountColumnName(operandColumns)
       if (nameArgument != null && nameArgument is RStringLiteralExpression) {
         val countColumnNameFromCall = nameArgument.name
         if (countColumnNameFromCall != null) {
@@ -216,6 +216,16 @@ enum class DplyrFunction(
       }
       result.add(TableManipulationColumn(countColumnName))
       return result
+    }
+
+    private fun getDefaultCountColumnName(operandColumns: List<TableManipulationColumn>):String {
+      var candidate = "n"
+      while (true) { 
+        if (!operandColumns.any{it.name == candidate}) {
+          return candidate
+        }
+        candidate += "n"
+      }
     }
   }
 }
