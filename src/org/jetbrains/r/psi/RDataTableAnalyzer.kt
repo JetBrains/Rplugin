@@ -55,7 +55,8 @@ enum class DataTableFunction(
   val extraFunctionNames: List<String> = emptyList(),
   val allowWithoutQuotes: List<String> = emptyList(),
   override val s3Function: Boolean = false,
-  override val tableArguments: List<String> = listOf("x")
+  override val tableArguments: List<String> = listOf("x"),
+  override val tableColumns: (operandColumns: List<TableManipulationColumn>, callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn> = TableManipulationAnalyzer.Companion::getTableColumns
 ) : TableManipulationFunction {
   ALL_EQUAL("all.equal", tableArguments = listOf("target", "current"), s3Function = true, returnsTable = false),
   ALLOC_COL("alloc.col", tableArguments = listOf("DT"), returnsTable = false), // experimental, might change

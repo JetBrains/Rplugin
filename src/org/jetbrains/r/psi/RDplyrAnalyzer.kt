@@ -8,6 +8,8 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.joinTableAndAllDotsColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getAllDotsColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getColumnsOfCountFunction
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getTableColumns
 import org.jetbrains.r.psi.api.*
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
@@ -80,7 +82,8 @@ enum class DplyrFunction(
   override val tableArguments: List<String> = listOf(".tbl"),
   override val inheritedFunction: Boolean = false,
   override val fullSuperFunctionName: String? = null,
-  override val s3Function: Boolean = false
+  override val s3Function: Boolean = false,
+  override val tableColumns: (operandColumns: List<TableManipulationColumn>, callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn> = ::getTableColumns
 ) : TableManipulationFunction {
   ADD_COUNT("add_count", tableArguments = listOf("x")),
   ADD_ROW("add_row", tableArguments = listOf(".data")),
@@ -89,12 +92,7 @@ enum class DplyrFunction(
   ARRANGE_ALL("arrange_all"),
   ARRANGE_AT("arrange_at"),
   ARRANGE_IF("arrange_if"),
-  COUNT("count", tableArguments = listOf("x")) {
-    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getColumnsOfCountFunction(operandColumns, callInfo)
-    }
-  },
+  COUNT("count", tableArguments = listOf("x"), tableColumns = ::getColumnsOfCountFunction),
   DISTINCT("distinct", tableArguments = listOf(".data")),
   DISTINCT_ALL("distinct_all"),
   DISTINCT_AT("distinct_at"),
@@ -104,17 +102,12 @@ enum class DplyrFunction(
   GROUP_BY_ALL("group_by_all"),
   GROUP_BY_AT("group_by_at"),
   GROUP_BY_IF("group_by_if"),
-  MUTATE("mutate", tableArguments = listOf(".data")) {
-    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return joinTableAndAllDotsColumns(operandColumns, callInfo)
-    }
-  },
+  MUTATE("mutate", tableArguments = listOf(".data"), tableColumns = ::joinTableAndAllDotsColumns),
   MUTATE_ALL("mutate_all"),
   MUTATE_AT("mutate_at"),
   MUTATE_IF("mutate_if"),
   PULL("pull", returnsTable = false, tableArguments = listOf(".data")),
-  RENAME("rename", tableArguments = listOf(".data")),
+  RENAME("rename", tableArguments = listOf(".data"), tableColumns = ::joinTableAndAllDotsColumns),
   RENAME_ALL("rename_all"),
   RENAME_AT("rename_at"),
   RENAME_IF("rename_if"),
@@ -125,31 +118,16 @@ enum class DplyrFunction(
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),
   SLICE("slice", tableArguments = listOf(".data")),
-  SUMMARISE("summarise", tableArguments = listOf(".data")) {
-    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getAllDotsColumns(callInfo)
-    }
-  },
+  SUMMARISE("summarise", tableArguments = listOf(".data"), tableColumns = ::getAllDotsColumns),
   SUMMARISE_ALL("summarise_all"),
   SUMMARISE_AT("summarise_at"),
   SUMMARISE_IF("summarise_if"),
-  SUMMARIZE("summarize", tableArguments = listOf(".data")),
+  SUMMARIZE("summarize", tableArguments = listOf(".data"), tableColumns = ::getAllDotsColumns),
   SUMMARIZE_ALL("summarize_all"),
   SUMMARIZE_AT("summarize_at"),
   SUMMARIZE_IF("summarize_if"),
-  TALLY("tally", tableArguments = listOf("x")) {
-    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getColumnsOfCountFunction(operandColumns, callInfo)
-    }
-  },
-  TIBBLE("tibble", tableArguments = listOf()) {
-    override fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                                 callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      return getAllDotsColumns(callInfo)
-    }
-  },
+  TALLY("tally", tableArguments = listOf("x"), tableColumns = ::getColumnsOfCountFunction),
+  TIBBLE("tibble", tableArguments = listOf(), tableColumns = ::getAllDotsColumns),
   TOP_FRAC("top_frac", tableArguments = listOf("x")),
   TOP_N("top_n", tableArguments = listOf("x")),
   TRANSMUTE("transmute", tableArguments = listOf(".data")),
@@ -198,35 +176,6 @@ enum class DplyrFunction(
     val size = argumentInfo.expressionListWithPipeExpression.size
     val argIndex = argumentInfo.expressionListWithPipeExpression.indexOf(currentArgument)
     return !(argIndex == 0 || size > 3 || (size == 3 && argIndex == 1))
-  }
-
-  companion object {
-    /**
-     * Retrieves columns from dot arguments and the column "n" from named argument
-     */
-    fun getColumnsOfCountFunction(operandColumns: List<TableManipulationColumn>, callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-      val result = ArrayList<TableManipulationColumn>(getAllDotsColumns(callInfo))
-      val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
-      var countColumnName = getDefaultCountColumnName(operandColumns)
-      if (nameArgument != null && nameArgument is RStringLiteralExpression) {
-        val countColumnNameFromCall = nameArgument.name
-        if (countColumnNameFromCall != null) {
-          countColumnName = countColumnNameFromCall
-        }
-      }
-      result.add(TableManipulationColumn(countColumnName))
-      return result
-    }
-
-    private fun getDefaultCountColumnName(operandColumns: List<TableManipulationColumn>):String {
-      var candidate = "n"
-      while (true) { 
-        if (!operandColumns.any{it.name == candidate}) {
-          return candidate
-        }
-        candidate += "n"
-      }
-    }
   }
 }
 

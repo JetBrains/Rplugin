@@ -26,6 +26,9 @@ interface TableManipulationFunction {
   val inheritedFunction: Boolean
   val fullSuperFunctionName: String?
   val tableArguments: List<String>
+  val tableColumns: (operandColumns: List<TableManipulationColumn>,
+                     callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn>
+
 
   fun havePassedTableArguments(argumentInfo: RArgumentInfo): Boolean {
     return argumentInfo.argumentNamesWithPipeExpression.any { it in tableArguments }
@@ -42,11 +45,6 @@ interface TableManipulationFunction {
   }
 
   fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean
-
-  fun getTableColumns(operandColumns: List<TableManipulationColumn>,
-                      callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
-    return operandColumns
-  }
 }
 
 data class TableManipulationCallInfo<T : TableManipulationFunction>(
@@ -180,7 +178,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   fun getTableFromCall(argumentColumns: List<TableManipulationColumn>, call: RCallExpression): TableInfo {
     val callInfo = getCallInfo(call, null)
     if (callInfo != null) {
-      val columns = callInfo.function.getTableColumns(argumentColumns, callInfo)
+      val columns = callInfo.function.tableColumns(argumentColumns, callInfo)
       return TableInfo(columns, TableType.UNKNOWN)
     }
     return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
@@ -406,11 +404,35 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   companion object {
     private const val PIPE_OPERATOR = "%>%"
 
+    fun getTableColumns(operandColumns: List<TableManipulationColumn>,
+                        callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      return operandColumns
+    }
+
+    /**
+     * Retrieves columns from dot arguments and the column "n" from named argument
+     */
+    fun getColumnsOfCountFunction(operandColumns: List<TableManipulationColumn>,
+                                  callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+      val result = ArrayList<TableManipulationColumn>(getAllDotsColumns(operandColumns, callInfo))
+      val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
+      var countColumnName = getDefaultCountColumnName(operandColumns)
+      if (nameArgument != null && nameArgument is RStringLiteralExpression) {
+        val countColumnNameFromCall = nameArgument.name
+        if (countColumnNameFromCall != null) {
+          countColumnName = countColumnNameFromCall
+        }
+      }
+      result.add(TableManipulationColumn(countColumnName))
+      return result
+    }
+
     /**
      * Retrieves column from call dot arguments. Columns from argument table ignored.
      * Useful for functions like "summarize".
      */
-    fun getAllDotsColumns(callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
+    fun getAllDotsColumns(tableColumns: List<TableManipulationColumn>,
+                          callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
       val result = ArrayList<TableManipulationColumn>()
       for (expression in callInfo.argumentInfo.allDotsArguments) {
         if (expression is RNamedArgument) {
@@ -429,12 +451,22 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     fun joinTableAndAllDotsColumns(tableColumns: List<TableManipulationColumn>,
                                    callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
       val result = ArrayList<TableManipulationColumn>(tableColumns)
-      for (column in getAllDotsColumns(callInfo)) {
+      for (column in getAllDotsColumns(tableColumns, callInfo)) {
         if (!result.any { it.name == column.name }) {
           result.add(column)
         }
       }
       return result
+    }
+
+    private fun getDefaultCountColumnName(operandColumns: List<TableManipulationColumn>):String {
+      var candidate = "n"
+      while (true) {
+        if (!operandColumns.any{it.name == candidate}) {
+          return candidate
+        }
+        candidate += "n"
+      }
     }
   }
 }
