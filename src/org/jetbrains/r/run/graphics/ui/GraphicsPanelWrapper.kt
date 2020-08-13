@@ -2,13 +2,15 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.intellij.datavis.r.inlays.components
+package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -18,7 +20,7 @@ import javax.swing.JComponent
 
 class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
-  private val graphicsManager = GraphicsManager.getInstance(project)
+  private val manager = ChunkGraphicsManager(project)
 
   private val graphicsPanel = GraphicsPanel(project, parent).apply {
     component.addComponentListener(object : ComponentAdapter() {
@@ -99,9 +101,9 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   fun <R> addImage(imageFile: File, rescaleMode: RescaleMode, executor: (() -> Unit) -> R): R {
     val path = imageFile.absolutePath
     if (rescaleMode != RescaleMode.LEFT_AS_IS) {
-      isAutoResizeEnabled = graphicsManager?.canRescale(path) ?: false
+      isAutoResizeEnabled = manager.canRescale(path)
     }
-    localResolution = graphicsManager?.getImageResolution(path)
+    localResolution = manager.getImageResolution(path)
     targetResolution = localResolution  // Note: this **schedules** a rescaling as well
     imagePath = path
     return executor {
@@ -128,14 +130,6 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     })
   }
 
-  fun showSvgImage(data: String) {
-    graphicsPanel.showSvgImage(data)
-  }
-
-  fun showImageBase64(data: String) {
-    graphicsPanel.showImageBase64(data)
-  }
-
   fun rescaleIfNecessary(preferredSize: Dimension? = null) {
     val oldSize = graphicsPanel.imageSize
     val newSize = preferredSize ?: preferredImageSize?.takeIf { isAutoResizeEnabled } ?: oldSize
@@ -153,14 +147,12 @@ class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   private fun rescale(newSize: Dimension, newResolution: Int?) {
     imagePath?.let { path ->
-      graphicsManager?.let { manager ->
-        if (!manager.isBusy) {
-          manager.rescaleImage(path, newSize, newResolution) { imageFile ->
-            addImage(imageFile, RescaleMode.LEFT_AS_IS)
-          }
-        } else {
-          scheduleRescaling()  // Out of luck: try again in 500 ms
+      if (!manager.isBusy) {
+        manager.rescaleImage(path, newSize, newResolution) { imageFile ->
+          addImage(imageFile, RescaleMode.LEFT_AS_IS)
         }
+      } else {
+        scheduleRescaling()  // Out of luck: try again in 500 ms
       }
     }
   }

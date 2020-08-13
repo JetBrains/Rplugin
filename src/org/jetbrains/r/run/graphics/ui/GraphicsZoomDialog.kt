@@ -2,12 +2,15 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.intellij.datavis.r.inlays.components
+package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.intellij.datavis.r.VisualizationBundle
+import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
+import org.intellij.datavis.r.inlays.components.DialogUtil
+import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -15,7 +18,7 @@ import javax.swing.JPanel
 class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
-  private val graphicsManager = GraphicsManager.getInstance(project)
+  private val manager = ChunkGraphicsManager(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
 
   private val rootPanel = JPanel(BorderLayout()).apply {
@@ -27,7 +30,7 @@ class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String
 
   init {
     init()
-    graphicsManager?.createImageGroup(imagePath)?.let { pair ->
+    manager.createImageGroup(imagePath)?.let { pair ->
       wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second

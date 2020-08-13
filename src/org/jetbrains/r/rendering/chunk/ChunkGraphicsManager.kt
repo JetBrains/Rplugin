@@ -26,22 +26,22 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
   private val settings: RMarkdownGraphicsSettings
     get() = RMarkdownGraphicsSettings.getInstance(project)
 
-  override val isBusy: Boolean
+  val isBusy: Boolean
     get() = project.chunkExecutionState != null
 
-  override var imageNumber: Int
+  var imageNumber: Int
     get() = RGraphicsSettings.getImageNumber(project)
     set(number) {
       RGraphicsSettings.setImageNumber(project, number)
     }
 
-  override var globalResolution: Int
+  var globalResolution: Int
     get() = settings.globalResolution
     set(newResolution) {
       settings.globalResolution = newResolution
     }
 
-  override var outputDirectory: String?
+  var outputDirectory: String?
     get() = RGraphicsSettings.getOutputDirectory(project)
     set(directory) {
       RGraphicsSettings.setOutputDirectory(project, directory)
@@ -53,20 +53,24 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       RGraphicsSettings.setDarkMode(project, isEnabled)
     }
 
-  override fun canRescale(imagePath: String): Boolean {
+  override fun isInvertible(image: File): Boolean {
+    return RSnapshot.from(image) != null
+  }
+
+  fun canRescale(imagePath: String): Boolean {
     return imagePath.toSnapshot()?.recordedFile?.takeIf { it.exists() } != null
   }
 
-  override fun getImageResolution(imagePath: String): Int? {
+  fun getImageResolution(imagePath: String): Int? {
     return imagePath.toSnapshot()?.resolution
   }
 
-  override fun suggestImageName(imageNumber: Int?): String {
+  fun suggestImageName(imageNumber: Int? = null): String {
     val number = imageNumber ?: (this.imageNumber + 1)
     return "Rplot%02d".format(number)
   }
 
-  override fun createImageGroup(imagePath: String): Pair<File, Disposable>? {
+  fun createImageGroup(imagePath: String): Pair<File, Disposable>? {
     return imagePath.toSnapshot()?.let { snapshot ->
       val directory = createLocalGroupDirectory(snapshot)
       copyFileTo(snapshot.recordedFile, directory)
@@ -82,11 +86,11 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     }
   }
 
-  override fun addGlobalResolutionListener(listener: (Int) -> Unit): Disposable {
+  fun addGlobalResolutionListener(listener: (Int) -> Unit): Disposable {
     return settings.addGlobalResolutionListener(listener)
   }
 
-  override fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int?, onResize: (File) -> Unit) {
+  fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int? = null, onResize: (File) -> Unit) {
     imagePath.toSnapshot()?.let { snapshot ->
       val resolution = newResolution ?: snapshot.resolutionOrDefault
       val newParameters = RGraphicsUtils.ScreenParameters(newSize, resolution)

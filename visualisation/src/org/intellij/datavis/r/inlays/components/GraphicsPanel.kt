@@ -202,7 +202,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   }
 
   private val File.isInvertible: Boolean
-    get() = graphicsManager?.canRescale(absolutePath) ?: false
+    get() = graphicsManager?.isInvertible(this) ?: false
 
   private fun tryCreateInvertedImage(content: ByteArray, globalScheme: EditorColorsScheme): ByteArray {
     return try {

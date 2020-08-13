@@ -2,7 +2,7 @@
  * Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package org.intellij.datavis.r.inlays.components
+package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
@@ -15,11 +15,12 @@ import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
-import org.intellij.datavis.r.inlays.components.forms.GraphicsAdvancedExportDialogForm
+import org.intellij.datavis.r.inlays.components.*
+import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
+import org.jetbrains.r.run.graphics.ui.forms.GraphicsAdvancedExportDialogForm
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -43,7 +44,7 @@ import kotlin.reflect.KProperty
 class GraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
-  private val graphicsManager = GraphicsManager.getInstance(project)
+  private val graphicsManager = ChunkGraphicsManager(project)
   private val wrapper = GraphicsPanelWrapper(project, parent)
   private val form = GraphicsAdvancedExportDialogForm()
 
@@ -158,7 +159,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
           val location = Paths.get(directory, "$name.$format").toFile()
           location.takeIf { checkLocation(it) }?.also {
             ImageIO.write(image, format, location)
-            graphicsManager?.apply {
+            graphicsManager.apply {
               extractImageNumber(name)?.let { number ->
                 imageNumber = number
               }
@@ -225,8 +226,8 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
     form.fileNameTextField.addBlankTextValidator()
     form.directoryFieldPanel.add(directoryTextField)
     directoryTextField.textField.isFocusable = false
-    fileName = graphicsManager?.suggestImageName() ?: DEFAULT_IMAGE_NAME
-    outputDirectory = graphicsManager?.outputDirectory ?: project.basePath!!
+    fileName = graphicsManager.suggestImageName()
+    outputDirectory = graphicsManager.outputDirectory ?: project.basePath!!
     form.formatComboBox.apply {
       for (format in InlayOutputUtil.getAvailableFormats()) {
         addItem(format)
@@ -246,7 +247,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   }
 
   private fun createImageGroup(parent: Disposable, imagePath: String) {
-    graphicsManager?.createImageGroup(imagePath)?.let { pair ->
+    graphicsManager.createImageGroup(imagePath)?.let { pair ->
       wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second
@@ -481,7 +482,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
       if (g is Graphics2D) {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
       }
-      val fontMetrics = g.getFontMetrics()
+      val fontMetrics = g.fontMetrics
       val unitWidth = fontMetrics.stringWidth("${unitText}X")
       g.color = JBUI.CurrentTheme.Label.disabledForeground()
       g.drawString(unitText, width - unitWidth, height / 2 + fontMetrics.ascent / 2 - 2)
@@ -503,8 +504,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
   companion object {
     private const val DPI_MAX_CHARACTERS = 3
     private const val PX_MAX_CHARACTERS = 4
-
-    private const val DEFAULT_IMAGE_NAME = "image"
 
     private val INVALID_INTEGER_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.invalid.input")
     private val BLANK_TEXT_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.blank.input")
@@ -529,14 +528,6 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)
-
-    private var JTextField.hint: String
-      get() = (this as JBTextField?)?.emptyText?.text ?: ""
-      set(value) {
-        if (this is JBTextField) {
-          emptyText.text = value
-        }
-      }
 
     private fun JTextField.addTextChangedListener(listener: (DocumentEvent) -> Unit) {
       document.addDocumentListener(object : DocumentAdapter() {

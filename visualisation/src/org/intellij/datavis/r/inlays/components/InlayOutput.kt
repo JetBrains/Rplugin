@@ -16,7 +16,6 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
@@ -33,6 +32,7 @@ import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.concurrency.Promise
 import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -144,71 +144,45 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   }
 }
 
-class InlayOutputImg(
-  private val parent: Disposable,
-  editor: Editor,
-  clearAction: () -> Unit)
-  : InlayOutput(parent, editor, clearAction) {
-  private val wrapper = GraphicsPanelWrapper(project, parent).apply {
-    isVisible = false
+class InlayOutputImg(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
+  private val graphicsPanel = GraphicsPanel(project, parent).apply {
+    isAdvancedMode = true
   }
 
-  private val path2Checks = mutableMapOf<String, Boolean>()
-
-  private val graphicsManager: GraphicsManager?
-    get() = GraphicsManager.getInstance(project)
-
-  private var globalResolutionSubscription: Disposable? = null
-
-  @Volatile
-  private var globalResolution: Int? = null
-
-  override val useDefaultSaveAction = false
   override val extraActions = createExtraActions()
 
   init {
-    toolbarPane.dataComponent = wrapper.component
-    graphicsManager?.let { manager ->
-      globalResolution = manager.globalResolution
-      val connection = manager.addGlobalResolutionListener { newGlobalResolution ->
-        wrapper.targetResolution = newGlobalResolution
-        globalResolution = newGlobalResolution
-      }
-      Disposer.register(parent, connection)
-    }
+    toolbarPane.dataComponent = graphicsPanel.component
   }
 
   override fun addToolbar() {
     super.addToolbar()
-    wrapper.overlayComponent = toolbarPane.toolbarComponent
+    graphicsPanel.overlayComponent = toolbarPane.toolbarComponent
   }
 
   override fun addData(data: String, type: String) {
-    if (type == "IMG") {
-      wrapper.isAutoResizeEnabled = false
-      wrapper.addImage(File(data), GraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay)
-    } else {
-      runAsyncInlay {
-        when (type) {
-          "IMGBase64" -> wrapper.showImageBase64(data)
-          "IMGSVG" -> wrapper.showSvgImage(data)
-          else -> Unit
-        }
-      }
-    }.onSuccess {
+    showImageAsync(data, type).onSuccess {
       SwingUtilities.invokeLater {
-        val maxHeight = wrapper.maximumHeight ?: 0
+        val maxHeight = graphicsPanel.maximumSize?.height ?: 0
         val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
-        val maxWidth = wrapper.maximumWidth ?: 0
+        val maxWidth = graphicsPanel.maximumSize?.width ?: 0
         val editorWidth = editor.contentComponent.width
         if (maxWidth * scaleMultiplier <= editorWidth) {
           onHeightCalculated?.invoke(maxHeight * scaleMultiplier)
         } else {
           onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
         }
-        if (type == "IMG") {
-          wrapper.isAutoResizeEnabled = graphicsManager?.canRescale(data) ?: false
-        }
+      }
+    }
+  }
+
+  private fun showImageAsync(data: String, type: String): Promise<Unit> {
+    return runAsyncInlay {
+      when (type) {
+        "IMGBase64" -> graphicsPanel.showImageBase64(data)
+        "IMGSVG" -> graphicsPanel.showSvgImage(data)
+        "IMG" -> graphicsPanel.showImage(File(data))
+        else -> Unit
       }
     }
   }
@@ -224,13 +198,8 @@ class InlayOutputImg(
   }
 
   override fun saveAs() {
-    val imagePath = wrapper.imagePath
-    if (imagePath != null && graphicsManager?.canRescale(imagePath) == true) {
-      GraphicsExportDialog(project, parent, imagePath, wrapper.preferredImageSize).show()
-    } else {
-      wrapper.image?.let { image ->
-        InlayOutputUtil.saveImageWithFileChooser(project, image)
-      }
+    graphicsPanel.image?.let { image ->
+      InlayOutputUtil.saveImageWithFileChooser(project, image)
     }
   }
 
@@ -238,69 +207,17 @@ class InlayOutputImg(
     return type == "IMG" || type == "IMGBase64" || type == "IMGSVG"
   }
 
-  override fun onViewportChange(isInViewport: Boolean) {
-    wrapper.isVisible = isInViewport
-  }
-
   private fun createExtraActions(): List<AnAction> {
     return listOf(
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ExportImageAction", this::saveAs),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction", this::copyImageToClipboard),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ZoomImageAction", this::canZoomImage, this::zoomImage),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ImageSettingsAction", this::openImageSettings)
+      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction", this::copyImageToClipboard)
     )
   }
 
   private fun copyImageToClipboard() {
-    wrapper.image?.let { image ->
+    graphicsPanel.image?.let { image ->
       ClipboardUtils.copyImageToClipboard(image)
     }
   }
-
-  private fun zoomImage() {
-    wrapper.imagePath?.let { path ->
-      GraphicsZoomDialog(project, parent, path).show()
-    }
-  }
-
-  private fun canZoomImage(): Boolean {
-    return canZoomImageOrNull() == true
-  }
-
-  private fun canZoomImageOrNull(): Boolean? {
-    return wrapper.imagePath?.let { path ->
-      path2Checks.getOrPut(path) {  // Note: speedup FS operations caused by `canRescale(path)`
-        graphicsManager?.canRescale(path) ?: false
-      }
-    }
-  }
-
-  private fun openImageSettings() {
-    val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
-    val isDarkModeEnabled = if (isDarkEditor) graphicsManager?.isDarkModeEnabled else null
-    val initialSettings = getInitialSettings(isDarkModeEnabled)
-    val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
-      wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
-      wrapper.targetResolution = newSettings.localResolution
-      graphicsManager?.let { manager ->
-        if (newSettings.isDarkModeEnabled != null && newSettings.isDarkModeEnabled != isDarkModeEnabled) {
-          manager.isDarkModeEnabled = newSettings.isDarkModeEnabled
-        }
-        if (newSettings.globalResolution != null && newSettings.globalResolution != globalResolution) {
-          // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
-          manager.globalResolution = newSettings.globalResolution
-        }
-      }
-    }
-    dialog.show()
-  }
-
-  private fun getInitialSettings(isDarkModeEnabled: Boolean?) = GraphicsSettingsDialog.Settings(
-    wrapper.isAutoResizeEnabled,
-    isDarkModeEnabled,
-    globalResolution,
-    wrapper.localResolution
-  )
 }
 
 class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {

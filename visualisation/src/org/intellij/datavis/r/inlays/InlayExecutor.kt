@@ -14,7 +14,7 @@ private val inlayExecutor = AppExecutorUtil.createBoundedApplicationPoolExecutor
 /**
  * run [runnable] on bounded inlay thread pool backed by application thread pool
  */
-internal inline fun <T> runAsyncInlay(crossinline runnable: () -> T): Promise<T> {
+fun <T> runAsyncInlay(runnable: () -> T): Promise<T> {
   val promise = AsyncPromise<T>()
   inlayExecutor.execute {
     val result = try {
