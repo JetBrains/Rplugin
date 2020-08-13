@@ -95,6 +95,12 @@ class RLocalInterpreterImpl(
     return promise
   }
 
+  override fun showUrlInViewer(rInterop: RInterop, url: String) {
+    invokeLater {
+      RToolWindowFactory.showUrl(project, url)
+    }
+  }
+
   companion object {
     val LOG = Logger.getInstance(RLocalInterpreterImpl::class.java)
   }

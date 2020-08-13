@@ -73,9 +73,11 @@ interface RInterpreter : RInterpreterInfo {
     return promise
   }
 
-  fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
-
   fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> = resolvedPromise()
+
+  fun showUrlInViewer(rInterop: RInterop, url: String) {}
+
+  fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
 }
 
 data class LocalOrRemotePath(val path: String, val isRemote: Boolean)
