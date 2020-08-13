@@ -58,9 +58,7 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
     createActions()
   }
 
-  fun getComponent(): Component {
-    return toolbarPane
-  }
+  fun getComponent() = toolbarPane
 
   /** Clears view, removes text/html. */
   abstract fun clear()
