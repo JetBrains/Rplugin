@@ -15,10 +15,6 @@ import org.jetbrains.r.rinterop.RInterop
 class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
   override fun setUp() {
     super.setUp()
-
-    // Setup custom "default" browser
-    // which should be used for URLs starting with either 'https:' or 'http:'.
-    // That means all web request will be redirected to R stdout
     rInterop.executeCode(".jetbrains $ ther_old_browser <<- function(url) { cat(url) }")
     rInterop.asyncEventsStartProcessing()
   }
@@ -91,7 +87,7 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
 
   private fun browseWebUrl(expectedUrl: String) {
     var wasShowFileRequest = false
-    var browseUrlRequest = AsyncPromise<String>()
+    val browseUrlRequest = AsyncPromise<String>()
     val listener = object : RInterop.AsyncEventsListener {
       override fun onShowFileRequest(filePath: String, title: String): Promise<Unit> {
         wasShowFileRequest = true
@@ -102,13 +98,9 @@ class RHtmlViewerTest : RProcessHandlerBaseTestCase() {
         browseUrlRequest.setResult(url)
       }
     }.also { rInterop.addAsyncEventsListener(it) }
-    val actualUrl = rInterop.executeCode("browseURL('$expectedUrl')").stdout
+    rInterop.executeCode("browseURL('$expectedUrl')")
     TestCase.assertFalse(wasShowFileRequest)
-    if (actualUrl == "") {
-      TestCase.assertEquals(expectedUrl, browseUrlRequest.blockingGet(DEFAULT_TIMEOUT))
-    } else {
-      TestCase.assertEquals(expectedUrl, actualUrl)
-    }
+    TestCase.assertEquals(expectedUrl, browseUrlRequest.blockingGet(DEFAULT_TIMEOUT))
     rInterop.removeAsyncEventsListener(listener)
   }
 }
