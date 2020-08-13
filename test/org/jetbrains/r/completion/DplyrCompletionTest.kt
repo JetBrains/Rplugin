@@ -253,6 +253,17 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStaticCompletionWithSeveralAssignments() {
+    checkStaticCompletion(
+      "tbl <- dplyr::tibble(my_column = letters, another_column = letters)\n" +
+      "tbl <- tbl %>% dplyr::mutate(third_column = letters)\n" +
+      "tbl %>% dplyr::filter(<caret>)",
+
+      listOf("third_column"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()

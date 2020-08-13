@@ -4,11 +4,11 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.suggested.startOffset
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
@@ -141,23 +141,31 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
    * It could use runtime to get columns for expressions that are used in the definition of the variable
    */
   fun retrieveTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
-    val variablesInfo = (variable.containingFile as RControlFlowHolder).getLocalVariableInfo(variable)
-    val variableInfo = variablesInfo?.variables?.get(variable.name)
-    if (variableInfo != null)  {
-      var lastAssignmentBeforeUsage = variableInfo.variableDescription.firstDefinition.parent
-      for (element in variableInfo.variableDescription.writes) {
-        val parent = element.parent
-        if (parent is RAssignmentStatement) {
-          if (parent.startOffset < variable.startOffset && parent.startOffset > variable.startOffset) {
-            lastAssignmentBeforeUsage = parent
+    val rControlFlowHolder = variable.containingFile as RControlFlowHolder
+    val variableInstruction = rControlFlowHolder.controlFlow.getInstructionByElement(variable)
+    var previousAssignment: RAssignmentStatement? = null
+    if (variableInstruction != null) {
+      val queue = LinkedList<Instruction>()
+      queue.add(variableInstruction)
+      while (queue.isNotEmpty()) {
+        val currentInstruction = queue.remove()
+        val instructionElement = currentInstruction.element
+        if (instructionElement is RAssignmentStatement && variable.name == instructionElement.name) {
+          previousAssignment = instructionElement
+          break
+        }
+        for (prevInstruction in currentInstruction.allPred()) {
+          if (prevInstruction.num() < currentInstruction.num() && prevInstruction !in queue) {
+            queue.add(prevInstruction)
           }
         }
       }
-      if (lastAssignmentBeforeUsage is RAssignmentStatement) {
-        val assignedValue = lastAssignmentBeforeUsage.assignedValue
-        if (assignedValue != null) {
-          return getTableColumns(assignedValue, runtimeInfo)
-        }
+    }
+
+    if (previousAssignment != null) {
+      val assignedValue = previousAssignment.assignedValue
+      if (assignedValue != null) {
+        return getTableColumns(assignedValue, runtimeInfo)
       }
     }
     return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
