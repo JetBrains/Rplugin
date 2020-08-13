@@ -12,6 +12,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -29,6 +30,7 @@ import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.Color
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.io.File
@@ -298,6 +300,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
   private val console = ColoredTextConsole(project, viewer = true)
 
+  private val maxHeight = 500
+
   init {
     Disposer.register(parent, console)
     toolbarPane.centralComponent = console.component
@@ -316,6 +320,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     console.editor.contentComponent.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK),
                                                  actionNameSelect)
     console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
+
+    console.editor.settings.isUseSoftWraps = true
   }
 
   override fun clear() {
@@ -335,7 +341,20 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
             outputs.forEach { console.addData(it.text, it.kind) }
           }
           console.flushDeferredText()
-          onHeightCalculated?.invoke(console.preferredSize.height)
+
+          with(console.editor as EditorImpl) {
+            softWrapModel.addSoftWrapChangeListener(
+              object : SoftWrapChangeListener {
+                override fun recalculationEnds() {
+                  val height = offsetToXY(document.textLength).y + lineHeight + 5
+                  component.preferredSize = Dimension(preferredSize.width, height)
+                  onHeightCalculated?.invoke(min(height, maxHeight))
+                }
+
+                override fun softWrapsChanged() {}
+              }
+            )
+          }
         }
       }
     }
