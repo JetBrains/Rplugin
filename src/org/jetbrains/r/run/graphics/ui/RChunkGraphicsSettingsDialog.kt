@@ -9,7 +9,7 @@ import com.intellij.ui.layout.*
 import org.intellij.datavis.r.VisualizationBundle
 import javax.swing.JComponent
 
-class GraphicsSettingsDialog(
+class RChunkGraphicsSettingsDialog(
   private val initialSettings: Settings,
   private val onSettingsChange: (Settings) -> Unit
 ) : DialogWrapper(null, true) {

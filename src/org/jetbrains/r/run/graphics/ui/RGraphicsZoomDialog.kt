@@ -15,11 +15,11 @@ import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String) :
+class RGraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
   private val manager = ChunkGraphicsManager(project)
-  private val wrapper = GraphicsPanelWrapper(project, parent)
+  private val wrapper = RGraphicsPanelWrapper(project, parent)
 
   private val rootPanel = JPanel(BorderLayout()).apply {
     preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.VERY_WIDE)
@@ -31,7 +31,7 @@ class GraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String
   init {
     init()
     manager.createImageGroup(imagePath)?.let { pair ->
-      wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
+      wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second
     }

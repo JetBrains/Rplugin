@@ -20,7 +20,7 @@ import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
 import org.intellij.datavis.r.inlays.components.*
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
-import org.jetbrains.r.run.graphics.ui.forms.GraphicsAdvancedExportDialogForm
+import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -41,14 +41,14 @@ import kotlin.math.max
 import kotlin.math.round
 import kotlin.reflect.KProperty
 
-class GraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?) :
+class RGraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
   private val graphicsManager = ChunkGraphicsManager(project)
-  private val wrapper = GraphicsPanelWrapper(project, parent)
-  private val form = GraphicsAdvancedExportDialogForm()
+  private val wrapper = RGraphicsPanelWrapper(project, parent)
+  private val form = RGraphicsExportDialogForm()
 
-  private val resizablePanel = ResizablePanel(wrapper.component, initialSize, this::onImageResize).apply {
+  private val resizablePanel = RResizablePanel(wrapper.component, initialSize, this::onImageResize).apply {
     wrapper.overlayComponent = manipulator
   }
 
@@ -248,7 +248,7 @@ class GraphicsExportDialog(private val project: Project, parent: Disposable, ima
 
   private fun createImageGroup(parent: Disposable, imagePath: String) {
     graphicsManager.createImageGroup(imagePath)?.let { pair ->
-      wrapper.addImage(pair.first, GraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
+      wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second
     }

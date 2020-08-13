@@ -10,17 +10,17 @@ import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
-import org.jetbrains.r.run.graphics.ui.GraphicsExportDialog
-import org.jetbrains.r.run.graphics.ui.GraphicsPanelWrapper
-import org.jetbrains.r.run.graphics.ui.GraphicsSettingsDialog
-import org.jetbrains.r.run.graphics.ui.GraphicsZoomDialog
+import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
+import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
+import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
+import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
 import java.io.File
 import javax.swing.SwingUtilities
 
 class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clearAction: () -> Unit) :
   InlayOutput(parent, editor, clearAction)
 {
-  private val wrapper = GraphicsPanelWrapper(project, parent).apply {
+  private val wrapper = RGraphicsPanelWrapper(project, parent).apply {
     isVisible = false
   }
 
@@ -50,7 +50,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   override fun addData(data: String, type: String) {
     wrapper.isAutoResizeEnabled = false
-    wrapper.addImage(File(data), GraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay).onSuccess {
+    wrapper.addImage(File(data), RGraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay).onSuccess {
       SwingUtilities.invokeLater {
         val maxHeight = wrapper.maximumHeight ?: 0
         val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
@@ -79,7 +79,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   override fun saveAs() {
     val imagePath = wrapper.imagePath
     if (imagePath != null && manager.canRescale(imagePath)) {
-      GraphicsExportDialog(project, parent, imagePath, wrapper.preferredImageSize).show()
+      RGraphicsExportDialog(project, parent, imagePath, wrapper.preferredImageSize).show()
     } else {
       wrapper.image?.let { image ->
         InlayOutputUtil.saveImageWithFileChooser(project, image)
@@ -112,7 +112,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private fun zoomImage() {
     wrapper.imagePath?.let { path ->
-      GraphicsZoomDialog(project, parent, path).show()
+      RGraphicsZoomDialog(project, parent, path).show()
     }
   }
 
@@ -132,7 +132,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
     val isDarkModeEnabled = if (isDarkEditor) manager.isDarkModeEnabled else null
     val initialSettings = getInitialSettings(isDarkModeEnabled)
-    val dialog = GraphicsSettingsDialog(initialSettings) { newSettings ->
+    val dialog = RChunkGraphicsSettingsDialog(initialSettings) { newSettings ->
       wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
       wrapper.targetResolution = newSettings.localResolution
       newSettings.isDarkModeEnabled?.let { newDarkModeEnabled ->
@@ -150,7 +150,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     dialog.show()
   }
 
-  private fun getInitialSettings(isDarkModeEnabled: Boolean?) = GraphicsSettingsDialog.Settings(
+  private fun getInitialSettings(isDarkModeEnabled: Boolean?) = RChunkGraphicsSettingsDialog.Settings(
     wrapper.isAutoResizeEnabled,
     isDarkModeEnabled,
     globalResolution,

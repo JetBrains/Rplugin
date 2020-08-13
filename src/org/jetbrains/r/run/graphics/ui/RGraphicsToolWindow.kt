@@ -160,7 +160,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     lastFile?.absolutePath?.let { imagePath ->
       val imageSize = getAdjustedScreenDimension()
       if (imageSize.isValid) {
-        GraphicsExportDialog(project, project, imagePath, imageSize).show()
+        RGraphicsExportDialog(project, project, imagePath, imageSize).show()
       }
     }
   }
@@ -173,7 +173,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun zoomCurrentSnapshot() {
     lastFile?.absolutePath?.let { imagePath ->
-      GraphicsZoomDialog(project, project, imagePath).show()
+      RGraphicsZoomDialog(project, project, imagePath).show()
     }
   }
 

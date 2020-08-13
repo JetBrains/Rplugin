@@ -15,7 +15,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
 
-class ResizablePanel(
+class RResizablePanel(
   private val child: JComponent,
   initialSize: Dimension?,
   private val onSizeRecalculated: (Int, Int, Int, Int) -> Unit

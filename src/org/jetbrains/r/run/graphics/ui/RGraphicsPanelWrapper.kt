@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.swing.JComponent
 
-class GraphicsPanelWrapper(project: Project, private val parent: Disposable) {
+class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val manager = ChunkGraphicsManager(project)
 

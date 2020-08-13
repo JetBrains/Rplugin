@@ -14,7 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
 
-public class GraphicsAdvancedExportDialogForm extends JDialog {
+public class RGraphicsExportDialogForm extends JDialog {
   private JPanel contentPane;
   private JTextField fileNameTextField;
   private JComboBox formatComboBox;
@@ -83,7 +83,7 @@ public class GraphicsAdvancedExportDialogForm extends JDialog {
     return autoResizeCheckBox;
   }
 
-  public GraphicsAdvancedExportDialogForm() {
+  public RGraphicsExportDialogForm() {
     setContentPane(contentPane);
     setModal(true);
   }
