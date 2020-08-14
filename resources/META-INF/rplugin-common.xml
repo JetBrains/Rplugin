@@ -257,6 +257,27 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
+    <!-- Chunk output actions -->
+    <actions>
+        <group id="org.jetbrains.r.rendering.chunk.ChunkOutputToolbarActions">
+            <action id="org.jetbrains.r.rendering.chunk.ExportImageAction"
+                    class="org.jetbrains.r.rendering.chunk.ExportImageAction"
+                    description="Save image to disk"
+                    text="Export"
+                    icon="AllIcons.ToolbarDecorator.Export"/>
+            <action id="org.jetbrains.r.rendering.chunk.ZoomImageAction"
+                    class="org.jetbrains.r.rendering.chunk.ZoomImageAction"
+                    description="Preview this image in a new window"
+                    text="Open in a New Window"
+                    icon="AllIcons.Actions.Preview"/>
+            <action id="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
+                    class="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
+                    description="Graphics settings"
+                    text="Settings"
+                    icon="AllIcons.General.GearPlain"/>
+        </group>
+    </actions>
+
     <!-- Variable view actions -->
     <actions>
         <group id="org.jetbrains.r.debugger.RXVariablesViewActions">

@@ -136,11 +136,11 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   }
 
   private fun createClearAction(): AnAction {
-    return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ClearOutputAction", clearAction::invoke)
+    return ToolbarUtil.createAnActionButton<ClearOutputAction>(clearAction::invoke)
   }
 
   private fun createSaveAsAction(): AnAction {
-    return ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.SaveOutputAction", this::saveAs)
+    return ToolbarUtil.createAnActionButton<SaveOutputAction>(this::saveAs)
   }
 }
 
@@ -208,9 +208,7 @@ class InlayOutputImg(parent: Disposable, editor: Editor, clearAction: () -> Unit
   }
 
   private fun createExtraActions(): List<AnAction> {
-    return listOf(
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction", this::copyImageToClipboard)
-    )
+    return listOf(ToolbarUtil.createAnActionButton<CopyImageToClipboardAction>(this::copyImageToClipboard))
   }
 
   private fun copyImageToClipboard() {

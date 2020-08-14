@@ -10,10 +10,4 @@ class ClearOutputAction : DumbAwareActionAdapter()
 
 class SaveOutputAction : DumbAwareActionAdapter()
 
-class ExportImageAction : DumbAwareActionAdapter()
-
 class CopyImageToClipboardAction : DumbAwareActionAdapter()
-
-class ZoomImageAction : DumbAwareActionAdapter()
-
-class ImageSettingsAction : DumbAwareActionAdapter()

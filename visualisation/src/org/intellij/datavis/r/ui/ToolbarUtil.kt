@@ -48,6 +48,10 @@ object ToolbarUtil {
     return createAnActionButton(A::class.qualifiedName ?: "", onClick)
   }
 
+  inline fun <reified A : AnAction>createAnActionButton(noinline canClick: () -> Boolean, noinline onClick: () -> Unit): AnActionButton {
+    return createAnActionButton(A::class.qualifiedName ?: "", canClick, onClick)
+  }
+
   fun createAnActionButton(id: String, onClick: Runnable): AnActionButton {
     return createAnActionButton(id) {
       onClick.run()

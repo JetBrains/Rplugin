@@ -97,10 +97,10 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private fun createExtraActions(): List<AnAction> {
     return listOf(
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ExportImageAction", this::saveAs),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction", this::copyImageToClipboard),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ZoomImageAction", this::canZoomImage, this::zoomImage),
-      ToolbarUtil.createAnActionButton("org.intellij.datavis.r.inlays.components.ImageSettingsAction", this::openImageSettings)
+      ToolbarUtil.createAnActionButton<ExportImageAction>(this::saveAs),
+      ToolbarUtil.createAnActionButton<CopyImageToClipboardAction>(this::copyImageToClipboard),
+      ToolbarUtil.createAnActionButton<ZoomImageAction>(this::canZoomImage, this::zoomImage),
+      ToolbarUtil.createAnActionButton<ImageSettingsAction>(this::openImageSettings)
     )
   }
 
