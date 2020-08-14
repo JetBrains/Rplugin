@@ -12,14 +12,15 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.intentions.LoadPackageFix
 import org.jetbrains.r.interpreter.RInterpreterStateManager
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.ROperator
-import org.jetbrains.r.psi.api.RPsiElement
-import org.jetbrains.r.psi.api.RVisitor
+import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.references.RReferenceBase
+import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 
 class UnresolvedReferenceInspection : RInspection() {
 
@@ -40,12 +41,13 @@ class UnresolvedReferenceInspection : RInspection() {
     }
 
     override fun visitCallExpression(element: RCallExpression) {
+      // do not try to resolve functions until we have skeletons
+      if (RInterpreterStateManager.getCurrentStateOrNull(element.project)?.isSkeletonInitialized != true) return
       handleResolveResult(element.expression, element.expression.reference ?: return)
+      handleS4ClassesName(element)
     }
 
     private fun handleResolveResult(element: RPsiElement, reference: RReferenceBase<*>) {
-      // do not try to resolve functions until we have skeletons
-      if (RInterpreterStateManager.getCurrentStateOrNull(element.project)?.isSkeletonInitialized != true) return
       val targets = reference.multiResolve(false)
       if (targets.isEmpty()) {
         myProblemHolder.registerProblem(element, UNRESOLVED_MSG, ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
@@ -53,8 +55,25 @@ class UnresolvedReferenceInspection : RInspection() {
       val runtimeInfo = element.containingFile?.runtimeInfo ?: return
       if (reference.areTargetsLoaded(false)) return
       val packageNames = targets.mapNotNull { RReferenceBase.findPackageNameByResolveResult(it) }
+      registerMissingPackages(element, element.text, packageNames, runtimeInfo)
+    }
+
+    private fun handleS4ClassesName(element: RCallExpression) {
+      if (!element.isFunctionFromLibrary("new", "methods")) return
+      val runtimeInfo = element.containingFile?.runtimeInfo ?: return
+      val loadedPackages = runtimeInfo.loadedPackages
+      val classNameExpr = element.argumentList.expressionList.firstOrNull() as? RStringLiteralExpression ?: return
+      val className = classNameExpr.name
+      val packageNames = className?.let {
+        RS4ClassNameIndex.findClassInfos(it, element.project, RSearchScopeUtil.getScope(element))
+      }?.map { it.packageName }?.filter { it.isNotBlank() } ?: return
+      if (packageNames.isEmpty() || packageNames.any { it in loadedPackages }) return
+      registerMissingPackages(classNameExpr, className, packageNames, runtimeInfo)
+    }
+
+    private fun registerMissingPackages(element: RPsiElement, text: String, packageNames: List<String>, runtimeInfo: RConsoleRuntimeInfo) {
       val quickFixes = packageNames.map { LoadPackageFix(it, runtimeInfo) }.toTypedArray()
-      val message = missingPackageMessage(element.text, packageNames)
+      val message = missingPackageMessage(text, packageNames)
       myProblemHolder.registerProblem(element, message, ProblemHighlightType.WEAK_WARNING, *quickFixes)
     }
   }

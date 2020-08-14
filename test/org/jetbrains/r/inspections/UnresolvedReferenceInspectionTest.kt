@@ -102,4 +102,8 @@ class UnresolvedReferenceInspectionTest : RInspectionTest() {
   fun testBackTickOpDef() {
     doExprTest("`%foo%` <- function(a,b) 3; 1 %foo% 3")
   }
+
+  fun testS4ClassName() {
+    doWeakTest()
+  }
 }
