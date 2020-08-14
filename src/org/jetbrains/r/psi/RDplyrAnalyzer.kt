@@ -83,7 +83,7 @@ enum class DplyrFunction(
   override val inheritedFunction: Boolean = false,
   override val fullSuperFunctionName: String? = null,
   override val s3Function: Boolean = false,
-  override val tableColumns: (operandColumns: List<TableManipulationColumn>, callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn> = ::getTableColumns
+  override val tableColumns: FunctionColumnsProvider = ::getTableColumns
 ) : TableManipulationFunction {
   ADD_COUNT("add_count", tableArguments = listOf("x")),
   ADD_ROW("add_row", tableArguments = listOf(".data")),

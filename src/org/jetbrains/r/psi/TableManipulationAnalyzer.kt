@@ -17,6 +17,9 @@ import org.jetbrains.r.rinterop.TableColumnsInfo
 import java.util.*
 import kotlin.collections.ArrayList
 
+typealias FunctionColumnsProvider = (operandColumns: List<TableManipulationColumn>,
+                                     callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn>
+
 interface TableManipulationFunction {
   val functionName: String?
   val returnsTable: Boolean
@@ -26,8 +29,7 @@ interface TableManipulationFunction {
   val inheritedFunction: Boolean
   val fullSuperFunctionName: String?
   val tableArguments: List<String>
-  val tableColumns: (operandColumns: List<TableManipulationColumn>,
-                     callInfo: TableManipulationCallInfo<*>) -> List<TableManipulationColumn>
+  val tableColumns: FunctionColumnsProvider
 
 
   fun havePassedTableArguments(argumentInfo: RArgumentInfo): Boolean {
