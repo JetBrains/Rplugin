@@ -80,9 +80,7 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   }
 
   /**
-   * Inlay component can can adjust itself to fit the Output.
-   * We need callback because text output can return height immediately,
-   * but Html output can return height only delayed, from it's Platform.runLater.
+   * HTML output returns the height delayed from it's Platform.runLater.
    */
   var onHeightCalculated: ((height: Int) -> Unit)? = null
     set(value) {

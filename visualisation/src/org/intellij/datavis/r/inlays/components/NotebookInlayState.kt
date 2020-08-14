@@ -10,9 +10,8 @@ import javax.swing.JLayeredPane
 abstract class NotebookInlayState : JLayeredPane() {
 
   /**
-   * Inlay component can can adjust itself to fit the Output.
-   * We need callback because text output can return height immediately,
-   * but Html output can return height only delayed, from it's Platform.runLater.
+   * An inlay component can adjust itself to fit the output.
+   * We need callback so a component can return the height delayed.
    */
   var onHeightCalculated: ((height: Int) -> Unit)? = null
 
