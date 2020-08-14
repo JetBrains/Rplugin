@@ -645,6 +645,9 @@ You can find the source code in the following repositories:
                        bundle="messages.RPluginBundle" key="inspection.deprecated.double.starts.name"
                        implementationClass="org.jetbrains.r.inspections.DeprecatedDoubleStarts"/>
 
+        <localInspection shortName="RDeprecatedSetClassArgsInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RPluginBundle" key="inspection.deprecated.setClass.args.name"
+                         implementationClass="org.jetbrains.r.inspections.s4class.DeprecatedSetClassArgsInspection"/>
 
         <intentionAction>
             <category>R</category>
