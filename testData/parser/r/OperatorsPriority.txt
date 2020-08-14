@@ -198,8 +198,8 @@ RFile:OperatorsPriority.r
                                                                                 PsiElement(^)('^')
                                                                               PsiWhiteSpace(' ')
                                                                               R_MEMBER_EXPRESSION
-                                                                                R_OPERATOR_EXPRESSION
-                                                                                  R_OPERATOR_EXPRESSION
+                                                                                R_AT_EXPRESSION
+                                                                                  R_AT_EXPRESSION
                                                                                     R_MEMBER_EXPRESSION
                                                                                       R_IDENTIFIER_EXPRESSION
                                                                                         PsiElement(identifier)('x23')

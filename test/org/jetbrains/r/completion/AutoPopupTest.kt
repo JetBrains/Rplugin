@@ -9,6 +9,7 @@ import com.intellij.testFramework.fixtures.CompletionAutoPopupTester
 import com.intellij.util.ThrowableRunnable
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -182,6 +183,14 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     }
 
     override fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo {
+      throw NotImplementedError()
+    }
+
+    override fun loadShortS4ClassInfos(): List<RS4ClassInfo> {
+      throw NotImplementedError()
+    }
+
+    override fun loadS4ClassInfo(objectName: String): RS4ClassInfo? {
       throw NotImplementedError()
     }
 

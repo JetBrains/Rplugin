@@ -43,47 +43,32 @@ public final class LibrarySummary {
     boolean getExported();
 
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>string parameters = 4;</code>
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
      */
-    java.lang.String getParameters();
+    boolean hasFunctionRepresentation();
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>string parameters = 4;</code>
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
      */
-    com.google.protobuf.ByteString
-        getParametersBytes();
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation();
+    /**
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     */
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder getFunctionRepresentationOrBuilder();
 
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    boolean hasExtraNamedArguments();
+    boolean hasS4ClassRepresentation();
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments();
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation();
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder();
+    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder();
+
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase getRepresentationCase();
   }
   /**
    * Protobuf type {@code library_summary.RLibrarySymbol}
@@ -100,7 +85,6 @@ public final class LibrarySummary {
     private RLibrarySymbol() {
       name_ = "";
       type_ = 0;
-      parameters_ = "";
     }
 
     @java.lang.Override
@@ -151,22 +135,31 @@ public final class LibrarySummary {
               break;
             }
             case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              parameters_ = s;
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder subBuilder = null;
+              if (representationCase_ == 4) {
+                subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_).toBuilder();
+              }
+              representation_ =
+                  input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_);
+                representation_ = subBuilder.buildPartial();
+              }
+              representationCase_ = 4;
               break;
             }
             case 42: {
-              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder subBuilder = null;
-              if (extraNamedArguments_ != null) {
-                subBuilder = extraNamedArguments_.toBuilder();
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder subBuilder = null;
+              if (representationCase_ == 5) {
+                subBuilder = ((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_).toBuilder();
               }
-              extraNamedArguments_ = input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.parser(), extensionRegistry);
+              representation_ =
+                  input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(extraNamedArguments_);
-                extraNamedArguments_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_);
+                representation_ = subBuilder.buildPartial();
               }
-
+              representationCase_ = 5;
               break;
             }
             default: {
@@ -218,6 +211,10 @@ public final class LibrarySummary {
        * <code>DATASET = 2;</code>
        */
       DATASET(2),
+      /**
+       * <code>S4CLASS = 3;</code>
+       */
+      S4CLASS(3),
       UNRECOGNIZED(-1),
       ;
 
@@ -233,6 +230,10 @@ public final class LibrarySummary {
        * <code>DATASET = 2;</code>
        */
       public static final int DATASET_VALUE = 2;
+      /**
+       * <code>S4CLASS = 3;</code>
+       */
+      public static final int S4CLASS_VALUE = 3;
 
 
       public final int getNumber() {
@@ -256,6 +257,7 @@ public final class LibrarySummary {
           case 0: return OTHER;
           case 1: return FUNCTION;
           case 2: return DATASET;
+          case 3: return S4CLASS;
           default: return null;
         }
       }
@@ -308,86 +310,54 @@ public final class LibrarySummary {
       // @@protoc_insertion_point(enum_scope:library_summary.RLibrarySymbol.Type)
     }
 
-    public interface ExtraNamedArgumentsOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.ExtraNamedArguments)
+    public interface FunctionRepresentationOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.FunctionRepresentation)
         com.google.protobuf.MessageOrBuilder {
 
       /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
+       * <code>string parameters = 1;</code>
        */
-      java.util.List<java.lang.String>
-          getArgNamesList();
+      java.lang.String getParameters();
       /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
-       */
-      int getArgNamesCount();
-      /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
-       */
-      java.lang.String getArgNames(int index);
-      /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
+       * <code>string parameters = 1;</code>
        */
       com.google.protobuf.ByteString
-          getArgNamesBytes(int index);
+          getParametersBytes();
 
       /**
-       * <code>repeated string funArgNames = 2;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
-      java.util.List<java.lang.String>
-          getFunArgNamesList();
+      boolean hasExtraNamedArguments();
       /**
-       * <code>repeated string funArgNames = 2;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
-      int getFunArgNamesCount();
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments();
       /**
-       * <code>repeated string funArgNames = 2;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
-      java.lang.String getFunArgNames(int index);
-      /**
-       * <code>repeated string funArgNames = 2;</code>
-       */
-      com.google.protobuf.ByteString
-          getFunArgNamesBytes(int index);
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder();
     }
     /**
-     * Protobuf type {@code library_summary.RLibrarySymbol.ExtraNamedArguments}
+     * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation}
      */
-    public  static final class ExtraNamedArguments extends
+    public  static final class FunctionRepresentation extends
         com.google.protobuf.GeneratedMessageV3 implements
-        // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.ExtraNamedArguments)
-        ExtraNamedArgumentsOrBuilder {
+        // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation)
+        FunctionRepresentationOrBuilder {
     private static final long serialVersionUID = 0L;
-      // Use ExtraNamedArguments.newBuilder() to construct.
-      private ExtraNamedArguments(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      // Use FunctionRepresentation.newBuilder() to construct.
+      private FunctionRepresentation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
-      private ExtraNamedArguments() {
-        argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private FunctionRepresentation() {
+        parameters_ = "";
       }
 
       @java.lang.Override
       @SuppressWarnings({"unused"})
       protected java.lang.Object newInstance(
           UnusedPrivateParameter unused) {
-        return new ExtraNamedArguments();
+        return new FunctionRepresentation();
       }
 
       @java.lang.Override
@@ -395,7 +365,7 @@ public final class LibrarySummary {
       getUnknownFields() {
         return this.unknownFields;
       }
-      private ExtraNamedArguments(
+      private FunctionRepresentation(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -403,7 +373,6 @@ public final class LibrarySummary {
         if (extensionRegistry == null) {
           throw new java.lang.NullPointerException();
         }
-        int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
         try {
@@ -416,20 +385,21 @@ public final class LibrarySummary {
                 break;
               case 10: {
                 java.lang.String s = input.readStringRequireUtf8();
-                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                  argNames_ = new com.google.protobuf.LazyStringArrayList();
-                  mutable_bitField0_ |= 0x00000001;
-                }
-                argNames_.add(s);
+
+                parameters_ = s;
                 break;
               }
               case 18: {
-                java.lang.String s = input.readStringRequireUtf8();
-                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                  funArgNames_ = new com.google.protobuf.LazyStringArrayList();
-                  mutable_bitField0_ |= 0x00000002;
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder subBuilder = null;
+                if (extraNamedArguments_ != null) {
+                  subBuilder = extraNamedArguments_.toBuilder();
                 }
-                funArgNames_.add(s);
+                extraNamedArguments_ = input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(extraNamedArguments_);
+                  extraNamedArguments_ = subBuilder.buildPartial();
+                }
+
                 break;
               }
               default: {
@@ -447,101 +417,943 @@ public final class LibrarySummary {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000001) != 0)) {
-            argNames_ = argNames_.getUnmodifiableView();
-          }
-          if (((mutable_bitField0_ & 0x00000002) != 0)) {
-            funArgNames_ = funArgNames_.getUnmodifiableView();
-          }
           this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
         }
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder.class);
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder.class);
       }
 
-      public static final int ARGNAMES_FIELD_NUMBER = 1;
-      private com.google.protobuf.LazyStringList argNames_;
-      /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
-       */
-      public com.google.protobuf.ProtocolStringList
-          getArgNamesList() {
-        return argNames_;
+      public interface ExtraNamedArgumentsOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        java.util.List<java.lang.String>
+            getArgNamesList();
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        int getArgNamesCount();
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        java.lang.String getArgNames(int index);
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        com.google.protobuf.ByteString
+            getArgNamesBytes(int index);
+
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        java.util.List<java.lang.String>
+            getFunArgNamesList();
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        int getFunArgNamesCount();
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        java.lang.String getFunArgNames(int index);
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        com.google.protobuf.ByteString
+            getFunArgNamesBytes(int index);
       }
       /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
+       * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments}
        */
-      public int getArgNamesCount() {
-        return argNames_.size();
-      }
-      /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
-       */
-      public java.lang.String getArgNames(int index) {
-        return argNames_.get(index);
-      }
-      /**
-       * <pre>
-       * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-       * </pre>
-       *
-       * <code>repeated string argNames = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getArgNamesBytes(int index) {
-        return argNames_.getByteString(index);
+      public  static final class ExtraNamedArguments extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
+          ExtraNamedArgumentsOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use ExtraNamedArguments.newBuilder() to construct.
+        private ExtraNamedArguments(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private ExtraNamedArguments() {
+          argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new ExtraNamedArguments();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private ExtraNamedArguments(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          int mutable_bitField0_ = 0;
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                    argNames_ = new com.google.protobuf.LazyStringArrayList();
+                    mutable_bitField0_ |= 0x00000001;
+                  }
+                  argNames_.add(s);
+                  break;
+                }
+                case 18: {
+                  java.lang.String s = input.readStringRequireUtf8();
+                  if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                    funArgNames_ = new com.google.protobuf.LazyStringArrayList();
+                    mutable_bitField0_ |= 0x00000002;
+                  }
+                  funArgNames_.add(s);
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            if (((mutable_bitField0_ & 0x00000001) != 0)) {
+              argNames_ = argNames_.getUnmodifiableView();
+            }
+            if (((mutable_bitField0_ & 0x00000002) != 0)) {
+              funArgNames_ = funArgNames_.getUnmodifiableView();
+            }
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder.class);
+        }
+
+        public static final int ARGNAMES_FIELD_NUMBER = 1;
+        private com.google.protobuf.LazyStringList argNames_;
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public com.google.protobuf.ProtocolStringList
+            getArgNamesList() {
+          return argNames_;
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public int getArgNamesCount() {
+          return argNames_.size();
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public java.lang.String getArgNames(int index) {
+          return argNames_.get(index);
+        }
+        /**
+         * <pre>
+         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+         * </pre>
+         *
+         * <code>repeated string argNames = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getArgNamesBytes(int index) {
+          return argNames_.getByteString(index);
+        }
+
+        public static final int FUNARGNAMES_FIELD_NUMBER = 2;
+        private com.google.protobuf.LazyStringList funArgNames_;
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public com.google.protobuf.ProtocolStringList
+            getFunArgNamesList() {
+          return funArgNames_;
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public int getFunArgNamesCount() {
+          return funArgNames_.size();
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public java.lang.String getFunArgNames(int index) {
+          return funArgNames_.get(index);
+        }
+        /**
+         * <code>repeated string funArgNames = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getFunArgNamesBytes(int index) {
+          return funArgNames_.getByteString(index);
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          for (int i = 0; i < argNames_.size(); i++) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, argNames_.getRaw(i));
+          }
+          for (int i = 0; i < funArgNames_.size(); i++) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 2, funArgNames_.getRaw(i));
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          {
+            int dataSize = 0;
+            for (int i = 0; i < argNames_.size(); i++) {
+              dataSize += computeStringSizeNoTag(argNames_.getRaw(i));
+            }
+            size += dataSize;
+            size += 1 * getArgNamesList().size();
+          }
+          {
+            int dataSize = 0;
+            for (int i = 0; i < funArgNames_.size(); i++) {
+              dataSize += computeStringSizeNoTag(funArgNames_.getRaw(i));
+            }
+            size += dataSize;
+            size += 1 * getFunArgNamesList().size();
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) obj;
+
+          if (!getArgNamesList()
+              .equals(other.getArgNamesList())) return false;
+          if (!getFunArgNamesList()
+              .equals(other.getFunArgNamesList())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          if (getArgNamesCount() > 0) {
+            hash = (37 * hash) + ARGNAMES_FIELD_NUMBER;
+            hash = (53 * hash) + getArgNamesList().hashCode();
+          }
+          if (getFunArgNamesCount() > 0) {
+            hash = (37 * hash) + FUNARGNAMES_FIELD_NUMBER;
+            hash = (53 * hash) + getFunArgNamesList().hashCode();
+          }
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments(this);
+            int from_bitField0_ = bitField0_;
+            if (((bitField0_ & 0x00000001) != 0)) {
+              argNames_ = argNames_.getUnmodifiableView();
+              bitField0_ = (bitField0_ & ~0x00000001);
+            }
+            result.argNames_ = argNames_;
+            if (((bitField0_ & 0x00000002) != 0)) {
+              funArgNames_ = funArgNames_.getUnmodifiableView();
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.funArgNames_ = funArgNames_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance()) return this;
+            if (!other.argNames_.isEmpty()) {
+              if (argNames_.isEmpty()) {
+                argNames_ = other.argNames_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+              } else {
+                ensureArgNamesIsMutable();
+                argNames_.addAll(other.argNames_);
+              }
+              onChanged();
+            }
+            if (!other.funArgNames_.isEmpty()) {
+              if (funArgNames_.isEmpty()) {
+                funArgNames_ = other.funArgNames_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureFunArgNamesIsMutable();
+                funArgNames_.addAll(other.funArgNames_);
+              }
+              onChanged();
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+          private int bitField0_;
+
+          private com.google.protobuf.LazyStringList argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          private void ensureArgNamesIsMutable() {
+            if (!((bitField0_ & 0x00000001) != 0)) {
+              argNames_ = new com.google.protobuf.LazyStringArrayList(argNames_);
+              bitField0_ |= 0x00000001;
+             }
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public com.google.protobuf.ProtocolStringList
+              getArgNamesList() {
+            return argNames_.getUnmodifiableView();
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public int getArgNamesCount() {
+            return argNames_.size();
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public java.lang.String getArgNames(int index) {
+            return argNames_.get(index);
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public com.google.protobuf.ByteString
+              getArgNamesBytes(int index) {
+            return argNames_.getByteString(index);
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public Builder setArgNames(
+              int index, java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArgNamesIsMutable();
+            argNames_.set(index, value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public Builder addArgNames(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArgNamesIsMutable();
+            argNames_.add(value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public Builder addAllArgNames(
+              java.lang.Iterable<java.lang.String> values) {
+            ensureArgNamesIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, argNames_);
+            onChanged();
+            return this;
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public Builder clearArgNames() {
+            argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            onChanged();
+            return this;
+          }
+          /**
+           * <pre>
+           * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
+           * </pre>
+           *
+           * <code>repeated string argNames = 1;</code>
+           */
+          public Builder addArgNamesBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            ensureArgNamesIsMutable();
+            argNames_.add(value);
+            onChanged();
+            return this;
+          }
+
+          private com.google.protobuf.LazyStringList funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          private void ensureFunArgNamesIsMutable() {
+            if (!((bitField0_ & 0x00000002) != 0)) {
+              funArgNames_ = new com.google.protobuf.LazyStringArrayList(funArgNames_);
+              bitField0_ |= 0x00000002;
+             }
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public com.google.protobuf.ProtocolStringList
+              getFunArgNamesList() {
+            return funArgNames_.getUnmodifiableView();
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public int getFunArgNamesCount() {
+            return funArgNames_.size();
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public java.lang.String getFunArgNames(int index) {
+            return funArgNames_.get(index);
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public com.google.protobuf.ByteString
+              getFunArgNamesBytes(int index) {
+            return funArgNames_.getByteString(index);
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public Builder setFunArgNames(
+              int index, java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureFunArgNamesIsMutable();
+            funArgNames_.set(index, value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public Builder addFunArgNames(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureFunArgNamesIsMutable();
+            funArgNames_.add(value);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public Builder addAllFunArgNames(
+              java.lang.Iterable<java.lang.String> values) {
+            ensureFunArgNamesIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, funArgNames_);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public Builder clearFunArgNames() {
+            funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>repeated string funArgNames = 2;</code>
+           */
+          public Builder addFunArgNamesBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            ensureFunArgNamesIsMutable();
+            funArgNames_.add(value);
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<ExtraNamedArguments>
+            PARSER = new com.google.protobuf.AbstractParser<ExtraNamedArguments>() {
+          @java.lang.Override
+          public ExtraNamedArguments parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new ExtraNamedArguments(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<ExtraNamedArguments> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<ExtraNamedArguments> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
       }
 
-      public static final int FUNARGNAMES_FIELD_NUMBER = 2;
-      private com.google.protobuf.LazyStringList funArgNames_;
+      public static final int PARAMETERS_FIELD_NUMBER = 1;
+      private volatile java.lang.Object parameters_;
       /**
-       * <code>repeated string funArgNames = 2;</code>
+       * <code>string parameters = 1;</code>
        */
-      public com.google.protobuf.ProtocolStringList
-          getFunArgNamesList() {
-        return funArgNames_;
+      public java.lang.String getParameters() {
+        java.lang.Object ref = parameters_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          parameters_ = s;
+          return s;
+        }
       }
       /**
-       * <code>repeated string funArgNames = 2;</code>
-       */
-      public int getFunArgNamesCount() {
-        return funArgNames_.size();
-      }
-      /**
-       * <code>repeated string funArgNames = 2;</code>
-       */
-      public java.lang.String getFunArgNames(int index) {
-        return funArgNames_.get(index);
-      }
-      /**
-       * <code>repeated string funArgNames = 2;</code>
+       * <code>string parameters = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getFunArgNamesBytes(int index) {
-        return funArgNames_.getByteString(index);
+          getParametersBytes() {
+        java.lang.Object ref = parameters_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          parameters_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int EXTRANAMEDARGUMENTS_FIELD_NUMBER = 2;
+      private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments_;
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       */
+      public boolean hasExtraNamedArguments() {
+        return extraNamedArguments_ != null;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
+        return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
+        return getExtraNamedArguments();
       }
 
       private byte memoizedIsInitialized = -1;
@@ -558,11 +1370,11 @@ public final class LibrarySummary {
       @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        for (int i = 0; i < argNames_.size(); i++) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, argNames_.getRaw(i));
+        if (!getParametersBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, parameters_);
         }
-        for (int i = 0; i < funArgNames_.size(); i++) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, funArgNames_.getRaw(i));
+        if (extraNamedArguments_ != null) {
+          output.writeMessage(2, getExtraNamedArguments());
         }
         unknownFields.writeTo(output);
       }
@@ -573,21 +1385,12 @@ public final class LibrarySummary {
         if (size != -1) return size;
 
         size = 0;
-        {
-          int dataSize = 0;
-          for (int i = 0; i < argNames_.size(); i++) {
-            dataSize += computeStringSizeNoTag(argNames_.getRaw(i));
-          }
-          size += dataSize;
-          size += 1 * getArgNamesList().size();
+        if (!getParametersBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, parameters_);
         }
-        {
-          int dataSize = 0;
-          for (int i = 0; i < funArgNames_.size(); i++) {
-            dataSize += computeStringSizeNoTag(funArgNames_.getRaw(i));
-          }
-          size += dataSize;
-          size += 1 * getFunArgNamesList().size();
+        if (extraNamedArguments_ != null) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, getExtraNamedArguments());
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -599,15 +1402,18 @@ public final class LibrarySummary {
         if (obj == this) {
          return true;
         }
-        if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments)) {
+        if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation)) {
           return super.equals(obj);
         }
-        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) obj;
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) obj;
 
-        if (!getArgNamesList()
-            .equals(other.getArgNamesList())) return false;
-        if (!getFunArgNamesList()
-            .equals(other.getFunArgNamesList())) return false;
+        if (!getParameters()
+            .equals(other.getParameters())) return false;
+        if (hasExtraNamedArguments() != other.hasExtraNamedArguments()) return false;
+        if (hasExtraNamedArguments()) {
+          if (!getExtraNamedArguments()
+              .equals(other.getExtraNamedArguments())) return false;
+        }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
       }
@@ -619,82 +1425,80 @@ public final class LibrarySummary {
         }
         int hash = 41;
         hash = (19 * hash) + getDescriptor().hashCode();
-        if (getArgNamesCount() > 0) {
-          hash = (37 * hash) + ARGNAMES_FIELD_NUMBER;
-          hash = (53 * hash) + getArgNamesList().hashCode();
-        }
-        if (getFunArgNamesCount() > 0) {
-          hash = (37 * hash) + FUNARGNAMES_FIELD_NUMBER;
-          hash = (53 * hash) + getFunArgNamesList().hashCode();
+        hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
+        hash = (53 * hash) + getParameters().hashCode();
+        if (hasExtraNamedArguments()) {
+          hash = (37 * hash) + EXTRANAMEDARGUMENTS_FIELD_NUMBER;
+          hash = (53 * hash) + getExtraNamedArguments().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
       }
 
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           java.nio.ByteBuffer data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           java.nio.ByteBuffer data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(byte[] data)
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(java.io.InputStream input)
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseDelimitedFrom(java.io.InputStream input)
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseDelimitedFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parseFrom(
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -707,7 +1511,7 @@ public final class LibrarySummary {
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
       }
-      public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments prototype) {
+      public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
       @java.lang.Override
@@ -723,26 +1527,26 @@ public final class LibrarySummary {
         return builder;
       }
       /**
-       * Protobuf type {@code library_summary.RLibrarySymbol.ExtraNamedArguments}
+       * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.ExtraNamedArguments)
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder {
+          // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.FunctionRepresentation)
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor;
         }
 
         @java.lang.Override
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder.class);
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder.class);
         }
 
-        // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder()
+        // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -760,27 +1564,31 @@ public final class LibrarySummary {
         @java.lang.Override
         public Builder clear() {
           super.clear();
-          argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-          bitField0_ = (bitField0_ & ~0x00000001);
-          funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-          bitField0_ = (bitField0_ & ~0x00000002);
+          parameters_ = "";
+
+          if (extraNamedArgumentsBuilder_ == null) {
+            extraNamedArguments_ = null;
+          } else {
+            extraNamedArguments_ = null;
+            extraNamedArgumentsBuilder_ = null;
+          }
           return this;
         }
 
         @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor;
         }
 
         @java.lang.Override
-        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstanceForType() {
-          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance();
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getDefaultInstanceForType() {
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
         }
 
         @java.lang.Override
-        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments build() {
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments result = buildPartial();
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation build() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
@@ -788,19 +1596,14 @@ public final class LibrarySummary {
         }
 
         @java.lang.Override
-        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments buildPartial() {
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments(this);
-          int from_bitField0_ = bitField0_;
-          if (((bitField0_ & 0x00000001) != 0)) {
-            argNames_ = argNames_.getUnmodifiableView();
-            bitField0_ = (bitField0_ & ~0x00000001);
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation buildPartial() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation(this);
+          result.parameters_ = parameters_;
+          if (extraNamedArgumentsBuilder_ == null) {
+            result.extraNamedArguments_ = extraNamedArguments_;
+          } else {
+            result.extraNamedArguments_ = extraNamedArgumentsBuilder_.build();
           }
-          result.argNames_ = argNames_;
-          if (((bitField0_ & 0x00000002) != 0)) {
-            funArgNames_ = funArgNames_.getUnmodifiableView();
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.funArgNames_ = funArgNames_;
           onBuilt();
           return result;
         }
@@ -839,35 +1642,22 @@ public final class LibrarySummary {
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) {
-            return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments)other);
+          if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) {
+            return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments other) {
-          if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance()) return this;
-          if (!other.argNames_.isEmpty()) {
-            if (argNames_.isEmpty()) {
-              argNames_ = other.argNames_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureArgNamesIsMutable();
-              argNames_.addAll(other.argNames_);
-            }
+        public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation other) {
+          if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance()) return this;
+          if (!other.getParameters().isEmpty()) {
+            parameters_ = other.parameters_;
             onChanged();
           }
-          if (!other.funArgNames_.isEmpty()) {
-            if (funArgNames_.isEmpty()) {
-              funArgNames_ = other.funArgNames_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureFunArgNamesIsMutable();
-              funArgNames_.addAll(other.funArgNames_);
-            }
-            onChanged();
+          if (other.hasExtraNamedArguments()) {
+            mergeExtraNamedArguments(other.getExtraNamedArguments());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -884,11 +1674,1636 @@ public final class LibrarySummary {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments parsedMessage = null;
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments) e.getUnfinishedMessage();
+            parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+
+        private java.lang.Object parameters_ = "";
+        /**
+         * <code>string parameters = 1;</code>
+         */
+        public java.lang.String getParameters() {
+          java.lang.Object ref = parameters_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            parameters_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>string parameters = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getParametersBytes() {
+          java.lang.Object ref = parameters_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            parameters_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string parameters = 1;</code>
+         */
+        public Builder setParameters(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          parameters_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string parameters = 1;</code>
+         */
+        public Builder clearParameters() {
+          
+          parameters_ = getDefaultInstance().getParameters();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string parameters = 1;</code>
+         */
+        public Builder setParametersBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          parameters_ = value;
+          onChanged();
+          return this;
+        }
+
+        private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments_;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder> extraNamedArgumentsBuilder_;
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public boolean hasExtraNamedArguments() {
+          return extraNamedArgumentsBuilder_ != null || extraNamedArguments_ != null;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
+          if (extraNamedArgumentsBuilder_ == null) {
+            return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+          } else {
+            return extraNamedArgumentsBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public Builder setExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments value) {
+          if (extraNamedArgumentsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            extraNamedArguments_ = value;
+            onChanged();
+          } else {
+            extraNamedArgumentsBuilder_.setMessage(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public Builder setExtraNamedArguments(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder builderForValue) {
+          if (extraNamedArgumentsBuilder_ == null) {
+            extraNamedArguments_ = builderForValue.build();
+            onChanged();
+          } else {
+            extraNamedArgumentsBuilder_.setMessage(builderForValue.build());
+          }
+
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public Builder mergeExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments value) {
+          if (extraNamedArgumentsBuilder_ == null) {
+            if (extraNamedArguments_ != null) {
+              extraNamedArguments_ =
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder(extraNamedArguments_).mergeFrom(value).buildPartial();
+            } else {
+              extraNamedArguments_ = value;
+            }
+            onChanged();
+          } else {
+            extraNamedArgumentsBuilder_.mergeFrom(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public Builder clearExtraNamedArguments() {
+          if (extraNamedArgumentsBuilder_ == null) {
+            extraNamedArguments_ = null;
+            onChanged();
+          } else {
+            extraNamedArguments_ = null;
+            extraNamedArgumentsBuilder_ = null;
+          }
+
+          return this;
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder getExtraNamedArgumentsBuilder() {
+          
+          onChanged();
+          return getExtraNamedArgumentsFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
+          if (extraNamedArgumentsBuilder_ != null) {
+            return extraNamedArgumentsBuilder_.getMessageOrBuilder();
+          } else {
+            return extraNamedArguments_ == null ?
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+          }
+        }
+        /**
+         * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder> 
+            getExtraNamedArgumentsFieldBuilder() {
+          if (extraNamedArgumentsBuilder_ == null) {
+            extraNamedArgumentsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder>(
+                    getExtraNamedArguments(),
+                    getParentForChildren(),
+                    isClean());
+            extraNamedArguments_ = null;
+          }
+          return extraNamedArgumentsBuilder_;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.FunctionRepresentation)
+      }
+
+      // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.FunctionRepresentation)
+      private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation();
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<FunctionRepresentation>
+          PARSER = new com.google.protobuf.AbstractParser<FunctionRepresentation>() {
+        @java.lang.Override
+        public FunctionRepresentation parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new FunctionRepresentation(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<FunctionRepresentation> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<FunctionRepresentation> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface S4ClassRepresentationOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.S4ClassRepresentation)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>string packageName = 1;</code>
+       */
+      java.lang.String getPackageName();
+      /**
+       * <code>string packageName = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getPackageNameBytes();
+
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> 
+          getSlotsList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getSlots(int index);
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      int getSlotsCount();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> 
+          getSlotsOrBuilderList();
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder getSlotsOrBuilder(
+          int index);
+
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      java.util.List<java.lang.String>
+          getSuperClassesList();
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      int getSuperClassesCount();
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      java.lang.String getSuperClasses(int index);
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      com.google.protobuf.ByteString
+          getSuperClassesBytes(int index);
+
+      /**
+       * <code>bool isVirtual = 4;</code>
+       */
+      boolean getIsVirtual();
+    }
+    /**
+     * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation}
+     */
+    public  static final class S4ClassRepresentation extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.S4ClassRepresentation)
+        S4ClassRepresentationOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use S4ClassRepresentation.newBuilder() to construct.
+      private S4ClassRepresentation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private S4ClassRepresentation() {
+        packageName_ = "";
+        slots_ = java.util.Collections.emptyList();
+        superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new S4ClassRepresentation();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private S4ClassRepresentation(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                packageName_ = s;
+                break;
+              }
+              case 18: {
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  slots_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot>();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                slots_.add(
+                    input.readMessage(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.parser(), extensionRegistry));
+                break;
+              }
+              case 26: {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                  superClasses_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000002;
+                }
+                superClasses_.add(s);
+                break;
+              }
+              case 32: {
+
+                isVirtual_ = input.readBool();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+            slots_ = java.util.Collections.unmodifiableList(slots_);
+          }
+          if (((mutable_bitField0_ & 0x00000002) != 0)) {
+            superClasses_ = superClasses_.getUnmodifiableView();
+          }
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder.class);
+      }
+
+      public interface S4ClassSlotOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>string name = 1;</code>
+         */
+        java.lang.String getName();
+        /**
+         * <code>string name = 1;</code>
+         */
+        com.google.protobuf.ByteString
+            getNameBytes();
+
+        /**
+         * <code>string type = 2;</code>
+         */
+        java.lang.String getType();
+        /**
+         * <code>string type = 2;</code>
+         */
+        com.google.protobuf.ByteString
+            getTypeBytes();
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot}
+       */
+      public  static final class S4ClassSlot extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
+          S4ClassSlotOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use S4ClassSlot.newBuilder() to construct.
+        private S4ClassSlot(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private S4ClassSlot() {
+          name_ = "";
+          type_ = "";
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new S4ClassSlot();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private S4ClassSlot(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 18: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  type_ = s;
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder.class);
+        }
+
+        public static final int NAME_FIELD_NUMBER = 1;
+        private volatile java.lang.Object name_;
+        /**
+         * <code>string name = 1;</code>
+         */
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            name_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string name = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int TYPE_FIELD_NUMBER = 2;
+        private volatile java.lang.Object type_;
+        /**
+         * <code>string type = 2;</code>
+         */
+        public java.lang.String getType() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            type_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string type = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getTypeBytes() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            type_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          if (!getNameBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 2, type_);
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          if (!getNameBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, type_);
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)) {
+            return super.equals(obj);
+          }
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot) obj;
+
+          if (!getName()
+              .equals(other.getName())) return false;
+          if (!getType()
+              .equals(other.getType())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + TYPE_FIELD_NUMBER;
+          hash = (53 * hash) + getType().hashCode();
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder.class);
+          }
+
+          // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+
+            type_ = "";
+
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getDefaultInstanceForType() {
+            return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot build() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot buildPartial() {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot(this);
+            result.name_ = name_;
+            result.type_ = type_;
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot) {
+              return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot other) {
+            if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.getDefaultInstance()) return this;
+            if (!other.getName().isEmpty()) {
+              name_ = other.name_;
+              onChanged();
+            }
+            if (!other.getType().isEmpty()) {
+              type_ = other.type_;
+              onChanged();
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+
+          private java.lang.Object name_ = "";
+          /**
+           * <code>string name = 1;</code>
+           */
+          public java.lang.String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           */
+          public com.google.protobuf.ByteString
+              getNameBytes() {
+            java.lang.Object ref = name_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              name_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string name = 1;</code>
+           */
+          public Builder setName(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           */
+          public Builder clearName() {
+            
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string name = 1;</code>
+           */
+          public Builder setNameBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            name_ = value;
+            onChanged();
+            return this;
+          }
+
+          private java.lang.Object type_ = "";
+          /**
+           * <code>string type = 2;</code>
+           */
+          public java.lang.String getType() {
+            java.lang.Object ref = type_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              type_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string type = 2;</code>
+           */
+          public com.google.protobuf.ByteString
+              getTypeBytes() {
+            java.lang.Object ref = type_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              type_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string type = 2;</code>
+           */
+          public Builder setType(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
+            type_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string type = 2;</code>
+           */
+          public Builder clearType() {
+            
+            type_ = getDefaultInstance().getType();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string type = 2;</code>
+           */
+          public Builder setTypeBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            type_ = value;
+            onChanged();
+            return this;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
+        }
+
+        // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
+        private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot();
+        }
+
+        public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<S4ClassSlot>
+            PARSER = new com.google.protobuf.AbstractParser<S4ClassSlot>() {
+          @java.lang.Override
+          public S4ClassSlot parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new S4ClassSlot(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<S4ClassSlot> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<S4ClassSlot> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
+      public static final int PACKAGENAME_FIELD_NUMBER = 1;
+      private volatile java.lang.Object packageName_;
+      /**
+       * <code>string packageName = 1;</code>
+       */
+      public java.lang.String getPackageName() {
+        java.lang.Object ref = packageName_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          packageName_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>string packageName = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPackageNameBytes() {
+        java.lang.Object ref = packageName_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          packageName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int SLOTS_FIELD_NUMBER = 2;
+      private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> slots_;
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> getSlotsList() {
+        return slots_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> 
+          getSlotsOrBuilderList() {
+        return slots_;
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      public int getSlotsCount() {
+        return slots_.size();
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getSlots(int index) {
+        return slots_.get(index);
+      }
+      /**
+       * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder getSlotsOrBuilder(
+          int index) {
+        return slots_.get(index);
+      }
+
+      public static final int SUPERCLASSES_FIELD_NUMBER = 3;
+      private com.google.protobuf.LazyStringList superClasses_;
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getSuperClassesList() {
+        return superClasses_;
+      }
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      public int getSuperClassesCount() {
+        return superClasses_.size();
+      }
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      public java.lang.String getSuperClasses(int index) {
+        return superClasses_.get(index);
+      }
+      /**
+       * <code>repeated string superClasses = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSuperClassesBytes(int index) {
+        return superClasses_.getByteString(index);
+      }
+
+      public static final int ISVIRTUAL_FIELD_NUMBER = 4;
+      private boolean isVirtual_;
+      /**
+       * <code>bool isVirtual = 4;</code>
+       */
+      public boolean getIsVirtual() {
+        return isVirtual_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (!getPackageNameBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, packageName_);
+        }
+        for (int i = 0; i < slots_.size(); i++) {
+          output.writeMessage(2, slots_.get(i));
+        }
+        for (int i = 0; i < superClasses_.size(); i++) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, superClasses_.getRaw(i));
+        }
+        if (isVirtual_ != false) {
+          output.writeBool(4, isVirtual_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (!getPackageNameBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, packageName_);
+        }
+        for (int i = 0; i < slots_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, slots_.get(i));
+        }
+        {
+          int dataSize = 0;
+          for (int i = 0; i < superClasses_.size(); i++) {
+            dataSize += computeStringSizeNoTag(superClasses_.getRaw(i));
+          }
+          size += dataSize;
+          size += 1 * getSuperClassesList().size();
+        }
+        if (isVirtual_ != false) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(4, isVirtual_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation)) {
+          return super.equals(obj);
+        }
+        org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation other = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) obj;
+
+        if (!getPackageName()
+            .equals(other.getPackageName())) return false;
+        if (!getSlotsList()
+            .equals(other.getSlotsList())) return false;
+        if (!getSuperClassesList()
+            .equals(other.getSuperClassesList())) return false;
+        if (getIsVirtual()
+            != other.getIsVirtual()) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + PACKAGENAME_FIELD_NUMBER;
+        hash = (53 * hash) + getPackageName().hashCode();
+        if (getSlotsCount() > 0) {
+          hash = (37 * hash) + SLOTS_FIELD_NUMBER;
+          hash = (53 * hash) + getSlotsList().hashCode();
+        }
+        if (getSuperClassesCount() > 0) {
+          hash = (37 * hash) + SUPERCLASSES_FIELD_NUMBER;
+          hash = (53 * hash) + getSuperClassesList().hashCode();
+        }
+        hash = (37 * hash) + ISVIRTUAL_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getIsVirtual());
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:library_summary.RLibrarySymbol.S4ClassRepresentation)
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.class, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder.class);
+        }
+
+        // Construct using org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+            getSlotsFieldBuilder();
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          packageName_ = "";
+
+          if (slotsBuilder_ == null) {
+            slots_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            slotsBuilder_.clear();
+          }
+          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          isVirtual_ = false;
+
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.jetbrains.r.packages.LibrarySummary.internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getDefaultInstanceForType() {
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation build() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation buildPartial() {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation result = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation(this);
+          int from_bitField0_ = bitField0_;
+          result.packageName_ = packageName_;
+          if (slotsBuilder_ == null) {
+            if (((bitField0_ & 0x00000001) != 0)) {
+              slots_ = java.util.Collections.unmodifiableList(slots_);
+              bitField0_ = (bitField0_ & ~0x00000001);
+            }
+            result.slots_ = slots_;
+          } else {
+            result.slots_ = slotsBuilder_.build();
+          }
+          if (((bitField0_ & 0x00000002) != 0)) {
+            superClasses_ = superClasses_.getUnmodifiableView();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.superClasses_ = superClasses_;
+          result.isVirtual_ = isVirtual_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) {
+            return mergeFrom((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation other) {
+          if (other == org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance()) return this;
+          if (!other.getPackageName().isEmpty()) {
+            packageName_ = other.packageName_;
+            onChanged();
+          }
+          if (slotsBuilder_ == null) {
+            if (!other.slots_.isEmpty()) {
+              if (slots_.isEmpty()) {
+                slots_ = other.slots_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+              } else {
+                ensureSlotsIsMutable();
+                slots_.addAll(other.slots_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.slots_.isEmpty()) {
+              if (slotsBuilder_.isEmpty()) {
+                slotsBuilder_.dispose();
+                slotsBuilder_ = null;
+                slots_ = other.slots_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+                slotsBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getSlotsFieldBuilder() : null;
+              } else {
+                slotsBuilder_.addAllMessages(other.slots_);
+              }
+            }
+          }
+          if (!other.superClasses_.isEmpty()) {
+            if (superClasses_.isEmpty()) {
+              superClasses_ = other.superClasses_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureSuperClassesIsMutable();
+              superClasses_.addAll(other.superClasses_);
+            }
+            onChanged();
+          }
+          if (other.getIsVirtual() != false) {
+            setIsVirtual(other.getIsVirtual());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
@@ -899,226 +3314,431 @@ public final class LibrarySummary {
         }
         private int bitField0_;
 
-        private com.google.protobuf.LazyStringList argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        private void ensureArgNamesIsMutable() {
-          if (!((bitField0_ & 0x00000001) != 0)) {
-            argNames_ = new com.google.protobuf.LazyStringArrayList(argNames_);
-            bitField0_ |= 0x00000001;
-           }
-        }
+        private java.lang.Object packageName_ = "";
         /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
+         * <code>string packageName = 1;</code>
          */
-        public com.google.protobuf.ProtocolStringList
-            getArgNamesList() {
-          return argNames_.getUnmodifiableView();
+        public java.lang.String getPackageName() {
+          java.lang.Object ref = packageName_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            packageName_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
-         */
-        public int getArgNamesCount() {
-          return argNames_.size();
-        }
-        /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
-         */
-        public java.lang.String getArgNames(int index) {
-          return argNames_.get(index);
-        }
-        /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
+         * <code>string packageName = 1;</code>
          */
         public com.google.protobuf.ByteString
-            getArgNamesBytes(int index) {
-          return argNames_.getByteString(index);
+            getPackageNameBytes() {
+          java.lang.Object ref = packageName_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            packageName_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
         }
         /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
+         * <code>string packageName = 1;</code>
          */
-        public Builder setArgNames(
-            int index, java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureArgNamesIsMutable();
-          argNames_.set(index, value);
-          onChanged();
-          return this;
-        }
-        /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
-         */
-        public Builder addArgNames(
+        public Builder setPackageName(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  ensureArgNamesIsMutable();
-          argNames_.add(value);
+  
+          packageName_ = value;
           onChanged();
           return this;
         }
         /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
+         * <code>string packageName = 1;</code>
          */
-        public Builder addAllArgNames(
-            java.lang.Iterable<java.lang.String> values) {
-          ensureArgNamesIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, argNames_);
+        public Builder clearPackageName() {
+          
+          packageName_ = getDefaultInstance().getPackageName();
           onChanged();
           return this;
         }
         /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
+         * <code>string packageName = 1;</code>
          */
-        public Builder clearArgNames() {
-          argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-          return this;
-        }
-        /**
-         * <pre>
-         * See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
-         * </pre>
-         *
-         * <code>repeated string argNames = 1;</code>
-         */
-        public Builder addArgNamesBytes(
+        public Builder setPackageNameBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-          ensureArgNamesIsMutable();
-          argNames_.add(value);
+          
+          packageName_ = value;
           onChanged();
           return this;
         }
 
-        private com.google.protobuf.LazyStringList funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        private void ensureFunArgNamesIsMutable() {
+        private java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> slots_ =
+          java.util.Collections.emptyList();
+        private void ensureSlotsIsMutable() {
+          if (!((bitField0_ & 0x00000001) != 0)) {
+            slots_ = new java.util.ArrayList<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot>(slots_);
+            bitField0_ |= 0x00000001;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> slotsBuilder_;
+
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> getSlotsList() {
+          if (slotsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(slots_);
+          } else {
+            return slotsBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public int getSlotsCount() {
+          if (slotsBuilder_ == null) {
+            return slots_.size();
+          } else {
+            return slotsBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getSlots(int index) {
+          if (slotsBuilder_ == null) {
+            return slots_.get(index);
+          } else {
+            return slotsBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder setSlots(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot value) {
+          if (slotsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSlotsIsMutable();
+            slots_.set(index, value);
+            onChanged();
+          } else {
+            slotsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder setSlots(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder builderForValue) {
+          if (slotsBuilder_ == null) {
+            ensureSlotsIsMutable();
+            slots_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            slotsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder addSlots(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot value) {
+          if (slotsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSlotsIsMutable();
+            slots_.add(value);
+            onChanged();
+          } else {
+            slotsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder addSlots(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot value) {
+          if (slotsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureSlotsIsMutable();
+            slots_.add(index, value);
+            onChanged();
+          } else {
+            slotsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder addSlots(
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder builderForValue) {
+          if (slotsBuilder_ == null) {
+            ensureSlotsIsMutable();
+            slots_.add(builderForValue.build());
+            onChanged();
+          } else {
+            slotsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder addSlots(
+            int index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder builderForValue) {
+          if (slotsBuilder_ == null) {
+            ensureSlotsIsMutable();
+            slots_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            slotsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder addAllSlots(
+            java.lang.Iterable<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> values) {
+          if (slotsBuilder_ == null) {
+            ensureSlotsIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, slots_);
+            onChanged();
+          } else {
+            slotsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder clearSlots() {
+          if (slotsBuilder_ == null) {
+            slots_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+            onChanged();
+          } else {
+            slotsBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public Builder removeSlots(int index) {
+          if (slotsBuilder_ == null) {
+            ensureSlotsIsMutable();
+            slots_.remove(index);
+            onChanged();
+          } else {
+            slotsBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder getSlotsBuilder(
+            int index) {
+          return getSlotsFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder getSlotsOrBuilder(
+            int index) {
+          if (slotsBuilder_ == null) {
+            return slots_.get(index);  } else {
+            return slotsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> 
+             getSlotsOrBuilderList() {
+          if (slotsBuilder_ != null) {
+            return slotsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(slots_);
+          }
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder addSlotsBuilder() {
+          return getSlotsFieldBuilder().addBuilder(
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder addSlotsBuilder(
+            int index) {
+          return getSlotsFieldBuilder().addBuilder(
+              index, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
+         */
+        public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder> 
+             getSlotsBuilderList() {
+          return getSlotsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> 
+            getSlotsFieldBuilder() {
+          if (slotsBuilder_ == null) {
+            slotsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder>(
+                    slots_,
+                    ((bitField0_ & 0x00000001) != 0),
+                    getParentForChildren(),
+                    isClean());
+            slots_ = null;
+          }
+          return slotsBuilder_;
+        }
+
+        private com.google.protobuf.LazyStringList superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        private void ensureSuperClassesIsMutable() {
           if (!((bitField0_ & 0x00000002) != 0)) {
-            funArgNames_ = new com.google.protobuf.LazyStringArrayList(funArgNames_);
+            superClasses_ = new com.google.protobuf.LazyStringArrayList(superClasses_);
             bitField0_ |= 0x00000002;
            }
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
         public com.google.protobuf.ProtocolStringList
-            getFunArgNamesList() {
-          return funArgNames_.getUnmodifiableView();
+            getSuperClassesList() {
+          return superClasses_.getUnmodifiableView();
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public int getFunArgNamesCount() {
-          return funArgNames_.size();
+        public int getSuperClassesCount() {
+          return superClasses_.size();
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public java.lang.String getFunArgNames(int index) {
-          return funArgNames_.get(index);
+        public java.lang.String getSuperClasses(int index) {
+          return superClasses_.get(index);
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
         public com.google.protobuf.ByteString
-            getFunArgNamesBytes(int index) {
-          return funArgNames_.getByteString(index);
+            getSuperClassesBytes(int index) {
+          return superClasses_.getByteString(index);
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public Builder setFunArgNames(
+        public Builder setSuperClasses(
             int index, java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  ensureFunArgNamesIsMutable();
-          funArgNames_.set(index, value);
+  ensureSuperClassesIsMutable();
+          superClasses_.set(index, value);
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public Builder addFunArgNames(
+        public Builder addSuperClasses(
             java.lang.String value) {
           if (value == null) {
     throw new NullPointerException();
   }
-  ensureFunArgNamesIsMutable();
-          funArgNames_.add(value);
+  ensureSuperClassesIsMutable();
+          superClasses_.add(value);
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public Builder addAllFunArgNames(
+        public Builder addAllSuperClasses(
             java.lang.Iterable<java.lang.String> values) {
-          ensureFunArgNamesIsMutable();
+          ensureSuperClassesIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, funArgNames_);
+              values, superClasses_);
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public Builder clearFunArgNames() {
-          funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        public Builder clearSuperClasses() {
+          superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
           bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
           return this;
         }
         /**
-         * <code>repeated string funArgNames = 2;</code>
+         * <code>repeated string superClasses = 3;</code>
          */
-        public Builder addFunArgNamesBytes(
+        public Builder addSuperClassesBytes(
             com.google.protobuf.ByteString value) {
           if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-          ensureFunArgNamesIsMutable();
-          funArgNames_.add(value);
+          ensureSuperClassesIsMutable();
+          superClasses_.add(value);
+          onChanged();
+          return this;
+        }
+
+        private boolean isVirtual_ ;
+        /**
+         * <code>bool isVirtual = 4;</code>
+         */
+        public boolean getIsVirtual() {
+          return isVirtual_;
+        }
+        /**
+         * <code>bool isVirtual = 4;</code>
+         */
+        public Builder setIsVirtual(boolean value) {
+          
+          isVirtual_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bool isVirtual = 4;</code>
+         */
+        public Builder clearIsVirtual() {
+          
+          isVirtual_ = false;
           onChanged();
           return this;
         }
@@ -1135,44 +3755,82 @@ public final class LibrarySummary {
         }
 
 
-        // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.ExtraNamedArguments)
+        // @@protoc_insertion_point(builder_scope:library_summary.RLibrarySymbol.S4ClassRepresentation)
       }
 
-      // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.ExtraNamedArguments)
-      private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments DEFAULT_INSTANCE;
+      // @@protoc_insertion_point(class_scope:library_summary.RLibrarySymbol.S4ClassRepresentation)
+      private static final org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation DEFAULT_INSTANCE;
       static {
-        DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments();
+        DEFAULT_INSTANCE = new org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation();
       }
 
-      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstance() {
+      public static org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getDefaultInstance() {
         return DEFAULT_INSTANCE;
       }
 
-      private static final com.google.protobuf.Parser<ExtraNamedArguments>
-          PARSER = new com.google.protobuf.AbstractParser<ExtraNamedArguments>() {
+      private static final com.google.protobuf.Parser<S4ClassRepresentation>
+          PARSER = new com.google.protobuf.AbstractParser<S4ClassRepresentation>() {
         @java.lang.Override
-        public ExtraNamedArguments parsePartialFrom(
+        public S4ClassRepresentation parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new ExtraNamedArguments(input, extensionRegistry);
+          return new S4ClassRepresentation(input, extensionRegistry);
         }
       };
 
-      public static com.google.protobuf.Parser<ExtraNamedArguments> parser() {
+      public static com.google.protobuf.Parser<S4ClassRepresentation> parser() {
         return PARSER;
       }
 
       @java.lang.Override
-      public com.google.protobuf.Parser<ExtraNamedArguments> getParserForType() {
+      public com.google.protobuf.Parser<S4ClassRepresentation> getParserForType() {
         return PARSER;
       }
 
       @java.lang.Override
-      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getDefaultInstanceForType() {
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
+    }
+
+    private int representationCase_ = 0;
+    private java.lang.Object representation_;
+    public enum RepresentationCase
+        implements com.google.protobuf.Internal.EnumLite {
+      FUNCTIONREPRESENTATION(4),
+      S4CLASSREPRESENTATION(5),
+      REPRESENTATION_NOT_SET(0);
+      private final int value;
+      private RepresentationCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static RepresentationCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static RepresentationCase forNumber(int value) {
+        switch (value) {
+          case 4: return FUNCTIONREPRESENTATION;
+          case 5: return S4CLASSREPRESENTATION;
+          case 0: return REPRESENTATION_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public RepresentationCase
+    getRepresentationCase() {
+      return RepresentationCase.forNumber(
+          representationCase_);
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
@@ -1235,79 +3893,56 @@ public final class LibrarySummary {
       return exported_;
     }
 
-    public static final int PARAMETERS_FIELD_NUMBER = 4;
-    private volatile java.lang.Object parameters_;
+    public static final int FUNCTIONREPRESENTATION_FIELD_NUMBER = 4;
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>string parameters = 4;</code>
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
      */
-    public java.lang.String getParameters() {
-      java.lang.Object ref = parameters_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        parameters_ = s;
-        return s;
-      }
+    public boolean hasFunctionRepresentation() {
+      return representationCase_ == 4;
     }
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>string parameters = 4;</code>
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
      */
-    public com.google.protobuf.ByteString
-        getParametersBytes() {
-      java.lang.Object ref = parameters_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        parameters_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation() {
+      if (representationCase_ == 4) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
       }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
+    }
+    /**
+     * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     */
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder getFunctionRepresentationOrBuilder() {
+      if (representationCase_ == 4) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
+      }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
     }
 
-    public static final int EXTRANAMEDARGUMENTS_FIELD_NUMBER = 5;
-    private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments_;
+    public static final int S4CLASSREPRESENTATION_FIELD_NUMBER = 5;
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    public boolean hasExtraNamedArguments() {
-      return extraNamedArguments_ != null;
+    public boolean hasS4ClassRepresentation() {
+      return representationCase_ == 5;
     }
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments() {
-      return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation() {
+      if (representationCase_ == 5) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
+      }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
     }
     /**
-     * <pre>
-     * for functions
-     * </pre>
-     *
-     * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+     * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
-    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
-      return getExtraNamedArguments();
+    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder() {
+      if (representationCase_ == 5) {
+         return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
+      }
+      return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1333,11 +3968,11 @@ public final class LibrarySummary {
       if (exported_ != false) {
         output.writeBool(3, exported_);
       }
-      if (!getParametersBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, parameters_);
+      if (representationCase_ == 4) {
+        output.writeMessage(4, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_);
       }
-      if (extraNamedArguments_ != null) {
-        output.writeMessage(5, getExtraNamedArguments());
+      if (representationCase_ == 5) {
+        output.writeMessage(5, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_);
       }
       unknownFields.writeTo(output);
     }
@@ -1359,12 +3994,13 @@ public final class LibrarySummary {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, exported_);
       }
-      if (!getParametersBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, parameters_);
-      }
-      if (extraNamedArguments_ != null) {
+      if (representationCase_ == 4) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, getExtraNamedArguments());
+          .computeMessageSize(4, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_);
+      }
+      if (representationCase_ == 5) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1386,12 +4022,18 @@ public final class LibrarySummary {
       if (type_ != other.type_) return false;
       if (getExported()
           != other.getExported()) return false;
-      if (!getParameters()
-          .equals(other.getParameters())) return false;
-      if (hasExtraNamedArguments() != other.hasExtraNamedArguments()) return false;
-      if (hasExtraNamedArguments()) {
-        if (!getExtraNamedArguments()
-            .equals(other.getExtraNamedArguments())) return false;
+      if (!getRepresentationCase().equals(other.getRepresentationCase())) return false;
+      switch (representationCase_) {
+        case 4:
+          if (!getFunctionRepresentation()
+              .equals(other.getFunctionRepresentation())) return false;
+          break;
+        case 5:
+          if (!getS4ClassRepresentation()
+              .equals(other.getS4ClassRepresentation())) return false;
+          break;
+        case 0:
+        default:
       }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
@@ -1411,11 +4053,17 @@ public final class LibrarySummary {
       hash = (37 * hash) + EXPORTED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getExported());
-      hash = (37 * hash) + PARAMETERS_FIELD_NUMBER;
-      hash = (53 * hash) + getParameters().hashCode();
-      if (hasExtraNamedArguments()) {
-        hash = (37 * hash) + EXTRANAMEDARGUMENTS_FIELD_NUMBER;
-        hash = (53 * hash) + getExtraNamedArguments().hashCode();
+      switch (representationCase_) {
+        case 4:
+          hash = (37 * hash) + FUNCTIONREPRESENTATION_FIELD_NUMBER;
+          hash = (53 * hash) + getFunctionRepresentation().hashCode();
+          break;
+        case 5:
+          hash = (37 * hash) + S4CLASSREPRESENTATION_FIELD_NUMBER;
+          hash = (53 * hash) + getS4ClassRepresentation().hashCode();
+          break;
+        case 0:
+        default:
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1556,14 +4204,8 @@ public final class LibrarySummary {
 
         exported_ = false;
 
-        parameters_ = "";
-
-        if (extraNamedArgumentsBuilder_ == null) {
-          extraNamedArguments_ = null;
-        } else {
-          extraNamedArguments_ = null;
-          extraNamedArgumentsBuilder_ = null;
-        }
+        representationCase_ = 0;
+        representation_ = null;
         return this;
       }
 
@@ -1593,12 +4235,21 @@ public final class LibrarySummary {
         result.name_ = name_;
         result.type_ = type_;
         result.exported_ = exported_;
-        result.parameters_ = parameters_;
-        if (extraNamedArgumentsBuilder_ == null) {
-          result.extraNamedArguments_ = extraNamedArguments_;
-        } else {
-          result.extraNamedArguments_ = extraNamedArgumentsBuilder_.build();
+        if (representationCase_ == 4) {
+          if (functionRepresentationBuilder_ == null) {
+            result.representation_ = representation_;
+          } else {
+            result.representation_ = functionRepresentationBuilder_.build();
+          }
         }
+        if (representationCase_ == 5) {
+          if (s4ClassRepresentationBuilder_ == null) {
+            result.representation_ = representation_;
+          } else {
+            result.representation_ = s4ClassRepresentationBuilder_.build();
+          }
+        }
+        result.representationCase_ = representationCase_;
         onBuilt();
         return result;
       }
@@ -1657,12 +4308,18 @@ public final class LibrarySummary {
         if (other.getExported() != false) {
           setExported(other.getExported());
         }
-        if (!other.getParameters().isEmpty()) {
-          parameters_ = other.parameters_;
-          onChanged();
-        }
-        if (other.hasExtraNamedArguments()) {
-          mergeExtraNamedArguments(other.getExtraNamedArguments());
+        switch (other.getRepresentationCase()) {
+          case FUNCTIONREPRESENTATION: {
+            mergeFunctionRepresentation(other.getFunctionRepresentation());
+            break;
+          }
+          case S4CLASSREPRESENTATION: {
+            mergeS4ClassRepresentation(other.getS4ClassRepresentation());
+            break;
+          }
+          case REPRESENTATION_NOT_SET: {
+            break;
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1692,6 +4349,21 @@ public final class LibrarySummary {
         }
         return this;
       }
+      private int representationCase_ = 0;
+      private java.lang.Object representation_;
+      public RepresentationCase
+          getRepresentationCase() {
+        return RepresentationCase.forNumber(
+            representationCase_);
+      }
+
+      public Builder clearRepresentation() {
+        representationCase_ = 0;
+        representation_ = null;
+        onChanged();
+        return this;
+      }
+
 
       private java.lang.Object name_ = "";
       /**
@@ -1833,246 +4505,276 @@ public final class LibrarySummary {
         return this;
       }
 
-      private java.lang.Object parameters_ = "";
-      /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>string parameters = 4;</code>
-       */
-      public java.lang.String getParameters() {
-        java.lang.Object ref = parameters_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          parameters_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>string parameters = 4;</code>
-       */
-      public com.google.protobuf.ByteString
-          getParametersBytes() {
-        java.lang.Object ref = parameters_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          parameters_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>string parameters = 4;</code>
-       */
-      public Builder setParameters(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        parameters_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>string parameters = 4;</code>
-       */
-      public Builder clearParameters() {
-        
-        parameters_ = getDefaultInstance().getParameters();
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>string parameters = 4;</code>
-       */
-      public Builder setParametersBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        parameters_ = value;
-        onChanged();
-        return this;
-      }
-
-      private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder> extraNamedArgumentsBuilder_;
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder> functionRepresentationBuilder_;
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public boolean hasExtraNamedArguments() {
-        return extraNamedArgumentsBuilder_ != null || extraNamedArguments_ != null;
+      public boolean hasFunctionRepresentation() {
+        return representationCase_ == 4;
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments getExtraNamedArguments() {
-        if (extraNamedArgumentsBuilder_ == null) {
-          return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation() {
+        if (functionRepresentationBuilder_ == null) {
+          if (representationCase_ == 4) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
         } else {
-          return extraNamedArgumentsBuilder_.getMessage();
+          if (representationCase_ == 4) {
+            return functionRepresentationBuilder_.getMessage();
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
         }
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public Builder setExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments value) {
-        if (extraNamedArgumentsBuilder_ == null) {
+      public Builder setFunctionRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation value) {
+        if (functionRepresentationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          extraNamedArguments_ = value;
+          representation_ = value;
           onChanged();
         } else {
-          extraNamedArgumentsBuilder_.setMessage(value);
+          functionRepresentationBuilder_.setMessage(value);
         }
-
+        representationCase_ = 4;
         return this;
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public Builder setExtraNamedArguments(
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder builderForValue) {
-        if (extraNamedArgumentsBuilder_ == null) {
-          extraNamedArguments_ = builderForValue.build();
+      public Builder setFunctionRepresentation(
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder builderForValue) {
+        if (functionRepresentationBuilder_ == null) {
+          representation_ = builderForValue.build();
           onChanged();
         } else {
-          extraNamedArgumentsBuilder_.setMessage(builderForValue.build());
+          functionRepresentationBuilder_.setMessage(builderForValue.build());
         }
-
+        representationCase_ = 4;
         return this;
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public Builder mergeExtraNamedArguments(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments value) {
-        if (extraNamedArgumentsBuilder_ == null) {
-          if (extraNamedArguments_ != null) {
-            extraNamedArguments_ =
-              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder(extraNamedArguments_).mergeFrom(value).buildPartial();
+      public Builder mergeFunctionRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation value) {
+        if (functionRepresentationBuilder_ == null) {
+          if (representationCase_ == 4 &&
+              representation_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance()) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_)
+                .mergeFrom(value).buildPartial();
           } else {
-            extraNamedArguments_ = value;
+            representation_ = value;
           }
           onChanged();
         } else {
-          extraNamedArgumentsBuilder_.mergeFrom(value);
+          if (representationCase_ == 4) {
+            functionRepresentationBuilder_.mergeFrom(value);
+          }
+          functionRepresentationBuilder_.setMessage(value);
         }
-
+        representationCase_ = 4;
         return this;
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public Builder clearExtraNamedArguments() {
-        if (extraNamedArgumentsBuilder_ == null) {
-          extraNamedArguments_ = null;
-          onChanged();
+      public Builder clearFunctionRepresentation() {
+        if (functionRepresentationBuilder_ == null) {
+          if (representationCase_ == 4) {
+            representationCase_ = 0;
+            representation_ = null;
+            onChanged();
+          }
         } else {
-          extraNamedArguments_ = null;
-          extraNamedArgumentsBuilder_ = null;
+          if (representationCase_ == 4) {
+            representationCase_ = 0;
+            representation_ = null;
+          }
+          functionRepresentationBuilder_.clear();
         }
-
         return this;
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder getExtraNamedArgumentsBuilder() {
-        
-        onChanged();
-        return getExtraNamedArgumentsFieldBuilder().getBuilder();
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder getFunctionRepresentationBuilder() {
+        return getFunctionRepresentationFieldBuilder().getBuilder();
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
-      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
-        if (extraNamedArgumentsBuilder_ != null) {
-          return extraNamedArgumentsBuilder_.getMessageOrBuilder();
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder getFunctionRepresentationOrBuilder() {
+        if ((representationCase_ == 4) && (functionRepresentationBuilder_ != null)) {
+          return functionRepresentationBuilder_.getMessageOrBuilder();
         } else {
-          return extraNamedArguments_ == null ?
-              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
+          if (representationCase_ == 4) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
         }
       }
       /**
-       * <pre>
-       * for functions
-       * </pre>
-       *
-       * <code>.library_summary.RLibrarySymbol.ExtraNamedArguments extraNamedArguments = 5;</code>
+       * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder> 
-          getExtraNamedArgumentsFieldBuilder() {
-        if (extraNamedArgumentsBuilder_ == null) {
-          extraNamedArgumentsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.ExtraNamedArgumentsOrBuilder>(
-                  getExtraNamedArguments(),
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder> 
+          getFunctionRepresentationFieldBuilder() {
+        if (functionRepresentationBuilder_ == null) {
+          if (!(representationCase_ == 4)) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.getDefaultInstance();
+          }
+          functionRepresentationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder>(
+                  (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_,
                   getParentForChildren(),
                   isClean());
-          extraNamedArguments_ = null;
+          representation_ = null;
         }
-        return extraNamedArgumentsBuilder_;
+        representationCase_ = 4;
+        onChanged();;
+        return functionRepresentationBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder> s4ClassRepresentationBuilder_;
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public boolean hasS4ClassRepresentation() {
+        return representationCase_ == 5;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation() {
+        if (s4ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 5) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
+        } else {
+          if (representationCase_ == 5) {
+            return s4ClassRepresentationBuilder_.getMessage();
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public Builder setS4ClassRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation value) {
+        if (s4ClassRepresentationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          representation_ = value;
+          onChanged();
+        } else {
+          s4ClassRepresentationBuilder_.setMessage(value);
+        }
+        representationCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public Builder setS4ClassRepresentation(
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder builderForValue) {
+        if (s4ClassRepresentationBuilder_ == null) {
+          representation_ = builderForValue.build();
+          onChanged();
+        } else {
+          s4ClassRepresentationBuilder_.setMessage(builderForValue.build());
+        }
+        representationCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public Builder mergeS4ClassRepresentation(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation value) {
+        if (s4ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 5 &&
+              representation_ != org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance()) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.newBuilder((org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            representation_ = value;
+          }
+          onChanged();
+        } else {
+          if (representationCase_ == 5) {
+            s4ClassRepresentationBuilder_.mergeFrom(value);
+          }
+          s4ClassRepresentationBuilder_.setMessage(value);
+        }
+        representationCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public Builder clearS4ClassRepresentation() {
+        if (s4ClassRepresentationBuilder_ == null) {
+          if (representationCase_ == 5) {
+            representationCase_ = 0;
+            representation_ = null;
+            onChanged();
+          }
+        } else {
+          if (representationCase_ == 5) {
+            representationCase_ = 0;
+            representation_ = null;
+          }
+          s4ClassRepresentationBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder getS4ClassRepresentationBuilder() {
+        return getS4ClassRepresentationFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder() {
+        if ((representationCase_ == 5) && (s4ClassRepresentationBuilder_ != null)) {
+          return s4ClassRepresentationBuilder_.getMessageOrBuilder();
+        } else {
+          if (representationCase_ == 5) {
+            return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
+          }
+          return org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder> 
+          getS4ClassRepresentationFieldBuilder() {
+        if (s4ClassRepresentationBuilder_ == null) {
+          if (!(representationCase_ == 5)) {
+            representation_ = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.getDefaultInstance();
+          }
+          s4ClassRepresentationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder>(
+                  (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_,
+                  getParentForChildren(),
+                  isClean());
+          representation_ = null;
+        }
+        representationCase_ = 5;
+        onChanged();;
+        return s4ClassRepresentationBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -3277,10 +5979,25 @@ public final class LibrarySummary {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_library_summary_RLibrarySymbol_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor;
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable;
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_library_summary_RLibraryPackage_descriptor;
   private static final 
@@ -3296,21 +6013,32 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\266\002\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\216\006\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
-      ".Type\022\020\n\010exported\030\003 \001(\010\022\022\n\nparameters\030\004 " +
-      "\001(\t\022P\n\023extraNamedArguments\030\005 \001(\01323.libra" +
-      "ry_summary.RLibrarySymbol.ExtraNamedArgu" +
-      "ments\032<\n\023ExtraNamedArguments\022\020\n\010argNames" +
-      "\030\001 \003(\t\022\023\n\013funArgNames\030\002 \003(\t\",\n\004Type\022\t\n\005O" +
-      "THER\020\000\022\014\n\010FUNCTION\020\001\022\013\n\007DATASET\020\002\"\330\001\n\017RL" +
-      "ibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030" +
-      "\002 \001(\0162).library_summary.RLibraryPackage." +
-      "Priority\0220\n\007symbols\030\003 \003(\0132\037.library_summ" +
-      "ary.RLibrarySymbol\"H\n\010Priority\022\013\n\007UNKNOW" +
-      "N\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014" +
-      "\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.packages" +
-      "b\006proto3"
+      ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
+      "sentation\030\004 \001(\01326.library_summary.RLibra" +
+      "rySymbol.FunctionRepresentationH\000\022V\n\025s4C" +
+      "lassRepresentation\030\005 \001(\01325.library_summa" +
+      "ry.RLibrarySymbol.S4ClassRepresentationH" +
+      "\000\032\323\001\n\026FunctionRepresentation\022\022\n\nparamete" +
+      "rs\030\001 \001(\t\022g\n\023extraNamedArguments\030\002 \001(\0132J." +
+      "library_summary.RLibrarySymbol.FunctionR" +
+      "epresentation.ExtraNamedArguments\032<\n\023Ext" +
+      "raNamedArguments\022\020\n\010argNames\030\001 \003(\t\022\023\n\013fu" +
+      "nArgNames\030\002 \003(\t\032\322\001\n\025S4ClassRepresentatio" +
+      "n\022\023\n\013packageName\030\001 \001(\t\022P\n\005slots\030\002 \003(\0132A." +
+      "library_summary.RLibrarySymbol.S4ClassRe" +
+      "presentation.S4ClassSlot\022\024\n\014superClasses" +
+      "\030\003 \003(\t\022\021\n\tisVirtual\030\004 \001(\010\032)\n\013S4ClassSlot" +
+      "\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\"9\n\004Type\022\t\n\005" +
+      "OTHER\020\000\022\014\n\010FUNCTION\020\001\022\013\n\007DATASET\020\002\022\013\n\007S4" +
+      "CLASS\020\003B\020\n\016representation\"\330\001\n\017RLibraryPa" +
+      "ckage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162)." +
+      "library_summary.RLibraryPackage.Priority" +
+      "\0220\n\007symbols\030\003 \003(\0132\037.library_summary.RLib" +
+      "rarySymbol\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n\002N" +
+      "A\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTION" +
+      "AL\020\004B\032\n\030org.jetbrains.r.packagesb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -3321,13 +6049,31 @@ public final class LibrarySummary {
     internal_static_library_summary_RLibrarySymbol_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_library_summary_RLibrarySymbol_descriptor,
-        new java.lang.String[] { "Name", "Type", "Exported", "Parameters", "ExtraNamedArguments", });
-    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor =
+        new java.lang.String[] { "Name", "Type", "Exported", "FunctionRepresentation", "S4ClassRepresentation", "Representation", });
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor =
       internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(0);
-    internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_fieldAccessorTable = new
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_library_summary_RLibrarySymbol_ExtraNamedArguments_descriptor,
+        internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor,
+        new java.lang.String[] { "Parameters", "ExtraNamedArguments", });
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor =
+      internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_descriptor.getNestedTypes().get(0);
+    internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_FunctionRepresentation_ExtraNamedArguments_descriptor,
         new java.lang.String[] { "ArgNames", "FunArgNames", });
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor =
+      internal_static_library_summary_RLibrarySymbol_descriptor.getNestedTypes().get(1);
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor,
+        new java.lang.String[] { "PackageName", "Slots", "SuperClasses", "IsVirtual", });
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor =
+      internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_descriptor.getNestedTypes().get(0);
+    internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_library_summary_RLibrarySymbol_S4ClassRepresentation_S4ClassSlot_descriptor,
+        new java.lang.String[] { "Name", "Type", });
     internal_static_library_summary_RLibraryPackage_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_library_summary_RLibraryPackage_fieldAccessorTable = new

@@ -9,6 +9,7 @@
   parserUtilClass="org.jetbrains.r.parsing.RParserUtil"
   elementTypeFactory("assignment_statement")="org.jetbrains.r.psi.RElementTypeFactory.getElementTypeByName"
   elementTypeFactory("parameter")="org.jetbrains.r.psi.RElementTypeFactory.getElementTypeByName"
+  elementTypeFactory("call_expression")="org.jetbrains.r.psi.RElementTypeFactory.getElementTypeByName"
   implements="org.jetbrains.r.psi.api.RPsiElement"
   extends="org.jetbrains.r.psi.RElementImpl"
 
@@ -117,13 +118,21 @@ expression ::=
     function_expression | left_assign_expression | eq_assign_expression | right_assign_expression |
     unary_tilde_expression | tilde_expression | or_expression | and_expression | unary_not_expression | compare_expression | plusminus_expression |
     muldiv_expression | infix_expression | colon_expression | unary_plusminus_expression | exp_expression | subscription_expression |
-    call_expression | member_expression | at_expression | namespace_access_expression | primitive_expression { methods= [ getReference ] }
+    call_impl_expression | member_expression | at_expression | namespace_access_expression | primitive_expression { methods= [ getReference ] }
 
 //operators
 fake assignment_statement ::= {
   methods=[isLeft isRight isEqual getAssignedValue getAssignee getName setName getNameIdentifier isFunctionDeclaration getFunctionParameters getParameterNameList isClosureAssignment]
   extends="org.jetbrains.r.psi.impl.RAssignmentBase"
   stubClass="org.jetbrains.r.psi.stubs.RAssignmentStub"
+  implements="org.jetbrains.r.psi.api.RExpression"
+}
+
+// Direct usage produce "employs left-recursion unsupported by generator" warning
+fake call_expression ::= {
+  methods=[ getArgumentList getExpression getAssociatedS4ClassInfo ]
+  extends="org.jetbrains.r.psi.impl.RCallExpressionBase"
+  stubClass="org.jetbrains.r.psi.stubs.RCallExpressionStub"
   implements="org.jetbrains.r.psi.api.RExpression"
 }
 
@@ -175,7 +184,7 @@ private member_tag ::= primitive_expression | namespace_access_expression | pare
 member_expression ::= expression !<<isNewLine>> list_subset_operator member_tag { methods = [ getTag ] extends=operator_expression }
 
 // R grammar allows only symbol or string after @ operator. We check the correctness in the annotator.
-at_expression ::= expression !<<isNewLine>> at_operator expression { elementType=operator_expression }
+at_expression ::= expression !<<isNewLine>> at_operator expression { extends=operator_expression }
 
 namespace_access_expression ::= identifier !<<isNewLine>> ('::' | ':::') identifier_expression {
   methods = [ Namespace="identifier" Identifier="identifier_expression" getNamespaceName]
@@ -232,7 +241,7 @@ private args_tail ::= (',' arg )* { pin(".*")=1 }
 private non_empty_first_arg ::= non_empty_arg args_tail { pin=1 }
 private empty_first_arg ::= external_empty_expression ',' arg args_tail { pin=2 }
 argument_list ::= '(' &<<incBrackets>> ( non_empty_first_arg | empty_first_arg )? ')' &<<decBrackets>> { pin(".*")=1 }
-call_expression ::= expression !<<isNewLine>> argument_list
+call_impl_expression ::= expression !<<isNewLine>> argument_list { elementType=call_expression }
 
 parameter ::= identifier_expression ('=' expression)? {
   methods = [ getName setName getNameIdentifier getVariable getDefaultValue]

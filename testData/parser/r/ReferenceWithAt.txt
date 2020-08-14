@@ -1,6 +1,6 @@
 RFile:ReferenceWithAt.r
   R_ASSIGNMENT_STATEMENT
-    R_OPERATOR_EXPRESSION
+    R_AT_EXPRESSION
       R_IDENTIFIER_EXPRESSION
         PsiElement(identifier)('c')
       R_AT_OPERATOR

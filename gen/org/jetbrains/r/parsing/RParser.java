@@ -40,14 +40,14 @@ public class RParser implements PsiParser, LightPsiParser {
       R_COMPARE_OPERATOR, R_EXP_OPERATOR, R_INFIX_OPERATOR, R_LIST_SUBSET_OPERATOR,
       R_MULDIV_OPERATOR, R_NOT_OPERATOR, R_OR_OPERATOR, R_PLUSMINUS_OPERATOR,
       R_TILDE_OPERATOR),
-    create_token_set_(R_ASSIGNMENT_STATEMENT, R_BLOCK_EXPRESSION, R_BOOLEAN_LITERAL, R_BOUNDARY_LITERAL,
-      R_BREAK_STATEMENT, R_CALL_EXPRESSION, R_EMPTY_EXPRESSION, R_EXPRESSION,
-      R_FOR_STATEMENT, R_FUNCTION_EXPRESSION, R_HELP_EXPRESSION, R_IDENTIFIER_EXPRESSION,
-      R_IF_STATEMENT, R_INVALID_LITERAL, R_MEMBER_EXPRESSION, R_NAMESPACE_ACCESS_EXPRESSION,
-      R_NA_LITERAL, R_NEXT_STATEMENT, R_NULL_LITERAL, R_NUMERIC_LITERAL_EXPRESSION,
-      R_OPERATOR_EXPRESSION, R_PARENTHESIZED_EXPRESSION, R_REPEAT_STATEMENT, R_STRING_LITERAL_EXPRESSION,
-      R_SUBSCRIPTION_EXPRESSION, R_TILDE_EXPRESSION, R_UNARY_NOT_EXPRESSION, R_UNARY_PLUSMINUS_EXPRESSION,
-      R_UNARY_TILDE_EXPRESSION, R_WHILE_STATEMENT),
+    create_token_set_(R_ASSIGNMENT_STATEMENT, R_AT_EXPRESSION, R_BLOCK_EXPRESSION, R_BOOLEAN_LITERAL,
+      R_BOUNDARY_LITERAL, R_BREAK_STATEMENT, R_CALL_EXPRESSION, R_EMPTY_EXPRESSION,
+      R_EXPRESSION, R_FOR_STATEMENT, R_FUNCTION_EXPRESSION, R_HELP_EXPRESSION,
+      R_IDENTIFIER_EXPRESSION, R_IF_STATEMENT, R_INVALID_LITERAL, R_MEMBER_EXPRESSION,
+      R_NAMESPACE_ACCESS_EXPRESSION, R_NA_LITERAL, R_NEXT_STATEMENT, R_NULL_LITERAL,
+      R_NUMERIC_LITERAL_EXPRESSION, R_OPERATOR_EXPRESSION, R_PARENTHESIZED_EXPRESSION, R_REPEAT_STATEMENT,
+      R_STRING_LITERAL_EXPRESSION, R_SUBSCRIPTION_EXPRESSION, R_TILDE_EXPRESSION, R_UNARY_NOT_EXPRESSION,
+      R_UNARY_PLUSMINUS_EXPRESSION, R_UNARY_TILDE_EXPRESSION, R_WHILE_STATEMENT),
   };
 
   /* ********************************************************** */
@@ -784,7 +784,7 @@ public class RParser implements PsiParser, LightPsiParser {
   // 23: PREFIX(unary_plusminus_expression)
   // 24: BINARY(exp_expression)
   // 25: POSTFIX(subscription_expression)
-  // 26: POSTFIX(call_expression)
+  // 26: POSTFIX(call_impl_expression)
   // 27: POSTFIX(member_expression)
   // 28: BINARY(at_expression)
   // 29: PREFIX(namespace_access_expression)
@@ -880,7 +880,7 @@ public class RParser implements PsiParser, LightPsiParser {
         r = true;
         exit_section_(b, l, m, R_SUBSCRIPTION_EXPRESSION, r, true, null);
       }
-      else if (g < 26 && call_expression_0(b, l + 1)) {
+      else if (g < 26 && call_impl_expression_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, R_CALL_EXPRESSION, r, true, null);
       }
@@ -890,7 +890,7 @@ public class RParser implements PsiParser, LightPsiParser {
       }
       else if (g < 28 && at_expression_0(b, l + 1)) {
         r = expression(b, l, 28);
-        exit_section_(b, l, m, R_OPERATOR_EXPRESSION, r, true, null);
+        exit_section_(b, l, m, R_AT_EXPRESSION, r, true, null);
       }
       else {
         exit_section_(b, l, m, null, false, false, null);
@@ -1591,19 +1591,19 @@ public class RParser implements PsiParser, LightPsiParser {
   }
 
   // !<<isNewLine>> argument_list
-  private static boolean call_expression_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "call_expression_0")) return false;
+  private static boolean call_impl_expression_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "call_impl_expression_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = call_expression_0_0(b, l + 1);
+    r = call_impl_expression_0_0(b, l + 1);
     r = r && argument_list(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // !<<isNewLine>>
-  private static boolean call_expression_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "call_expression_0_0")) return false;
+  private static boolean call_impl_expression_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "call_impl_expression_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NOT_);
     r = !isNewLine(b, l + 1);

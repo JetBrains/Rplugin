@@ -17,6 +17,7 @@ import org.jetbrains.r.psi.api.*
 object RElementFilters {
   val IMPORT_FILTER = ImportFilter()
   val MEMBER_ACCESS_FILTER = FilterPattern(MemberFilter())
+  val AT_ACCESS_FILTER = FilterPattern(AtFilter())
   val IMPORT_CONTEXT = FilterPattern(IMPORT_FILTER)
   val IDENTIFIER_FILTER = FilterPattern(AndFilter(IdentifierFilter(), NotFilter(IMPORT_FILTER)))
   val OPERATOR_FILTER = FilterPattern(OperatorFilter())
@@ -30,6 +31,15 @@ class MemberFilter : ElementFilter {
     val memberExpression = PsiTreeUtil.getParentOfType(context, org.jetbrains.r.psi.api.RMemberExpression::class.java, false) ?: return false
     return !(PsiTreeUtil.isAncestor(memberExpression.leftExpr, context ?: return false, false))
 
+  }
+
+  override fun isClassAcceptable(hintClass: Class<*>?) = true
+}
+
+class AtFilter : ElementFilter {
+  override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+    val atExpression = PsiTreeUtil.getParentOfType(context, RAtExpression::class.java, false) ?: return false
+    return !(PsiTreeUtil.isAncestor(atExpression.leftExpr, context ?: return false, false))
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?) = true

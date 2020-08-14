@@ -13,17 +13,35 @@ message RLibrarySymbol {
     OTHER = 0;
     FUNCTION = 1;
     DATASET = 2;
+    S4CLASS = 3;
   }
-  message ExtraNamedArguments {
+  message FunctionRepresentation {
+    message ExtraNamedArguments {
       // See org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo for details
       repeated string argNames = 1;
       repeated string funArgNames = 2;
+    }
+    string parameters = 1;
+    ExtraNamedArguments extraNamedArguments = 2;
   }
+  message S4ClassRepresentation {
+    message S4ClassSlot {
+      string name = 1;
+      string type = 2;
+    }
+    string packageName = 1;
+    repeated S4ClassSlot slots = 2;
+    repeated string superClasses = 3;
+    bool isVirtual = 4;
+  }
+
   string name = 1;
   Type type = 2;
   bool exported = 3;
-  string parameters = 4; // for functions
-  ExtraNamedArguments extraNamedArguments = 5; // for functions
+  oneof representation {
+    FunctionRepresentation functionRepresentation = 4;
+    S4ClassRepresentation s4ClassRepresentation = 5;
+  }
 }
 
 message RLibraryPackage {

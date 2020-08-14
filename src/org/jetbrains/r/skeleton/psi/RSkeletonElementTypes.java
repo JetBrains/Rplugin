@@ -6,4 +6,5 @@ package org.jetbrains.r.skeleton.psi;
 
 public interface RSkeletonElementTypes {
   RSkeletonAssignmentElementType R_SKELETON_ASSIGNMENT_STATEMENT = new RSkeletonAssignmentElementType();
+  RSkeletonCallExpressionElementType R_SKELETON_CALL_EXPRESSION = new RSkeletonCallExpressionElementType();
 }

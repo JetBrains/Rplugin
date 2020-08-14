@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.api.RFunctionExpression
@@ -16,6 +17,7 @@ import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValue
 import org.jetbrains.r.rinterop.getWithCheckCanceled
+import java.util.concurrent.atomic.AtomicReference
 
 interface RConsoleRuntimeInfo {
   val variables: Map<String, RValue>
@@ -28,6 +30,8 @@ interface RConsoleRuntimeInfo {
   fun loadInheritorNamedArguments(baseFunctionName: String) : List<String>
   fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo
   fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo
+  fun loadShortS4ClassInfos(): List<RS4ClassInfo>
+  fun loadS4ClassInfo(objectName: String): RS4ClassInfo?
   fun getFormalArguments(expression: String) : List<String>
   fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
@@ -54,6 +58,8 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val extraNamedArgumentsStampCache by rInterop.Cached { mutableMapOf<String, Long>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
+  private val s4ClassInfosCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
+  private val loadedShortS4ClassInfosCache by rInterop.Cached { AtomicReference<List<RS4ClassInfo>?>(null) }
 
   override val rMarkdownChunkOptions by lazy { rInterop.rMarkdownChunkOptions }
 
@@ -99,6 +105,24 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
       }
     }
     return extraNamedArgumentsCache.getValue(functionName)
+  }
+
+  /**
+   * @return list of [RS4ClassInfo] without information about [RS4ClassInfo.slots] and [RS4ClassInfo.superClasses]
+   */
+  override fun loadShortS4ClassInfos(): List<RS4ClassInfo> {
+    loadedShortS4ClassInfosCache.get().let { infos ->
+      if (infos != null) return infos
+      return rInterop.getLoadedShortS4ClassInfos().also {
+        loadedShortS4ClassInfosCache.set(it)
+      } ?: emptyList()
+    }
+  }
+
+  override fun loadS4ClassInfo(objectName: String): RS4ClassInfo? {
+    return s4ClassInfosCache.getOrPut(objectName) {
+      rInterop.getS4ClassInfo(RReference.expressionRef(objectName, rInterop))
+    }
   }
 
   override fun getFormalArguments(expression: String): List<String> {

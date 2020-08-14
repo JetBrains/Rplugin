@@ -14,12 +14,13 @@ public interface RElementTypes {
   IElementType R_ARGUMENT_LIST = new RElementType("R_ARGUMENT_LIST");
   IElementType R_ASSIGNMENT_STATEMENT = RElementTypeFactory.getElementTypeByName("R_ASSIGNMENT_STATEMENT");
   IElementType R_ASSIGN_OPERATOR = new RElementType("R_ASSIGN_OPERATOR");
+  IElementType R_AT_EXPRESSION = new RElementType("R_AT_EXPRESSION");
   IElementType R_AT_OPERATOR = new RElementType("R_AT_OPERATOR");
   IElementType R_BLOCK_EXPRESSION = new RElementType("R_BLOCK_EXPRESSION");
   IElementType R_BOOLEAN_LITERAL = new RElementType("R_BOOLEAN_LITERAL");
   IElementType R_BOUNDARY_LITERAL = new RElementType("R_BOUNDARY_LITERAL");
   IElementType R_BREAK_STATEMENT = new RElementType("R_BREAK_STATEMENT");
-  IElementType R_CALL_EXPRESSION = new RElementType("R_CALL_EXPRESSION");
+  IElementType R_CALL_EXPRESSION = RElementTypeFactory.getElementTypeByName("R_CALL_EXPRESSION");
   IElementType R_COLON_OPERATOR = new RElementType("R_COLON_OPERATOR");
   IElementType R_COMPARE_OPERATOR = new RElementType("R_COMPARE_OPERATOR");
   IElementType R_EMPTY_EXPRESSION = new RElementType("R_EMPTY_EXPRESSION");
@@ -142,6 +143,9 @@ public interface RElementTypes {
       }
       else if (type == R_ASSIGN_OPERATOR) {
         return new RAssignOperatorImpl(node);
+      }
+      else if (type == R_AT_EXPRESSION) {
+        return new RAtExpressionImpl(node);
       }
       else if (type == R_AT_OPERATOR) {
         return new RAtOperatorImpl(node);

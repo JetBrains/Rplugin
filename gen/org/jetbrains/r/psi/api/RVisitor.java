@@ -25,6 +25,10 @@ public class RVisitor extends PsiElementVisitor {
     // visitPsiNameIdentifierOwner(o);
   }
 
+  public void visitAtExpression(@NotNull RAtExpression o) {
+    visitOperatorExpression(o);
+  }
+
   public void visitAtOperator(@NotNull RAtOperator o) {
     visitOperator(o);
   }

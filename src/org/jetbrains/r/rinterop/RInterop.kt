@@ -33,6 +33,8 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.classes.RS4ClassInfo
+import org.jetbrains.r.classes.RS4ClassSlot
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -812,6 +814,28 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       RExtraNamedArgumentsInfo(res.argNamesList, res.funArgNamesList)
     } catch (e: RInteropTerminated) {
       RExtraNamedArgumentsInfo(emptyList(), emptyList())
+    }
+  }
+
+  /**
+   * @return list of [RS4ClassInfo] without information about [RS4ClassInfo.slots] and [RS4ClassInfo.superClasses]
+   */
+  fun getLoadedShortS4ClassInfos(): List<RS4ClassInfo>? {
+    return try {
+      executeWithCheckCancel(asyncStub::getLoadedShortS4ClassInfos, Empty.getDefaultInstance()).shortS4ClassInfosList.map {
+        RS4ClassInfo(it.name, it.`package`, emptyList(), emptyList(), it.isVirtual)
+      }
+    } catch (e: RInteropTerminated) {
+      null
+    }
+  }
+
+  fun getS4ClassInfo(ref: RReference): RS4ClassInfo? {
+    return try {
+      val res = executeWithCheckCancel(asyncStub::getS4ClassInfo, ref.proto)
+      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList, res.isVirtual)
+    } catch (e: RInteropTerminated) {
+      null
     }
   }
 

@@ -24,6 +24,8 @@ import org.jetbrains.r.interpreter.RMultiOutputProcessor
 import org.jetbrains.r.interpreter.runMultiOutputHelper
 import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
+import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.*
+import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol
 import org.jetbrains.r.packages.remote.RepoUtils
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.skeleton.RSkeletonFileType
@@ -39,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 8
+  private const val CUR_SKELETON_VERSION = 9
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -145,12 +147,12 @@ object RSkeletonUtil {
   fun getPriorityFromSkeletonFile(file: File): RPackagePriority? {
     return try {
       val priority = file.inputStream().use {
-        RLibraryPackage.parseFrom(it).priority
+        parseFrom(it).priority
       }
       return when (priority) {
-        RLibraryPackage.Priority.NA -> RPackagePriority.NA
-        RLibraryPackage.Priority.BASE -> RPackagePriority.BASE
-        RLibraryPackage.Priority.RECOMMENDED -> RPackagePriority.RECOMMENDED
+        Priority.NA -> RPackagePriority.NA
+        Priority.BASE -> RPackagePriority.BASE
+        Priority.RECOMMENDED -> RPackagePriority.RECOMMENDED
         else -> null
       }
     } catch (e: Exception) {
@@ -166,20 +168,20 @@ object RSkeletonUtil {
   private const val invalidPackageFormat = "Invalid package summary format"
 
   private fun convertToBinFormat(packageName: String, packageSummary: String ): RLibraryPackage {
-    val packageBuilder = RLibraryPackage.newBuilder().setName(packageName)
+    val packageBuilder = newBuilder().setName(packageName)
     packageBuilder.setName(packageName)
     val lines: List<String> = packageSummary.lines()
     if (lines.isEmpty()) throw IOException("Empty summary")
 
     val priority = when (val it = lines[0].trim()) {
-      "", "NA" -> RLibraryPackage.Priority.NA
-      "BASE" -> RLibraryPackage.Priority.BASE
-      "RECOMMENDED" -> RLibraryPackage.Priority.RECOMMENDED
-      "OPTIONAL" -> RLibraryPackage.Priority.OPTIONAL
+      "", "NA" -> Priority.NA
+      "BASE" -> Priority.BASE
+      "RECOMMENDED" -> Priority.RECOMMENDED
+      "OPTIONAL" -> Priority.OPTIONAL
       else -> {
         LOG.error("Unknown priority for package $packageName: $it",
                   Attachment("$packageName.RSummary", packageSummary))
-        RLibraryPackage.Priority.NA
+        Priority.NA
       }
     }
     packageBuilder.setPriority(priority)
@@ -200,21 +202,18 @@ object RSkeletonUtil {
 
       val methodName = parts[0]
       val exported = parts[1] == "TRUE"
-      val builder = LibrarySummary.RLibrarySymbol.newBuilder()
+      val builder = RLibrarySymbol.newBuilder()
         .setName(methodName)
         .setExported(exported)
-      val typesNumber = parts[2].toInt()
 
-      val typesEndIndex = 3 + typesNumber
-      if (parts.size < typesEndIndex) {
-        throw IOException("Expected $typesNumber types in line $lineNum: " + line)
+      val (types, typesEndIndex) = readRepeatedAttribute(parts, 2) {
+        throw IOException("Expected $it types in line $lineNum: $line")
       }
-
-      val types = parts.subList(3, typesEndIndex)
 
       if (types.contains("function") && typesEndIndex < parts.size) {
         //No "function" description for exported symbols like `something <- .Primitive("some_primitive")`
-        builder.setType(LibrarySummary.RLibrarySymbol.Type.FUNCTION)
+        builder.type = RLibrarySymbol.Type.FUNCTION
+        val functionRepresentationBuilder = RLibrarySymbol.FunctionRepresentation.newBuilder()
 
         val signature = parts[typesEndIndex]
         val prefix = "function ("
@@ -223,21 +222,55 @@ object RSkeletonUtil {
         }
 
         val parameters = signature.substring(prefix.length, signature.length - 2)
-        builder.setParameters(parameters)
+        functionRepresentationBuilder.parameters = parameters
 
         if (parts.size > typesEndIndex + 1) {
-          val extraNamedArgsBuilder = LibrarySummary.RLibrarySymbol.ExtraNamedArguments.newBuilder()
+          val extraNamedArgsBuilder = RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder()
           extraNamedArgsBuilder.addAllArgNames(parts[typesEndIndex + 1].split(";"))
           extraNamedArgsBuilder.addAllFunArgNames(parts[typesEndIndex + 2].split(";"))
-          builder.setExtraNamedArguments(extraNamedArgsBuilder)
+          functionRepresentationBuilder.setExtraNamedArguments(extraNamedArgsBuilder)
         }
+        builder.setFunctionRepresentation(functionRepresentationBuilder)
+      }
+      else if (types.contains("classRepresentation") && parts.size > typesEndIndex) {
+        builder.type = RLibrarySymbol.Type.S4CLASS
+        val s4ClassRepresentationBuilder = RLibrarySymbol.S4ClassRepresentation.newBuilder()
+
+        s4ClassRepresentationBuilder.packageName = packageName
+        val (slots, slotsEndIndex) = readRepeatedAttribute(parts, typesEndIndex) {
+          throw IOException("Expected $it slots in line $lineNum: $line")
+        }
+        val (superClasses, superClassesEndIndex) = readRepeatedAttribute(parts, slotsEndIndex) {
+          throw IOException("Expected $it superClasses in line $lineNum: $line")
+        }
+        val isVirtual = parts[superClassesEndIndex] == "TRUE"
+
+        for (i in slots.indices step 2) {
+          val slotBuilder = RLibrarySymbol.S4ClassRepresentation.S4ClassSlot.newBuilder()
+          slotBuilder.name = slots[i]
+          slotBuilder.type = slots[i + 1]
+          s4ClassRepresentationBuilder.addSlots(slotBuilder)
+        }
+        s4ClassRepresentationBuilder.addAllSuperClasses(superClasses)
+        s4ClassRepresentationBuilder.isVirtual = isVirtual
+        builder.setS4ClassRepresentation(s4ClassRepresentationBuilder)
       }
       else if (types.contains("data.frame")) {
-        builder.setType(LibrarySummary.RLibrarySymbol.Type.DATASET)
+        builder.type = RLibrarySymbol.Type.DATASET
       }
       packageBuilder.addSymbols(builder.build())
     }
     return packageBuilder.build()
+  }
+
+  private inline fun readRepeatedAttribute(parts: List<String>, ind: Int, onError: (Int) -> Unit): Pair<List<String>, Int> {
+    val attrNumber = parts[ind].toInt()
+    val attrEndIndex = ind + attrNumber + 1
+    if (parts.size < attrEndIndex) {
+      onError(attrNumber)
+      return emptyList<String>() to -1
+    }
+    return parts.subList(ind + 1, attrEndIndex) to attrEndIndex
   }
 
   private class RSkeletonProcessor(private val es: ExecutorService,

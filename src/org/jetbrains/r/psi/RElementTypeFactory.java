@@ -20,6 +20,9 @@ public final class RElementTypeFactory {
         if (name.equals("R_PARAMETER")) {
             return new RParameterElementType(name);
         }
+        if (name.equals("R_CALL_EXPRESSION")) {
+            return new RCallExpressionElementType(name);
+        }
         throw new IllegalArgumentException("Unknown element type: " + name);
     }
 }

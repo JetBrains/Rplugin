@@ -407,6 +407,7 @@ You can find the source code in the following repositories:
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.RS4ClassNameIndex"/>
         <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>

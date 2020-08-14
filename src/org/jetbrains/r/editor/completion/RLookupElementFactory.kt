@@ -21,7 +21,9 @@ import kotlin.math.min
 const val TABLE_MANIPULATION_PRIORITY = 110.0
 const val IMPORT_PACKAGE_PRIORITY = 110.0
 const val NAMED_ARGUMENT_PRIORITY = 100.0
+const val LOADED_S4_CLASS_NAME = 100.0
 const val VARIABLE_GROUPING = 90
+const val NOT_LOADED_S4_CLASS_NAME = 50.0
 const val PACKAGE_PRIORITY = -1.0
 const val GLOBAL_GROUPING = 0
 const val NAMESPACE_NAME_GROUPING = -1
@@ -95,6 +97,16 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
       context.editor.caretModel.moveToOffset(context.tailOffset)
     }
     return createLookupElementWithGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Package),
+                                           insertHandler, NAMESPACE_NAME_GROUPING)
+  }
+
+  fun createAtAccess(lookupString: String, type: String = ""): LookupElement {
+    val insertHandler = InsertHandler<LookupElement> { context, _ ->
+      val document = context.document
+      document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
+      context.editor.caretModel.moveToOffset(context.tailOffset)
+    }
+    return createLookupElementWithGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Field, type),
                                            insertHandler, NAMESPACE_NAME_GROUPING)
   }
 

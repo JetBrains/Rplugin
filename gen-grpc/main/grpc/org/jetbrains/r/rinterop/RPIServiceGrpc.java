@@ -1825,6 +1825,37 @@ public final class RPIServiceGrpc {
     return getFindExtraNamedArgumentsMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfo",
+      requestType = org.jetbrains.r.rinterop.RRef.class,
+      responseType = org.jetbrains.r.rinterop.S4ClassInfo.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod;
+    if ((getGetS4ClassInfoMethod = RPIServiceGrpc.getGetS4ClassInfoMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetS4ClassInfoMethod = RPIServiceGrpc.getGetS4ClassInfoMethod) == null) {
+          RPIServiceGrpc.getGetS4ClassInfoMethod = getGetS4ClassInfoMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfo"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.S4ClassInfo.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfo"))
+              .build();
+        }
+      }
+    }
+    return getGetS4ClassInfoMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.TableColumnsInfoRequest,
       org.jetbrains.r.rinterop.TableColumnsInfo> getGetTableColumnsInfoMethod;
 
@@ -2755,6 +2786,37 @@ public final class RPIServiceGrpc {
     return getSetSaveOnExitMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getLoadedShortS4ClassInfos",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = org.jetbrains.r.rinterop.ShortS4ClassInfoList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
+    if ((getGetLoadedShortS4ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetLoadedShortS4ClassInfosMethod = RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod) == null) {
+          RPIServiceGrpc.getGetLoadedShortS4ClassInfosMethod = getGetLoadedShortS4ClassInfosMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.ShortS4ClassInfoList>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getLoadedShortS4ClassInfos"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.ShortS4ClassInfoList.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getLoadedShortS4ClassInfos"))
+              .build();
+        }
+      }
+    }
+    return getGetLoadedShortS4ClassInfosMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -3208,6 +3270,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void getS4ClassInfo(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetS4ClassInfoMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void getTableColumnsInfo(org.jetbrains.r.rinterop.TableColumnsInfoRequest request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.TableColumnsInfo> responseObserver) {
       asyncUnimplementedUnaryCall(getGetTableColumnsInfoMethod(), responseObserver);
@@ -3423,6 +3492,13 @@ public final class RPIServiceGrpc {
     public void setSaveOnExit(com.google.protobuf.BoolValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getSetSaveOnExitMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetLoadedShortS4ClassInfosMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -3834,6 +3910,13 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.ExtraNamedArguments>(
                   this, METHODID_FIND_EXTRA_NAMED_ARGUMENTS)))
           .addMethod(
+            getGetS4ClassInfoMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.RRef,
+                org.jetbrains.r.rinterop.S4ClassInfo>(
+                  this, METHODID_GET_S4CLASS_INFO)))
+          .addMethod(
             getGetTableColumnsInfoMethod(),
             asyncUnaryCall(
               new MethodHandlers<
@@ -4043,6 +4126,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.BoolValue,
                 com.google.protobuf.Empty>(
                   this, METHODID_SET_SAVE_ON_EXIT)))
+          .addMethod(
+            getGetLoadedShortS4ClassInfosMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                org.jetbrains.r.rinterop.ShortS4ClassInfoList>(
+                  this, METHODID_GET_LOADED_SHORT_S4CLASS_INFOS)))
           .build();
     }
   }
@@ -4549,6 +4639,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void getS4ClassInfo(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetS4ClassInfoMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void getTableColumnsInfo(org.jetbrains.r.rinterop.TableColumnsInfoRequest request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.TableColumnsInfo> responseObserver) {
       asyncUnaryCall(
@@ -4794,6 +4892,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSetSaveOnExitMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -5256,6 +5362,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfo(org.jetbrains.r.rinterop.RRef request) {
+      return blockingUnaryCall(
+          getChannel(), getGetS4ClassInfoMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public org.jetbrains.r.rinterop.TableColumnsInfo getTableColumnsInfo(org.jetbrains.r.rinterop.TableColumnsInfoRequest request) {
       return blockingUnaryCall(
           getChannel(), getGetTableColumnsInfoMethod(), getCallOptions(), request);
@@ -5471,6 +5584,13 @@ public final class RPIServiceGrpc {
     public com.google.protobuf.Empty setSaveOnExit(com.google.protobuf.BoolValue request) {
       return blockingUnaryCall(
           getChannel(), getSetSaveOnExitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.ShortS4ClassInfoList getLoadedShortS4ClassInfos(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getGetLoadedShortS4ClassInfosMethod(), getCallOptions(), request);
     }
   }
 
@@ -5844,6 +5964,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfo(
+        org.jetbrains.r.rinterop.RRef request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetS4ClassInfoMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.TableColumnsInfo> getTableColumnsInfo(
         org.jetbrains.r.rinterop.TableColumnsInfoRequest request) {
       return futureUnaryCall(
@@ -6090,6 +6218,14 @@ public final class RPIServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSetSaveOnExitMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ShortS4ClassInfoList> getLoadedShortS4ClassInfos(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_GET_INFO = 0;
@@ -6150,36 +6286,38 @@ public final class RPIServiceGrpc {
   private static final int METHODID_LOAD_OBJECT_NAMES = 55;
   private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 56;
   private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 57;
-  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 58;
-  private static final int METHODID_GET_FORMAL_ARGUMENTS = 59;
-  private static final int METHODID_GET_EQUALITY_OBJECT = 60;
-  private static final int METHODID_SET_VALUE = 61;
-  private static final int METHODID_GET_OBJECT_SIZES = 62;
-  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 63;
-  private static final int METHODID_DATA_FRAME_REGISTER = 64;
-  private static final int METHODID_DATA_FRAME_GET_INFO = 65;
-  private static final int METHODID_DATA_FRAME_GET_DATA = 66;
-  private static final int METHODID_DATA_FRAME_SORT = 67;
-  private static final int METHODID_DATA_FRAME_FILTER = 68;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 69;
-  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 70;
-  private static final int METHODID_HTTPD_REQUEST = 71;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 73;
-  private static final int METHODID_START_HTTPD = 74;
-  private static final int METHODID_GET_WORKING_DIR = 75;
-  private static final int METHODID_SET_WORKING_DIR = 76;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 77;
-  private static final int METHODID_GET_SYS_ENV = 78;
-  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 79;
-  private static final int METHODID_LOAD_LIB_PATHS = 80;
-  private static final int METHODID_LOAD_LIBRARY = 81;
-  private static final int METHODID_UNLOAD_LIBRARY = 82;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 83;
-  private static final int METHODID_LOAD_ENVIRONMENT = 84;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 85;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 86;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 87;
+  private static final int METHODID_GET_S4CLASS_INFO = 58;
+  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 59;
+  private static final int METHODID_GET_FORMAL_ARGUMENTS = 60;
+  private static final int METHODID_GET_EQUALITY_OBJECT = 61;
+  private static final int METHODID_SET_VALUE = 62;
+  private static final int METHODID_GET_OBJECT_SIZES = 63;
+  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 64;
+  private static final int METHODID_DATA_FRAME_REGISTER = 65;
+  private static final int METHODID_DATA_FRAME_GET_INFO = 66;
+  private static final int METHODID_DATA_FRAME_GET_DATA = 67;
+  private static final int METHODID_DATA_FRAME_SORT = 68;
+  private static final int METHODID_DATA_FRAME_FILTER = 69;
+  private static final int METHODID_DATA_FRAME_DISPOSE = 70;
+  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 71;
+  private static final int METHODID_HTTPD_REQUEST = 72;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 73;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 74;
+  private static final int METHODID_START_HTTPD = 75;
+  private static final int METHODID_GET_WORKING_DIR = 76;
+  private static final int METHODID_SET_WORKING_DIR = 77;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 78;
+  private static final int METHODID_GET_SYS_ENV = 79;
+  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 80;
+  private static final int METHODID_LOAD_LIB_PATHS = 81;
+  private static final int METHODID_LOAD_LIBRARY = 82;
+  private static final int METHODID_UNLOAD_LIBRARY = 83;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 84;
+  private static final int METHODID_LOAD_ENVIRONMENT = 85;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 86;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 87;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 88;
+  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 89;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6430,6 +6568,10 @@ public final class RPIServiceGrpc {
           serviceImpl.findExtraNamedArguments((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ExtraNamedArguments>) responseObserver);
           break;
+        case METHODID_GET_S4CLASS_INFO:
+          serviceImpl.getS4ClassInfo((org.jetbrains.r.rinterop.RRef) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo>) responseObserver);
+          break;
         case METHODID_GET_TABLE_COLUMNS_INFO:
           serviceImpl.getTableColumnsInfo((org.jetbrains.r.rinterop.TableColumnsInfoRequest) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.TableColumnsInfo>) responseObserver);
@@ -6550,6 +6692,10 @@ public final class RPIServiceGrpc {
           serviceImpl.setSaveOnExit((com.google.protobuf.BoolValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
+        case METHODID_GET_LOADED_SHORT_S4CLASS_INFOS:
+          serviceImpl.getLoadedShortS4ClassInfos((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -6669,6 +6815,7 @@ public final class RPIServiceGrpc {
               .addMethod(getLoadObjectNamesMethod())
               .addMethod(getFindInheritorNamedArgumentsMethod())
               .addMethod(getFindExtraNamedArgumentsMethod())
+              .addMethod(getGetS4ClassInfoMethod())
               .addMethod(getGetTableColumnsInfoMethod())
               .addMethod(getGetFormalArgumentsMethod())
               .addMethod(getGetEqualityObjectMethod())
@@ -6699,6 +6846,7 @@ public final class RPIServiceGrpc {
               .addMethod(getSetOutputWidthMethod())
               .addMethod(getClientRequestFinishedMethod())
               .addMethod(getSetSaveOnExitMethod())
+              .addMethod(getGetLoadedShortS4ClassInfosMethod())
               .build();
         }
       }
