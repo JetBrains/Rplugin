@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.psi
 
-import com.intellij.codeInsight.controlflow.Instruction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
@@ -13,6 +12,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.rinterop.TableColumnsInfo
 import java.util.*
 import kotlin.collections.ArrayList
@@ -139,32 +139,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
    * It could use runtime to get columns for expressions that are used in the definition of the variable
    */
   fun retrieveTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
-    var previousAssignment: RAssignmentStatement? = null
-    var currentElement: PsiElement = variable
-    var rControlFlowHolder = PsiTreeUtil.getParentOfType(currentElement, RControlFlowHolder::class.java)
-    while (rControlFlowHolder != null && previousAssignment == null) {
-      val variableInstruction = rControlFlowHolder.controlFlow.getInstructionByElement(currentElement)
-      if (variableInstruction != null) {
-        val queue = LinkedList<Instruction>()
-        queue.add(variableInstruction)
-        while (queue.isNotEmpty()) {
-          val currentInstruction = queue.remove()
-          val instructionElement = currentInstruction.element
-          if (instructionElement is RAssignmentStatement && variable.name == instructionElement.name) {
-            previousAssignment = instructionElement
-            break
-          }
-          for (prevInstruction in currentInstruction.allPred()) {
-            if (prevInstruction.num() < currentInstruction.num() && prevInstruction !in queue) {
-              queue.add(prevInstruction)
-            }
-          }
-        }
-      }
-      currentElement = rControlFlowHolder
-      rControlFlowHolder = PsiTreeUtil.getParentOfType(currentElement, RControlFlowHolder::class.java)
-    }
-
+    val previousAssignment = RResolveUtil.findPreviousAssignment(variable)
     if (previousAssignment != null) {
       val assignedValue = previousAssignment.assignedValue
       if (assignedValue != null) {
@@ -436,7 +411,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * Retrieves column from call dot arguments. Columns from argument table ignored.
      * Useful for functions like "summarize".
      */
-    fun getAllDotsColumns(tableColumns: List<TableManipulationColumn>,
+    fun getAllDotsColumns(@Suppress("UNUSED_PARAMETER") tableColumns: List<TableManipulationColumn>,
                           callInfo: TableManipulationCallInfo<*>): List<TableManipulationColumn> {
       val result = ArrayList<TableManipulationColumn>()
       for (expression in callInfo.argumentInfo.allDotsArguments) {
