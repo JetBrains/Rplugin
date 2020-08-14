@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.util.Disposer
-import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.ClipboardUtils
+import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
@@ -53,14 +53,9 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     wrapper.addImage(File(data), RGraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay).onSuccess {
       SwingUtilities.invokeLater {
         val maxHeight = wrapper.maximumHeight ?: 0
-        val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
         val maxWidth = wrapper.maximumWidth ?: 0
-        val editorWidth = editor.contentComponent.width
-        if (maxWidth * scaleMultiplier <= editorWidth) {
-          onHeightCalculated?.invoke(maxHeight * scaleMultiplier)
-        } else {
-          onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
-        }
+        val height = InlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
+        onHeightCalculated?.invoke(height)
         wrapper.isAutoResizeEnabled = manager.canRescale(data)
       }
     }

@@ -29,6 +29,7 @@ import com.intellij.util.ui.UIUtil
 import org.cef.browser.CefBrowser
 import org.cef.handler.CefLoadHandlerAdapter
 import org.intellij.datavis.r.inlays.ClipboardUtils
+import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
@@ -164,14 +165,9 @@ class InlayOutputImg(parent: Disposable, editor: Editor, clearAction: () -> Unit
     showImageAsync(data, type).onSuccess {
       SwingUtilities.invokeLater {
         val maxHeight = graphicsPanel.maximumSize?.height ?: 0
-        val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
         val maxWidth = graphicsPanel.maximumSize?.width ?: 0
-        val editorWidth = editor.contentComponent.width
-        if (maxWidth * scaleMultiplier <= editorWidth) {
-          onHeightCalculated?.invoke(maxHeight * scaleMultiplier)
-        } else {
-          onHeightCalculated?.invoke(maxHeight * editorWidth / maxWidth)
-        }
+        val height = InlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
+        onHeightCalculated?.invoke(height)
       }
     }
   }

@@ -4,9 +4,11 @@
 
 package org.intellij.datavis.r.inlays
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import java.awt.Dimension
 import java.awt.Font
 import kotlin.math.max
@@ -102,6 +104,16 @@ object InlayDimensions {
 
   fun calculateInlayWidth(editor: EditorEx): Int {
     return editor.component.width - editor.gutterComponentEx.width - rightBorder
+  }
+
+  fun calculateInlayHeight(maxWidth: Int, maxHeight: Int, editor: Editor): Int {
+    val scaleMultiplier = if (UIUtil.isRetina()) 2 else 1
+    val editorWidth = editor.contentComponent.width
+    return if (maxWidth * scaleMultiplier <= editorWidth) {
+      maxHeight * scaleMultiplier
+    } else {
+      maxHeight * editorWidth / maxWidth
+    }
   }
 
   fun calculateInlayContentSize(editor: EditorEx, inlayHeight: Int = defaultHeight): Dimension {
