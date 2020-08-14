@@ -51,8 +51,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <notificationGroup displayType="BALLOON" id="Notebook Table" bundle="messages.VisualizationBundle" key="inlay.output.table.notification.group.name"/>
-    <notificationGroup id="InlayTable" displayType="BALLOON"/>
+    <notificationAllowlist groupIds="InlayTable;Notebook Table"/>
     <editorFactoryListener id="org.intellij.datavis.r.inlays.InlaysManager" implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
   </extensions>
 
