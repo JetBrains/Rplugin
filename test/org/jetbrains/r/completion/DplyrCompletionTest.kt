@@ -264,6 +264,30 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStaticCompletionInFunction() {
+    checkStaticCompletion(
+      "f <- function() {\n" +
+      " tbl <- dplyr::tibble(my_column = letters)\n" +
+      " tbl %>% dplyr::filter(<caret>)\n" +
+      "}",
+
+      listOf("my_column"),
+      listOf()
+    )
+  }
+
+  fun testStaticCompletionInFunctionWithReferenceToGlobalVariable() {
+    checkStaticCompletion(
+      "tbl <- dplyr::tibble(my_column = letters)\n" +
+      "f <- function() {\n" +
+      " tbl %>% dplyr::filter(<caret>)\n" +
+      "}",
+
+      listOf("my_column"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()
