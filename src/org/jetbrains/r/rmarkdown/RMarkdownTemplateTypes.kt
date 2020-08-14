@@ -11,6 +11,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.templateLanguages.TemplateDataElementType
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.OuterLanguageElementType
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
@@ -20,7 +21,7 @@ import org.intellij.markdown.parser.MarkdownParser
 import org.intellij.markdown.IElementType as MarkdownIElementType
 
 val INNER_ELEMENT = IElementType("INNER", RMarkdownLanguage)
-val OUTER_ELEMENT = IElementType("OUTER", RMarkdownLanguage)
+val OUTER_ELEMENT = OuterLanguageElementType("OUTER", RMarkdownLanguage)
 
 
 class RMarkdownTemplate(private val templateLanguage: Language)
