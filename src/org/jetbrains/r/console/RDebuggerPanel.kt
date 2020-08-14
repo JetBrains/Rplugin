@@ -9,16 +9,25 @@ import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroup
+import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroupingRule
+import com.intellij.xdebugger.impl.DebuggerSupport
 import com.intellij.xdebugger.impl.XDebuggerUtilImpl
+import com.intellij.xdebugger.impl.actions.DebuggerToggleActionHandler
+import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointItem
+import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointPanelProvider
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.PlatformDebuggerImplIcons
@@ -79,6 +88,13 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
         }
         validate()
         repaint()
+      }
+    }
+  internal var breakpointsMuted = false
+    set(value) {
+      if (field != value) {
+        field = value
+        rInterop.debugMuteBreakpoints(value)
       }
     }
 
@@ -213,15 +229,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   private fun createMuteBreakpointsAction(): ToggleAction {
     return object : DumbAwareToggleAction(ActionsBundle.message("action.Debugger.MuteBreakpoints.text"), null,
                                           AllIcons.Debugger.MuteBreakpoints) {
-      private var selected = false
-
-      override fun isSelected(e: AnActionEvent) = selected
+      override fun isSelected(e: AnActionEvent) = breakpointsMuted
 
       override fun setSelected(e: AnActionEvent, state: Boolean) {
-        if (selected != state) {
-          selected = state
-          rInterop.debugMuteBreakpoints(state)
-        }
+        breakpointsMuted = state
       }
     }
   }
@@ -339,6 +350,50 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       e.presentation.isEnabled = toolWindow?.isVisible == true &&
                                  (isActive?.invoke() ?:
                                   (console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT))
+    }
+  }
+}
+
+class RDebuggerSupport : DebuggerSupport() {
+  override fun getBreakpointPanelProvider(): BreakpointPanelProvider<*> {
+    return object : BreakpointPanelProvider<Any>() {
+      override fun createBreakpointsGroupingRules(rules: MutableCollection<XBreakpointGroupingRule<Any, XBreakpointGroup>>?) {
+      }
+
+      override fun addListener(listener: BreakpointsListener?, project: Project?, disposable: Disposable?) {
+      }
+
+      override fun getPriority() = 0
+
+      override fun findBreakpoint(project: Project, document: Document, offset: Int): Any? = null
+
+      override fun getBreakpointGutterIconRenderer(breakpoint: Any?): GutterIconRenderer? = null
+
+      override fun onDialogClosed(project: Project?) {
+      }
+
+      override fun provideBreakpointItems(project: Project?, items: MutableCollection<BreakpointItem>?) {
+      }
+    }
+  }
+
+  override fun getMuteBreakpointsHandler(): DebuggerToggleActionHandler {
+    return object : DebuggerToggleActionHandler() {
+      override fun isEnabled(project: Project, event: AnActionEvent?): Boolean {
+        return getPanel(project) != null
+      }
+
+      override fun isSelected(project: Project, event: AnActionEvent?): Boolean {
+        return getPanel(project)?.breakpointsMuted ?: false
+      }
+
+      override fun setSelected(project: Project, event: AnActionEvent?, state: Boolean) {
+        getPanel(project)?.apply { breakpointsMuted = state }
+      }
+
+      private fun getPanel(project: Project): RDebuggerPanel? {
+        return RConsoleManager.getInstance(project).currentConsoleOrNull?.debuggerPanel
+      }
     }
   }
 }
