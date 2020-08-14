@@ -185,63 +185,69 @@ object RInteropUtil {
 
   private fun runRWrapper(interpreter: RInterpreter, workingDirectory: String): Promise<Pair<ProcessHandler, RPaths>> {
     val result = AsyncPromise<Pair<ProcessHandler, RPaths>>()
-    val paths = getRPaths(interpreter)
-    val version = interpreter.version
-    if (!RInterpreterUtil.isSupportedVersion(version)) return result.also { result.setError("Unsupported interpreter version " + version)  }
-    val wrapperPath = getWrapperPath(interpreter.hostOS)
-    LOG.info("R version is $version. RWrapper path: $wrapperPath")
-    val rwrapper = File(wrapperPath)
-    if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
-    if (!rwrapper.canExecute()) {
-      rwrapper.setExecutable(true)
-    }
-    val wrapperPathOnHost = interpreter.uploadFileToHost(rwrapper)
-    var command = GeneralCommandLine()
-      .withExePath(wrapperPathOnHost)
-      .withParameters("--with-timeout")
-      .withEnvironment("R_HOME", paths.home)
-      .withEnvironment("R_SHARE_DIR", paths.share)
-      .withEnvironment("R_INCLUDE_DIR", paths.include)
-      .withEnvironment("R_DOC_DIR", paths.doc)
+    try {
+      val paths = getRPaths(interpreter)
+      val version = interpreter.version
+      if (!RInterpreterUtil.isSupportedVersion(version)) return result.also {
+        result.setError("Unsupported interpreter version " + version)
+      }
+      val wrapperPath = getWrapperPath(interpreter.hostOS)
+      LOG.info("R version is $version. RWrapper path: $wrapperPath")
+      val rwrapper = File(wrapperPath)
+      if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
+      if (!rwrapper.canExecute()) {
+        rwrapper.setExecutable(true)
+      }
+      val wrapperPathOnHost = interpreter.uploadFileToHost(rwrapper)
+      var command = GeneralCommandLine()
+        .withExePath(wrapperPathOnHost)
+        .withParameters("--with-timeout")
+        .withEnvironment("R_HOME", paths.home)
+        .withEnvironment("R_SHARE_DIR", paths.share)
+        .withEnvironment("R_INCLUDE_DIR", paths.include)
+        .withEnvironment("R_DOC_DIR", paths.doc)
 
-    if (!interpreter.isLocal()) {
-      command = command.withParameters("--is-remote")
-    }
+      if (!interpreter.isLocal()) {
+        command = command.withParameters("--is-remote")
+      }
 
-    if (interpreter.isLocal()) {
-      val crashpadHandler = getCrashpadHandler(interpreter.hostOS)
-      if (crashpadHandler.exists()) {
-        if (!crashpadHandler.canExecute()) {
-          crashpadHandler.setExecutable(true)
+      if (interpreter.isLocal()) {
+        val crashpadHandler = getCrashpadHandler(interpreter.hostOS)
+        if (crashpadHandler.exists()) {
+          if (!crashpadHandler.canExecute()) {
+            crashpadHandler.setExecutable(true)
+          }
+          val crashes = getRWrapperCrashesDirectory()
+          FileUtil.createDirectory(crashes)
+          updateCrashes()
+          command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
+            .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
         }
-        val crashes = getRWrapperCrashesDirectory()
-        FileUtil.createDirectory(crashes)
-        updateCrashes()
-        command = command.withEnvironment("CRASHPAD_HANDLER_PATH", crashpadHandler.absolutePath)
-          .withEnvironment("CRASHPAD_DB_PATH", crashes.absolutePath)
       }
-    }
-    val crashReportFile = interpreter.createTempFileOnHost("rwrapper-crash-report.txt")
-    command = command.withParameters("--crash-report-file", crashReportFile)
+      val crashReportFile = interpreter.createTempFileOnHost("rwrapper-crash-report.txt")
+      command = command.withParameters("--crash-report-file", crashReportFile)
 
-    command = command.withEnvironment("PATH", paths.path)
-    command = when (interpreter.hostOS) {
-      OperatingSystem.MAC_OS -> {
-        // DYLD_FALLBACK_LIBRARY_PATH doesn't work if notarization is enabled, use DYLD_LIBRARY_PATH instead.
-        // Right now we notarize only bundled binaries.
-        val dyldName = if (RPluginUtil.getPlugin().isBundled) "DYLD_LIBRARY_PATH" else "DYLD_FALLBACK_LIBRARY_PATH"
-        command.withEnvironment(dyldName, paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
+      command = command.withEnvironment("PATH", paths.path)
+      command = when (interpreter.hostOS) {
+        OperatingSystem.MAC_OS -> {
+          // DYLD_FALLBACK_LIBRARY_PATH doesn't work if notarization is enabled, use DYLD_LIBRARY_PATH instead.
+          // Right now we notarize only bundled binaries.
+          val dyldName = if (RPluginUtil.getPlugin().isBundled) "DYLD_LIBRARY_PATH" else "DYLD_FALLBACK_LIBRARY_PATH"
+          command.withEnvironment(dyldName, paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
+        }
+        OperatingSystem.LINUX -> {
+          command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
+        }
+        OperatingSystem.WINDOWS -> {
+          command.withEnvironment("PATH", RPathUtil.join(paths.home, "bin", "x64") + ";" + paths.path)
+        }
       }
-      OperatingSystem.LINUX -> {
-        command.withEnvironment("LD_LIBRARY_PATH", paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
-      }
-      OperatingSystem.WINDOWS -> {
-        command.withEnvironment("PATH", RPathUtil.join(paths.home, "bin", "x64") + ";" + paths.path)
-      }
+      result.setResult(interpreter.runProcessOnHost(command, workingDirectory, true).apply {
+        this.putUserData(PROCESS_CRASH_REPORT_FILE, crashReportFile)
+      } to paths)
+    } catch (t: Throwable) {
+      result.setError(t)
     }
-    result.setResult(interpreter.runProcessOnHost(command, workingDirectory, true).apply {
-      this.putUserData(PROCESS_CRASH_REPORT_FILE, crashReportFile)
-    } to paths)
     return result
   }
 
