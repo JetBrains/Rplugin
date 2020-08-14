@@ -10,6 +10,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -167,7 +168,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     private const val RESIZE_TIME_SPAN = 500
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
-    private const val WAITING_MESSAGE = "Waiting for plot to rescale"
+    private val WAITING_MESSAGE = RBundle.message("graphics.panel.wrapper.waiting")
 
     private val Dimension.isValid: Boolean
       get() = width > 0 && height > 0

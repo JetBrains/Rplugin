@@ -34,7 +34,7 @@
                   <gridbag weightx="0.0" weighty="1.0"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.open.image"/>
+                  <text resource-bundle="messages/RPluginBundle" key="graphics.panel.export.dialog.open.image"/>
                 </properties>
               </component>
               <grid id="fa9d1" binding="okCancelButtonsPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
@@ -63,7 +63,7 @@
               <gridbag weightx="0.0" weighty="1.0"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.save.as"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.export.dialog.save.as"/>
             </properties>
           </component>
           <component id="2adc0" class="javax.swing.JTextField" binding="fileNameTextField">
@@ -90,7 +90,7 @@
               <gridbag top="0" left="8" bottom="0" right="8" weightx="0.0" weighty="1.0"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.save.in"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.export.dialog.save.in"/>
             </properties>
           </component>
           <grid id="d1cbc" binding="directoryFieldPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
@@ -117,7 +117,7 @@
               <gridbag top="0" left="28" bottom="0" right="8" weightx="0.0" weighty="1.0"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.width"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.settings.dialog.width"/>
             </properties>
           </component>
           <component id="c453e" class="javax.swing.JLabel">
@@ -126,7 +126,7 @@
               <gridbag top="0" left="8" bottom="0" right="8" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.height"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.settings.dialog.height"/>
             </properties>
           </component>
           <component id="45d7c" class="javax.swing.JLabel">
@@ -135,7 +135,7 @@
               <gridbag top="0" left="28" bottom="0" right="8" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text resource-bundle="messages/VisualizationBundle" key="inlay.output.image.export.dialog.resolution"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.settings.dialog.resolution"/>
             </properties>
           </component>
           <grid id="1a4a2" layout-manager="GridBagLayout">
@@ -200,7 +200,7 @@
             </constraints>
             <properties>
               <selected value="true"/>
-              <text resource-bundle="messages/VisualizationBundle" key="graphics.settings.auto.resize"/>
+              <text resource-bundle="messages/RPluginBundle" key="graphics.panel.settings.dialog.auto.resize"/>
             </properties>
           </component>
         </children>

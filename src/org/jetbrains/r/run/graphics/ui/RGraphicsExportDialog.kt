@@ -16,9 +16,9 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
-import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
 import org.intellij.datavis.r.inlays.components.*
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import java.awt.*
@@ -505,23 +505,23 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
     private const val DPI_MAX_CHARACTERS = 3
     private const val PX_MAX_CHARACTERS = 4
 
-    private val INVALID_INTEGER_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.invalid.input")
-    private val BLANK_TEXT_INPUT_MESSAGE = VisualizationBundle.message("inlay.output.image.export.dialog.blank.input")
+    private val INVALID_INTEGER_INPUT_MESSAGE = RBundle.message("graphics.panel.settings.dialog.invalid.integer.input")
+    private val BLANK_TEXT_INPUT_MESSAGE = RBundle.message("graphics.panel.export.dialog.blank.input")
 
-    private val KEEP_ASPECT_RATIO_ACTIVE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.active")
-    private val KEEP_ASPECT_RATIO_IDLE_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.keep.aspect.ratio.idle")
-    private val REFRESH_PREVIEW_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.refresh.preview")
+    private val KEEP_ASPECT_RATIO_ACTIVE_TEXT = RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.active")
+    private val KEEP_ASPECT_RATIO_IDLE_TEXT = RBundle.message("graphics.panel.export.dialog.keep.aspect.ratio.idle")
+    private val REFRESH_PREVIEW_TEXT = RBundle.message("graphics.panel.export.dialog.refresh.preview")
 
-    private val CHOOSE_DIRECTORY_DESCRIPTION = VisualizationBundle.message("inlay.output.image.export.dialog.choose.directory.description")
-    private val CHOOSE_DIRECTORY_TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.choose.directory.title")
-    private val PROJECT_DIRECTORY_HINT = VisualizationBundle.message("inlay.output.image.export.dialog.project.directory.hint")
+    private val CHOOSE_DIRECTORY_DESCRIPTION = RBundle.message("graphics.panel.export.dialog.choose.directory.description")
+    private val CHOOSE_DIRECTORY_TITLE = RBundle.message("graphics.panel.export.dialog.choose.directory.title")
+    private val PROJECT_DIRECTORY_HINT = RBundle.message("import.data.dialog.project.directory.hint")
 
-    private val CONFIRM_REPLACE_TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.confirm.replace.title")
-    private val SAVE_BUTTON_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.save")
-    private val TITLE = VisualizationBundle.message("inlay.output.image.export.dialog.title")
+    private val CONFIRM_REPLACE_TITLE = RBundle.message("graphics.panel.export.dialog.confirm.replace.title")
+    private val SAVE_BUTTON_TEXT = RBundle.message("graphics.panel.export.dialog.save")
+    private val TITLE = RBundle.message("graphics.panel.export.dialog.title")
 
-    private val DPI_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.dpi.text")
-    private val PX_TEXT = VisualizationBundle.message("inlay.output.image.export.dialog.unit.px.text")
+    private val DPI_TEXT = RBundle.message("graphics.panel.settings.dialog.dpi")
+    private val PX_TEXT = RBundle.message("graphics.panel.settings.dialog.pixels")
 
     private val KEEP_ASPECT_RATIO_PRESENTATION =
       ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false)
@@ -556,7 +556,7 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
     }
 
     private fun createConfirmReplaceDescription(location: File): String {
-      return VisualizationBundle.message("inlay.output.image.export.dialog.confirm.replace.description", location.name)
+      return RBundle.message("graphics.panel.export.dialog.confirm.replace.description", location.name)
     }
   }
 }

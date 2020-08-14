@@ -12,6 +12,7 @@ import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 public class RGraphicsExportDialogForm extends JDialog {
@@ -120,8 +121,8 @@ public class RGraphicsExportDialogForm extends JDialog {
                                                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
                                                null, 0, false));
     openAfterSavingCheckBox = new JCheckBox();
-    this.$$$loadButtonText$$$(openAfterSavingCheckBox, ResourceBundle.getBundle("messages/VisualizationBundle")
-      .getString("inlay.output.image.export.dialog.open.image"));
+    this.$$$loadButtonText$$$(openAfterSavingCheckBox,
+                              this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.export.dialog.open.image"));
     GridBagConstraints gbc;
     gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -144,8 +145,7 @@ public class RGraphicsExportDialogForm extends JDialog {
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     final JLabel label1 = new JLabel();
-    this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("messages/VisualizationBundle")
-      .getString("inlay.output.image.export.dialog.save.as"));
+    this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.export.dialog.save.as"));
     gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -173,8 +173,7 @@ public class RGraphicsExportDialogForm extends JDialog {
     gbc.insets = new JBInsets(0, 8, 0, 0);
     panel2.add(formatComboBox, gbc);
     final JLabel label2 = new JLabel();
-    this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("messages/VisualizationBundle")
-      .getString("inlay.output.image.export.dialog.save.in"));
+    this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.export.dialog.save.in"));
     gbc = new GridBagConstraints();
     gbc.gridx = 3;
     gbc.gridy = 0;
@@ -197,8 +196,7 @@ public class RGraphicsExportDialogForm extends JDialog {
                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                                                 GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     final JLabel label3 = new JLabel();
-    this.$$$loadLabelText$$$(label3,
-                             ResourceBundle.getBundle("messages/VisualizationBundle").getString("inlay.output.image.export.dialog.width"));
+    this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.settings.dialog.width"));
     gbc = new GridBagConstraints();
     gbc.gridx = 1;
     gbc.gridy = 0;
@@ -207,8 +205,7 @@ public class RGraphicsExportDialogForm extends JDialog {
     gbc.insets = new JBInsets(0, 28, 0, 8);
     panel3.add(label3, gbc);
     final JLabel label4 = new JLabel();
-    this.$$$loadLabelText$$$(label4,
-                             ResourceBundle.getBundle("messages/VisualizationBundle").getString("inlay.output.image.export.dialog.height"));
+    this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.settings.dialog.height"));
     gbc = new GridBagConstraints();
     gbc.gridx = 3;
     gbc.gridy = 0;
@@ -216,8 +213,8 @@ public class RGraphicsExportDialogForm extends JDialog {
     gbc.insets = new JBInsets(0, 8, 0, 8);
     panel3.add(label4, gbc);
     final JLabel label5 = new JLabel();
-    this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("messages/VisualizationBundle")
-      .getString("inlay.output.image.export.dialog.resolution"));
+    this
+      .$$$loadLabelText$$$(label5, this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.settings.dialog.resolution"));
     gbc = new GridBagConstraints();
     gbc.gridx = 5;
     gbc.gridy = 0;
@@ -275,7 +272,7 @@ public class RGraphicsExportDialogForm extends JDialog {
     autoResizeCheckBox = new JCheckBox();
     autoResizeCheckBox.setSelected(true);
     this.$$$loadButtonText$$$(autoResizeCheckBox,
-                              ResourceBundle.getBundle("messages/VisualizationBundle").getString("graphics.settings.auto.resize"));
+                              this.$$$getMessageFromBundle$$$("messages/RPluginBundle", "graphics.panel.settings.dialog.auto.resize"));
     gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
@@ -296,6 +293,24 @@ public class RGraphicsExportDialogForm extends JDialog {
     final Spacer spacer2 = new Spacer();
     contentPane.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                                                  GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, JBUI.scale(8)), null, 0, false));
+  }
+
+  private static Method $$$cachedGetBundleMethod$$$ = null;
+
+  private String $$$getMessageFromBundle$$$(String path, String key) {
+    ResourceBundle bundle;
+    try {
+      Class<?> thisClass = this.getClass();
+      if ($$$cachedGetBundleMethod$$$ == null) {
+        Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+        $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+      }
+      bundle = (ResourceBundle)$$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+    }
+    catch (Exception e) {
+      bundle = ResourceBundle.getBundle(path);
+    }
+    return bundle.getString(key);
   }
 
   /**

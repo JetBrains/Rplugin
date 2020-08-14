@@ -6,7 +6,7 @@ package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.layout.*
-import org.intellij.datavis.r.VisualizationBundle
+import org.jetbrains.r.RBundle
 import javax.swing.JComponent
 
 class RChunkGraphicsSettingsDialog(
@@ -78,13 +78,13 @@ class RChunkGraphicsSettingsDialog(
     private const val INPUT_COLUMN_COUNT = 7
     private val INPUT_RANGE = IntRange(1, 9999)
 
-    private val TITLE = VisualizationBundle.message("graphics.setting.title")
-    private val LOCAL_SETTINGS_TITLE = VisualizationBundle.message("graphics.settings.for.current.plot")
-    private val AUTO_RESIZE_TEXT = VisualizationBundle.message("graphics.settings.auto.resize")
-    private val RESOLUTION_TEXT = VisualizationBundle.message("graphics.settings.resolution")
-    private val DPI_TEXT = VisualizationBundle.message("graphics.settings.dpi")
+    private val TITLE = RBundle.message("chunk.graphics.settings.dialog.title")
+    private val LOCAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.current.plot")
+    private val AUTO_RESIZE_TEXT = RBundle.message("graphics.panel.settings.dialog.auto.resize")
+    private val RESOLUTION_TEXT = RBundle.message("graphics.panel.settings.dialog.resolution")
+    private val DPI_TEXT = RBundle.message("graphics.panel.settings.dialog.dpi")
 
-    private val GLOBAL_SETTINGS_TITLE = VisualizationBundle.message("graphics.settings.for.all.plots")
-    private val DARK_MODE_TEXT = VisualizationBundle.message("graphics.settings.adapt.to.dark.theme")
+    private val GLOBAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.all.plots")
+    private val DARK_MODE_TEXT = RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme")
   }
 }

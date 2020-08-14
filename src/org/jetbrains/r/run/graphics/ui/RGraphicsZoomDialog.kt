@@ -7,9 +7,9 @@ package org.jetbrains.r.run.graphics.ui
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
 import org.intellij.datavis.r.inlays.components.DialogUtil
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -47,6 +47,6 @@ class RGraphicsZoomDialog(project: Project, parent: Disposable, imagePath: Strin
   }
 
   companion object {
-    private val TITLE = VisualizationBundle.message("inlay.output.image.zoom.dialog.title")
+    private val TITLE = RBundle.message("graphics.panel.zoom.dialog.title")
   }
 }
