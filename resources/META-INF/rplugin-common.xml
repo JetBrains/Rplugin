@@ -649,6 +649,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RPluginBundle" key="inspection.deprecated.setClass.args.name"
                          implementationClass="org.jetbrains.r.inspections.s4class.DeprecatedSetClassArgsInspection"/>
 
+        <localInspection shortName="RInstanceOfVirtualS4ClassInspection" language="R" enabledByDefault="true" groupName="R"
+                         bundle="messages.RPluginBundle" key="inspection.virtual.s4class.instance.name"
+                         implementationClass="org.jetbrains.r.inspections.s4class.InstanceOfVirtualS4ClassInspection"/>
+
         <intentionAction>
             <category>R</category>
             <className>org.jetbrains.r.intentions.TtoTrueIntention</className>
