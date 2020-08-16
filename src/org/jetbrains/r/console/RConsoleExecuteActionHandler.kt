@@ -40,6 +40,7 @@ import org.jetbrains.r.psi.RPomTarget
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
+import org.jetbrains.r.rinterop.rstudioapi.*
 import org.jetbrains.r.util.PromiseUtil
 import java.util.*
 import kotlin.collections.HashSet
@@ -280,8 +281,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
               promise.setResult(getThemeInfo())
             }
             RStudioApiFunctionId.JOB_RUN_SCRIPT_ID -> {
-              jobRunScript(rInterop, args).then { promise.setResult(it) }
-                .onError { promise.setError(it) }
+              jobRunScript(rInterop, args).then {
+                promise.setResult(it)
+              }.onError {
+                  promise.setError(it)
+              }
             }
             RStudioApiFunctionId.JOB_REMOVE_ID -> {
               promise.setResult(jobRemove(rInterop, args))
@@ -289,14 +293,53 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             RStudioApiFunctionId.JOB_SET_STATE_ID -> TODO()
             RStudioApiFunctionId.RESTART_SESSION_ID -> {
               promise.setResult(RObject.getDefaultInstance())
-              restartSession(rInterop).then {
-                sendToConsole(rInterop, args)
-              }
+              restartSession(rInterop, args)
             }
             RStudioApiFunctionId.DOCUMENT_NEW_ID -> {
               documentNew(rInterop, args).then {
                 promise.setResult(RObject.getDefaultInstance())
               }
+            }
+            RStudioApiFunctionId.TERMINAL_ACTIVATE_ID -> TODO()
+            RStudioApiFunctionId.TERMINAL_BUFFER_ID -> {
+              promise.setResult(terminalBuffer(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_BUSY_ID -> {
+              promise.setResult(terminalBusy(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_CLEAR_ID -> {
+              promise.setResult(terminalClear(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_CONTEXT_ID -> {
+              promise.setResult(terminalContext(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_CREATE_ID -> {
+              promise.setResult(terminalCreate(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_EXECUTE_ID -> {
+              promise.setResult(terminalExecute(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_EXITCODE_ID -> TODO()
+            RStudioApiFunctionId.TERMINAL_KILL_ID -> {
+              terminalKill(rInterop, args)
+              promise.setResult(getRNull())
+            }
+            RStudioApiFunctionId.TERMINAL_LIST_ID -> {
+              promise.setResult(terminalList(rInterop))
+            }
+            RStudioApiFunctionId.TERMINAL_RUNNING_ID -> {
+              promise.setResult(terminalRunning(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_SEND_ID -> {
+              promise.setResult(terminalSend(rInterop, args))
+            }
+            RStudioApiFunctionId.TERMINAL_VISIBLE_ID -> {
+              promise.setResult(terminalVisible(rInterop))
+            }
+            RStudioApiFunctionId.VIEWER_ID -> {
+              viewer(rInterop, args).then {
+                promise.setResult(RObject.getDefaultInstance())
+              }.onError { promise.setError(it) }
             }
           }
         } catch (e: Throwable) {

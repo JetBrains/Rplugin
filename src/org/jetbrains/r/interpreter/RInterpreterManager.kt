@@ -12,6 +12,7 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
+import org.jetbrains.annotations.Async
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
@@ -54,8 +55,9 @@ interface RInterpreterManager {
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
 
-    fun restartInterpreter(project: Project): Promise<RInterpreter> {
-      return getInterpreterAsync(project, true).onProcessed { interpreter ->
+    fun restartInterpreter(project: Project): Promise<Unit> {
+      val promise = AsyncPromise<Unit>()
+      getInterpreterAsync(project, true).onProcessed { interpreter ->
         if (interpreter != null) {
           RepoProvider.getInstance(project).onInterpreterVersionChange()
           ApplicationManager.getApplication().invokeLater {
@@ -67,9 +69,11 @@ interface RInterpreterManager {
           runInEdt {
             RConsoleManager.closeMismatchingConsoles(project, interpreter)
             RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
+            promise.setResult(Unit)
           }
         }
       }
+      return promise
     }
   }
 }

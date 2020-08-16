@@ -49,6 +49,7 @@ import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableManipulationColumn
 import org.jetbrains.r.psi.TableType
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
