@@ -1,0 +1,6 @@
+version: '3'
+services:
+  ssh:
+    image: "docker-registry.labs.intellij.net/khavari/r-sshaccess:latest"
+    ports:
+      - "2201:22"
