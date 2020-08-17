@@ -7,8 +7,6 @@ package org.jetbrains.r.packages
 
 import com.intellij.webcore.packaging.InstalledPackage
 
-private const val INTERPRETER = "interpreter"
-
 enum class RPackagePriority {
   BASE,
   RECOMMENDED,
@@ -17,9 +15,6 @@ enum class RPackagePriority {
 
 class RInstalledPackage(val packageName: String, val packageVersion: String, val priority: RPackagePriority?, val libraryPath: String,
                         val description: Map<String, String>) : InstalledPackage(packageName, packageVersion) {
-  val isStandard: Boolean
-    get() = priority == RPackagePriority.BASE || priority == RPackagePriority.RECOMMENDED
-
-  val isUser: Boolean
-    get() = priority == null || priority == RPackagePriority.NA
+  val isBase: Boolean
+    get() = priority == RPackagePriority.BASE
 }
