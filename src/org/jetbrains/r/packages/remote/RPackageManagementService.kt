@@ -116,7 +116,7 @@ class RPackageManagementService(private val project: Project,
 
   private fun loadInstalledPackages(): ExpiringList<RInstalledPackage> {
     val installed = rInterpreterState?.withAutoUpdate { installedPackages } ?: emptyExpiringList()
-    return installed.filter { it.isUser }.map { it }
+    return installed.filter { !it.isBase }.map { it }
   }
 
   fun findInstalledPackageByName(name: String): RInstalledPackage? {
