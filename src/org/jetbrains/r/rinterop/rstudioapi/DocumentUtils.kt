@@ -254,14 +254,21 @@ fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
   return promise
 }
 
-fun navigateToFile(rInterop: RInterop, args: RObject): RObject {
+fun navigateToFile(rInterop: RInterop, args: RObject): Promise<RObject> {
   val filePath = args.list.getRObjects(0).rString.getStrings(0)
   val line = args.list.getRObjects(1).rInt.getInts(0).toInt() - 1
   val column = args.list.getRObjects(1).rInt.getInts(1).toInt() - 1
-  val file = rInterop.interpreter.findFileByPathAtHost(filePath) ?: return rError("$filePath does not exist.")
-  FileEditorManager.getInstance(rInterop.project)
-    .openTextEditor(OpenFileDescriptor(rInterop.project, file, line, column), true)
-  return getRNull()
+  val promise = AsyncPromise<RObject>()
+  val filePromise = findFileByPathAtHostHelper(rInterop, filePath)
+  filePromise.then {
+    it ?: promise.setResult(rError("$filePath does not exist."))
+    runInEdt {
+      FileEditorManager.getInstance(rInterop.project)
+        .openTextEditor(OpenFileDescriptor(rInterop.project, it!!, line, column), true)
+      promise.setResult(getRNull())
+    }
+  }
+  return promise
 }
 
 private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {

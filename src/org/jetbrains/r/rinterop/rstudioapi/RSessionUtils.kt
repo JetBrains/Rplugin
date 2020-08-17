@@ -4,9 +4,7 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.psi.PsiDocumentManager
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleToolWindowFactory
-import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject

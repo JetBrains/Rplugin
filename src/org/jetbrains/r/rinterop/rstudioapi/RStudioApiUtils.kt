@@ -1,10 +1,17 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.compute
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
@@ -138,4 +145,21 @@ internal fun getConsoleView(rInterop: RInterop): RConsoleView? {
 
 internal fun rError(message: String): RObject {
   return RObject.newBuilder().setError(message).build()
+}
+
+internal fun findFileByPathAtHostHelper(rInterop: RInterop, path: String): Promise<VirtualFile?> {
+  val promise = AsyncPromise<VirtualFile?>()
+  if (rInterop.interpreter.isLocal()) {
+    promise.setResult(rInterop.interpreter.findFileByPathAtHost(path))
+  } else {
+    val name = PathUtilRt.getFileName(path)
+    ProgressManager.getInstance().run(object : Task.Backgroundable(
+      rInterop.project, "remote.host.view.opening.file.title.$name") {
+      override fun run(indicator: ProgressIndicator) {
+        val file = rInterop.interpreter.findFileByPathAtHost(path)
+        promise.setResult(file)
+      }
+    })
+  }
+  return promise
 }
