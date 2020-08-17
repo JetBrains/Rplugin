@@ -157,7 +157,6 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
   }
 
   fun createDebuggerPanel() {
-    if (ApplicationManager.getApplication().isUnitTestMode) return
     debuggerPanel = RDebuggerPanel(this).also {
       Disposer.register(this, it)
       executeActionHandler.addListener(it)

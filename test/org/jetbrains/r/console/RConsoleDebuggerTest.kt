@@ -4,6 +4,8 @@
 
 package org.jetbrains.r.console
 
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
@@ -167,6 +169,29 @@ class RConsoleDebuggerTest : RConsoleBaseTestCase() {
     checkConsoleText("<<1>>")
     checkConsoleText("<<2>>", true)
     checkConsoleText("<<3>>", true)
+  }
+
+  fun testGlobalMuteBreakpointsAction() {
+    val file = loadFileWithBreakpointsFromText("""
+      1
+      2 # BREAKPOINT
+      3
+    """.trimIndent())
+    val action = ActionManager.getInstance().getAction("XDebugger.MuteBreakpoints") as ToggleAction
+    val helper = RConsoleDebuggerTestHelper(console)
+
+    action.setSelected(createAnActionEvent(), true)
+    TestCase.assertTrue(console.debuggerPanel!!.breakpointsMuted)
+    helper.invokeAndWait(false) { rInterop.replSourceFile(file, debug = true) }
+
+    action.setSelected(createAnActionEvent(), false)
+    TestCase.assertFalse(console.debuggerPanel!!.breakpointsMuted)
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, debug = true) }
+    helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+
+    TestCase.assertFalse(action.isSelected(createAnActionEvent()))
+    console.debuggerPanel!!.breakpointsMuted = true
+    TestCase.assertTrue(action.isSelected(createAnActionEvent()))
   }
 
   private fun checkConsoleText(s: String, exclude: Boolean = false) {
