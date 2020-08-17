@@ -19,11 +19,11 @@ The following types are available:
 * [Run R script](https://www.jetbrains.com/help/pycharm/run-debug-r-script.html#run) in the editor
 * [View variables](https://www.jetbrains.com/help/pycharm/run-debug-r-script.html#variables)
 * [View graphics](https://www.jetbrains.com/help/pycharm/r-plugin-support.html#r-graphics)
-* [View tables](https://www.jetbrains.com/help/pycharm/2020.2/r-plugin-support.html#table-view)
-* [Manage jobs](https://www.jetbrains.com/help/pycharm/2020.2/run-debug-r-script.html#jobs)
+* [View tables](https://www.jetbrains.com/help/pycharm/r-plugin-support.html#table-view)
+* [Manage jobs](https://www.jetbrains.com/help/pycharm/run-debug-r-script.html#jobs)
 
 ## Got any issues?
-* [Debug R code](https://www.jetbrains.com/help/pycharm/2020.2/run-debug-r-script.html#debug)
+* [Debug R code](https://www.jetbrains.com/help/pycharm/run-debug-r-script.html#debug)
 
 ## Build visual R markdown
 
