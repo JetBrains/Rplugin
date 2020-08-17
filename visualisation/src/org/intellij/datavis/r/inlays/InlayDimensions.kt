@@ -25,8 +25,8 @@ object InlayDimensions {
 
   const val topBorderUnscaled = topOffsetUnscaled + 3
   const val bottomBorderUnscaled = bottomOffsetUnscaled + 5
-  const val leftBorderUnscaled = 5
-  const val rightBorderUnscaled = 5
+  const val leftBorderUnscaled = 0
+  const val rightBorderUnscaled = 0
 
 
   /** Real borders for inner inlay component */
@@ -106,7 +106,7 @@ object InlayDimensions {
 
   fun calculateInlayContentSize(editor: EditorEx, inlayHeight: Int = defaultHeight): Dimension {
     val inlayWidth = calculateInlayWidth(editor)
-    val contentWidth = max(inlayWidth - JBUI.scale(rightBorderUnscaled)- JBUI.scale(leftBorderUnscaled), 0)
+    val contentWidth = max(inlayWidth - JBUI.scale(rightBorderUnscaled) - JBUI.scale(leftBorderUnscaled), 0)
     val contentHeight = max(inlayHeight - topBorder - topOffset - bottomBorder - bottomOffset, 0)
     return Dimension(contentWidth, contentHeight)
   }
