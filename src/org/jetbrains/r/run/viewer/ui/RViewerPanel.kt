@@ -33,17 +33,25 @@ class RViewerPanel(disposable: Disposable) {
 
   val component = rootPanel.component
 
-  fun loadUrl(url: String): Promise<Unit> {
-    val qualifiedUrl = RViewerUtils.getQualifiedUrl(url)
+  fun loadFile(filePath: String): Promise<Unit> {
+    val qualifiedUrl = RViewerUtils.getQualifiedUrl(filePath)
     val path = URI.create(qualifiedUrl).path
     val file = File(path)
     return if (file.exists()) {
       closeViewer(LOADING)
       loadHtmlOrText(file, qualifiedUrl)
     } else {
-      closeViewer(makeNoSuchFileText(url))
+      closeViewer(makeNoSuchFileText(filePath))
       resolvedPromise()
     }
+  }
+
+  fun loadUrl(url: String): Promise<Unit> {
+    jbBrowser.loadURL(url)
+    if (rootPanel.contentComponent != jbBrowser.component) {
+      rootPanel.contentComponent = jbBrowser.component
+    }
+    return resolvedPromise()
   }
 
   private fun loadHtmlOrText(file: File, qualifiedUrl: String): Promise<Unit> {

@@ -3236,11 +3236,6 @@ private static final long serialVersionUID = 0L;
      */
     com.google.protobuf.ByteString
         getTitleBytes();
-
-    /**
-     * <code>bytes content = 3;</code>
-     */
-    com.google.protobuf.ByteString getContent();
   }
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.ShowFileRequest}
@@ -3257,7 +3252,6 @@ private static final long serialVersionUID = 0L;
     private ShowFileRequest() {
       filePath_ = "";
       title_ = "";
-      content_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -3300,11 +3294,6 @@ private static final long serialVersionUID = 0L;
               java.lang.String s = input.readStringRequireUtf8();
 
               title_ = s;
-              break;
-            }
-            case 26: {
-
-              content_ = input.readBytes();
               break;
             }
             default: {
@@ -3407,15 +3396,6 @@ private static final long serialVersionUID = 0L;
       }
     }
 
-    public static final int CONTENT_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString content_;
-    /**
-     * <code>bytes content = 3;</code>
-     */
-    public com.google.protobuf.ByteString getContent() {
-      return content_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -3436,9 +3416,6 @@ private static final long serialVersionUID = 0L;
       if (!getTitleBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, title_);
       }
-      if (!content_.isEmpty()) {
-        output.writeBytes(3, content_);
-      }
       unknownFields.writeTo(output);
     }
 
@@ -3453,10 +3430,6 @@ private static final long serialVersionUID = 0L;
       }
       if (!getTitleBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, title_);
-      }
-      if (!content_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, content_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3477,8 +3450,6 @@ private static final long serialVersionUID = 0L;
           .equals(other.getFilePath())) return false;
       if (!getTitle()
           .equals(other.getTitle())) return false;
-      if (!getContent()
-          .equals(other.getContent())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -3494,8 +3465,6 @@ private static final long serialVersionUID = 0L;
       hash = (53 * hash) + getFilePath().hashCode();
       hash = (37 * hash) + TITLE_FIELD_NUMBER;
       hash = (53 * hash) + getTitle().hashCode();
-      hash = (37 * hash) + CONTENT_FIELD_NUMBER;
-      hash = (53 * hash) + getContent().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3633,8 +3602,6 @@ private static final long serialVersionUID = 0L;
 
         title_ = "";
 
-        content_ = com.google.protobuf.ByteString.EMPTY;
-
         return this;
       }
 
@@ -3663,7 +3630,6 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest result = new org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest(this);
         result.filePath_ = filePath_;
         result.title_ = title_;
-        result.content_ = content_;
         onBuilt();
         return result;
       }
@@ -3719,9 +3685,6 @@ private static final long serialVersionUID = 0L;
         if (!other.getTitle().isEmpty()) {
           title_ = other.title_;
           onChanged();
-        }
-        if (other.getContent() != com.google.protobuf.ByteString.EMPTY) {
-          setContent(other.getContent());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3886,35 +3849,6 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
         
         title_ = value;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>bytes content = 3;</code>
-       */
-      public com.google.protobuf.ByteString getContent() {
-        return content_;
-      }
-      /**
-       * <code>bytes content = 3;</code>
-       */
-      public Builder setContent(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        content_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bytes content = 3;</code>
-       */
-      public Builder clearContent() {
-        
-        content_ = getDefaultInstance().getContent();
         onChanged();
         return this;
       }

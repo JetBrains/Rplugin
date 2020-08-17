@@ -5,6 +5,7 @@
 package org.jetbrains.r.interpreter
 
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -16,6 +17,10 @@ import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.compute
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
@@ -78,6 +83,16 @@ class RLocalInterpreterImpl(
     } else {
       Pair(userPath, File(userPath).mkdirs())
     }
+  }
+
+  override fun showFileInViewer(rInterop: RInterop, pathOnHost: String): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    invokeLater {
+      promise.compute {
+        RToolWindowFactory.showFile(project, pathOnHost)
+      }
+    }
+    return promise
   }
 
   companion object {

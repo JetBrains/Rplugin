@@ -90,7 +90,13 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
       ToolWindowManager.getInstance(project).getToolWindow(ID)!!.contentManager.findContent(displayName)
 
     fun showFile(project: Project, path: String): Promise<Unit> {
-      return getViewerComponent(project).refresh(path).also {
+      return getViewerComponent(project).refreshFile(path).also {
+        RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
+      }
+    }
+
+    fun showUrl(project: Project, url: String): Promise<Unit> {
+      return getViewerComponent(project).refreshUrl(url).also {
         RNonStealingToolWindowInvoker(project, VIEWER).showWindow()
       }
     }

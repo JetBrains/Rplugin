@@ -2322,6 +2322,37 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Int32Value> getStartHttpdMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "startHttpd",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = com.google.protobuf.Int32Value.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Int32Value> getStartHttpdMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Int32Value> getStartHttpdMethod;
+    if ((getStartHttpdMethod = RPIServiceGrpc.getStartHttpdMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getStartHttpdMethod = RPIServiceGrpc.getStartHttpdMethod) == null) {
+          RPIServiceGrpc.getStartHttpdMethod = getStartHttpdMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.Int32Value>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "startHttpd"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Int32Value.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("startHttpd"))
+              .build();
+        }
+      }
+    }
+    return getStartHttpdMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
       com.google.protobuf.StringValue> getGetWorkingDirMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
@@ -3264,7 +3295,7 @@ public final class RPIServiceGrpc {
 
     /**
      * <pre>
-     * Documentation
+     * Documentation and http
      * </pre>
      */
     public void convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request,
@@ -3291,6 +3322,13 @@ public final class RPIServiceGrpc {
     public void getDocumentationForSymbol(org.jetbrains.r.rinterop.DocumentationForSymbolRequest request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getGetDocumentationForSymbolMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void startHttpd(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Int32Value> responseObserver) {
+      asyncUnimplementedUnaryCall(getStartHttpdMethod(), responseObserver);
     }
 
     /**
@@ -3907,6 +3945,13 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.DocumentationForSymbolRequest,
                 org.jetbrains.r.rinterop.HttpdResponse>(
                   this, METHODID_GET_DOCUMENTATION_FOR_SYMBOL)))
+          .addMethod(
+            getStartHttpdMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                com.google.protobuf.Int32Value>(
+                  this, METHODID_START_HTTPD)))
           .addMethod(
             getGetWorkingDirMethod(),
             asyncUnaryCall(
@@ -4603,7 +4648,7 @@ public final class RPIServiceGrpc {
 
     /**
      * <pre>
-     * Documentation
+     * Documentation and http
      * </pre>
      */
     public void convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request,
@@ -4634,6 +4679,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetDocumentationForSymbolMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void startHttpd(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Int32Value> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getStartHttpdMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5290,7 +5343,7 @@ public final class RPIServiceGrpc {
 
     /**
      * <pre>
-     * Documentation
+     * Documentation and http
      * </pre>
      */
     public org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse convertRoxygenToHTML(org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest request) {
@@ -5317,6 +5370,13 @@ public final class RPIServiceGrpc {
     public org.jetbrains.r.rinterop.HttpdResponse getDocumentationForSymbol(org.jetbrains.r.rinterop.DocumentationForSymbolRequest request) {
       return blockingUnaryCall(
           getChannel(), getGetDocumentationForSymbolMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Int32Value startHttpd(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getStartHttpdMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5883,7 +5943,7 @@ public final class RPIServiceGrpc {
 
     /**
      * <pre>
-     * Documentation
+     * Documentation and http
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLResponse> convertRoxygenToHTML(
@@ -5914,6 +5974,14 @@ public final class RPIServiceGrpc {
         org.jetbrains.r.rinterop.DocumentationForSymbolRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getGetDocumentationForSymbolMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Int32Value> startHttpd(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getStartHttpdMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6098,19 +6166,20 @@ public final class RPIServiceGrpc {
   private static final int METHODID_HTTPD_REQUEST = 71;
   private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
   private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 73;
-  private static final int METHODID_GET_WORKING_DIR = 74;
-  private static final int METHODID_SET_WORKING_DIR = 75;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 76;
-  private static final int METHODID_GET_SYS_ENV = 77;
-  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 78;
-  private static final int METHODID_LOAD_LIB_PATHS = 79;
-  private static final int METHODID_LOAD_LIBRARY = 80;
-  private static final int METHODID_UNLOAD_LIBRARY = 81;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 82;
-  private static final int METHODID_LOAD_ENVIRONMENT = 83;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 84;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 85;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 86;
+  private static final int METHODID_START_HTTPD = 74;
+  private static final int METHODID_GET_WORKING_DIR = 75;
+  private static final int METHODID_SET_WORKING_DIR = 76;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 77;
+  private static final int METHODID_GET_SYS_ENV = 78;
+  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 79;
+  private static final int METHODID_LOAD_LIB_PATHS = 80;
+  private static final int METHODID_LOAD_LIBRARY = 81;
+  private static final int METHODID_UNLOAD_LIBRARY = 82;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 83;
+  private static final int METHODID_LOAD_ENVIRONMENT = 84;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 85;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 86;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 87;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6425,6 +6494,10 @@ public final class RPIServiceGrpc {
           serviceImpl.getDocumentationForSymbol((org.jetbrains.r.rinterop.DocumentationForSymbolRequest) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.HttpdResponse>) responseObserver);
           break;
+        case METHODID_START_HTTPD:
+          serviceImpl.startHttpd((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Int32Value>) responseObserver);
+          break;
         case METHODID_GET_WORKING_DIR:
           serviceImpl.getWorkingDir((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.StringValue>) responseObserver);
@@ -6612,6 +6685,7 @@ public final class RPIServiceGrpc {
               .addMethod(getHttpdRequestMethod())
               .addMethod(getGetDocumentationForPackageMethod())
               .addMethod(getGetDocumentationForSymbolMethod())
+              .addMethod(getStartHttpdMethod())
               .addMethod(getGetWorkingDirMethod())
               .addMethod(getSetWorkingDirMethod())
               .addMethod(getClearEnvironmentMethod())
