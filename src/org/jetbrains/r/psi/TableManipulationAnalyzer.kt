@@ -151,12 +151,6 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     return TableInfo(Collections.emptyList(), TableType.UNKNOWN)
   }
 
-  fun getTableFromVariable(variable: RIdentifierExpression, runtimeInfo: RConsoleRuntimeInfo):TableInfo {
-    return CachedValuesManager.getCachedValue(variable) {
-      CachedValueProvider.Result.create(retrieveTableFromVariable(variable, runtimeInfo), variable)
-    }
-  }
-
   fun getTableFromCall(argumentColumns: List<TableManipulationColumn>, call: RCallExpression): TableInfo {
     val callInfo = getCallInfo(call, null)
     if (callInfo != null) {
@@ -176,7 +170,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     }
 
     if (element is RIdentifierExpression) {
-      return getTableFromVariable(element, runtimeInfo)
+      return retrieveTableFromVariable(element, runtimeInfo)
     }
     else if (element is ROperatorExpression) {
       val operator = element.operator
