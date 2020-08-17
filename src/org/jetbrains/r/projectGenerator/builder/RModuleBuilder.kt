@@ -12,6 +12,7 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.projectGenerator.step.RGeneratorSettingsWizardStep
 import org.jetbrains.r.projectGenerator.template.RProjectGenerator
@@ -36,7 +37,7 @@ class RModuleBuilder(private val generator: RProjectGenerator) : ModuleBuilder()
 
   override fun getDescription(): String = RBundle.message("module.builder.description")
 
-  override fun getBuilderId(): String = generator.getId()
+  override fun getBuilderId(): @NonNls String = generator.getId()
 
   override fun commitModule(project: Project, model: ModifiableModuleModel?): Module? {
     ApplicationManager.getApplication().assertIsDispatchThread()
