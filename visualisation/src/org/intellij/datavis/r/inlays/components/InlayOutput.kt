@@ -308,6 +308,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
   private val console = ColoredTextConsole(project, viewer = true)
 
   private val maxHeight = 500
+  private val scrollPaneTopBorderHeight = 5
 
   init {
     Disposer.register(parent, console)
@@ -315,7 +316,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
     (console.editor as EditorImpl).apply {
       backgroundColor = UIUtil.getPanelBackground()
-      scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(5, 0, 0, 0))
+      scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
       MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
     }
 
@@ -356,7 +357,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() {
-                  val height = offsetToXY(document.textLength).y + lineHeight + 5
+                  val height = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
                   component.preferredSize = Dimension(preferredSize.width, height)
                   onHeightCalculated?.invoke(min(height, maxHeight))
                 }
