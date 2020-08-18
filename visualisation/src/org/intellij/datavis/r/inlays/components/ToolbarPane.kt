@@ -6,19 +6,19 @@ package org.intellij.datavis.r.inlays.components
 
 import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
+import java.awt.Component
 import javax.swing.JComponent
-import javax.swing.JLayeredPane
 import javax.swing.JPanel
 
 /**
- * ToolbarPane - special component with central part which is set by
- * setCentralComponent() - this component fill the entire ToolbarPane
- * setToolbarComponent() - preserves initial size and stays in top right corner
+ * ToolbarPane - a special component consisting of two parts which are
+ * setDataComponent() - used for displaying some output and should fill the major part of ToolbarPane, is aligned to the left
+ * setToolbarComponent() - typically occupies the small area to the right and contains the button that shows the output actions menu
  */
-class ToolbarPane(val inlayOutput: InlayOutput) : JLayeredPane() {
+class ToolbarPane(val inlayOutput: InlayOutput) : JPanel(BorderLayout()) {
   private var mainPanel: JPanel? = null
 
-  var centralComponent: JComponent? = null
+  var dataComponent: JComponent? = null
     set(value) {
       field = value
       updateMainComponent()
@@ -36,7 +36,7 @@ class ToolbarPane(val inlayOutput: InlayOutput) : JLayeredPane() {
   var toolbarComponent: JComponent? = null
     set(value) {
       field = value
-      add(value, DEFAULT_LAYER)
+      updateMainComponent()
       updateChildrenBounds()
       UiCustomizer.instance.toolbarPaneToolbarComponentChanged(this, value)
     }
@@ -45,15 +45,18 @@ class ToolbarPane(val inlayOutput: InlayOutput) : JLayeredPane() {
     if (mainPanel == null) {
       mainPanel = JPanel(BorderLayout())
       UiCustomizer.instance.toolbarPaneMainPanelCreated(this, mainPanel)
-      add(mainPanel, PALETTE_LAYER)
+      add(mainPanel as Component, BorderLayout.CENTER)
     }
     mainPanel?.let { main ->
       main.removeAll()
       progressComponent?.let { progress ->
         main.add(progress, BorderLayout.PAGE_START)
       }
-      centralComponent?.let { central ->
+      dataComponent?.let { central ->
         main.add(central, BorderLayout.CENTER)
+      }
+      toolbarComponent?.let { toolbar ->
+        main.add(toolbar, BorderLayout.LINE_END)
       }
     }
   }

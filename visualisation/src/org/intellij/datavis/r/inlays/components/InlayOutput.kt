@@ -7,8 +7,13 @@ package org.intellij.datavis.r.inlays.components
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -28,8 +33,6 @@ import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
-import java.awt.Color
-import java.awt.Component
 import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -104,11 +107,19 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   }
 
   private fun createToolbar(): JComponent {
-    val groups = listOf(actions, listOf(createClearAction()))
-    val toolbar = ToolbarUtil.createActionToolbar(groups)
-    return toolbar.apply {
-      isOpaque = false
-      background = Color(0, 0, 0, 0)
+    val ellipsis = DefaultActionGroup().apply {
+      addAll(actions)
+      add(createClearAction())
+      isPopup = true
+      with(templatePresentation) {
+        putClientProperty(ActionButton.HIDE_DROPDOWN_ICON, true)
+        icon = AllIcons.Actions.More
+      }
+    }
+    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, DefaultActionGroup(ellipsis), false)
+    return toolbar.component.apply {
+      isOpaque = true
+      background = UIUtil.getEditorPaneBackground()
     }
   }
 
@@ -156,7 +167,7 @@ class InlayOutputImg(
   override val extraActions = createExtraActions()
 
   init {
-    toolbarPane.centralComponent = wrapper.component
+    toolbarPane.dataComponent = wrapper.component
     graphicsManager?.let { manager ->
       globalResolution = manager.globalResolution
       val connection = manager.addGlobalResolutionListener { newGlobalResolution ->
@@ -300,7 +311,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
   init {
     Disposer.register(parent, console)
-    toolbarPane.centralComponent = console.component
+    toolbarPane.dataComponent = console.component
     (console.editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
     (console.editor as EditorImpl).scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(5, 0, 0, 0))
     MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane, parent)
@@ -405,7 +416,7 @@ class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Uni
       JBCefJSQuery.Response("OK")
     }
     Disposer.register(jbBrowser, heightJsCallback)
-    toolbarPane.centralComponent = jbBrowser.component
+    toolbarPane.dataComponent = jbBrowser.component
   }
 
   override fun acceptType(type: String): Boolean {
