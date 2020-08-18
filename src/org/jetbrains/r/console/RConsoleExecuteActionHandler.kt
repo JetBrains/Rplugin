@@ -343,6 +343,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                 promise.setResult(RObject.getDefaultInstance())
               }.onError { promise.setError(it) }
             }
+            RStudioApiFunctionId.VERSION_INFO_MODE_ID -> {
+              promise.setResult(versionInfoMode(rInterop))
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)

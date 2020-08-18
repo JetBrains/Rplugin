@@ -55,8 +55,7 @@ interface RInterpreterManager {
     fun getInterpreterOrNull(project: Project): RInterpreter? = getInstanceIfCreated(project)?.interpreterOrNull
     fun getInterpreterBlocking(project: Project, timeout: Int): RInterpreter? = getInstance(project).getInterpreterBlocking(timeout)
 
-    fun restartInterpreter(project: Project): Promise<Unit> {
-      val promise = AsyncPromise<Unit>()
+    fun restartInterpreter(project: Project, afterRestart: Runnable? = null) {
       getInterpreterAsync(project, true).onProcessed { interpreter ->
         if (interpreter != null) {
           RepoProvider.getInstance(project).onInterpreterVersionChange()
@@ -68,12 +67,10 @@ interface RInterpreterManager {
         RConsoleManager.getInstance(project).currentConsoleAsync.onSuccess {
           runInEdt {
             RConsoleManager.closeMismatchingConsoles(project, interpreter)
-            RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show {}
-            promise.setResult(Unit)
+            RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.show(afterRestart)
           }
         }
       }
-      return promise
     }
   }
 }

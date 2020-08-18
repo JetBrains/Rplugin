@@ -4,6 +4,7 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.psi.PsiDocumentManager
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
@@ -61,10 +62,11 @@ fun sendToConsole(rInterop: RInterop, args: RObject) {
 }
 
 fun restartSession(rInterop: RInterop, args: RObject) {
-  // TODO
   val command = args.list.getRObjects(0).rString.getStrings(0)
   getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
-  RInterpreterManager.restartInterpreter(rInterop.project).then {
-    getConsoleView(rInterop)?.executeText(command)
-  }
+  RInterpreterManager.restartInterpreter(rInterop.project, Runnable {
+    RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
+      it.executeText(command)
+    }
+  })
 }

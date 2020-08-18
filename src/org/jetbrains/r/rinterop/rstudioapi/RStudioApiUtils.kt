@@ -52,7 +52,8 @@ enum class RStudioApiFunctionId {
   TERMINAL_RUNNING_ID,
   TERMINAL_SEND_ID,
   TERMINAL_VISIBLE_ID,
-  VIEWER_ID;
+  VIEWER_ID,
+  VERSION_INFO_MODE_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -93,6 +94,7 @@ enum class RStudioApiFunctionId {
         33 -> TERMINAL_SEND_ID
         34 -> TERMINAL_VISIBLE_ID
         35 -> VIEWER_ID
+        36 -> VERSION_INFO_MODE_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }
@@ -108,6 +110,11 @@ fun viewer(rInterop: RInterop, args: RObject): AsyncPromise<Unit> {
     }
   }
   return promise
+}
+
+fun versionInfoMode(rInterop: RInterop): RObject {
+  val mode = if (rInterop.interpreter.isLocal()) "desktop" else "server"
+  return mode.toRString()
 }
 
 internal fun String.toRString(): RObject {
