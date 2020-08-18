@@ -352,7 +352,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
           }
           console.flushDeferredText()
 
-          with(console.editor as EditorImpl) {
+          (console.editor as? EditorImpl)?.apply {
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() {
