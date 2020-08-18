@@ -4,9 +4,7 @@ import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.VisualPosition
+import com.intellij.openapi.editor.*
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -25,6 +23,7 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import kotlin.math.min
 import kotlin.streams.toList
 
 fun getSourceEditorContext(rInterop: RInterop): RObject {
@@ -167,15 +166,15 @@ fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
     val id = args.list.getRObjects(1).rString.getStrings(0)
     getDocumentFromId(id, rInterop)
   } ?: return getRNull()
-  for (r in ranges) {
-    val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
-    editors.map {
-      it.caretModel.addCaret(
-        VisualPosition(r[2], r[3])
-      )?.setSelection(
-        document.getLineStartOffset(r[0]) + r[1],
-        document.getLineStartOffset(r[2]) + r[3]
-      )
+  val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
+  editors.map {editor ->
+    editor.caretModel.caretsAndSelections = ranges.map { r ->
+      val (selectionStart, selectionEnd) = listOf(0, 2).map { pos ->
+        editor.offsetToLogicalPosition(
+          min(document.getLineEndOffset(r[pos]), document.getLineStartOffset(r[pos]) + r[pos + 1])
+        )
+      }
+      CaretState(selectionEnd, selectionStart, selectionEnd)
     }
   }
   return getRNull()
