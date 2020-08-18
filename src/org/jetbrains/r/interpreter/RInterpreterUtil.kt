@@ -392,6 +392,7 @@ object RInterpreterUtil {
         if (beginLexer.advanceChar(char)) {
           markerOccurred = true
           beginLexer.restore()
+          stdoutBuffer.setLength(0)
         }
       }
       else {
