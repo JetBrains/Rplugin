@@ -312,9 +312,12 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
   init {
     Disposer.register(parent, console)
     toolbarPane.dataComponent = console.component
-    (console.editor as EditorImpl).backgroundColor = UIUtil.getPanelBackground()
-    (console.editor as EditorImpl).scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(5, 0, 0, 0))
-    MouseWheelUtils.wrapMouseWheelListeners((console.editor as EditorImpl).scrollPane, parent)
+
+    (console.editor as EditorImpl).apply {
+      backgroundColor = UIUtil.getPanelBackground()
+      scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(5, 0, 0, 0))
+      MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
+    }
 
     console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
 
