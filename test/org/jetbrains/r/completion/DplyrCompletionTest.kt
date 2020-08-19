@@ -288,6 +288,17 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStaticCompletionInNestedFunctions() {
+    checkStaticCompletion(
+      """
+        transmute(mutate(table, yyyy_ac = 1 + 2), yyyy_ax = 1, yyyy_ay = yyyy_<caret>, yyyy_az = 2)        
+      """.trimIndent(),
+
+      listOf("yyyy_ac"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()

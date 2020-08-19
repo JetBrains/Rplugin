@@ -87,6 +87,16 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testResolveInNestedFunctions() {
+    doTest(
+      "yyyy_ac = 1 + 2",
+
+      """
+        transmute(mutate(table, yyyy_ac = 1 + 2), yyyy_ax = 1, yyyy_ay = yyyy<caret>_ac, yyyy_az = 2)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))

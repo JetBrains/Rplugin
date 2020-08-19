@@ -154,12 +154,13 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     return true
   }
 
-  private fun processColumnsFromCall(leftExpression: RExpression?, call: RCallExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
+  private fun processColumnsFromCall(call: RCallExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
     val callInfo = getCallInfo(call, null)
     if (callInfo != null) {
+      val table = callInfo.passedTableArguments.lastOrNull()
       val processOperandColumnsRunner = Callable<Boolean> {
-        if (leftExpression != null) {
-          return@Callable processStaticTableColumns(leftExpression, processor)
+        if (table != null) {
+          return@Callable processStaticTableColumns(table, processor)
         }
         return@Callable true
       }
@@ -182,11 +183,11 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       }
       val rightExpr = element.rightExpr
       if (rightExpr is RCallExpression) {
-        return processColumnsFromCall(element.leftExpr, rightExpr, processor)
+        return processColumnsFromCall(rightExpr, processor)
       }
     }
     else if (element is RCallExpression) {
-      return processColumnsFromCall(null, element, processor)
+      return processColumnsFromCall(element, processor)
     }
     return true
   }
