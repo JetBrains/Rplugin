@@ -46,10 +46,10 @@ import kotlin.math.min
 
 abstract class InlayOutput(parent: Disposable, val editor: Editor, private val clearAction: () -> Unit) {
   // Transferring `this` from the constructor to another class violates JMM and leads to undefined behaviour
-  //  when accessing `toolbarPane` inside constructor and when `toolbarPane` accesses `this`. So, be careful.
-  //  Since this is an abstract class with many inheritors, the only way to get rid of this issue is to convert
-  //  the class to the interface (or make the constructor private) and initialize `toolbarPane` inside some
-  //  factory method.
+  // when accessing `toolbarPane` inside constructor and when `toolbarPane` accesses `this`. So, be careful.
+  // Since this is an abstract class with many inheritors, the only way to get rid of this issue is to convert
+  // the class to the interface (or make the constructor private) and initialize `toolbarPane` inside some
+  // factory method.
   @Suppress("LeakingThis")
   protected val toolbarPane = ToolbarPane(this)
 
