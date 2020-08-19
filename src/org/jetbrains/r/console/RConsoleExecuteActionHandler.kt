@@ -264,11 +264,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_FILE_ID -> {
-              selectFile(args).then { promise.setResult(it) }
+              selectFile(rInterop, args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_DIRECTORY_ID -> {
-              selectDirectory(args).then { promise.setResult(it) }
+              selectDirectory(rInterop, args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_DIALOG_ID -> {

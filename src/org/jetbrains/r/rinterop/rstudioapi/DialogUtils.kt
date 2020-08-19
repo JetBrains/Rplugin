@@ -2,15 +2,22 @@ package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.dialog
+import com.intellij.ui.components.noteComponent
 import com.intellij.ui.layout.*
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import java.util.concurrent.TimeUnit
 import javax.swing.JPasswordField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
@@ -109,12 +116,53 @@ fun askForSecret(args: RObject): Promise<RObject> {
   return promise
 }
 
-fun selectFile(args: RObject): Promise<RObject> {
-  TODO()
+fun selectFile(rInterop: RInterop, args: RObject): Promise<RObject> {
+  return selectHelper(rInterop, args)
 }
 
-fun selectDirectory(args: RObject): Promise<RObject> {
-  TODO()
+fun selectDirectory(rInterop: RInterop, args: RObject): Promise<RObject> {
+  return selectHelper(rInterop, args, true)
+}
+
+private fun selectHelper(rInterop: RInterop, args: RObject, selectFolder: Boolean = false): Promise<RObject> {
+  val caption = args.list.getRObjects(0).rString.getStrings(0)
+  val label = args.list.getRObjects(1).rString.getStrings(0)
+  val path = args.list.getRObjects(2).rString.getStrings(0)
+  val filter = if (selectFolder) null else args.list.getRObjects(3).rString.getStrings(0)
+  val extension = when (filter) {
+    "All Files (*)" -> null
+    "R Files (*.R)" -> "R"
+    "R Markdown Files (*.Rmd)" -> "Rmd"
+    else -> null
+  }
+  val existing = if (selectFolder) true else args.list.getRObjects(4).rboolean.getBooleans(0)
+  val fileChooser = rInterop.interpreter.createFileChooserForHost(path, selectFolder)
+  val panel = panel {
+    if (!selectFolder) noteRow(filter!!)
+    row { fileChooser().focused() }
+  }
+  val promise = AsyncPromise<RObject>()
+
+  runInEdt {
+    val dialog = dialog(caption, panel, okActionEnabled = selectFolder)
+    val validate: () -> Unit = {
+      dialog.isOKActionEnabled = (extension == null || fileChooser.text.endsWith(".$extension"))
+    }
+    fileChooser.isEditable = !existing
+    if (!selectFolder) {
+      fileChooser.textField.document.addDocumentListener(object : DocumentListener {
+        override fun changedUpdate(e: DocumentEvent?) = validate()
+        override fun insertUpdate(e: DocumentEvent?) = validate()
+        override fun removeUpdate(e: DocumentEvent?) = validate()
+      })
+    }
+    val result = if (dialog.showAndGet()) {
+      fileChooser.text.toRString()
+    }
+    else getRNull()
+    promise.setResult(result)
+  }
+  return promise
 }
 
 fun showDialog(args: RObject): Promise<RObject> {
