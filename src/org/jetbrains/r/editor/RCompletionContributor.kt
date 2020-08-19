@@ -15,6 +15,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.CommonProcessors
 import com.intellij.util.ProcessingContext
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
@@ -452,6 +453,16 @@ class RCompletionContributor : CompletionContributor() {
         columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
       }
       result.addAll(columns)
+
+      val columnNamesFromConsole = columns.map { it.name }
+      val collectProcessor = CommonProcessors.CollectProcessor<TableManipulationColumn>()
+      tableCallInfo.passedTableArguments.forEach {
+        if (!tableAnalyser.processStaticTableColumns(it, collectProcessor)) {
+          return@forEach
+        }
+      }
+
+      result.addAll(collectProcessor.results.filter { !columnNamesFromConsole.contains(it.name) })
     }
 
     private fun addFilePathCompletion(parameters: CompletionParameters,

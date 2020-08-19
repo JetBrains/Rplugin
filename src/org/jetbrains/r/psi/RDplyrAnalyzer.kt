@@ -6,10 +6,10 @@ package org.jetbrains.r.psi
 
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.joinTableAndAllDotsColumns
-import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getAllDotsColumns
-import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getColumnsOfCountFunction
-import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getTableColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processColumnsOfCountFunction
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandTableAndAllDotsColumns
 import org.jetbrains.r.psi.api.*
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
@@ -83,7 +83,7 @@ enum class DplyrFunction(
   override val inheritedFunction: Boolean = false,
   override val fullSuperFunctionName: String? = null,
   override val s3Function: Boolean = false,
-  override val tableColumns: FunctionColumnsProvider = ::getTableColumns
+  override val tableColumnsProvider: TableColumnsProvider = ::processOperandColumns
 ) : TableManipulationFunction {
   ADD_COUNT("add_count", tableArguments = listOf("x")),
   ADD_ROW("add_row", tableArguments = listOf(".data")),
@@ -92,7 +92,7 @@ enum class DplyrFunction(
   ARRANGE_ALL("arrange_all"),
   ARRANGE_AT("arrange_at"),
   ARRANGE_IF("arrange_if"),
-  COUNT("count", tableArguments = listOf("x"), tableColumns = ::getColumnsOfCountFunction),
+  COUNT("count", tableArguments = listOf("x"), tableColumnsProvider = ::processColumnsOfCountFunction),
   DISTINCT("distinct", tableArguments = listOf(".data")),
   DISTINCT_ALL("distinct_all"),
   DISTINCT_AT("distinct_at"),
@@ -102,12 +102,12 @@ enum class DplyrFunction(
   GROUP_BY_ALL("group_by_all"),
   GROUP_BY_AT("group_by_at"),
   GROUP_BY_IF("group_by_if"),
-  MUTATE("mutate", tableArguments = listOf(".data"), tableColumns = ::joinTableAndAllDotsColumns),
+  MUTATE("mutate", tableArguments = listOf(".data"), tableColumnsProvider = ::processOperandTableAndAllDotsColumns),
   MUTATE_ALL("mutate_all"),
   MUTATE_AT("mutate_at"),
   MUTATE_IF("mutate_if"),
   PULL("pull", returnsTable = false, tableArguments = listOf(".data")),
-  RENAME("rename", tableArguments = listOf(".data"), tableColumns = ::joinTableAndAllDotsColumns),
+  RENAME("rename", tableArguments = listOf(".data"), tableColumnsProvider = ::processOperandTableAndAllDotsColumns),
   RENAME_ALL("rename_all"),
   RENAME_AT("rename_at"),
   RENAME_IF("rename_if"),
@@ -118,16 +118,16 @@ enum class DplyrFunction(
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),
   SLICE("slice", tableArguments = listOf(".data")),
-  SUMMARISE("summarise", tableArguments = listOf(".data"), tableColumns = ::getAllDotsColumns),
+  SUMMARISE("summarise", tableArguments = listOf(".data"), tableColumnsProvider = ::processAllDotsColumns),
   SUMMARISE_ALL("summarise_all"),
   SUMMARISE_AT("summarise_at"),
   SUMMARISE_IF("summarise_if"),
-  SUMMARIZE("summarize", tableArguments = listOf(".data"), tableColumns = ::getAllDotsColumns),
+  SUMMARIZE("summarize", tableArguments = listOf(".data"), tableColumnsProvider = ::processAllDotsColumns),
   SUMMARIZE_ALL("summarize_all"),
   SUMMARIZE_AT("summarize_at"),
   SUMMARIZE_IF("summarize_if"),
-  TALLY("tally", tableArguments = listOf("x"), tableColumns = ::getColumnsOfCountFunction),
-  TIBBLE("tibble", tableArguments = listOf(), tableColumns = ::getAllDotsColumns),
+  TALLY("tally", tableArguments = listOf("x"), tableColumnsProvider = ::processColumnsOfCountFunction),
+  TIBBLE("tibble", tableArguments = listOf(), tableColumnsProvider = ::processAllDotsColumns),
   TOP_FRAC("top_frac", tableArguments = listOf("x")),
   TOP_N("top_n", tableArguments = listOf("x")),
   TRANSMUTE("transmute", tableArguments = listOf(".data")),

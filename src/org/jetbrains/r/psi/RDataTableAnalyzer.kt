@@ -6,7 +6,7 @@ package org.jetbrains.r.psi
 
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
-import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.getTableColumns
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import org.jetbrains.r.psi.api.RExpression
 
 object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
@@ -57,7 +57,7 @@ enum class DataTableFunction(
   val allowWithoutQuotes: List<String> = emptyList(),
   override val s3Function: Boolean = false,
   override val tableArguments: List<String> = listOf("x"),
-  override val tableColumns: FunctionColumnsProvider = ::getTableColumns
+  override val tableColumnsProvider: TableColumnsProvider = ::processOperandColumns
 ) : TableManipulationFunction {
   ALL_EQUAL("all.equal", tableArguments = listOf("target", "current"), s3Function = true, returnsTable = false),
   ALLOC_COL("alloc.col", tableArguments = listOf("DT"), returnsTable = false), // experimental, might change
