@@ -97,6 +97,17 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testDplyrSelect() {
+    doTest(
+      "height",
+
+      """
+        a1 <- select(starwars, name, height, mass)
+        a2 <- mutate(a1, abc = 2 * he<caret>ight)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))

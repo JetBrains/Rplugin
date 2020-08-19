@@ -113,7 +113,7 @@ enum class DplyrFunction(
   RENAME_IF("rename_if"),
   SAMPLE_FRAC("sample_frac", ignoreInTransform = true, tableArguments = listOf("tbl")),
   SAMPLE_N("sample_n", ignoreInTransform = true, tableArguments = listOf("tbl")),
-  SELECT("select", tableArguments = listOf(".data")),
+  SELECT("select", tableArguments = listOf(".data"), tableColumnsProvider = ::processAllDotsColumns),
   SELECT_ALL("select_all"),
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),

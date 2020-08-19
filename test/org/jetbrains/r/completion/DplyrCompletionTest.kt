@@ -299,6 +299,18 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStaticCompletionForSelect() {
+    checkStaticCompletion(
+      """
+        a1 <- select(starwars, name, height, mass)
+        a2 <- mutate(a1, abc = 2 * heig<caret>)
+      """.trimIndent(),
+
+      listOf("height"),
+      listOf("hair_color")
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()
