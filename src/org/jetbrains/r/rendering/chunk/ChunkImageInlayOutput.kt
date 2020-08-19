@@ -34,7 +34,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   override val extraActions = createExtraActions()
 
   init {
-    toolbarPane.centralComponent = wrapper.component
+    toolbarPane.dataComponent = wrapper.component
     globalResolution = manager.globalResolution
     val connection = manager.addGlobalResolutionListener { newGlobalResolution ->
       wrapper.targetResolution = newGlobalResolution
