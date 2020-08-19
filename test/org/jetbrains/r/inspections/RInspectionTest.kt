@@ -23,9 +23,7 @@ abstract class RInspectionTest : RUsefulTestCase() {
 
   internal abstract val inspection: Class<out RInspection>
 
-  override fun getTestDataPath(): String {
-    return super.getTestDataPath() + "/inspections/" + javaClass.simpleName.replace("Test", "")
-  }
+  override fun getTestDataPath(): String = Paths.get(super.getTestDataPath(), "inspections", javaClass.simpleName.replace("Test", "")).toString()
 
   private fun doTestBase(filename: String,
                          checkWarnings: Boolean = false,

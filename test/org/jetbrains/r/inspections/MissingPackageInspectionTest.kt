@@ -5,9 +5,12 @@
 
 package org.jetbrains.r.inspections
 
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import org.jetbrains.r.RFileType.DOT_R_EXTENSION
+import org.jetbrains.r.interpreter.RInterpreterBaseTestCase
+import java.nio.file.Paths
 
-class MissingPackageInspectionTest : org.jetbrains.r.inspections.RInspectionTest() {
+class MissingPackageInspectionTest : RInterpreterBaseTestCase() {
 
   @Throws(Exception::class)
   override fun setUp() {
@@ -73,6 +76,21 @@ class MissingPackageInspectionTest : org.jetbrains.r.inspections.RInspectionTest
     """.trimIndent())
   }
 
-  override val inspection: Class<out RInspection>
+  val inspection
     get() = MissingPackageInspection::class.java
+
+  override fun getTestDataPath(): String = Paths.get(super.getTestDataPath(), "inspections", javaClass.simpleName.replace("Test", "")).toString()
+
+  private fun doTest(filename: String = getTestName(false) + DOT_R_EXTENSION): CodeInsightTestFixture {
+    myFixture.configureByFile(filename)
+    myFixture.enableInspections(inspection)
+    myFixture.testHighlighting(true, false, false, filename)
+
+    return myFixture
+  }
+
+  override fun configureFixture(myFixture: CodeInsightTestFixture) {
+    super.configureFixture(myFixture)
+    myFixture.enableInspections(inspection)
+  }
 }
