@@ -38,7 +38,7 @@ class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
   private fun completeSingle(@Language("R") text: String, @Language("R") expected: String) {
     myFixture.configureByText("foo.R", text)
     val completion = myFixture.completeBasic()
-    assertNull(completion) // means a single variant completed
+    assertNull("Got ${completion?.joinToString(", ") { it.lookupString }} instead of null", completion) // means a single variant completed
     myFixture.checkResult(expected)
   }
 }
