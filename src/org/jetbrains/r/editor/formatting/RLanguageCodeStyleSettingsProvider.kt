@@ -9,7 +9,6 @@ import com.intellij.application.options.IndentOptionsEditor
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizableOptions
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import org.jetbrains.r.RLanguage
@@ -57,34 +56,34 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
         consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_LBRACE.name, "Function left brace")
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_BINARY_TILDE_OPERATOR.name,
-                                  "Binary tilde operator (~)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Binary tilde operator (~)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_DISJUNCTION_OPERATORS.name,
-                                  "Disjunction operators (|, ||)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Disjunction operators (|, ||)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_CONJUNCTION_OPERATORS.name,
-                                  "Conjunction operators (&, &&)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Conjunction operators (&, &&)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_INFIX_OPERATOR.name,
-                                  "Infix operators (%%, %/%, ...)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Infix operators (%%, %/%, ...)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_COLON_OPERATOR.name,
-                                  "Colon operator (:)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Colon operator (:)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_EXPONENTIATION_OPERATOR.name,
-                                  "Exponentiation operator (^)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "Exponentiation operator (^)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_SUBSET_OPERATOR.name,
-                                  "List subset operator ($)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "List subset operator ($)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_AT_OPERATOR.name,
-                                  "At operator (@)", CodeStyleSettingsCustomizableOptions.SPACES_AROUND_OPERATORS.get())
+                                  "At operator (@)", CodeStyleSettingsCustomizable.SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_BEFORE_REPEAT_LBRACE.name,
-                                  "'repeat' left brace", CodeStyleSettingsCustomizableOptions.SPACES_BEFORE_LEFT_BRACE.get())
+                                  "'repeat' left brace", CodeStyleSettingsCustomizable.SPACES_BEFORE_LEFT_BRACE)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_BEFORE_LEFT_BRACKET.name,
-                                  "Space before [", CodeStyleSettingsCustomizableOptions.SPACES_OTHER.get())
+                                  "Space before [", CodeStyleSettingsCustomizable.SPACES_OTHER)
       }
       SettingsType.BLANK_LINES_SETTINGS ->
         consumer.showStandardOptions(CCSS::KEEP_BLANK_LINES_IN_CODE.name)
