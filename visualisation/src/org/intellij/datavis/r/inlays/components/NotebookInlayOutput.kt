@@ -16,6 +16,7 @@ import java.awt.Font
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import kotlin.math.min
 
 class ProcessOutput(val text: String, kind: Key<*>) {
   private val kindValue: Int = when(kind) {
@@ -64,7 +65,12 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
     addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent) {
-        output.getComponent().bounds = Rectangle(0, 0, e.component.bounds.width, e.component.bounds.height)
+        if (output.isFullWidth) {
+          output.getComponent().bounds = Rectangle(0, 0, e.component.bounds.width, e.component.bounds.height)
+        } else {
+          output.getComponent().bounds = Rectangle(0, 0, min(output.getComponent().preferredSize.width, e.component.bounds.width),
+                                                   e.component.bounds.height)
+        }
       }
     })
     if (addToolbar) {

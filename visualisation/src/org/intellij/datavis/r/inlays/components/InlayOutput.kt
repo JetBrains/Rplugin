@@ -58,6 +58,9 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   protected open val useDefaultSaveAction: Boolean = true
   protected open val extraActions: List<AnAction> = emptyList()
 
+  /** If the output should occupy as much editor width as possible. */
+  open val isFullWidth = true
+
   val actions: List<AnAction> by lazy {  // Note: eager initialization will cause runtime errors
     createActions()
   }
@@ -151,6 +154,7 @@ class InlayOutputImg(parent: Disposable, editor: Editor, clearAction: () -> Unit
   }
 
   override val extraActions = createExtraActions()
+  override val isFullWidth = false
 
   init {
     toolbarPane.dataComponent = graphicsPanel.component
