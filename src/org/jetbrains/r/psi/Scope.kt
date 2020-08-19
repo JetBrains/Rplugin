@@ -5,15 +5,14 @@
 package org.jetbrains.r.psi
 
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.r.psi.api.RControlFlowHolder
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.cfg.VariableDefinition
 
 enum class ReferenceKind {
   LOCAL_VARIABLE,
   CLOSURE,
   PARAMETER,
+  ARGUMENT,
   OTHER
 }
 
@@ -32,6 +31,12 @@ fun RIdentifierExpression.getKind(): ReferenceKind {
       return ReferenceKind.PARAMETER
     }
     return ReferenceKind.LOCAL_VARIABLE
+  }
+
+  val elementAncestor = PsiTreeUtil.getParentOfType(this, RArgumentList::class.java, RCallExpression::class.java,
+                                                    RControlFlowHolder::class.java)
+  if (elementAncestor is RArgumentList) {
+    return ReferenceKind.ARGUMENT
   }
   return ReferenceKind.OTHER
 }

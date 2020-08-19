@@ -16,8 +16,8 @@ import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.rinterop.TableColumnsInfo
 import java.util.concurrent.Callable
 
-typealias TableColumnsProvider = (operandProcessorRunner: Callable<Boolean>?, callInfo: TableManipulationCallInfo<*>,
-                                  processor: Processor<TableManipulationColumn>) -> Boolean
+typealias TableColumnsProvider = (operandProcessorRunner: Callable<Boolean>?, call: RCallExpression, callInfo: TableManipulationCallInfo<*>,
+                                  processor: Processor<PsiTableColumnInfo>) -> Boolean
 
 interface TableManipulationFunction {
   val functionName: String?
@@ -82,6 +82,11 @@ data class TableInfo(val columns: List<TableManipulationColumn>, val type: Table
 
 data class TableManipulationColumn(val name: String, val type: String? = null)
 
+/**
+ * Column information based on PSI definition
+ */
+data class PsiTableColumnInfo(val name: String, val definition: PsiElement)
+
 abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 
   protected abstract val nameToFunction: Map<String, T>
@@ -138,7 +143,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
    * Statically calculates columns of the variable
    * It could use runtime to get columns for expressions that are used in the definition of the variable
    */
-  fun processTableFromVariable(variable: RIdentifierExpression, processor: Processor<TableManipulationColumn>): Boolean {
+  private fun processTableFromVariable(variable: RIdentifierExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
     val previousAssignment = RResolveUtil.findPreviousAssignment(variable)
     if (previousAssignment != null) {
       val assignedValue = previousAssignment.assignedValue
@@ -149,7 +154,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     return true
   }
 
-  fun processColumnsFromCall(leftExpression: RExpression?, call: RCallExpression, processor: Processor<TableManipulationColumn>): Boolean {
+  private fun processColumnsFromCall(leftExpression: RExpression?, call: RCallExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
     val callInfo = getCallInfo(call, null)
     if (callInfo != null) {
       val processOperandColumnsRunner = Callable<Boolean> {
@@ -158,7 +163,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
         }
         return@Callable true
       }
-      return callInfo.function.tableColumnsProvider(processOperandColumnsRunner, callInfo, processor)
+      return callInfo.function.tableColumnsProvider(processOperandColumnsRunner, call, callInfo, processor)
     }
     return true
   }
@@ -166,7 +171,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   /**
    * Retrieve the columns for the element with runtime or statically
    */
-  fun processStaticTableColumns(element: RExpression, processor: Processor<TableManipulationColumn>): Boolean {
+  fun processStaticTableColumns(element: RExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
     if (element is RIdentifierExpression) {
       return processTableFromVariable(element, processor)
     }
@@ -372,8 +377,9 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     private const val PIPE_OPERATOR = "%>%"
 
     fun processOperandColumns(operandProcessorRunner: Callable<Boolean>?,
+                              @Suppress("UNUSED_PARAMETER") call: RCallExpression,
                               @Suppress("UNUSED_PARAMETER") callInfo: TableManipulationCallInfo<*>,
-                              @Suppress("UNUSED_PARAMETER") processor: Processor<TableManipulationColumn>): Boolean {
+                              @Suppress("UNUSED_PARAMETER") processor: Processor<PsiTableColumnInfo>): Boolean {
       if (operandProcessorRunner != null) {
         return operandProcessorRunner.call()
       }
@@ -384,10 +390,11 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * Retrieves columns from dot arguments and the column "n" from named argument
      */
     fun processColumnsOfCountFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
+                                      @Suppress("UNUSED_PARAMETER") call: RCallExpression,
                                       callInfo: TableManipulationCallInfo<*>,
-                                      processor: Processor<TableManipulationColumn>): Boolean {
-      val collectProcessor = CommonProcessors.CollectProcessor<TableManipulationColumn>()
-      processAllDotsColumns(null, callInfo, collectProcessor)
+                                      processor: Processor<PsiTableColumnInfo>): Boolean {
+      val collectProcessor = CommonProcessors.CollectProcessor<PsiTableColumnInfo>()
+      processAllDotsColumns(null, call, callInfo, collectProcessor)
 
       for (column in collectProcessor.results) {
         if (!processor.process(column)) {
@@ -396,14 +403,16 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       }
 
       val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
+      var countColumnNameDefinition: PsiElement = call
       var countColumnName = getDefaultCountColumnName(collectProcessor.results)
       if (nameArgument != null && nameArgument is RStringLiteralExpression) {
         val countColumnNameFromCall = nameArgument.name
         if (countColumnNameFromCall != null) {
           countColumnName = countColumnNameFromCall
+          countColumnNameDefinition = nameArgument.parent
         }
       }
-      return processor.process(TableManipulationColumn(countColumnName))
+      return processor.process(PsiTableColumnInfo(countColumnName, countColumnNameDefinition))
     }
 
     /**
@@ -411,15 +420,16 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * Useful for functions like "summarize".
      */
     fun processAllDotsColumns(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
+                              @Suppress("UNUSED_PARAMETER") call: RCallExpression,
                               callInfo: TableManipulationCallInfo<*>,
-                              processor: Processor<TableManipulationColumn>): Boolean {
-      val result = ArrayList<TableManipulationColumn>()
+                              processor: Processor<PsiTableColumnInfo>): Boolean {
+      val result = ArrayList<PsiTableColumnInfo>()
       for (expression in callInfo.argumentInfo.allDotsArguments) {
         if (expression is RNamedArgument) {
-          result.add(TableManipulationColumn(expression.name))
+          result.add(PsiTableColumnInfo(expression.name, expression))
         }
         else if (expression is RIdentifierExpression) {
-          result.add(TableManipulationColumn(expression.name))
+          result.add(PsiTableColumnInfo(expression.name, expression))
         }
       }
       for (column in result) {
@@ -434,18 +444,23 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * @return joined columns from argument table and call dot arguments
      */
     fun processOperandTableAndAllDotsColumns(operandProcessorRunner: Callable<Boolean>?,
+                                             @Suppress("UNUSED_PARAMETER") call: RCallExpression,
                                              callInfo: TableManipulationCallInfo<*>,
-                                             processor: Processor<TableManipulationColumn>): Boolean {
+                                             processor: Processor<PsiTableColumnInfo>): Boolean {
       if (operandProcessorRunner != null && !operandProcessorRunner.call()) {
         return false
       }
-      if (!processAllDotsColumns(null, callInfo, processor)) {
+      if (!processAllDotsColumns(null, call, callInfo, processor)) {
         return false
       }
       return true
     }
 
-    private fun getDefaultCountColumnName(operandColumns: Collection<TableManipulationColumn>):String {
+    /**
+     * Dplyr function count crate column "nn" if a column with name "n" already exists in operand table and no custom name defined,
+     * it uses "nnn" if exist both "n" and "nn" and so on
+     */
+    private fun getDefaultCountColumnName(operandColumns: Collection<PsiTableColumnInfo>):String {
       var candidate = "n"
       while (true) {
         if (!operandColumns.any{it.name == candidate}) {

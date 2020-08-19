@@ -5,16 +5,16 @@
 
 package org.jetbrains.r.psi.references
 
+import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.IncorrectOperationException
+import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
-import java.util.*
 
 class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifierExpression>(element) {
 
@@ -25,6 +25,36 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     if (element.isDependantIdentifier) return emptyArray()
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
+  }
+
+  private fun resolveColumn() : PsiElementResolveResult? {
+    val runtimeInfo = element.containingFile.originalFile.runtimeInfo
+    if (runtimeInfo != null) {
+      val resultElementRef = Ref<PsiElement>()
+      val tableContextInfo = RDplyrAnalyzer.getContextInfo(element, runtimeInfo)
+
+      if (tableContextInfo != null) {
+        val resolveProcessor = object : Processor<PsiTableColumnInfo> {
+          override fun process(it: PsiTableColumnInfo): Boolean {
+            if (it.name == element.name) {
+              resultElementRef.set(it.definition)
+              return false
+            }
+            return true
+          }
+        }
+
+        tableContextInfo.callInfo.passedTableArguments.forEach {
+          if (!RDplyrAnalyzer.processStaticTableColumns(it, resolveProcessor)) {
+            return@forEach
+          }
+        }
+        if (!resultElementRef.isNull) {
+          return PsiElementResolveResult(resultElementRef.get())
+        }
+      }
+    }
+    return null
   }
 
   private fun resolveLocally(): ResolveResult? {
@@ -40,6 +70,9 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
         return PsiElementResolveResult(definition)
       }
       return RResolver.EmptyLocalResult
+    }
+    else if (kind == ReferenceKind.ARGUMENT) {
+      return resolveColumn()
     }
     return null
   }

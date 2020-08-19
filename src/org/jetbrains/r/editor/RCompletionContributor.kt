@@ -455,14 +455,14 @@ class RCompletionContributor : CompletionContributor() {
       result.addAll(columns)
 
       val columnNamesFromConsole = columns.map { it.name }
-      val collectProcessor = CommonProcessors.CollectProcessor<TableManipulationColumn>()
+      val collectProcessor = CommonProcessors.CollectProcessor<PsiTableColumnInfo>()
       tableCallInfo.passedTableArguments.forEach {
         if (!tableAnalyser.processStaticTableColumns(it, collectProcessor)) {
           return@forEach
         }
       }
 
-      result.addAll(collectProcessor.results.filter { !columnNamesFromConsole.contains(it.name) })
+      result.addAll(collectProcessor.results.filter { !columnNamesFromConsole.contains(it.name) }.map { TableManipulationColumn(it.name) })
     }
 
     private fun addFilePathCompletion(parameters: CompletionParameters,

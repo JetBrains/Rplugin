@@ -21,14 +21,12 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.r.RElementGenerator
+import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.parsing.RElementTypes.*
-import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.RElementFilters
+import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.cfg.RControlFlow
 import org.jetbrains.r.psi.cfg.buildControlFlow
-import org.jetbrains.r.psi.getParameters
-import org.jetbrains.r.psi.isNamespaceAccess
 import org.jetbrains.r.psi.references.*
 import org.jetbrains.r.refactoring.RNamesValidator
 import java.util.*
@@ -242,6 +240,7 @@ internal object RPsiImplUtil {
     if (identifierExpression.isNamespaceAccess()) {
       return RNamespaceReference(identifierExpression, (identifierExpression.parent as RNamespaceAccessExpression).namespaceName)
     }
+
     return RReferenceImpl(identifierExpression)
   }
 
