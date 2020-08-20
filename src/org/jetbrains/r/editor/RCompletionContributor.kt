@@ -456,9 +456,9 @@ class RCompletionContributor : CompletionContributor() {
 
       val columnNamesFromConsole = columns.map { it.name }
       val collectProcessor = CommonProcessors.CollectProcessor<PsiTableColumnInfo>()
-      tableCallInfo.passedTableArguments.forEach {
-        if (!tableAnalyser.processStaticTableColumns(it, collectProcessor)) {
-          return@forEach
+      for (table in tableCallInfo.passedTableArguments) {
+        if (!tableAnalyser.processStaticTableColumns(table, collectProcessor)) {
+          break
         }
       }
 

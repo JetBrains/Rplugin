@@ -33,7 +33,7 @@ fun RIdentifierExpression.getKind(): ReferenceKind {
     return ReferenceKind.LOCAL_VARIABLE
   }
 
-  val elementAncestor = PsiTreeUtil.getParentOfType(this, RArgumentList::class.java, RCallExpression::class.java,
+  val elementAncestor = PsiTreeUtil.getParentOfType(this, RArgumentHolder::class.java, RCallExpression::class.java,
                                                     RControlFlowHolder::class.java)
   if (elementAncestor is RArgumentList) {
     return ReferenceKind.ARGUMENT

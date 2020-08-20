@@ -44,9 +44,9 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
           }
         }
 
-        tableContextInfo.callInfo.passedTableArguments.forEach {
-          if (!RDplyrAnalyzer.processStaticTableColumns(it, resolveProcessor)) {
-            return@forEach
+        for (table in tableContextInfo.callInfo.passedTableArguments) {
+          if (!RDplyrAnalyzer.processStaticTableColumns(table, resolveProcessor)) {
+            break
           }
         }
         if (!resultElementRef.isNull) {
