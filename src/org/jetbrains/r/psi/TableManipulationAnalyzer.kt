@@ -157,10 +157,11 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   private fun processColumnsFromCall(call: RCallExpression, processor: Processor<PsiTableColumnInfo>): Boolean {
     val callInfo = getCallInfo(call, null)
     if (callInfo != null) {
-      val table = callInfo.passedTableArguments.lastOrNull()
       val processOperandColumnsRunner = Callable<Boolean> {
-        if (table != null) {
-          return@Callable processStaticTableColumns(table, processor)
+        for (table in callInfo.passedTableArguments) {
+          if (!processStaticTableColumns(table, processor)) {
+            return@Callable false
+          }
         }
         return@Callable true
       }

@@ -311,6 +311,20 @@ class DplyrCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStaticCompletionForJoin() {
+    checkStaticCompletion(
+      """
+tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+tbl2 <- tibble(letter = letters, column_two = letters)
+
+tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
+      """.trimIndent(),
+
+      listOf("column_one", "column_two"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()

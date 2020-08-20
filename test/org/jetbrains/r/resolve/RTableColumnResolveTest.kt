@@ -108,6 +108,19 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testDplyrJoin() {
+    doTest(
+      "column_two = letters",
+
+      """
+        tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+        tbl2 <- dplyr::tibble(letter = letters, column_two = letters)
+        
+        tbl1 %>% dplyr::inner_join(tbl2) %>% dplyr::filter(col<caret>umn_two)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
