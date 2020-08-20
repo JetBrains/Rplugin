@@ -273,6 +273,6 @@ fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 
     TestCase.assertTrue("Timeout: $writeActionTime > $edtTimeout", writeActionTime < edtTimeout)
     Thread.sleep(5)
   }
-  TestCase.assertTrue(isSucceeded)
+  TestCase.assertTrue("Promise finished without success: ${this.state}", isSucceeded)
   return blockingGet(1)
 }

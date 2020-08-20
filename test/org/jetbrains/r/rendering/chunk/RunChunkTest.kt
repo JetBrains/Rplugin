@@ -122,11 +122,10 @@ class RunChunkTest : RConsoleBaseTestCase() {
     p
     ```
     """.trimIndent())
-    assertTrue(result.size == 1)
-    if (result.first().type == "Output") {
-      fail(File(result.first().data).readText())
-    }
-    assertTrue(result.first().type == "URL")
+    assertTrue(
+      "Got wrong number of URL results:\n${result.joinToString("\n") { "${it.type}: ${it.data}" }}",
+      result.filter { it.type == "URL" }.size == 1
+    )
   }
 
   fun testDebugChunk() {
