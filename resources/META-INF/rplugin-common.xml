@@ -79,17 +79,16 @@ You can find the source code in the following repositories:
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
     </extensionPoints>
 
+    <resource-bundle>messages.RPluginBundle</resource-bundle>
+
     <actions>
         <action id="org.jetbrains.r.console.RConsoleAction"
-                class="org.jetbrains.r.console.RConsoleAction"
-                text="Start R Console" description="Starts R interactive console">
+                class="org.jetbrains.r.console.RConsoleAction">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
 
         <action id="org.jetbrains.r.console.RConsoleView.RInterruptAction"
                 class="org.jetbrains.r.console.RConsoleView$RInterruptAction"
-                text="Interrupt Execution"
-                description="Interrupt execution in the R Console"
                 icon="AllIcons.Actions.Suspend">
           <keyboard-shortcut keymap="$default" first-keystroke="control C"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="control C" replace-all="true"/>
@@ -97,11 +96,11 @@ You can find the source code in the following repositories:
         </action>
 
         <action id="org.jetbrains.r.console.RConsoleView.RestartRAction"
-                class="org.jetbrains.r.console.RConsoleView$RestartRAction" text="Restart R"
+                class="org.jetbrains.r.console.RConsoleView$RestartRAction"
                 icon="AllIcons.Actions.Restart"/>
 
         <action id="org.jetbrains.r.console.RConsoleView.TerminateRWithReportAction"
-                class="org.jetbrains.r.console.RConsoleView$TerminateRWithReportAction" text="Terminate R and Generate Report"
+                class="org.jetbrains.r.console.RConsoleView$TerminateRWithReportAction"
                 icon="AllIcons.Debugger.KillProcess"/>
 
         <action id="org.jetbrains.r.console.RConsoleView.REofAction"
@@ -112,16 +111,14 @@ You can find the source code in the following repositories:
         </action>
 
         <action id="org.jetbrains.r.console.RConsoleView.RSetCurrentDirectoryFromEditor"
-                  class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor" text="Set Current Directory From Editor"
-                  icon="/icons/changeWorkingDirectory.svg"
-                  description="Set current directory in the R Console to the directory of an opened file in the editor"/>
+                class="org.jetbrains.r.console.RConsoleView$RSetCurrentDirectoryFromEditor"
+                icon="/icons/changeWorkingDirectory.svg"/>
 
-        <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction" text="Rename Console">
+        <action id="RConsoleRenameAction" class="org.jetbrains.r.console.RConsoleRenameAction">
           <add-to-group group-id="ToolWindowContextMenu" anchor="last"/>
         </action>
 
-        <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction"
-                text="R Script" description="Create a new R-script">
+        <action id="NewRScriptAction" class="org.jetbrains.r.actions.NewRScriptAction">
             <add-to-group group-id="NewGroup" relative-to-action="NewFromTemplate" anchor="before"/>
         </action>
 
@@ -134,42 +131,39 @@ You can find the source code in the following repositories:
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="SynchronizeCurrentFile" anchor="after"/>
         </group>
 
-        <action id="VisualizeTableAction" class="org.jetbrains.r.run.visualize.VisualizeTableAction" text="Visualize Table"/>
-        <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"
-                text="Dump gRPC Messages" description="Dump all gRPC messages which were sent to RWrapper"/>
+        <action id="VisualizeTableAction" class="org.jetbrains.r.run.visualize.VisualizeTableAction"/>
+        <action id="org.jetbrains.r.actions.DumpRInteropMessages" class="org.jetbrains.r.actions.DumpRInteropMessages"/>
 
         <action id="org.jetbrains.r.console.jobs.RunRJobAction" class="org.jetbrains.r.console.jobs.RunRJobAction"
-                text="Run R Job" description="Run R job" icon="/icons/run/runJob.svg"/>
+                icon="/icons/run/runJob.svg"/>
     </actions>
 
     <actions>
-      <action id="org.jetbrains.r.actions.REditorHelpAction" class="org.jetbrains.r.actions.REditorHelpAction" text="Help"
-              description="Get help for the element under the cursor" icon="AllIcons.Actions.Help" >
+      <action id="org.jetbrains.r.actions.REditorHelpAction" class="org.jetbrains.r.actions.REditorHelpAction"
+              icon="AllIcons.Actions.Help" >
         <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
       </action>
-      <action id="RInsertAssignmentAction" class="org.jetbrains.r.editor.RInsertAssignmentAction"
-              text="Insert Assignment Operator">
+      <action id="RInsertAssignmentAction" class="org.jetbrains.r.editor.RInsertAssignmentAction">
         <keyboard-shortcut keymap="$default" first-keystroke="alt MINUS"/>
         <keyboard-shortcut keymap="Mac OS X" first-keystroke="alt MINUS" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="alt MINUS" replace-all="true"/>
       </action>
-      <action id="RInsertPipeAction" class="org.jetbrains.r.editor.RInsertPipeAction"
-              text="Insert Pipe Operator">
+      <action id="RInsertPipeAction" class="org.jetbrains.r.editor.RInsertPipeAction">
         <keyboard-shortcut keymap="$default" first-keystroke="control shift M" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift M" replace-all="true"/>
         <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift M" replace-all="true"/>
       </action>
-        <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction" text="Run"
-                description="Run file in console" icon="AllIcons.Actions.Execute" >
+        <action id="org.jetbrains.r.actions.RRunAction" class="org.jetbrains.r.actions.RRunAction"
+                icon="AllIcons.Actions.Execute" >
           <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
-        <action id="org.jetbrains.r.actions.RDebugAction" class="org.jetbrains.r.actions.RDebugAction" text="Debug"
-                description="Debug file in console" icon="AllIcons.Actions.StartDebugger">
+        <action id="org.jetbrains.r.actions.RDebugAction" class="org.jetbrains.r.actions.RDebugAction"
+                icon="AllIcons.Actions.StartDebugger">
           <keyboard-shortcut keymap="$default" first-keystroke="control alt shift ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt shift ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift ENTER" replace-all="true"/>
@@ -177,8 +171,6 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.RunSelection"
                 class="org.jetbrains.r.actions.RunSelection"
-                text="Run Selection"
-                description="Run line/selection in Console"
                 icon="/icons/run/runCurrent.svg">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
@@ -187,16 +179,13 @@ You can find the source code in the following repositories:
         </action>
         <action id="org.jetbrains.r.actions.DebugSelection"
                 class="org.jetbrains.r.actions.DebugSelection"
-                text="Debug Selection"
-                description="Debug line/selection in Console"
                 icon="/icons/run/debugCurrent.svg">
           <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
-        <action id="RConsoleNextLineAction" class="org.jetbrains.r.console.RConsoleNextLineAction"
-                text="Break a Line in the R Console">
+        <action id="RConsoleNextLineAction" class="org.jetbrains.r.console.RConsoleNextLineAction">
           <keyboard-shortcut keymap="$default" first-keystroke="shift ENTER"/>
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="shift ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="shift ENTER" replace-all="true"/>
@@ -209,8 +198,6 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.rendering.chunk.RunChunkActions">
             <action id="org.jetbrains.r.rendering.chunk.RunChunkAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunkAction"
-                    text="Run Chunk"
-                    description="Run current chunk"
                     icon="AllIcons.Actions.Execute">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C" replace-all="true"/>
@@ -218,8 +205,6 @@ You can find the source code in the following repositories:
             </action>
             <action id="org.jetbrains.r.rendering.chunk.DebugChunkAction"
                     class="org.jetbrains.r.rendering.chunk.DebugChunkAction"
-                    text="Debug Chunk"
-                    description="Debug current chunk"
                     icon="AllIcons.Actions.StartDebugger">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt X"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt X" replace-all="true"/>
@@ -227,8 +212,6 @@ You can find the source code in the following repositories:
             </action>
             <action id="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
                     class="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
-                    text="Interrupt Chunk"
-                    description="Interrupt chunk execution"
                     icon="AllIcons.Actions.Suspend">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt S"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt S" replace-all="true"/>
@@ -236,8 +219,6 @@ You can find the source code in the following repositories:
             </action>
             <action id="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
-                    text="Run Chunks Above"
-                    description="Run chunks above the current cursor position"
                     icon="/icons/run/runAbove.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt B"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B" replace-all="true"/>
@@ -245,11 +226,9 @@ You can find the source code in the following repositories:
             </action>
             <action id="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
-                    text="Run Chunks Below"
-                    description="Run chunks below the current cursor position"
                     icon="/icons/run/runBelow.svg"/>
             <action id="RMarkdownNewChunk" class="org.jetbrains.r.rmarkdown.RMarkdownNewChunk"
-                    text="Add New R Chunk" icon="AllIcons.General.Add">
+                    icon="AllIcons.General.Add">
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt I"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt I" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt I" replace-all="true"/>
@@ -262,18 +241,12 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.rendering.chunk.ChunkOutputToolbarActions">
             <action id="org.jetbrains.r.rendering.chunk.ExportImageAction"
                     class="org.jetbrains.r.rendering.chunk.ExportImageAction"
-                    description="Save image to disk"
-                    text="Export"
                     icon="AllIcons.ToolbarDecorator.Export"/>
             <action id="org.jetbrains.r.rendering.chunk.ZoomImageAction"
                     class="org.jetbrains.r.rendering.chunk.ZoomImageAction"
-                    description="Preview this image in a new window"
-                    text="Open in a New Window"
                     icon="AllIcons.Actions.Preview"/>
             <action id="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
                     class="org.jetbrains.r.rendering.chunk.ImageSettingsAction"
-                    description="Graphics settings"
-                    text="Settings"
                     icon="AllIcons.General.GearPlain"/>
         </group>
     </actions>
@@ -282,17 +255,11 @@ You can find the source code in the following repositories:
     <actions>
         <group id="org.jetbrains.r.debugger.RXVariablesViewActions">
             <action id="org.jetbrains.r.debugger.RImportBaseDataAction"
-                    class="org.jetbrains.r.debugger.RImportBaseDataAction"
-                    text="CSV with Base"
-                    description="Import dataset from text with base"/>
+                    class="org.jetbrains.r.debugger.RImportBaseDataAction"/>
             <action id="org.jetbrains.r.debugger.RImportCsvDataAction"
-                    class="org.jetbrains.r.debugger.RImportCsvDataAction"
-                    text="CSV with Readr"
-                    description="Import dataset from text with readr"/>
+                    class="org.jetbrains.r.debugger.RImportCsvDataAction"/>
             <action id="org.jetbrains.r.debugger.RImportExcelDataAction"
-                    class="org.jetbrains.r.debugger.RImportExcelDataAction"
-                    text="Excel"
-                    description="Import dataset from Excel with readxl"/>
+                    class="org.jetbrains.r.debugger.RImportExcelDataAction"/>
         </group>
     </actions>
 
@@ -301,35 +268,27 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.run.graphics.ui.RGraphicsToolbarActions">
             <action id="org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RPreviousGraphicsAction"
-                    description="Previous graphics"
                     icon="AllIcons.Actions.Back"/>
             <action id="org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RNextGraphicsAction"
-                    description="Next graphics"
                     icon="AllIcons.Actions.Forward"/>
             <action id="org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RExportGraphicsAction"
-                    description="Export graphics"
                     icon="AllIcons.ToolbarDecorator.Export"/>
             <action id="org.jetbrains.r.run.graphics.ui.RCopyGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RCopyGraphicsAction"
-                    description="Copy graphics to clipboard"
                     icon="AllIcons.Actions.Copy"/>
             <action id="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RZoomGraphicsAction"
-                    description="Zoom graphics"
                     icon="AllIcons.Actions.Preview"/>
             <action id="org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RClearGraphicsAction"
-                    description="Clear current graphics"
                     icon="AllIcons.Actions.GC"/>
             <action id="org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
                     class="org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
-                    description="Clear all graphics"
                     icon="AllIcons.Actions.Cancel"/>
             <action id="org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
                     class="org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
-                    description="Tune graphics size and resolution"
                     icon="AllIcons.General.GearPlain"/>
         </group>
     </actions>
@@ -339,18 +298,14 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.packages.remote.ui.RInstalledPackagesPanelActions">
             <action id="org.jetbrains.r.packages.remote.ui.RInstallAction"
                     class="org.jetbrains.r.packages.remote.ui.RInstallAction"
-                    text="Install"
                     icon="AllIcons.General.Add"/>
             <action id="org.jetbrains.r.packages.remote.ui.RUpgradeAction"
                     class="org.jetbrains.r.packages.remote.ui.RUpgradeAction"
-                    text="Upgrade"
                     icon="AllIcons.Actions.MoveUp"/>
             <action id="org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"
-                    class="org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"
-                    text="Upgrade All"/>
+                    class="org.jetbrains.r.packages.remote.ui.RUpgradeAllAction"/>
             <action id="org.jetbrains.r.packages.remote.ui.RRefreshAction"
                     class="org.jetbrains.r.packages.remote.ui.RRefreshAction"
-                    text="Refresh"
                     icon="AllIcons.Actions.Refresh"/>
             <action id="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"
                     class="org.jetbrains.r.packages.remote.ui.RLoadUnloadAction"/>
@@ -372,23 +327,18 @@ You can find the source code in the following repositories:
         <group id="org.jetbrains.r.packages.build.ui.RPackageBuildToolbarActions">
             <action id="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
                     class="org.jetbrains.r.packages.build.ui.RInstallPackageAction"
-                    description="Install and reload package"
                     icon="AllIcons.Toolwindows.ToolWindowBuild"/>
             <action id="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
                     class="org.jetbrains.r.packages.build.ui.RCheckPackageAction"
-                    description="Check package"
                     icon="AllIcons.General.InspectionsOK"/>
             <action id="org.jetbrains.r.packages.build.ui.RTestPackageAction"
                     class="org.jetbrains.r.packages.build.ui.RTestPackageAction"
-                    description="Test package"
                     icon="AllIcons.RunConfigurations.TestState.Run"/>
             <action id="org.jetbrains.r.packages.build.ui.RSetupTestsAction"
                     class="org.jetbrains.r.packages.build.ui.RSetupTestsAction"
-                    description="Setup testing infrastructure"
                     icon="AllIcons.Actions.NewFolder"/>
             <action id="org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
                     class="org.jetbrains.r.packages.build.ui.RPackageBuildSettingsAction"
-                    description="Build settings"
                     icon="AllIcons.General.GearPlain"/>
         </group>
     </actions>
