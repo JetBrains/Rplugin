@@ -8,6 +8,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.util.ProgressIndicatorBase
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import junit.framework.TestCase
@@ -180,7 +181,7 @@ class RIncludedSourcesResolveTest : RResolveFromFilesTestCase("resolveInSource")
   }
 
   private fun getActualResultsWithTimeLimit(): Set<PsiElementWrapper> {
-    val result = runAsync { runReadAction { getActualResults() } }.blockingGet(500)
+    val result = runAsync { runReadAction { getActualResults() } }.blockingGet(if (SystemInfo.isWindows) 800 else 500)
     assertNotNull("Resolve is too long", result)
     return result!!
   }

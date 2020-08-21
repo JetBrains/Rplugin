@@ -14,6 +14,7 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
@@ -261,7 +262,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
   }
 }
 
-fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = 300): T? {
+fun <T> Promise<T>.blockingGetAndDispatchEvents(timeout: Int, edtTimeout: Int = if (SystemInfo.isWindows) 800 else 300): T? {
   val time = System.currentTimeMillis()
   while (System.currentTimeMillis() - time < timeout && isPending) {
     PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
