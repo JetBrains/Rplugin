@@ -92,6 +92,7 @@
     <orderEntry type="module" module-name="intellij.platform.statistics" />
     <orderEntry type="library" name="javax.annotation-api" level="project" />
     <orderEntry type="module" module-name="intellij.platform.testFramework" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.r.ultimate.tests" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="commons-compress" level="project" />
     <orderEntry type="library" name="gson" level="project" />
   </component>
