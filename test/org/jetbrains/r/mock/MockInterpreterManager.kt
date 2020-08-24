@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.mock
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.interpreter.*
@@ -19,4 +20,13 @@ class MockInterpreterManager(project: Project) : RInterpreterManager {
   override fun getInterpreterAsync(force: Boolean) = resolvedPromise(interpreterOrNull)
 
   override fun hasInterpreter(): Boolean = true
+
+  init {
+    LOG.warn("List of settings providers: ${RInterpreterSettingsProvider.getProviders().toList()}")
+    LOG.warn("Selected interpreter location: ${interpreterLocation}")
+  }
+
+  companion object {
+    val LOG = Logger.getInstance(MockInterpreterManager::class.java)
+  }
 }
