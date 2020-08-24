@@ -65,8 +65,10 @@ fun restartSession(rInterop: RInterop, args: RObject) {
   val command = args.list.getRObjects(0).rString.getStrings(0)
   getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
   RInterpreterManager.restartInterpreter(rInterop.project, Runnable {
-    RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
-      it.executeText(command)
+    if (command.isNotBlank()) {
+      RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
+        it.executeText(command)
+      }
     }
   })
 }

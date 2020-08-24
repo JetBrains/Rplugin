@@ -20,7 +20,8 @@ fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
     args.list.getRObjects(3).rString.getStrings(0)
   }
   val importEnv = args.list.getRObjects(4).rboolean.getBooleans(0)
-  val exportEnv = when (args.list.getRObjects(5).rString.getStrings(0)) {
+  val exportEnvName = args.list.getRObjects(5).rString.getStrings(0)
+  val exportEnv = when (exportEnvName) {
     "" -> ExportGlobalEnvPolicy.DO_NO_EXPORT
     "R_GlobalEnv" -> ExportGlobalEnvPolicy.EXPORT_TO_GLOBAL_ENV
     else -> ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE
@@ -28,7 +29,7 @@ fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
   val promise = AsyncPromise<RObject>()
   filePromise.then {
     if (it != null) {
-      RJobRunner.getInstance(rInterop.project).runRJob(RJobTask(it, workingDir, importEnv, exportEnv)).then {
+      RJobRunner.getInstance(rInterop.project).runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName).then {
         promise.setResult("${it.hashCode()}".toRString())
       }
     }

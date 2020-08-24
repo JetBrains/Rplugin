@@ -36,7 +36,7 @@ class RJobRunner(private val project: Project) {
   fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreter()
 
   @TestOnly
-  internal fun run(task: RJobTask): Promise<ProcessHandler> {
+  internal fun run(task: RJobTask, exportEnvName: String? = null): Promise<ProcessHandler> {
     check(canRun())
     invokeAndWaitIfNeeded { FileDocumentManager.getInstance().saveAllDocuments() }
     val rConsoleManager = RConsoleManager.getInstance(project)
@@ -47,7 +47,7 @@ class RJobRunner(private val project: Project) {
         val (scriptFile, exportRDataFile) = generateRunScript(interpreter, task, rInterop)
         val processHandler: ProcessHandler = interpreter.runHelperProcess(scriptFile, emptyList(), task.workingDirectory)
         if (exportRDataFile != null) {
-          installProcessListener(processHandler, exportRDataFile, console, task)
+          installProcessListener(processHandler, exportRDataFile, console, task, exportEnvName)
         }
         processHandler
       }
@@ -57,13 +57,14 @@ class RJobRunner(private val project: Project) {
   private fun installProcessListener(processHandler: ProcessHandler,
                                      exportRDataFile: String,
                                      console: RConsoleView?,
-                                     task: RJobTask) {
+                                     task: RJobTask,
+                                     exportEnvName: String? = null) {
     val rInterop = console?.rInterop
     processHandler.addProcessListener(object : ProcessAdapter() {
       override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
         if (rInterop?.isAlive == true) {
           val variableName = if (task.exportGlobalEnv == ExportGlobalEnvPolicy.EXPORT_TO_VARIABLE)
-            task.script.nameWithoutExtension + "_results"
+            exportEnvName ?: task.script.nameWithoutExtension + "_results"
           else ""
           rInterop.loadEnvironment(exportRDataFile, variableName).then {
             console.debuggerPanel?.onCommandExecuted()
@@ -94,9 +95,9 @@ class RJobRunner(private val project: Project) {
     return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
-  fun runRJob(task: RJobTask): Promise<RJobDescriptor> {
+  fun runRJob(task: RJobTask, exportEnvName: String? = null): Promise<RJobDescriptor> {
     val promise = AsyncPromise<RJobDescriptor>()
-    run(task).then { processHandler ->
+    run(task, exportEnvName).then { processHandler ->
       val consoleView = ConsoleViewImpl(project, true)
       consoleView.attachToProcess(processHandler)
       val myInputMessageFilterField = ConsoleViewImpl::class.memberProperties.first { it.name == "myInputMessageFilter" }
