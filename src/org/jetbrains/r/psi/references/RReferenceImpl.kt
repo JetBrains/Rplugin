@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.Processor
+import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
@@ -22,6 +23,14 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
     RPsiUtil.getNamedArgumentByNameIdentifier(element)?.let {
       return resolveNamedArgument(it, incompleteCode)
     }
+
+    for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+      val resultFromExtension = extension.resolve(element)
+      if (resultFromExtension != null) {
+        return arrayOf(resultFromExtension)
+      }
+    }
+
     if (element.isDependantIdentifier) return emptyArray()
 
     return RResolver.resolveUsingSourcesAndRuntime(element, element.name, resolveLocally())
