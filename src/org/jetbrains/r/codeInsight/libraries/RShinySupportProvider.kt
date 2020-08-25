@@ -70,6 +70,52 @@ class RShinySupportProvider : RLibrarySupportProvider {
     }
   }
 
+  override fun completeIdentifier(element: PsiElement,
+                                  lookupElementFactory: RLookupElementFactory,
+                                  completionConsumer: CompletionResultSet) {
+    completeHtmlTagAttributes(element, lookupElementFactory, completionConsumer)
+  }
+
+  private fun completeHtmlTagAttributes(element: PsiElement,
+                                        lookupElementFactory: RLookupElementFactory,
+                                        completionConsumer: CompletionResultSet) {
+    val ident = PsiTreeUtil.getParentOfType(element, RIdentifierExpression::class.java)
+    val call = ident?.parent?.parent // consider case: ident => argument list => call expression
+    if (call !is RCallExpression) {
+      return
+    }
+    val receiver = call.expression
+    if (receiver !is RMemberExpression) {
+      return
+    }
+
+    val tagsObject = receiver.leftExpr
+    if (tagsObject !is RIdentifierExpression || tagsObject.text != "tags") {
+      return
+    }
+    val tagsMethod = receiver.rightExpr
+    if (tagsMethod !is RIdentifierExpression) {
+      return
+    }
+
+    val uiAndServerElements = getUiAndServerElements(call)
+    val uiDefinition = uiAndServerElements.first
+    if (uiDefinition == null || !PsiTreeUtil.isAncestor(uiDefinition, element, true)) {
+      return
+    }
+
+    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("style"))
+    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("id"))
+    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("class"))
+
+    val customAttributes = SHINY_TAGS_ATTRIBUTES[tagsMethod.text]
+    if (customAttributes != null) {
+      for (customAttribute in customAttributes) {
+        completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement(customAttribute))
+      }
+    }
+  }
+
   /**
    * Processes input elements defined in Shiny's "ui" assignment.
    * The code below defines element with name "num"
@@ -224,12 +270,12 @@ class RShinySupportProvider : RLibrarySupportProvider {
   }
 
   private class ShinyCompletionProcessor(private var lookupElementFactory: RLookupElementFactory,
-                                 private var completionConsumer: CompletionResultSet) : Processor<PsiElement> {
+                                         private var completionConsumer: CompletionResultSet) : Processor<PsiElement> {
     override fun process(namedUiElement: PsiElement?): Boolean {
       if (namedUiElement is RStringLiteralExpressionImpl) {
         val elementName = namedUiElement.name
         if (!elementName.isNullOrEmpty()) {
-          completionConsumer.consume(lookupElementFactory.createMemberLookupElement(elementName))
+          completionConsumer.consume(lookupElementFactory.createMemberLookupElement(elementName, priority = CUSTOM_ATTRIBUTE_PRIORITY))
         }
       }
       return true
@@ -237,11 +283,38 @@ class RShinySupportProvider : RLibrarySupportProvider {
   }
 
   companion object {
-    @NonNls const val SERVER_VARIABLE = "server"
-    @NonNls const val UI_VARIABLE = "ui"
-    @NonNls const val INPUT_ID_ATTRIBUTE = "inputId"
-    @NonNls const val INPUT_OBJECT = "input"
-    @NonNls const val OUTPUT_OBJECT = "output"
-    @NonNls const val OUTPUT_CALL_SUFFIX = "Output"
+    @NonNls
+    const val SERVER_VARIABLE = "server"
+    @NonNls
+    const val UI_VARIABLE = "ui"
+    @NonNls
+    const val INPUT_ID_ATTRIBUTE = "inputId"
+    @NonNls
+    const val INPUT_OBJECT = "input"
+    @NonNls
+    const val OUTPUT_OBJECT = "output"
+    @NonNls
+    const val OUTPUT_CALL_SUFFIX = "Output"
+
+    const val CUSTOM_ATTRIBUTE_PRIORITY = 200.0
+
+    /**
+     * Custom attributes according to @see [list of tags](https://shiny.rstudio.com/articles/tag-glossary.html)
+     */
+    @NonNls
+    val SHINY_TAGS_ATTRIBUTES = mapOf(
+      "a" to listOf("href"),
+      "audio" to listOf("autoplay", "controls", "src", "type"),
+      "blockquote" to listOf("cite"),
+      "embed" to listOf( "src", "type", "height", "width"),
+      "iframe" to listOf( "src", "srcdoc", "scrolling", "seamless", "height", "width", "name"),
+      "img" to listOf( "src", "height", "width"),
+      "video" to listOf("autoplay", "controls", "src", "height", "width"))
+
+    @NonNls
+    val SHINY_TAG_CONTAINERS = listOf("absolutePanel", "fixedPanel", "bootstrapPage", "column", "conditionalPanel", "fillPage", "fillRow",
+                                      "fixedPage", "fluidPage", "helpText", "navbarPage", "navlistPanel", "sidebarLayout", "tabPanel",
+                                      "tabsetPanel", "titlePanel", "inputPanel", "flowLayout", "splitLayout", "verticalLayout", "wellPanel",
+                                      "withMathJax")
   }
 }

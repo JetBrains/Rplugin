@@ -167,6 +167,10 @@ class RCompletionContributor : CompletionContributor() {
       val prefix = position.name?.let { StringUtil.trimEnd(it, CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED) } ?: ""
       RPackageCompletionUtil.addCompletionFromIndices(project, RSearchScopeUtil.getScope(originalFile),
                                                       parameters.originalFile, prefix, shownNames, result, elementFactory)
+
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeIdentifier(parameters.position, rCompletionElementFactory, result)
+      }
     }
 
     private fun addLocalsFromRuntime(originFile: PsiFile,

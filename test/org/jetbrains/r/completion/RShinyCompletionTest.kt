@@ -42,6 +42,22 @@ class RShinyCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testStandardTagAttributes() {
+    checkCompletion(
+      """
+      ui <- fluidPage(
+        tags${"$"}input(<caret> "My Shiny App"),
+        actionButton(inputId = "norm", label = "Normal"),
+        plotOutput("hist")
+      )
+
+      server <- function(input, output) {
+      }
+      """.trimIndent(),
+      listOf("class", "id", "style")
+    )
+  }
+
   private fun checkCompletion(text: String, expectedToBePresent: List<String>) {
     myFixture.configureByText("a.R", text)
     val result = myFixture.completeBasic()

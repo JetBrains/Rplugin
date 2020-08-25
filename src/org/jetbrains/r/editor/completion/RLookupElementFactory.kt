@@ -18,7 +18,7 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
 import kotlin.math.min
 
-const val MEMBER_PRIORITY = 110.0
+const val LIBRARY_METHOD_PRIORITY = 120.0
 const val TABLE_MANIPULATION_PRIORITY = 110.0
 const val IMPORT_PACKAGE_PRIORITY = 110.0
 const val NAMED_ARGUMENT_PRIORITY = 100.0
@@ -132,8 +132,12 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     }
   }
 
-  fun createMemberLookupElement(lookupString: String): LookupElement {
-    return PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Field), MEMBER_PRIORITY)
+  fun createMemberLookupElement(lookupString: String, priority: Double): LookupElement {
+    return PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Field), priority)
+  }
+
+  fun createLibraryFunctionLookupElement(lookupString: String, priority: Double = LIBRARY_METHOD_PRIORITY): LookupElement {
+    return PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Function), priority)
   }
 
   private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {
