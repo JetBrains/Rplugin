@@ -1,11 +1,13 @@
 package org.jetbrains.r.codeInsight.libraries
 
+import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.psi.*
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
+import org.jetbrains.r.editor.completion.RLookupElementFactory
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RStringLiteralExpressionImpl
@@ -43,6 +45,29 @@ class RShinySupportProvider : RLibrarySupportProvider {
       processOutputElements(uiDefinition, resolveProcessor)
     }
     return resolveProcessor.result
+  }
+
+  override fun completeMembers(receiver: RPsiElement,
+                               lookupElementFactory: RLookupElementFactory,
+                               completionConsumer: CompletionResultSet) {
+    if (receiver !is RIdentifierExpression || (receiver.text != INPUT_OBJECT && receiver.text != OUTPUT_OBJECT)) {
+      return
+    }
+    val uiAndServerElements = getUiAndServerElements(receiver)
+    val uiDefinition = uiAndServerElements.first
+    val serverDefinition = uiAndServerElements.second
+
+    if (uiDefinition == null || serverDefinition == null || !PsiTreeUtil.isAncestor(serverDefinition, receiver, true)) {
+      return
+    }
+
+    val completionProcessor = ShinyCompletionProcessor(lookupElementFactory, completionConsumer)
+    if (receiver.text == INPUT_OBJECT) {
+      processInputElements(uiDefinition, completionProcessor)
+    }
+    if (receiver.text == OUTPUT_OBJECT) {
+      processOutputElements(uiDefinition, completionProcessor)
+    }
   }
 
   /**
@@ -184,7 +209,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
     return Pair(uiDefinition, serverDefinition)
   }
 
-  class ShinyResolveProcessor(private var elementName: String) : Processor<PsiElement> {
+  private class ShinyResolveProcessor(private var elementName: String) : Processor<PsiElement> {
     var result: PsiElementResolveResult? = null
 
     override fun process(namedUiElement: PsiElement?): Boolean {
@@ -192,6 +217,19 @@ class RShinySupportProvider : RLibrarySupportProvider {
         if (namedUiElement.name == this.elementName) {
           result = PsiElementResolveResult(namedUiElement)
           return false
+        }
+      }
+      return true
+    }
+  }
+
+  private class ShinyCompletionProcessor(private var lookupElementFactory: RLookupElementFactory,
+                                 private var completionConsumer: CompletionResultSet) : Processor<PsiElement> {
+    override fun process(namedUiElement: PsiElement?): Boolean {
+      if (namedUiElement is RStringLiteralExpressionImpl) {
+        val elementName = namedUiElement.name
+        if (!elementName.isNullOrEmpty()) {
+          completionConsumer.consume(lookupElementFactory.createMemberLookupElement(elementName))
         }
       }
       return true
