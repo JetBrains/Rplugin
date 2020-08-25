@@ -70,6 +70,10 @@ object RPackageBuildUtil {
     return findInProject(project, "R", "RcppExports.R")
   }
 
+  fun findTestFile(project: Project, fileName: String): VirtualFile? {
+    return findInProject(project, "tests", "testthat", fileName)
+  }
+
   private fun findInProject(project: Project, vararg pathElements: String): VirtualFile? {
     return project.guessProjectDir()?.let { VfsUtil.findRelativeFile(it, *pathElements) }
   }

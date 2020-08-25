@@ -6,6 +6,7 @@ package org.jetbrains.r
 
 import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.ide.DataManager
+import com.intellij.ide.IdeView
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.PathManager
@@ -16,10 +17,7 @@ import com.intellij.openapi.project.DumbServiceImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementResolveResult
-import com.intellij.psi.PsiPolyVariantReference
-import com.intellij.psi.ResolveResult
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -121,18 +119,26 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     return IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, LightTempDirTestFixtureImpl(true))
   }
 
-  protected fun createAnActionEvent(): AnActionEvent =
-    AnActionEvent.createFromDataContext(ActionPlaces.EDITOR_POPUP, null, createDataContext())
+  protected fun createAnActionEvent(directories: Collection<PsiDirectory>? = null): AnActionEvent =
+    AnActionEvent.createFromDataContext(ActionPlaces.EDITOR_POPUP, null, createDataContext(directories))
 
-  protected open fun createDataContext(): DataContext {
+  protected open fun createDataContext(directories: Collection<PsiDirectory>? = null): DataContext {
     return DataContext {
       when (it) {
         CommonDataKeys.PROJECT.name -> myFixture.project
         CommonDataKeys.EDITOR.name -> myFixture.editor
         CommonDataKeys.PSI_FILE.name -> myFixture.file
         CommonDataKeys.VIRTUAL_FILE.name -> myFixture.file.virtualFile
+        LangDataKeys.IDE_VIEW.name -> if (directories != null) mockIdeView(directories) else null
         else -> null
       }
+    }
+  }
+
+  private fun mockIdeView(directories: Collection<PsiDirectory>): IdeView {
+    return object : IdeView {
+      override fun getDirectories(): Array<PsiDirectory> = directories.toTypedArray()
+      override fun getOrChooseDirectory(): PsiDirectory? = directories.firstOrNull()
     }
   }
 

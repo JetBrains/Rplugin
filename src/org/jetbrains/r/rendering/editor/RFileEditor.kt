@@ -14,30 +14,44 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
+import org.jetbrains.r.actions.isVirtualFileForTest
 import java.awt.BorderLayout
 
 class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: VirtualFile)
   : AdvancedTextEditor(project, textEditor, virtualFile) {
   init {
-    mainComponent.add(createREditorToolbar().component, BorderLayout.NORTH)
+    val isTestable = isVirtualFileForTest(virtualFile, project)
+    mainComponent.add(createREditorToolbar(isTestable).component, BorderLayout.NORTH)
   }
 
   override fun getName() = RBundle.message("editor.r.editor.name")
 
-  private fun createREditorToolbar(): ActionToolbar =
-    ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(), true).also {
+  private fun createREditorToolbar(isTestable: Boolean): ActionToolbar =
+    ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(isTestable), true).also {
       it.setTargetComponent(textEditor.editor.contentComponent)
     }
 
-  private fun createActionGroup(): ActionGroup = DefaultActionGroup(
-    ToolbarAction("org.jetbrains.r.actions.RRunAction"),
-    ToolbarAction("org.jetbrains.r.actions.RDebugAction"),
-    ToolbarAction("org.jetbrains.r.console.jobs.RunRJobAction"),
-    Separator(),
-    ToolbarAction("org.jetbrains.r.actions.RunSelection"),
-    ToolbarAction("org.jetbrains.r.actions.DebugSelection"),
-    Separator(),
-    ToolbarAction("org.jetbrains.r.actions.REditorHelpAction"))
+  private fun createActionGroup(isTestable: Boolean): ActionGroup = object : DefaultActionGroup() {
+    private val basicActions = listOf<AnAction>(
+      ToolbarAction("org.jetbrains.r.actions.RRunAction"),
+      ToolbarAction("org.jetbrains.r.actions.RDebugAction"),
+      ToolbarAction("org.jetbrains.r.console.jobs.RunRJobAction"),
+      Separator(),
+      ToolbarAction("org.jetbrains.r.actions.RunSelection"),
+      ToolbarAction("org.jetbrains.r.actions.DebugSelection"))
+    private val testsActions = listOf<AnAction>(
+      Separator(),
+      ToolbarAction("org.jetbrains.r.actions.CreateRTestFileAction"))
+    private val helpActions = listOf<AnAction>(
+      Separator(),
+      ToolbarAction("org.jetbrains.r.actions.REditorHelpAction"))
+
+    init {
+      addAll(basicActions)
+      if (isTestable) addAll(testsActions)
+      addAll(helpActions)
+    }
+  }
 
   private inner class ToolbarAction(actionId: String) : DumbAwareAction() {
     private val action = ActionManager.getInstance().getAction(actionId).also { copyFrom(it) }

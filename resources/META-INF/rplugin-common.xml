@@ -343,6 +343,16 @@ You can find the source code in the following repositories:
         </group>
     </actions>
 
+    <!-- Project view actions -->
+    <actions>
+      <action
+        id="org.jetbrains.r.actions.CreateRTestFileAction"
+        class="org.jetbrains.r.actions.CreateRTestFileAction"
+        icon="AllIcons.Nodes.Test">
+        <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="SynchronizeCurrentFile" anchor="after"/>
+      </action>
+    </actions>
+
     <extensions defaultExtensionNs="com.intellij">
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
@@ -702,6 +712,8 @@ You can find the source code in the following repositories:
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
+
+      <iconProvider implementation="org.jetbrains.r.icons.RProjectIconProvider" order="first"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">

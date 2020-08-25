@@ -41,6 +41,8 @@ public final class RIcons {
   }
 
   public static final class Packages {
+    /** 16x16 */ public static final @NotNull Icon DocumentsRoot = load("/icons/packages/documentsRoot.svg", 8874748293289503376L, 0);
+    /** 16x16 */ public static final @NotNull Icon RTest = load("/icons/packages/rTest.svg", 5658823605569677260L, 0);
     /** 16x16 */ public static final @NotNull Icon UpgradeAll = load("/icons/packages/upgradeAll.svg", -4336844615149500583L, 2);
   }
 
@@ -48,6 +50,7 @@ public final class RIcons {
   /** 16x16 */ public static final @NotNull Icon Render = load("/icons/render.svg", -8382472418395606488L, 2);
   /** 16x16 */ public static final @NotNull Icon Render_dark1 = load("/icons/render_dark-1.svg", -6213356100823881705L, 0);
   /** 16x16 */ public static final @NotNull Icon RMarkdown = load("/icons/rMarkdown.svg", -3729429059388681844L, 0);
+  /** 16x16 */ public static final @NotNull Icon ROpenTest = load("/icons/rOpenTest.svg", 1157164774830945780L, 2);
 
   public static final class Run {
     /** 16x16 */ public static final @NotNull Icon DebugCurrent = load("/icons/run/debugCurrent.svg", 8687395189521453956L, 2);
