@@ -53,7 +53,8 @@ enum class RStudioApiFunctionId {
   TERMINAL_SEND_ID,
   TERMINAL_VISIBLE_ID,
   VIEWER_ID,
-  VERSION_INFO_MODE_ID;
+  VERSION_INFO_MODE_ID,
+  DOCUMENT_CLOSE_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId {
@@ -95,6 +96,7 @@ enum class RStudioApiFunctionId {
         34 -> TERMINAL_VISIBLE_ID
         35 -> VIEWER_ID
         36 -> VERSION_INFO_MODE_ID
+        37 -> DOCUMENT_CLOSE_ID
         else -> throw IllegalArgumentException("Unknown function id")
       }
     }

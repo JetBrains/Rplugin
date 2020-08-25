@@ -346,6 +346,9 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             RStudioApiFunctionId.VERSION_INFO_MODE_ID -> {
               promise.setResult(versionInfoMode(rInterop))
             }
+            RStudioApiFunctionId.DOCUMENT_CLOSE_ID -> {
+              promise.setResult(documentClose(rInterop, args))
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)

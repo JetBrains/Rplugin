@@ -202,7 +202,17 @@ fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
   val promise = AsyncPromise<Unit>()
   dialogPromise.then {
     if (it != null) {
-      val newFilePath = rInterop.interpreter.createFileOnHost(it, text.toByteArray(), "")
+      val path = if (PathUtilRt.getFileExtension(it) == null) {
+        it + when(type) {
+          "r" -> ".R"
+          "rmarkdown" -> ".rmd"
+          "sql" -> ".sql"
+          else -> ""
+        }
+      } else {
+        it
+      }
+      val newFilePath = rInterop.interpreter.createFileOnHost(path, text.toByteArray(), "")
       val name = PathUtilRt.getFileName(newFilePath)
       ProgressManager.getInstance().run(object : Task.Backgroundable(
         rInterop.project, "remote.host.view.opening.file.title.$name") {
@@ -239,7 +249,6 @@ fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
                     }
                   }
                 }
-                "sql" -> TODO()
                 else -> {
                 }
               }
@@ -268,6 +277,15 @@ fun navigateToFile(rInterop: RInterop, args: RObject): Promise<RObject> {
     }
   }
   return promise
+}
+
+fun documentClose(rInterop: RInterop, args: RObject): RObject {
+  val id = args.list.getRObjects(0).rString.getStrings(0)
+  val numId = (id.drop(1)).toInt()
+  val editor = FileEditorManager.getInstance(rInterop.project).allEditors.find { it.hashCode() == numId }
+  val file = editor?.file ?: return true.toRBoolean()
+  FileEditorManager.getInstance(rInterop.project).closeFile(file)
+  return true.toRBoolean()
 }
 
 private fun getDocumentFromId(id: String?, rInterop: RInterop): Document? {
