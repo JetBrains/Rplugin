@@ -15,7 +15,7 @@ import org.jetbrains.r.RLanguage;
 public class RContextType extends FileTypeBasedContextType {
 
     public RContextType() {
-        super("R", "&R", RFileType.INSTANCE);
+        super("R", "&R", RFileType.INSTANCE); //NON-NLS
     }
 
 

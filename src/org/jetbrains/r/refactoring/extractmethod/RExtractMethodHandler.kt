@@ -20,6 +20,7 @@ import com.intellij.refactoring.extractMethod.ExtractMethodValidator
 import com.intellij.refactoring.util.AbstractVariableData
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil.RefactoringErrorHintException
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isAssignee
@@ -43,7 +44,7 @@ class RExtractMethodHandler : RefactoringActionHandler {
         throw RefactoringErrorHintException(e.message!!)
       }
     } catch (e: RefactoringErrorHintException) {
-      CommonRefactoringUtil.showErrorHint(project, editor, e.message!!, "Extract Method", "refactoring.extractMethod")
+      CommonRefactoringUtil.showErrorHint(project, editor, e.message!!, RBundle.message("dialog.title.extract.method"), "refactoring.extractMethod")
       return
     }
 
@@ -123,7 +124,7 @@ class RExtractMethodHandler : RefactoringActionHandler {
         override fun check(name: String?): String? {
           if (name in codeFragment.controlFlowHolder.getLocalVariableInfo(codeFragment.entryPoint)!!.variables ||
               file.children.filterIsInstance<RNamedArgument>().any { it.name == name }) {
-            return "Name clashes with already existing name"
+            return RBundle.message("dialog.message.name.clashes.with.already.existing.name")
           }
           return null
         }

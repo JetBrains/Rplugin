@@ -19,6 +19,7 @@ import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer
 import com.intellij.refactoring.introduce.inplace.OccurrencesChooser
 import com.intellij.refactoring.util.CommonRefactoringUtil
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RPsiUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
@@ -214,7 +215,7 @@ abstract class RIntroduceLocalHandler : RefactoringActionHandler {
 
   private fun showCannotPerformError(operation: IntroduceOperation) {
     CommonRefactoringUtil.showErrorHint(operation.project, operation.editor,
-                                        "Cannot perform refactoring using selected element(s)",
+                                        RBundle.message("dialog.message.cannot.perform.refactoring.using.selected.element.s"),
                                         dialogTitle, "refactoring.extractMethod")
   }
 

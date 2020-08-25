@@ -115,7 +115,7 @@ class TablePaginator : JPanel(BorderLayout()) {
 
     panel.add(JToolBar.Separator())
 
-    panel.add(JLabel("Page"))
+    panel.add(JLabel(VisualizationBundle.message("paginator.label.page")))
 
     currentPage.putClientProperty("AuxEditorComponent", true)
 

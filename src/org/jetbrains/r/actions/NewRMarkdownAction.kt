@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import icons.RIcons
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
@@ -25,15 +26,15 @@ class NewRMarkdownAction : TestableCreateFileFromTemplateAction("RMarkdown file"
 
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
-      .setTitle("New RMarkdown file")
-      .addKind("HTML Notebook", RIcons.FileTypes.HtmlNotebook, NOTEBOOK_TEMPLATE_NAME)
-      .addKind("Document", RIcons.FileTypes.RMarkdown, DOCUMENT_TEMPLATE_NAME)
-      .addKind("Presentation", RIcons.FileTypes.Presentation, PRESENTATION_TEMPLATE_NAME)
-      .addKind("Shiny", RIcons.FileTypes.Shiny, SHINY_TEMPLATE_NAME)
+      .setTitle(RBundle.message("create.new.r.markdown.file.title"))
+      .addKind(RBundle.message("create.new.r.markdown.file.notebook"), RIcons.FileTypes.HtmlNotebook, NOTEBOOK_TEMPLATE_NAME)
+      .addKind(RBundle.message("create.new.r.markdown.file.document"), RIcons.FileTypes.RMarkdown, DOCUMENT_TEMPLATE_NAME)
+      .addKind(RBundle.message("create.new.r.markdown.file.presentation"), RIcons.FileTypes.Presentation, PRESENTATION_TEMPLATE_NAME)
+      .addKind(RBundle.message("create.new.r.markdown.file.shiny"), RIcons.FileTypes.Shiny, SHINY_TEMPLATE_NAME)
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {
-    return "RMarkdown file"
+    return RBundle.message("create.new.r.markdown.file.action.name")
   }
 
   override fun createFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {

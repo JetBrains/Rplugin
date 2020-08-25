@@ -14,7 +14,7 @@ object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 
   override fun getName(): String = "R"
 
-  override fun getDescription(): String = "R scripts"
+  override fun getDescription(): String = RBundle.message("r.file.type.description")
 
   override fun getDefaultExtension(): String = "R"
 

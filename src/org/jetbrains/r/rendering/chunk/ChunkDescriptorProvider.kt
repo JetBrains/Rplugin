@@ -87,7 +87,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
     fun getImages(psi: PsiElement): List<InlayOutput> {
       return getImageFilesOrdered(psi).map { imageFile ->
         val bytes = FileUtil.loadFileBytes(imageFile)
-        val imageIcon = ImageIcon(bytes, "preview")
+        val imageIcon = ImageIcon(bytes)
         val preview = IconUtil.scale(imageIcon, null, InlayDimensions.lineHeight * 4.0f / imageIcon.iconHeight)
         val text = imageFile.absolutePath
         InlayOutput(text, "IMG", preview = preview)

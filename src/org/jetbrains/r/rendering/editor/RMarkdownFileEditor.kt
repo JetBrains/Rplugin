@@ -67,7 +67,7 @@ class RMarkdownFileEditor(project: Project, textEditor: TextEditor, virtualFile:
     }
   }
 
-  override fun getName() = "RMarkdown Editor"
+  override fun getName() = RBundle.message("editor.name.rmarkdown")
 }
 
 private fun createRMarkdownEditorToolbar(project: Project, report: VirtualFile, editor: Editor): ActionToolbar =

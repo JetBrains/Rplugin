@@ -43,7 +43,7 @@ class DplyrCallToPipeInspection : RInspection() {
         }
       }
 
-      myProblemHolder.registerProblem(o, "Dplyr function calls can be replaced with pipe",
+      myProblemHolder.registerProblem(o, RBundle.message("inspection.message.dplyr.function.calls.can.be.replaced.with.pipe"),
                                       ProblemHighlightType.WEAK_WARNING, MyQuickFix)
     }
 
@@ -55,7 +55,7 @@ class DplyrCallToPipeInspection : RInspection() {
   }
 
   private object MyQuickFix : LocalQuickFix {
-    override fun getFamilyName() = "Replace function calls with pipe"
+    override fun getFamilyName() = RBundle.message("intention.family.name.replace.function.calls.with.pipe")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
       var expr = descriptor.psiElement as RCallExpression

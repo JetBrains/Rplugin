@@ -7,6 +7,7 @@ package org.jetbrains.r.inspections
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
@@ -33,13 +34,15 @@ class CompareToNaInspection : RInspection() {
       val lhs = o.leftExpr ?: return
       val rhs = o.rightExpr ?: return
       if (lhs is RNaLiteral || rhs is RNaLiteral) {
-        myProblemHolder.registerProblem(o, "Checking for NA should be done using is.na", ProblemHighlightType.WARNING, myQuickFix)
+        myProblemHolder.registerProblem(o, RBundle.message("inspection.message.checking.for.na.should.be.done.using.na"), ProblemHighlightType.WARNING, myQuickFix)
       }
     }
   }
 
   private class MyQuickFix : LocalQuickFix {
-    override fun getFamilyName() = "Replace with is.na"
+    @NonNls
+    private val IS_NA = "is.na"
+    override fun getFamilyName() = CommonQuickFixBundle.message("fix.replace.with.x", IS_NA)
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
       val o = descriptor.psiElement as ROperatorExpression

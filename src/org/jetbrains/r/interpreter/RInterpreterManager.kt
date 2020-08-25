@@ -138,7 +138,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
 
   private fun setupInterpreter(location: RInterpreterLocation): Promise<RInterpreter> {
     val promise = AsyncPromise<RInterpreter>()
-    runBackgroundableTask("Initializing R interpreter", project) {
+    runBackgroundableTask(RBundle.message("initializing.r.interpreter.message"), project) {
       try {
         location.createInterpreter(project).let {
           interpreterOrNull = it

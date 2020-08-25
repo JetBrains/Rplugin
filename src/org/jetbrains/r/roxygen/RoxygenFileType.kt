@@ -4,13 +4,14 @@
 package org.jetbrains.r.roxygen
 
 import com.intellij.openapi.fileTypes.LanguageFileType
+import org.jetbrains.r.RBundle
 import javax.swing.Icon
 
 object RoxygenFileType : LanguageFileType(RoxygenLanguage.INSTANCE) {
 
   override fun getName(): String = "Roxygen"
 
-  override fun getDescription(): String = "Roxygen Documentation"
+  override fun getDescription(): String = RBundle.message("fileType.roxygen.documentation.description")
 
   override fun getDefaultExtension(): String = "roxygen"
 

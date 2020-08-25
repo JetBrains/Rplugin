@@ -16,6 +16,7 @@ import com.intellij.webcore.packaging.RepoPackage
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
@@ -253,7 +254,7 @@ class RPackageManagementService(private val project: Project,
 
     internal fun toErrorDescription(exception: ExecutionException?): ErrorDescription? {
       return exception?.let { e ->
-        ErrorDescription(e.message ?: "Unknown error", null, null, null)
+        ErrorDescription(e.message ?: RBundle.message("package.management.exception.unknown.error"), null, null, null)
       }
     }
 

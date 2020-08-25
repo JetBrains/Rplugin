@@ -457,7 +457,7 @@ abstract class PopupComponent implements PopupMenuListener {
             prototype = choicesList.getPrototypeCellValue();
             // we need to change the prototype. The jlist will not update its
             // cell height if the prototype does not change
-            prototype = "X".equals(prototype) ? "Z" : "X";
+            prototype = "X".equals(prototype) ? "Z" : "X"; //NON-NLS
         } else {
             prototype = null;
         }

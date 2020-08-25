@@ -146,7 +146,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
       // copy-pasted from com.intellij.find.editorHeaderActions.StatusTextAction
       //noinspection HardCodedStringLiteral
       label.font = JBUI.Fonts.toolbarFont()
-      label.text = "9888 results"
+      label.text = "9888 results" //NON-NLS
       val size = label.preferredSize
       size.height = max(size.height, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE.height)
       label.preferredSize = size

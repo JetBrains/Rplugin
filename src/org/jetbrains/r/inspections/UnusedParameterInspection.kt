@@ -31,7 +31,7 @@ class UnusedParameterInspection : org.jetbrains.r.inspections.RInspection() {
       val rControlFlowHolder = PsiTreeUtil.getParentOfType(o, RControlFlowHolder::class.java)
       val variables = rControlFlowHolder?.getLocalVariableInfo(o)?.variables?.get(o.name) ?: return
       if (variables.variableDescription.reads.isEmpty()) {
-        myProblemHolder.registerProblem(o, "Unused parameter " + o.text, ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+        myProblemHolder.registerProblem(o, RBundle.message("inspection.message.unused.parameter", o.text), ProblemHighlightType.LIKE_UNUSED_SYMBOL)
       }
     }
   }

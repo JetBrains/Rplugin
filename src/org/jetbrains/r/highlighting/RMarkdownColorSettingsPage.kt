@@ -13,6 +13,8 @@ import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
 import icons.RIcons
+import org.jetbrains.annotations.NonNls
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.R_DEMO
 import org.jetbrains.r.highlighting.RColorSettingsPage.Companion.TAGS
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
@@ -32,10 +34,12 @@ class RMarkdownColorSettingsPage : RainbowColorSettingsPage {
 
   override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = tags
 
-  override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(AttributesDescriptor("R Markdown Chunk", RMARKDOWN_CHUNK))
+  override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(AttributesDescriptor(
+    RBundle.message("attribute.descriptor.r.markdown.chunk"), RMARKDOWN_CHUNK))
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
+  @NonNls
   override fun getDisplayName(): String = "R Markdown"
 
   companion object {

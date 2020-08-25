@@ -10,6 +10,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.interpreter.RInterpreterManager
 
@@ -25,12 +26,12 @@ class NewRScriptAction : TestableCreateFileFromTemplateAction("R Script",
 
   override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
     builder
-      .setTitle("New R Script file")
-      .addKind("R Script file", RFileType.icon, NEW_R_SCRIPT_TEMPLATE_NAME)
+      .setTitle(RBundle.message("create.r.script.title"))
+      .addKind(RBundle.message("create.r.script.text"), RFileType.icon, NEW_R_SCRIPT_TEMPLATE_NAME)
   }
 
   override fun getActionName(directory: PsiDirectory, newName: String, templateName: String): String {
-    return "R Script file"
+    return RBundle.message("create.r.script.text")
   }
 
   override fun createFile(name: String?, templateName: String, directory: PsiDirectory): PsiFile? {

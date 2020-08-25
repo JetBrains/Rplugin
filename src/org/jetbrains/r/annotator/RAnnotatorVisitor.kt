@@ -52,7 +52,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
           PsiTreeUtil.getParentOfType(element, RArgumentList::class.java) == null &&
           !isDotsFunctionDefinition(element) &&
           !declaredDotsParameter(element)) {
-        holder.createWarningAnnotation(element, "'...' used in an incorrect context")
+        holder.createWarningAnnotation(element, RBundle.message("inspection.message.used.in.incorrect.context"))
       }
     }
   }
@@ -84,14 +84,14 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
     if (right is RStringLiteralExpression || right is RIdentifierExpression) {
       highlight(right, FIELD)
     } else {
-      holder.createErrorAnnotation(right, "R grammar doesn't allow `${right.text}` here")
+      holder.createErrorAnnotation(right, RBundle.message("inspection.message.r.grammar.doesn.t.allow.here", right.text))
     }
   }
 
   override fun visitNoCommaTail(noComma: RNoCommaTail) {
     val reportElement = PsiTreeUtil.findChildOfAnyType(noComma, RExpression::class.java, RNamedArgument::class.java) ?: return
     val offset = reportElement.textRange.startOffset
-    holder.createErrorAnnotation(TextRange(offset, offset + 1), "missing comma")
+    holder.createErrorAnnotation(TextRange(offset, offset + 1), RBundle.message("inspection.message.missing.comma"))
   }
 
   override fun visitStringLiteralExpression(o: RStringLiteralExpression) {
@@ -117,7 +117,7 @@ class RAnnotatorVisitor(private val holder: AnnotationHolder) : RVisitor() {
   }
 
   override fun visitInvalidLiteral(invalid: RInvalidLiteral) {
-    holder.createErrorAnnotation(invalid, "unclosed string literal")
+    holder.createErrorAnnotation(invalid, RBundle.message("inspection.message.unclosed.string.literal"))
   }
 
   private fun highlight(element: PsiElement, colorKey: TextAttributesKey) {

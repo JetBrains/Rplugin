@@ -122,7 +122,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
   }
 
   private fun setupSelectAllAction(table: JTable) {
-    val actionName = "TABLE_SELECT_ALL"
+    val actionName = VisualizationBundle.message("action.name.table.select.all")
     val action = object : AbstractAction(actionName) {
       override fun actionPerformed(e: ActionEvent) {
         table.setRowSelectionInterval(0, table.rowCount - 1)

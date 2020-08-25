@@ -23,7 +23,10 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.runHelperProcess
+import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.rendering.settings.RMarkdownSettings
 import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
@@ -31,7 +34,7 @@ import java.io.IOException
 import javax.swing.JPanel
 
 class RMarkdownRenderingConsoleRunner(private val project : Project,
-                                      private val consoleTitle: String = "RMarkdown Console") {
+                                      private val consoleTitle: String = RBundle.message("rmarkdown.rendering.console.title")) {
   @Volatile
   private var isInterrupted = false
   @Volatile
@@ -111,8 +114,8 @@ class RMarkdownRenderingConsoleRunner(private val project : Project,
   }
 
   private fun renderingErrorNotification() {
-    val notification = Notification("RMarkdownRenderError", "Rendering status",
-                                    "Error occurred during rendering", NotificationType.ERROR, null)
+    val notification = Notification("RMarkdownRenderError", RBundle.message("notification.title.rendering.status"),
+                                    RBundle.message("notification.content.error.occurred.during.rendering"), NotificationType.ERROR, null)
     notification.notify(project)
   }
 

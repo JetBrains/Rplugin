@@ -22,7 +22,7 @@ import org.jetbrains.r.RLanguage
  */
 class RCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
   override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
-    return object : CodeStyleAbstractConfigurable(settings, originalSettings, "R") {
+    return object : CodeStyleAbstractConfigurable(settings, originalSettings, "R") { //NON-NLS
       override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
         val language = RLanguage.INSTANCE
         val currentSettings = currentSettings

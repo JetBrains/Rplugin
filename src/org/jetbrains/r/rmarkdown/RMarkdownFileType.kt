@@ -8,10 +8,12 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.openapi.vfs.VirtualFile
 import icons.RIcons
+import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
 
 object RMarkdownFileType : LanguageFileType(RMarkdownLanguage) {
   override fun getName() = "RMarkdown"
+  @NonNls
   override fun getDescription() = "R Markdown"
   override fun getDefaultExtension() = "Rmd"
   override fun getIcon(): Icon? = RIcons.RMarkdown

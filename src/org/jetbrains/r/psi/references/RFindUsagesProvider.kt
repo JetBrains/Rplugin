@@ -11,6 +11,7 @@ import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.lexer.RLexer
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.parsing.RParserDefinition
@@ -42,11 +43,11 @@ class RFindUsagesProvider : FindUsagesProvider {
     if (element is RAssignmentStatement) {
       val assignedValue = element.assignedValue
       if (assignedValue is RFunctionExpression) {
-        return "function"
+        return RBundle.message("find.usages.function")
       }
     }
 
-    return if (element is RParameter) "function parameter" else "variable"
+    return if (element is RParameter) RBundle.message("find.usages.parameter") else RBundle.message("find.usages.variable")
 
   }
 

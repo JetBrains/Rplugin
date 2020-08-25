@@ -5,7 +5,7 @@
 package org.jetbrains.r.packages.remote.ui
 
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.SimpleTextAttributes
+import org.jetbrains.r.RBundle
 import javax.swing.JList
 
 class RPackageListCellRenderer : ColoredListCellRenderer<RPackageUpdateInfo>() {
@@ -17,11 +17,11 @@ class RPackageListCellRenderer : ColoredListCellRenderer<RPackageUpdateInfo>() {
     hasFocus: Boolean
   ) {
     if (value != null) {
-      append(value.installedPackage.name)
-      append(" from ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
-      append(value.installedPackage.version, SimpleTextAttributes.GRAYED_ATTRIBUTES)
-      append(" to ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
-      append(value.latestVersion, SimpleTextAttributes.GRAYED_ATTRIBUTES)
+
+      append(RBundle.message("package.update.info.cell.renderer.text",
+                             value.installedPackage.name,
+                             value.installedPackage.version,
+                             value.latestVersion))
     }
   }
 }

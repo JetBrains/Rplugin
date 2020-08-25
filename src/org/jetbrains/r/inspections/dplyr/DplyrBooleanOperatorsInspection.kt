@@ -38,13 +38,13 @@ class DplyrBooleanOperatorsInspection : RInspection() {
       val runtimeInfo = o.containingFile.runtimeInfo
       val dplyrContextInfo = RDplyrAnalyzer.getContextInfo(o, runtimeInfo) ?: return
       if (dplyrContextInfo.currentArgumentIsTable) return
-      myProblemHolder.registerProblem(o, "Non-vector logical operator used in dplyr expression",
+      myProblemHolder.registerProblem(o, RBundle.message("inspection.message.non.vector.logical.operator.used.in.dplyr.expression"),
                                       ProblemHighlightType.WARNING, MyQuickFix(name))
     }
   }
 
   private class MyQuickFix(val operatorName: String) : LocalQuickFix {
-    override fun getFamilyName() = "Replace '$operatorName' with '${operatorName[0]}'"
+    override fun getFamilyName() = CommonQuickFixBundle.message("fix.replace.x.with.y", operatorName, operatorName[0])
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
       val o = descriptor.psiElement as ROperator

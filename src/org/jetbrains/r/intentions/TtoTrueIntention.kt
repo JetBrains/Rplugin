@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.util.IncorrectOperationException
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RIdentifierExpression
 
@@ -31,11 +32,11 @@ class TtoTrueIntention : AbstractRIntention() {
   }
 
   override fun getText(): String {
-    return "Convert T/F to TRUE and FALSE"
+    return RBundle.message("intention.name.convert.t.f.to.true.false")
   }
 
   override fun getFamilyName(): String {
-    return "R best practices"
+    return RBundle.message("intention.family.name.r.best.practices")
   }
 
   private class MergeElseIfPredicate : PsiElementPredicate {

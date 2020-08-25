@@ -37,13 +37,13 @@ class BooleanExpressionSimplifier : RInspection() {
       try {
         simplify(expr, { _, _ -> throw ReplaceHappened() }, { throw ReplaceHappened() })
       } catch (_: ReplaceHappened) {
-        myProblemHolder.registerProblem(expr, "Boolean expression can be simplified", myQuickFix)
+        myProblemHolder.registerProblem(expr, RBundle.message("inspection.message.boolean.expression.can.be.simplified"), myQuickFix)
       }
     }
   }
 
   private class MyQuickFix : LocalQuickFix {
-    override fun getFamilyName() = "Simplify"
+    override fun getFamilyName() = RBundle.message("intention.family.name.simplify")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
       var expr = descriptor.psiElement as RExpression

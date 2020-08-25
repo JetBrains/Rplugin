@@ -5,13 +5,18 @@
 package org.jetbrains.r.editor
 
 import com.intellij.openapi.options.BeanConfigurable
+import org.jetbrains.annotations.NonNls
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.settings.REditorSettings
 
+@NonNls
+private const val TITLE = "R"
+
 class RSmartKeys : BeanConfigurable<REditorSettings>(
-  REditorSettings.INSTANCE, "R") {
+  REditorSettings.INSTANCE, TITLE) {
   init {
     checkBox(
-      "Disable completion auto-popup for identifier prefixes shorter than 3 symbols",
+      RBundle.message("checkbox.name.disable.completion.auto.popup.for.identifier.prefixes.shorter.than"),
       { REditorSettings.disableCompletionAutoPopupForShortPrefix },
       { REditorSettings.disableCompletionAutoPopupForShortPrefix = it }
     )

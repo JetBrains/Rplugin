@@ -12,6 +12,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizableOptions
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 
 
@@ -46,48 +47,57 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
           CCSS::SPACE_AFTER_COMMA.name,
           CCSS::SPACE_BEFORE_COMMA.name)
 
-        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_CALL_PARENTHESES.name, "Function call parentheses")
-        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_PARENTHESES.name, "Function declaration parentheses")
-        consumer.renameStandardOption(CCSS::SPACE_AROUND_ASSIGNMENT_OPERATORS.name, "Assignment operators (<-, ->>, =, ...)")
-        consumer.renameStandardOption(CCSS::SPACE_AROUND_RELATIONAL_OPERATORS.name, "Comparison operators (==, <, >=, ...)")
-        consumer.renameStandardOption(CCSS::SPACE_AROUND_MULTIPLICATIVE_OPERATORS.name, "Multiplicative operators (*, /)")
-        consumer.renameStandardOption(CCSS::SPACE_AROUND_UNARY_OPERATOR.name, "Unary operators (!, +, -, ~)")
-        consumer.renameStandardOption(CCSS::SPACE_WITHIN_BRACES.name, "Braces")
-        consumer.renameStandardOption(CCSS::SPACE_WITHIN_PARENTHESES.name, "Parentheses")
-        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_LBRACE.name, "Function left brace")
+        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_CALL_PARENTHESES.name,
+                                      RBundle.message("code.style.label.function.call.parentheses"))
+        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_PARENTHESES.name,
+                                      RBundle.message("code.style.label.function.declaration.parentheses"))
+        consumer.renameStandardOption(CCSS::SPACE_AROUND_ASSIGNMENT_OPERATORS.name,
+                                      RBundle.message("code.style.label.assignment.operators"))
+        consumer.renameStandardOption(CCSS::SPACE_AROUND_RELATIONAL_OPERATORS.name,
+                                      RBundle.message("code.style.label.comparison.operators"))
+        consumer.renameStandardOption(CCSS::SPACE_AROUND_MULTIPLICATIVE_OPERATORS.name,
+                                      RBundle.message("code.style.label.multiplicative.operators"))
+        consumer.renameStandardOption(CCSS::SPACE_AROUND_UNARY_OPERATOR.name,
+                                      RBundle.message("code.style.label.unary.operators"))
+        consumer.renameStandardOption(CCSS::SPACE_WITHIN_BRACES.name,
+                                      RBundle.message("code.style.label.braces"))
+        consumer.renameStandardOption(CCSS::SPACE_WITHIN_PARENTHESES.name,
+                                      RBundle.message("code.style.label.parentheses"))
+        consumer.renameStandardOption(CCSS::SPACE_BEFORE_METHOD_LBRACE.name,
+                                      RBundle.message("code.style.label.function.left.brace"))
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_BINARY_TILDE_OPERATOR.name,
-                                  "Binary tilde operator (~)", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
+                                  RBundle.message("code.style.label.binary.tilde.operator"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_DISJUNCTION_OPERATORS.name,
-                                  "Disjunction operators (|, ||)",
+                                  RBundle.message("code.style.label.disjunction.operators"),
                                   CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_CONJUNCTION_OPERATORS.name,
-                                  "Conjunction operators (&, &&)",
+                                  RBundle.message("code.style.label.conjunction.operators"),
                                   CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_INFIX_OPERATOR.name,
-                                  "Infix operators (%%, %/%, ...)",
+                                  RBundle.message("code.style.label.infix.operators"),
                                   CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_COLON_OPERATOR.name,
-                                  "Colon operator (:)", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
+                                  RBundle.message("code.style.label.colon.operator"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_EXPONENTIATION_OPERATOR.name,
-                                  "Exponentiation operator (^)", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
+                                  RBundle.message("code.style.label.exponentiation.operator"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_SUBSET_OPERATOR.name,
-                                  "List subset operator ($)", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
+                                  RBundle.message("code.style.label.list.subset.operator"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_AROUND_AT_OPERATOR.name,
-                                  "At operator (@)", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
+                                  RBundle.message("code.style.label.at.operator"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_AROUND_OPERATORS)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_BEFORE_REPEAT_LBRACE.name,
-                                  "'repeat' left brace", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_BEFORE_LEFT_BRACE)
+                                  RBundle.message("code.style.label.repeat.left.brace"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_BEFORE_LEFT_BRACE)
 
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::SPACE_BEFORE_LEFT_BRACKET.name,
-                                  "Space before [", CodeStyleSettingsCustomizableOptions.getInstance().SPACES_OTHER)
+                                  RBundle.message("code.style.label.space.before"), CodeStyleSettingsCustomizableOptions.getInstance().SPACES_OTHER)
       }
       SettingsType.BLANK_LINES_SETTINGS ->
         consumer.showStandardOptions(CCSS::KEEP_BLANK_LINES_IN_CODE.name)
@@ -99,9 +109,9 @@ class RLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
                                      CCSS::ALIGN_MULTILINE_PARAMETERS.name,
                                      CCSS::ALIGN_MULTILINE_PARAMETERS_IN_CALLS.name)
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::ALIGN_ASSIGNMENT_OPERATORS.name,
-                                  "Align assignment operators", null)
+                                  RBundle.message("code.style.label.align.assignment.operators"), null)
         consumer.showCustomOption(RCodeStyleSettings::class.java, RCodeStyleSettings::ALIGN_COMMENTS.name,
-                                  "Align comments", null)
+                                  RBundle.message("code.style.label.align.comments"), null)
       }
       else -> {} // do nothing
     }

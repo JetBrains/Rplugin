@@ -123,7 +123,7 @@ class RPackageTaskManager(
             val title = StringUtil.capitalizeWords(action.failureTitle, true)
             PackagesNotificationPanel.showError(title, description)
           }
-          val content = exception.message ?: "${action.failureDescription}.\nCheck console output for details"
+          val content = exception.message ?: RBundle.message("notification.content.check.console.output.for.details")
           Notification(PACKAGING_GROUP_ID, action.failureTitle, content, NotificationType.ERROR, listener)
         }
       }

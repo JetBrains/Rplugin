@@ -4,6 +4,7 @@
 
 package org.intellij.datavis.r.inlays.table.filters.gui.editor;
 
+import com.intellij.openapi.util.NlsSafe;
 import com.intellij.ui.Gray;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.SideBorder;
@@ -648,7 +649,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
    * Without popup, unselect any possible selection
    */
   private void setupEnterKey(JComponent component) {
-
+    @NlsSafe
     String actionName = "FCB_ENTER";
     Action action = new AbstractAction(actionName) {
 
@@ -678,7 +679,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
    * And unselect any possible selection
    */
   private void setupEscKey(JComponent component) {
-
+    @NlsSafe
     String actionName = "FCB_ESC";
     Action action = new AbstractAction(actionName) {
 
@@ -699,6 +700,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupEndKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_END";
     Action action = new AbstractAction(actionName) {
 
@@ -721,6 +723,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupEndCtrlKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_END_CTRL";
     Action action = new AbstractAction(actionName) {
 
@@ -749,6 +752,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupHomeCtrlKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_HOME_CTRL";
     Action action = new AbstractAction(actionName) {
 
@@ -784,6 +788,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
    * origin.
    */
   private void setupHomeKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_HOME";
     Action action = new AbstractAction(actionName) {
 
@@ -805,6 +810,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupDownPageKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_PAGE_DOWN";
     Action action = new AbstractAction(actionName) {
 
@@ -831,6 +837,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupUpPageKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_PAGE_UP";
     Action action = new AbstractAction(actionName) {
 
@@ -854,6 +861,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupUpCtrlKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_UP_CTRL";
     Action action = new AbstractAction(actionName) {
 
@@ -877,6 +885,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupUpKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_UP";
     Action action = new AbstractAction(actionName) {
 
@@ -910,6 +919,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupDownCtrlKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_DOWN_CTRL";
     Action action = new AbstractAction(actionName) {
 
@@ -940,6 +950,7 @@ public class FilterEditor extends JComponent implements IFilterEditor /*, Dispos
   }
 
   private void setupDownKey(JComponent component) {
+    @NlsSafe
     String actionName = "FCB_DOWN";
     Action action = new AbstractAction(actionName) {
 

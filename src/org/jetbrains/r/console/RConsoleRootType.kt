@@ -6,8 +6,9 @@ package org.jetbrains.r.console
 
 import com.intellij.execution.console.ConsoleRootType
 import com.intellij.ide.scratch.RootType
+import org.jetbrains.r.RBundle
 
-class RConsoleRootType internal constructor() : ConsoleRootType("R", "R Consoles") {
+class RConsoleRootType internal constructor() : ConsoleRootType("R", RBundle.message("content.root.r.console.display.name")) {
   companion object {
 
     val instance: RConsoleRootType

@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.interpreter.RInterpreterStateManager
@@ -162,7 +163,7 @@ object RepoUtils {
 
   private fun getInterop(suggested: RInterop?, project: Project): RInterop {
     return suggested ?: RInterpreterStateManager.getCurrentStateBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT)?.rInterop ?:
-           throw ExecutionException("Cannot get rInterop for packaging task. Please, specify path to the R executable")
+           throw ExecutionException(RBundle.message("repo.exception.cannot.get.rinterop"))
   }
 
   private fun getPackageVersion(packageName: String, rInterop: RInterop): String? {
@@ -183,7 +184,7 @@ object RepoUtils {
   fun updatePackage(interop: RInterop?, project: Project, repoPackage: RepoPackage, repoUrls: List<String>) {
     val rInterop = getInterop(interop, project)
     if (repoUrls.isEmpty()) {
-      throw ExecutionException("Unknown repo URL for package '${repoPackage.name}'")
+      throw ExecutionException(RBundle.message("repo.dialog.message.unknown.repo.url.for.package", repoPackage.name))
     }
     val urls = repoUrls.map { trimRepoUrlSuffix(it) }
 
@@ -219,7 +220,7 @@ object RepoUtils {
         LOGGER.warn("updatePackage(): Expected version = ${repoPackage.latestVersion}, got = $version")
       }
     }
-    throw ExecutionException("Cannot install package '${repoPackage.name}'. Check console for process output")
+    throw ExecutionException(RBundle.message("repo.exception.cannot.install.package", repoPackage.name))
   }
 
   private fun RInterop.runWithPackageUnloaded(packageName: String, task: RInterop.() -> Unit) {
@@ -278,12 +279,12 @@ object RepoUtils {
     val packageName = repoPackage.name
     val rInterop = getInterop(interop, project)
     if (!checkPackageInstalled(packageName, rInterop)) {
-      throw ExecutionException("Cannot remove package '$packageName'. It is not installed")
+      throw ExecutionException(RBundle.message("repo.exception.cannot.remove.package.it.not.installed", packageName))
     }
     val libraryPath = rInterop.state.getLibraryPathByName(packageName)
-                      ?: throw ExecutionException("Cannot get library path for package '$packageName'")
+                      ?: throw ExecutionException(RBundle.message("repo.exception.cannot.get.library.path.for.package", packageName))
     if (!libraryPath.isWritable) {
-      throw ExecutionException("Cannot remove package '$packageName'. Library path is not writable")
+      throw ExecutionException(RBundle.message("repo.exception.cannot.remove.package.library.path.not.writable", packageName))
     }
     if (rInterop.isLibraryLoaded(packageName)) {
       // Note: I guess there is no need to keep a dynamic library around since a package is deleted anyway
@@ -292,7 +293,7 @@ object RepoUtils {
     rInterop.repoRemovePackage(packageName, libraryPath.path)
     val version = getPackageVersion(packageName, rInterop)
     if (version != null && RPackageVersion.isSame(version, repoPackage.version)) {
-      throw ExecutionException("Cannot remove package '$packageName'. Check console for process output")
+      throw ExecutionException(RBundle.message("repo.exception.cannot.remove.package.check.console.for.process.output", packageName))
     }
   }
 

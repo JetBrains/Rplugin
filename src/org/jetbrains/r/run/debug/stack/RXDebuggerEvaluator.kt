@@ -8,6 +8,7 @@ package org.jetbrains.r.run.debug.stack
 import com.intellij.openapi.Disposable
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RVar
@@ -23,7 +24,7 @@ class RXDebuggerEvaluator(private val stackFrame: RXStackFrame, private var pare
       }
     }.onError {
       if (it is RDebuggerException) {
-        callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { msg -> msg.isNotBlank() } ?: "Error")
+        callback.errorOccurred(it.message?.trim()?.lines()?.joinToString(" ")?.takeIf { msg -> msg.isNotBlank() } ?: RBundle.message("rx.presentation.utils.error.value"))
       } else {
         callback.errorOccurred("")
       }

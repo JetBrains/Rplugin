@@ -13,6 +13,7 @@ import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.RainbowColorSettingsPage
 import icons.RIcons
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.RLanguage
 import javax.swing.Icon
 
@@ -34,6 +35,7 @@ class RColorSettingsPage : RainbowColorSettingsPage {
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
+  @NonNls
   override fun getDisplayName(): String = "R"
 
   companion object {

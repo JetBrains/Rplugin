@@ -12,6 +12,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.AppUIUtil
+import org.jetbrains.r.RBundle
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import javax.swing.*
@@ -80,7 +81,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
     panel.add(toFirst)
     panel.add(toPrevious)
     panel.add(JToolBar.Separator())
-    panel.add(JLabel("Page"))
+    panel.add(JLabel(RBundle.message("dataframe.viewer.label.page")))
     currentPageComponent.putClientProperty("AuxEditorComponent", true)
     panel.add(currentPageComponent)
     panel.add(totalPagesComponent)
@@ -132,9 +133,9 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
 
     val start = currentPageIndex * currentPageSize
     val end = min((currentPageIndex + 1) * currentPageSize, rowCount)
-    label.text = if (start == end) "" else "Displaying ${start + 1} to $end of $rowCount"
+    label.text = if (start == end) "" else RBundle.message("dataframe.viewer.label.range", start + 1, end, rowCount)
     currentPageComponent.text = (currentPageIndex + 1).toString()
-    totalPagesComponent.text = "Of $pagesCount"
+    totalPagesComponent.text = RBundle.message("dataframe.viewer.page.count", pagesCount)
     pageSizeComponent.selectedItem = currentPageSize
     rowSorter.shownRange = Pair(start, end)
 
@@ -142,7 +143,8 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
   }
 
   private fun createActionButtons() {
-    var action: AnAction = object : AnAction("First ", "Go to first page", AllIcons.Actions.Play_first) {
+    var action: AnAction = object : AnAction(RBundle.message("action.dataframe.viewer.first.text"),
+                                             RBundle.message("action.dataframe.viewer.first.description"), AllIcons.Actions.Play_first) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex = 0
         updateInfo()
@@ -150,7 +152,8 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
     }
     toFirst = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Previous", "Show previous page", AllIcons.Actions.Play_back) {
+    action = object : AnAction(RBundle.message("action.dataframe.viewer.previous.text"),
+                               RBundle.message("action.dataframe.viewer.previous.description"), AllIcons.Actions.Play_back) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex--
         updateInfo()
@@ -158,7 +161,8 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
     }
     toPrevious = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Next", "Show next page", AllIcons.Actions.Play_forward) {
+    action = object : AnAction(RBundle.message("action.dataframe.viewer.next.text"),
+                               RBundle.message("action.dataframe.viewer.next.description"), AllIcons.Actions.Play_forward) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex++
         updateInfo()
@@ -166,7 +170,8 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
     }
     toNext = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
 
-    action = object : AnAction("Last", "Go to last page", AllIcons.Actions.Play_last) {
+    action = object : AnAction(RBundle.message("action.dataframe.viewer.last.text"),
+                               RBundle.message("action.dataframe.viewer.description"), AllIcons.Actions.Play_last) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex = getPagesCount() - 1
         updateInfo()

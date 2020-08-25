@@ -12,6 +12,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
 import java.awt.BorderLayout
 
@@ -21,7 +22,7 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
     mainComponent.add(createREditorToolbar().component, BorderLayout.NORTH)
   }
 
-  override fun getName() = "R Editor"
+  override fun getName() = RBundle.message("editor.r.editor.name")
 
   private fun createREditorToolbar(): ActionToolbar =
     ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, createActionGroup(), true).also {

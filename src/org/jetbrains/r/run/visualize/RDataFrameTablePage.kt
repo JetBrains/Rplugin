@@ -100,7 +100,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   }
 
   private fun setupTablePopupMenu() {
-    val filterByValue = JMenuItem("Filter by value")
+    val filterByValue = JMenuItem(RBundle.message("dataframe.viewer.menu.item.filter.by.value"))
     filterByValue.addActionListener {
       if (filterHeader == null) {
         filterTableButton.click()
@@ -117,10 +117,10 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       }
     }
 
-    val copyAll = JMenuItem("Copy all")
+    val copyAll = JMenuItem(RBundle.message("dataframe.viewer.menu.copy.all"))
     copyAll.addActionListener { ClipboardUtils.copyAllToClipboard(table) }
 
-    val copySelected = JMenuItem("Copy selected")
+    val copySelected = JMenuItem(RBundle.message("dataframe.viewer.menu.copy.selected"))
     copySelected.addActionListener { ClipboardUtils.copySelectedToClipboard(table) }
 
     val popupMenu = JPopupMenu()
@@ -143,7 +143,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   }
 
   private fun setupSelectAllAction() {
-    val actionName = "TABLE_SELECT_ALL"
+    val actionName = "TABLE_SELECT_ALL" //NON-NLS
     val action = object : AbstractAction(actionName) {
       override fun actionPerformed(e: ActionEvent) {
         table.setRowSelectionInterval(0, table.rowCount - 1)
@@ -170,14 +170,15 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       return button
     }
 
-    val actionSaveAsCsv = object : DumbAwareAction("Export As", "Export as csv/tsv.", AllIcons.ToolbarDecorator.Export) {
+    val actionSaveAsCsv = object : DumbAwareAction(RBundle.message("action.dataframe.viewer.export.as.text.name"),
+                                                   RBundle.message("action.dataframe.viewer.export.as.csv.tsv.description"), AllIcons.ToolbarDecorator.Export) {
       override fun actionPerformed(e: AnActionEvent) {
         saveAsCsv()
       }
     }
     createButton(actionSaveAsCsv)
 
-    val filterTable = object : DumbAwareToggleAction(FILTER_TOOLTIP_ESCAPED, "Filter", AllIcons.Actions.Find) {
+    val filterTable = object : DumbAwareToggleAction(FILTER_TOOLTIP_ESCAPED, RBundle.message("action.dataframe.viewer.filter.description"), AllIcons.Actions.Find) {
       override fun isSelected(e: AnActionEvent) = filterHeader != null
 
       override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -191,7 +192,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
     filterTableButton = createButton(filterTable)
 
-    val paginateTable = object : DumbAwareToggleAction("Pagination", "Pagination", VisualizationIcons.TABLE_PAGINATION) {
+    val paginateTable = object : DumbAwareToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
+                                                       RBundle.message("action.dataframe.viewer.pagination.description"), VisualizationIcons.TABLE_PAGINATION) {
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null
       }
@@ -215,8 +217,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
   private fun saveAsCsv() {
     val descriptor = FileSaverDescriptor(
-      "Export as tsv",
-      "Exports the selected range or whole table is nothing is selected as csv or tsv file.",
+      RBundle.message("dialog.title.dataframe.viewer.export.as.tsv"),
+      RBundle.message("dialog.title.dataframe.viewer.export.as.tsv.description"),
       "csv", "tsv"
     )
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)

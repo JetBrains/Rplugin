@@ -66,7 +66,7 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
           .onError {
             if (it is CancellationException) return@onError
             rInterop.invalidateCaches()
-            callback.errorOccurred(it.message ?: "Error")
+            callback.errorOccurred(it.message ?: RBundle.message("rx.presentation.utils.error.value"))
           }
       }
     }

@@ -28,11 +28,13 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.cef.browser.CefBrowser
 import org.cef.handler.CefLoadHandlerAdapter
+import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import java.awt.Dimension
 import java.awt.event.ActionEvent
@@ -224,7 +226,6 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
   private val maxHeight = 500
   private val scrollPaneTopBorderHeight = 5
-
   init {
     Disposer.register(parent, console)
     toolbarPane.dataComponent = console.component
@@ -237,7 +238,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
     console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
 
-    val actionNameSelect = "TEXT_OUTPUT_SELECT_ALL"
+    @NonNls
+    val actionNameSelect = VisualizationBundle.message("action.name.output.select.all")
     val actionSelect = object : AbstractAction(actionNameSelect) {
       override fun actionPerformed(e: ActionEvent) {
         (console.editor as EditorImpl).selectionModel.setSelection(0, console.text.length)

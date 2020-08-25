@@ -34,7 +34,7 @@ class RInlineAssignmentDialog(project: Project,
                            else ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE))
   }
 
-  override fun getBorderTitle(): String = "Inline"
+  override fun getBorderTitle(): String = RBundle.message("inline.diaglog.title.inline")
   override fun getKeepTheDeclarationText(): String? = if (isFunction) RBundle.message("inline.assignment.dialog.keep.text") else null
   override fun getInlineThisText(): String? = RBundle.message("inline.assignment.dialog.only.this.text")
   override fun getInlineAllText(): String? = RBundle.message("inline.assignment.dialog.all.text")

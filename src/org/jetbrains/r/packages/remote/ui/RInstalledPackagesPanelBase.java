@@ -46,6 +46,7 @@ import com.intellij.webcore.packaging.*;
 import org.intellij.datavis.r.ui.ToolbarUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.r.RBundle;
 import org.jetbrains.r.packages.RInstalledPackage;
 import org.jetbrains.r.packages.remote.RPackageManagementService;
 import org.jetbrains.r.rinterop.RInteropKt;
@@ -226,8 +227,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
         if (aPackage != null && myPackageManagementService.canUninstallPackage(aPackage)) {
           int yesNo = Messages.showYesNoDialog(myPackagesTable,
-                                               "Are you sure you wish to uninstall '" + aPackage.getPackageName() + "' package?",
-                                               "Uninstall " + aPackage.getPackageName(),
+                                               RBundle.INSTANCE.message("install.package.dialog.message.are.you.sure.you.wish.to.uninstall.package", aPackage.getPackageName()),
+                                               RBundle.INSTANCE.message("install.package.dialog.title.uninstall", aPackage.getPackageName()),
                                                AllIcons.Diff.Remove);
           if (yesNo == Messages.YES) {
             doRecorded(UNINSTALL_ACTION_ID, e, () -> uninstallAction(Collections.singletonList(aPackage)));
@@ -387,7 +388,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
                   myNotificationArea.showSuccess("Package " + packageName + " successfully upgraded");
                 }
                 else {
-                  myNotificationArea.showError("Upgrade packages failed. <a href=\"xxx\">Details...</a>", "Upgrade Packages Failed",
+                  myNotificationArea.showError("Upgrade packages failed. <a href=\"xxx\">Details...</a>",
+                                               RBundle.INSTANCE.message("install.package.dialog.title.upgrade.packages.failed"),
                                                errorDescription);
                 }
 
@@ -411,8 +413,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
       @Override
       public void consume(Exception e) {
         ApplicationManager.getApplication().invokeLater(() -> Messages
-          .showErrorDialog("Error occurred. Please, check your internet connection.",
-                           "Upgrade Package Failed."), ModalityState.any());
+          .showErrorDialog(RBundle.INSTANCE.message("install.package.dialog.message.error.occurred.please.check.your.internet.connection"),
+                           RBundle.INSTANCE.message("install.package.dialog.title.upgrade.package.failed")), ModalityState.any());
       }
     });
   }
@@ -496,7 +498,8 @@ public class RInstalledPackagesPanelBase extends JPanel {
               }
             }
             else {
-              myNotificationArea.showError("Uninstall packages failed. <a href=\"xxx\">Details...</a>", "Uninstall Packages Failed",
+              myNotificationArea.showError("Uninstall packages failed. <a href=\"xxx\">Details...</a>",
+                                           RBundle.INSTANCE.message("install.package.dialog.title.uninstall.packages.failed"),
                                            errorDescription);
             }
           }, modalityState);
@@ -517,7 +520,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private void onUpdateStarted() {
-    myPackagesTable.getEmptyText().setText("Loading...");
+    myPackagesTable.getEmptyText().setText(RBundle.INSTANCE.message("install.package.status.text.loading"));
   }
 
   private void onUpdateFinished() {

@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightVirtualFile
+import org.jetbrains.r.RBundle
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import javax.swing.Icon
@@ -24,7 +25,7 @@ private const val EDITOR_TYPE_ID = "r-tables"
 private object TableFileType : FakeFileType() {
   override fun getName() = "R Table"
 
-  override fun getDescription() = "R table"
+  override fun getDescription() = RBundle.message("table.file.label")
 
   override fun isMyFileType(file: VirtualFile) = file is RTableVirtualFile
 

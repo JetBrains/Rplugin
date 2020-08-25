@@ -79,8 +79,8 @@ class UnusedVariableInspection : org.jetbrains.r.inspections.RInspection() {
       }, false)
 
       if (!found) {
-        val message = if (!rewritten) "Variable '" + assignee.text + "' is never used"
-                                 else "Variable '" + assignee.text + "' is assigned but never accessed"
+        val message = if (!rewritten) RBundle.message("inspection.message.variable.is.never.used", assignee.text)
+                                 else RBundle.message("inspection.message.variable.is.never.used.but.assigned", assignee.text)
         myProblemHolder.registerProblem(assignee,
                                         message,
                                         ProblemHighlightType.LIKE_UNUSED_SYMBOL)
