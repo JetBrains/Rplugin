@@ -70,31 +70,36 @@ private static final long serialVersionUID = 0L;
           }
           case 32: {
 
-            withEcho_ = input.readBool();
+            sourceFileFirstLineOffset_ = input.readInt32();
             break;
           }
           case 40: {
 
-            streamOutput_ = input.readBool();
+            withEcho_ = input.readBool();
             break;
           }
           case 48: {
 
-            isRepl_ = input.readBool();
+            streamOutput_ = input.readBool();
             break;
           }
           case 56: {
 
-            isDebug_ = input.readBool();
+            isRepl_ = input.readBool();
             break;
           }
           case 64: {
+
+            isDebug_ = input.readBool();
+            break;
+          }
+          case 72: {
             int rawValue = input.readEnum();
 
             firstDebugCommand_ = rawValue;
             break;
           }
-          case 72: {
+          case 80: {
 
             setLastValue_ = input.readBool();
             break;
@@ -315,52 +320,61 @@ private static final long serialVersionUID = 0L;
     return sourceFileLineOffset_;
   }
 
-  public static final int WITHECHO_FIELD_NUMBER = 4;
+  public static final int SOURCEFILEFIRSTLINEOFFSET_FIELD_NUMBER = 4;
+  private int sourceFileFirstLineOffset_;
+  /**
+   * <code>int32 sourceFileFirstLineOffset = 4;</code>
+   */
+  public int getSourceFileFirstLineOffset() {
+    return sourceFileFirstLineOffset_;
+  }
+
+  public static final int WITHECHO_FIELD_NUMBER = 5;
   private boolean withEcho_;
   /**
-   * <code>bool withEcho = 4;</code>
+   * <code>bool withEcho = 5;</code>
    */
   public boolean getWithEcho() {
     return withEcho_;
   }
 
-  public static final int STREAMOUTPUT_FIELD_NUMBER = 5;
+  public static final int STREAMOUTPUT_FIELD_NUMBER = 6;
   private boolean streamOutput_;
   /**
-   * <code>bool streamOutput = 5;</code>
+   * <code>bool streamOutput = 6;</code>
    */
   public boolean getStreamOutput() {
     return streamOutput_;
   }
 
-  public static final int ISREPL_FIELD_NUMBER = 6;
+  public static final int ISREPL_FIELD_NUMBER = 7;
   private boolean isRepl_;
   /**
-   * <code>bool isRepl = 6;</code>
+   * <code>bool isRepl = 7;</code>
    */
   public boolean getIsRepl() {
     return isRepl_;
   }
 
-  public static final int ISDEBUG_FIELD_NUMBER = 7;
+  public static final int ISDEBUG_FIELD_NUMBER = 8;
   private boolean isDebug_;
   /**
-   * <code>bool isDebug = 7;</code>
+   * <code>bool isDebug = 8;</code>
    */
   public boolean getIsDebug() {
     return isDebug_;
   }
 
-  public static final int FIRSTDEBUGCOMMAND_FIELD_NUMBER = 8;
+  public static final int FIRSTDEBUGCOMMAND_FIELD_NUMBER = 9;
   private int firstDebugCommand_;
   /**
-   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
    */
   public int getFirstDebugCommandValue() {
     return firstDebugCommand_;
   }
   /**
-   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
    */
   public org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand() {
     @SuppressWarnings("deprecation")
@@ -368,10 +382,10 @@ private static final long serialVersionUID = 0L;
     return result == null ? org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.UNRECOGNIZED : result;
   }
 
-  public static final int SETLASTVALUE_FIELD_NUMBER = 9;
+  public static final int SETLASTVALUE_FIELD_NUMBER = 10;
   private boolean setLastValue_;
   /**
-   * <code>bool setLastValue = 9;</code>
+   * <code>bool setLastValue = 10;</code>
    */
   public boolean getSetLastValue() {
     return setLastValue_;
@@ -400,23 +414,26 @@ private static final long serialVersionUID = 0L;
     if (sourceFileLineOffset_ != 0) {
       output.writeInt32(3, sourceFileLineOffset_);
     }
+    if (sourceFileFirstLineOffset_ != 0) {
+      output.writeInt32(4, sourceFileFirstLineOffset_);
+    }
     if (withEcho_ != false) {
-      output.writeBool(4, withEcho_);
+      output.writeBool(5, withEcho_);
     }
     if (streamOutput_ != false) {
-      output.writeBool(5, streamOutput_);
+      output.writeBool(6, streamOutput_);
     }
     if (isRepl_ != false) {
-      output.writeBool(6, isRepl_);
+      output.writeBool(7, isRepl_);
     }
     if (isDebug_ != false) {
-      output.writeBool(7, isDebug_);
+      output.writeBool(8, isDebug_);
     }
     if (firstDebugCommand_ != org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.CONTINUE.getNumber()) {
-      output.writeEnum(8, firstDebugCommand_);
+      output.writeEnum(9, firstDebugCommand_);
     }
     if (setLastValue_ != false) {
-      output.writeBool(9, setLastValue_);
+      output.writeBool(10, setLastValue_);
     }
     unknownFields.writeTo(output);
   }
@@ -437,29 +454,33 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(3, sourceFileLineOffset_);
     }
+    if (sourceFileFirstLineOffset_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(4, sourceFileFirstLineOffset_);
+    }
     if (withEcho_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(4, withEcho_);
+        .computeBoolSize(5, withEcho_);
     }
     if (streamOutput_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(5, streamOutput_);
+        .computeBoolSize(6, streamOutput_);
     }
     if (isRepl_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(6, isRepl_);
+        .computeBoolSize(7, isRepl_);
     }
     if (isDebug_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(7, isDebug_);
+        .computeBoolSize(8, isDebug_);
     }
     if (firstDebugCommand_ != org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.CONTINUE.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(8, firstDebugCommand_);
+        .computeEnumSize(9, firstDebugCommand_);
     }
     if (setLastValue_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(9, setLastValue_);
+        .computeBoolSize(10, setLastValue_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -482,6 +503,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getSourceFileId())) return false;
     if (getSourceFileLineOffset()
         != other.getSourceFileLineOffset()) return false;
+    if (getSourceFileFirstLineOffset()
+        != other.getSourceFileFirstLineOffset()) return false;
     if (getWithEcho()
         != other.getWithEcho()) return false;
     if (getStreamOutput()
@@ -510,6 +533,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getSourceFileId().hashCode();
     hash = (37 * hash) + SOURCEFILELINEOFFSET_FIELD_NUMBER;
     hash = (53 * hash) + getSourceFileLineOffset();
+    hash = (37 * hash) + SOURCEFILEFIRSTLINEOFFSET_FIELD_NUMBER;
+    hash = (53 * hash) + getSourceFileFirstLineOffset();
     hash = (37 * hash) + WITHECHO_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getWithEcho());
@@ -666,6 +691,8 @@ private static final long serialVersionUID = 0L;
 
       sourceFileLineOffset_ = 0;
 
+      sourceFileFirstLineOffset_ = 0;
+
       withEcho_ = false;
 
       streamOutput_ = false;
@@ -707,6 +734,7 @@ private static final long serialVersionUID = 0L;
       result.code_ = code_;
       result.sourceFileId_ = sourceFileId_;
       result.sourceFileLineOffset_ = sourceFileLineOffset_;
+      result.sourceFileFirstLineOffset_ = sourceFileFirstLineOffset_;
       result.withEcho_ = withEcho_;
       result.streamOutput_ = streamOutput_;
       result.isRepl_ = isRepl_;
@@ -771,6 +799,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getSourceFileLineOffset() != 0) {
         setSourceFileLineOffset(other.getSourceFileLineOffset());
+      }
+      if (other.getSourceFileFirstLineOffset() != 0) {
+        setSourceFileFirstLineOffset(other.getSourceFileFirstLineOffset());
       }
       if (other.getWithEcho() != false) {
         setWithEcho(other.getWithEcho());
@@ -983,15 +1014,41 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int sourceFileFirstLineOffset_ ;
+    /**
+     * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     */
+    public int getSourceFileFirstLineOffset() {
+      return sourceFileFirstLineOffset_;
+    }
+    /**
+     * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     */
+    public Builder setSourceFileFirstLineOffset(int value) {
+      
+      sourceFileFirstLineOffset_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     */
+    public Builder clearSourceFileFirstLineOffset() {
+      
+      sourceFileFirstLineOffset_ = 0;
+      onChanged();
+      return this;
+    }
+
     private boolean withEcho_ ;
     /**
-     * <code>bool withEcho = 4;</code>
+     * <code>bool withEcho = 5;</code>
      */
     public boolean getWithEcho() {
       return withEcho_;
     }
     /**
-     * <code>bool withEcho = 4;</code>
+     * <code>bool withEcho = 5;</code>
      */
     public Builder setWithEcho(boolean value) {
       
@@ -1000,7 +1057,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool withEcho = 4;</code>
+     * <code>bool withEcho = 5;</code>
      */
     public Builder clearWithEcho() {
       
@@ -1011,13 +1068,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean streamOutput_ ;
     /**
-     * <code>bool streamOutput = 5;</code>
+     * <code>bool streamOutput = 6;</code>
      */
     public boolean getStreamOutput() {
       return streamOutput_;
     }
     /**
-     * <code>bool streamOutput = 5;</code>
+     * <code>bool streamOutput = 6;</code>
      */
     public Builder setStreamOutput(boolean value) {
       
@@ -1026,7 +1083,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool streamOutput = 5;</code>
+     * <code>bool streamOutput = 6;</code>
      */
     public Builder clearStreamOutput() {
       
@@ -1037,13 +1094,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean isRepl_ ;
     /**
-     * <code>bool isRepl = 6;</code>
+     * <code>bool isRepl = 7;</code>
      */
     public boolean getIsRepl() {
       return isRepl_;
     }
     /**
-     * <code>bool isRepl = 6;</code>
+     * <code>bool isRepl = 7;</code>
      */
     public Builder setIsRepl(boolean value) {
       
@@ -1052,7 +1109,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool isRepl = 6;</code>
+     * <code>bool isRepl = 7;</code>
      */
     public Builder clearIsRepl() {
       
@@ -1063,13 +1120,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean isDebug_ ;
     /**
-     * <code>bool isDebug = 7;</code>
+     * <code>bool isDebug = 8;</code>
      */
     public boolean getIsDebug() {
       return isDebug_;
     }
     /**
-     * <code>bool isDebug = 7;</code>
+     * <code>bool isDebug = 8;</code>
      */
     public Builder setIsDebug(boolean value) {
       
@@ -1078,7 +1135,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool isDebug = 7;</code>
+     * <code>bool isDebug = 8;</code>
      */
     public Builder clearIsDebug() {
       
@@ -1089,13 +1146,13 @@ private static final long serialVersionUID = 0L;
 
     private int firstDebugCommand_ = 0;
     /**
-     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
      */
     public int getFirstDebugCommandValue() {
       return firstDebugCommand_;
     }
     /**
-     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
      */
     public Builder setFirstDebugCommandValue(int value) {
       firstDebugCommand_ = value;
@@ -1103,7 +1160,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
      */
     public org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand() {
       @SuppressWarnings("deprecation")
@@ -1111,7 +1168,7 @@ private static final long serialVersionUID = 0L;
       return result == null ? org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.UNRECOGNIZED : result;
     }
     /**
-     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
      */
     public Builder setFirstDebugCommand(org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand value) {
       if (value == null) {
@@ -1123,7 +1180,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+     * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
      */
     public Builder clearFirstDebugCommand() {
       
@@ -1134,13 +1191,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean setLastValue_ ;
     /**
-     * <code>bool setLastValue = 9;</code>
+     * <code>bool setLastValue = 10;</code>
      */
     public boolean getSetLastValue() {
       return setLastValue_;
     }
     /**
-     * <code>bool setLastValue = 9;</code>
+     * <code>bool setLastValue = 10;</code>
      */
     public Builder setSetLastValue(boolean value) {
       
@@ -1149,7 +1206,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool setLastValue = 9;</code>
+     * <code>bool setLastValue = 10;</code>
      */
     public Builder clearSetLastValue() {
       

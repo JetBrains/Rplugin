@@ -34,4 +34,17 @@ public interface StackFrameOrBuilder extends
    * <code>int64 equalityObject = 3;</code>
    */
   long getEqualityObject();
+
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  boolean hasExtendedSourcePosition();
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition();
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder getExtendedSourcePositionOrBuilder();
 }

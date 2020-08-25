@@ -17,7 +17,7 @@ class RDebuggerTestHelper(rInterop: RInterop) {
     rInterop.asyncEventsStartProcessing()
     val textPromise = AsyncPromise<Unit>()
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-      override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
+      override fun onPrompt(isDebug: Boolean) {
         promise.setResult(isDebug)
       }
 
@@ -34,10 +34,13 @@ class RDebuggerTestHelper(rInterop: RInterop) {
     }
   }
 
-  fun <R> invokeAndWait(expectedDebug: Boolean, f: () -> R): R {
+  fun <R> invokeAndWait(expectedDebug: Boolean? = null, f: () -> R): R {
     PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     val result = f()
-    TestCase.assertEquals(expectedDebug, promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT))
+    val isDebug = promise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    if (expectedDebug != null) {
+      TestCase.assertEquals(expectedDebug, isDebug)
+    }
     promise = AsyncPromise()
     return result
   }

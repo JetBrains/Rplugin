@@ -6,9 +6,8 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.xdebugger.XDebuggerManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -16,7 +15,6 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
-import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
 class RDebuggerTest : RProcessHandlerBaseTestCase() {
@@ -30,6 +28,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     }
     helper = RDebuggerTestHelper(rInterop)
     RDebuggerUtil.createBreakpointListener(rInterop)
+    rInterop.asyncEventsStartProcessing()
   }
 
   fun testBreakpoints() {
@@ -237,7 +236,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     helper.invokeAndWait(false) { rInterop.debugCommandStepInto() }
   }
 
-  fun testForceStepInto() {
+  fun _testForceStepInto() {
     val file = loadFileWithBreakpointsFromText("""
       f <- function(x) {
         return(x + 10)
@@ -492,5 +491,147 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(1, stack.count { it.file == secondVirtualFile && it.line == 3 })
     TestCase.assertEquals(1, stack.count { it.file == firstFile && it.line == 2 })
     helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+  }
+
+  fun testBrowser() {
+    val file = loadFileWithBreakpointsFromText("""
+      foo = function() {
+        2
+        browser(expr = FALSE)
+        browser()
+        5
+        6
+      }
+      foo()
+      9
+      browser()
+      11
+      12
+    """.trimIndent())
+
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+    TestCase.assertEquals(listOf(7, 3), rInterop.debugStack.map { it.position?.line })
+
+    helper.invokeAndWait(true) { rInterop.debugCommandStepOver() }
+    TestCase.assertEquals(listOf(7, 4), rInterop.debugStack.map { it.position?.line })
+
+    helper.invokeAndWait(true) { rInterop.debugCommandContinue() }
+    TestCase.assertEquals(listOf(9), rInterop.debugStack.map { it.position?.line })
+
+    helper.invokeAndWait(true) { rInterop.debugCommandStepOver() }
+    TestCase.assertEquals(listOf(10), rInterop.debugStack.map { it.position?.line })
+
+    helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+  }
+
+  fun testDebugFunction() {
+    fun doTest(fooCode: String) {
+      rInterop.executeCode("foo <- $fooCode")
+      val file = loadFileWithBreakpointsFromText("foo()")
+
+      TestCase.assertFalse(rInterop.executeCode("cat(isdebugged(foo))").stdout == "TRUE")
+      rInterop.executeCode("debug(foo)")
+      TestCase.assertTrue(rInterop.executeCode("cat(isdebugged(foo))").stdout == "TRUE")
+
+      helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+      TestCase.assertEquals(listOf(null, "foo"), rInterop.debugStack.map { it.functionName })
+      helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+
+      helper.invokeAndWait(false) { rInterop.replSourceFile(file, false) }
+
+      helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+      TestCase.assertEquals(listOf(null, "foo"), rInterop.debugStack.map { it.functionName })
+      helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+
+      rInterop.executeCode("undebug(foo)")
+      TestCase.assertFalse(rInterop.executeCode("cat(isdebugged(foo))").stdout == "TRUE")
+      helper.invokeAndWait(false) { rInterop.replSourceFile(file, true) }
+
+      rInterop.executeCode("debugonce(foo)")
+      helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+      TestCase.assertEquals(listOf(null, "foo"), rInterop.debugStack.map { it.functionName })
+      helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+
+      helper.invokeAndWait(false) { rInterop.replSourceFile(file, true) }
+    }
+
+    doTest("""function() {
+      |  2
+      |  3
+      |  4
+      |}
+    """.trimMargin())
+    doTest("function() {}")
+    doTest("function() 1 + 1 + 1")
+  }
+
+  fun testExtendedSourcePositions() {
+    val text = """
+      x <- 1
+      y <- 2; "Абвг"; z <- 3
+      if (TRUE) {
+        123
+        44; 55
+      }; hh <- 6
+      if (TRUE) {
+        678 }; 999
+      if (TRUE) { 15 }
+    """.trimIndent()
+    val file = loadFileWithBreakpointsFromText(text)
+    val steps = mutableListOf<String?>()
+
+    helper.invokeAndWait { rInterop.replSourceFile(file, true, firstDebugCommand = ExecuteCodeRequest.DebugCommand.STOP) }
+    while (rInterop.isDebug) {
+      steps.add(rInterop.debugStack.lastOrNull()?.extendedPosition?.let { text.substring(it.startOffset, it.endOffset) })
+      helper.invokeAndWait { rInterop.debugCommandStepOver() }
+    }
+
+    TestCase.assertEquals(listOf(null, "y <- 2", "\"Абвг\"", "z <- 3", null, null, "44", "55", "hh <- 6", null, "678", "999", null, "15"), steps)
+  }
+
+  fun testExtendedPositionBreakpoint() {
+    fun doTest(stop: Boolean, code: String) {
+      val file = loadFileWithBreakpointsFromText(code)
+      if (stop) {
+        rInterop.executeCode("fail <- FALSE")
+        helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+        TestCase.assertEquals("FALSE", rInterop.executeCode("cat(fail)").stdout)
+        helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
+      } else {
+        helper.invokeAndWait(false) { rInterop.replSourceFile(file, true) }
+      }
+      val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
+      runWriteAction {
+        breakpointManager.allBreakpoints.forEach { breakpointManager.removeBreakpoint(it) }
+      }
+    }
+
+    doTest(true, """
+      1
+      fail <- TRUE; 3; 4 # BREAKPOINT
+      5
+    """.trimIndent())
+    doTest(true, """
+      1
+      if (TRUE) { fail <- TRUE } # BREAKPOINT
+      5
+    """.trimIndent())
+    doTest(true, """
+      1
+      if (TRUE) {
+        fail <- TRUE }; 55 # BREAKPOINT
+      5
+    """.trimIndent())
+    doTest(false, """
+      1
+      if (FALSE) {
+        44 }; 55 # BREAKPOINT
+      5
+    """.trimIndent())
+    doTest(true, """
+      1
+      if (FALSE) { 44 }; fail <- TRUE # BREAKPOINT
+      5
+    """.trimIndent())
   }
 }

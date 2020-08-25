@@ -29,20 +29,6 @@ class RConsoleDebuggerTest : RConsoleBaseTestCase() {
     checkConsoleText("Breakpoint hit (abc.R:3)")
   }
 
-  fun testLogMessageFunction() {
-    val file = loadFileWithBreakpointsFromText("""
-      foobar <- function() {
-        2 # BREAKPOINT(suspend = FALSE, logMessage = TRUE)
-      }
-      foobar()
-    """.trimIndent(), "abc.R")
-    val helper = RConsoleDebuggerTestHelper(console)
-    helper.invokeAndWait(false) {
-      rInterop.replSourceFile(file, debug = true)
-    }
-    checkConsoleText("Breakpoint hit in foobar (abc.R:2)")
-  }
-
   fun testLogStack() {
     val file = loadFileWithBreakpointsFromText("""
       foo <- function() {

@@ -8,6 +8,7 @@ package org.jetbrains.r.run.debug.stack
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.util.TextRange
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.xdebugger.XExpression
@@ -30,7 +31,8 @@ class RXStackFrame(val functionName: String,
                    val loader: RVariableLoader,
                    val grayAttributes: Boolean,
                    val variableViewSettings: RXVariableViewSettings,
-                   private val equalityObject: Any? = null) : XStackFrame(), Disposable {
+                   private val equalityObject: Any? = null,
+                   val extendedSourcePosition: TextRange? = null) : XStackFrame(), Disposable {
   private val evaluator = RXDebuggerEvaluator(this, this)
   internal val environment get() = loader.obj
   internal var expandFunctionGroup = false

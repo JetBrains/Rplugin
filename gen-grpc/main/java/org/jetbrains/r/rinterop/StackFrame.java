@@ -73,6 +73,19 @@ private static final long serialVersionUID = 0L;
             equalityObject_ = input.readInt64();
             break;
           }
+          case 34: {
+            org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder subBuilder = null;
+            if (extendedSourcePosition_ != null) {
+              subBuilder = extendedSourcePosition_.toBuilder();
+            }
+            extendedSourcePosition_ = input.readMessage(org.jetbrains.r.rinterop.ExtendedSourcePosition.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(extendedSourcePosition_);
+              extendedSourcePosition_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -169,6 +182,27 @@ private static final long serialVersionUID = 0L;
     return equalityObject_;
   }
 
+  public static final int EXTENDEDSOURCEPOSITION_FIELD_NUMBER = 4;
+  private org.jetbrains.r.rinterop.ExtendedSourcePosition extendedSourcePosition_;
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  public boolean hasExtendedSourcePosition() {
+    return extendedSourcePosition_ != null;
+  }
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  public org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition() {
+    return extendedSourcePosition_ == null ? org.jetbrains.r.rinterop.ExtendedSourcePosition.getDefaultInstance() : extendedSourcePosition_;
+  }
+  /**
+   * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   */
+  public org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder getExtendedSourcePositionOrBuilder() {
+    return getExtendedSourcePosition();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -192,6 +226,9 @@ private static final long serialVersionUID = 0L;
     if (equalityObject_ != 0L) {
       output.writeInt64(3, equalityObject_);
     }
+    if (extendedSourcePosition_ != null) {
+      output.writeMessage(4, getExtendedSourcePosition());
+    }
     unknownFields.writeTo(output);
   }
 
@@ -211,6 +248,10 @@ private static final long serialVersionUID = 0L;
     if (equalityObject_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(3, equalityObject_);
+    }
+    if (extendedSourcePosition_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(4, getExtendedSourcePosition());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -236,6 +277,11 @@ private static final long serialVersionUID = 0L;
         .equals(other.getFunctionName())) return false;
     if (getEqualityObject()
         != other.getEqualityObject()) return false;
+    if (hasExtendedSourcePosition() != other.hasExtendedSourcePosition()) return false;
+    if (hasExtendedSourcePosition()) {
+      if (!getExtendedSourcePosition()
+          .equals(other.getExtendedSourcePosition())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -256,6 +302,10 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + EQUALITYOBJECT_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getEqualityObject());
+    if (hasExtendedSourcePosition()) {
+      hash = (37 * hash) + EXTENDEDSOURCEPOSITION_FIELD_NUMBER;
+      hash = (53 * hash) + getExtendedSourcePosition().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -399,6 +449,12 @@ private static final long serialVersionUID = 0L;
 
       equalityObject_ = 0L;
 
+      if (extendedSourcePositionBuilder_ == null) {
+        extendedSourcePosition_ = null;
+      } else {
+        extendedSourcePosition_ = null;
+        extendedSourcePositionBuilder_ = null;
+      }
       return this;
     }
 
@@ -432,6 +488,11 @@ private static final long serialVersionUID = 0L;
       }
       result.functionName_ = functionName_;
       result.equalityObject_ = equalityObject_;
+      if (extendedSourcePositionBuilder_ == null) {
+        result.extendedSourcePosition_ = extendedSourcePosition_;
+      } else {
+        result.extendedSourcePosition_ = extendedSourcePositionBuilder_.build();
+      }
       onBuilt();
       return result;
     }
@@ -489,6 +550,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getEqualityObject() != 0L) {
         setEqualityObject(other.getEqualityObject());
+      }
+      if (other.hasExtendedSourcePosition()) {
+        mergeExtendedSourcePosition(other.getExtendedSourcePosition());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -729,6 +793,123 @@ private static final long serialVersionUID = 0L;
       equalityObject_ = 0L;
       onChanged();
       return this;
+    }
+
+    private org.jetbrains.r.rinterop.ExtendedSourcePosition extendedSourcePosition_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.ExtendedSourcePosition, org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder, org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder> extendedSourcePositionBuilder_;
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public boolean hasExtendedSourcePosition() {
+      return extendedSourcePositionBuilder_ != null || extendedSourcePosition_ != null;
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition() {
+      if (extendedSourcePositionBuilder_ == null) {
+        return extendedSourcePosition_ == null ? org.jetbrains.r.rinterop.ExtendedSourcePosition.getDefaultInstance() : extendedSourcePosition_;
+      } else {
+        return extendedSourcePositionBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public Builder setExtendedSourcePosition(org.jetbrains.r.rinterop.ExtendedSourcePosition value) {
+      if (extendedSourcePositionBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        extendedSourcePosition_ = value;
+        onChanged();
+      } else {
+        extendedSourcePositionBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public Builder setExtendedSourcePosition(
+        org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder builderForValue) {
+      if (extendedSourcePositionBuilder_ == null) {
+        extendedSourcePosition_ = builderForValue.build();
+        onChanged();
+      } else {
+        extendedSourcePositionBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public Builder mergeExtendedSourcePosition(org.jetbrains.r.rinterop.ExtendedSourcePosition value) {
+      if (extendedSourcePositionBuilder_ == null) {
+        if (extendedSourcePosition_ != null) {
+          extendedSourcePosition_ =
+            org.jetbrains.r.rinterop.ExtendedSourcePosition.newBuilder(extendedSourcePosition_).mergeFrom(value).buildPartial();
+        } else {
+          extendedSourcePosition_ = value;
+        }
+        onChanged();
+      } else {
+        extendedSourcePositionBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public Builder clearExtendedSourcePosition() {
+      if (extendedSourcePositionBuilder_ == null) {
+        extendedSourcePosition_ = null;
+        onChanged();
+      } else {
+        extendedSourcePosition_ = null;
+        extendedSourcePositionBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder getExtendedSourcePositionBuilder() {
+      
+      onChanged();
+      return getExtendedSourcePositionFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    public org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder getExtendedSourcePositionOrBuilder() {
+      if (extendedSourcePositionBuilder_ != null) {
+        return extendedSourcePositionBuilder_.getMessageOrBuilder();
+      } else {
+        return extendedSourcePosition_ == null ?
+            org.jetbrains.r.rinterop.ExtendedSourcePosition.getDefaultInstance() : extendedSourcePosition_;
+      }
+    }
+    /**
+     * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.ExtendedSourcePosition, org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder, org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder> 
+        getExtendedSourcePositionFieldBuilder() {
+      if (extendedSourcePositionBuilder_ == null) {
+        extendedSourcePositionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.ExtendedSourcePosition, org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder, org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder>(
+                getExtendedSourcePosition(),
+                getParentForChildren(),
+                isClean());
+        extendedSourcePosition_ = null;
+      }
+      return extendedSourcePositionBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

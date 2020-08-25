@@ -16,10 +16,12 @@ import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.junit.Ignore
 import java.awt.Dimension
 import java.io.File
 import java.nio.file.Paths
 
+@Ignore
 class RBundledTestsTest : RProcessHandlerBaseTestCase() {
   private lateinit var tempDir: String
   override val customDeadline = 600L

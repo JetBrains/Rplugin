@@ -33,36 +33,41 @@ public interface ExecuteCodeRequestOrBuilder extends
   int getSourceFileLineOffset();
 
   /**
-   * <code>bool withEcho = 4;</code>
+   * <code>int32 sourceFileFirstLineOffset = 4;</code>
+   */
+  int getSourceFileFirstLineOffset();
+
+  /**
+   * <code>bool withEcho = 5;</code>
    */
   boolean getWithEcho();
 
   /**
-   * <code>bool streamOutput = 5;</code>
+   * <code>bool streamOutput = 6;</code>
    */
   boolean getStreamOutput();
 
   /**
-   * <code>bool isRepl = 6;</code>
+   * <code>bool isRepl = 7;</code>
    */
   boolean getIsRepl();
 
   /**
-   * <code>bool isDebug = 7;</code>
+   * <code>bool isDebug = 8;</code>
    */
   boolean getIsDebug();
 
   /**
-   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
    */
   int getFirstDebugCommandValue();
   /**
-   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 8;</code>
+   * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
    */
   org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand();
 
   /**
-   * <code>bool setLastValue = 9;</code>
+   * <code>bool setLastValue = 10;</code>
    */
   boolean getSetLastValue();
 }

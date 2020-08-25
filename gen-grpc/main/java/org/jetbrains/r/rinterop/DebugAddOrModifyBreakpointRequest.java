@@ -4,18 +4,18 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.DebugAddBreakpointRequest}
+ * Protobuf type {@code rplugininterop.DebugAddOrModifyBreakpointRequest}
  */
-public  final class DebugAddBreakpointRequest extends
+public  final class DebugAddOrModifyBreakpointRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.DebugAddBreakpointRequest)
-    DebugAddBreakpointRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.DebugAddOrModifyBreakpointRequest)
+    DebugAddOrModifyBreakpointRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use DebugAddBreakpointRequest.newBuilder() to construct.
-  private DebugAddBreakpointRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use DebugAddOrModifyBreakpointRequest.newBuilder() to construct.
+  private DebugAddOrModifyBreakpointRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private DebugAddBreakpointRequest() {
+  private DebugAddOrModifyBreakpointRequest() {
     evaluateAndLog_ = "";
     condition_ = "";
   }
@@ -24,7 +24,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new DebugAddBreakpointRequest();
+    return new DebugAddOrModifyBreakpointRequest();
   }
 
   @java.lang.Override
@@ -32,7 +32,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private DebugAddBreakpointRequest(
+  private DebugAddOrModifyBreakpointRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -50,7 +50,12 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
+          case 8: {
+
+            id_ = input.readInt32();
+            break;
+          }
+          case 18: {
             org.jetbrains.r.rinterop.SourcePosition.Builder subBuilder = null;
             if (position_ != null) {
               subBuilder = position_.toBuilder();
@@ -63,21 +68,41 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 16: {
+          case 24: {
+
+            enabled_ = input.readBool();
+            break;
+          }
+          case 32: {
 
             suspend_ = input.readBool();
             break;
           }
-          case 26: {
+          case 42: {
             java.lang.String s = input.readStringRequireUtf8();
 
             evaluateAndLog_ = s;
             break;
           }
-          case 34: {
+          case 50: {
             java.lang.String s = input.readStringRequireUtf8();
 
             condition_ = s;
+            break;
+          }
+          case 56: {
+
+            removeAfterHit_ = input.readBool();
+            break;
+          }
+          case 64: {
+
+            hitMessage_ = input.readBool();
+            break;
+          }
+          case 72: {
+
+            printStack_ = input.readBool();
             break;
           }
           default: {
@@ -101,51 +126,69 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddBreakpointRequest_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddOrModifyBreakpointRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddBreakpointRequest_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddOrModifyBreakpointRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.DebugAddBreakpointRequest.class, org.jetbrains.r.rinterop.DebugAddBreakpointRequest.Builder.class);
+            org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.class, org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.Builder.class);
   }
 
-  public static final int POSITION_FIELD_NUMBER = 1;
+  public static final int ID_FIELD_NUMBER = 1;
+  private int id_;
+  /**
+   * <code>int32 id = 1;</code>
+   */
+  public int getId() {
+    return id_;
+  }
+
+  public static final int POSITION_FIELD_NUMBER = 2;
   private org.jetbrains.r.rinterop.SourcePosition position_;
   /**
-   * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * <code>.rplugininterop.SourcePosition position = 2;</code>
    */
   public boolean hasPosition() {
     return position_ != null;
   }
   /**
-   * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * <code>.rplugininterop.SourcePosition position = 2;</code>
    */
   public org.jetbrains.r.rinterop.SourcePosition getPosition() {
     return position_ == null ? org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance() : position_;
   }
   /**
-   * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * <code>.rplugininterop.SourcePosition position = 2;</code>
    */
   public org.jetbrains.r.rinterop.SourcePositionOrBuilder getPositionOrBuilder() {
     return getPosition();
   }
 
-  public static final int SUSPEND_FIELD_NUMBER = 2;
+  public static final int ENABLED_FIELD_NUMBER = 3;
+  private boolean enabled_;
+  /**
+   * <code>bool enabled = 3;</code>
+   */
+  public boolean getEnabled() {
+    return enabled_;
+  }
+
+  public static final int SUSPEND_FIELD_NUMBER = 4;
   private boolean suspend_;
   /**
-   * <code>bool suspend = 2;</code>
+   * <code>bool suspend = 4;</code>
    */
   public boolean getSuspend() {
     return suspend_;
   }
 
-  public static final int EVALUATEANDLOG_FIELD_NUMBER = 3;
+  public static final int EVALUATEANDLOG_FIELD_NUMBER = 5;
   private volatile java.lang.Object evaluateAndLog_;
   /**
-   * <code>string evaluateAndLog = 3;</code>
+   * <code>string evaluateAndLog = 5;</code>
    */
   public java.lang.String getEvaluateAndLog() {
     java.lang.Object ref = evaluateAndLog_;
@@ -160,7 +203,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string evaluateAndLog = 3;</code>
+   * <code>string evaluateAndLog = 5;</code>
    */
   public com.google.protobuf.ByteString
       getEvaluateAndLogBytes() {
@@ -176,10 +219,10 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int CONDITION_FIELD_NUMBER = 4;
+  public static final int CONDITION_FIELD_NUMBER = 6;
   private volatile java.lang.Object condition_;
   /**
-   * <code>string condition = 4;</code>
+   * <code>string condition = 6;</code>
    */
   public java.lang.String getCondition() {
     java.lang.Object ref = condition_;
@@ -194,7 +237,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string condition = 4;</code>
+   * <code>string condition = 6;</code>
    */
   public com.google.protobuf.ByteString
       getConditionBytes() {
@@ -208,6 +251,33 @@ private static final long serialVersionUID = 0L;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
+  }
+
+  public static final int REMOVEAFTERHIT_FIELD_NUMBER = 7;
+  private boolean removeAfterHit_;
+  /**
+   * <code>bool removeAfterHit = 7;</code>
+   */
+  public boolean getRemoveAfterHit() {
+    return removeAfterHit_;
+  }
+
+  public static final int HITMESSAGE_FIELD_NUMBER = 8;
+  private boolean hitMessage_;
+  /**
+   * <code>bool hitMessage = 8;</code>
+   */
+  public boolean getHitMessage() {
+    return hitMessage_;
+  }
+
+  public static final int PRINTSTACK_FIELD_NUMBER = 9;
+  private boolean printStack_;
+  /**
+   * <code>bool printStack = 9;</code>
+   */
+  public boolean getPrintStack() {
+    return printStack_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -224,17 +294,32 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
+    if (id_ != 0) {
+      output.writeInt32(1, id_);
+    }
     if (position_ != null) {
-      output.writeMessage(1, getPosition());
+      output.writeMessage(2, getPosition());
+    }
+    if (enabled_ != false) {
+      output.writeBool(3, enabled_);
     }
     if (suspend_ != false) {
-      output.writeBool(2, suspend_);
+      output.writeBool(4, suspend_);
     }
     if (!getEvaluateAndLogBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, evaluateAndLog_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, evaluateAndLog_);
     }
     if (!getConditionBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, condition_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, condition_);
+    }
+    if (removeAfterHit_ != false) {
+      output.writeBool(7, removeAfterHit_);
+    }
+    if (hitMessage_ != false) {
+      output.writeBool(8, hitMessage_);
+    }
+    if (printStack_ != false) {
+      output.writeBool(9, printStack_);
     }
     unknownFields.writeTo(output);
   }
@@ -245,19 +330,39 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
+    if (id_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(1, id_);
+    }
     if (position_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, getPosition());
+        .computeMessageSize(2, getPosition());
+    }
+    if (enabled_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(3, enabled_);
     }
     if (suspend_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(2, suspend_);
+        .computeBoolSize(4, suspend_);
     }
     if (!getEvaluateAndLogBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, evaluateAndLog_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, evaluateAndLog_);
     }
     if (!getConditionBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, condition_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, condition_);
+    }
+    if (removeAfterHit_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(7, removeAfterHit_);
+    }
+    if (hitMessage_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(8, hitMessage_);
+    }
+    if (printStack_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(9, printStack_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -269,22 +374,32 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.DebugAddBreakpointRequest)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.DebugAddBreakpointRequest other = (org.jetbrains.r.rinterop.DebugAddBreakpointRequest) obj;
+    org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest other = (org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest) obj;
 
+    if (getId()
+        != other.getId()) return false;
     if (hasPosition() != other.hasPosition()) return false;
     if (hasPosition()) {
       if (!getPosition()
           .equals(other.getPosition())) return false;
     }
+    if (getEnabled()
+        != other.getEnabled()) return false;
     if (getSuspend()
         != other.getSuspend()) return false;
     if (!getEvaluateAndLog()
         .equals(other.getEvaluateAndLog())) return false;
     if (!getCondition()
         .equals(other.getCondition())) return false;
+    if (getRemoveAfterHit()
+        != other.getRemoveAfterHit()) return false;
+    if (getHitMessage()
+        != other.getHitMessage()) return false;
+    if (getPrintStack()
+        != other.getPrintStack()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -296,10 +411,15 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
+    hash = (37 * hash) + ID_FIELD_NUMBER;
+    hash = (53 * hash) + getId();
     if (hasPosition()) {
       hash = (37 * hash) + POSITION_FIELD_NUMBER;
       hash = (53 * hash) + getPosition().hashCode();
     }
+    hash = (37 * hash) + ENABLED_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getEnabled());
     hash = (37 * hash) + SUSPEND_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getSuspend());
@@ -307,74 +427,83 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getEvaluateAndLog().hashCode();
     hash = (37 * hash) + CONDITION_FIELD_NUMBER;
     hash = (53 * hash) + getCondition().hashCode();
+    hash = (37 * hash) + REMOVEAFTERHIT_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getRemoveAfterHit());
+    hash = (37 * hash) + HITMESSAGE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getHitMessage());
+    hash = (37 * hash) + PRINTSTACK_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getPrintStack());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest parseFrom(
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -387,7 +516,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.DebugAddBreakpointRequest prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -403,26 +532,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.DebugAddBreakpointRequest}
+   * Protobuf type {@code rplugininterop.DebugAddOrModifyBreakpointRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.DebugAddBreakpointRequest)
-      org.jetbrains.r.rinterop.DebugAddBreakpointRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.DebugAddOrModifyBreakpointRequest)
+      org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddBreakpointRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddOrModifyBreakpointRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddBreakpointRequest_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddOrModifyBreakpointRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.DebugAddBreakpointRequest.class, org.jetbrains.r.rinterop.DebugAddBreakpointRequest.Builder.class);
+              org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.class, org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.DebugAddBreakpointRequest.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -440,17 +569,27 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      id_ = 0;
+
       if (positionBuilder_ == null) {
         position_ = null;
       } else {
         position_ = null;
         positionBuilder_ = null;
       }
+      enabled_ = false;
+
       suspend_ = false;
 
       evaluateAndLog_ = "";
 
       condition_ = "";
+
+      removeAfterHit_ = false;
+
+      hitMessage_ = false;
+
+      printStack_ = false;
 
       return this;
     }
@@ -458,17 +597,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddBreakpointRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_DebugAddOrModifyBreakpointRequest_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DebugAddBreakpointRequest getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.DebugAddBreakpointRequest.getDefaultInstance();
+    public org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DebugAddBreakpointRequest build() {
-      org.jetbrains.r.rinterop.DebugAddBreakpointRequest result = buildPartial();
+    public org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest build() {
+      org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -476,16 +615,21 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.DebugAddBreakpointRequest buildPartial() {
-      org.jetbrains.r.rinterop.DebugAddBreakpointRequest result = new org.jetbrains.r.rinterop.DebugAddBreakpointRequest(this);
+    public org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest buildPartial() {
+      org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest result = new org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest(this);
+      result.id_ = id_;
       if (positionBuilder_ == null) {
         result.position_ = position_;
       } else {
         result.position_ = positionBuilder_.build();
       }
+      result.enabled_ = enabled_;
       result.suspend_ = suspend_;
       result.evaluateAndLog_ = evaluateAndLog_;
       result.condition_ = condition_;
+      result.removeAfterHit_ = removeAfterHit_;
+      result.hitMessage_ = hitMessage_;
+      result.printStack_ = printStack_;
       onBuilt();
       return result;
     }
@@ -524,18 +668,24 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.DebugAddBreakpointRequest) {
-        return mergeFrom((org.jetbrains.r.rinterop.DebugAddBreakpointRequest)other);
+      if (other instanceof org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest) {
+        return mergeFrom((org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.DebugAddBreakpointRequest other) {
-      if (other == org.jetbrains.r.rinterop.DebugAddBreakpointRequest.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest other) {
+      if (other == org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.getDefaultInstance()) return this;
+      if (other.getId() != 0) {
+        setId(other.getId());
+      }
       if (other.hasPosition()) {
         mergePosition(other.getPosition());
+      }
+      if (other.getEnabled() != false) {
+        setEnabled(other.getEnabled());
       }
       if (other.getSuspend() != false) {
         setSuspend(other.getSuspend());
@@ -547,6 +697,15 @@ private static final long serialVersionUID = 0L;
       if (!other.getCondition().isEmpty()) {
         condition_ = other.condition_;
         onChanged();
+      }
+      if (other.getRemoveAfterHit() != false) {
+        setRemoveAfterHit(other.getRemoveAfterHit());
+      }
+      if (other.getHitMessage() != false) {
+        setHitMessage(other.getHitMessage());
+      }
+      if (other.getPrintStack() != false) {
+        setPrintStack(other.getPrintStack());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -563,11 +722,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.DebugAddBreakpointRequest parsedMessage = null;
+      org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.DebugAddBreakpointRequest) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -577,17 +736,43 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int id_ ;
+    /**
+     * <code>int32 id = 1;</code>
+     */
+    public int getId() {
+      return id_;
+    }
+    /**
+     * <code>int32 id = 1;</code>
+     */
+    public Builder setId(int value) {
+      
+      id_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 id = 1;</code>
+     */
+    public Builder clearId() {
+      
+      id_ = 0;
+      onChanged();
+      return this;
+    }
+
     private org.jetbrains.r.rinterop.SourcePosition position_;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> positionBuilder_;
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public boolean hasPosition() {
       return positionBuilder_ != null || position_ != null;
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public org.jetbrains.r.rinterop.SourcePosition getPosition() {
       if (positionBuilder_ == null) {
@@ -597,7 +782,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public Builder setPosition(org.jetbrains.r.rinterop.SourcePosition value) {
       if (positionBuilder_ == null) {
@@ -613,7 +798,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public Builder setPosition(
         org.jetbrains.r.rinterop.SourcePosition.Builder builderForValue) {
@@ -627,7 +812,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public Builder mergePosition(org.jetbrains.r.rinterop.SourcePosition value) {
       if (positionBuilder_ == null) {
@@ -645,7 +830,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public Builder clearPosition() {
       if (positionBuilder_ == null) {
@@ -659,7 +844,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public org.jetbrains.r.rinterop.SourcePosition.Builder getPositionBuilder() {
       
@@ -667,7 +852,7 @@ private static final long serialVersionUID = 0L;
       return getPositionFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     public org.jetbrains.r.rinterop.SourcePositionOrBuilder getPositionOrBuilder() {
       if (positionBuilder_ != null) {
@@ -678,7 +863,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * <code>.rplugininterop.SourcePosition position = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> 
@@ -694,15 +879,41 @@ private static final long serialVersionUID = 0L;
       return positionBuilder_;
     }
 
+    private boolean enabled_ ;
+    /**
+     * <code>bool enabled = 3;</code>
+     */
+    public boolean getEnabled() {
+      return enabled_;
+    }
+    /**
+     * <code>bool enabled = 3;</code>
+     */
+    public Builder setEnabled(boolean value) {
+      
+      enabled_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool enabled = 3;</code>
+     */
+    public Builder clearEnabled() {
+      
+      enabled_ = false;
+      onChanged();
+      return this;
+    }
+
     private boolean suspend_ ;
     /**
-     * <code>bool suspend = 2;</code>
+     * <code>bool suspend = 4;</code>
      */
     public boolean getSuspend() {
       return suspend_;
     }
     /**
-     * <code>bool suspend = 2;</code>
+     * <code>bool suspend = 4;</code>
      */
     public Builder setSuspend(boolean value) {
       
@@ -711,7 +922,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool suspend = 2;</code>
+     * <code>bool suspend = 4;</code>
      */
     public Builder clearSuspend() {
       
@@ -722,7 +933,7 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object evaluateAndLog_ = "";
     /**
-     * <code>string evaluateAndLog = 3;</code>
+     * <code>string evaluateAndLog = 5;</code>
      */
     public java.lang.String getEvaluateAndLog() {
       java.lang.Object ref = evaluateAndLog_;
@@ -737,7 +948,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string evaluateAndLog = 3;</code>
+     * <code>string evaluateAndLog = 5;</code>
      */
     public com.google.protobuf.ByteString
         getEvaluateAndLogBytes() {
@@ -753,7 +964,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string evaluateAndLog = 3;</code>
+     * <code>string evaluateAndLog = 5;</code>
      */
     public Builder setEvaluateAndLog(
         java.lang.String value) {
@@ -766,7 +977,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string evaluateAndLog = 3;</code>
+     * <code>string evaluateAndLog = 5;</code>
      */
     public Builder clearEvaluateAndLog() {
       
@@ -775,7 +986,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string evaluateAndLog = 3;</code>
+     * <code>string evaluateAndLog = 5;</code>
      */
     public Builder setEvaluateAndLogBytes(
         com.google.protobuf.ByteString value) {
@@ -791,7 +1002,7 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object condition_ = "";
     /**
-     * <code>string condition = 4;</code>
+     * <code>string condition = 6;</code>
      */
     public java.lang.String getCondition() {
       java.lang.Object ref = condition_;
@@ -806,7 +1017,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string condition = 4;</code>
+     * <code>string condition = 6;</code>
      */
     public com.google.protobuf.ByteString
         getConditionBytes() {
@@ -822,7 +1033,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string condition = 4;</code>
+     * <code>string condition = 6;</code>
      */
     public Builder setCondition(
         java.lang.String value) {
@@ -835,7 +1046,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string condition = 4;</code>
+     * <code>string condition = 6;</code>
      */
     public Builder clearCondition() {
       
@@ -844,7 +1055,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string condition = 4;</code>
+     * <code>string condition = 6;</code>
      */
     public Builder setConditionBytes(
         com.google.protobuf.ByteString value) {
@@ -854,6 +1065,84 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       condition_ = value;
+      onChanged();
+      return this;
+    }
+
+    private boolean removeAfterHit_ ;
+    /**
+     * <code>bool removeAfterHit = 7;</code>
+     */
+    public boolean getRemoveAfterHit() {
+      return removeAfterHit_;
+    }
+    /**
+     * <code>bool removeAfterHit = 7;</code>
+     */
+    public Builder setRemoveAfterHit(boolean value) {
+      
+      removeAfterHit_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool removeAfterHit = 7;</code>
+     */
+    public Builder clearRemoveAfterHit() {
+      
+      removeAfterHit_ = false;
+      onChanged();
+      return this;
+    }
+
+    private boolean hitMessage_ ;
+    /**
+     * <code>bool hitMessage = 8;</code>
+     */
+    public boolean getHitMessage() {
+      return hitMessage_;
+    }
+    /**
+     * <code>bool hitMessage = 8;</code>
+     */
+    public Builder setHitMessage(boolean value) {
+      
+      hitMessage_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool hitMessage = 8;</code>
+     */
+    public Builder clearHitMessage() {
+      
+      hitMessage_ = false;
+      onChanged();
+      return this;
+    }
+
+    private boolean printStack_ ;
+    /**
+     * <code>bool printStack = 9;</code>
+     */
+    public boolean getPrintStack() {
+      return printStack_;
+    }
+    /**
+     * <code>bool printStack = 9;</code>
+     */
+    public Builder setPrintStack(boolean value) {
+      
+      printStack_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool printStack = 9;</code>
+     */
+    public Builder clearPrintStack() {
+      
+      printStack_ = false;
       onChanged();
       return this;
     }
@@ -870,41 +1159,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.DebugAddBreakpointRequest)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.DebugAddOrModifyBreakpointRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.DebugAddBreakpointRequest)
-  private static final org.jetbrains.r.rinterop.DebugAddBreakpointRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.DebugAddOrModifyBreakpointRequest)
+  private static final org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.DebugAddBreakpointRequest();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest();
   }
 
-  public static org.jetbrains.r.rinterop.DebugAddBreakpointRequest getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<DebugAddBreakpointRequest>
-      PARSER = new com.google.protobuf.AbstractParser<DebugAddBreakpointRequest>() {
+  private static final com.google.protobuf.Parser<DebugAddOrModifyBreakpointRequest>
+      PARSER = new com.google.protobuf.AbstractParser<DebugAddOrModifyBreakpointRequest>() {
     @java.lang.Override
-    public DebugAddBreakpointRequest parsePartialFrom(
+    public DebugAddOrModifyBreakpointRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new DebugAddBreakpointRequest(input, extensionRegistry);
+      return new DebugAddOrModifyBreakpointRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<DebugAddBreakpointRequest> parser() {
+  public static com.google.protobuf.Parser<DebugAddOrModifyBreakpointRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<DebugAddBreakpointRequest> getParserForType() {
+  public com.google.protobuf.Parser<DebugAddOrModifyBreakpointRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.DebugAddBreakpointRequest getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

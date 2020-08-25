@@ -8,8 +8,8 @@ import com.google.protobuf.StringValue
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.DeprecatedVirtualFileSystem
 import com.intellij.openapi.vfs.NonPhysicalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
+  private val fileToId = ConcurrentHashMap<VirtualFile, String>()
   private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<RSourcePosition>>() }
 
   init {
@@ -35,10 +36,10 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   fun getFileId(file: VirtualFile): String {
-    file.getUserData(FILE_ID)?.let { return it }
+    fileToId[file]?.let { return it }
     val fileId = rInterop.interpreter.getFilePathAtHost(file)?.let { R_LOCAL_PREFIX + it }
-                 ?:IDE_LOCAL_PREFIX + file.url
-    file.putUserData(FILE_ID, fileId)
+                 ?: IDE_PREFIX + file.url
+    fileToId[file] = fileId
     files[fileId] = file
     return fileId
   }
@@ -46,15 +47,15 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   fun getFileById(fileId: String): VirtualFile? {
     if (fileId.isEmpty()) return null
     files[fileId]?.let { return it }
-    if (fileId.startsWith(IDE_LOCAL_PREFIX)) {
-      VirtualFileManager.getInstance().findFileByUrl(fileId.substring(IDE_LOCAL_PREFIX.length))?.let {
-        it.putUserData(FILE_ID, fileId)
+    if (fileId.startsWith(IDE_PREFIX)) {
+      VirtualFileManager.getInstance().findFileByUrl(fileId.substring(IDE_PREFIX.length))?.let {
+        fileToId[it] = fileId
         files[fileId] = it
         return it
       }
     } else if (fileId.startsWith(R_LOCAL_PREFIX)) {
       rInterop.interpreter.findFileByPathAtHost(fileId.substring(R_LOCAL_PREFIX.length))?.let {
-        it.putUserData(FILE_ID, fileId)
+        fileToId[it] = fileId
         files[fileId] = it
         return it
       }
@@ -62,9 +63,23 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
     val text = rInterop.execute(rInterop.asyncStub::getSourceFileText, StringValue.of(fileId)).value
     if (text.isEmpty()) return null
     val name = rInterop.execute(rInterop.asyncStub::getSourceFileName, StringValue.of(fileId)).value
+      .takeIf { it.isNotEmpty() } ?: "tmp"
     val file = filesystem.createFile(name, text)
-    file.putUserData(FILE_ID, fileId)
+    fileToId[file] = fileId
     files[fileId] = file
+    Disposer.register(this, Disposable {
+      filesystem.removeFile(file.path)
+      runInEdt {
+        FileEditorManager.getInstance(rInterop.project).closeFile(file)
+        runWriteAction {
+          val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
+          val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
+          breakpointManager.getBreakpoints(breakpointType)
+            .filter { it.fileUrl == file.url }
+            .forEach { breakpointManager.removeBreakpoint(it) }
+        }
+      }
+    })
     return file
   }
 
@@ -78,20 +93,6 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   override fun dispose() {
-    val temporaryFileUrls = files.values.filter { isTemporary(it) }.map { it.url }.toSet()
-    files.values.forEach {
-      it.putUserData(FILE_ID, null)
-      filesystem.removeFile(it.path)
-    }
-    runInEdt {
-      runWriteAction {
-        val breakpointManager = XDebuggerManager.getInstance(rInterop.project).breakpointManager
-        val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(RLineBreakpointType::class.java)
-        breakpointManager.getBreakpoints(breakpointType)
-          .filter { it.fileUrl in temporaryFileUrls }
-          .forEach { breakpointManager.removeBreakpoint(it) }
-      }
-    }
   }
 
   class MyVirtualFileSystem : DeprecatedVirtualFileSystem(), NonPhysicalFileSystem {
@@ -126,9 +127,8 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
   }
 
   companion object {
-    private const val IDE_LOCAL_PREFIX = "ilocal://"
-    private const val R_LOCAL_PREFIX = "rlocal://"
-    private val FILE_ID = Key<String>("org.jetbrains.r.rinterop.SourceFileId")
+    private const val IDE_PREFIX = "ide:"
+    private const val R_LOCAL_PREFIX = "rlocal:"
     private const val PROTOCOL = "rwrapper"
     private val filesystem = VirtualFileManager.getInstance().getFileSystem(PROTOCOL) as MyVirtualFileSystem
 

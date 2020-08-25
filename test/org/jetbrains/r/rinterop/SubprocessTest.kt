@@ -69,7 +69,7 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
         done = true
       }
 
-      override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
+      override fun onPrompt(isDebug: Boolean) {
         if (done) {
           promptPromise.setResult(Unit)
         }

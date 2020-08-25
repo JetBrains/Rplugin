@@ -34,7 +34,7 @@ internal object RLineBreakpointUtils {
       while (element != null) {
         if (element.textRange.startOffset < lineStart || element is PsiFile) break
         val parent = element.parent
-        if (element is RBlockExpression || element is RExpression && ((parent is RFile && allowTopLevel) || parent is RBlockExpression)) {
+        if (element is RExpression && ((parent is RFile && allowTopLevel) || parent is RBlockExpression)) {
           result = true
           return@iterateLine false
         }

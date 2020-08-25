@@ -367,7 +367,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   private fun executeCodeImpl(
-    code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0, isRepl: Boolean = false,
+    code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0,
+    sourceFileFirstLineOffset: Int = 0, isRepl: Boolean = false,
     returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
     setLastValue: Boolean = false, isSource: Boolean = false,
@@ -377,6 +378,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .setCode(code)
       .setSourceFileId(sourceFileId)
       .setSourceFileLineOffset(sourceFileLineOffset)
+      .setSourceFileFirstLineOffset(sourceFileFirstLineOffset)
       .setWithEcho(withEcho)
       .setStreamOutput(returnOutput || outputConsumer != null)
       .setIsRepl(isRepl)
@@ -465,32 +467,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     asyncEventsListeners.remove(listener)
   }
 
-  fun debugAddBreakpoint(file: VirtualFile, line: Int,
-                         suspend: Boolean = true,
-                         evaluateAndLog: String? = null,
-                         condition: String? = null) {
-    val position = SourcePosition.newBuilder()
-      .setFileId(sourceFileManager.getFileId(file)).setLine(line).build()
-    execute(asyncStub::debugAddBreakpoint, DebugAddBreakpointRequest.newBuilder()
-      .setPosition(position)
-      .setSuspend(suspend)
-      .setEvaluateAndLog(evaluateAndLog ?: "")
-      .setCondition(condition ?: "")
-      .build()
-    )
-  }
-
-  fun debugRemoveBreakpoint(file: VirtualFile, line: Int) {
-    execute(asyncStub::debugRemoveBreakpoint, SourcePosition.newBuilder()
-      .setFileId(sourceFileManager.getFileId(file)).setLine(line).build())
-  }
-
   fun debugCommandContinue() = executeTask {
     execute(asyncStub::debugCommandContinue, Empty.getDefaultInstance())
-  }
-
-  fun debugCommandKeepPrevious() = executeTask {
-    execute(asyncStub::debugCommandKeepPrevious, Empty.getDefaultInstance())
   }
 
   fun debugCommandPause() = executeTask {
@@ -999,7 +977,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         if (event.debugPrompt.changed) {
           debugStack = stackFromProto(event.debugPrompt.stack)
         }
-        fireListeners { it.onPrompt(true, event.debugPrompt.isStep, event.debugPrompt.isBreakpoint) }
+        fireListeners { it.onPrompt(true) }
       }
       AsyncEvent.EventCase.EXCEPTION -> {
         if (!event.exception.exception.hasInterrupted()) {
@@ -1046,6 +1024,17 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
             }
           }) {
           executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)
+        }
+      }
+      AsyncEvent.EventCase.DEBUGREMOVEBREAKPOINTREQUEST -> {
+        val request = event.debugRemoveBreakpointRequest
+        fireListeners { it.onRemoveBreakpointByIdRequest(request) }
+      }
+      AsyncEvent.EventCase.DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST -> {
+        val request = event.debugPrintSourcePositionToConsoleRequest
+        val file = sourceFileManager.getFileById(request.fileId)
+        if (file != null) {
+          fireListeners { it.onDebugPrintSourcePositionRequest(RSourcePosition(file, request.line)) }
         }
       }
       else -> {
@@ -1128,8 +1117,20 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return proto.framesList.mapIndexed { index, it ->
       val file = sourceFileManager.getFileById(it.position.fileId)
       val position = file?.let { f -> RSourcePosition(f, it.position.line) }
+      val extended = it.extendedSourcePosition
+      val extendedPosition = when {
+        file == null -> null
+        extended.startLine == 0 && extended.startOffset == 0 && extended.endLine == 0 && extended.endOffset == 0 -> null
+        else -> runReadAction {
+          val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction null
+          val lineCount = document.lineCount
+          if (extended.startLine >= lineCount || extended.endLine >= lineCount) return@runReadAction null
+          TextRange(document.getLineStartOffset(extended.startLine) + extended.startOffset,
+                    document.getLineStartOffset(extended.endLine) + extended.endOffset)
+        }
+      }
       RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
-                  it.equalityObject)
+                  it.equalityObject, extendedPosition)
     }
   }
 
@@ -1267,7 +1268,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onText(text: String, type: ProcessOutputType) {}
     fun onBusy() {}
     fun onRequestReadLn(prompt: String) {}
-    fun onPrompt(isDebug: Boolean = false, isDebugStep: Boolean = false, isBreakpoint: Boolean = false) {}
+    fun onPrompt(isDebug: Boolean = false) {}
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
@@ -1276,6 +1277,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> = resolvedPromise()
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
+    fun onRemoveBreakpointByIdRequest(id: Int) {}
+    fun onDebugPrintSourcePositionRequest(position: RSourcePosition) {}
   }
 
   companion object {

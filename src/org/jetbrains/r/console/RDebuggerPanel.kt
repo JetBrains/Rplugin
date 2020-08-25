@@ -16,11 +16,13 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.xdebugger.XSourcePositionWrapper
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroup
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroupingRule
 import com.intellij.xdebugger.impl.DebuggerSupport
@@ -106,7 +108,14 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
         if (position == null) {
           positionHighlighter.hide()
         } else {
-          positionHighlighter.show(position, frame != framesView.model.getElementAt(0), null)
+          val newPosition = if (frame.extendedSourcePosition != null) {
+            object : XSourcePositionWrapper(position), ExecutionPointHighlighter.HighlighterProvider {
+              override fun getHighlightRange() = frame.extendedSourcePosition
+            }
+          } else {
+            position
+          }
+          positionHighlighter.show(newPosition, frame != framesView.model.getElementAt(0), null)
         }
       }
       variablesView.stackFrame = frame
@@ -268,7 +277,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   fun refreshStackFrames() {
     updateStack(currentRXStackFrames.map {
       RXStackFrame(it.functionName, it.sourcePosition, it.loader,
-                   it.grayAttributes, variablesView.settings, it.equalityObject)
+                   it.grayAttributes, variablesView.settings, it.equalityObject, it.extendedSourcePosition)
     })
   }
 
@@ -281,7 +290,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       }
       RXStackFrame(functionName, it.position?.xSourcePosition, it.environment.createVariableLoader(),
                    it.position == null || RSourceFileManager.isTemporary(it.position.file),
-                   variablesView.settings, it.equalityObject)
+                   variablesView.settings, it.equalityObject, it.extendedPosition)
     }.reversed()
   }
 
