@@ -5,6 +5,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.Processor
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RStringLiteralExpressionImpl
@@ -19,12 +20,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
       return null
     }
 
-    return resolveInputMembers(element, uiDefinition, serverDefinition)
-  }
-
-  private fun resolveInputMembers(element: RPsiElement,
-                                  uiDefinition: RAssignmentStatement,
-                                  serverDefinition: RAssignmentStatement): ResolveResult? {
+    val elementName = element.name
+    if (elementName == null) {
+      return null
+    }
     if (!PsiTreeUtil.isAncestor(serverDefinition, element, true)) {
       return null
     }
@@ -33,28 +32,29 @@ class RShinySupportProvider : RLibrarySupportProvider {
       return null
     }
     val callableObject = parent.leftExpr
-    if (callableObject !is RIdentifierExpression || callableObject.text != INPUT_OBJECT) {
+    if (callableObject !is RIdentifierExpression) {
       return null
     }
-
-    var result: ResolveResult? = null
-    processInputElements(uiDefinition, object : Processor<PsiElement> {
-      override fun process(namedUiElement: PsiElement?): Boolean {
-        if (namedUiElement is RStringLiteralExpressionImpl) {
-          if (namedUiElement.name == element.name) {
-            result = PsiElementResolveResult(namedUiElement)
-            return false
-          }
-        }
-        return true
-      }
-
-    })
-    return result
+    val resolveProcessor = ShinyResolveProcessor(elementName)
+    if (callableObject.text == INPUT_OBJECT) {
+      processInputElements(uiDefinition, resolveProcessor)
+    }
+    if (callableObject.text == OUTPUT_OBJECT) {
+      processOutputElements(uiDefinition, resolveProcessor)
+    }
+    return resolveProcessor.result
   }
 
   /**
-   * Processes input elements defined in Shiny's "ui" assignment
+   * Processes input elements defined in Shiny's "ui" assignment.
+   * The code below defines element with name "num"
+   * ```
+   * ui <- fluidPage(
+   *   fluidRow(
+   *     column(5, sliderInput(inputId = "num")
+   *   )
+   * )
+   * ```
    */
   private fun processInputElements(uiDefinition: RAssignmentStatement,
                                    processor: Processor<PsiElement>): Boolean {
@@ -73,23 +73,11 @@ class RShinySupportProvider : RLibrarySupportProvider {
 
   private fun getInputElements(uiDefinition: RAssignmentStatement): List<SmartPsiElementPointer<PsiElement>> {
     return CachedValuesManager.getCachedValue(uiDefinition) {
-      CachedValueProvider.Result.create(retrieveNamedElements(uiDefinition), uiDefinition)
+      CachedValueProvider.Result.create(retrieveInputElements(uiDefinition), uiDefinition)
     }
   }
 
-  /**
-   * Retrieves all named elements defined in "ui" assignment.
-   *
-   * The code below defines element with name "num"
-   * ```
-   * ui <- fluidPage(
-   *   fluidRow(
-   *     column(5, sliderInput(inputId = "num")
-   *   )
-   * )
-   * ```
-   */
-  private fun retrieveNamedElements(uiDefinition: RAssignmentStatement): List<SmartPsiElementPointer<PsiElement>> {
+  private fun retrieveInputElements(uiDefinition: RAssignmentStatement): List<SmartPsiElementPointer<PsiElement>> {
     val result = ArrayList<SmartPsiElementPointer<PsiElement>>()
 
     uiDefinition.accept(object : RRecursiveElementVisitor() {
@@ -100,6 +88,59 @@ class RShinySupportProvider : RLibrarySupportProvider {
             val elementName = assignedValue.name
             if (elementName != null) {
               result.add(SmartPointerManager.createPointer(assignedValue as PsiElement))
+            }
+          }
+        }
+        super.visitCallExpression(call)
+      }
+    })
+    return result
+  }
+
+  /**
+   * Processes output elements defined in Shiny's "ui" assignment
+   * According to the Shiny documentation it's calls inside assignment to the "ui" variable
+   * that ended with "Output" suffix
+   *
+   * ```
+   * ui <- fluidPage(
+   *   ...
+   *   plotOutput("hist")
+   *   ...
+   * )
+   * ```
+   */
+  private fun processOutputElements(uiDefinition: RAssignmentStatement,
+                                    processor: Processor<PsiElement>): Boolean {
+
+    val outputElements = getOutputElements(uiDefinition)
+
+    for (outputElement in outputElements) {
+      val resolvedElement = outputElement.element
+      if (resolvedElement != null && !processor.process(resolvedElement)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  private fun getOutputElements(uiDefinition: RAssignmentStatement): List<SmartPsiElementPointer<PsiElement>> {
+    return CachedValuesManager.getCachedValue(uiDefinition) {
+      CachedValueProvider.Result.create(retrieveOutputElements(uiDefinition), uiDefinition)
+    }
+  }
+
+  private fun retrieveOutputElements(uiDefinition: RAssignmentStatement): List<SmartPsiElementPointer<PsiElement>> {
+    val result = ArrayList<SmartPsiElementPointer<PsiElement>>()
+
+    uiDefinition.accept(object : RRecursiveElementVisitor() {
+      override fun visitCallExpression(call: RCallExpression) {
+        if (call.expression is RIdentifierExpression && call.expression.text.endsWith(OUTPUT_CALL_SUFFIX)) {
+          if (call.argumentList.expressionList.isNotEmpty()) {
+            val outputIdCandidate = call.argumentList.expressionList.first()
+            if (outputIdCandidate is RStringLiteralExpression) {
+              result.add(SmartPointerManager.createPointer(outputIdCandidate))
             }
           }
         }
@@ -143,10 +184,26 @@ class RShinySupportProvider : RLibrarySupportProvider {
     return Pair(uiDefinition, serverDefinition)
   }
 
+  class ShinyResolveProcessor(private var elementName: String) : Processor<PsiElement> {
+    var result: PsiElementResolveResult? = null
+
+    override fun process(namedUiElement: PsiElement?): Boolean {
+      if (namedUiElement is RStringLiteralExpressionImpl) {
+        if (namedUiElement.name == this.elementName) {
+          result = PsiElementResolveResult(namedUiElement)
+          return false
+        }
+      }
+      return true
+    }
+  }
+
   companion object {
-    const val SERVER_VARIABLE = "server"
-    const val UI_VARIABLE = "ui"
-    const val INPUT_ID_ATTRIBUTE = "inputId"
-    const val INPUT_OBJECT = "input"
+    @NonNls const val SERVER_VARIABLE = "server"
+    @NonNls const val UI_VARIABLE = "ui"
+    @NonNls const val INPUT_ID_ATTRIBUTE = "inputId"
+    @NonNls const val INPUT_OBJECT = "input"
+    @NonNls const val OUTPUT_OBJECT = "output"
+    @NonNls const val OUTPUT_CALL_SUFFIX = "Output"
   }
 }

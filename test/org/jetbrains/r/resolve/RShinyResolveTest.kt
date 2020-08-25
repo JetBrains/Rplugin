@@ -23,16 +23,35 @@ class RShinyResolveTest : RLightCodeInsightFixtureTestCase() {
     )
   }
 
-  private fun doTest(resolveTargetParentText: String, text: String) {
+  fun testOutputAttributes() {
+    doTest("\"hist\"",
+           """
+             ui <- fluidPage(
+               textInput(inputId = "title", 
+                 label = "label",
+                 value = "value"),
+               plotOutput(outputId = "hist")
+             )
+
+             server <- function(input, output) {
+               output${'$'}hi<caret>st <- renderPlot({
+                 hist(rnorm(input${'$'}num), main = input${'$'}title)
+               })
+             }
+           """.trimIndent()
+    )
+  }
+
+  private fun doTest(elementDefinitionText: String, text: String) {
     myFixture.configureByText(RFileType, text)
     val results = resolve()
-    if (resolveTargetParentText.isBlank()) {
+    if (elementDefinitionText.isBlank()) {
       TestCase.assertEquals(results.size, 0)
       return
     }
     TestCase.assertEquals(results.size, 1)
     val element = results[0].element!!
     TestCase.assertTrue(element.isValid)
-    TestCase.assertEquals(resolveTargetParentText, element.text)
+    TestCase.assertEquals(elementDefinitionText, element.text)
   }
 }
