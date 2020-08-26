@@ -6,6 +6,7 @@ package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.LocalOrRemotePath
 import org.jetbrains.r.rinterop.RInterop
@@ -15,6 +16,9 @@ import javax.swing.JComponent
 class RImportBaseDataDialog private constructor(project: Project, interop: RInterop, parent: Disposable, initialPath: LocalOrRemotePath)
   : RImportDataDialog(project, interop, parent, initialPath)
 {
+  @TestOnly
+  constructor(project: Project, interop: RInterop, initialPath: LocalOrRemotePath) : this(project, interop, project, initialPath)
+
   private val form = RImportBaseOptionPanelForm()
 
   private var firstRowAsNames by CheckBoxDelegate(form.firstRowAsNamesCheckBox)

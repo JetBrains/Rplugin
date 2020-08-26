@@ -28,6 +28,7 @@ import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
 import org.intellij.datavis.r.inlays.components.DialogUtil
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
@@ -115,6 +116,9 @@ abstract class RImportDataDialog(
   protected abstract val importOptions: RImportOptions?
   protected abstract val supportedFormats: List<String>
 
+  @TestOnly
+  internal fun variableName(): String? = variableName
+
   override fun init() {
     super.init()
     setupStatusBar()
@@ -141,8 +145,11 @@ abstract class RImportDataDialog(
   }
 
   protected open fun onUpdateFinished() {
-    // Do nothing
+    onUpdateAdditional?.let { it() }
   }
+
+  @TestOnly
+  var onUpdateAdditional: (() -> Unit)? = null
 
   private fun setupPreviewComponent() {
     val splitter = OnePixelSplitter(false, 0.25f).apply {
@@ -191,8 +198,30 @@ abstract class RImportDataDialog(
     }
   }
 
+  /**
+   * Clears out the given string from restricted characters
+   *
+   * Steps:
+   * - Replace all characters except a-zA-Z0-9 and `.` with `_`
+   * - Replace all continuous `_` with only one
+   * - Remove tailing `_`
+   *
+   * @return modified string, may be empty
+   */
+  private fun replaceRestrictedCharacters(name: String): String {
+    return name.replace(Regex("[^\\w|.]"), "_").replace(Regex("_+"), "_").replace(Regex("_$"), "")
+  }
+
   private fun updateVariableName() {
-    variableName = filePath?.let { FileUtilRt.getNameWithoutExtension(PathUtil.getFileName(it.path)) } ?: DEFAULT_VARIABLE_NAME
+    var name = filePath?.let { FileUtilRt.getNameWithoutExtension(PathUtil.getFileName(it.path)) }
+    if (name == null || name.isBlank()) {
+      name = DEFAULT_VARIABLE_NAME
+    } else {
+      name = replaceRestrictedCharacters(name)
+      if (name.isBlank() || name[0] == '_' || name[0].isDigit() || (name.length >= 2 && name[0] == '.' && name[1].isDigit()))
+        name = "dataset${name.replace(Regex("^[_.]"), "").let { if (it.isBlank()) "" else "_$it" }}"
+    }
+    variableName = name
   }
 
   @Synchronized
