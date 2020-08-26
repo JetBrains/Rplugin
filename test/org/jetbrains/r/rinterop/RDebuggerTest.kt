@@ -233,10 +233,10 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     helper.invokeAndWait(true) { rInterop.debugCommandStepOut() }
     TestCase.assertEquals(listOf(13), rInterop.debugStack.map { it.position!!.line })
 
-    helper.invokeAndWait(false) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(false) { rInterop.debugCommandStepIntoMyCode() }
   }
 
-  fun _testForceStepInto() {
+  fun testStepIntoCat() {
     val file = loadFileWithBreakpointsFromText("""
       f <- function(x) {
         return(x + 10)
@@ -248,7 +248,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(listOf(null), rInterop.debugStack.map { it.functionName })
     TestCase.assertEquals(3, rInterop.debugStack.last().position!!.line )
 
-    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepIntoMyCode() }
     TestCase.assertEquals(listOf(null, "cat", "f"), rInterop.debugStack.map { it.functionName })
     TestCase.assertEquals(1, rInterop.debugStack.last().position!!.line )
 
@@ -258,7 +258,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(listOf(null), rInterop.debugStack.map { it.functionName })
     TestCase.assertEquals(3, rInterop.debugStack.last().position!!.line )
 
-    helper.invokeAndWait(true) { rInterop.debugCommandForceStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
     TestCase.assertEquals(listOf(null, "cat"), rInterop.debugStack.map { it.functionName })
 
     helper.invokeAndWait(false) { rInterop.debugCommandStepOut() }
@@ -424,15 +424,15 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
     TestCase.assertEquals(3, rInterop.debugStack.last().position?.line)
-    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepIntoMyCode() }
     TestCase.assertEquals(4, rInterop.debugStack.last().position?.line)
-    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepIntoMyCode() }
     TestCase.assertEquals(5, rInterop.debugStack.last().position?.line)
-    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepIntoMyCode() }
     TestCase.assertEquals(1, rInterop.debugStack.last().position?.line)
-    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepIntoMyCode() }
     TestCase.assertEquals(6, rInterop.debugStack.last().position?.line)
-    helper.invokeAndWait(false) { rInterop.debugCommandStepInto() }
+    helper.invokeAndWait(false) { rInterop.debugCommandStepIntoMyCode() }
   }
 
   fun testDebugPrint() {
@@ -459,9 +459,9 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
     TestCase.assertEquals(listOf(0), rInterop.debugStack.map { it.position!!.line })
-    helper.invokeAndWait(true) { rInterop.debugCommandForceStepInto() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepInto() }
     TestCase.assertEquals(listOf(1), rInterop.debugStack.map { it.position!!.line })
-    helper.invokeAndWait(false) { rInterop.debugCommandForceStepInto() }
+    helper.invokeAndWait(false) { rInterop.debugCommandStepInto() }
   }
 
   fun testSource() {

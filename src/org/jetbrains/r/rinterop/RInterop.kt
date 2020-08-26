@@ -487,8 +487,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::debugCommandStepInto, Empty.getDefaultInstance())
   }
 
-  fun debugCommandForceStepInto() = executeTask {
-    execute(asyncStub::debugCommandForceStepInto, Empty.getDefaultInstance())
+  fun debugCommandStepIntoMyCode() = executeTask {
+    execute(asyncStub::debugCommandStepIntoMyCode, Empty.getDefaultInstance())
   }
 
   fun debugCommandStepOut() = executeTask {

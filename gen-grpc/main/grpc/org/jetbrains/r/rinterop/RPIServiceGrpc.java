@@ -586,34 +586,34 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.google.protobuf.Empty> getDebugCommandForceStepIntoMethod;
+      com.google.protobuf.Empty> getDebugCommandStepIntoMyCodeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "debugCommandForceStepInto",
+      fullMethodName = SERVICE_NAME + '/' + "debugCommandStepIntoMyCode",
       requestType = com.google.protobuf.Empty.class,
       responseType = com.google.protobuf.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.google.protobuf.Empty> getDebugCommandForceStepIntoMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Empty> getDebugCommandForceStepIntoMethod;
-    if ((getDebugCommandForceStepIntoMethod = RPIServiceGrpc.getDebugCommandForceStepIntoMethod) == null) {
+      com.google.protobuf.Empty> getDebugCommandStepIntoMyCodeMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Empty> getDebugCommandStepIntoMyCodeMethod;
+    if ((getDebugCommandStepIntoMyCodeMethod = RPIServiceGrpc.getDebugCommandStepIntoMyCodeMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getDebugCommandForceStepIntoMethod = RPIServiceGrpc.getDebugCommandForceStepIntoMethod) == null) {
-          RPIServiceGrpc.getDebugCommandForceStepIntoMethod = getDebugCommandForceStepIntoMethod =
+        if ((getDebugCommandStepIntoMyCodeMethod = RPIServiceGrpc.getDebugCommandStepIntoMyCodeMethod) == null) {
+          RPIServiceGrpc.getDebugCommandStepIntoMyCodeMethod = getDebugCommandStepIntoMyCodeMethod =
               io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugCommandForceStepInto"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugCommandStepIntoMyCode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugCommandForceStepInto"))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugCommandStepIntoMyCode"))
               .build();
         }
       }
     }
-    return getDebugCommandForceStepIntoMethod;
+    return getDebugCommandStepIntoMyCodeMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
@@ -2913,9 +2913,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void debugCommandForceStepInto(com.google.protobuf.Empty request,
+    public void debugCommandStepIntoMyCode(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getDebugCommandForceStepIntoMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getDebugCommandStepIntoMyCodeMethod(), responseObserver);
     }
 
     /**
@@ -3554,12 +3554,12 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty>(
                   this, METHODID_DEBUG_COMMAND_STEP_INTO)))
           .addMethod(
-            getDebugCommandForceStepIntoMethod(),
+            getDebugCommandStepIntoMyCodeMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
                 com.google.protobuf.Empty>(
-                  this, METHODID_DEBUG_COMMAND_FORCE_STEP_INTO)))
+                  this, METHODID_DEBUG_COMMAND_STEP_INTO_MY_CODE)))
           .addMethod(
             getDebugCommandStepOutMethod(),
             asyncUnaryCall(
@@ -4214,10 +4214,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void debugCommandForceStepInto(com.google.protobuf.Empty request,
+    public void debugCommandStepIntoMyCode(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getDebugCommandForceStepIntoMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getDebugCommandStepIntoMyCodeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4949,9 +4949,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.protobuf.Empty debugCommandForceStepInto(com.google.protobuf.Empty request) {
+    public com.google.protobuf.Empty debugCommandStepIntoMyCode(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
-          getChannel(), getDebugCommandForceStepIntoMethod(), getCallOptions(), request);
+          getChannel(), getDebugCommandStepIntoMyCodeMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5617,10 +5617,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugCommandForceStepInto(
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugCommandStepIntoMyCode(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
-          getChannel().newCall(getDebugCommandForceStepIntoMethod(), getCallOptions()), request);
+          getChannel().newCall(getDebugCommandStepIntoMyCodeMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6110,7 +6110,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DEBUG_COMMAND_STOP = 15;
   private static final int METHODID_DEBUG_COMMAND_STEP_OVER = 16;
   private static final int METHODID_DEBUG_COMMAND_STEP_INTO = 17;
-  private static final int METHODID_DEBUG_COMMAND_FORCE_STEP_INTO = 18;
+  private static final int METHODID_DEBUG_COMMAND_STEP_INTO_MY_CODE = 18;
   private static final int METHODID_DEBUG_COMMAND_STEP_OUT = 19;
   private static final int METHODID_DEBUG_COMMAND_RUN_TO_POSITION = 20;
   private static final int METHODID_DEBUG_MUTE_BREAKPOINTS = 21;
@@ -6270,8 +6270,8 @@ public final class RPIServiceGrpc {
           serviceImpl.debugCommandStepInto((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
-        case METHODID_DEBUG_COMMAND_FORCE_STEP_INTO:
-          serviceImpl.debugCommandForceStepInto((com.google.protobuf.Empty) request,
+        case METHODID_DEBUG_COMMAND_STEP_INTO_MY_CODE:
+          serviceImpl.debugCommandStepIntoMyCode((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_DEBUG_COMMAND_STEP_OUT:
@@ -6629,7 +6629,7 @@ public final class RPIServiceGrpc {
               .addMethod(getDebugCommandStopMethod())
               .addMethod(getDebugCommandStepOverMethod())
               .addMethod(getDebugCommandStepIntoMethod())
-              .addMethod(getDebugCommandForceStepIntoMethod())
+              .addMethod(getDebugCommandStepIntoMyCodeMethod())
               .addMethod(getDebugCommandStepOutMethod())
               .addMethod(getDebugCommandRunToPositionMethod())
               .addMethod(getDebugMuteBreakpointsMethod())

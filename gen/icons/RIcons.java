@@ -27,6 +27,11 @@ public final class RIcons {
 
   }
 
+  public final static class Debug {
+    /** 16x16 */ public static final @NotNull Icon StepIntoMyCode = load("/icons/debug/StepIntoMyCode.svg", 5552042508432718920L);
+
+  }
+
   public final static class FileTypes {
     /** 16x16 */ public static final @NotNull Icon HtmlNotebook = load("/icons/fileTypes/htmlNotebook.svg", 7989704827109353134L);
     /** 16x16 */ public static final @NotNull Icon Presentation = load("/icons/fileTypes/presentation.svg", 1094863549779576036L);

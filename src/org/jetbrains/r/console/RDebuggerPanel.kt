@@ -45,6 +45,7 @@ import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointPanelProvider
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
 import icons.PlatformDebuggerImplIcons
+import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
@@ -215,13 +216,13 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
         console.rInterop.debugCommandStepInto()
       }
     )
-    class ForceStepInto : RBaseDebuggerAction(
-      ActionsBundle.message("action.ForceStepInto.text"),
-      PlatformDebuggerImplIcons.Actions.Force_step_into,
+    class StepIntoMyCode : RBaseDebuggerAction(
+      RBundle.message("action.StepIntoMyCode.text"),
+      RIcons.Debug.StepIntoMyCode,
       "ForceStepInto",
       callback = {
         console.executeActionHandler.fireBusy()
-        console.rInterop.debugCommandForceStepInto()
+        console.rInterop.debugCommandStepIntoMyCode()
       }
     )
     class StepOut : RBaseDebuggerAction(
@@ -253,7 +254,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     actions.addSeparator()
     actions.add(StepOverAction())
     actions.add(StepInto())
-    actions.add(ForceStepInto())
+    actions.add(StepIntoMyCode())
     actions.add(StepOut())
     actions.add(RunToCursor())
     actions.addSeparator()
@@ -388,13 +389,13 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   abstract inner class RBaseDebuggerAction(
     text: String,
     icon: Icon,
-    actionId: String? = null,
+    shortcutsActionId: String? = null,
     private val isActive: (() -> Boolean)? = null,
     private val callback: (AnActionEvent) -> Unit
   ): DumbAwareAction(text, null, icon) {
     init {
-      if (actionId != null) {
-        registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(actionId) },
+      if (shortcutsActionId != null) {
+        registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(shortcutsActionId) },
                                   WindowManager.getInstance().getFrame(console.project)?.rootPane,
                                   this@RDebuggerPanel)
       }
