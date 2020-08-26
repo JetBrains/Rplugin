@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private StackFrame() {
     functionName_ = "";
+    sourcePositionText_ = "";
   }
 
   @java.lang.Override
@@ -84,6 +85,12 @@ private static final long serialVersionUID = 0L;
               extendedSourcePosition_ = subBuilder.buildPartial();
             }
 
+            break;
+          }
+          case 42: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            sourcePositionText_ = s;
             break;
           }
           default: {
@@ -203,6 +210,40 @@ private static final long serialVersionUID = 0L;
     return getExtendedSourcePosition();
   }
 
+  public static final int SOURCEPOSITIONTEXT_FIELD_NUMBER = 5;
+  private volatile java.lang.Object sourcePositionText_;
+  /**
+   * <code>string sourcePositionText = 5;</code>
+   */
+  public java.lang.String getSourcePositionText() {
+    java.lang.Object ref = sourcePositionText_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      sourcePositionText_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string sourcePositionText = 5;</code>
+   */
+  public com.google.protobuf.ByteString
+      getSourcePositionTextBytes() {
+    java.lang.Object ref = sourcePositionText_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      sourcePositionText_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -229,6 +270,9 @@ private static final long serialVersionUID = 0L;
     if (extendedSourcePosition_ != null) {
       output.writeMessage(4, getExtendedSourcePosition());
     }
+    if (!getSourcePositionTextBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, sourcePositionText_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -252,6 +296,9 @@ private static final long serialVersionUID = 0L;
     if (extendedSourcePosition_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(4, getExtendedSourcePosition());
+    }
+    if (!getSourcePositionTextBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, sourcePositionText_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -282,6 +329,8 @@ private static final long serialVersionUID = 0L;
       if (!getExtendedSourcePosition()
           .equals(other.getExtendedSourcePosition())) return false;
     }
+    if (!getSourcePositionText()
+        .equals(other.getSourcePositionText())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -306,6 +355,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + EXTENDEDSOURCEPOSITION_FIELD_NUMBER;
       hash = (53 * hash) + getExtendedSourcePosition().hashCode();
     }
+    hash = (37 * hash) + SOURCEPOSITIONTEXT_FIELD_NUMBER;
+    hash = (53 * hash) + getSourcePositionText().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -455,6 +506,8 @@ private static final long serialVersionUID = 0L;
         extendedSourcePosition_ = null;
         extendedSourcePositionBuilder_ = null;
       }
+      sourcePositionText_ = "";
+
       return this;
     }
 
@@ -493,6 +546,7 @@ private static final long serialVersionUID = 0L;
       } else {
         result.extendedSourcePosition_ = extendedSourcePositionBuilder_.build();
       }
+      result.sourcePositionText_ = sourcePositionText_;
       onBuilt();
       return result;
     }
@@ -553,6 +607,10 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasExtendedSourcePosition()) {
         mergeExtendedSourcePosition(other.getExtendedSourcePosition());
+      }
+      if (!other.getSourcePositionText().isEmpty()) {
+        sourcePositionText_ = other.sourcePositionText_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -910,6 +968,75 @@ private static final long serialVersionUID = 0L;
         extendedSourcePosition_ = null;
       }
       return extendedSourcePositionBuilder_;
+    }
+
+    private java.lang.Object sourcePositionText_ = "";
+    /**
+     * <code>string sourcePositionText = 5;</code>
+     */
+    public java.lang.String getSourcePositionText() {
+      java.lang.Object ref = sourcePositionText_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        sourcePositionText_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string sourcePositionText = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSourcePositionTextBytes() {
+      java.lang.Object ref = sourcePositionText_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sourcePositionText_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string sourcePositionText = 5;</code>
+     */
+    public Builder setSourcePositionText(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      sourcePositionText_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string sourcePositionText = 5;</code>
+     */
+    public Builder clearSourcePositionText() {
+      
+      sourcePositionText_ = getDefaultInstance().getSourcePositionText();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string sourcePositionText = 5;</code>
+     */
+    public Builder setSourcePositionTextBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      sourcePositionText_ = value;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

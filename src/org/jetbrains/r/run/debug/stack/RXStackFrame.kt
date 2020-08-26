@@ -17,6 +17,7 @@ import com.intellij.xdebugger.frame.*
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.rinterop.RValueError
 import org.jetbrains.r.rinterop.RValueUnevaluated
@@ -27,12 +28,11 @@ import kotlin.math.exp
 import kotlin.math.min
 
 class RXStackFrame(val functionName: String,
-                   private val position: XSourcePosition?,
+                   val rStackFrame: RStackFrame?,
                    val loader: RVariableLoader,
                    val grayAttributes: Boolean,
                    val variableViewSettings: RXVariableViewSettings,
-                   private val equalityObject: Any? = null,
-                   val extendedSourcePosition: TextRange? = null) : XStackFrame(), Disposable {
+                   private val equalityObject: Any? = null) : XStackFrame(), Disposable {
   private val evaluator = RXDebuggerEvaluator(this, this)
   internal val environment get() = loader.obj
   internal var expandFunctionGroup = false
@@ -53,10 +53,11 @@ class RXStackFrame(val functionName: String,
 
   override fun getEvaluator() = evaluator
 
-  override fun getSourcePosition() = position
+  override fun getSourcePosition() = rStackFrame?.position?.xSourcePosition
 
   override fun customizePresentation(component: ColoredTextContainer) {
     val attributes = if (grayAttributes) SimpleTextAttributes.GRAYED_ATTRIBUTES else SimpleTextAttributes.REGULAR_ATTRIBUTES
+    val position = sourcePosition
     if (position == null) {
       component.append(functionName, attributes)
     } else {

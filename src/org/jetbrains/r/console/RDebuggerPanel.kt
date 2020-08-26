@@ -5,20 +5,32 @@
 package org.jetbrains.r.console
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.idea.ActionsBundle
+import com.intellij.largeFilesEditor.editor.LargeFileEditor
+import com.intellij.largeFilesEditor.editor.LargeFileNotificationProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.EditorBundle
 import com.intellij.openapi.editor.markup.GutterIconRenderer
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.WindowManager
+import com.intellij.ui.EditorNotificationPanel
+import com.intellij.ui.EditorNotifications
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
@@ -99,23 +111,39 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
         rInterop.debugMuteBreakpoints(value)
       }
     }
+  private var fileWithNonMatchingSourceNotification: VirtualFile? = null
+    set(value) {
+      if (value == field) return
+      field?.let {
+        it.putUserData(RSourceChangedEditorNotificationProvider.FILE_KEY, null)
+        EditorNotifications.getInstance(console.project).updateNotifications(it)
+      }
+      field = value
+      field?.let {
+        it.putUserData(RSourceChangedEditorNotificationProvider.FILE_KEY, true)
+        EditorNotifications.getInstance(console.project).updateNotifications(it)
+      }
+    }
 
   init {
     framesView.addListSelectionListener {
       val frame = framesView.selectedValue as? RXStackFrame
+      fileWithNonMatchingSourceNotification = null
       if (isEnabled) {
         val position = frame?.sourcePosition
         if (position == null) {
           positionHighlighter.hide()
         } else {
-          val newPosition = if (frame.extendedSourcePosition != null) {
+          val rStackFrame = frame.rStackFrame
+          val newPosition = if (rStackFrame?.extendedPosition != null) {
             object : XSourcePositionWrapper(position), ExecutionPointHighlighter.HighlighterProvider {
-              override fun getHighlightRange() = frame.extendedSourcePosition
+              override fun getHighlightRange() = rStackFrame.extendedPosition
             }
           } else {
             position
           }
           positionHighlighter.show(newPosition, frame != framesView.model.getElementAt(0), null)
+          updateNonMatchingSourceNotification(rStackFrame)
         }
       }
       variablesView.stackFrame = frame
@@ -127,6 +155,24 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     val toolbarActions = createDebugActions()
     actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, true)
     onCommandExecuted()
+  }
+
+  private fun updateNonMatchingSourceNotification(frame: RStackFrame?) {
+    val textFromR = frame?.sourcePositionText ?: return
+    val file = frame.position?.file ?: return
+    val textInFile = runReadAction {
+      val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction null
+      val line = frame.position.line
+      try {
+        val range = frame.extendedPosition ?: TextRange(document.getLineStartOffset(line), document.getLineEndOffset(line))
+        document.getText(range)
+      } catch (e: IndexOutOfBoundsException) {
+        null
+      }
+    }
+    if (textInFile == null || !StringUtil.equalsIgnoreWhitespaces(textInFile, textFromR)) {
+      fileWithNonMatchingSourceNotification = file
+    }
   }
 
   private fun createDebugActions(): ActionGroup {
@@ -154,7 +200,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     class StepOverAction : RBaseDebuggerAction(
       ActionsBundle.message("action.StepOver.text"),
       AllIcons.Actions.TraceOver,
-    "StepOver",
+      "StepOver",
       callback = {
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandStepOver()
@@ -246,8 +292,9 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     }
   }
 
-  override fun dispose() {
+  override fun dispose() = invokeLater {
     positionHighlighter.hide()
+    fileWithNonMatchingSourceNotification = null
   }
 
   override fun onCommandExecuted() {
@@ -276,8 +323,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
 
   fun refreshStackFrames() {
     updateStack(currentRXStackFrames.map {
-      RXStackFrame(it.functionName, it.sourcePosition, it.loader,
-                   it.grayAttributes, variablesView.settings, it.equalityObject, it.extendedSourcePosition)
+      RXStackFrame(it.functionName, it.rStackFrame, it.loader,
+                   it.grayAttributes, variablesView.settings, it.equalityObject)
     })
   }
 
@@ -288,9 +335,9 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       } else {
         RBundle.message("debugger.anonymous.stack.frame")
       }
-      RXStackFrame(functionName, it.position?.xSourcePosition, it.environment.createVariableLoader(),
+      RXStackFrame(functionName, it, it.environment.createVariableLoader(),
                    it.position == null || RSourceFileManager.isTemporary(it.position.file),
-                   variablesView.settings, it.equalityObject, it.extendedPosition)
+                   variablesView.settings, it.equalityObject)
     }.reversed()
   }
 
@@ -348,7 +395,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     init {
       if (actionId != null) {
         registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(actionId) },
-                                                WindowManager.getInstance().getFrame(console.project)?.rootPane,
+                                  WindowManager.getInstance().getFrame(console.project)?.rootPane,
                                   this@RDebuggerPanel)
       }
     }
@@ -404,5 +451,20 @@ class RDebuggerSupport : DebuggerSupport() {
         return RConsoleManager.getInstance(project).currentConsoleOrNull?.debuggerPanel
       }
     }
+  }
+}
+
+class RSourceChangedEditorNotificationProvider : EditorNotifications.Provider<EditorNotificationPanel>() {
+  private val KEY: Key<EditorNotificationPanel> = Key.create("org.jetbrains.r.console.RSourceChangedEditorNotificationProvider")
+
+  override fun getKey() = KEY
+
+  override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
+    if (file.getUserData(FILE_KEY) != true) return null
+    return EditorNotificationPanel().text(RBundle.message("debugger.file.has.changed.notification"))
+  }
+
+  companion object {
+    val FILE_KEY = Key.create<Boolean>("org.jetbrains.r.console.RSourceChangedEditorNotificationProvider.fileKey")
   }
 }

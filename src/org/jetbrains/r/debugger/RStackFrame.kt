@@ -8,4 +8,4 @@ import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.rinterop.RReference
 
 data class RStackFrame(val position: RSourcePosition?, val environment: RReference, val functionName: String?, val equalityObject: Long,
-                       val extendedPosition: TextRange? = null)
+                       val extendedPosition: TextRange? = null, val sourcePositionText: String? = null)

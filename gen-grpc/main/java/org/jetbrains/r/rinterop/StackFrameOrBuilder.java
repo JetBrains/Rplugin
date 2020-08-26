@@ -47,4 +47,14 @@ public interface StackFrameOrBuilder extends
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
    */
   org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder getExtendedSourcePositionOrBuilder();
+
+  /**
+   * <code>string sourcePositionText = 5;</code>
+   */
+  java.lang.String getSourcePositionText();
+  /**
+   * <code>string sourcePositionText = 5;</code>
+   */
+  com.google.protobuf.ByteString
+      getSourcePositionTextBytes();
 }

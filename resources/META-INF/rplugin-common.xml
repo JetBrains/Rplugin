@@ -524,6 +524,8 @@ You can find the source code in the following repositories:
 
         <xdebugger.debuggerSupport implementation="org.jetbrains.r.console.RDebuggerSupport" order="first,before XDebuggerSupport"/>
 
+        <editorNotificationProvider implementation="org.jetbrains.r.console.RSourceChangedEditorNotificationProvider"/>
+
         <!--- RMarkdown ui-->
         <fileEditorProvider implementation="org.jetbrains.r.rendering.editor.RMarkdownFileEditorProvider"/>
 

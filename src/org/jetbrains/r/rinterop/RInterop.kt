@@ -1129,8 +1129,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
                     document.getLineStartOffset(extended.endLine) + extended.endOffset)
         }
       }
-      RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
-                  it.equalityObject, extendedPosition)
+    RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
+                  it.equalityObject, extendedPosition, it.sourcePositionText.takeIf { it.isNotEmpty() })
     }
   }
 
