@@ -73,6 +73,12 @@ class FormatterTest : RUsefulTestCase() {
           # Shift comment!
       # Shift comment!
       }
+
+      someMethod(
+      # some comment
+            argument1,
+         argument2, argument3,
+               argument4)
     """, """
       xxx <- 10 # One space required
       y <- 20   # Do not touch spaces
@@ -86,6 +92,12 @@ class FormatterTest : RUsefulTestCase() {
         # Shift comment!
         # Shift comment!
       }
+
+      someMethod(
+          # some comment
+          argument1,
+          argument2, argument3,
+          argument4)
     """)
   }
 

@@ -8,6 +8,7 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
@@ -205,6 +206,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
       psi is RExpression && parent is RArgumentList -> Indent.getContinuationIndent()
       parent is RBlockExpression-> Indent.getIndent(Indent.Type.NORMAL, false, false)
       parent is RExpression && parent.firstChild != psi -> Indent.getContinuationWithoutFirstIndent()
+      parent is RArgumentList && psi is PsiComment -> Indent.getContinuationIndent()
       else -> Indent.getNoneIndent()
     }
   }
