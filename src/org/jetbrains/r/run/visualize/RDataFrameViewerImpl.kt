@@ -83,14 +83,16 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
     }
     val start = chunkIndex * CHUNK_SIZE
     val end = min((chunkIndex + 1) * CHUNK_SIZE, nRows)
-    val promise: Promise<Unit> = rInterop.dataFrameGetData(ref, start, end).then { response ->
-      chunks[chunkIndex] = Array(nColumns) { col ->
-        Array(end - start) { row ->
-          columns[col].parseValue(response.getColumns(col).getValues(row))
+    val promise: Promise<Unit> = rInterop.dataFrameGetData(ref, start, end)
+      .also { Disposer.register(this, Disposable { it.cancel() }) }
+      .then { response ->
+        chunks[chunkIndex] = Array(nColumns) { col ->
+          Array(end - start) { row ->
+            columns[col].parseValue(response.getColumns(col).getValues(row))
+          }
         }
+        onLoadCallback?.invoke()
       }
-      onLoadCallback?.invoke()
-    }
     promises[chunkIndex] = promise
     return promise
   }
