@@ -307,34 +307,34 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.AsyncEvent> getGetNextAsyncEventMethod;
+      org.jetbrains.r.rinterop.AsyncEvent> getGetAsyncEventsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getNextAsyncEvent",
+      fullMethodName = SERVICE_NAME + '/' + "getAsyncEvents",
       requestType = com.google.protobuf.Empty.class,
       responseType = org.jetbrains.r.rinterop.AsyncEvent.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.AsyncEvent> getGetNextAsyncEventMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.AsyncEvent> getGetNextAsyncEventMethod;
-    if ((getGetNextAsyncEventMethod = RPIServiceGrpc.getGetNextAsyncEventMethod) == null) {
+      org.jetbrains.r.rinterop.AsyncEvent> getGetAsyncEventsMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.AsyncEvent> getGetAsyncEventsMethod;
+    if ((getGetAsyncEventsMethod = RPIServiceGrpc.getGetAsyncEventsMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getGetNextAsyncEventMethod = RPIServiceGrpc.getGetNextAsyncEventMethod) == null) {
-          RPIServiceGrpc.getGetNextAsyncEventMethod = getGetNextAsyncEventMethod =
+        if ((getGetAsyncEventsMethod = RPIServiceGrpc.getGetAsyncEventsMethod) == null) {
+          RPIServiceGrpc.getGetAsyncEventsMethod = getGetAsyncEventsMethod =
               io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.AsyncEvent>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNextAsyncEvent"))
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getAsyncEvents"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.AsyncEvent.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getNextAsyncEvent"))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getAsyncEvents"))
               .build();
         }
       }
     }
-    return getGetNextAsyncEventMethod;
+    return getGetAsyncEventsMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddBreakpointRequest,
@@ -2909,9 +2909,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void getNextAsyncEvent(com.google.protobuf.Empty request,
+    public void getAsyncEvents(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.AsyncEvent> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetNextAsyncEventMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getGetAsyncEventsMethod(), responseObserver);
     }
 
     /**
@@ -3567,12 +3567,12 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty>(
                   this, METHODID_REPL_INTERRUPT)))
           .addMethod(
-            getGetNextAsyncEventMethod(),
-            asyncUnaryCall(
+            getGetAsyncEventsMethod(),
+            asyncServerStreamingCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
                 org.jetbrains.r.rinterop.AsyncEvent>(
-                  this, METHODID_GET_NEXT_ASYNC_EVENT)))
+                  this, METHODID_GET_ASYNC_EVENTS)))
           .addMethod(
             getDebugAddBreakpointMethod(),
             asyncUnaryCall(
@@ -4229,10 +4229,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void getNextAsyncEvent(com.google.protobuf.Empty request,
+    public void getAsyncEvents(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.AsyncEvent> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getGetNextAsyncEventMethod(), getCallOptions()), request, responseObserver);
+      asyncServerStreamingCall(
+          getChannel().newCall(getGetAsyncEventsMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4988,9 +4988,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.AsyncEvent getNextAsyncEvent(com.google.protobuf.Empty request) {
-      return blockingUnaryCall(
-          getChannel(), getGetNextAsyncEventMethod(), getCallOptions(), request);
+    public java.util.Iterator<org.jetbrains.r.rinterop.AsyncEvent> getAsyncEvents(
+        com.google.protobuf.Empty request) {
+      return blockingServerStreamingCall(
+          getChannel(), getGetAsyncEventsMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5669,14 +5670,6 @@ public final class RPIServiceGrpc {
     }
 
     /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.AsyncEvent> getNextAsyncEvent(
-        com.google.protobuf.Empty request) {
-      return futureUnaryCall(
-          getChannel().newCall(getGetNextAsyncEventMethod(), getCallOptions()), request);
-    }
-
-    /**
      * <pre>
      * Debugger
      * </pre>
@@ -6237,7 +6230,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_SEND_READ_LN = 6;
   private static final int METHODID_SEND_EOF = 7;
   private static final int METHODID_REPL_INTERRUPT = 8;
-  private static final int METHODID_GET_NEXT_ASYNC_EVENT = 9;
+  private static final int METHODID_GET_ASYNC_EVENTS = 9;
   private static final int METHODID_DEBUG_ADD_BREAKPOINT = 10;
   private static final int METHODID_DEBUG_REMOVE_BREAKPOINT = 11;
   private static final int METHODID_DEBUG_COMMAND_CONTINUE = 12;
@@ -6372,8 +6365,8 @@ public final class RPIServiceGrpc {
           serviceImpl.replInterrupt((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
-        case METHODID_GET_NEXT_ASYNC_EVENT:
-          serviceImpl.getNextAsyncEvent((com.google.protobuf.Empty) request,
+        case METHODID_GET_ASYNC_EVENTS:
+          serviceImpl.getAsyncEvents((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.AsyncEvent>) responseObserver);
           break;
         case METHODID_DEBUG_ADD_BREAKPOINT:
@@ -6766,7 +6759,7 @@ public final class RPIServiceGrpc {
               .addMethod(getSendReadLnMethod())
               .addMethod(getSendEofMethod())
               .addMethod(getReplInterruptMethod())
-              .addMethod(getGetNextAsyncEventMethod())
+              .addMethod(getGetAsyncEventsMethod())
               .addMethod(getDebugAddBreakpointMethod())
               .addMethod(getDebugRemoveBreakpointMethod())
               .addMethod(getDebugCommandContinueMethod())
