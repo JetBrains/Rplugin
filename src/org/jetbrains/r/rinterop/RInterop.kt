@@ -1036,37 +1036,34 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   private fun processAsyncEvents() {
-    executeAsync(asyncStub::getNextAsyncEvent, Empty.getDefaultInstance()).onSuccess { event ->
-      executeTask {
-        if (asyncProcessingStarted) {
-          processAsyncEvent(event)
-        } else {
-          asyncEventsBeforeStarted.add(event)
-        }
-        if (event.hasTermination()) {
-          heartbeatTimer.cancel()
-          terminationPromise.setResult(Unit)
-          executeAsync(asyncStub::quitProceed, Empty.getDefaultInstance())
+    val call = channel.newCall(RPIServiceGrpc.getGetAsyncEventsMethod(), CallOptions.DEFAULT)
+    ClientCalls.asyncServerStreamingCall(call, Empty.getDefaultInstance(), object : StreamObserver<AsyncEvent> {
+      override fun onNext(event: AsyncEvent) {
+        executeTask {
+          if (asyncProcessingStarted) {
+            processAsyncEvent(event)
+          } else {
+            asyncEventsBeforeStarted.add(event)
+          }
+          if (event.hasTermination()) {
+            call.cancel("Termination event received", null)
+            heartbeatTimer.cancel()
+            terminationPromise.setResult(Unit)
+            executeAsync(asyncStub::quitProceed, Empty.getDefaultInstance())
+          }
         }
       }
-      if (!event.hasTermination()) {
+
+      override fun onError(t: Throwable?) {
+        val e = t?.let { processError(it, "getAsyncEvents") }
+        if (e is RInteropTerminated) return
+        LOG.error(e)
         processAsyncEvents()
       }
-    }.onError {
-      when (it) {
-        is CancellationException -> {
-          processAsyncEvents()
-        }
-        is RInteropRequestFailed -> {
-          LOG.error(it)
-          processAsyncEvents()
-        }
-        else -> {
-          heartbeatTimer.cancel()
-          terminationPromise.setResult(Unit)
-        }
+
+      override fun onCompleted() {
       }
-    }
+    })
   }
 
   private fun stackFromProto(proto: StackFrameList,
