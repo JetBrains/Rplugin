@@ -11,6 +11,7 @@ import com.intellij.openapi.util.Disposer
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.DataFrameFilterRequest
 import org.jetbrains.r.rinterop.getWithCheckCanceled
+import java.util.concurrent.CancellationException
 import java.util.concurrent.Future
 import javax.swing.JTable
 import javax.swing.RowSorter
@@ -108,6 +109,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
                        e.message.orEmpty(), NotificationType.ERROR, null)
             .notify(initialViewer.project)
         }
+      } catch (e: CancellationException) {
       }
       model.viewer = currentViewer
       jTable.clearSelection()

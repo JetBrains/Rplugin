@@ -54,6 +54,7 @@ import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.util.thenCancellable
+import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -767,7 +768,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         val persistentRef = RPersistentRef(index, this)
         Disposer.register(persistentRef, Disposable {
           dataFrameViewerCache.remove(index)
-          if (isAlive) execute(asyncStub::dataFrameDispose, Int32Value.of(index))
+          if (isAlive) executeAsync(asyncStub::dataFrameDispose, Int32Value.of(index))
         })
         val viewer = RDataFrameViewerImpl(persistentRef)
         viewer
@@ -779,7 +780,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeWithCheckCancel(asyncStub::dataFrameGetInfo, ref.proto)
   }
 
-  fun dataFrameGetData(ref: RReference, start: Int, end: Int): Promise<DataFrameGetDataResponse> {
+  fun dataFrameGetData(ref: RReference, start: Int, end: Int): CancellablePromise<DataFrameGetDataResponse> {
     val request = DataFrameGetDataRequest.newBuilder().setRef(ref.proto).setStart(start).setEnd(end).build()
     return executeAsync(asyncStub::dataFrameGetData, request)
   }
@@ -792,12 +793,16 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         .build()
     }
     val request = DataFrameSortRequest.newBuilder().setRef(ref.proto).addAllKeys(keysProto).build()
-    return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameSort, request).value, this, disposableParent)
+    return executeAsync(asyncStub::dataFrameSort, request)
+      .also { disposableParent?.tryRegisterDisposable(Disposable { it.cancel() }) }
+      .let { RPersistentRef(it.getWithCheckCanceled().value, this, disposableParent) }
   }
 
   fun dataFrameFilter(ref: RReference, f: DataFrameFilterRequest.Filter, disposableParent: Disposable? = null): RPersistentRef {
     val request = DataFrameFilterRequest.newBuilder().setRef(ref.proto).setFilter(f).build()
-    return RPersistentRef(executeWithCheckCancel(asyncStub::dataFrameFilter, request).value, this, disposableParent)
+    return executeAsync(asyncStub::dataFrameFilter, request)
+      .also { disposableParent?.tryRegisterDisposable(Disposable { it.cancel() }) }
+      .let { RPersistentRef(it.getWithCheckCanceled().value, this, disposableParent) }
   }
 
   fun findInheritorNamedArguments(function: RReference): List<String> {
