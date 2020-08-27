@@ -4,16 +4,21 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.util.Processor
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import org.jetbrains.r.psi.RDplyrAnalyzer.processColumnsOfSelectFunction
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processColumnsOfCountFunction
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandTableAndAllDotsColumns
 import org.jetbrains.r.psi.api.*
+import java.util.concurrent.Callable
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
-  const val PIPE_OPERATOR = "%>%"
+  @NonNls const val PIPE_OPERATOR = "%>%"
+  @NonNls const val EVERYTHING_FUNCTION = "everything"
 
   override val nameToFunction = DplyrFunction.values()
     .mapNotNull { (it.functionName ?: return@mapNotNull null) to it }
@@ -26,7 +31,7 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
 
   // TODO(DS-226): Put more functions here
   @Suppress("SpellCheckingInspection")
-  override val safeFunctions = super.safeFunctions + mapOf<String, Set<String>>(
+  override val safeFunctions = super.safeFunctions + mapOf(
     "dplyr" to setOf(
       "all_vars", "any_vars", "between", "case_when", "coalesce", "contains", "cumall", "cumany", "cume_dist", "cummean", "dense_rank",
       "desc", "ends_with", "everything", "first", "if_else", "lag", "last", "last_col", "lead", "matches", "min_rank", "n", "n_distinct",
@@ -70,6 +75,21 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
           else -> null
         }
       }
+  }
+
+  fun processColumnsOfSelectFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
+                                     @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+                                     callInfo: TableManipulationCallInfo<*>,
+                                     processor: Processor<PsiTableColumnInfo>): Boolean {
+    processAllDotsColumns(operandProcessorRunner, call, callInfo, processor)
+
+    for (expression in callInfo.argumentInfo.allDotsArguments) {
+      if (expression is RCallExpression && expression.expression.name == EVERYTHING_FUNCTION) {
+        operandProcessorRunner?.call()
+      }
+    }
+
+    return true
   }
 }
 
@@ -115,7 +135,7 @@ enum class DplyrFunction(
   ROWWISE("rowwise", tableArguments = listOf("data")),
   SAMPLE_FRAC("sample_frac", ignoreInTransform = true, tableArguments = listOf("tbl")),
   SAMPLE_N("sample_n", ignoreInTransform = true, tableArguments = listOf("tbl")),
-  SELECT("select", tableArguments = listOf(".data"), tableColumnsProvider = ::processAllDotsColumns),
+  SELECT("select", tableArguments = listOf(".data"), tableColumnsProvider = ::processColumnsOfSelectFunction),
   SELECT_ALL("select_all"),
   SELECT_AT("select_at"),
   SELECT_IF("select_if"),

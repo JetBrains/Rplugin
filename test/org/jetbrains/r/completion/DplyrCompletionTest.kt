@@ -349,6 +349,18 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
     )
   }
 
+  fun testStaticCompletionForSelectEverything() {
+    checkStaticCompletion(
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% dplyr::select(everything()) %>% dplyr::filter(column<caret>)
+      """.trimIndent(),
+
+      listOf("column_one"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()

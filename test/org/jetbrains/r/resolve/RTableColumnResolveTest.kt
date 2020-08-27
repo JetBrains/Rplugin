@@ -143,6 +143,17 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testDplyrSelectEverything() {
+    doTest(
+      "column_one = letters",
+
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% dplyr::select(everything()) %>% dplyr::filter(column<caret>_one)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
