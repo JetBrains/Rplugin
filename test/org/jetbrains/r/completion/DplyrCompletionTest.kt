@@ -325,6 +325,30 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
     )
   }
 
+  fun testStaticCompletionForRelocate() {
+    checkStaticCompletion(
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% relocate(column_one) %>% filter(colu<caret>)
+      """.trimIndent(),
+
+      listOf("column_one"),
+      listOf()
+    )
+  }
+
+  fun testStaticCompletionForRowwise() {
+    checkStaticCompletion(
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% dplyr::rowwise() %>% filter(colu<caret>)
+      """.trimIndent(),
+
+      listOf("column_one"),
+      listOf()
+    )
+  }
+
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()

@@ -121,6 +121,28 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testDplyrRelocate() {
+    doTest(
+      "column_one = letters",
+
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% dplyr::relocate(column_one) %>% dplyr::filter(column<caret>_one)
+      """.trimIndent()
+    )
+  }
+
+  fun testDplyrRowwise() {
+    doTest(
+      "column_one = letters",
+
+      """
+      tbl1 <- dplyr::tibble(letter = letters, column_one = letters)
+      tbl1 %>% dplyr::rowwise() %>% dplyr::filter(column<caret>_one)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
