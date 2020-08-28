@@ -194,9 +194,9 @@ object RInteropUtil {
       val wrapperPath = getWrapperPath(interpreter.hostOS)
       LOG.info("R version is $version. RWrapper path: $wrapperPath")
       val rwrapper = File(wrapperPath)
-      if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
-      if (!rwrapper.canExecute()) {
-        rwrapper.setExecutable(true)
+      if (interpreter.isLocal()) {
+        if (!rwrapper.exists()) return result.also { result.setError("Cannot find suitable RWrapper version in " + wrapperPath) }
+        if (!rwrapper.canExecute()) rwrapper.setExecutable(true)
       }
       val wrapperPathOnHost = interpreter.uploadFileToHost(rwrapper)
       var command = GeneralCommandLine()
