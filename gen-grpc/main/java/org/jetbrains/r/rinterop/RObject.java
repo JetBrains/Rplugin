@@ -5469,24 +5469,24 @@ private static final long serialVersionUID = 0L;
 
   public static final int RNULL_FIELD_NUMBER = 5;
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  public boolean hasRnull() {
+  public boolean hasRNull() {
     return objectCase_ == 5;
   }
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  public org.jetbrains.r.rinterop.RObject.RNull getRnull() {
+  public org.jetbrains.r.rinterop.RObject.RNull getRNull() {
     if (objectCase_ == 5) {
        return (org.jetbrains.r.rinterop.RObject.RNull) object_;
     }
     return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder() {
+  public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRNullOrBuilder() {
     if (objectCase_ == 5) {
        return (org.jetbrains.r.rinterop.RObject.RNull) object_;
     }
@@ -5495,24 +5495,24 @@ private static final long serialVersionUID = 0L;
 
   public static final int RBOOLEAN_FIELD_NUMBER = 6;
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  public boolean hasRboolean() {
+  public boolean hasRBoolean() {
     return objectCase_ == 6;
   }
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  public org.jetbrains.r.rinterop.RObject.RBoolean getRboolean() {
+  public org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean() {
     if (objectCase_ == 6) {
        return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
     }
     return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder() {
+  public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRBooleanOrBuilder() {
     if (objectCase_ == 6) {
        return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
     }
@@ -5700,12 +5700,12 @@ private static final long serialVersionUID = 0L;
             .equals(other.getList())) return false;
         break;
       case 5:
-        if (!getRnull()
-            .equals(other.getRnull())) return false;
+        if (!getRNull()
+            .equals(other.getRNull())) return false;
         break;
       case 6:
-        if (!getRboolean()
-            .equals(other.getRboolean())) return false;
+        if (!getRBoolean()
+            .equals(other.getRBoolean())) return false;
         break;
       case 7:
         if (!getNamedList()
@@ -5748,11 +5748,11 @@ private static final long serialVersionUID = 0L;
         break;
       case 5:
         hash = (37 * hash) + RNULL_FIELD_NUMBER;
-        hash = (53 * hash) + getRnull().hashCode();
+        hash = (53 * hash) + getRNull().hashCode();
         break;
       case 6:
         hash = (37 * hash) + RBOOLEAN_FIELD_NUMBER;
-        hash = (53 * hash) + getRboolean().hashCode();
+        hash = (53 * hash) + getRBoolean().hashCode();
         break;
       case 7:
         hash = (37 * hash) + NAMEDLIST_FIELD_NUMBER;
@@ -5955,17 +5955,17 @@ private static final long serialVersionUID = 0L;
         }
       }
       if (objectCase_ == 5) {
-        if (rnullBuilder_ == null) {
+        if (rNullBuilder_ == null) {
           result.object_ = object_;
         } else {
-          result.object_ = rnullBuilder_.build();
+          result.object_ = rNullBuilder_.build();
         }
       }
       if (objectCase_ == 6) {
-        if (rbooleanBuilder_ == null) {
+        if (rBooleanBuilder_ == null) {
           result.object_ = object_;
         } else {
-          result.object_ = rbooleanBuilder_.build();
+          result.object_ = rBooleanBuilder_.build();
         }
       }
       if (objectCase_ == 7) {
@@ -6045,11 +6045,11 @@ private static final long serialVersionUID = 0L;
           break;
         }
         case RNULL: {
-          mergeRnull(other.getRnull());
+          mergeRNull(other.getRNull());
           break;
         }
         case RBOOLEAN: {
-          mergeRboolean(other.getRboolean());
+          mergeRBoolean(other.getRBoolean());
           break;
         }
         case NAMEDLIST: {
@@ -6655,64 +6655,64 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> rnullBuilder_;
+        org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> rNullBuilder_;
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public boolean hasRnull() {
+    public boolean hasRNull() {
       return objectCase_ == 5;
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RNull getRnull() {
-      if (rnullBuilder_ == null) {
+    public org.jetbrains.r.rinterop.RObject.RNull getRNull() {
+      if (rNullBuilder_ == null) {
         if (objectCase_ == 5) {
           return (org.jetbrains.r.rinterop.RObject.RNull) object_;
         }
         return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
       } else {
         if (objectCase_ == 5) {
-          return rnullBuilder_.getMessage();
+          return rNullBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public Builder setRnull(org.jetbrains.r.rinterop.RObject.RNull value) {
-      if (rnullBuilder_ == null) {
+    public Builder setRNull(org.jetbrains.r.rinterop.RObject.RNull value) {
+      if (rNullBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
         object_ = value;
         onChanged();
       } else {
-        rnullBuilder_.setMessage(value);
+        rNullBuilder_.setMessage(value);
       }
       objectCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public Builder setRnull(
+    public Builder setRNull(
         org.jetbrains.r.rinterop.RObject.RNull.Builder builderForValue) {
-      if (rnullBuilder_ == null) {
+      if (rNullBuilder_ == null) {
         object_ = builderForValue.build();
         onChanged();
       } else {
-        rnullBuilder_.setMessage(builderForValue.build());
+        rNullBuilder_.setMessage(builderForValue.build());
       }
       objectCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public Builder mergeRnull(org.jetbrains.r.rinterop.RObject.RNull value) {
-      if (rnullBuilder_ == null) {
+    public Builder mergeRNull(org.jetbrains.r.rinterop.RObject.RNull value) {
+      if (rNullBuilder_ == null) {
         if (objectCase_ == 5 &&
             object_ != org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance()) {
           object_ = org.jetbrains.r.rinterop.RObject.RNull.newBuilder((org.jetbrains.r.rinterop.RObject.RNull) object_)
@@ -6723,18 +6723,18 @@ private static final long serialVersionUID = 0L;
         onChanged();
       } else {
         if (objectCase_ == 5) {
-          rnullBuilder_.mergeFrom(value);
+          rNullBuilder_.mergeFrom(value);
         }
-        rnullBuilder_.setMessage(value);
+        rNullBuilder_.setMessage(value);
       }
       objectCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public Builder clearRnull() {
-      if (rnullBuilder_ == null) {
+    public Builder clearRNull() {
+      if (rNullBuilder_ == null) {
         if (objectCase_ == 5) {
           objectCase_ = 0;
           object_ = null;
@@ -6745,22 +6745,22 @@ private static final long serialVersionUID = 0L;
           objectCase_ = 0;
           object_ = null;
         }
-        rnullBuilder_.clear();
+        rNullBuilder_.clear();
       }
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RNull.Builder getRnullBuilder() {
-      return getRnullFieldBuilder().getBuilder();
+    public org.jetbrains.r.rinterop.RObject.RNull.Builder getRNullBuilder() {
+      return getRNullFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder() {
-      if ((objectCase_ == 5) && (rnullBuilder_ != null)) {
-        return rnullBuilder_.getMessageOrBuilder();
+    public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRNullOrBuilder() {
+      if ((objectCase_ == 5) && (rNullBuilder_ != null)) {
+        return rNullBuilder_.getMessageOrBuilder();
       } else {
         if (objectCase_ == 5) {
           return (org.jetbrains.r.rinterop.RObject.RNull) object_;
@@ -6769,16 +6769,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+     * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> 
-        getRnullFieldBuilder() {
-      if (rnullBuilder_ == null) {
+        getRNullFieldBuilder() {
+      if (rNullBuilder_ == null) {
         if (!(objectCase_ == 5)) {
           object_ = org.jetbrains.r.rinterop.RObject.RNull.getDefaultInstance();
         }
-        rnullBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+        rNullBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
             org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder>(
                 (org.jetbrains.r.rinterop.RObject.RNull) object_,
                 getParentForChildren(),
@@ -6787,68 +6787,68 @@ private static final long serialVersionUID = 0L;
       }
       objectCase_ = 5;
       onChanged();;
-      return rnullBuilder_;
+      return rNullBuilder_;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> rbooleanBuilder_;
+        org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> rBooleanBuilder_;
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public boolean hasRboolean() {
+    public boolean hasRBoolean() {
       return objectCase_ == 6;
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RBoolean getRboolean() {
-      if (rbooleanBuilder_ == null) {
+    public org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean() {
+      if (rBooleanBuilder_ == null) {
         if (objectCase_ == 6) {
           return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
         }
         return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
       } else {
         if (objectCase_ == 6) {
-          return rbooleanBuilder_.getMessage();
+          return rBooleanBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public Builder setRboolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
-      if (rbooleanBuilder_ == null) {
+    public Builder setRBoolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
+      if (rBooleanBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
         object_ = value;
         onChanged();
       } else {
-        rbooleanBuilder_.setMessage(value);
+        rBooleanBuilder_.setMessage(value);
       }
       objectCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public Builder setRboolean(
+    public Builder setRBoolean(
         org.jetbrains.r.rinterop.RObject.RBoolean.Builder builderForValue) {
-      if (rbooleanBuilder_ == null) {
+      if (rBooleanBuilder_ == null) {
         object_ = builderForValue.build();
         onChanged();
       } else {
-        rbooleanBuilder_.setMessage(builderForValue.build());
+        rBooleanBuilder_.setMessage(builderForValue.build());
       }
       objectCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public Builder mergeRboolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
-      if (rbooleanBuilder_ == null) {
+    public Builder mergeRBoolean(org.jetbrains.r.rinterop.RObject.RBoolean value) {
+      if (rBooleanBuilder_ == null) {
         if (objectCase_ == 6 &&
             object_ != org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance()) {
           object_ = org.jetbrains.r.rinterop.RObject.RBoolean.newBuilder((org.jetbrains.r.rinterop.RObject.RBoolean) object_)
@@ -6859,18 +6859,18 @@ private static final long serialVersionUID = 0L;
         onChanged();
       } else {
         if (objectCase_ == 6) {
-          rbooleanBuilder_.mergeFrom(value);
+          rBooleanBuilder_.mergeFrom(value);
         }
-        rbooleanBuilder_.setMessage(value);
+        rBooleanBuilder_.setMessage(value);
       }
       objectCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public Builder clearRboolean() {
-      if (rbooleanBuilder_ == null) {
+    public Builder clearRBoolean() {
+      if (rBooleanBuilder_ == null) {
         if (objectCase_ == 6) {
           objectCase_ = 0;
           object_ = null;
@@ -6881,22 +6881,22 @@ private static final long serialVersionUID = 0L;
           objectCase_ = 0;
           object_ = null;
         }
-        rbooleanBuilder_.clear();
+        rBooleanBuilder_.clear();
       }
       return this;
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RBoolean.Builder getRbooleanBuilder() {
-      return getRbooleanFieldBuilder().getBuilder();
+    public org.jetbrains.r.rinterop.RObject.RBoolean.Builder getRBooleanBuilder() {
+      return getRBooleanFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
-    public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder() {
-      if ((objectCase_ == 6) && (rbooleanBuilder_ != null)) {
-        return rbooleanBuilder_.getMessageOrBuilder();
+    public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRBooleanOrBuilder() {
+      if ((objectCase_ == 6) && (rBooleanBuilder_ != null)) {
+        return rBooleanBuilder_.getMessageOrBuilder();
       } else {
         if (objectCase_ == 6) {
           return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
@@ -6905,16 +6905,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+     * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> 
-        getRbooleanFieldBuilder() {
-      if (rbooleanBuilder_ == null) {
+        getRBooleanFieldBuilder() {
+      if (rBooleanBuilder_ == null) {
         if (!(objectCase_ == 6)) {
           object_ = org.jetbrains.r.rinterop.RObject.RBoolean.getDefaultInstance();
         }
-        rbooleanBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+        rBooleanBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
             org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder>(
                 (org.jetbrains.r.rinterop.RObject.RBoolean) object_,
                 getParentForChildren(),
@@ -6923,7 +6923,7 @@ private static final long serialVersionUID = 0L;
       }
       objectCase_ = 6;
       onChanged();;
-      return rbooleanBuilder_;
+      return rBooleanBuilder_;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<

@@ -562,8 +562,8 @@ public final class Service {
       "\002 \001(\0132\034.rplugininterop.RObject.RIntH\000\0222\n" +
       "\007rDouble\030\003 \001(\0132\037.rplugininterop.RObject." +
       "RDoubleH\000\022,\n\004list\030\004 \001(\0132\034.rplugininterop" +
-      ".RObject.ListH\000\022.\n\005rnull\030\005 \001(\0132\035.rplugin" +
-      "interop.RObject.RNullH\000\0224\n\010rboolean\030\006 \001(" +
+      ".RObject.ListH\000\022.\n\005rNull\030\005 \001(\0132\035.rplugin" +
+      "interop.RObject.RNullH\000\0224\n\010rBoolean\030\006 \001(" +
       "\0132 .rplugininterop.RObject.RBooleanH\000\0226\n" +
       "\tnamedList\030\007 \001(\0132!.rplugininterop.RObjec" +
       "t.NamedListH\000\022\017\n\005error\030\010 \001(\tH\000\032\032\n\007RStrin" +
@@ -1036,7 +1036,7 @@ public final class Service {
     internal_static_rplugininterop_RObject_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_rplugininterop_RObject_descriptor,
-        new java.lang.String[] { "RString", "RInt", "RDouble", "List", "Rnull", "Rboolean", "NamedList", "Error", "Object", });
+        new java.lang.String[] { "RString", "RInt", "RDouble", "List", "RNull", "RBoolean", "NamedList", "Error", "Object", });
     internal_static_rplugininterop_RObject_RString_descriptor =
       internal_static_rplugininterop_RObject_descriptor.getNestedTypes().get(0);
     internal_static_rplugininterop_RObject_RString_fieldAccessorTable = new

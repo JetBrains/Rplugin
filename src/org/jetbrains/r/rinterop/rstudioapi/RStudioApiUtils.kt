@@ -1,6 +1,13 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.editor.colors.CodeInsightColors
+import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -15,6 +22,8 @@ import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import kotlin.math.min
+import kotlin.streams.toList
 
 enum class RStudioApiFunctionId {
   GET_SOURCE_EDITOR_CONTEXT_ID,
@@ -54,10 +63,11 @@ enum class RStudioApiFunctionId {
   TERMINAL_VISIBLE_ID,
   VIEWER_ID,
   VERSION_INFO_MODE_ID,
-  DOCUMENT_CLOSE_ID;
+  DOCUMENT_CLOSE_ID,
+  SOURCE_MARKERS_ID;
 
   companion object {
-    fun fromInt(a: Int): RStudioApiFunctionId {
+    fun fromInt(a: Int): RStudioApiFunctionId? {
       return when (a) {
         0 -> GET_SOURCE_EDITOR_CONTEXT_ID
         1 -> INSERT_TEXT_ID
@@ -97,7 +107,8 @@ enum class RStudioApiFunctionId {
         35 -> VIEWER_ID
         36 -> VERSION_INFO_MODE_ID
         37 -> DOCUMENT_CLOSE_ID
-        else -> throw IllegalArgumentException("Unknown function id")
+        38 -> SOURCE_MARKERS_ID
+        else -> null
       }
     }
   }
@@ -114,6 +125,86 @@ fun viewer(rInterop: RInterop, args: RObject): AsyncPromise<Unit> {
   return promise
 }
 
+fun sourceMarkers(rInterop: RInterop, args: RObject) {
+  val name = args.list.getRObjects(0).rString.getStrings(0)
+  val markers = args.list.getRObjects(1).list.rObjectsList.map {
+    marker -> marker.list.rObjectsList
+  }
+  val basePath = args.list.getRObjects(2).toStringOrNull()
+  var autoSelect = args.list.getRObjects(3).rString.getStrings(0).let {
+    if (it == "none") null
+    else it
+  }
+  val files = markers.map { it[1].rString.getStrings(0) }.toHashSet()
+  for (file in files) {
+    val filePath = (basePath ?: "") + file
+    findFileByPathAtHostHelper(rInterop, filePath).then { virtualFile ->
+      val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
+      if (document == null) {
+        return@then
+      }
+      val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
+      for (e in editors) {
+        e.markupModel.allHighlighters.filter { it.textAttributesKey?.externalName == name }.map {
+          e.markupModel.removeHighlighter(it)
+        }
+      }
+    }
+  }
+  for (marker in markers) {
+    val type = marker[0].rString.getStrings(0)
+    val file = marker[1].rString.getStrings(0)
+    val line = marker[2].rInt.getInts(0)
+    val column = marker[3].rInt.getInts(0)
+    val message = marker[4].rString.getStrings(0)
+    val filePath = (basePath ?: "") + file
+    val highlighterLayer = when (type) {
+      "error" -> HighlighterLayer.ERROR
+      "warning", "style" -> HighlighterLayer.WARNING
+      "info", "usage" -> HighlighterLayer.WEAK_WARNING
+      else -> return
+    }
+    findFileByPathAtHostHelper(rInterop, filePath).then { virtualFile ->
+      val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
+      if (document == null) {
+        return@then
+      }
+      val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
+      for (e in editors) {
+        val offset = getLineOffset(document, line - 1, column - 1)
+        if (autoSelect == "first" || (autoSelect == "error" && type == "error")) {
+          e.caretModel.primaryCaret.moveToOffset(offset)
+        }
+        val textAttributesKey = TextAttributesKey.createTextAttributesKey(name)
+        val color = e.colorsScheme.getAttributes(
+          when (highlighterLayer) {
+            HighlighterLayer.ERROR -> CodeInsightColors.ERRORS_ATTRIBUTES
+            HighlighterLayer.WARNING -> CodeInsightColors.WARNINGS_ATTRIBUTES
+            HighlighterLayer.WEAK_WARNING -> CodeInsightColors.WEAK_WARNING_ATTRIBUTES
+            else -> return@then
+          }
+        ).errorStripeColor
+        e.markupModel.addLineHighlighter(line.toInt() - 1, highlighterLayer, null)
+        val rangeHighlighter = e.markupModel.addRangeHighlighter(
+          textAttributesKey,
+          offset, offset,
+          highlighterLayer,
+          HighlighterTargetArea.LINES_IN_RANGE
+        )
+        rangeHighlighter.errorStripeMarkColor = color
+        rangeHighlighter.errorStripeTooltip = message
+      }
+    }
+    if (autoSelect == "first" || type == "error") {
+      autoSelect = null
+    }
+  }
+}
+
+private fun getLineOffset(document: Document, line: Long, col: Long): Int {
+  return min(document.getLineEndOffset(line.toInt()), document.getLineStartOffset(line.toInt()) + col.toInt())
+}
+
 fun versionInfoMode(rInterop: RInterop): RObject {
   val mode = if (rInterop.interpreter.isLocal()) "desktop" else "server"
   return mode.toRString()
@@ -123,12 +214,19 @@ internal fun String.toRString(): RObject {
   return RObject.newBuilder().setRString(RObject.RString.newBuilder().addStrings(this)).build()
 }
 
+internal fun RObject.toStringOrNull(): String? {
+  return if (this.hasRNull()) return null
+  else {
+    this.rString.getStrings(0)
+  }
+}
+
 internal fun <T : Iterable<RObject>> T.toRList(): RObject {
   return RObject.newBuilder().setList(RObject.List.newBuilder().addAllRObjects(this)).build()
 }
 
 internal fun Boolean.toRBoolean(): RObject {
-  return RObject.newBuilder().setRboolean(RObject.RBoolean.newBuilder().addBooleans(this)).build()
+  return RObject.newBuilder().setRBoolean(RObject.RBoolean.newBuilder().addBooleans(this)).build()
 }
 
 internal fun Long.toRInt(): RObject {
@@ -140,7 +238,7 @@ internal fun Int.toRInt(): RObject {
 }
 
 internal fun getRNull(): RObject {
-  return RObject.newBuilder().setRnull(RObject.RNull.getDefaultInstance()).build()
+  return RObject.newBuilder().setRNull(RObject.RNull.getDefaultInstance()).build()
 }
 
 internal fun getConsoleView(rInterop: RInterop): RConsoleView? {

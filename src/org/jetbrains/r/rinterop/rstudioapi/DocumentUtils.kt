@@ -99,13 +99,7 @@ private fun getDocumentContext(rInterop: RInterop, type: ContextType): RObject {
 }
 
 fun insertText(rInterop: RInterop, args: RObject): RObject {
-  val document = if (args.list.getRObjects(1).hasRnull()) {
-    getDocumentFromId(null, rInterop) ?: return getRNull()
-  }
-  else {
-    val id = args.list.getRObjects(1).rString.getStrings(0)
-    getDocumentFromId(id, rInterop) ?: return getRNull()
-  }
+  val document = getDocumentFromId(args.list.getRObjects(1).toStringOrNull(), rInterop) ?: return getRNull()
   val insertions = args.list.getRObjects(0).list.rObjectsList.sortedWith(compareBy(
     { -it.list.getRObjects(0).rInt.intsList[0].toInt() },
     { -it.list.getRObjects(0).rInt.intsList[1].toInt() },
@@ -160,12 +154,7 @@ fun insertText(rInterop: RInterop, args: RObject): RObject {
 
 fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
   val ranges = args.list.getRObjects(0).list.rObjectsList.map { it.rInt.intsList.map { it.toInt() } }
-  val document = if (args.list.getRObjects(1).hasRnull()) {
-    getDocumentFromId(null, rInterop)
-  } else {
-    val id = args.list.getRObjects(1).rString.getStrings(0)
-    getDocumentFromId(id, rInterop)
-  } ?: return getRNull()
+  val document = getDocumentFromId(args.list.getRObjects(1).toStringOrNull(), rInterop) ?: return getRNull()
   val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
   editors.map {editor ->
     editor.caretModel.caretsAndSelections = ranges.map { r ->
@@ -180,12 +169,12 @@ fun setSelectionRanges(rInterop: RInterop, args: RObject): RObject {
   return getRNull()
 }
 
-fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
+fun documentNew(rInterop: RInterop, args: RObject): Promise<RObject> {
   val type = args.list.getRObjects(0).rString.getStrings(0)
   val text = args.list.getRObjects(1).rString.getStrings(0)
   val line = args.list.getRObjects(2).rInt.getInts(0).toInt()
   val column = args.list.getRObjects(2).rInt.getInts(1).toInt()
-  val execute = args.list.getRObjects(3).rboolean.getBooleans(0)
+  val execute = args.list.getRObjects(3).rBoolean.getBooleans(0)
   val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
   val panel = panel {
     row { component(fileChooser).focused() }
@@ -199,7 +188,7 @@ fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
     else null
     dialogPromise.setResult(result)
   }
-  val promise = AsyncPromise<Unit>()
+  val promise = AsyncPromise<RObject>()
   dialogPromise.then {
     if (it != null) {
       val path = if (PathUtilRt.getFileExtension(it) == null) {
@@ -254,10 +243,11 @@ fun documentNew(rInterop: RInterop, args: RObject): Promise<Unit> {
               }
             }
           }
-          promise.setResult(Unit)
+          promise.setResult(RObject.getDefaultInstance())
         }
       })
     }
+    else promise.setResult(rError("No file selected"))
   }
   return promise
 }

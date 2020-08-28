@@ -1026,11 +1026,19 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         lateinit var rStudioApiResponse: RObject
         fireListenersAsync(
           {
-            val response = it.onRStudioApiRequest(RStudioApiFunctionId.fromInt(request.functionID), request.args)
-            response.then { result ->
-              rStudioApiResponse = result
-            }.onError {
-              rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
+            val id = RStudioApiFunctionId.fromInt(request.functionID)
+            if (id != null) {
+              val response = it.onRStudioApiRequest(id, request.args)
+              response.then { result ->
+                rStudioApiResponse = result
+              }.onError {
+                rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
+              }
+            } else {
+              val response = AsyncPromise<Unit>()
+              rStudioApiResponse = RObject.newBuilder().setError("Unknown function id").build()
+              response.setResult(Unit)
+              response
             }
           }) {
           executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)

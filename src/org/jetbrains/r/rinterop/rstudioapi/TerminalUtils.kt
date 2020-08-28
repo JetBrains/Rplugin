@@ -46,14 +46,13 @@ fun terminalClear(rInterop: RInterop, args: RObject): RObject {
 fun terminalExecute(rInterop: RInterop, args: RObject): RObject {
   val command= args.list.getRObjects(0).rString.getStrings(0)
   val workingDir = args.list.getRObjects(1).let {
-    if (it.hasRnull()) null
-    else it.rString.getStrings(0)
+    it.toStringOrNull()
   }
   val env = args.list.getRObjects(2).rString.stringsList.toList().map {
     val (f, s) = it.split("=")
     f to s
   }.associate { it }
-  val show = args.list.getRObjects(3).rboolean.getBooleans(0)
+  val show = args.list.getRObjects(3).rBoolean.getBooleans(0)
 
   val terminalWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(workingDir, "Terminal")
   TerminalOptionsProvider.instance.setEnvData(com.intellij.execution.configuration.EnvironmentVariablesData.create(env, true))
@@ -98,7 +97,7 @@ fun terminalVisible(rInterop: RInterop): RObject {
 
 fun terminalCreate(rInterop: RInterop, args: RObject): RObject {
   val caption = args.list.getRObjects(0).rString.getStrings(0)
-  val show = args.list.getRObjects(1).rboolean.getBooleans(0)
+  val show = args.list.getRObjects(1).rBoolean.getBooleans(0)
   val shellType = args.list.getRObjects(2).rString.getStrings(0)
   val shellWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(rInterop.project.basePath, caption)
   return idFromTerminal(rInterop, shellWidget)?.toRString() ?: getRNull()

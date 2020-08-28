@@ -60,30 +60,30 @@ public interface RObjectOrBuilder extends
   org.jetbrains.r.rinterop.RObject.ListOrBuilder getListOrBuilder();
 
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  boolean hasRnull();
+  boolean hasRNull();
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  org.jetbrains.r.rinterop.RObject.RNull getRnull();
+  org.jetbrains.r.rinterop.RObject.RNull getRNull();
   /**
-   * <code>.rplugininterop.RObject.RNull rnull = 5;</code>
+   * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
-  org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRnullOrBuilder();
+  org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRNullOrBuilder();
 
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  boolean hasRboolean();
+  boolean hasRBoolean();
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  org.jetbrains.r.rinterop.RObject.RBoolean getRboolean();
+  org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean();
   /**
-   * <code>.rplugininterop.RObject.RBoolean rboolean = 6;</code>
+   * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
-  org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRbooleanOrBuilder();
+  org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRBooleanOrBuilder();
 
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>

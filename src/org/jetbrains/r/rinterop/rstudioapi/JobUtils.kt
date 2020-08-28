@@ -13,13 +13,8 @@ import org.jetbrains.r.rinterop.RObject
 fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
   val path = args.list.getRObjects(0).rString.getStrings(0)
   val filePromise = findFileByPathAtHostHelper(rInterop, path)
-  val workingDir = if (args.list.getRObjects(3).hasRnull()) {
-    PathUtil.getParentPath(path)
-  }
-  else {
-    args.list.getRObjects(3).rString.getStrings(0)
-  }
-  val importEnv = args.list.getRObjects(4).rboolean.getBooleans(0)
+  val workingDir = args.list.getRObjects(3).toStringOrNull() ?: PathUtil.getParentPath(path)
+  val importEnv = args.list.getRObjects(4).rBoolean.getBooleans(0)
   val exportEnvName = args.list.getRObjects(5).rString.getStrings(0)
   val exportEnv = when (exportEnvName) {
     "" -> ExportGlobalEnvPolicy.DO_NO_EXPORT

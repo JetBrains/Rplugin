@@ -4,9 +4,11 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.vfs.VirtualFileManager
 import junit.framework.TestCase
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
+import java.nio.file.Paths
 import kotlin.streams.toList
 
 class RStudioApiUtilsTest : RConsoleBaseTestCase() {
@@ -278,5 +280,51 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["b"])
     TestCase.assertEquals("[1] 3", (console.consoleRuntimeInfo.variables["e"] as RValueSimple).text)
     TestCase.assertEquals("[1] 4", (console.consoleRuntimeInfo.variables["d"] as RValueSimple).text)
+  }
+
+  fun testBasic_sourceMarkersErrorFocus() {
+    rInterop.setWorkingDir(myFixture.testDataPath)
+    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
+    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
+    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
+    console.executeText("""
+      |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
+      |b <- rstudioapi::sourceMarkers("test", markers, NULL, "error")
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals(2,
+                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
+    TestCase.assertEquals(11, editor.caretModel.primaryCaret.offset)
+  }
+
+  fun testBasic_sourceMarkersFirstFocus() {
+    rInterop.setWorkingDir(myFixture.testDataPath)
+    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
+    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
+    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
+    console.executeText("""
+      |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
+      |b <- rstudioapi::sourceMarkers("test", markers, NULL, "first")
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals(2,
+                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
+    TestCase.assertEquals(2, editor.caretModel.primaryCaret.offset)
+  }
+
+  fun testBasic_sourceMarkersNoFocus() {
+    rInterop.setWorkingDir(myFixture.testDataPath)
+    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
+    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
+    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
+    console.executeText("""
+      |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
+      |b <- rstudioapi::sourceMarkers("test", markers, NULL)
+      |b <- rstudioapi::sourceMarkers("test", markers, NULL)
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals(2,
+                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
+    TestCase.assertEquals(0, editor.caretModel.primaryCaret.offset)
   }
 }

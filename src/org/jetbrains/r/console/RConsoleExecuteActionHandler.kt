@@ -299,7 +299,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             }
             RStudioApiFunctionId.DOCUMENT_NEW_ID -> {
               documentNew(rInterop, args).then {
-                promise.setResult(RObject.getDefaultInstance())
+                promise.setResult(it)
               }
             }
             RStudioApiFunctionId.TERMINAL_ACTIVATE_ID -> TODO()
@@ -348,6 +348,10 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             }
             RStudioApiFunctionId.DOCUMENT_CLOSE_ID -> {
               promise.setResult(documentClose(rInterop, args))
+            }
+            RStudioApiFunctionId.SOURCE_MARKERS_ID -> {
+              sourceMarkers(rInterop, args)
+              promise.setResult(RObject.getDefaultInstance())
             }
           }
         } catch (e: Throwable) {

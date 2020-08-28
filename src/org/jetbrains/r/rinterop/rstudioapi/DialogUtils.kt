@@ -135,7 +135,7 @@ private fun selectHelper(rInterop: RInterop, args: RObject, selectFolder: Boolea
     "R Markdown Files (*.Rmd)" -> "Rmd"
     else -> null
   }
-  val existing = if (selectFolder) true else args.list.getRObjects(4).rboolean.getBooleans(0)
+  val existing = if (selectFolder) true else args.list.getRObjects(4).rBoolean.getBooleans(0)
   val fileChooser = rInterop.interpreter.createFileChooserForHost(path, selectFolder)
   val panel = panel {
     if (!selectFolder) noteRow(filter!!)

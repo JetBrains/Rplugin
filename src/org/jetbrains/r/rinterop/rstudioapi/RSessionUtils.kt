@@ -12,9 +12,9 @@ import org.jetbrains.r.rinterop.RObject
 
 fun sendToConsole(rInterop: RInterop, args: RObject) {
   val code = args.list.getRObjects(0).rString.getStrings(0)
-  val execute = args.list.getRObjects(1).rboolean.getBooleans(0)
-  val echo = args.list.getRObjects(2).rboolean.getBooleans(0)
-  val focus = args.list.getRObjects(3).rboolean.getBooleans(0)
+  val execute = args.list.getRObjects(1).rBoolean.getBooleans(0)
+  val echo = args.list.getRObjects(2).rBoolean.getBooleans(0)
+  val focus = args.list.getRObjects(3).rBoolean.getBooleans(0)
   val call = args.list.getRObjects(4).rString.getStrings(0)
 
   val console = getConsoleView(rInterop) ?: return
