@@ -19,7 +19,6 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.RMultiOutputProcessor
 import org.jetbrains.r.interpreter.runMultiOutputHelper
 import org.jetbrains.r.interpreter.uploadFileToHost
@@ -108,7 +107,7 @@ object RSkeletonUtil {
     }
 
     for (promise in promises) {
-      promise.blockingGet(RInterpreterUtil.DEFAULT_TIMEOUT)?.let { result = result || it } // Wait for all helpers
+      promise.blockingGet(PACKAGE_SUMMARY_TIMEOUT)?.let { result = result || it } // Wait for all helpers
     }
 
     try {
@@ -351,6 +350,8 @@ object RSkeletonUtil {
       private val extraNamedArgumentsHelper = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R")
     }
   }
+
+  private const val PACKAGE_SUMMARY_TIMEOUT = MAX_BUCKET_SIZE * 15 * 1000 // 15 seconds for each package
 }
 
 data class RPackage(val name: String, val version: String) {
