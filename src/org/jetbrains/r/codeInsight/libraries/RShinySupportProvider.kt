@@ -8,16 +8,15 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.editor.completion.RLookupElementFactory
+import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.impl.RStringLiteralExpressionImpl
 
 class RShinySupportProvider : RLibrarySupportProvider {
   override fun resolve(element: RPsiElement): ResolveResult? {
-    val uiAndServerElements = getUiAndServerElements(element)
+    val (uiDefinition, serverDefinition) = getUiAndServerElements(element)
 
-    val uiDefinition = uiAndServerElements.first
-    val serverDefinition = uiAndServerElements.second
     if (uiDefinition == null || serverDefinition == null) {
       return null
     }
@@ -38,10 +37,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
       return null
     }
     val resolveProcessor = ShinyResolveProcessor(elementName)
-    if (callableObject.text == INPUT_OBJECT) {
+    if (callableObject.name == INPUT_OBJECT) {
       processInputElements(uiDefinition, resolveProcessor)
     }
-    if (callableObject.text == OUTPUT_OBJECT) {
+    if (callableObject.name == OUTPUT_OBJECT) {
       processOutputElements(uiDefinition, resolveProcessor)
     }
     return resolveProcessor.result
@@ -50,7 +49,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
   override fun completeMembers(receiver: RPsiElement,
                                lookupElementFactory: RLookupElementFactory,
                                completionConsumer: CompletionResultSet) {
-    if (receiver !is RIdentifierExpression || (receiver.text != INPUT_OBJECT && receiver.text != OUTPUT_OBJECT)) {
+    if (receiver !is RIdentifierExpression || (receiver.name != INPUT_OBJECT && receiver.name != OUTPUT_OBJECT)) {
       return
     }
     val uiAndServerElements = getUiAndServerElements(receiver)
@@ -62,10 +61,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
     }
 
     val completionProcessor = ShinyCompletionProcessor(lookupElementFactory, completionConsumer)
-    if (receiver.text == INPUT_OBJECT) {
+    if (receiver.name == INPUT_OBJECT) {
       processInputElements(uiDefinition, completionProcessor)
     }
-    if (receiver.text == OUTPUT_OBJECT) {
+    if (receiver.name == OUTPUT_OBJECT) {
       processOutputElements(uiDefinition, completionProcessor)
     }
   }
@@ -90,7 +89,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
     }
 
     val tagsObject = receiver.leftExpr
-    if (tagsObject !is RIdentifierExpression || tagsObject.text != "tags") {
+    if (tagsObject !is RIdentifierExpression || tagsObject.name != "tags") {
       return
     }
     val tagsMethod = receiver.rightExpr
@@ -108,7 +107,7 @@ class RShinySupportProvider : RLibrarySupportProvider {
     completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("id"))
     completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("class"))
 
-    val customAttributes = SHINY_TAGS_ATTRIBUTES[tagsMethod.text]
+    val customAttributes = SHINY_TAGS_ATTRIBUTES[tagsMethod.name]
     if (customAttributes != null) {
       for (customAttribute in customAttributes) {
         completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement(customAttribute))
@@ -153,14 +152,9 @@ class RShinySupportProvider : RLibrarySupportProvider {
 
     uiDefinition.accept(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(call: RCallExpression) {
-        for (namedArgument in call.argumentList.namedArgumentList) {
-          val assignedValue = namedArgument.assignedValue
-          if (namedArgument.name == INPUT_ID_ATTRIBUTE && assignedValue is RStringLiteralExpression) {
-            val elementName = assignedValue.name
-            if (elementName != null) {
-              result.add(SmartPointerManager.createPointer(assignedValue as PsiElement))
-            }
-          }
+        val inputIdArgument = RParameterInfoUtil.getArgumentByName(call, INPUT_ID_ATTRIBUTE)
+        if (inputIdArgument != null) {
+          result.add(SmartPointerManager.createPointer(inputIdArgument as PsiElement))
         }
         super.visitCallExpression(call)
       }
@@ -207,12 +201,11 @@ class RShinySupportProvider : RLibrarySupportProvider {
 
     uiDefinition.accept(object : RRecursiveElementVisitor() {
       override fun visitCallExpression(call: RCallExpression) {
-        if (call.expression is RIdentifierExpression && call.expression.text.endsWith(OUTPUT_CALL_SUFFIX)) {
-          if (call.argumentList.expressionList.isNotEmpty()) {
-            val outputIdCandidate = call.argumentList.expressionList.first()
-            if (outputIdCandidate is RStringLiteralExpression) {
-              result.add(SmartPointerManager.createPointer(outputIdCandidate))
-            }
+        val callExpression = call.expression
+        if (callExpression is RIdentifierExpression && callExpression.name.endsWith(OUTPUT_CALL_SUFFIX)) {
+          val outputIdArgument = RParameterInfoUtil.getArgumentByName(call, OUTPUT_ID_ATTRIBUTE)
+          if (outputIdArgument != null) {
+            result.add(SmartPointerManager.createPointer(outputIdArgument))
           }
         }
         super.visitCallExpression(call)
@@ -239,10 +232,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
       if (child is RAssignmentStatement) {
         val assignee = child.assignee
         if (assignee is RIdentifierExpression) {
-          if (assignee.text == UI_VARIABLE) {
+          if (assignee.name == UI_VARIABLE) {
             uiDefinition = child
           }
-          if (assignee.text == SERVER_VARIABLE) {
+          if (assignee.name == SERVER_VARIABLE) {
             serverDefinition = child
           }
         }
@@ -289,6 +282,8 @@ class RShinySupportProvider : RLibrarySupportProvider {
     const val UI_VARIABLE = "ui"
     @NonNls
     const val INPUT_ID_ATTRIBUTE = "inputId"
+    @NonNls
+    const val OUTPUT_ID_ATTRIBUTE = "outputId"
     @NonNls
     const val INPUT_OBJECT = "input"
     @NonNls
