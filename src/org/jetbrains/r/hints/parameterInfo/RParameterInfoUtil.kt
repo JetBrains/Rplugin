@@ -188,7 +188,15 @@ object RParameterInfoUtil {
    * @see [getArgumentByName]
    */
   fun getArgumentByName(call: RCallExpression, name: String, definition: RAssignmentStatement?): RExpression? {
-    return getArgumentInfo(call, definition)?.getArgumentPassedToParameter(name)
+    if (definition != null) {
+      return getArgumentInfo(call, definition)?.getArgumentPassedToParameter(name)
+    }
+    for (namedArgument in call.argumentList.namedArgumentList) {
+      if (namedArgument.name == name) {
+        return namedArgument.assignedValue
+      }
+    }
+    return null
   }
 
   fun getAllDotsArguments(call: RCallExpression): List<RExpression> {
