@@ -579,14 +579,19 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     """.trimIndent()
     val file = loadFileWithBreakpointsFromText(text)
     val steps = mutableListOf<String?>()
+    val texts = mutableListOf<String>()
 
     helper.invokeAndWait { rInterop.replSourceFile(file, true, firstDebugCommand = ExecuteCodeRequest.DebugCommand.STOP) }
     while (rInterop.isDebug) {
-      steps.add(rInterop.debugStack.lastOrNull()?.extendedPosition?.let { text.substring(it.startOffset, it.endOffset) })
+      steps.add(rInterop.debugStack.last().extendedPosition?.let { text.substring(it.startOffset, it.endOffset) })
+      texts.add(rInterop.debugStack.last().sourcePositionText!!)
       helper.invokeAndWait { rInterop.debugCommandStepOver() }
     }
 
     TestCase.assertEquals(listOf(null, "y <- 2", "\"Абвг\"", "z <- 3", null, null, "44", "55", "hh <- 6", null, "678", "999", null, "15"), steps)
+    TestCase.assertEquals(listOf("x<-1", "y<-2", "\"Абвг\"", "z<-3", "if(TRUE){", "123", "44", "55", "hh<-6",
+                                 "if(TRUE){", "678", "999", "if(TRUE){15}", "15"),
+                          texts.map { it.replace(Regex("\\s"), "") })
   }
 
   fun testExtendedPositionBreakpoint() {
@@ -633,5 +638,45 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
       if (FALSE) { 44 }; fail <- TRUE # BREAKPOINT
       5
     """.trimIndent())
+  }
+
+  fun testFunctionSourcePositionWithText() {
+    val file = loadFileWithBreakpointsFromText("""
+      0
+      1
+      2
+      foo <- function(a, b = 3) {
+        return(a + b)
+      }
+      6
+      7; bar <- function(x = 1,
+                         y = 2) { x - y }
+      9
+    """.trimIndent())
+    rInterop.replSourceFile(file)
+
+    TestCase.assertEquals(RSourcePosition(file, 3) to "foo <- function(a, b = 3) {",
+                          RReference.expressionRef("foo", rInterop).functionSourcePositionWithText())
+    TestCase.assertEquals(RSourcePosition(file, 7) to "7; bar <- function(x = 1,",
+                          RReference.expressionRef("bar", rInterop).functionSourcePositionWithText())
+  }
+
+  fun testException() {
+    val file = loadFileWithBreakpointsFromText("""
+      x <- 0 # BREAKPOINT
+      x <- 1
+      x <- err2
+      x <- 3
+      x <- 4
+    """.trimIndent())
+
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepOver() }
+    helper.invokeAndWait(true) { rInterop.debugCommandStepOver() }
+    TestCase.assertEquals(2, rInterop.debugStack.lastOrNull()?.position?.line)
+    TestCase.assertEquals("1", rInterop.executeCode("cat(x)").stdout)
+
+    helper.invokeAndWait(false) { rInterop.debugCommandStepOver() }
+    TestCase.assertEquals("1", rInterop.executeCode("cat(x)").stdout)
   }
 }

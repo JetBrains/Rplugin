@@ -34,6 +34,7 @@ import com.intellij.ui.EditorNotifications
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.DocumentUtil
 import com.intellij.xdebugger.XSourcePositionWrapper
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroup
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointGroupingRule
@@ -165,7 +166,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction null
       val line = frame.position.line
       try {
-        val range = frame.extendedPosition ?: TextRange(document.getLineStartOffset(line), document.getLineEndOffset(line))
+        val range = frame.extendedPosition ?: DocumentUtil.getLineTextRange(document, line)
         document.getText(range)
       } catch (e: IndexOutOfBoundsException) {
         null

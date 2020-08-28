@@ -15,6 +15,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.api.RPsiElement
@@ -73,9 +74,9 @@ private fun createFunctionPomTarget(rVar: RVar): RPomTarget = FunctionPomTarget(
 internal class FunctionPomTarget(private val rVar: RVar) : RPomTarget() {
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return rVar.ref.rInterop.executeTask {
-      rVar.ref.functionSourcePosition()?.xSourcePosition?.let {
+      rVar.ref.functionSourcePositionWithText()?.let {
         ApplicationManager.getApplication().invokeLater {
-          it.createNavigatable(rVar.project).navigate(true)
+          RDebuggerUtil.navigateAndCheckSourceChanges(rVar.project, it)
         }
       }
       Unit

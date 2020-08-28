@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class RSourceFileManager(private val rInterop: RInterop): Disposable {
   private val files = ConcurrentHashMap<String, VirtualFile>()
   private val fileToId = ConcurrentHashMap<VirtualFile, String>()
-  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<RSourcePosition>>() }
+  private val cachedFunctionPositions by rInterop.Cached { ConcurrentHashMap<RRef, Optional<Pair<RSourcePosition, String?>>>() }
 
   init {
     Disposer.register(rInterop, this)
@@ -83,11 +83,13 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
     return file
   }
 
-  fun getFunctionPosition(rRef: RReference): CancellablePromise<RSourcePosition?> {
+  fun getFunctionPosition(rRef: RReference): CancellablePromise<Pair<RSourcePosition, String?>?> {
     val map = cachedFunctionPositions
-    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).thenCancellable { position ->
+    return rInterop.executeAsync(rInterop.asyncStub::getFunctionSourcePosition, rRef.proto).thenCancellable { response ->
       map.getOrPut(rRef.proto) {
-        rInterop.sourceFileManager.getFileById(position.fileId)?.let { RSourcePosition(it, position.line) }.let { Optional.ofNullable(it) }
+        getFileById(response.position.fileId)
+          ?.let { file -> RSourcePosition(file, response.position.line) to response.sourcePositionText.takeIf { it.isNotEmpty() }}
+          .let { Optional.ofNullable(it) }
       }.orElse(null)
     }
   }

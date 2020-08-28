@@ -76,15 +76,20 @@ open class RReference internal constructor(internal val proto: RRef, internal va
     }
   }
 
-  fun functionSourcePosition(): RSourcePosition? {
+  fun functionSourcePosition(): RSourcePosition? = functionSourcePositionWithText()?.first
+
+  fun functionSourcePositionAsync(): CancellablePromise<RSourcePosition?> =
+    functionSourcePositionWithTextAsync().thenCancellable { it?.first }
+
+  fun functionSourcePositionWithText(): Pair<RSourcePosition, String?>? {
     return try {
-      functionSourcePositionAsync().getWithCheckCanceled()
+      functionSourcePositionWithTextAsync().getWithCheckCanceled()
     } catch (e: RInteropTerminated) {
       null
     }
   }
 
-  fun functionSourcePositionAsync(): CancellablePromise<RSourcePosition?> {
+  fun functionSourcePositionWithTextAsync(): CancellablePromise<Pair<RSourcePosition, String?>?> {
     return rInterop.sourceFileManager.getFunctionPosition(this)
   }
 

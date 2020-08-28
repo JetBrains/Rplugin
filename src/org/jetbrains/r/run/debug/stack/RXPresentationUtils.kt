@@ -15,6 +15,7 @@ import com.intellij.xdebugger.frame.presentation.XValuePresentation
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.exception.RDebuggerException
 import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -109,9 +110,9 @@ internal object RXPresentationUtils {
     node.setFullValueEvaluator(object : XFullValueEvaluator(RBundle.message("rx.presentation.utils.view.code.link.text")) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
-        ref.functionSourcePositionAsync().then {
+        ref.functionSourcePositionWithTextAsync().then {
           ApplicationManager.getApplication().invokeLater {
-            it?.xSourcePosition?.createNavigatable(ref.rInterop.project)?.navigate(true)
+            RDebuggerUtil.navigateAndCheckSourceChanges(ref.rInterop.project, it)
             callback.evaluated("")
           }
         }

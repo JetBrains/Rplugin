@@ -55,7 +55,7 @@ class RLineBreakpointUtilsTest : RUsefulTestCase() {
         print("NO")
       }
     """.trimIndent()).virtualFile
-    TestCase.assertEquals(listOf(true, true, false, true, false, false, true, true, true, false, true, true, false),
+    TestCase.assertEquals(listOf(true, false, false, true, false, false, true, true, true, false, false, true, false),
                           (0 until 13).map { RLineBreakpointUtils.canPutAt(project, file, it) })
   }
 }
