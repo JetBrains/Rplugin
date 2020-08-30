@@ -3,12 +3,12 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.Content
-import org.jetbrains.plugins.terminal.ShellTerminalWidget
-import org.jetbrains.plugins.terminal.TerminalOptionsProvider
-import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
-import org.jetbrains.plugins.terminal.TerminalView
+import com.intellij.util.execution.ParametersListUtil
+import org.jetbrains.plugins.terminal.*
+import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
@@ -54,7 +54,7 @@ fun terminalExecute(rInterop: RInterop, args: RObject): RObject {
   }.associate { it }
   val show = args.list.getRObjects(3).rBoolean.getBooleans(0)
 
-  val terminalWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(workingDir, "Terminal")
+  val terminalWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(workingDir, null)
   TerminalOptionsProvider.instance.setEnvData(com.intellij.execution.configuration.EnvironmentVariablesData.create(env, true))
   terminalWidget.executeCommand(command)
   return idFromTerminal(rInterop, terminalWidget)?.toRString() ?: getRNull()
@@ -96,16 +96,17 @@ fun terminalVisible(rInterop: RInterop): RObject {
 }
 
 fun terminalCreate(rInterop: RInterop, args: RObject): RObject {
-  val caption = args.list.getRObjects(0).rString.getStrings(0)
+  //TODO shellType
+  val caption = args.list.getRObjects(0).toStringOrNull()
   val show = args.list.getRObjects(1).rBoolean.getBooleans(0)
-  val shellType = args.list.getRObjects(2).rString.getStrings(0)
+  val shellType = args.list.getRObjects(2).toStringOrNull()
   val shellWidget = TerminalView.getInstance(rInterop.project).createLocalShellWidget(rInterop.project.basePath, caption)
   return idFromTerminal(rInterop, shellWidget)?.toRString() ?: getRNull()
 }
 
 fun terminalContext(rInterop: RInterop, args: RObject): RObject {
   val id = args.list.getRObjects(0).rString.getStrings(0)
-  return asRStudioTerminal(terminalFromId(rInterop, id) ?: return getRNull())
+  return asRStudioTerminal(terminalFromId(rInterop, id) ?: return getRNull(), rInterop)
 }
 
 fun terminalList(rInterop: RInterop): RObject {
@@ -155,8 +156,7 @@ private fun clearTypedCommand(widget: ShellTerminalWidget) {
   textBuffer.unlock()
 }
 
-private fun asRStudioTerminal(terminal: Content): RObject {
-  // TODO used: caption, shell, handle (shell as Git Bash, Command Prompt)
+private fun asRStudioTerminal(terminal: Content, rInterop: RInterop): RObject {
   val caption = terminal.tabName
   val handle = terminal.hashCode().toString()
   FUCounterUsageLogger.getInstance()
@@ -166,14 +166,17 @@ private fun asRStudioTerminal(terminal: Content): RObject {
   val lines = widget.terminalTextBuffer.screenLinesCount
   val rows = widget.terminalDisplay.rowCount
   val columns = widget.terminalDisplay.columnCount
-
+  val shellPath = TerminalProjectOptionsProvider.getInstance(rInterop.project).shellPath
+  val command = ParametersListUtil.parse(shellPath, false, true)
+  val shellCommand = if (command.size > 0) command[0] else null
+  val shellName = shellCommand?.let { File(shellCommand).name }
   return RObject.newBuilder()
     .setNamedList(RObject.NamedList.newBuilder()
                     .addRObjects(0, RObject.KeyValue.newBuilder().setKey("handle").setValue(handle.toRString()))
                     .addRObjects(1, RObject.KeyValue.newBuilder().setKey("caption").setValue(caption.toRString()))
                     .addRObjects(2, RObject.KeyValue.newBuilder().setKey("title").setValue(getRNull()))
                     .addRObjects(3, RObject.KeyValue.newBuilder().setKey("working_dir").setValue(getRNull()))
-                    .addRObjects(4, RObject.KeyValue.newBuilder().setKey("shell").setValue(getRNull()))
+                    .addRObjects(4, RObject.KeyValue.newBuilder().setKey("shell").setValue(shellName?.toRString() ?: getRNull()))
                     .addRObjects(5, RObject.KeyValue.newBuilder().setKey("running").setValue(active.toRBoolean()))
                     .addRObjects(6, RObject.KeyValue.newBuilder().setKey("busy").setValue(busy.toRBoolean()))
                     .addRObjects(7, RObject.KeyValue.newBuilder().setKey("exit_code").setValue(getRNull()))
