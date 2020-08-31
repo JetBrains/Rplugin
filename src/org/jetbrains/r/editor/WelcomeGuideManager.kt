@@ -21,7 +21,7 @@ class WelcomeGuideManager(private val project: Project) {
 
   internal fun showWelcomeGuide() {
     val propertiesComponent = PropertiesComponent.getInstance()
-    if (!propertiesComponent.isTrueValue(KEY)) {
+    if (!propertiesComponent.isTrueValue(KEY) && !RPluginUtil.getPlugin().isBundled) {
       propertiesComponent.setValue(KEY, true)
       val welcomeText = String(javaClass.getResourceAsStream("/fileTemplates/internal/welcome.md").readAllBytes())
       val welcomeFile = LightVirtualFile("R plugin - Welcome.md", welcomeText)
