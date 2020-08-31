@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.testFramework.LightVirtualFile
 import org.intellij.plugins.markdown.ui.preview.MarkdownSplitEditor
 import org.intellij.plugins.markdown.ui.split.SplitFileEditor
+import org.jetbrains.r.RPluginUtil
 
 class WelcomeGuideManager(private val project: Project) {
   init {
@@ -18,7 +19,7 @@ class WelcomeGuideManager(private val project: Project) {
 
   internal fun showWelcomeGuide() {
     val propertiesComponent = PropertiesComponent.getInstance()
-    if (!propertiesComponent.isTrueValue(KEY)) {
+    if (!propertiesComponent.isTrueValue(KEY) && !RPluginUtil.getPlugin().isBundled) {
       propertiesComponent.setValue(KEY, true)
       val welcomeText = String(javaClass.getResourceAsStream("/fileTemplates/internal/welcome.md").readAllBytes())
       val welcomeFile = LightVirtualFile("R plugin - Welcome.md", welcomeText)
