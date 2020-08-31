@@ -86,8 +86,8 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
 
   abstract fun acceptType(type: String): Boolean
 
-  fun updateProgressStatus(progressStatus: InlayProgressStatus) {
-    toolbarPane.progressComponent = buildProgressStatusComponent(progressStatus)
+  fun updateProgressStatus(editor: Editor, progressStatus: InlayProgressStatus) {
+    toolbarPane.progressComponent = buildProgressStatusComponent(progressStatus, editor)
   }
 
   private fun getProgressStatusHeight(): Int {

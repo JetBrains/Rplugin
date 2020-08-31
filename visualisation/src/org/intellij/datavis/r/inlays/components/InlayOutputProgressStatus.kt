@@ -1,9 +1,11 @@
 package org.intellij.datavis.r.inlays.components
 
 import com.intellij.ide.ui.laf.darcula.ui.DarculaProgressBarUI
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.ui.JBColor
 import com.intellij.ui.scale.JBUIScale
+import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.*
@@ -17,9 +19,11 @@ enum class ProgressStatus {
 
 data class InlayProgressStatus(val progress: ProgressStatus, val statusText: String)
 
-fun buildProgressStatusComponent(progressStatus: InlayProgressStatus): JComponent? {
+fun buildProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
   if (progressStatus.progress == ProgressStatus.STOPPED_OK && progressStatus.statusText.isEmpty()) return null
-  val progressPanel = JPanel(BorderLayout())
+  val progressPanel = JPanel(BorderLayout()).apply {
+    background = UiCustomizer.instance.getTextOutputBackground(editor)
+  }
   var progressBar: JProgressBar? = null
   if (progressStatus.progress != ProgressStatus.STOPPED_OK) {
     progressBar = JProgressBar(0, 100)
