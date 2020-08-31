@@ -34,6 +34,7 @@ import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import java.awt.Dimension
@@ -231,7 +232,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     toolbarPane.dataComponent = console.component
 
     (console.editor as EditorImpl).apply {
-      backgroundColor = UIUtil.getPanelBackground()
+      backgroundColor = UiCustomizer.instance.getTextOutputBackground(editor)
       scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
       MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
     }

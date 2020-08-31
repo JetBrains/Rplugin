@@ -1,5 +1,6 @@
 package org.intellij.datavis.r.ui
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
@@ -9,6 +10,7 @@ import org.intellij.datavis.r.inlays.NotebookInlayComponent
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.ToolbarPane
 import org.intellij.images.editor.ImageEditor
+import java.awt.Color
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -24,6 +26,8 @@ interface UiCustomizer {
   fun toolbarPaneMainPanelCreated(toolbarPane: ToolbarPane, panel: JPanel?)
 
   fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent
+
+  fun getTextOutputBackground(editor: Editor): Color
 
   @JvmDefault
   val isResizeOutputToPreviewHeight: Boolean

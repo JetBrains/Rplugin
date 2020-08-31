@@ -1,9 +1,11 @@
 package org.intellij.datavis.r.ui
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.NotebookInlayComponent
 import org.intellij.datavis.r.inlays.NotebookInlayComponentImpl
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
@@ -25,6 +27,8 @@ class DefaultUiCustomizer : UiCustomizer {
 
   override fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent =
     NotebookInlayComponentImpl(cell, editor)
+
+  override fun getTextOutputBackground(editor: Editor) = UIUtil.getPanelBackground()
 
   override val showUpdateCellSeparator: Boolean = true
 }
