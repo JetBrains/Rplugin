@@ -17,7 +17,10 @@ import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.SoftWrapChangeListener
+import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.editor.impl.softwrap.SoftWrapDrawingType
+import com.intellij.openapi.editor.impl.softwrap.SoftWrapPainter
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -38,6 +41,8 @@ import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
 import java.awt.Dimension
+import java.awt.Font
+import java.awt.Graphics
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.io.File
@@ -272,6 +277,17 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
           console.flushDeferredText()
 
           (console.editor as? EditorImpl)?.apply {
+            softWrapModel.setSoftWrapPainter(object : SoftWrapPainter {
+              override fun paint(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
+
+              override fun getDrawingHorizontalOffset(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
+
+              override fun getMinDrawingWidth(drawingType: SoftWrapDrawingType) = 0
+
+              override fun canUse() = true
+
+              override fun reinit() {}
+            })
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() {
