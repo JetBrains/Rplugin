@@ -106,7 +106,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
       }
     }
     progressStatus?.let {
-      inlayOutput.updateProgressStatus(it)
+      inlayOutput.updateProgressStatus(editor, it)
     }
     inlayOutput.addData(data, type)
   }
@@ -116,7 +116,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
   }
 
   override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
-    output?.updateProgressStatus(progressStatus)
+    output?.updateProgressStatus(editor, progressStatus)
   }
 
   override fun clear() {
