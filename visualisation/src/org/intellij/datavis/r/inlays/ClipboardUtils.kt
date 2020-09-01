@@ -24,7 +24,7 @@ object ClipboardUtils {
 
   private const val CELL_BREAK = "\t"
 
-  private fun copyAllToString(table: JTable) : String {
+  private fun copyAllToString(table: JTable, cellBreak: String = CELL_BREAK): String {
     if (table.rowCount == 0 || table.columnCount == 0) {
       // The code should be compatible with 193 and 201 so, so we cannot use NotificationGroup.createIdWithTitle yet
       // NotificationGroup.createIdWithTitle("Notebook Table", VisualizationBundle.message("inlay.output.table.notification.group.name"))
@@ -38,10 +38,10 @@ object ClipboardUtils {
     val builder = StringBuilder()
     for (i in 0 until table.rowCount) {
       for (j in 0 until table.columnCount) {
-        table.getValueAt(i, j)?.let { builder.append(escape(it)) }
+        table.getValueAt(i, j)?.let { builder.append(escape(it, cellBreak)) }
 
         if (j < table.columnCount - 1) {
-          builder.append(CELL_BREAK)
+          builder.append(cellBreak)
         }
       }
       builder.append(LINE_BREAK)
@@ -50,12 +50,12 @@ object ClipboardUtils {
     return builder.toString()
   }
 
-  fun copyAllToClipboard(table: JTable) {
-    val sel = StringSelection(copyAllToString(table))
+  fun copyAllToClipboard(table: JTable, cellBreak: String = CELL_BREAK) {
+    val sel = StringSelection(copyAllToString(table, cellBreak))
     Toolkit.getDefaultToolkit().systemClipboard.setContents(sel, sel)
   }
 
-  fun copySelectedToString(table: JTable) : String {
+  fun copySelectedToString(table: JTable, cellBreak: String = CELL_BREAK): String {
 
     val selectedColumnCount = table.selectedColumnCount
     val selectedRowCount = table.selectedRowCount
@@ -73,10 +73,10 @@ object ClipboardUtils {
     val builder = StringBuilder()
     for (i in 0 until selectedRowCount) {
       for (j in 0 until selectedColumnCount) {
-        table.getValueAt(selectedRows[i], selectedColumns[j])?.let { builder.append(escape(it)) }
+        table.getValueAt(selectedRows[i], selectedColumns[j])?.let { builder.append(escape(it, cellBreak)) }
 
         if (j < selectedColumnCount - 1) {
-          builder.append(CELL_BREAK)
+          builder.append(cellBreak)
         }
       }
       builder.append(LINE_BREAK)
@@ -84,14 +84,14 @@ object ClipboardUtils {
     return builder.toString()
   }
 
-  fun copySelectedToClipboard(table: JTable) {
-    val sel = StringSelection(copySelectedToString(table))
+  fun copySelectedToClipboard(table: JTable, cellBreak: String = CELL_BREAK) {
+    val sel = StringSelection(copySelectedToString(table, cellBreak))
     Toolkit.getDefaultToolkit().systemClipboard.setContents(sel, sel)
   }
 
-  fun escape(cell: Any): String {
+  fun escape(cell: Any, cellBreak: String = CELL_BREAK): String {
     return cell.toString().replace(LINE_BREAK, " ").replace(
-      CELL_BREAK, " ")
+      cellBreak, " ")
   }
 
   fun copyImageToClipboard(image: Image) {
