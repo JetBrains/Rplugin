@@ -27,13 +27,14 @@ class NotebookInlayData(val project: Project, parent: Disposable, dataFrame: Dat
   private val disposable = Disposer.newDisposable()
 
   init {
-    Disposer.register(parent, disposable)
-    layout = BorderLayout()
-    add(inlayTablePage, DEFAULT_LAYER)
-    inlayTablePage.onChange = { onChange?.invoke() }
-    MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane, parent)
-
-    inlayTablePage.setDataFrame(dataFrame)
+    if (!Disposer.isDisposed(parent)) {
+      Disposer.register(parent, disposable)
+      layout = BorderLayout()
+      add(inlayTablePage, DEFAULT_LAYER)
+      inlayTablePage.onChange = { onChange?.invoke() }
+      MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane, parent)
+      inlayTablePage.setDataFrame(dataFrame)
+    }
   }
 
   private fun createClearAction(): DumbAwareAction {
