@@ -8,52 +8,71 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.packages.build.ui.forms.RPackageBuildSettingsForm
 import org.jetbrains.r.settings.RPackageBuildSettings
-import javax.swing.JCheckBox
 import javax.swing.JComponent
-import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import kotlin.reflect.KProperty
 
 class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) {
-  private val form = RPackageBuildSettingsForm()
   private val settings = RPackageBuildSettings.getInstance(project)
+  private val installArgsTextField = JBTextField()
+  private val checkArgsTextField = JBTextField()
 
-  private var mainArchitectureOnly by CheckboxDelegate(form.mainArchitectureCheckBox)
-  private var useDevTools by CheckboxDelegate(form.useDevToolsCheckBox)
-  private var keepSources by CheckboxDelegate(form.keepSourcesCheckBox)
-  private var cleanBuild by CheckboxDelegate(form.cleanBuildCheckBox)
-  private var asCran by CheckboxDelegate(form.asCranCheckBox)
+  private var mainArchitectureOnly = settings.mainArchitectureOnly
+  private var useDevTools = settings.useDevTools
+  private var keepSources = settings.keepSources
+  private var cleanBuild = settings.cleanBuild
+  private var asCran = settings.asCran
 
-  private var installArgs: List<String>? by ArgsFieldDelegate(form.installArgsTextField, INSTALL_ARGS_HINT)
-  private var checkArgs: List<String>? by ArgsFieldDelegate(form.checkArgsTextField, CHECK_ARGS_HINT)
+  private var installArgs: List<String>? by ArgsFieldDelegate(installArgsTextField, INSTALL_ARGS_HINT)
+  private var checkArgs: List<String>? by ArgsFieldDelegate(checkArgsTextField, CHECK_ARGS_HINT)
 
   init {
-    loadInitialSettings()
+    installArgs = settings.installArgs
+    checkArgs = settings.checkArgs
     setResizable(false)
     title = TITLE
     init()
   }
 
   override fun createCenterPanel(): JComponent {
-    return form.contentPane
+    val self = this
+    return panel {
+      titledRow(GENERAL_OPTIONS_TITLE) {
+        row {
+          checkBox(USE_DEVTOOLS_TEXT, self::useDevTools)
+        }
+      }
+      titledRow(INSTALLATION_OPTIONS_TITLE) {
+        row {
+          checkBox(MAIN_ARCHITECTURE_ONLY_TEXT, self::mainArchitectureOnly)
+        }
+        row {
+          checkBox(KEEP_SOURCES_TEXT, self::keepSources)
+        }
+        row {
+          checkBox(CLEAN_BUILD_TEXT, self::cleanBuild)
+        }
+        row {
+          installArgsTextField()
+        }
+      }
+      titledRow(CHECKING_OPTIONS_TITLE) {
+        row {
+          checkBox(AS_CRAN_TEXT, self::asCran)
+        }
+        row {
+          checkArgsTextField()
+        }
+      }
+    }
   }
 
   override fun doOKAction() {
     super.doOKAction()
     storeCurrentSettings()
-  }
-
-  private fun loadInitialSettings() {
-    mainArchitectureOnly = settings.mainArchitectureOnly
-    useDevTools = settings.useDevTools
-    keepSources = settings.keepSources
-    cleanBuild = settings.cleanBuild
-    asCran = settings.asCran
-    installArgs = settings.installArgs
-    checkArgs = settings.checkArgs
   }
 
   private fun storeCurrentSettings() {
@@ -70,56 +89,24 @@ class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) 
     isOKActionEnabled = installArgs != null && checkArgs != null
   }
 
-  private class CheckboxDelegate(private val checkbox: JCheckBox) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Boolean {
-      return checkbox.isSelected
-    }
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean) {
-      checkbox.isSelected = value
-    }
-  }
-
-  private inner class ArgsFieldDelegate(field: JTextField, hint: String) {
-    private val proxy = JBTextField()
-
+  private inner class ArgsFieldDelegate(private val field: JBTextField, hint: String) {
     init {
-      replaceTextField(field, hint)
+      field.emptyText.text = hint
       setupInputListener()
     }
 
-    /*
-     * The definitive guide to the black magic of GUI hacking below.
-     * Given that:
-     *   1) a vanilla JTextField doesn't support any grayed out hints for empty input
-     *   2) JBTextField supports them but UI Designer doesn't allow to use it instead of JTextField
-     * how can one setup a hint for a text field?
-     *   The obvious solution is to replace JTextField instantiated by the UI Designer
-     * with an instance of JBTextField.
-     * To make this possible, an extra (otherwise useless) JPanel with BorderLayout is introduced.
-     *   Please note, BorderLayout is essential: it ensures `panel.add(proxy)` statement
-     * will work smoothly without any particular layout constraints specified as the second argument
-     * whilst GridLayoutManager will throw an error
-     */
-    private fun replaceTextField(field: JTextField, hint: String) {
-      proxy.emptyText.text = hint
-      val panel = field.parent
-      panel.remove(field)
-      panel.add(proxy)
-    }
-
     private fun setupInputListener() {
-      proxy.document.addDocumentListener(object : DocumentAdapter() {
+      field.document.addDocumentListener(object : DocumentAdapter() {
         override fun textChanged(e: DocumentEvent) {
           val (_, errorText) = tryParseArgs()
-          setErrorText(errorText, proxy)
+          setErrorText(errorText, field)
           updateOkAction()
         }
       })
     }
 
     private fun tryParseArgs(): Pair<List<String>?, String?> {
-      val text = proxy.text
+      val text = field.text
       if (text.isNullOrBlank()) {
         return Pair(emptyList(), null)
       }
@@ -153,7 +140,7 @@ class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) 
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: List<String>?) {
-      proxy.text = value?.joinToString(separator = " ") ?: ""
+      field.text = value?.joinToString(separator = " ") ?: ""
     }
   }
 
@@ -163,6 +150,17 @@ class RPackageBuildSettingsDialog(project: Project) : DialogWrapper(null, true) 
     private val INSTALL_ARGS_HINT = RBundle.message("packages.build.settings.install.args.hint")
     private val CHECK_ARGS_HINT = RBundle.message("packages.build.settings.check.args.hint")
     private val TITLE = RBundle.message("packages.build.settings.title")
+
+    private val GENERAL_OPTIONS_TITLE = RBundle.message("packages.build.settings.general")
+    private val USE_DEVTOOLS_TEXT = RBundle.message("packages.build.settings.use.dev.tools")
+
+    private val INSTALLATION_OPTIONS_TITLE = RBundle.message("packages.build.settings.install.options")
+    private val MAIN_ARCHITECTURE_ONLY_TEXT = RBundle.message("packages.build.settings.main.architecture.only")
+    private val KEEP_SOURCES_TEXT = RBundle.message("packages.build.settings.keep.sources")
+    private val CLEAN_BUILD_TEXT = RBundle.message("packages.build.settings.clean.build")
+
+    private val CHECKING_OPTIONS_TITLE = RBundle.message("packages.build.settings.check.options")
+    private val AS_CRAN_TEXT = RBundle.message("packages.build.settings.as.cran")
 
     private fun createTooManyLettersForShortArgumentMessage(argument: String): String {
       return RBundle.message("packages.build.settings.incorrect.short.argument", argument)
