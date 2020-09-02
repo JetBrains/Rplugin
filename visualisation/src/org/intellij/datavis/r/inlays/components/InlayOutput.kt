@@ -235,6 +235,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     toolbarPane.dataComponent = console.component
 
     (console.editor as EditorImpl).apply {
+      isRendererMode = true
       backgroundColor = UiCustomizer.instance.getTextOutputBackground(editor)
       scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
       MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
