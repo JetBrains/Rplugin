@@ -24,6 +24,7 @@ import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropTerminated
 import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.locks.ReentrantLock
 
 class RPackageTaskManager(
   private val rInterop: RInterop?,
@@ -32,7 +33,7 @@ class RPackageTaskManager(
 ) {
 
   private val packagesInProgress: ConcurrentSkipListSet<String>
-    get() = project.getUserData(KEY) ?: ConcurrentSkipListSet<String>().also { project.putUserData(KEY, it) }
+    get() = project.getUserData(PACKAGES_KEY) ?: ConcurrentSkipListSet<String>().also { project.putUserData(PACKAGES_KEY, it) }
 
   fun install(packages: List<RepoPackage>, repoUrls: List<String>) {
     val installPackages = packages.filter { !packagesInProgress.contains(it.name) }
@@ -67,12 +68,22 @@ class RPackageTaskManager(
   ) : Task.Backgroundable(project, title) {
 
     override fun run(indicator: ProgressIndicator) {
+      indicator.text = makeQueuedIndicatorText()
+      val lock = obtainLock()
+      lock.lock()
       val watcher = RLibraryWatcher.getInstance(project)
       watcher.disable()
       try {
         runTask(indicator)
       } finally {
         watcher.enable()
+        lock.unlock()
+      }
+    }
+
+    private fun obtainLock(): ReentrantLock {
+      return project.getUserData(LOCK_KEY) ?: ReentrantLock().also { lock ->
+        project.putUserData(LOCK_KEY, lock)
       }
     }
 
@@ -100,10 +111,14 @@ class RPackageTaskManager(
       taskFinished(exceptions)
     }
 
+    private fun makeQueuedIndicatorText(): String {
+      return RBundle.message("package.task.manager.queued.indicator.text", makeIndicatorText(0))
+    }
+
     private fun makeIndicatorText(index: Int): String {
       val action = actions[index]
       return if (actions.size > 1) {
-        "Packaging task $index/${actions.size}: ${action.name}"
+        RBundle.message("package.task.manager.group.indicator.text", index, actions.size, action.name)
       } else {
         action.name
       }
@@ -188,7 +203,7 @@ class RPackageTaskManager(
         RepoUtils.installPackage(rInterop, project, repoPackage, repoUrls)
       }
       finally {
-        project.getUserData(KEY)!!.remove(repoPackage.name)
+        project.getUserData(PACKAGES_KEY)!!.remove(repoPackage.name)
       }
     }
   }
@@ -211,7 +226,7 @@ class RPackageTaskManager(
         RepoUtils.updatePackage(rInterop, project, repoPackage, repoUrls)
       }
       finally {
-        project.getUserData(KEY)!!.remove(repoPackage.name)
+        project.getUserData(PACKAGES_KEY)!!.remove(repoPackage.name)
       }
     }
   }
@@ -234,6 +249,7 @@ class RPackageTaskManager(
   }
 
   companion object {
-    private val KEY: Key<ConcurrentSkipListSet<String>> = Key.create("PACKAGES_IN_INSTALLATION_OR_UPDATING")
+    private val PACKAGES_KEY: Key<ConcurrentSkipListSet<String>> = Key.create("PACKAGES_IN_INSTALLATION_OR_UPDATING")
+    private val LOCK_KEY = Key.create<ReentrantLock>("R_PACKAGING_TASK_LOCK")
   }
 }
