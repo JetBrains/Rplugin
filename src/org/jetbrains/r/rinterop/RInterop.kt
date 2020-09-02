@@ -646,16 +646,14 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeRequest(RPIServiceGrpc.getAfterChunkExecutionMethod(), Empty.getDefaultInstance())
   }
 
-  fun pullChunkOutputRelativePaths(): List<String> {
-    return executeWithCheckCancel(asyncStub::pullChunkOutputRelativePaths, Empty.getDefaultInstance()).listList
-  }
+  data class ChunkOutputPathsResponse(val directory: String, val relativePaths: List<String>)
 
-  fun pullChunkOutputFile(relativePath: String): ByteArray {
-    val response = executeWithCheckCancel(asyncStub::pullChunkOutputFile, StringValue.of(FileUtil.toSystemIndependentName(relativePath)))
-    if (response.message.isNotBlank()) {
-      throw RuntimeException(response.message)
-    }
-    return response.content.toByteArray()
+  fun pullChunkOutputPaths(): ChunkOutputPathsResponse {
+    // Note: the format of gRPC's response:
+    // - the first line is the path to directory
+    // - the remaining lines are relative output paths
+    val lines = executeWithCheckCancel(asyncStub::pullChunkOutputPaths, Empty.getDefaultInstance()).listList
+    return ChunkOutputPathsResponse(lines[0], lines.drop(1))
   }
 
   fun repoGetPackageVersion(packageName: String): RIExecutionResult {

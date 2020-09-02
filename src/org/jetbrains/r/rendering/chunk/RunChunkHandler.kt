@@ -55,8 +55,6 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -216,16 +214,13 @@ object RunChunkHandler {
   }
 
   private fun pullOutputsAsync(rInterop: RInterop, cacheDirectory: String) = runAsync {
-    for (relativePath in rInterop.pullChunkOutputRelativePaths()) {
-      val content = rInterop.pullChunkOutputFile(relativePath)
-      createFileWith(content, relativePath, cacheDirectory)
+    val response = rInterop.pullChunkOutputPaths()
+    for (relativePath in response.relativePaths) {
+      val remotePath = "${response.directory}/$relativePath"
+      val localPath = "$cacheDirectory/$relativePath"
+      File(localPath).parentFile.mkdirs()
+      rInterop.interpreter.downloadFileFromHost(remotePath, localPath)
     }
-  }
-
-  private fun createFileWith(content: ByteArray, relativePath: String, basePath: String) {
-    val path = Paths.get(basePath, relativePath)
-    path.toFile().parentFile.mkdirs()
-    Files.write(path, content)
   }
 
   private fun createRMarkdownParameters(file: PsiFile) =
