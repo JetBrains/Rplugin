@@ -124,7 +124,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     override fun onPrompt(isDebug: Boolean, isDebugStep: Boolean, isBreakpoint: Boolean) {
       if (isDebug) {
         val suspend = isBreakpoint && RDebuggerUtil.processBreakpoint(consoleView)
-        if (!isDebugStep && !suspend) {
+        if (isBreakpoint && !isDebugStep && !suspend) {
           rInterop.debugCommandKeepPrevious()
           return
         }
