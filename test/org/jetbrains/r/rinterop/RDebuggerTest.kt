@@ -384,6 +384,20 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertTrue(rInterop.executeCode("cat(aa)").stdout.toInt() > 1000)
   }
 
+  fun testStopSuspended() {
+    val file = loadFileWithBreakpointsFromText("""
+      aa <- 123
+      aa <- 234 # BREAKPOINT
+      aa <- 345
+      aa <- 456
+    """.trimIndent())
+
+    helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
+    TestCase.assertEquals("123", rInterop.executeCode("cat(aa)").stdout)
+    helper.invokeAndWait(false) { rInterop.debugCommandStop() }
+    TestCase.assertEquals("123", rInterop.executeCode("cat(aa)").stdout)
+  }
+
   fun testExceptionHandler() {
     myFixture.configureByText(RFileType, """
       f <- function(xx, yy, zz) {
