@@ -3,8 +3,8 @@
 
 package org.jetbrains.r.rinterop;
 
-public interface GraphicsPullSnapshotResponseOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rplugininterop.GraphicsPullSnapshotResponse)
+public interface GraphicsGetSnapshotPathResponseOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rplugininterop.GraphicsGetSnapshotPathResponse)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -28,12 +28,12 @@ public interface GraphicsPullSnapshotResponseOrBuilder extends
       getSnapshotNameBytes();
 
   /**
-   * <code>bytes content = 3;</code>
+   * <code>string directory = 3;</code>
    */
-  com.google.protobuf.ByteString getContent();
-
+  java.lang.String getDirectory();
   /**
-   * <code>bytes recorded = 4;</code>
+   * <code>string directory = 3;</code>
    */
-  com.google.protobuf.ByteString getRecorded();
+  com.google.protobuf.ByteString
+      getDirectoryBytes();
 }

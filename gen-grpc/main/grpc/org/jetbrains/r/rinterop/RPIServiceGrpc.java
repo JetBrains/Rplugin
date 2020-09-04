@@ -864,35 +864,35 @@ public final class RPIServiceGrpc {
     return getGraphicsPullChangedNumbersMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest,
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> getGraphicsPullSnapshotMethod;
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest,
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> getGraphicsGetSnapshotPathMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "graphicsPullSnapshot",
-      requestType = org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.class,
-      responseType = org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.class,
+      fullMethodName = SERVICE_NAME + '/' + "graphicsGetSnapshotPath",
+      requestType = org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.class,
+      responseType = org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest,
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> getGraphicsPullSnapshotMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest, org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> getGraphicsPullSnapshotMethod;
-    if ((getGraphicsPullSnapshotMethod = RPIServiceGrpc.getGraphicsPullSnapshotMethod) == null) {
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest,
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> getGraphicsGetSnapshotPathMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> getGraphicsGetSnapshotPathMethod;
+    if ((getGraphicsGetSnapshotPathMethod = RPIServiceGrpc.getGraphicsGetSnapshotPathMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getGraphicsPullSnapshotMethod = RPIServiceGrpc.getGraphicsPullSnapshotMethod) == null) {
-          RPIServiceGrpc.getGraphicsPullSnapshotMethod = getGraphicsPullSnapshotMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest, org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse>newBuilder()
+        if ((getGraphicsGetSnapshotPathMethod = RPIServiceGrpc.getGraphicsGetSnapshotPathMethod) == null) {
+          RPIServiceGrpc.getGraphicsGetSnapshotPathMethod = getGraphicsGetSnapshotPathMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "graphicsPullSnapshot"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "graphicsGetSnapshotPath"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("graphicsPullSnapshot"))
+                  org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("graphicsGetSnapshotPath"))
               .build();
         }
       }
     }
-    return getGraphicsPullSnapshotMethod;
+    return getGraphicsGetSnapshotPathMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
@@ -2979,9 +2979,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void graphicsPullSnapshot(org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getGraphicsPullSnapshotMethod(), responseObserver);
+    public void graphicsGetSnapshotPath(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGraphicsGetSnapshotPathMethod(), responseObserver);
     }
 
     /**
@@ -3617,12 +3617,12 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.Int32List>(
                   this, METHODID_GRAPHICS_PULL_CHANGED_NUMBERS)))
           .addMethod(
-            getGraphicsPullSnapshotMethod(),
+            getGraphicsGetSnapshotPathMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest,
-                org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse>(
-                  this, METHODID_GRAPHICS_PULL_SNAPSHOT)))
+                org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest,
+                org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse>(
+                  this, METHODID_GRAPHICS_GET_SNAPSHOT_PATH)))
           .addMethod(
             getGraphicsCreateGroupMethod(),
             asyncServerStreamingCall(
@@ -4289,10 +4289,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void graphicsPullSnapshot(org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> responseObserver) {
+    public void graphicsGetSnapshotPath(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getGraphicsPullSnapshotMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getGraphicsGetSnapshotPathMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5019,9 +5019,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse graphicsPullSnapshot(org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest request) {
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse graphicsGetSnapshotPath(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest request) {
       return blockingUnaryCall(
-          getChannel(), getGraphicsPullSnapshotMethod(), getCallOptions(), request);
+          getChannel(), getGraphicsGetSnapshotPathMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5658,10 +5658,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse> graphicsPullSnapshot(
-        org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> graphicsGetSnapshotPath(
+        org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getGraphicsPullSnapshotMethod(), getCallOptions()), request);
+          getChannel().newCall(getGraphicsGetSnapshotPathMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6112,7 +6112,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_GRAPHICS_RESCALE = 24;
   private static final int METHODID_GRAPHICS_RESCALE_STORED = 25;
   private static final int METHODID_GRAPHICS_PULL_CHANGED_NUMBERS = 26;
-  private static final int METHODID_GRAPHICS_PULL_SNAPSHOT = 27;
+  private static final int METHODID_GRAPHICS_GET_SNAPSHOT_PATH = 27;
   private static final int METHODID_GRAPHICS_CREATE_GROUP = 28;
   private static final int METHODID_GRAPHICS_REMOVE_GROUP = 29;
   private static final int METHODID_GRAPHICS_SHUTDOWN = 30;
@@ -6299,9 +6299,9 @@ public final class RPIServiceGrpc {
           serviceImpl.graphicsPullChangedNumbers((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.Int32List>) responseObserver);
           break;
-        case METHODID_GRAPHICS_PULL_SNAPSHOT:
-          serviceImpl.graphicsPullSnapshot((org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse>) responseObserver);
+        case METHODID_GRAPHICS_GET_SNAPSHOT_PATH:
+          serviceImpl.graphicsGetSnapshotPath((org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse>) responseObserver);
           break;
         case METHODID_GRAPHICS_CREATE_GROUP:
           serviceImpl.graphicsCreateGroup((com.google.protobuf.Empty) request,
@@ -6631,7 +6631,7 @@ public final class RPIServiceGrpc {
               .addMethod(getGraphicsRescaleMethod())
               .addMethod(getGraphicsRescaleStoredMethod())
               .addMethod(getGraphicsPullChangedNumbersMethod())
-              .addMethod(getGraphicsPullSnapshotMethod())
+              .addMethod(getGraphicsGetSnapshotPathMethod())
               .addMethod(getGraphicsCreateGroupMethod())
               .addMethod(getGraphicsRemoveGroupMethod())
               .addMethod(getGraphicsShutdownMethod())

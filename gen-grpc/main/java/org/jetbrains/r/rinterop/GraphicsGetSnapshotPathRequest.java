@@ -4,18 +4,18 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.GraphicsPullSnapshotRequest}
+ * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathRequest}
  */
-public  final class GraphicsPullSnapshotRequest extends
+public  final class GraphicsGetSnapshotPathRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsPullSnapshotRequest)
-    GraphicsPullSnapshotRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsGetSnapshotPathRequest)
+    GraphicsGetSnapshotPathRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use GraphicsPullSnapshotRequest.newBuilder() to construct.
-  private GraphicsPullSnapshotRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use GraphicsGetSnapshotPathRequest.newBuilder() to construct.
+  private GraphicsGetSnapshotPathRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private GraphicsPullSnapshotRequest() {
+  private GraphicsGetSnapshotPathRequest() {
     groupId_ = "";
   }
 
@@ -23,7 +23,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new GraphicsPullSnapshotRequest();
+    return new GraphicsGetSnapshotPathRequest();
   }
 
   @java.lang.Override
@@ -31,7 +31,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private GraphicsPullSnapshotRequest(
+  private GraphicsGetSnapshotPathRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -60,11 +60,6 @@ private static final long serialVersionUID = 0L;
             snapshotNumber_ = input.readInt32();
             break;
           }
-          case 24: {
-
-            withRecorded_ = input.readBool();
-            break;
-          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -86,15 +81,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotRequest_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathRequest_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotRequest_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.class, org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.Builder.class);
+            org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.class, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.Builder.class);
   }
 
   public static final int GROUPID_FIELD_NUMBER = 1;
@@ -140,15 +135,6 @@ private static final long serialVersionUID = 0L;
     return snapshotNumber_;
   }
 
-  public static final int WITHRECORDED_FIELD_NUMBER = 3;
-  private boolean withRecorded_;
-  /**
-   * <code>bool withRecorded = 3;</code>
-   */
-  public boolean getWithRecorded() {
-    return withRecorded_;
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -169,9 +155,6 @@ private static final long serialVersionUID = 0L;
     if (snapshotNumber_ != 0) {
       output.writeInt32(2, snapshotNumber_);
     }
-    if (withRecorded_ != false) {
-      output.writeBool(3, withRecorded_);
-    }
     unknownFields.writeTo(output);
   }
 
@@ -188,10 +171,6 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(2, snapshotNumber_);
     }
-    if (withRecorded_ != false) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(3, withRecorded_);
-    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -202,17 +181,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest other = (org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest) obj;
+    org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest other = (org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest) obj;
 
     if (!getGroupId()
         .equals(other.getGroupId())) return false;
     if (getSnapshotNumber()
         != other.getSnapshotNumber()) return false;
-    if (getWithRecorded()
-        != other.getWithRecorded()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -228,77 +205,74 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getGroupId().hashCode();
     hash = (37 * hash) + SNAPSHOTNUMBER_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotNumber();
-    hash = (37 * hash) + WITHRECORDED_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getWithRecorded());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -311,7 +285,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -327,26 +301,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.GraphicsPullSnapshotRequest}
+   * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.GraphicsPullSnapshotRequest)
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.GraphicsGetSnapshotPathRequest)
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotRequest_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.class, org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.Builder.class);
+              org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.class, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -368,25 +342,23 @@ private static final long serialVersionUID = 0L;
 
       snapshotNumber_ = 0;
 
-      withRecorded_ = false;
-
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotRequest_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathRequest_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.getDefaultInstance();
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest build() {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest result = buildPartial();
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest build() {
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -394,11 +366,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest buildPartial() {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest result = new org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest(this);
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest buildPartial() {
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest result = new org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest(this);
       result.groupId_ = groupId_;
       result.snapshotNumber_ = snapshotNumber_;
-      result.withRecorded_ = withRecorded_;
       onBuilt();
       return result;
     }
@@ -437,25 +408,22 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest) {
-        return mergeFrom((org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest)other);
+      if (other instanceof org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest) {
+        return mergeFrom((org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest other) {
-      if (other == org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest other) {
+      if (other == org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest.getDefaultInstance()) return this;
       if (!other.getGroupId().isEmpty()) {
         groupId_ = other.groupId_;
         onChanged();
       }
       if (other.getSnapshotNumber() != 0) {
         setSnapshotNumber(other.getSnapshotNumber());
-      }
-      if (other.getWithRecorded() != false) {
-        setWithRecorded(other.getWithRecorded());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -472,11 +440,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest parsedMessage = null;
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -580,32 +548,6 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
-
-    private boolean withRecorded_ ;
-    /**
-     * <code>bool withRecorded = 3;</code>
-     */
-    public boolean getWithRecorded() {
-      return withRecorded_;
-    }
-    /**
-     * <code>bool withRecorded = 3;</code>
-     */
-    public Builder setWithRecorded(boolean value) {
-      
-      withRecorded_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>bool withRecorded = 3;</code>
-     */
-    public Builder clearWithRecorded() {
-      
-      withRecorded_ = false;
-      onChanged();
-      return this;
-    }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -619,41 +561,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.GraphicsPullSnapshotRequest)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.GraphicsGetSnapshotPathRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.GraphicsPullSnapshotRequest)
-  private static final org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.GraphicsGetSnapshotPathRequest)
+  private static final org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest();
   }
 
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<GraphicsPullSnapshotRequest>
-      PARSER = new com.google.protobuf.AbstractParser<GraphicsPullSnapshotRequest>() {
+  private static final com.google.protobuf.Parser<GraphicsGetSnapshotPathRequest>
+      PARSER = new com.google.protobuf.AbstractParser<GraphicsGetSnapshotPathRequest>() {
     @java.lang.Override
-    public GraphicsPullSnapshotRequest parsePartialFrom(
+    public GraphicsGetSnapshotPathRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new GraphicsPullSnapshotRequest(input, extensionRegistry);
+      return new GraphicsGetSnapshotPathRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<GraphicsPullSnapshotRequest> parser() {
+  public static com.google.protobuf.Parser<GraphicsGetSnapshotPathRequest> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<GraphicsPullSnapshotRequest> getParserForType() {
+  public com.google.protobuf.Parser<GraphicsGetSnapshotPathRequest> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.GraphicsPullSnapshotRequest getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

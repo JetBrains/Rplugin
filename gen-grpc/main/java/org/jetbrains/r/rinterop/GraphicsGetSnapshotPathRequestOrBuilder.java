@@ -3,8 +3,8 @@
 
 package org.jetbrains.r.rinterop;
 
-public interface GraphicsPullSnapshotRequestOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:rplugininterop.GraphicsPullSnapshotRequest)
+public interface GraphicsGetSnapshotPathRequestOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:rplugininterop.GraphicsGetSnapshotPathRequest)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -21,9 +21,4 @@ public interface GraphicsPullSnapshotRequestOrBuilder extends
    * <code>int32 snapshotNumber = 2;</code>
    */
   int getSnapshotNumber();
-
-  /**
-   * <code>bool withRecorded = 3;</code>
-   */
-  boolean getWithRecorded();
 }

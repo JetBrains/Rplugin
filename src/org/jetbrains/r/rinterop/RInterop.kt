@@ -554,31 +554,21 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return response.valueList
   }
 
-  class GraphicsPullResponse(val name: String, val content: ByteArray, val recorded: ByteArray? = null)
+  data class GraphicsGetPathResponse(val name: String, val directory: String)
 
-  fun graphicsPullInMemorySnapshot(number: Int, withRecorded: Boolean): GraphicsPullResponse? {
-    return graphicsPullSnapshot(number, withRecorded = withRecorded)
-  }
-
-  fun graphicsPullStoredSnapshot(number: Int, groupId: String): GraphicsPullResponse? {
-    return graphicsPullSnapshot(number, groupId = groupId)
-  }
-
-  private fun graphicsPullSnapshot(number: Int, groupId: String = "", withRecorded: Boolean = false): GraphicsPullResponse? {
-    val request = GraphicsPullSnapshotRequest.newBuilder()
-      .setWithRecorded(withRecorded)
+  fun graphicsGetSnapshotPath(number: Int, groupId: String?): GraphicsGetPathResponse? {
+    val request = GraphicsGetSnapshotPathRequest.newBuilder()
       .setSnapshotNumber(number)
-      .setGroupId(FileUtil.toSystemIndependentName(groupId))
+      .setGroupId(groupId ?: "")
       .build()
-    val response = executeWithCheckCancel(asyncStub::graphicsPullSnapshot, request)
+    val response = executeWithCheckCancel(asyncStub::graphicsGetSnapshotPath, request)
     if (response.message.isNotBlank()) {
       throw RuntimeException(response.message)
     }
-    if (response.content.isEmpty) {
+    if (response.snapshotName.isBlank()) {
       return null
     }
-    val recordedContent = response.recorded.takeIf { !it.isEmpty }?.toByteArray()
-    return GraphicsPullResponse(response.snapshotName, response.content.toByteArray(), recordedContent)
+    return GraphicsGetPathResponse(response.snapshotName, response.directory)
   }
 
   fun graphicsCreateGroup(): RIExecutionResult {

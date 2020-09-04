@@ -4,29 +4,28 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.GraphicsPullSnapshotResponse}
+ * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathResponse}
  */
-public  final class GraphicsPullSnapshotResponse extends
+public  final class GraphicsGetSnapshotPathResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsPullSnapshotResponse)
-    GraphicsPullSnapshotResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsGetSnapshotPathResponse)
+    GraphicsGetSnapshotPathResponseOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use GraphicsPullSnapshotResponse.newBuilder() to construct.
-  private GraphicsPullSnapshotResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use GraphicsGetSnapshotPathResponse.newBuilder() to construct.
+  private GraphicsGetSnapshotPathResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private GraphicsPullSnapshotResponse() {
+  private GraphicsGetSnapshotPathResponse() {
     message_ = "";
     snapshotName_ = "";
-    content_ = com.google.protobuf.ByteString.EMPTY;
-    recorded_ = com.google.protobuf.ByteString.EMPTY;
+    directory_ = "";
   }
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new GraphicsPullSnapshotResponse();
+    return new GraphicsGetSnapshotPathResponse();
   }
 
   @java.lang.Override
@@ -34,7 +33,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private GraphicsPullSnapshotResponse(
+  private GraphicsGetSnapshotPathResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -65,13 +64,9 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 26: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-            content_ = input.readBytes();
-            break;
-          }
-          case 34: {
-
-            recorded_ = input.readBytes();
+            directory_ = s;
             break;
           }
           default: {
@@ -95,15 +90,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotResponse_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotResponse_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.class, org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.Builder.class);
+            org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.class, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.Builder.class);
   }
 
   public static final int MESSAGE_FIELD_NUMBER = 1;
@@ -174,22 +169,38 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int CONTENT_FIELD_NUMBER = 3;
-  private com.google.protobuf.ByteString content_;
+  public static final int DIRECTORY_FIELD_NUMBER = 3;
+  private volatile java.lang.Object directory_;
   /**
-   * <code>bytes content = 3;</code>
+   * <code>string directory = 3;</code>
    */
-  public com.google.protobuf.ByteString getContent() {
-    return content_;
+  public java.lang.String getDirectory() {
+    java.lang.Object ref = directory_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      directory_ = s;
+      return s;
+    }
   }
-
-  public static final int RECORDED_FIELD_NUMBER = 4;
-  private com.google.protobuf.ByteString recorded_;
   /**
-   * <code>bytes recorded = 4;</code>
+   * <code>string directory = 3;</code>
    */
-  public com.google.protobuf.ByteString getRecorded() {
-    return recorded_;
+  public com.google.protobuf.ByteString
+      getDirectoryBytes() {
+    java.lang.Object ref = directory_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      directory_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -212,11 +223,8 @@ private static final long serialVersionUID = 0L;
     if (!getSnapshotNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, snapshotName_);
     }
-    if (!content_.isEmpty()) {
-      output.writeBytes(3, content_);
-    }
-    if (!recorded_.isEmpty()) {
-      output.writeBytes(4, recorded_);
+    if (!getDirectoryBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, directory_);
     }
     unknownFields.writeTo(output);
   }
@@ -233,13 +241,8 @@ private static final long serialVersionUID = 0L;
     if (!getSnapshotNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, snapshotName_);
     }
-    if (!content_.isEmpty()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(3, content_);
-    }
-    if (!recorded_.isEmpty()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(4, recorded_);
+    if (!getDirectoryBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, directory_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -251,19 +254,17 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse other = (org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse) obj;
+    org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse other = (org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse) obj;
 
     if (!getMessage()
         .equals(other.getMessage())) return false;
     if (!getSnapshotName()
         .equals(other.getSnapshotName())) return false;
-    if (!getContent()
-        .equals(other.getContent())) return false;
-    if (!getRecorded()
-        .equals(other.getRecorded())) return false;
+    if (!getDirectory()
+        .equals(other.getDirectory())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -279,78 +280,76 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getMessage().hashCode();
     hash = (37 * hash) + SNAPSHOTNAME_FIELD_NUMBER;
     hash = (53 * hash) + getSnapshotName().hashCode();
-    hash = (37 * hash) + CONTENT_FIELD_NUMBER;
-    hash = (53 * hash) + getContent().hashCode();
-    hash = (37 * hash) + RECORDED_FIELD_NUMBER;
-    hash = (53 * hash) + getRecorded().hashCode();
+    hash = (37 * hash) + DIRECTORY_FIELD_NUMBER;
+    hash = (53 * hash) + getDirectory().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parseFrom(
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -363,7 +362,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -379,26 +378,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.GraphicsPullSnapshotResponse}
+   * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.GraphicsPullSnapshotResponse)
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.GraphicsGetSnapshotPathResponse)
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotResponse_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotResponse_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.class, org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.Builder.class);
+              org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.class, org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -420,9 +419,7 @@ private static final long serialVersionUID = 0L;
 
       snapshotName_ = "";
 
-      content_ = com.google.protobuf.ByteString.EMPTY;
-
-      recorded_ = com.google.protobuf.ByteString.EMPTY;
+      directory_ = "";
 
       return this;
     }
@@ -430,17 +427,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsPullSnapshotResponse_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_GraphicsGetSnapshotPathResponse_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.getDefaultInstance();
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse build() {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse result = buildPartial();
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse build() {
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -448,12 +445,11 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse buildPartial() {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse result = new org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse(this);
+    public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse buildPartial() {
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse result = new org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse(this);
       result.message_ = message_;
       result.snapshotName_ = snapshotName_;
-      result.content_ = content_;
-      result.recorded_ = recorded_;
+      result.directory_ = directory_;
       onBuilt();
       return result;
     }
@@ -492,16 +488,16 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse) {
-        return mergeFrom((org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse)other);
+      if (other instanceof org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse) {
+        return mergeFrom((org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse other) {
-      if (other == org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse other) {
+      if (other == org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse.getDefaultInstance()) return this;
       if (!other.getMessage().isEmpty()) {
         message_ = other.message_;
         onChanged();
@@ -510,11 +506,9 @@ private static final long serialVersionUID = 0L;
         snapshotName_ = other.snapshotName_;
         onChanged();
       }
-      if (other.getContent() != com.google.protobuf.ByteString.EMPTY) {
-        setContent(other.getContent());
-      }
-      if (other.getRecorded() != com.google.protobuf.ByteString.EMPTY) {
-        setRecorded(other.getRecorded());
+      if (!other.getDirectory().isEmpty()) {
+        directory_ = other.directory_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -531,11 +525,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse parsedMessage = null;
+      org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -683,60 +677,71 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
+    private java.lang.Object directory_ = "";
     /**
-     * <code>bytes content = 3;</code>
+     * <code>string directory = 3;</code>
      */
-    public com.google.protobuf.ByteString getContent() {
-      return content_;
+    public java.lang.String getDirectory() {
+      java.lang.Object ref = directory_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        directory_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
-     * <code>bytes content = 3;</code>
+     * <code>string directory = 3;</code>
      */
-    public Builder setContent(com.google.protobuf.ByteString value) {
+    public com.google.protobuf.ByteString
+        getDirectoryBytes() {
+      java.lang.Object ref = directory_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        directory_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string directory = 3;</code>
+     */
+    public Builder setDirectory(
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      content_ = value;
+      directory_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>bytes content = 3;</code>
+     * <code>string directory = 3;</code>
      */
-    public Builder clearContent() {
+    public Builder clearDirectory() {
       
-      content_ = getDefaultInstance().getContent();
+      directory_ = getDefaultInstance().getDirectory();
       onChanged();
       return this;
     }
-
-    private com.google.protobuf.ByteString recorded_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes recorded = 4;</code>
+     * <code>string directory = 3;</code>
      */
-    public com.google.protobuf.ByteString getRecorded() {
-      return recorded_;
-    }
-    /**
-     * <code>bytes recorded = 4;</code>
-     */
-    public Builder setRecorded(com.google.protobuf.ByteString value) {
+    public Builder setDirectoryBytes(
+        com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  
-      recorded_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>bytes recorded = 4;</code>
-     */
-    public Builder clearRecorded() {
+  checkByteStringIsUtf8(value);
       
-      recorded_ = getDefaultInstance().getRecorded();
+      directory_ = value;
       onChanged();
       return this;
     }
@@ -753,41 +758,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.GraphicsPullSnapshotResponse)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.GraphicsGetSnapshotPathResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.GraphicsPullSnapshotResponse)
-  private static final org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.GraphicsGetSnapshotPathResponse)
+  private static final org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse();
   }
 
-  public static org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<GraphicsPullSnapshotResponse>
-      PARSER = new com.google.protobuf.AbstractParser<GraphicsPullSnapshotResponse>() {
+  private static final com.google.protobuf.Parser<GraphicsGetSnapshotPathResponse>
+      PARSER = new com.google.protobuf.AbstractParser<GraphicsGetSnapshotPathResponse>() {
     @java.lang.Override
-    public GraphicsPullSnapshotResponse parsePartialFrom(
+    public GraphicsGetSnapshotPathResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new GraphicsPullSnapshotResponse(input, extensionRegistry);
+      return new GraphicsGetSnapshotPathResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<GraphicsPullSnapshotResponse> parser() {
+  public static com.google.protobuf.Parser<GraphicsGetSnapshotPathResponse> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<GraphicsPullSnapshotResponse> getParserForType() {
+  public com.google.protobuf.Parser<GraphicsGetSnapshotPathResponse> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.GraphicsPullSnapshotResponse getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

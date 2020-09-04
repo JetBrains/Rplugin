@@ -130,7 +130,7 @@ class RGraphicsDevice(
   }
 
   private fun dumpAllAsync(): Promise<Unit> {
-    val promise = executeWithLogAsync(createHintFor(null)) {
+    val promise = executeWithLogAsync(createHintForInMemory(null)) {
       rInterop.graphicsDump()
     }
     return promise.thenIfTrue {
@@ -140,13 +140,13 @@ class RGraphicsDevice(
 
   fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
     return createDeviceGroupIfNeededAsync(snapshot.file.parentFile).thenAsync { group ->
-      val hint = "Recorded snapshot #${snapshot.number} at '${group.id}'"
+      val hint = createHintForStored(snapshot.number)
       val promise = executeWithLogAsync(hint) {
         pushStoredSnapshotIfNeeded(snapshot, group)
         rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
       }
       promise.then { isRescaled ->
-        if (isRescaled) pullStoredSnapshot(snapshot, group.id, hint) else null
+        if (isRescaled) pullStoredSnapshot(snapshot, group.id) else null
       }
     }
   }
@@ -167,7 +167,7 @@ class RGraphicsDevice(
 
   private fun rescaleInMemoryAsync(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters): Promise<Unit> {
     return queue.submit(snapshotNumber, parameters) {
-      val promise = executeWithLogAsync(createHintFor(snapshotNumber)) {
+      val promise = executeWithLogAsync(createHintForInMemory(snapshotNumber)) {
         rInterop.graphicsRescale(snapshotNumber, parameters)
       }
       promise.thenIfTrue {
@@ -238,34 +238,63 @@ class RGraphicsDevice(
 
   private fun pullInMemorySnapshot(number: Int): RSnapshot? {
     val previous = number2SnapshotInfos[number]?.snapshot
-    return pullSnapshotTo(shadowDirectory, createHintFor(number), previous) {
-      val withRecorded = !number2SnapshotInfos.containsKey(number)
-      rInterop.graphicsPullInMemorySnapshot(number, withRecorded)
-    }
+    val withRecorded = !number2SnapshotInfos.containsKey(number)
+    return pullSnapshotTo(shadowDirectory, number, previous, groupId = null, withRecorded = withRecorded)
   }
 
-  private fun pullStoredSnapshot(previous: RSnapshot, groupId: String, hint: String): RSnapshot? {
-    return pullSnapshotTo(previous.file.parentFile, hint, previous) {
-      rInterop.graphicsPullStoredSnapshot(previous.number, groupId)
-    }
+  private fun pullStoredSnapshot(previous: RSnapshot, groupId: String): RSnapshot? {
+    return pullSnapshotTo(previous.file.parentFile, previous.number, previous, groupId, withRecorded = false)
   }
 
-  private fun pullSnapshotTo(directory: File, hint: String, previous: RSnapshot?, task: () -> RInterop.GraphicsPullResponse?): RSnapshot? {
+  private fun pullSnapshotTo(directory: File, number: Int, previous: RSnapshot?, groupId: String?, withRecorded: Boolean): RSnapshot? {
     return try {
-      task()?.let { response ->
-        RSnapshot.from(response.content, response.name, directory)?.also { snapshot ->
-          response.recorded?.let { recorded ->
-            snapshot.createRecordedFile(recorded)
-          }
-          if (previous != null && previous.identity != snapshot.identity) {
-            previous.file.delete()
+      rInterop.graphicsGetSnapshotPath(number, groupId)?.let { response ->
+        /*
+         * Note: one of the most important questions of the graphics machinery
+         * is how to keep snapshot groups (i.e. folders) consistent
+         * which means they mustn't contain different versions
+         * of the same snapshot at the same time.
+         * The most straight forward and safe approach is to insert
+         * clean up functions at every "synchronization" point
+         * which will scan folder and delete old versions
+         * (right after either rescale or dump).
+         * However, this approach has serious disadvantages:
+         *  1) It requires a big amount of additional code which is hard to maintain
+         *  2) It has a linear time complexity.
+         * The suggested solution (delete a snapshot right after it's pulled)
+         * is not the best one for sure since it makes pull request
+         * not re-entrant but it's very easy to implement
+         * and also highly computationally effective
+         */
+        pullFile(response.name, response.directory, directory, deleteRemoteAfterPull = true)?.let { file ->
+          RSnapshot.from(file)?.also { snapshot ->
+            if (withRecorded) {
+              val recordedFileName = RSnapshot.createRecordedFileName(number)
+              pullFile(recordedFileName, response.directory, directory)
+            }
+            if (previous != null && previous.identity != snapshot.identity) {
+              previous.file.delete()
+            }
           }
         }
       }
     } catch (e: Error) {
+      val hint = if (groupId != null) createHintForStored(number) else createHintForInMemory(number)
       LOGGER.error("Cannot pull <$hint>", e)
       null
     }
+  }
+
+  private fun pullFile(name: String, remoteDirectory: String, localDirectory: File, deleteRemoteAfterPull: Boolean = false): File? {
+    val localPath = "${localDirectory.absolutePath}/$name"
+    val remotePath = "$remoteDirectory/$name"
+    rInterop.interpreter.apply {
+      downloadFileFromHost(remotePath, localPath)
+      if (deleteRemoteAfterPull) {
+        deleteFileOnHost(remotePath)
+      }
+    }
+    return File(localPath).takeIf { it.exists() }
   }
 
   private fun postSnapshotNumber(number: Int?) {
@@ -360,9 +389,14 @@ class RGraphicsDevice(
       }
     }
 
-    private fun createHintFor(snapshotNumber: Int?): String {
+    private fun createHintForInMemory(snapshotNumber: Int?): String {
       // Note: for error logging only. Not intended to be moved to RBundle
       return if (snapshotNumber != null) "In-Memory snapshot #${snapshotNumber}" else "Last in-memory snapshots"
+    }
+
+    private fun createHintForStored(snapshotNumber: Int): String {
+      // Note: for error logging only. Not intended to be moved to RBundle
+      return "Recorded snapshot #$snapshotNumber"
     }
 
     private fun Promise<Boolean>.thenIfTrue(task: () -> Unit) = then { isDone ->
