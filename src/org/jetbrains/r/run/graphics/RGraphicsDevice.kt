@@ -161,8 +161,7 @@ class RGraphicsDevice(
   @Synchronized
   private fun pushStoredSnapshotIfNeeded(snapshot: RSnapshot, group: DeviceGroup) {
     if (group.snapshotNumbers.add(snapshot.number)) {
-      val recorded = snapshot.recordedFile.readBytes()
-      rInterop.graphicsPushSnapshot(group.id, snapshot.number, recorded)
+      rInterop.interpreter.uploadFileToHost(snapshot.recordedFile, group.id)
     }
   }
 

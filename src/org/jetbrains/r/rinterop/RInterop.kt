@@ -581,18 +581,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return GraphicsPullResponse(response.snapshotName, response.content.toByteArray(), recordedContent)
   }
 
-  fun graphicsPushSnapshot(groupId: String, number: Int, recorded: ByteArray) {
-    val request = GraphicsPushSnapshotRequest.newBuilder()
-      .setRecorded(ByteString.copyFrom(recorded))
-      .setSnapshotNumber(number)
-      .setGroupId(FileUtil.toSystemIndependentName(groupId))
-      .build()
-    val response = executeWithCheckCancel(asyncStub::graphicsPushSnapshot, request)
-    if (response.value.isNotBlank()) {
-      throw RuntimeException(response.value)
-    }
-  }
-
   fun graphicsCreateGroup(): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getGraphicsCreateGroupMethod(), Empty.getDefaultInstance())
   }
