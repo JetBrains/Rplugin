@@ -53,6 +53,10 @@ interface RInterpreter : RInterpreterInfo {
 
   fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop
 
+  fun deleteFileOnHost(path: String)
+
+  fun uploadFileToHost(file: File, remoteDir: String)
+
   fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean = false): String
 
   fun createFileChooserForHost(value: String = "", selectFolder: Boolean = false): TextFieldWithBrowseButton

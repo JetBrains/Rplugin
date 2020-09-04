@@ -24,6 +24,7 @@ import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import java.io.File
+import java.nio.file.Paths
 
 class RLocalInterpreterImpl(
   override val interpreterLocation: RLocalInterpreterLocation,
@@ -35,6 +36,16 @@ class RLocalInterpreterImpl(
 
   override fun createRInteropForProcess(process: ProcessHandler, port: Int): RInterop {
     return RInteropUtil.createRInteropForLocalProcess(this, process, port)
+  }
+
+  override fun deleteFileOnHost(path: String) {
+    File(path).delete()
+  }
+
+  override fun uploadFileToHost(file: File, remoteDir: String) {
+    val target = Paths.get(remoteDir, file.name).toFile()
+    // Note: `copyTo()` calls `mkdirs()`
+    file.copyTo(target)
   }
 
   override fun uploadFileToHostIfNeeded(file: VirtualFile, preserveName: Boolean): String {
