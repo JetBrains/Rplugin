@@ -13,6 +13,7 @@ import com.intellij.util.CatchingConsumer
 import com.intellij.webcore.packaging.InstalledPackage
 import com.intellij.webcore.packaging.PackageManagementService
 import com.intellij.webcore.packaging.RepoPackage
+import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
@@ -203,7 +204,7 @@ class RPackageManagementService(private val project: Project,
     consumer.consume(listOf())
   }
 
-  override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<String, Exception>) {
+  override fun fetchPackageDetails(packageName: String, consumer: CatchingConsumer<@Nls String, Exception>) {
     runAsync {
       val repoPackage = provider.name2AvailablePackages?.get(packageName)
       consumer.consume(RepoUtils.formatDetails(repoPackage))
