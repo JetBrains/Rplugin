@@ -160,6 +160,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
         val snapshot = getLastSnapshot()
         val suffix = "${drawerInfo.name}_${dimension.width}_${dimension.height}_stored"
         checkSimilar(snapshot, drawerInfo.expectedIndex, getRescaleCandidates(dimension), suffix)
+        snapshot.file.delete()
       }
     } finally {
       group.dispose()
