@@ -85,6 +85,8 @@ interface RInterpreter : RInterpreterInfo {
 
   fun showUrlInViewer(rInterop: RInterop, url: String) {}
 
+  fun translateLocalUrl(rInterop: RInterop, url: String, absolute: Boolean): Promise<String> = AsyncPromise<String>().also { it.setResult(url) }
+
   fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
 }
 

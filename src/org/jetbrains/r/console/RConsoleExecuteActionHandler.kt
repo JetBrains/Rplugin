@@ -339,9 +339,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
               promise.setResult(terminalVisible(rInterop))
             }
             RStudioApiFunctionId.VIEWER_ID -> {
-              viewer(rInterop, args).then {
-                promise.setResult(RObject.getDefaultInstance())
-              }.onError { promise.setError(it) }
+              viewer(rInterop, args)
+              promise.setResult(RObject.getDefaultInstance())
             }
             RStudioApiFunctionId.VERSION_INFO_MODE_ID -> {
               promise.setResult(versionInfoMode(rInterop))
@@ -351,6 +350,15 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             }
             RStudioApiFunctionId.SOURCE_MARKERS_ID -> {
               sourceMarkers(rInterop, args)
+              promise.setResult(RObject.getDefaultInstance())
+            }
+            RStudioApiFunctionId.TRANSLATE_LOCAL_URL_ID -> {
+              translateLocalUrl(rInterop, args).then {
+                promise.setResult(it)
+              }.onError { promise.setError(it) }
+            }
+            RStudioApiFunctionId.EXECUTE_COMMAND_ID -> {
+              executeCommand(rInterop, args)
               promise.setResult(RObject.getDefaultInstance())
             }
           }

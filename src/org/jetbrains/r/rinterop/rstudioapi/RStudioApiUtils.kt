@@ -1,6 +1,7 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.CodeInsightColors
@@ -11,8 +12,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtilRt
+import git4idea.changes.GitChangesViewRefresher
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.compute
@@ -64,7 +67,9 @@ enum class RStudioApiFunctionId {
   VIEWER_ID,
   VERSION_INFO_MODE_ID,
   DOCUMENT_CLOSE_ID,
-  SOURCE_MARKERS_ID;
+  SOURCE_MARKERS_ID,
+  TRANSLATE_LOCAL_URL_ID,
+  EXECUTE_COMMAND_ID;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId? {
@@ -108,21 +113,17 @@ enum class RStudioApiFunctionId {
         36 -> VERSION_INFO_MODE_ID
         37 -> DOCUMENT_CLOSE_ID
         38 -> SOURCE_MARKERS_ID
+        39 -> TRANSLATE_LOCAL_URL_ID
+        40 -> EXECUTE_COMMAND_ID
         else -> null
       }
     }
   }
 }
 
-fun viewer(rInterop: RInterop, args: RObject): AsyncPromise<Unit> {
+fun viewer(rInterop: RInterop, args: RObject) {
   val url = args.list.getRObjects(0).rString.getStrings(0)
-  val promise = AsyncPromise<Unit>()
-  invokeLater {
-    promise.compute {
-      RToolWindowFactory.showUrl(rInterop.project, url)
-    }
-  }
-  return promise
+  rInterop.interpreter.showUrlInViewer(rInterop, url)
 }
 
 fun sourceMarkers(rInterop: RInterop, args: RObject) {
@@ -201,13 +202,45 @@ fun sourceMarkers(rInterop: RInterop, args: RObject) {
   }
 }
 
-private fun getLineOffset(document: Document, line: Long, col: Long): Int {
-  return min(document.getLineEndOffset(line.toInt()), document.getLineStartOffset(line.toInt()) + col.toInt())
-}
-
 fun versionInfoMode(rInterop: RInterop): RObject {
   val mode = if (rInterop.interpreter.isLocal()) "desktop" else "server"
   return mode.toRString()
+}
+
+fun translateLocalUrl(rInterop: RInterop, args: RObject): Promise<RObject> {
+  val url = args.list.getRObjects(0).rString.getStrings(0)
+  val absolute = args.list.getRObjects(1).rBoolean.getBooleans(0)
+  val promise = AsyncPromise<RObject>()
+  rInterop.interpreter.translateLocalUrl(rInterop, url, absolute).then {
+    promise.setResult(it.toRString())
+  }
+  return promise
+}
+
+fun executeCommand(rInterop: RInterop, args: RObject) {
+  when (val command = args.list.getRObjects(0).rString.getStrings(0)) {
+    "vcsRefresh" -> {
+      invokeLater {
+        GitChangesViewRefresher().refresh(rInterop.project)
+      }
+    }
+    else -> {
+      val quiet = args.list.getRObjects(1).rBoolean.getBooleans(0)
+      if (!quiet) {
+        runInEdt {
+          Messages.showErrorDialog(
+            rInterop.project,
+            "The command '$command' is unsupported or does not exist.",
+            "Invalid Command"
+          )
+        }
+      }
+    }
+  }
+}
+
+private fun getLineOffset(document: Document, line: Long, col: Long): Int {
+  return min(document.getLineEndOffset(line.toInt()), document.getLineStartOffset(line.toInt()) + col.toInt())
 }
 
 internal fun String.toRString(): RObject {

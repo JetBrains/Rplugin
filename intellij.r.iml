@@ -98,5 +98,7 @@
     <orderEntry type="library" scope="TEST" name="commons-compress" level="project" />
     <orderEntry type="library" name="gson" level="project" />
     <orderEntry type="module" module-name="intellij.r.plugin" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.vcs.git" />
+    <orderEntry type="module" module-name="intellij.platform.vcs" />
   </component>
 </module>
