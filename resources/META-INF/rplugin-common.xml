@@ -659,6 +659,8 @@ You can find the source code in the following repositories:
         </intentionAction>
 
         <documentationProvider implementation="org.jetbrains.r.documentation.RDocumentationProvider"/>
+        <lang.documentationToolWindowManager language="R"
+                                             implementationClass="org.jetbrains.r.documentation.RDocToolWindowManager"/>
 
         <editorHighlighterProvider filetype="RMarkdown" implementationClass="org.jetbrains.r.rmarkdown.RMarkdownEditorHighlighterProvider"/>
 
