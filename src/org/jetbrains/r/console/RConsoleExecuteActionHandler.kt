@@ -221,144 +221,144 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         try {
           when (functionId) {
             RStudioApiFunctionId.GET_SOURCE_EDITOR_CONTEXT_ID -> {
-              promise.setResult(getSourceEditorContext(rInterop))
+              promise.setResult(DocumentUtils.getSourceEditorContext(rInterop))
             }
             RStudioApiFunctionId.INSERT_TEXT_ID -> {
-              promise.setResult(insertText(rInterop, args))
+              promise.setResult(DocumentUtils.insertText(rInterop, args))
             }
             RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
               promise.setResult(RObject.getDefaultInstance())
-              sendToConsole(rInterop, args)
+              RSessionUtils.sendToConsole(rInterop, args)
             }
             RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
-              promise.setResult(getConsoleEditorContext(rInterop))
+              promise.setResult(DocumentUtils.getConsoleEditorContext(rInterop))
             }
             RStudioApiFunctionId.NAVIGATE_TO_FILE_ID -> {
-              navigateToFile(rInterop, args).then {
+              DocumentUtils.navigateToFile(rInterop, args).then {
                 promise.setResult(it)
               }
             }
             RStudioApiFunctionId.GET_ACTIVE_PROJECT_ID -> {
-              promise.setResult(getActiveProject(rInterop))
+              promise.setResult(ProjectsUtils.getActiveProject(rInterop))
             }
             RStudioApiFunctionId.GET_ACTIVE_DOCUMENT_CONTEXT_ID -> {
-              promise.setResult(getActiveDocumentContext(rInterop))
+              promise.setResult(DocumentUtils.getActiveDocumentContext(rInterop))
             }
             RStudioApiFunctionId.SET_SELECTION_RANGES_ID -> {
-              promise.setResult(setSelectionRanges(rInterop, args))
+              promise.setResult(DocumentUtils.setSelectionRanges(rInterop, args))
             }
             RStudioApiFunctionId.ASK_FOR_PASSWORD_ID -> {
-              askForPassword(args).then { promise.setResult(it) }
+              DialogUtils.askForPassword(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_QUESTION_ID -> {
-              showQuestion(args).then { promise.setResult(it) }
+              DialogUtils.showQuestion(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_PROMPT_ID -> {
-              showPrompt(args).then { promise.setResult(it) }
+              DialogUtils.showPrompt(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.ASK_FOR_SECRET_ID -> {
-              askForSecret(args).then { promise.setResult(it) }
+              DialogUtils.askForSecret(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_FILE_ID -> {
-              selectFile(rInterop, args).then { promise.setResult(it) }
+              DialogUtils.selectFile(rInterop, args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SELECT_DIRECTORY_ID -> {
-              selectDirectory(rInterop, args).then { promise.setResult(it) }
+              DialogUtils.selectDirectory(rInterop, args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.SHOW_DIALOG_ID -> {
-              showDialog(args).then { promise.setResult(it) }
+              DialogUtils.showDialog(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.UPDATE_DIALOG_ID -> {
-              updateDialog(args).then { promise.setResult(it) }
+              DialogUtils.updateDialog(args).then { promise.setResult(it) }
                 .onError { promise.setError(it) }
             }
             RStudioApiFunctionId.GET_THEME_INFO -> {
-              promise.setResult(getThemeInfo())
+              promise.setResult(ThemeUtils.getThemeInfo())
             }
             RStudioApiFunctionId.JOB_RUN_SCRIPT_ID -> {
-              jobRunScript(rInterop, args).then {
+              JobUtils.jobRunScript(rInterop, args).then {
                 promise.setResult(it)
               }.onError {
                   promise.setError(it)
               }
             }
             RStudioApiFunctionId.JOB_REMOVE_ID -> {
-              promise.setResult(jobRemove(rInterop, args))
+              promise.setResult(JobUtils.jobRemove(rInterop, args))
             }
             RStudioApiFunctionId.JOB_SET_STATE_ID -> TODO()
             RStudioApiFunctionId.RESTART_SESSION_ID -> {
               promise.setResult(RObject.getDefaultInstance())
-              restartSession(rInterop, args)
+              RSessionUtils.restartSession(rInterop, args)
             }
             RStudioApiFunctionId.DOCUMENT_NEW_ID -> {
-              documentNew(rInterop, args).then {
+              DocumentUtils.documentNew(rInterop, args).then {
                 promise.setResult(it)
               }
             }
             RStudioApiFunctionId.TERMINAL_ACTIVATE_ID -> TODO()
             RStudioApiFunctionId.TERMINAL_BUFFER_ID -> {
-              promise.setResult(terminalBuffer(rInterop, args))
+              promise.setResult(TerminalUtils.terminalBuffer(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_BUSY_ID -> {
-              promise.setResult(terminalBusy(rInterop, args))
+              promise.setResult(TerminalUtils.terminalBusy(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_CLEAR_ID -> {
-              promise.setResult(terminalClear(rInterop, args))
+              promise.setResult(TerminalUtils.terminalClear(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_CONTEXT_ID -> {
-              promise.setResult(terminalContext(rInterop, args))
+              promise.setResult(TerminalUtils.terminalContext(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_CREATE_ID -> {
-              promise.setResult(terminalCreate(rInterop, args))
+              promise.setResult(TerminalUtils.terminalCreate(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_EXECUTE_ID -> {
-              promise.setResult(terminalExecute(rInterop, args))
+              promise.setResult(TerminalUtils.terminalExecute(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_EXITCODE_ID -> TODO()
             RStudioApiFunctionId.TERMINAL_KILL_ID -> {
-              terminalKill(rInterop, args)
+              TerminalUtils.terminalKill(rInterop, args)
               promise.setResult(getRNull())
             }
             RStudioApiFunctionId.TERMINAL_LIST_ID -> {
-              promise.setResult(terminalList(rInterop))
+              promise.setResult(TerminalUtils.terminalList(rInterop))
             }
             RStudioApiFunctionId.TERMINAL_RUNNING_ID -> {
-              promise.setResult(terminalRunning(rInterop, args))
+              promise.setResult(TerminalUtils.terminalRunning(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_SEND_ID -> {
-              promise.setResult(terminalSend(rInterop, args))
+              promise.setResult(TerminalUtils.terminalSend(rInterop, args))
             }
             RStudioApiFunctionId.TERMINAL_VISIBLE_ID -> {
-              promise.setResult(terminalVisible(rInterop))
+              promise.setResult(TerminalUtils.terminalVisible(rInterop))
             }
             RStudioApiFunctionId.VIEWER_ID -> {
-              viewer(rInterop, args)
+              RStudioApiUtils.viewer(rInterop, args)
               promise.setResult(RObject.getDefaultInstance())
             }
             RStudioApiFunctionId.VERSION_INFO_MODE_ID -> {
-              promise.setResult(versionInfoMode(rInterop))
+              promise.setResult(RStudioApiUtils.versionInfoMode(rInterop))
             }
             RStudioApiFunctionId.DOCUMENT_CLOSE_ID -> {
-              promise.setResult(documentClose(rInterop, args))
+              promise.setResult(DocumentUtils.documentClose(rInterop, args))
             }
             RStudioApiFunctionId.SOURCE_MARKERS_ID -> {
-              sourceMarkers(rInterop, args)
+              RStudioApiUtils.sourceMarkers(rInterop, args)
               promise.setResult(RObject.getDefaultInstance())
             }
             RStudioApiFunctionId.TRANSLATE_LOCAL_URL_ID -> {
-              translateLocalUrl(rInterop, args).then {
+              RStudioApiUtils.translateLocalUrl(rInterop, args).then {
                 promise.setResult(it)
               }.onError { promise.setError(it) }
             }
             RStudioApiFunctionId.EXECUTE_COMMAND_ID -> {
-              executeCommand(rInterop, args)
+              RStudioApiUtils.executeCommand(rInterop, args)
               promise.setResult(RObject.getDefaultInstance())
             }
           }
