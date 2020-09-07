@@ -12,14 +12,16 @@ import org.jetbrains.r.RPluginUtil
 
 class WelcomeGuideManager(private val project: Project) {
   init {
-    if (!(ApplicationManager.getApplication().isUnitTestMode || ApplicationManager.getApplication().isHeadlessEnvironment)) {
+    if (!(ApplicationManager.getApplication().isUnitTestMode ||
+          ApplicationManager.getApplication().isHeadlessEnvironment ||
+          RPluginUtil.getPlugin().isBundled)) {
       showWelcomeGuide()
     }
   }
 
   internal fun showWelcomeGuide() {
     val propertiesComponent = PropertiesComponent.getInstance()
-    if (!propertiesComponent.isTrueValue(KEY) && !RPluginUtil.getPlugin().isBundled) {
+    if (!propertiesComponent.isTrueValue(KEY)) {
       propertiesComponent.setValue(KEY, true)
       val welcomeText = String(javaClass.getResourceAsStream("/fileTemplates/internal/welcome.md").readAllBytes())
       val welcomeFile = LightVirtualFile("R plugin - Welcome.md", welcomeText)
