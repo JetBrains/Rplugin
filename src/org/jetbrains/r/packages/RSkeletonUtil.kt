@@ -20,6 +20,7 @@ import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.RMultiOutputProcessor
+import org.jetbrains.r.interpreter.runHelper
 import org.jetbrains.r.interpreter.runMultiOutputHelper
 import org.jetbrains.r.interpreter.uploadFileToHost
 import org.jetbrains.r.packages.LibrarySummary.RLibraryPackage
@@ -45,7 +46,9 @@ object RSkeletonUtil {
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
   private const val PRIORITY_PREFIX = "## Package priority: "
-  private const val MAX_BUCKET_SIZE = 25 // 4 threads consume a total of ~1GB memory
+  private const val DEFAULT_MAX_BUCKET_SIZE = 25 // 4 threads consume a total of ~1GB memory
+
+  private val RAM_SIZE_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/ram_size.R") }
 
   private val LOG = Logger.getInstance("#" + RSkeletonUtil::class.java.name)
 
@@ -97,7 +100,8 @@ object RSkeletonUtil {
     val newPackages = generationList.shuffled() // to increase the probability of uniform distribution between threads
     var bucketSize = newPackages.size / MAX_THREAD_POOL_SIZE
     if (newPackages.size % MAX_THREAD_POOL_SIZE != 0) ++bucketSize
-    bucketSize = min(bucketSize, MAX_BUCKET_SIZE)
+    val maxBucketSize = getLimitedByRAMBucketSize(interop)
+    bucketSize = min(bucketSize, maxBucketSize)
     for (i in newPackages.indices step bucketSize) {
       val rPackages = (i until i + bucketSize).mapNotNull { newPackages.getOrNull(it) }
       val skeletonFiles = rPackages.map { it.second.toFile() }
@@ -107,7 +111,8 @@ object RSkeletonUtil {
     }
 
     for (promise in promises) {
-      promise.blockingGet(PACKAGE_SUMMARY_TIMEOUT)?.let { result = result || it } // Wait for all helpers
+      val timeout = maxBucketSize * 15 * 1000 // 15 seconds for each package
+      promise.blockingGet(timeout)?.let { result = result || it } // Wait for all helpers
     }
 
     try {
@@ -118,6 +123,18 @@ object RSkeletonUtil {
       e.printStackTrace()
     }
     return result
+  }
+
+  private fun getLimitedByRAMBucketSize(interop: RInterop): Int {
+    val ram = interop.interpreter.runHelper(RAM_SIZE_HELPER, emptyList()).toDoubleOrNull()
+    return if (ram == null) DEFAULT_MAX_BUCKET_SIZE
+    else when {
+      // See more information in testData/misc/skeleton_ram_usage.csv
+      ram >= 16 -> 100 // ~2.5 GB
+      ram >= 2 -> 25   // ~1 GB
+      ram >= 1 -> 5    // ~0.5 GB
+      else -> 1
+    }
   }
 
   private fun hash(libraryPath: String): String {
@@ -350,8 +367,6 @@ object RSkeletonUtil {
       private val extraNamedArgumentsHelper = RPluginUtil.findFileInRHelpers("R/extraNamedArguments.R")
     }
   }
-
-  private const val PACKAGE_SUMMARY_TIMEOUT = MAX_BUCKET_SIZE * 15 * 1000 // 15 seconds for each package
 }
 
 data class RPackage(val name: String, val version: String) {
