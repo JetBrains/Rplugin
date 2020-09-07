@@ -17,11 +17,12 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.CommonProcessors
 import com.intellij.util.ProcessingContext
+import com.intellij.util.Processor
 import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.classes.RS4ClassInfoUtil
+import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
@@ -32,6 +33,7 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
+import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -48,6 +50,7 @@ class RCompletionContributor : CompletionContributor() {
     addInstalledPackageCompletion()
     addNamespaceAccessExpression()
     addMemberAccessCompletion()
+    addAtAccessCompletion()
     addIdentifierCompletion()
   }
 
@@ -66,6 +69,11 @@ class RCompletionContributor : CompletionContributor() {
   private fun addMemberAccessCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.MEMBER_ACCESS_FILTER), MemberAccessCompletionProvider())
+  }
+
+  private fun addAtAccessCompletion() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
+      .and(RElementFilters.AT_ACCESS_FILTER), AtAccessCompletionProvider())
   }
 
   private fun addInstalledPackageCompletion() {
@@ -92,16 +100,86 @@ class RCompletionContributor : CompletionContributor() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
       val file = parameters.originalFile
-      val info = file.runtimeInfo ?: return
+      val info = file.runtimeInfo
       val memberAccess = PsiTreeUtil.getParentOfType(position, RMemberExpression::class.java) ?: return
       val leftExpr = memberAccess.leftExpr ?: return
-      val noCalls = PsiTreeUtil.processElements(leftExpr) { it !is RCallExpression }
-      if (noCalls) {
-        info.loadObjectNames(leftExpr.text).forEach { result.consume(rCompletionElementFactory.createNamespaceAccess(it)) }
+      if (info != null) {
+        val noCalls = PsiTreeUtil.processElements(leftExpr) { it !is RCallExpression }
+        if (noCalls) {
+          info.loadObjectNames(leftExpr.text).forEach { result.consume(rCompletionElementFactory.createNamespaceAccess(it)) }
+        }
+      }
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeMembers(leftExpr, rCompletionElementFactory, result)
       }
     }
   }
 
+  private class AtAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val file = parameters.originalFile
+      val atAccess = PsiTreeUtil.getParentOfType(parameters.position, RAtExpression::class.java) ?: return
+      val runtimeInfo = file.runtimeInfo
+      val shownNames = HashSet<String>()
+      if (file.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true) {
+        if (!addCompletionFromRuntime(atAccess, runtimeInfo, shownNames, result)) {
+          addCompletionStatically(atAccess, shownNames, result)
+        }
+      }
+      else {
+        if (!addCompletionStatically(atAccess, shownNames, result)) {
+          addCompletionFromRuntime(atAccess, runtimeInfo, shownNames, result)
+        }
+      }
+    }
+
+    private fun addCompletionFromRuntime(atAccess: RAtExpression,
+                                         runtimeInfo: RConsoleRuntimeInfo?,
+                                         shownNames: HashSet<String>,
+                                         result: CompletionResultSet): Boolean {
+      runtimeInfo ?: return false
+      val obj = atAccess.leftExpr ?: return false
+      // obj@<caret>
+      // pck::obj@<caret>
+      // env$obj@<caret>
+      if (obj !is RIdentifierExpression &&
+          obj !is RNamespaceAccessExpression &&
+          (obj !is RMemberExpression || obj.rightExpr !is RIdentifierExpression)) {
+        return false
+      }
+      val text = obj.text
+      runtimeInfo.loadS4ClassInfo(text)?.let { info ->
+        return addCompletionFromS4ClassInfo(info, shownNames, result)
+      }
+      return false
+    }
+
+    private fun addCompletionStatically(atAccess: RAtExpression,
+                                        shownNames: HashSet<String>,
+                                        result: CompletionResultSet): Boolean {
+      atAccess.leftExpr?.reference?.multiResolve(false)?.forEach { resolveResult ->
+        val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
+        (definition.assignedValue as? RCallExpression)?.let { call ->
+          val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
+          RS4ClassNameIndex.findClassInfos(className, atAccess.project, RSearchScopeUtil.getScope(atAccess)).forEach { info ->
+            return addCompletionFromS4ClassInfo(info, shownNames, result)
+          }
+        }
+      }
+      return false
+    }
+
+    private fun addCompletionFromS4ClassInfo(info: RS4ClassInfo, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
+      var hasNewResults = false
+      for (slot in info.slots) {
+        if (slot.name in shownNames) continue
+        result.consume(rCompletionElementFactory.createAtAccess(slot.name, slot.type))
+        shownNames.add(slot.name)
+        hasNewResults = true
+      }
+      return hasNewResults
+    }
+  }
 
   private class InstalledPackageCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -358,6 +436,7 @@ class RCompletionContributor : CompletionContributor() {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
       addTableLiterals(stringLiteral, parameters, result)
       addFilePathCompletion(parameters, stringLiteral, result)
+      addS4ClassNameCompletion(stringLiteral, parameters.originalFile, result)
     }
 
     private fun addTableLiterals(stringLiteral: RStringLiteralExpression,
@@ -371,14 +450,9 @@ class RCompletionContributor : CompletionContributor() {
       val values = mutableListOf<String>()
       addColumnStringValues(RDplyrAnalyzer, stringLiteral, other, runtimeInfo, values)
       addColumnStringValues(RDataTableAnalyzer, stringLiteral, other, runtimeInfo, values)
-      val insertHandler = InsertHandler<LookupElement> { insertHandlerContext, _ ->
-        insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
-          insertHandlerContext.editor.caretModel.moveToOffset(element.textRange.endOffset)
-        }
-      }
       result.addAllElements(values.distinct().map {
         RLookupElementFactory.createLookupElementWithPriority(RLookupElement(escape(it), true, AllIcons.Nodes.Field, itemText = it),
-                                                              insertHandler, TABLE_MANIPULATION_PRIORITY)
+                                                              STRING_LITERAL_INSERT_HANDLER, TABLE_MANIPULATION_PRIORITY)
       })
     }
 
@@ -409,7 +483,90 @@ class RCompletionContributor : CompletionContributor() {
       result.addAll(runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() })
     }
 
+    private fun addS4ClassNameCompletion(classNameLiteral: RStringLiteralExpression,
+                                         file: PsiFile,
+                                         result: CompletionResultSet) {
+      val parentCall = PsiTreeUtil.getParentOfType(classNameLiteral, RCallExpression::class.java) ?: return
+      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return
+      var omitVirtual = false
+      var nameToOmit: String? = null
+      when {
+        // new("<caret>")
+        parentCall.isFunctionFromLibrary("new", "methods") -> {
+          if (parentArgumentInfo.getArgumentPassedToParameter("Class") != classNameLiteral) return
+          omitVirtual = true
+        }
+        // setClass("MyClass", "<caret>")
+        // setClass("MyClass", , , "<caret>")
+        parentCall.isFunctionFromLibrary("setClass", "methods") -> {
+          if (parentArgumentInfo.getArgumentPassedToParameter("contains") != classNameLiteral &&
+              parentArgumentInfo.getArgumentPassedToParameter("representation") != classNameLiteral) return
+          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(parentCall, parentArgumentInfo)
+        }
+        else -> {
+          val superParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return
+          if (!superParentCall.isFunctionFromLibrary("setClass", "methods")) return
+          val superParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(superParentCall) ?: return
+
+          // setClass("MyClass", contains = "<caret>")
+          // setClass("MyClass", contains = c("<caret>"))
+          // setClass("MyClass", contains = c(smt = "<caret>")
+          // setClass("MyClass", representation = representation(smt = "<caret>")
+          // setClass("MyClass", representation = representation("<caret>")
+          if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("contains"), classNameLiteral, false) ||
+              PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("representation"), classNameLiteral, false)) {
+            val parent = classNameLiteral.parent
+            if (parent is RNamedArgument && parent.nameIdentifier == classNameLiteral) return
+            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
+          }
+          // setClass("MyClass", slots = c(name = "<caret>"))
+          else if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("slots"), classNameLiteral, false)) {
+            val parent = classNameLiteral.parent
+            if (parent !is RNamedArgument || parent.assignedValue != classNameLiteral) return
+            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
+          } else return
+        }
+      }
+
+      val project = classNameLiteral.project
+      val scope = RSearchScopeUtil.getScope(classNameLiteral)
+      val runtimeInfo = file.runtimeInfo
+      val loadedPackages = runtimeInfo?.loadedPackages?.keys
+      val shownNames = HashSet<String>()
+      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { info ->
+        if (omitVirtual && info.isVirtual) return@Processor true
+        if (nameToOmit != info.className) {
+          result.addS4ClassName(info, shownNames, loadedPackages)
+        }
+        return@Processor true
+      })
+      runtimeInfo?.loadShortS4ClassInfos()?.forEach { info ->
+        if (omitVirtual && info.isVirtual) return@forEach
+        if (nameToOmit != info.className) {
+          result.addS4ClassName(info, shownNames, loadedPackages)
+        }
+      }
+    }
+
+    private fun CompletionResultSet.addS4ClassName(classInfo: RS4ClassInfo, shownNames: MutableSet<String>, loadedPackages: Set<String>?) {
+      val className = classInfo.className
+      if (className in shownNames) return
+      shownNames.add(className)
+
+      val packageName = classInfo.packageName
+      val isLoaded = loadedPackages?.contains(packageName) ?: true
+      val priority = if (isLoaded) LOADED_S4_CLASS_NAME else NOT_LOADED_S4_CLASS_NAME
+      addElement(RLookupElementFactory.createLookupElementWithPriority(
+        RLookupElement(escape(className), true, AllIcons.Nodes.Field, itemText = className, packageName = packageName),
+        STRING_LITERAL_INSERT_HANDLER, priority))
+    }
+
     private val escape = StringUtil.escaper(true, "\"")::`fun`
+    private val STRING_LITERAL_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
+      insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
+        insertHandlerContext.editor.caretModel.moveToOffset(element.textRange.endOffset)
+      }
+    }
   }
 
   companion object {
