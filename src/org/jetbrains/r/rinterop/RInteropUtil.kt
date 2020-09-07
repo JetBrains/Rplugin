@@ -230,9 +230,7 @@ object RInteropUtil {
       command = command.withEnvironment("PATH", paths.path)
       command = when (interpreter.hostOS) {
         OperatingSystem.MAC_OS -> {
-          // DYLD_FALLBACK_LIBRARY_PATH doesn't work if notarization is enabled, use DYLD_LIBRARY_PATH instead.
-          // Right now we notarize only bundled binaries.
-          val dyldName = if (RPluginUtil.getPlugin().isBundled) "DYLD_LIBRARY_PATH" else "DYLD_FALLBACK_LIBRARY_PATH"
+          val dyldName = "DYLD_LIBRARY_PATH"
           command.withEnvironment(dyldName, paths.ldPath.takeIf { it.isNotBlank() } ?: "${paths.home}/lib")
         }
         OperatingSystem.LINUX -> {
