@@ -213,7 +213,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
     initRequest.setRScriptsPath(rScriptsPath).projectDir = baseDir
-    initRequest.httpUserAgent = "Rkernel/" + ApplicationInfo.getInstance().build.asStringWithoutProductCode()
+    initRequest.httpUserAgent = "Rkernel/" + (ApplicationInfo.getInstance()?.build?.asStringWithoutProductCode() ?: "IntelliJ")
 
     val initOutput = executeRequest(RPIServiceGrpc.getInitMethod(), initRequest.build())
     if (initOutput.stdout.isNotBlank()) {
