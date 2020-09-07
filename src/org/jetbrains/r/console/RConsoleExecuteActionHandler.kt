@@ -312,9 +312,18 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
   fun splitAndExecute(code: String, isDebug: Boolean = false,
                       sourceFile: VirtualFile? = null, sourceStartOffset: Int? = null,
-                      firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE): Promise<Unit> {
-    return splitCodeForExecution(consoleView.project, code)
+                      firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE
+  ): Promise<Unit> = runReadAction {
+    splitCodeForExecution(consoleView.project, code)
       .mapIndexed { index, (text, range) ->
+        val doExecute = if (sourceFile == null || sourceStartOffset == null) {
+          ({ consoleView.rInterop.replExecute(text, setLastValue = true, isDebug = isDebug) })
+        } else {
+          val newRange = TextRange(range.startOffset + sourceStartOffset, range.endOffset + sourceStartOffset)
+          val debugCommand = if (index == 0) firstDebugCommand else ExecuteCodeRequest.DebugCommand.KEEP_PREVIOUS
+          val request = consoleView.rInterop.prepareReplSourceFileRequest(sourceFile, newRange, isDebug, debugCommand)
+          ({ consoleView.rInterop.replSourceFile(request) })
+        }
         {
           executeLater {
             if (isDebug && state == State.DEBUG_PROMPT) {
@@ -325,15 +334,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             fireBusy()
             val prepare = if (index == 0) consoleView.interpreter.prepareForExecution() else resolvedPromise()
             prepare.thenAsync {
-              if (sourceFile == null || sourceStartOffset == null) {
-                consoleView.rInterop.replExecute(text, setLastValue = true, isDebug = isDebug).then { it.exception == null }
-              } else {
-                val newRange = TextRange(range.startOffset + sourceStartOffset, range.endOffset + sourceStartOffset)
-                val debugCommand = if (index == 0) firstDebugCommand else ExecuteCodeRequest.DebugCommand.KEEP_PREVIOUS
-                rInterop.replSourceFile(sourceFile, textRange = newRange, debug = isDebug,
-                                        firstDebugCommand = debugCommand, setLastValue = true)
-                  .then { it.exception == null }
-              }
+              doExecute().then { it.exception == null }
             }
           }.thenAsync { it }
         }
@@ -398,26 +399,25 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   }
 
   companion object {
-    fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> =
-      runReadAction {
-        val psiFile = RElementFactory.buildRFileFromText(project, text)
-        psiFile.children.asSequence()
-          .filter { it is PsiWhiteSpace }
-          .flatMap {
-            it.text.asSequence().mapIndexedNotNull { i, c ->
-              if (c == '\n') {
-                TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
-              } else {
-                null
-              }
+    fun splitCodeForExecution(project: Project, text: String): List<Pair<String, TextRange>> {
+      val psiFile = RElementFactory.buildRFileFromText(project, text)
+      return psiFile.children.asSequence()
+        .filter { it is PsiWhiteSpace }
+        .flatMap {
+          it.text.asSequence().mapIndexedNotNull { i, c ->
+            if (c == '\n') {
+              TextRange(it.textRange.startOffset + i, it.textRange.startOffset + i + 1)
+            } else {
+              null
             }
           }
-          .let { sequenceOf(TextRange(0, 0)).plus(it) }
-          .plus(TextRange(text.length, text.length))
-          .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
-          .map { text.substring(it.startOffset, it.endOffset) to it }
-          .toList()
-      }
+        }
+        .let { sequenceOf(TextRange(0, 0)).plus(it) }
+        .plus(TextRange(text.length, text.length))
+        .zipWithNext { first, second -> TextRange(first.endOffset, second.startOffset) }
+        .map { text.substring(it.startOffset, it.endOffset) to it }
+        .toList()
+    }
 
     private class SourcePositionHyperlink(private val position: XSourcePosition) : HyperlinkInfo {
       override fun navigate(project: Project?) {

@@ -17,11 +17,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SyntaxTraverser
@@ -34,10 +34,7 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.concurrency.runAsync
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -45,7 +42,6 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
-import org.jetbrains.r.rinterop.ExecuteCodeRequest
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
@@ -186,10 +182,17 @@ object RunChunkHandler {
       }
     }
 
+    val range = if (textRange == null) {
+      codeElement.textRange
+    } else {
+      textRange.intersection(codeElement.textRange) ?: TextRange.EMPTY_RANGE
+    }
+    val request = rInterop.prepareReplSourceFileRequest(file.virtualFile, range, isDebug)
+
     updateProgressBar(editor, inlayElement)
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
     prepare.onProcessed {
-      executeCode(console, codeElement, isDebug, textRange, beforeChunkPromise) {
+      executeCode(request, console, codeElement, beforeChunkPromise) {
         InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
       }.onProcessed { result ->
         dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
@@ -319,49 +322,23 @@ object RunChunkHandler {
 
   private data class ExecutionResult(val output: List<ProcessOutput>, val exception: String? = null)
 
-  private fun executeCode(console: RConsoleView,
+  private fun executeCode(request: RInterop.ReplSourceFileRequest,
+                          console: RConsoleView,
                           codeElement: PsiElement,
-                          debug: Boolean = false,
-                          textRange: TextRange? = null,
                           beforeChunkPromise: Promise<Unit>,
                           onOutput: (ProcessOutput) -> Unit = {}): Promise<ExecutionResult> {
     val result = mutableListOf<ProcessOutput>()
-    val virtualFile = codeElement.containingFile.virtualFile
-    val debugCommand = RDebuggerUtil.getFirstDebugCommand(console.project, virtualFile, textRange ?: codeElement.textRange)
-    val range = if (textRange == null) {
-      codeElement.textRange
-    } else {
-      textRange.intersection(codeElement.textRange) ?: TextRange.EMPTY_RANGE
-    }
     val promise = AsyncPromise<ExecutionResult>()
     beforeChunkPromise.onProcessed {
-      executeInConsole(console, virtualFile, debug, range, debugCommand, result, onOutput, promise, codeElement)
+      val executePromise = console.rInterop.replSourceFile(request) { s, type ->
+        val output = ProcessOutput(s, type)
+        result.add(output)
+        onOutput(output)
+      }
+      executePromise.onProcessed { promise.setResult(ExecutionResult(result, if (it == null) "Interrupted" else it.exception)) }
+      codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
     }
     return promise
-  }
-
-  private fun executeInConsole(console: RConsoleView,
-                               virtualFile: VirtualFile,
-                               debug: Boolean,
-                               range: TextRange?,
-                               debugCommand: ExecuteCodeRequest.DebugCommand,
-                               result: MutableList<ProcessOutput>,
-                               onOutput: (ProcessOutput) -> Unit,
-                               promise: AsyncPromise<ExecutionResult>,
-                               codeElement: PsiElement) {
-    val executePromise = console.rInterop.replSourceFile(virtualFile, debug, range, firstDebugCommand = debugCommand) { s, type ->
-      val output = ProcessOutput(s, type)
-      result.add(output)
-      onOutput(output)
-    }
-    executePromise.onProcessed {
-      if (it == null) {
-        promise.setResult(ExecutionResult(result, "Interrupted"))
-      } else {
-        promise.setResult(ExecutionResult(result, it.exception))
-      }
-    }
-    codeElement.project.chunkExecutionState?.interrupt?.set { executePromise.cancel() }
   }
 
   private fun logNonEmptyError(result: RIExecutionResult) {

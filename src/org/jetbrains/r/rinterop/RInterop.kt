@@ -35,6 +35,7 @@ import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.classes.RS4ClassSlot
+import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -301,28 +302,43 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
-                     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
-                     setLastValue: Boolean = false,
-                     consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
-    var code = ""
-    var lineOffset = -1
-    runReadAction {
+  data class ReplSourceFileRequest(val code: String, val file: VirtualFile, val lineOffset: Int,
+                                   val debug: Boolean, val firstDebugCommand: ExecuteCodeRequest.DebugCommand)
+
+  fun prepareReplSourceFileRequest(file: VirtualFile, textRange: TextRange? = null, debug: Boolean = false,
+                                   firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
+  ): ReplSourceFileRequest {
+    return runReadAction {
+      val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !isDebug) {
+        ExecuteCodeRequest.DebugCommand.CONTINUE
+      } else {
+        RDebuggerUtil.getFirstDebugCommand(project, file, textRange)
+      }
       val document = FileDocumentManager.getInstance().getDocument(file)
-                     ?: return@runReadAction
-      code = textRange?.let { document.getText(it) } ?: document.text
-      lineOffset = textRange?.let { document.getLineNumber(it.startOffset) } ?: 0
+      if (document == null) return@runReadAction ReplSourceFileRequest("", file, 0, debug, debugCommand)
+      val range = textRange?.let { it.intersection(TextRange(0, document.textLength)) ?: TextRange.EMPTY_RANGE }
+                  ?: TextRange(0, document.textLength)
+      val code = document.getText(range)
+      val lineOffset = document.getLineNumber(range.startOffset)
+      ReplSourceFileRequest(code, file, lineOffset, debug, debugCommand)
     }
-    if (lineOffset == -1) {
-      return AsyncPromise<RIExecutionResult>().also { it.setError("No document for $file") }
-    }
+  }
+
+  fun replSourceFile(file: VirtualFile, debug: Boolean = false, textRange: TextRange? = null,
+                     firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null,
+                     consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
+    return replSourceFile(prepareReplSourceFileRequest(file, textRange, debug, firstDebugCommand), consumer)
+  }
+
+  fun replSourceFile(request: ReplSourceFileRequest,
+                     consumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
     return executeCodeImpl(
-      code,
-      sourceFileId = sourceFileManager.getFileId(file),
-      sourceFileLineOffset = lineOffset,
-      isRepl = true, isDebug = debug,
-      firstDebugCommand = firstDebugCommand,
-      setLastValue = setLastValue,
+      request.code,
+      sourceFileId = sourceFileManager.getFileId(request.file),
+      sourceFileLineOffset = request.lineOffset,
+      isRepl = true, isDebug = request.debug,
+      firstDebugCommand = request.firstDebugCommand,
+      setLastValue = true,
       outputConsumer = consumer
     )
   }
