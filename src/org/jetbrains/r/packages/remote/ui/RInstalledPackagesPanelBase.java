@@ -635,7 +635,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
   }
 
   private static void doRecorded(@NotNull String actionId, @NotNull MouseEvent event, @NotNull Runnable runnable) {
-    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(actionId, event);
+    ActionManagerEx.getInstanceEx().fireBeforeActionPerformed(actionId, event, "RInstalledPackagesPanel");
     runnable.run();
   }
 
