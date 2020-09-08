@@ -175,7 +175,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
 
   /** Returns width of component. */
   override fun calcWidthInPixels(inlay: Inlay<*>): Int {
-    return size.width
+    return InlayDimensions.calculateInlayWidth(inlay.editor as EditorImpl)
   }
 
   /** Returns height of component. */

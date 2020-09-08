@@ -103,7 +103,7 @@ object InlayDimensions {
   }
 
   fun calculateInlayWidth(editor: EditorEx): Int {
-    return editor.component.width - editor.gutterComponentEx.width - rightBorder
+    return max(0, editor.scrollPane.let { it.viewport.width - it.verticalScrollBar.width })
   }
 
   fun calculateInlayHeight(maxWidth: Int, maxHeight: Int, editor: Editor): Int {
@@ -111,7 +111,8 @@ object InlayDimensions {
     val editorWidth = editor.contentComponent.width
     return if (maxWidth * scaleMultiplier <= editorWidth) {
       maxHeight * scaleMultiplier
-    } else {
+    }
+    else {
       maxHeight * editorWidth / maxWidth
     }
   }
