@@ -5,6 +5,7 @@
 package org.jetbrains.r.packages.remote.ui
 
 import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import org.jetbrains.r.RBundle
 import javax.swing.JList
 
@@ -17,11 +18,26 @@ class RPackageListCellRenderer : ColoredListCellRenderer<RPackageUpdateInfo>() {
     hasFocus: Boolean
   ) {
     if (value != null) {
-
-      append(RBundle.message("package.update.info.cell.renderer.text",
-                             value.installedPackage.name,
-                             value.installedPackage.version,
-                             value.latestVersion))
+      append(value.installedPackage.name)
+      appendHint(FROM_HINT)
+      append(value.installedPackage.version, SimpleTextAttributes.GRAYED_ATTRIBUTES)
+      appendHint(TO_HINT)
+      append(value.latestVersion, SimpleTextAttributes.GRAYED_ATTRIBUTES)
     }
+  }
+
+  private fun appendHint(hint: String) {
+    appendTextGap()
+    append(hint, SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
+    appendTextGap()
+  }
+
+  private fun appendTextGap() {
+    append(" ")
+  }
+
+  companion object {
+    private val FROM_HINT = RBundle.message("package.update.info.cell.renderer.from")
+    private val TO_HINT = RBundle.message("package.update.info.cell.renderer.to")
   }
 }
