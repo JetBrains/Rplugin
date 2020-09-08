@@ -1,0 +1,22 @@
+FROM ubuntu:bionic
+
+RUN apt-get update
+RUN apt-get install -y curl gnupg apt-transport-https ca-certificates --no-install-recommends
+RUN echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main" >> /etc/apt/sources.list
+RUN echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main" >> /etc/apt/sources.list
+RUN curl https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 60C317803A41BA51845E371A1E9377A2BA9EF27F
+RUN apt-get update
+RUN apt-get -y install g++-7 clang-9 clang-tools-9 --no-install-recommends
+RUN update-alternatives --install /usr/bin/cc cc   /usr/bin/clang-9  50
+RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-9  50
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 50
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 50
+# install R dependencies
+RUN apt-get -y install libxml2-dev libssl-dev libcairo2-dev patch curl libcurl4-gnutls-dev make gfortran git unzip
+# install other dependencies
+RUN apt-get -y install libpcre2-dev
+# delete all the apt list files since they're big and get stale quickly
+RUN rm -rf /var/lib/apt/lists/*
+
+CMD ["/bin/bash"]

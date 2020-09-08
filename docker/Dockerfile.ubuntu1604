@@ -46,7 +46,7 @@ RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 50
 # install R dependencies
 RUN apt-get -y install libxml2-dev libssl-dev libcairo2-dev patch curl libcurl4-gnutls-dev make gfortran git unzip
 # install other dependencies
-RUN apt-get -y install libpcre2-dev libxtst6 libxi6 xvfb
+RUN apt-get -y install libpcre2-dev
 # delete all the apt list files since they're big and get stale quickly
 RUN rm -rf /var/lib/apt/lists/*
 # this forces "apt-get update" in dependent images, which is also good
@@ -54,5 +54,5 @@ RUN rm -rf /var/lib/apt/lists/*
 # make systemd-detect-virt return "docker"
 # See: https://github.com/systemd/systemd/blob/aa0c34279ee40bce2f9681b496922dedbadfca19/src/basic/virt.c#L434
 RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
-COPY ./entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["/bin/bash"]
