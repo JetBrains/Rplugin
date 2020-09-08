@@ -21,14 +21,19 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   private val switch = RLibraryWatcherSwitch()
   private val changed = AtomicBoolean(false)
   private var currentDisposable: Disposable? = null
+  private var currentRoots: List<String>? = null
 
   @Synchronized
   fun updateRootsToWatch(state: RInterpreterState) {
+    val roots = state.libraryPaths.map { it.path }
+    if (currentRoots == roots) {
+      return
+    }
+    currentRoots = roots
     currentDisposable?.let {
       Disposer.dispose(it)
       currentDisposable = null
     }
-    val roots = state.libraryPaths.map { it.path }
     if (roots.isNotEmpty()) {
       val disposable = Disposer.newDisposable()
       currentDisposable = disposable
