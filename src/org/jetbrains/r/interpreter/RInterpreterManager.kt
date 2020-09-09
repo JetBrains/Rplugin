@@ -112,7 +112,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
                      ?: return rejectedPromise<RInterpreter>("No R Interpreter").also { interpreterPromise = it }
       if (!initialized) {
         RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
-          RInterpreterStateManager.getCurrentStateAsync(project).onSuccess { it.scheduleSkeletonUpdate() }.then { }
+          RInterpreterStateManager.getCurrentStateAsync(project).thenAsync { it.scheduleSkeletonUpdate() }
         }
       }
       initialized = true
