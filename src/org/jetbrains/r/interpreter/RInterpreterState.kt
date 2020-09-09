@@ -81,6 +81,10 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
 
   @Volatile
   private var updatePromise: Promise<Unit>? = null
+
+  @Volatile
+  private var skeletonPromise: Promise<Unit>? = null
+
   private val updateEpoch = AtomicInteger(0)
 
   private val name2PsiFile = ContainerUtil.createConcurrentSoftKeySoftValueMap<String, PsiFile?>()
@@ -234,19 +238,37 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     return rInterop.loadLibPaths().toList().also { if (it.isEmpty()) LOG.error("Got empty library paths") }
   }
 
+  @Synchronized
   override fun scheduleSkeletonUpdate(): Promise<Unit> {
-    return AsyncPromise<Unit>().also { promise ->
-      updateState()
-        .onProcessed { promise.setResult(Unit) }
-        .onSuccess {
-          val updater = object : Task.Backgroundable(project, RBundle.message("interpreter.state.schedule.skeleton.update"), false) {
-            override fun run(indicator: ProgressIndicator) {
-              RLibraryWatcher.getInstance(project).updateRootsToWatch(this@RInterpreterStateImpl)
-              updateSkeletons()
-            }
-          }
-          ProgressManager.getInstance().run(updater)
+    return skeletonPromise ?: createSkeletonPromise().also {
+      skeletonPromise = it
+    }
+  }
+
+  private fun createSkeletonPromise(): Promise<Unit> {
+    return doScheduleSkeletonUpdate()
+      .onProcessed {
+        resetSkeletonPromise()
+      }
+      .onError { e ->
+        LOG.error("Cannot schedule skeleton update", e)
+      }
+  }
+
+  @Synchronized
+  private fun resetSkeletonPromise() {
+    skeletonPromise = null
+  }
+
+  private fun doScheduleSkeletonUpdate(): Promise<Unit> {
+    return updateState().onSuccess {
+      val updater = object : Task.Backgroundable(project, RBundle.message("interpreter.state.schedule.skeleton.update"), false) {
+        override fun run(indicator: ProgressIndicator) {
+          RLibraryWatcher.getInstance(project).updateRootsToWatch(this@RInterpreterStateImpl)
+          updateSkeletons()
         }
+      }
+      ProgressManager.getInstance().run(updater)
     }
   }
 
