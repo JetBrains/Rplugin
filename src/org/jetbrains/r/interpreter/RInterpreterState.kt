@@ -164,6 +164,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     if (interpreterLocation != RInterpreterManager.getInterpreterOrNull(project)?.interpreterLocation) {
       throw IllegalStateException("RInterop is out of date")
     }
+    updateEpoch.incrementAndGet()
     val installedPackages = makeExpiring(rInterop.loadInstalledPackages())
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
     val (libraryPaths, userLibraryPath) = loadPaths()
@@ -172,7 +173,6 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
       RSkeletonUtil.installedPackageToSkeletonFile(skeletonsDirectory, it)
     }.toSet()
     synchronized(this) {
-      updateEpoch.incrementAndGet()
       name2PsiFile.clear()
       this.installedPackages = installedPackages
       this.name2installedPackages = name2installedPackages
