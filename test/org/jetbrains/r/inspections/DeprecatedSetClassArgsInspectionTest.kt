@@ -44,9 +44,20 @@ class DeprecatedSetClassArgsInspectionTest : RInspectionTest() {
     """.trimIndent(), true)
   }
 
+  fun testNamedEmptyExpression() {
+    doExprTest("""
+      setClass('MyClass', ${makeWeakWarn("representation", "representation = ")})
+    """.trimIndent(), true)
+  }
+
   fun testNoWarnings() {
     doExprTest("""
       setClass('MyClass', slots = c(aa = "aaType", bb = "bbType"), contains = c("matrix", "VIRTUAL"))
+    """.trimIndent(), true)
+
+    // REmptyExpression
+    doExprTest("""
+      setClass('MyClass', )
     """.trimIndent(), true)
   }
 

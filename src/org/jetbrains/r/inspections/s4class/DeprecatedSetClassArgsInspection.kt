@@ -13,6 +13,7 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.inspections.RInspection
 import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.REmptyExpression
 import org.jetbrains.r.psi.api.RNamedArgument
 import org.jetbrains.r.psi.api.RVisitor
 import org.jetbrains.r.psi.isFunctionFromLibrary
@@ -37,6 +38,7 @@ class DeprecatedSetClassArgsInspection : RInspection() {
     private fun findDeprecatedArgument(argumentInfo: RArgumentInfo, argumentName: String) {
       val arg = argumentInfo.getArgumentPassedToParameter(argumentName) ?: return
       val element = if (arg.parent is RNamedArgument) arg.parent else arg
+      if (element is REmptyExpression) return
       myProblemHolder.registerProblem(element,
                                       RBundle.message("inspection.deprecated.setClass.args.description", argumentName),
                                       ProblemHighlightType.WEAK_WARNING)
