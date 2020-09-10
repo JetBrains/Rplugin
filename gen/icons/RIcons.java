@@ -44,8 +44,7 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon UpgradeAll = load("/icons/packages/upgradeAll.svg", -4336844615149500583L, 2);
   }
 
-  /** 16x16 */ public static final @NotNull Icon R = load("/icons/r.svg", -7325083084636395392L, 0);
-  /** 16x16 */ public static final @NotNull Icon R_logo_16 = load("/icons/r_logo_16.svg", -6908158756826125412L, 0);
+  /** 16x16 */ public static final @NotNull Icon R = load("/icons/r.svg", -3482938846178170340L, 0);
   /** 16x16 */ public static final @NotNull Icon Render = load("/icons/render.svg", -8382472418395606488L, 2);
   /** 16x16 */ public static final @NotNull Icon Render_dark1 = load("/icons/render_dark-1.svg", -6213356100823881705L, 0);
   /** 16x16 */ public static final @NotNull Icon RMarkdown = load("/icons/rMarkdown.svg", -3729429059388681844L, 0);

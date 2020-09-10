@@ -11,7 +11,7 @@ import javax.swing.Icon
 abstract class RPanel : JBPanel<RPanel>() {
 
   abstract val panelName: String
-  open val icon: Icon? = RIcons.R_logo_16
+  open val icon: Icon? = RIcons.R
   open val changeListeners = mutableListOf<Runnable>()
 
   open fun addChangeListener(listener: Runnable) {

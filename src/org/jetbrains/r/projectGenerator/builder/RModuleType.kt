@@ -23,7 +23,7 @@ open class RModuleType : ModuleType<ModuleBuilder>(R_MODULE) {
 
   override fun getDescription(): String = RBundle.message("module.type.description")
 
-  override fun getNodeIcon(isOpened: Boolean): Icon = RIcons.R_logo_16!!
+  override fun getNodeIcon(isOpened: Boolean): Icon = RIcons.R!!
 
   companion object {
     const val R_MODULE = "R_MODULE"

@@ -19,7 +19,7 @@ import javax.swing.Icon
 
 class RColorSettingsPage : RainbowColorSettingsPage {
 
-  override fun getIcon(): Icon? = RIcons.R_logo_16
+  override fun getIcon(): Icon? = RIcons.R
 
   override fun isRainbowType(type: TextAttributesKey?): Boolean = type == LOCAL_VARIABLE || type == PARAMETER || type == CLOSURE
 

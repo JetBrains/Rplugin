@@ -315,7 +315,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
   : JPanel(MigLayout("insets 0 0 0 0", "[grow][][]", "[]")) {
 
   private var deleted = false
-  private val rLogo = JBLabel(RIcons.R_logo_16)
+  private val rLogo = JBLabel(RIcons.R)
   private val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
     add(rLogo)
   }

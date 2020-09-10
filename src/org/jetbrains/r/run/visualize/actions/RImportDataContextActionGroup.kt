@@ -12,7 +12,7 @@ import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 
-class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R_logo_16), DumbAware {
+class RImportDataContextActionGroup : ActionGroup(TITLE, null, RIcons.R), DumbAware {
   private val actions: Array<RImportDataContextAction> = arrayOf(
     RImportBaseDataContextAction(),
     RImportCsvDataContextAction(),

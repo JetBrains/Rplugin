@@ -18,7 +18,7 @@ object RFileType : LanguageFileType(RLanguage.INSTANCE) {
 
   override fun getDefaultExtension(): String = "R"
 
-  override fun getIcon() = RIcons.R_logo_16
+  override fun getIcon() = RIcons.R
 
   var INPUT_FILTER: FileBasedIndex.InputFilter = DefaultFileTypeSpecificInputFilter(this)
 

@@ -36,7 +36,7 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
     when (value) {
       is RInterpreterInfo -> {
         appendName(value)
-        icon = RIcons.R_logo_16
+        icon = RIcons.R
       }
       null -> {
         appendName(null)

@@ -23,7 +23,7 @@ import javax.swing.JPanel
 
 abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSettings>(), CustomStepProjectGenerator<RProjectSettings>, ProjectTemplate {
 
-  override fun getIcon(): Icon? = RIcons.R_logo_16
+  override fun getIcon(): Icon? = RIcons.R
 
   override fun createModuleBuilder(): ModuleBuilder = RModuleBuilder(this)
 
@@ -45,7 +45,7 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
   private var settingsListener: SettingsListener? = null
 
   override fun getLogo(): Icon? {
-    return RIcons.R_logo_16
+    return RIcons.R
   }
 
   open fun validateGeneratorSettings(): List<ValidationInfo> {
