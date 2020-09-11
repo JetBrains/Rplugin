@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="LanguageInjectionConfiguration">
+  <injection language="Markdown" injector-id="R" enabled="true">
+    <display-name>Markdown in Shiny</display-name>
+    <place><![CDATA[callArgumentPattern("markdown", "mds")]]></place>
+  </injection>
+</component>

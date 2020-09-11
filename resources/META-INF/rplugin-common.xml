@@ -695,6 +695,11 @@ You can find the source code in the following repositories:
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
     </extensions>
 
+  <extensions defaultExtensionNs="org.intellij.intelliLang">
+    <injectionConfig config="injections/rInjections.xml"/>
+    <languageSupport implementation="org.jetbrains.r.injections.RInjectionSupport"/>
+  </extensions>
+
   <extensions defaultExtensionNs="org.jetbrains.r">
     <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RShinySupportProvider"/>
   </extensions>

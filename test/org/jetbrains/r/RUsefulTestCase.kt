@@ -258,6 +258,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       tibble
       readxl
       readr
+      shiny
     """.trimIndent().split("\n").toSet()
   }
 }
