@@ -133,7 +133,7 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
     val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, DefaultActionGroup(ellipsis), false)
     return toolbar.component.apply {
       isOpaque = true
-      background = UIUtil.getEditorPaneBackground()
+      background = UiCustomizer.instance.getTextOutputBackground(editor)
     }
   }
 
