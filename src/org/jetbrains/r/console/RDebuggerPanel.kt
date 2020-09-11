@@ -227,7 +227,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   private fun createMuteBreakpointsAction(): ToggleAction {
-    return object : DumbAwareToggleAction(ActionsBundle.message("action.Debugger.MuteBreakpoints.text"), null,
+    return object : DumbAwareToggleAction(ActionsBundle.message("action.XDebugger.MuteBreakpoints.text"), null,
                                           AllIcons.Debugger.MuteBreakpoints) {
       override fun isSelected(e: AnActionEvent) = breakpointsMuted
 
