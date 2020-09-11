@@ -61,4 +61,17 @@ object MaterialTableUtils {
       fitColumnWidth(column, table, maxWidth, maxRows)
     }
   }
+
+  private fun getRowHeight(table: JTable): Int {
+    val column = 0
+    val row = 0
+    val renderer = table.getCellRenderer(row, column)
+    val component = table.prepareRenderer(renderer, row, column)
+    return component.preferredSize.height
+  }
+
+  fun fitRowHeight(table: JTable) {
+    table.tableHeader.resizeAndRepaint()
+    table.rowHeight = getRowHeight(table)
+  }
 }
