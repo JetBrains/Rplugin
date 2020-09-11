@@ -14,8 +14,12 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.SoftWrapChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.impl.softwrap.SoftWrapDrawingType
@@ -133,7 +137,11 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
     }
   }
 
-  protected fun saveWithFileChooser(title: String, description: String, extension: Array<String>, defaultName: String, onChoose: (File) -> Unit) {
+  protected fun saveWithFileChooser(title: String,
+                                    description: String,
+                                    extension: Array<String>,
+                                    defaultName: String,
+                                    onChoose: (File) -> Unit) {
     InlayOutputUtil.saveWithFileChooser(project, title, description, extension, defaultName, true, onChoose)
   }
 
@@ -230,13 +238,15 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
   private val maxHeight = 500
   private val scrollPaneTopBorderHeight = 5
+
   init {
     Disposer.register(parent, console)
     toolbarPane.dataComponent = console.component
 
-    (console.editor as EditorImpl).apply {
+    (console.editor as EditorEx).apply {
       isRendererMode = true
       backgroundColor = UiCustomizer.instance.getTextOutputBackground(editor)
+      setFontSize(editor.colorsScheme.editorFontSize)
       scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
       MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
     }
@@ -255,6 +265,14 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
 
     console.editor.settings.isUseSoftWraps = true
+
+    ApplicationManager.getApplication().messageBus.connect(console)
+      .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+        (console.editor as EditorEx).apply {
+          setFontSize(editor.colorsScheme.editorFontSize)
+          component.repaint()
+        }
+      })
   }
 
   override fun clear() {
@@ -317,7 +335,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
   }
 
   override fun acceptType(type: String): Boolean {
-    return  type == "TEXT"
+    return type == "TEXT"
   }
 
   override fun saveAs() {
@@ -357,7 +375,7 @@ class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Uni
   }
 
   override fun acceptType(type: String): Boolean {
-    return  type == "HTML" || type == "URL"
+    return type == "HTML" || type == "URL"
   }
 
   override fun clear() {}
@@ -380,7 +398,7 @@ class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Uni
     else {
       jbBrowser.loadHTML("<head><style>" + GithubMarkdownCss.css + " </style></head><body>" + data + "</body>")
     }
-    jbBrowser.jbCefClient.addLoadHandler( object : CefLoadHandlerAdapter() {
+    jbBrowser.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
       override fun onLoadingStateChange(browser: CefBrowser?, isLoading: Boolean, canGoBack: Boolean, canGoForward: Boolean) {
         notifySize()
       }
