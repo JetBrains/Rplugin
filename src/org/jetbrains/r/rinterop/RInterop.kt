@@ -292,8 +292,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::setOutputWidth, Int32Value.of(width))
   }
 
-  fun replExecute(code: String, setLastValue: Boolean = false, isDebug: Boolean = false): CancellablePromise<RIExecutionResult> {
-    return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue, isDebug = isDebug)
+  fun replExecute(code: String, setLastValue: Boolean = false, debug: Boolean = false): CancellablePromise<RIExecutionResult> {
+    return executeCodeImpl(code, isRepl = true, setLastValue = setLastValue, debug = debug)
   }
 
   /**
@@ -309,26 +309,27 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  data class ReplSourceFileRequest(val code: String, val file: VirtualFile, val lineOffset: Int,
+  data class ReplSourceFileRequest(val code: String, val file: VirtualFile,
+                                   val lineOffset: Int, val firstLineOffset: Int,
                                    val debug: Boolean, val firstDebugCommand: ExecuteCodeRequest.DebugCommand)
 
   fun prepareReplSourceFileRequest(file: VirtualFile, textRange: TextRange? = null, debug: Boolean = false,
                                    firstDebugCommand: ExecuteCodeRequest.DebugCommand? = null
   ): ReplSourceFileRequest {
     return runReadAction {
-      isInSourceFileExecution.set(true)
-      val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !isDebug) {
+      val debugCommand = firstDebugCommand ?: if (isUnitTestMode || !debug) {
         ExecuteCodeRequest.DebugCommand.CONTINUE
       } else {
         RDebuggerUtil.getFirstDebugCommand(project, file, textRange)
       }
       val document = FileDocumentManager.getInstance().getDocument(file)
-      if (document == null) return@runReadAction ReplSourceFileRequest("", file, 0, debug, debugCommand)
+      if (document == null) return@runReadAction ReplSourceFileRequest("", file, 0, 0, debug, debugCommand)
       val range = textRange?.let { it.intersection(TextRange(0, document.textLength)) ?: TextRange.EMPTY_RANGE }
                   ?: TextRange(0, document.textLength)
       val code = document.getText(range)
       val lineOffset = document.getLineNumber(range.startOffset)
-      ReplSourceFileRequest(code, file, lineOffset, debug, debugCommand)
+      val firstLineOffset = range.startOffset - document.getLineStartOffset(lineOffset)
+      ReplSourceFileRequest(code, file, lineOffset, firstLineOffset, debug, debugCommand)
     }
   }
 
@@ -344,7 +345,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       request.code,
       sourceFileId = sourceFileManager.getFileId(request.file),
       sourceFileLineOffset = request.lineOffset,
-      isRepl = true, isDebug = request.debug,
+      sourceFileFirstLineOffset = request.firstLineOffset,
+      isRepl = true, debug = request.debug,
       firstDebugCommand = request.firstDebugCommand,
       setLastValue = true,
       outputConsumer = consumer,
@@ -354,14 +356,14 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun executeCodeAsync(
     code: String, withEcho: Boolean = true, isRepl: Boolean = false, returnOutput: Boolean = !isRepl,
-    isDebug: Boolean = false, setLastValue: Boolean = false,
+    debug: Boolean = false, setLastValue: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null): CancellablePromise<RIExecutionResult> {
     return executeCodeImpl(
       code,
       withEcho = withEcho,
       isRepl = isRepl,
       returnOutput = returnOutput,
-      isDebug = isDebug,
+      debug = debug,
       setLastValue = setLastValue,
       outputConsumer = outputConsumer)
   }
@@ -369,7 +371,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   private fun executeCodeImpl(
     code: String, withEcho: Boolean = true, sourceFileId: String = "", sourceFileLineOffset: Int = 0,
     sourceFileFirstLineOffset: Int = 0, isRepl: Boolean = false,
-    returnOutput: Boolean = !isRepl, isDebug: Boolean = false,
+    returnOutput: Boolean = !isRepl, debug: Boolean = false,
     firstDebugCommand: ExecuteCodeRequest.DebugCommand = ExecuteCodeRequest.DebugCommand.CONTINUE,
     setLastValue: Boolean = false, isSource: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
@@ -382,13 +384,13 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .setWithEcho(withEcho)
       .setStreamOutput(returnOutput || outputConsumer != null)
       .setIsRepl(isRepl)
-      .setIsDebug(isDebug)
+      .setIsDebug(debug)
       .setSetLastValue(setLastValue)
       .setFirstDebugCommand(firstDebugCommand)
       .build()
     val number = rInteropGrpcLogger.nextStubNumber()
     rInteropGrpcLogger.onExecuteRequestAsync(number, RPIServiceGrpc.getExecuteCodeMethod(), request)
-    if (isRepl) this.isDebug = isDebug
+    if (isRepl) this.isDebug = debug
     val call = channel.newCall(RPIServiceGrpc.getExecuteCodeMethod(), CallOptions.DEFAULT)
     val promise = object : AsyncPromise<RIExecutionResult>() {
       override fun cancel(mayInterruptIfRunning: Boolean): Boolean {

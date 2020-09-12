@@ -299,7 +299,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     rInterop.asyncEventsStartProcessing()
     promptPromise.blockingGet(DEFAULT_TIMEOUT)
     promptPromise = AsyncPromise<Unit>()
-    rInterop.replExecute("f()", isDebug = true).blockingGet(DEFAULT_TIMEOUT)
+    rInterop.replExecute("f()", debug = true).blockingGet(DEFAULT_TIMEOUT)
     promptPromise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("123", rInterop.executeCode("cat(123)").stdout)
     TestCase.assertFalse(rInterop.isDebug)

@@ -474,7 +474,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     splitCodeForExecution(consoleView.project, code)
       .mapIndexed { index, (text, range) ->
         val doExecute = if (sourceFile == null || sourceStartOffset == null) {
-          ({ consoleView.rInterop.replExecute(text, setLastValue = true, isDebug = isDebug) })
+          ({ consoleView.rInterop.replExecute(text, setLastValue = true, debug = isDebug) })
         } else {
           val newRange = TextRange(range.startOffset + sourceStartOffset, range.endOffset + sourceStartOffset)
           val debugCommand = if (index == 0) firstDebugCommand else ExecuteCodeRequest.DebugCommand.KEEP_PREVIOUS

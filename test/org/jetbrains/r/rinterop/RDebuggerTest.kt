@@ -6,6 +6,7 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.xdebugger.XDebuggerManager
@@ -652,6 +653,22 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
       if (FALSE) { 44 }; fail <- TRUE # BREAKPOINT
       5
     """.trimIndent())
+  }
+
+  fun testExtendedPositionFirstLineOffset() {
+    val text = "1; 2; 3; 4; 5;\n6; 7; 8; 9; 10"
+    val file = loadFileWithBreakpointsFromText(text)
+    val texts = mutableListOf<String>()
+
+    val range = TextRange("1; 2; ".length, "1; 2; 3; 4; 5;\n6; 7; 8;".length)
+    helper.invokeAndWait { rInterop.replSourceFile(file, true, firstDebugCommand = ExecuteCodeRequest.DebugCommand.STOP,
+                                                   textRange = range) }
+    while (rInterop.isDebug) {
+      texts.add(rInterop.debugStack.last().sourcePositionText!!)
+      helper.invokeAndWait { rInterop.debugCommandStepOver() }
+    }
+
+    TestCase.assertEquals(listOf("3", "4", "5", "6", "7", "8"), texts)
   }
 
   fun testFunctionSourcePositionWithText() {

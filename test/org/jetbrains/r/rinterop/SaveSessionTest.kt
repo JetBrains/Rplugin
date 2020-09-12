@@ -73,7 +73,7 @@ class SaveSessionTest : RUsefulTestCase() {
       }
       RDebuggerUtil.createBreakpointListener(rInterop)
       val helper = RDebuggerTestHelper(rInterop)
-      helper.invokeAndWait(true) { rInterop.executeCodeAsync("func()", isRepl = true, isDebug = true) }
+      helper.invokeAndWait(true) { rInterop.executeCodeAsync("func()", isRepl = true, debug = true) }
       TestCase.assertEquals(RSourcePosition(file, 2), rInterop.debugStack.last().position)
       helper.invokeAndWait(false) { rInterop.debugCommandContinue() }
     }
