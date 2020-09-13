@@ -4,4 +4,9 @@
     <display-name>Markdown in Shiny</display-name>
     <place><![CDATA[callArgumentPattern("markdown", "mds")]]></place>
   </injection>
+
+  <injection language="HTML" injector-id="R" enabled="true">
+    <display-name>htmlTemplate in Shiny</display-name>
+    <place><![CDATA[callArgumentPattern("htmlTemplate", "text_")]]></place>
+  </injection>
 </component>

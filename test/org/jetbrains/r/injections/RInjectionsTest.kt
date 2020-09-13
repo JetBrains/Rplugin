@@ -26,6 +26,11 @@ class RInjectionsTest : RProcessHandlerBaseTestCase() {
       """.trimIndent()
     )
   }
+
+  fun testInjectionInShinyHtmlTemplateCall() {
+    doTest("htmlTemplate(text_ = \"<div st<caret>yle='color: red'>Hello</div>\")")
+  }
+
   private fun doTest(code: String) {
     myFixture.configureByText("test.r", code)
     val element = myFixture.file.findElementAt(myFixture.caretOffset)
