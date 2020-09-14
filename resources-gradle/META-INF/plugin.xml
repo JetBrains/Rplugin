@@ -1,0 +1,12 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="false">
+  <name>R Language for IntelliJ</name>
+  <vendor>JetBrains</vendor>
+  <version>2020.3-SNAPSHOT</version>
+  <idea-version since-build="203.1000"/>
+  <id>R4Intellij</id>
+  <xi:include href="/META-INF/visualisation.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/rplugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <depends optional="true" config-file="rplugin-python.xml">com.intellij.modules.python</depends>
+  <depends optional="true" config-file="rplugin-remote.xml">org.jetbrains.plugins.remote-run</depends>
+</idea-plugin>
