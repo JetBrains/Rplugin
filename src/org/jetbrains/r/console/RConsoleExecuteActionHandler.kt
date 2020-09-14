@@ -131,8 +131,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
       }
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
       runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
-      fireCommandExecuted()
       pollExecuteLaterQueue()
+      if (!isRunningCommand) fireCommandExecuted()
     }
 
     override fun onTermination() {
