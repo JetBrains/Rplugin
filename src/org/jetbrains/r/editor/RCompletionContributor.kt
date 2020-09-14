@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.classes.RS4ClassInfoUtil
+import org.jetbrains.r.classes.RS4ClassSlot
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
@@ -149,7 +150,7 @@ class RCompletionContributor : CompletionContributor() {
       }
       val text = obj.text
       runtimeInfo.loadS4ClassInfo(text)?.let { info ->
-        return addCompletionFromS4ClassInfo(info, shownNames, result)
+        return addSlotsCompletion(info.slots, shownNames, result)
       }
       return false
     }
@@ -161,17 +162,17 @@ class RCompletionContributor : CompletionContributor() {
         val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
         (definition.assignedValue as? RCallExpression)?.let { call ->
           val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-          RS4ClassNameIndex.findClassInfos(className, atAccess.project, RSearchScopeUtil.getScope(atAccess)).forEach { info ->
-            return addCompletionFromS4ClassInfo(info, shownNames, result)
+          RS4ClassNameIndex.findClassDefinition(className, atAccess.project, RSearchScopeUtil.getScope(atAccess)).forEach {
+            return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
           }
         }
       }
       return false
     }
 
-    private fun addCompletionFromS4ClassInfo(info: RS4ClassInfo, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
+    private fun addSlotsCompletion(slots: List<RS4ClassSlot>, shownNames: MutableSet<String>, result: CompletionResultSet): Boolean {
       var hasNewResults = false
-      for (slot in info.slots) {
+      for (slot in slots) {
         if (slot.name in shownNames) continue
         result.consume(rCompletionElementFactory.createAtAccess(slot.name, slot.type))
         shownNames.add(slot.name)

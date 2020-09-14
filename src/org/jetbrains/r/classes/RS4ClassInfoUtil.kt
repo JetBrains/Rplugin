@@ -4,49 +4,70 @@
 
 package org.jetbrains.r.classes
 
+import com.intellij.openapi.util.Key
+import com.intellij.psi.util.CachedValuesManager
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RExpression
-import org.jetbrains.r.psi.api.RNamedArgument
-import org.jetbrains.r.psi.api.RStringLiteralExpression
+import org.jetbrains.r.psi.RElementFactory
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrary
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 import org.jetbrains.r.psi.references.RSearchScopeUtil
 import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.skeleton.psi.RSkeletonCallExpression
 
 object RS4ClassInfoUtil {
 
   fun getAssociatedClassName(callExpression: RCallExpression,
                              argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
     argumentInfo ?: return null
-    if (!callExpression.isFunctionFromLibrary("setClass", "methods") &&
-        !callExpression.isFunctionFromLibrary("new", "methods")) return null
+    if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods") &&
+        !callExpression.isFunctionFromLibrarySoft("new", "methods")) return null
     return (argumentInfo.getArgumentPassedToParameter("Class") as? RStringLiteralExpression)?.name
   }
 
   /**
-   * Most likely you need [RCallExpression.getAssociatedS4ClassInfo], not this function
+   * @param callExpression `setClass` definition expression
+   * @return all slots associated with class including slots from superclasses
    */
-  fun parseS4ClassInfo(callExpression: RCallExpression): RS4ClassInfo? {
-    if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return null
-    val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression) ?: return null
-    val className = getAssociatedClassName(callExpression, argumentInfo) ?: return null
-    val representationInfo = parseRepresentationArgument(argumentInfo.getArgumentPassedToParameter("representation"))
-    val slots = parseSlotsArgument(argumentInfo.getArgumentPassedToParameter("slots"))
-    val (superClasses, isVirtual) = parseContainsArgument(argumentInfo.getArgumentPassedToParameter("contains"))
+  fun getAllAssociatedSlots(callExpression: RCallExpression?): List<RS4ClassSlot> {
+    if (callExpression == null) return emptyList()
+    if (callExpression is RSkeletonCallExpression) {
+      // S4 classes from packages and so contains all slots
+      return callExpression.associatedS4ClassInfo.slots
+    }
+    if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
+    return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
+      val info = callExpression.associatedS4ClassInfo
+      if (info == null) return@getProjectPsiDependentCache emptyList<RS4ClassSlot>()
+      calcAllAssociatedSlots(callExpression, info)
+    }
+  }
 
-    val project = callExpression.project
+  /**
+   * @param callExpression `setClass` definition expression
+   * @return all superclasses associated with class including superclasses from superclasses
+   */
+  fun getAllAssociatedSuperClasses(callExpression: RCallExpression?): List<String> {
+    if (callExpression == null) return emptyList()
+    if (callExpression is RSkeletonCallExpression) {
+      // S4 classes from packages and so contains all super classes
+      return callExpression.associatedS4ClassInfo.superClasses
+    }
+    if (!callExpression.isFunctionFromLibrary("setClass", "methods")) return emptyList()
+    return CachedValuesManager.getProjectPsiDependentCache(callExpression) {
+      val info = callExpression.associatedS4ClassInfo
+      if (info == null) return@getProjectPsiDependentCache emptyList<String>()
+      calcAllAssociatedSuperClasses(callExpression, info)
+    }
+  }
+
+  private fun calcAllAssociatedSlots(callExpression: RCallExpression, s4ClassInfo: RS4ClassInfo): List<RS4ClassSlot> {
+    val allSuperClasses = calcAllAssociatedSuperClasses(callExpression, s4ClassInfo)
     val callSearchScope = RSearchScopeUtil.getScope(callExpression)
-    val allSuperClasses = (representationInfo.superClasses + superClasses).distinct().flatMap { superClassName ->
-      // R keeps all superclasses together in the list, not as a tree
-      // So, I don't see any reason to do anything else
-      val parentSuperClasses = RS4ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap { it.superClasses }
-      listOf(superClassName) + parentSuperClasses
-    }.distinct()
-
-    val allSlots = (representationInfo.slots + slots + allSuperClasses.flatMap { superClassName ->
+    val project = callExpression.project
+    return (s4ClassInfo.slots + allSuperClasses.flatMap { superClassName ->
       // Collect slots from super classes and data slot if needed
       RS4ClassNameIndex.findClassInfos(superClassName, project, callSearchScope).flatMap {
         val superClassSlots = it.slots
@@ -59,6 +80,41 @@ object RS4ClassInfoUtil {
         }
       }
     }).distinctBy { it.name }
+  }
+
+  private fun calcAllAssociatedSuperClasses(callExpression: RCallExpression, s4ClassInfo: RS4ClassInfo): List<String> {
+    val callSearchScope = RSearchScopeUtil.getScope(callExpression)
+    val project = callExpression.project
+    return s4ClassInfo.superClasses.flatMap { superClassName ->
+      // R keeps all superclasses together in the list, not as a tree
+      // So, I don't see any reason to do anything else
+      val parentSuperClasses = RS4ClassNameIndex.findClassDefinition(superClassName, project, callSearchScope).flatMap {
+        getAllAssociatedSuperClasses(it)
+      }
+      listOf(superClassName) + parentSuperClasses
+    }.distinct()
+  }
+
+  /**
+   * Most likely you need [RCallExpression.getAssociatedS4ClassInfo], not this function
+   */
+  fun parseS4ClassInfo(callExpression: RCallExpression): RS4ClassInfo? {
+    if (!callExpression.isFunctionFromLibrarySoft("setClass", "methods")) return null
+    val project = callExpression.project
+    var definition = project.getUserData(SET_CLASS_DEFINITION_KEY)
+    if (definition == null || !definition.isValid) {
+      val setClassDefinition =
+        RElementFactory.createRPsiElementFromText(callExpression.project, SET_CLASS_DEFINITION) as RAssignmentStatement
+      definition = setClassDefinition.also { project.putUserData(SET_CLASS_DEFINITION_KEY, it) }
+    }
+    val argumentInfo = RParameterInfoUtil.getArgumentInfo(callExpression, definition) ?: return null
+    val className = getAssociatedClassName(callExpression, argumentInfo) ?: return null
+    val representationInfo = parseRepresentationArgument(argumentInfo.getArgumentPassedToParameter("representation"))
+    val slots = parseSlotsArgument(argumentInfo.getArgumentPassedToParameter("slots"))
+    val (superClasses, isVirtual) = parseContainsArgument(argumentInfo.getArgumentPassedToParameter("contains"))
+
+    val allSuperClasses = (representationInfo.superClasses + superClasses).distinct()
+    val allSlots = (representationInfo.slots + slots).distinctBy { it.name }
 
     val packageName = RPackageProjectManager.getInstance(project).getProjectPackageDescriptionInfo()?.packageName ?: ""
     return RS4ClassInfo(className, packageName, allSlots, allSuperClasses, isVirtual || representationInfo.isVirtual)
@@ -180,4 +236,12 @@ object RS4ClassInfoUtil {
     "signature" to "character", "stampedEnv" to "list", "structure" to "vector", "ts" to "vector",
     "vector" to "vector", "while" to "while"
   )
+
+  private val SET_CLASS_DEFINITION =
+    """setClass <- function (Class, representation = list(), prototype = NULL, contains = character(),
+                             validity = NULL, access = list(), where = topenv(parent.frame()),
+                             version = .newExternalptr(), sealed = FALSE, package = getPackageName(where),
+                             S3methods = FALSE, slots) {}""".trimIndent()
+
+  private val SET_CLASS_DEFINITION_KEY: Key<RAssignmentStatement> = Key.create("S4_SET_CLASS_DEFINITION")
 }

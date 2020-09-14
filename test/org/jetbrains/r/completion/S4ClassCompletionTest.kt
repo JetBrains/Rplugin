@@ -95,13 +95,23 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testUserClassWithUserSuperClass() {
-    // setClass("className", contains = "character", representation(package = "character"))
     doTest("""
       setClass('MyClass1', slots = c(aaa = 'aaaType'))
       setClass('MyClass2', slots = c(bbb = 'bbbType'), contains = "MyClass1")
       obj <- new('MyClass2')
       obj@<caret>
     """.trimIndent(), "aaa" to "aaaType", "bbb" to "bbbType")
+  }
+
+  fun testUserClassWithDifficultUserSuperClass() {
+    // setClass("className", contains = "character", representation(package = "character"))
+    doTest("""
+      setClass('MyClass1', slots = c(aaa = 'aaaType'), contains = "className")
+      setClass('MyClass2', slots = c(bbb = 'bbbType'), contains = "MyClass1")
+      setClass('MyClass3', slots = c(ccc = 'cccType'), contains = "MyClass2")
+      obj <- new('MyClass3')
+      obj@<caret>
+    """.trimIndent(), ".Data" to "character", "aaa" to "aaaType", "bbb" to "bbbType", "ccc" to "cccType", "package" to "character")
   }
 
   fun testSlotsAsList() {
