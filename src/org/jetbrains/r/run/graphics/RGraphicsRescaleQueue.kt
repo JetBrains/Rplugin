@@ -2,9 +2,11 @@ package org.jetbrains.r.run.graphics
 
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.r.rinterop.RInterop
 import java.util.ArrayDeque
 
-class RGraphicsRescaleQueue {
+class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RInterop) {
   private var isTaskRunning = false
   private val queue = ArrayDeque<TaskWrapper>()
 
@@ -39,11 +41,15 @@ class RGraphicsRescaleQueue {
 
   private fun execute(wrapper: TaskWrapper): Promise<Unit> {
     isTaskRunning = true
-    val promise = wrapper.task()
+    val promise = launchOrIgnore(wrapper.task)
     promise.processed(wrapper.promise)
     return promise.onProcessed {
       executeNextOrStop()
     }
+  }
+
+  private fun launchOrIgnore(task: () -> Promise<Unit>): Promise<Unit> {
+    return if (interop.graphicsDeviceManager.currentDeviceId == deviceId) task() else resolvedPromise()  // Ignore
   }
 
   private data class TaskWrapper(

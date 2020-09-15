@@ -50,6 +50,7 @@ import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableManipulationColumn
 import org.jetbrains.r.psi.TableType
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
+import org.jetbrains.r.run.graphics.RGraphicsDeviceManager
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
@@ -119,6 +120,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     get() = !terminationPromise.isDone
   @Volatile
   internal var killedByUsed = false
+
+  val graphicsDeviceManager = RGraphicsDeviceManager()
 
   val state: RInterpreterState = RInterpreterStateImpl(project, this)
   fun updateState() = state.updateState()

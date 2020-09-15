@@ -24,7 +24,9 @@ class RGraphicsDevice(
   private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
   private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
-  private val queue = RGraphicsRescaleQueue()
+
+  private val deviceId = rInterop.graphicsDeviceManager.registerNewDevice()
+  private val queue = RGraphicsRescaleQueue(deviceId, rInterop)
 
   val lastUpdate: List<RSnapshot>
     get() = lastNormal
@@ -80,6 +82,8 @@ class RGraphicsDevice(
   fun dumpAndShutdownAsync(): Promise<Unit> {
     return dumpAllAsync().then<Unit> {  // Note: explicit cast `RIExecutionResult` -> `Unit`
       rInterop.graphicsShutdown()
+    }.onProcessed {
+      rInterop.graphicsDeviceManager.unregisterLastDevice()
     }
   }
 
