@@ -173,7 +173,7 @@ class RGraphicsDevice(
       }
       promise.thenIfTrue {
         pullInMemorySnapshot(snapshotNumber)?.let { pulled ->
-          onNewSnapshots(listOf(pulled), snapshotNumber)
+          onNewSnapshots(listOf(pulled), parameters, snapshotNumber)
         }
       }
     }
@@ -190,7 +190,7 @@ class RGraphicsDevice(
         }
         val pulled = pullAndRescaleInMemory(number2Parameters, parameters)
         if (pulled.isNotEmpty()) {
-          onNewSnapshots(pulled, null)
+          onNewSnapshots(pulled, parameters, null)
         }
       }
     }
@@ -229,9 +229,9 @@ class RGraphicsDevice(
     }
   }
 
-  private fun onNewSnapshots(pulledSnapshots: List<RSnapshot>, tracedSnapshotNumber: Int?) {
+  private fun onNewSnapshots(pulledSnapshots: List<RSnapshot>, parameters: RGraphicsUtils.ScreenParameters?, tracedSnapshotNumber: Int?) {
     for (snapshot in pulledSnapshots) {
-      val snapshotInfo = SnapshotInfo(snapshot, configuration.screenParameters)
+      val snapshotInfo = SnapshotInfo(snapshot, parameters ?: configuration.screenParameters)
       number2SnapshotInfos[snapshot.number] = snapshotInfo
     }
     lastNormal = collectLatestSnapshots()
