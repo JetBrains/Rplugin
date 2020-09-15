@@ -52,6 +52,7 @@ class RCompletionContributor : CompletionContributor() {
     addNamespaceAccessExpression()
     addMemberAccessCompletion()
     addAtAccessCompletion()
+    addS4ClassContextCompletion()
     addIdentifierCompletion()
   }
 
@@ -85,6 +86,11 @@ class RCompletionContributor : CompletionContributor() {
   private fun addTableContextCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), TableContextCompletionProvider())
+  }
+
+  private fun addS4ClassContextCompletion() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
+      .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), S4ClassContextCompletionProvider())
   }
 
   private fun addStringLiteralCompletion() {
@@ -432,12 +438,108 @@ class RCompletionContributor : CompletionContributor() {
     }
   }
 
+  private class S4ClassContextCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
+      addS4ClassNameCompletion(expression, parameters.originalFile, result)
+    }
+
+    private fun addS4ClassNameCompletion(classNameExpression: RExpression,
+                                         file: PsiFile,
+                                         result: CompletionResultSet) {
+      val parentCall = PsiTreeUtil.getParentOfType(classNameExpression, RCallExpression::class.java) ?: return
+      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return
+      var omitVirtual = false
+      var nameToOmit: String? = null
+      when {
+        // new("<caret>")
+        parentCall.isFunctionFromLibrary("new", "methods") -> {
+          if (parentArgumentInfo.getArgumentPassedToParameter("Class") != classNameExpression) return
+          omitVirtual = true
+        }
+        // setClass("MyClass", "<caret>")
+        // setClass("MyClass", , , "<caret>")
+        parentCall.isFunctionFromLibrary("setClass", "methods") -> {
+          if (parentArgumentInfo.getArgumentPassedToParameter("contains") != classNameExpression &&
+              parentArgumentInfo.getArgumentPassedToParameter("representation") != classNameExpression) return
+          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(parentCall, parentArgumentInfo)
+        }
+        else -> {
+          val superParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return
+          if (!superParentCall.isFunctionFromLibrary("setClass", "methods")) return
+          val superParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(superParentCall) ?: return
+
+          // setClass("MyClass", contains = "<caret>")
+          // setClass("MyClass", contains = c("<caret>"))
+          // setClass("MyClass", contains = c(smt = "<caret>")
+          // setClass("MyClass", representation = representation(smt = "<caret>")
+          // setClass("MyClass", representation = representation("<caret>")
+          if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("contains"), classNameExpression, false) ||
+              PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("representation"), classNameExpression, false)) {
+            val parent = classNameExpression.parent
+            if (parent is RNamedArgument && parent.nameIdentifier == classNameExpression) return
+            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
+          }
+          // setClass("MyClass", slots = c(name = "<caret>"))
+          else if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("slots"), classNameExpression, false)) {
+            val parent = classNameExpression.parent
+            if (parent !is RNamedArgument || parent.assignedValue != classNameExpression) return
+            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
+          } else return
+        }
+      }
+
+      val project = classNameExpression.project
+      val scope = RSearchScopeUtil.getScope(classNameExpression)
+      val runtimeInfo = file.runtimeInfo
+      val loadedPackages = runtimeInfo?.loadedPackages?.keys
+      val shownNames = HashSet<String>()
+      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { info ->
+        if (omitVirtual && info.isVirtual) return@Processor true
+        if (nameToOmit != info.className) {
+          result.addS4ClassName(classNameExpression, info, shownNames, loadedPackages)
+        }
+        return@Processor true
+      })
+      runtimeInfo?.loadShortS4ClassInfos()?.forEach { info ->
+        if (omitVirtual && info.isVirtual) return@forEach
+        if (nameToOmit != info.className) {
+          result.addS4ClassName(classNameExpression, info, shownNames, loadedPackages)
+        }
+      }
+    }
+
+    private fun CompletionResultSet.addS4ClassName(classNameExpression: RExpression,
+                                                   classInfo: RS4ClassInfo,
+                                                   shownNames: MutableSet<String>,
+                                                   loadedPackages: Set<String>?) {
+      val className = classInfo.className
+      if (className in shownNames) return
+      shownNames.add(className)
+
+      val packageName = classInfo.packageName
+      val isLoaded = loadedPackages?.contains(packageName) ?: true
+      val priority = if (isLoaded || packageName.isEmpty()) LOADED_S4_CLASS_NAME else NOT_LOADED_S4_CLASS_NAME
+      if (classNameExpression is RStringLiteralExpression) {
+        addElement(RLookupElementFactory.createLookupElementWithPriority(
+          RLookupElement(escape(className), true, AllIcons.Nodes.Field, packageName = packageName),
+          STRING_LITERAL_INSERT_HANDLER, priority))
+      }
+      else {
+        addElement(PrioritizedLookupElement.withPriority(
+          RLookupElement("\"$className\"", true, AllIcons.Nodes.Field, packageName = packageName),
+          priority
+        ))
+      }
+    }
+  }
+
+
   private class StringLiteralCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
       addTableLiterals(stringLiteral, parameters, result)
       addFilePathCompletion(parameters, stringLiteral, result)
-      addS4ClassNameCompletion(stringLiteral, parameters.originalFile, result)
     }
 
     private fun addTableLiterals(stringLiteral: RStringLiteralExpression,
@@ -482,91 +584,6 @@ class RCompletionContributor : CompletionContributor() {
         "(${columnNameIdentifier.text})"
       }
       result.addAll(runtimeInfo.loadDistinctStrings(text).filter { it.isNotEmpty() })
-    }
-
-    private fun addS4ClassNameCompletion(classNameLiteral: RStringLiteralExpression,
-                                         file: PsiFile,
-                                         result: CompletionResultSet) {
-      val parentCall = PsiTreeUtil.getParentOfType(classNameLiteral, RCallExpression::class.java) ?: return
-      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return
-      var omitVirtual = false
-      var nameToOmit: String? = null
-      when {
-        // new("<caret>")
-        parentCall.isFunctionFromLibrary("new", "methods") -> {
-          if (parentArgumentInfo.getArgumentPassedToParameter("Class") != classNameLiteral) return
-          omitVirtual = true
-        }
-        // setClass("MyClass", "<caret>")
-        // setClass("MyClass", , , "<caret>")
-        parentCall.isFunctionFromLibrary("setClass", "methods") -> {
-          if (parentArgumentInfo.getArgumentPassedToParameter("contains") != classNameLiteral &&
-              parentArgumentInfo.getArgumentPassedToParameter("representation") != classNameLiteral) return
-          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(parentCall, parentArgumentInfo)
-        }
-        else -> {
-          val superParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return
-          if (!superParentCall.isFunctionFromLibrary("setClass", "methods")) return
-          val superParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(superParentCall) ?: return
-
-          // setClass("MyClass", contains = "<caret>")
-          // setClass("MyClass", contains = c("<caret>"))
-          // setClass("MyClass", contains = c(smt = "<caret>")
-          // setClass("MyClass", representation = representation(smt = "<caret>")
-          // setClass("MyClass", representation = representation("<caret>")
-          if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("contains"), classNameLiteral, false) ||
-              PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("representation"), classNameLiteral, false)) {
-            val parent = classNameLiteral.parent
-            if (parent is RNamedArgument && parent.nameIdentifier == classNameLiteral) return
-            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
-          }
-          // setClass("MyClass", slots = c(name = "<caret>"))
-          else if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("slots"), classNameLiteral, false)) {
-            val parent = classNameLiteral.parent
-            if (parent !is RNamedArgument || parent.assignedValue != classNameLiteral) return
-            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
-          } else return
-        }
-      }
-
-      val project = classNameLiteral.project
-      val scope = RSearchScopeUtil.getScope(classNameLiteral)
-      val runtimeInfo = file.runtimeInfo
-      val loadedPackages = runtimeInfo?.loadedPackages?.keys
-      val shownNames = HashSet<String>()
-      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { info ->
-        if (omitVirtual && info.isVirtual) return@Processor true
-        if (nameToOmit != info.className) {
-          result.addS4ClassName(info, shownNames, loadedPackages)
-        }
-        return@Processor true
-      })
-      runtimeInfo?.loadShortS4ClassInfos()?.forEach { info ->
-        if (omitVirtual && info.isVirtual) return@forEach
-        if (nameToOmit != info.className) {
-          result.addS4ClassName(info, shownNames, loadedPackages)
-        }
-      }
-    }
-
-    private fun CompletionResultSet.addS4ClassName(classInfo: RS4ClassInfo, shownNames: MutableSet<String>, loadedPackages: Set<String>?) {
-      val className = classInfo.className
-      if (className in shownNames) return
-      shownNames.add(className)
-
-      val packageName = classInfo.packageName
-      val isLoaded = loadedPackages?.contains(packageName) ?: true
-      val priority = if (isLoaded) LOADED_S4_CLASS_NAME else NOT_LOADED_S4_CLASS_NAME
-      addElement(RLookupElementFactory.createLookupElementWithPriority(
-        RLookupElement(escape(className), true, AllIcons.Nodes.Field, itemText = className, packageName = packageName),
-        STRING_LITERAL_INSERT_HANDLER, priority))
-    }
-
-    private val escape = StringUtil.escaper(true, "\"")::`fun`
-    private val STRING_LITERAL_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
-      insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
-        insertHandlerContext.editor.caretModel.moveToOffset(element.textRange.endOffset)
-      }
     }
   }
 
@@ -649,6 +666,13 @@ class RCompletionContributor : CompletionContributor() {
         if (result.prefixMatcher.prefixMatches(lookup)) {
           result.addElement(lookup)
         }
+      }
+    }
+
+    private val escape = StringUtil.escaper(true, "\"")::`fun`
+    private val STRING_LITERAL_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
+      insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
+        insertHandlerContext.editor.caretModel.moveToOffset(element.textRange.endOffset)
       }
     }
   }

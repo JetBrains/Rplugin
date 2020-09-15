@@ -233,6 +233,22 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
                         "classGeneratorFunction", "className", "classPrototypeDef", "classRepresentation")
   }
 
+  fun testClassNameWithoutQuotes() {
+    val variants =
+      listOf("classGeneratorFunction", "className", "classPrototypeDef", "classRepresentation").map { "\"$it\"" to "methods" }
+    doTest("new(class<caret>)", *variants.toTypedArray(), strict = false)
+    doTest("""
+      setClass('MyClass1')
+      setClass('MyClass2')
+      setClass('MyClass3', contains = MyC<caret>)
+    """.trimIndent(), "\"MyClass1\"" to "", "\"MyClass2\"" to "", strict = false)
+    doTest("""
+      setClass('MyClass1')
+      setClass('MyClass2')
+      setClass('MyClass3', representation = representation(MyC<caret>))
+    """.trimIndent(), "\"MyClass1\"" to "", "\"MyClass2\"" to "", strict = false)
+  }
+
   fun testOmitSetClassName() {
     doWrongVariantsTest("setClass('MyClass', 'My<caret>')", "MyClass")
   }
