@@ -168,7 +168,7 @@ class RCompletionContributor : CompletionContributor() {
         val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
         (definition.assignedValue as? RCallExpression)?.let { call ->
           val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-          RS4ClassNameIndex.findClassDefinition(className, atAccess.project, RSearchScopeUtil.getScope(atAccess)).forEach {
+          RS4ClassNameIndex.findClassDefinitions(className, atAccess.project, RSearchScopeUtil.getScope(atAccess)).forEach {
             return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
           }
         }
@@ -457,7 +457,7 @@ class RCompletionContributor : CompletionContributor() {
       val arguments = parentCall.argumentList.expressionList
       if (!arguments.contains(currentArgument)) return
 
-      RS4ClassNameIndex.findClassDefinition(className, expression.project, RSearchScopeUtil.getScope(expression)).singleOrNull()?.let { definition ->
+      RS4ClassNameIndex.findClassDefinitions(className, expression.project, RSearchScopeUtil.getScope(expression)).singleOrNull()?.let { definition ->
         RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
           result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
         }

@@ -88,7 +88,7 @@ object RS4ClassInfoUtil {
     return s4ClassInfo.superClasses.flatMap { superClassName ->
       // R keeps all superclasses together in the list, not as a tree
       // So, I don't see any reason to do anything else
-      val parentSuperClasses = RS4ClassNameIndex.findClassDefinition(superClassName, project, callSearchScope).flatMap {
+      val parentSuperClasses = RS4ClassNameIndex.findClassDefinitions(superClassName, project, callSearchScope).flatMap {
         getAllAssociatedSuperClasses(it)
       }
       listOf(superClassName) + parentSuperClasses

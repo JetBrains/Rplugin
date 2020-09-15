@@ -35,7 +35,7 @@ import org.jetbrains.r.psi.api.RCallExpression
       return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java).mapNotNull { it.associatedS4ClassInfo }
     }
 
-    fun findClassDefinition(name: String, project: Project, scope: GlobalSearchScope?): Collection<RCallExpression> {
+    fun findClassDefinitions(name: String, project: Project, scope: GlobalSearchScope?): Collection<RCallExpression> {
       return StubIndex.getElements(KEY, name, project, scope, RCallExpression::class.java)
     }
 
