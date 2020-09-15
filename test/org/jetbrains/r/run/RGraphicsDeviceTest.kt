@@ -11,10 +11,7 @@ import com.intellij.util.ui.UIUtil
 import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
-import org.jetbrains.r.run.graphics.RGraphicsDevice
-import org.jetbrains.r.run.graphics.RGraphicsRepository
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.run.graphics.*
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer
@@ -42,7 +39,9 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
     RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
     graphicsDevice.addListener { update ->
-      currentSnapshots = update
+      if (update is RGraphicsCompletedUpdate) {
+        currentSnapshots = update.snapshots
+      }
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     graphicsManager = ChunkGraphicsManager(project)

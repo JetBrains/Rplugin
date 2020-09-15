@@ -22,14 +22,15 @@ class RGraphicsDevice(
 
   private val directory2GroupPromises = mutableMapOf<String, Promise<DeviceGroup>>()
   private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
-  private val listeners = mutableListOf<(List<RSnapshot>) -> Unit>()
+  private val listeners = mutableListOf<(RGraphicsUpdate) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
 
   private val deviceId = rInterop.graphicsDeviceManager.registerNewDevice()
   private val queue = RGraphicsRescaleQueue(deviceId, rInterop)
 
-  val lastUpdate: List<RSnapshot>
-    get() = lastNormal
+  @Volatile
+  var lastUpdate: RGraphicsUpdate = RGraphicsCompletedUpdate(lastNormal)
+    private set
 
   var configuration: Configuration = Configuration(initialParameters, null)
     set(value) {
@@ -67,16 +68,14 @@ class RGraphicsDevice(
   fun clearSnapshot(number: Int) {
     lastNormal = removeSnapshotByNumber(lastNormal, number)
     number2SnapshotInfos.remove(number)
-    notifyListenersOnUpdate()
+    postCompletedUpdate()
   }
 
   fun clearAllSnapshots() {
     deleteSnapshots(lastNormal, true)
     lastNormal = listOf()
     number2SnapshotInfos.clear()
-    for (listener in listeners) {
-      listener(lastUpdate)
-    }
+    postCompletedUpdate()
   }
 
   fun dumpAndShutdownAsync(): Promise<Unit> {
@@ -87,12 +86,12 @@ class RGraphicsDevice(
     }
   }
 
-  fun addListener(listener: (List<RSnapshot>) -> Unit) {
+  fun addListener(listener: (RGraphicsUpdate) -> Unit) {
     listeners.add(listener)
     listener(lastUpdate)
   }
 
-  fun removeListener(listener: (List<RSnapshot>) -> Unit) {
+  fun removeListener(listener: (RGraphicsUpdate) -> Unit) {
     listeners.remove(listener)
   }
 
@@ -237,7 +236,7 @@ class RGraphicsDevice(
     }
     lastNormal = collectLatestSnapshots()
     postSnapshotNumber(tracedSnapshotNumber)
-    notifyListenersOnUpdate()
+    postCompletedUpdate()
   }
 
   private fun collectLatestSnapshots(): List<RSnapshot> {
@@ -249,7 +248,9 @@ class RGraphicsDevice(
     parameters: RGraphicsUtils.ScreenParameters?
   ): List<RSnapshot> {
     return try {
-      number2Parameters.asIterable().mapNotNull { (number, actualParameters) ->
+      number2Parameters.asIterable().withIndex().mapNotNull { (index, entry) ->
+        postLoadingUpdate(index, number2Parameters.size)
+        val (number, actualParameters) = entry
         if (parameters != null && actualParameters != parameters) {
           val result = rInterop.graphicsRescale(number, parameters)
           parseExecutionResult(result, createHintForInMemory(number))
@@ -325,6 +326,16 @@ class RGraphicsDevice(
 
   private fun postSnapshotNumber(number: Int?) {
     configuration = configuration.copy(snapshotNumber = number)
+  }
+
+  private fun postCompletedUpdate() {
+    lastUpdate = RGraphicsCompletedUpdate(lastNormal)
+    notifyListenersOnUpdate()
+  }
+
+  private fun postLoadingUpdate(loadedCount: Int, totalCount: Int) {
+    lastUpdate = RGraphicsLoadingUpdate(loadedCount, totalCount)
+    notifyListenersOnUpdate()
   }
 
   private fun notifyListenersOnUpdate() {

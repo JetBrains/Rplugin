@@ -14,7 +14,7 @@ import java.io.File
 class RGraphicsRepository(private val project: Project) {
   private val devices = mutableSetOf<RGraphicsDevice>()
   private val notNullDevicePromise = AsyncPromise<Unit>()
-  private val snapshotListeners = mutableListOf<(List<RSnapshot>) -> Unit>()
+  private val updateListeners = mutableListOf<(RGraphicsUpdate) -> Unit>()
 
   private var currentDevice: RGraphicsDevice? = null
 
@@ -50,8 +50,8 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun addSnapshotListener(listener: (List<RSnapshot>) -> Unit) {
-    snapshotListeners.add(listener)
+  fun addUpdateListener(listener: (RGraphicsUpdate) -> Unit) {
+    updateListeners.add(listener)
     currentDevice?.let { device ->
       listener(device.lastUpdate)
     }
@@ -81,8 +81,8 @@ class RGraphicsRepository(private val project: Project) {
     }
   }
 
-  private fun notifyUpdate(update: List<RSnapshot>) {
-    for (listener in snapshotListeners) {
+  private fun notifyUpdate(update: RGraphicsUpdate) {
+    for (listener in updateListeners) {
       listener(update)
     }
   }

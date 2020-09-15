@@ -18,11 +18,9 @@ import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.components.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
-import org.jetbrains.r.run.graphics.RGraphicsRepository
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.settings.RGraphicsSettings
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.r.run.graphics.*
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -66,14 +64,26 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       }
     })
 
-    repository.addSnapshotListener { snapshotUpdate ->
+    repository.addUpdateListener { update ->
       ApplicationManager.getApplication().invokeLater {
-        refresh(snapshotUpdate)
+        refresh(update)
       }
     }
   }
 
-  private fun refresh(normal: List<RSnapshot>) {
+  private fun refresh(update: RGraphicsUpdate) {
+    when (update) {
+      is RGraphicsLoadingUpdate -> refreshLoading(update.loadedCount, update.totalCount)
+      is RGraphicsCompletedUpdate -> refreshCompleted(update.snapshots)
+    }
+  }
+
+  private fun refreshLoading(loadedCount: Int, totalCount: Int) {
+    val message = RBundle.message("graphics.panel.loading.snapshots.hint", loadedCount, totalCount)
+    graphicsPanel.showLoadingMessage(message)
+  }
+
+  private fun refreshCompleted(normal: List<RSnapshot>) {
     if (normal.isNotEmpty()) {
       val newMaxNumber = normal.last().number
       // Note: `newMaxNumber` is bigger if there is a new plot
