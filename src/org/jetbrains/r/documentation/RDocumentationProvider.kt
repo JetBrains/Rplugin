@@ -5,21 +5,19 @@
 
 package org.jetbrains.r.documentation
 
-import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo.isWindows
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.ui.ColorUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
@@ -30,17 +28,15 @@ import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.getWithCheckCanceled
+import java.awt.Color
 import java.io.File
-import java.io.IOException
-import java.net.MalformedURLException
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import java.util.*
+import java.util.function.Consumer
 
-private const val INDEX_HTML = "00Index.html"
 private const val WINDOWS_MAX_PATH_LENGTH = 259
 private const val INSTALL_REQUIRED_PACKAGES_LINK = "#Install#"
 private val LOG = Logger.getInstance(RDocumentationProvider::class.java)
@@ -266,11 +262,71 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       psiManager.project, "${RNamesValidator.quoteIfNeeded(pkg)}::${RNamesValidator.quoteIfNeeded(name)}")
   }
 
+  override fun collectDocComments(file: PsiFile, sink: Consumer<in PsiDocCommentBase>) {
+    if (!RSourceFileManager.isTemporary(file.virtualFile)) {
+      return
+    }
+    val first = file.children.firstOrNull()
+    if (first !is PsiComment || !first.text.matches(DOCUMENTATION_COMMENT_REGEX)) {
+      return
+    }
+    val docComment = RVirtualDocumentationComment(file, first.textRange)
+    sink.accept(docComment)
+  }
+
+  override fun generateRenderedDoc(comment: PsiDocCommentBase): String? {
+    val containingFile = comment.containingFile as RFile
+    val rInterop = containingFile.runtimeInfo?.rInterop
+    if (rInterop != null) {
+      val commentText = comment.text.substring(2)
+      val nameAndPackage = commentText.split("::")
+      if (nameAndPackage.size != 2) {
+        return null
+      }
+      val documentationPromise = rInterop.getDocumentationForSymbol(nameAndPackage[1], nameAndPackage[0])
+      val documentationResponse = documentationPromise.get()
+      if (documentationResponse != null) {
+        val htmlDocumentation = StringBuilder(convertHelpPage(documentationResponse))
+        adjustHtmlDocumentationForEditor(htmlDocumentation)
+        return htmlDocumentation.toString()
+      }
+    }
+
+    return null
+  }
+
+  override fun findDocComment(file: PsiFile, range: TextRange): PsiDocCommentBase? {
+    val comment = PsiTreeUtil.getParentOfType(file.findElementAt(range.startOffset), PsiComment::class.java, false)
+    return if (comment == null || range != comment.textRange) null else RVirtualDocumentationComment(file, range)
+  }
+
   private class RequiredPackageException(message: String?) : RuntimeException(message)
 
   companion object {
     private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
     private val INTERCEPTED_LINK = Key<Boolean>("org.jetbrains.r.documentation.InterceptedLink")
+    private val DOCUMENTATION_COMMENT_REGEX = "^# \\w+::\\w+$".toRegex()
+
+    fun adjustHtmlDocumentationForEditor(documentation: StringBuilder) {
+      // remove the horizontal line at the bottom and centered text [Package <em><package-name></em> version]
+      val horizontalLineIndex = documentation.lastIndexOf("<hr")
+      if (horizontalLineIndex > 0) {
+        documentation.delete(horizontalLineIndex, documentation.length)
+      }
+
+      val documentationBackgroundColor = ColorUtil.darker(getEditorBackgroundColor(), 1)
+      documentation.insert(0, "<div style=\"background:${getHexFromColor(documentationBackgroundColor)};padding:5px\"")
+      documentation.insert(documentation.length, "</div>")
+    }
+
+    private fun getEditorBackgroundColor(): Color {
+      val colorsScheme = EditorColorsManager.getInstance().globalScheme
+      return colorsScheme.defaultBackground
+    }
+
+    fun getHexFromColor(color: Color): String {
+      return String.format("#%02x%02x%02x", color.red, color.green, color.blue)
+    }
 
     fun makeElementForText(rInterop: RInterop, httpdResponse: RInterop.HttpdResponse): PsiElement {
       return RElementFactory.createRPsiElementFromText(rInterop.project, "text").also {
@@ -307,6 +363,5 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
         .let { Regex("<a href.*<img.*></a>").replace(it, "") }
         .let { Regex("<img.*>").replace(it, "") }
     }
-
   }
 }

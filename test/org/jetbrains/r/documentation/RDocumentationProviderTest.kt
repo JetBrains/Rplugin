@@ -8,7 +8,9 @@ import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.documentation.DocumentationManager.ORIGINAL_ELEMENT_KEY
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.openapi.application.PathManager
+import com.intellij.psi.PsiDocCommentBase
 import com.intellij.psi.PsiManager
+import com.intellij.util.CollectConsumer
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
@@ -236,6 +238,18 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
       
       fo<caret>o
     """.trimIndent(), documentationExist = false)
+  }
+
+  fun testDocumentationCommentForLibraryMethod() {
+    val virtualFile = rInterop.sourceFileManager.createFileForTest("test.R", "# tibble::as_tibble\nfunction(x) {}")
+    myFixture.openFileInEditor(virtualFile);
+    myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
+
+    val consumer = CollectConsumer<PsiDocCommentBase>()
+    docProvider.collectDocComments(myFixture.file, consumer)
+    val result = docProvider.generateRenderedDoc(consumer.result.first())
+
+    assertTrue(result != null && result.contains("Coerce lists, matrices, and more to data frames"))
   }
 
   // ---- END OF TESTS ---
