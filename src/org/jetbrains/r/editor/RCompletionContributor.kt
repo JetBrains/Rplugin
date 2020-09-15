@@ -442,6 +442,26 @@ class RCompletionContributor : CompletionContributor() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
       addS4ClassNameCompletion(expression, parameters.originalFile, result)
+      addS4SlotNameCompletion(expression, result)
+    }
+
+    private fun addS4SlotNameCompletion(expression: RExpression, result: CompletionResultSet) {
+      val parentCall = PsiTreeUtil.getParentOfType(expression, RCallExpression::class.java) ?: return
+      if (!parentCall.isFunctionFromLibrary("new", "methods")) return
+      val className = RS4ClassInfoUtil.getAssociatedClassName(parentCall) ?: return
+      if (PsiTreeUtil.isAncestor(RParameterInfoUtil.getArgumentByName(parentCall, "Class"), expression, false)) return
+
+      val currentArgument =
+        if (expression.parent is RNamedArgument) RPsiUtil.getNamedArgumentByNameIdentifier(expression) ?: return
+        else expression
+      val arguments = parentCall.argumentList.expressionList
+      if (!arguments.contains(currentArgument)) return
+
+      RS4ClassNameIndex.findClassDefinition(className, expression.project, RSearchScopeUtil.getScope(expression)).singleOrNull()?.let { definition ->
+        RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
+          result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
+        }
+      }
     }
 
     private fun addS4ClassNameCompletion(classNameExpression: RExpression,

@@ -310,6 +310,27 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("new('My<caret>')'", "MyClass" to ".GlobalEnv", "MyClass1" to ".GlobalEnv", withRuntimeInfo = true)
   }
 
+  fun testSlotInNew() {
+    doTest("""
+      setClass("Person", slots = c(person_xxx_name = "character", person_xxx_age = "<-"))
+      new("Person", person_xxx_<caret>)
+    """.trimIndent(), "person_xxx_age" to "<-", "person_xxx_name" to "character")
+    doTest("""
+      setClass('MyClass1', slots = c(class_xxx_id = "numeric"))
+      setClass('MyClass2', contains = "MyClass1", slots = c(class_xxx_no = "character"))
+      new('MyClass2', class_xxx_<caret>)
+    """.trimIndent(), "class_xxx_id" to "numeric", "class_xxx_no" to "character")
+
+    doWrongVariantsTest("""
+      setClass("Person", slots = c(person_name = "character", person_age = "<-"))
+      new(person_<caret>)
+    """.trimIndent(), "person_age", "person_name")
+    doWrongVariantsTest("""
+      setClass("Person", slots = c(person_name = "character", person_age = "<-"))
+      new("Person", person_age = person_<caret>)
+    """.trimIndent(), "person_age", "person_name")
+  }
+
   fun testApplyCompletionField() {
     doApplyCompletionTest("""
       obj <- new('classRepresentation')

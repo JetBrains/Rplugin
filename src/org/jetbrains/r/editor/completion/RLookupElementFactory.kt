@@ -21,6 +21,7 @@ import kotlin.math.min
 const val LIBRARY_METHOD_PRIORITY = 120.0
 const val TABLE_MANIPULATION_PRIORITY = 110.0
 const val IMPORT_PACKAGE_PRIORITY = 110.0
+const val SLOT_NAME_PRIORITY = 110.0
 const val NAMED_ARGUMENT_PRIORITY = 100.0
 const val LOADED_S4_CLASS_NAME = 100.0
 const val VARIABLE_GROUPING = 90
@@ -80,15 +81,17 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
                                            if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
   }
 
-  fun createNamedArgumentLookupElement(lookupString: String): LookupElement {
+  fun createNamedArgumentLookupElement(lookupString: String,
+                                       packageName: String? = null,
+                                       priority: Double = NAMED_ARGUMENT_PRIORITY): LookupElement {
     val icon = AllIcons.Nodes.Parameter
     val insertHandler = InsertHandler<LookupElement> { context, _ ->
       val document = context.document
       document.insertString(context.tailOffset, " = ")
       context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
     }
-    return createLookupElementWithPriority(RLookupElement(lookupString, true, icon, tailText = " = "),
-                                           insertHandler, NAMED_ARGUMENT_PRIORITY)
+    return createLookupElementWithPriority(RLookupElement(lookupString, true, icon, packageName = packageName, tailText = " = "),
+                                           insertHandler, priority)
   }
 
   fun createNamespaceAccess(lookupString: String): LookupElement {
@@ -107,8 +110,8 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
       document.replaceString(context.startOffset, context.tailOffset, RNamesValidator.quoteIfNeeded(lookupString))
       context.editor.caretModel.moveToOffset(context.tailOffset)
     }
-    return createLookupElementWithGrouping(RLookupElement(lookupString, false, AllIcons.Nodes.Field, type),
-                                           insertHandler, NAMESPACE_NAME_GROUPING)
+    return createLookupElementWithPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Field, type),
+                                           insertHandler, SLOT_NAME_PRIORITY)
   }
 
   fun createLocalVariableLookupElement(lookupString: String, isParameter: Boolean): LookupElement {
