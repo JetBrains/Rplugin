@@ -10,6 +10,7 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.guessProjectDir
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
@@ -62,6 +63,9 @@ class RCompletionContributor : CompletionContributor() {
     addAtAccessCompletion()
     addS4ClassContextCompletion()
     addIdentifierCompletion()
+    if (Registry.get("r.editor.mlcompletion").asBoolean()) {
+      addMachineLearningCompletion()
+    }
   }
 
   private fun addNamespaceAccessExpression() {
@@ -104,6 +108,10 @@ class RCompletionContributor : CompletionContributor() {
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.STRING_EXCEPT_S4_CONTEXT_FILTER), StringLiteralCompletionProvider())
+  }
+
+  private fun addMachineLearningCompletion() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE), MachineLearningCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
