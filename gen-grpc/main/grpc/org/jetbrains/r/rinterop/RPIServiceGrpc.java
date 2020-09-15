@@ -741,28 +741,28 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.CommandOutput> getGraphicsDumpMethod;
+      org.jetbrains.r.rinterop.GraphicsDumpResponse> getGraphicsDumpMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "graphicsDump",
       requestType = com.google.protobuf.Empty.class,
-      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+      responseType = org.jetbrains.r.rinterop.GraphicsDumpResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      org.jetbrains.r.rinterop.CommandOutput> getGraphicsDumpMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.CommandOutput> getGraphicsDumpMethod;
+      org.jetbrains.r.rinterop.GraphicsDumpResponse> getGraphicsDumpMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, org.jetbrains.r.rinterop.GraphicsDumpResponse> getGraphicsDumpMethod;
     if ((getGraphicsDumpMethod = RPIServiceGrpc.getGraphicsDumpMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getGraphicsDumpMethod = RPIServiceGrpc.getGraphicsDumpMethod) == null) {
           RPIServiceGrpc.getGraphicsDumpMethod = getGraphicsDumpMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, org.jetbrains.r.rinterop.GraphicsDumpResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "graphicsDump"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.GraphicsDumpResponse.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("graphicsDump"))
               .build();
         }
@@ -2983,7 +2983,7 @@ public final class RPIServiceGrpc {
     /**
      */
     public void graphicsDump(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsDumpResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getGraphicsDumpMethod(), responseObserver);
     }
 
@@ -3628,10 +3628,10 @@ public final class RPIServiceGrpc {
                   this, METHODID_GRAPHICS_INIT)))
           .addMethod(
             getGraphicsDumpMethod(),
-            asyncServerStreamingCall(
+            asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
-                org.jetbrains.r.rinterop.CommandOutput>(
+                org.jetbrains.r.rinterop.GraphicsDumpResponse>(
                   this, METHODID_GRAPHICS_DUMP)))
           .addMethod(
             getGraphicsRescaleMethod(),
@@ -4303,8 +4303,8 @@ public final class RPIServiceGrpc {
     /**
      */
     public void graphicsDump(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
-      asyncServerStreamingCall(
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsDumpResponse> responseObserver) {
+      asyncUnaryCall(
           getChannel().newCall(getGraphicsDumpMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -5041,9 +5041,8 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> graphicsDump(
-        com.google.protobuf.Empty request) {
-      return blockingServerStreamingCall(
+    public org.jetbrains.r.rinterop.GraphicsDumpResponse graphicsDump(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
           getChannel(), getGraphicsDumpMethod(), getCallOptions(), request);
     }
 
@@ -5710,6 +5709,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.GraphicsDumpResponse> graphicsDump(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGraphicsDumpMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.Int32List> graphicsPullChangedNumbers(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
@@ -6354,7 +6361,7 @@ public final class RPIServiceGrpc {
           break;
         case METHODID_GRAPHICS_DUMP:
           serviceImpl.graphicsDump((com.google.protobuf.Empty) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsDumpResponse>) responseObserver);
           break;
         case METHODID_GRAPHICS_RESCALE:
           serviceImpl.graphicsRescale((org.jetbrains.r.rinterop.GraphicsRescaleRequest) request,

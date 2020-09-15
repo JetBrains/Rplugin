@@ -11,7 +11,7 @@ class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RIn
   private val queue = ArrayDeque<TaskWrapper>()
 
   @Synchronized
-  fun submit(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters, task: () -> Promise<Unit>): Promise<Unit> {
+  fun submit(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters?, task: () -> Promise<Unit>): Promise<Unit> {
     if (isTaskRunning) {
       // Schedule
       for (wrapper in queue) {
@@ -54,7 +54,7 @@ class RGraphicsRescaleQueue(private val deviceId: Long, private val interop: RIn
 
   private data class TaskWrapper(
     val snapshotNumber: Int?,
-    val parameters: RGraphicsUtils.ScreenParameters,
+    val parameters: RGraphicsUtils.ScreenParameters?,
     val task: () -> Promise<Unit>,
     val promise: AsyncPromise<Unit> = AsyncPromise()
   )

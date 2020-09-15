@@ -58,6 +58,7 @@ import org.jetbrains.r.run.visualize.RDataFrameViewerImpl
 import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.util.thenCancellable
 import org.jetbrains.r.util.tryRegisterDisposable
+import java.awt.Dimension
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -536,8 +537,16 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeRequest(RPIServiceGrpc.getGraphicsInitMethod(), request)
   }
 
-  fun graphicsDump(): RIExecutionResult {
-    return executeRequest(RPIServiceGrpc.getGraphicsDumpMethod(), Empty.getDefaultInstance())
+  fun graphicsDump(): Map<Int, RGraphicsUtils.ScreenParameters> {
+    val response = executeWithCheckCancel(asyncStub::graphicsDump, Empty.getDefaultInstance())
+    if (response.message.isNotBlank()) {
+      throw RuntimeException(response.message)
+    }
+    return response.number2ParametersMap.mapValues { entry ->
+      val dimension = Dimension(entry.value.width, entry.value.height)
+      val resolution = entry.value.resolution.takeIf { it > 0 }
+      RGraphicsUtils.ScreenParameters(dimension, resolution)
+    }
   }
 
   fun graphicsRescale(snapshotNumber: Int?, newParameters: RGraphicsUtils.ScreenParameters): RIExecutionResult {
@@ -572,14 +581,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .setHeight(scaled.height)
       .setWidth(scaled.width)
       .build()
-  }
-
-  fun graphicsPullChangedNumbers(): List<Int> {
-    val response = executeWithCheckCancel(asyncStub::graphicsPullChangedNumbers, Empty.getDefaultInstance())
-    if (response.message.isNotBlank()) {
-      throw RuntimeException(response.message)
-    }
-    return response.valueList
   }
 
   data class GraphicsGetPathResponse(val name: String, val directory: String)

@@ -57,7 +57,7 @@ class RGraphicsDevice(
   }
 
   fun update() {
-    rescaleInMemoryAsync(null, configuration.screenParameters)
+    dumpAndRescaleLastAsync(configuration.screenParameters)
   }
 
   fun reset() {
@@ -134,12 +134,7 @@ class RGraphicsDevice(
   }
 
   private fun dumpAllAsync(): Promise<Unit> {
-    val promise = executeWithLogAsync(createHintForInMemory(null)) {
-      rInterop.graphicsDump()
-    }
-    return promise.thenIfTrue {
-      pullInMemorySnapshots()
-    }
+    return dumpAndRescaleLastAsync(null)
   }
 
   fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
@@ -147,7 +142,8 @@ class RGraphicsDevice(
       val hint = createHintForStored(snapshot.number)
       val promise = executeWithLogAsync(hint) {
         pushStoredSnapshotIfNeeded(snapshot, group)
-        rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
+        val result = rInterop.graphicsRescaleStored(group.id, snapshot.number, snapshot.version, parameters)
+        parseExecutionResult(result, hint)
       }
       promise.then { isRescaled ->
         if (isRescaled) pullStoredSnapshot(snapshot, group.id) else null
@@ -169,48 +165,67 @@ class RGraphicsDevice(
     }
   }
 
-  private fun rescaleInMemoryAsync(snapshotNumber: Int?, parameters: RGraphicsUtils.ScreenParameters): Promise<Unit> {
+  private fun rescaleInMemoryAsync(snapshotNumber: Int, parameters: RGraphicsUtils.ScreenParameters): Promise<Unit> {
     return queue.submit(snapshotNumber, parameters) {
-      val promise = executeWithLogAsync(createHintForInMemory(snapshotNumber)) {
-        rInterop.graphicsRescale(snapshotNumber, parameters)
+      val hint = createHintForInMemory(snapshotNumber)
+      val promise = executeWithLogAsync(hint) {
+        val result = rInterop.graphicsRescale(snapshotNumber, parameters)
+        parseExecutionResult(result, hint)
       }
       promise.thenIfTrue {
-        val pulled = pullInMemorySnapshots()
-        if (pulled.isNotEmpty()) {
-          onNewSnapshots(pulled, snapshotNumber)
+        pullInMemorySnapshot(snapshotNumber)?.let { pulled ->
+          onNewSnapshots(listOf(pulled), snapshotNumber)
         }
       }
     }
   }
 
-  private fun executeWithLogAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
+  private fun dumpAndRescaleLastAsync(parameters: RGraphicsUtils.ScreenParameters?): Promise<Unit> {
+    return queue.submit(null, parameters) {
+      val promise = executeWithLogAsync(createHintForInMemory(null)) {
+        rInterop.graphicsDump()
+      }
+      promise.then { number2Parameters ->
+        if (number2Parameters.isEmpty()) {
+          return@then
+        }
+        val pulled = pullAndRescaleInMemory(number2Parameters, parameters)
+        if (pulled.isNotEmpty()) {
+          onNewSnapshots(pulled, null)
+        }
+      }
+    }
+  }
+
+  private fun <R> executeWithLogAsync(hint: String, task: () -> R): Promise<R> {
     if (!rInterop.isAlive) {
       // Note: `rejectedPromise()` will spam the error log
       return cancelledPromise()
     }
-    return executeAsync(hint, task).onError { e ->
+    return executeAsync(task).onError { e ->
       LOGGER.error("Cannot execute task for <$hint>", e)
     }
   }
 
-  private fun executeAsync(hint: String, task: () -> RIExecutionResult): Promise<Boolean> {
+  private fun <R> executeAsync(task: () -> R): Promise<R> {
     return devicePromise.thenAsync {
-      runAsync {
-        val result = task()
-        if (result.stderr.isNotBlank()) {
-          // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
-          LOGGER.warn("Task for <$hint> has failed:\n${result.stderr}")
-        }
-        if (result.stdout.isNotBlank()) {
-          val output = result.stdout.let { it.substring(4, it.length - 1) }
-          return@runAsync output == "TRUE"
-        } else {
-          if (result.stderr.isNotBlank()) {
-            throw RuntimeException("Cannot get stdout from graphics device. Stderr was:\n${result.stderr}")
-          } else {
-            throw RuntimeException("Cannot get any output from graphics device")
-          }
-        }
+      runAsync(task)
+    }
+  }
+
+  private fun parseExecutionResult(result: RIExecutionResult, hint: String): Boolean {
+    if (result.stderr.isNotBlank()) {
+      // Note: This might be due to large margins and therefore shouldn't be treated as a fatal error
+      LOGGER.warn("Task for <$hint> has failed:\n${result.stderr}")
+    }
+    if (result.stdout.isNotBlank()) {
+      val output = result.stdout.let { it.substring(4, it.length - 1) }
+      return output == "TRUE"
+    } else {
+      if (result.stderr.isNotBlank()) {
+        throw RuntimeException("Cannot get stdout from graphics device. Stderr was:\n${result.stderr}")
+      } else {
+        throw RuntimeException("Cannot get any output from graphics device")
       }
     }
   }
@@ -229,13 +244,20 @@ class RGraphicsDevice(
     return number2SnapshotInfos.values.map { it.snapshot }.sortedBy { it.number }
   }
 
-  private fun pullInMemorySnapshots(): List<RSnapshot> {
+  private fun pullAndRescaleInMemory(
+    number2Parameters: Map<Int, RGraphicsUtils.ScreenParameters>,
+    parameters: RGraphicsUtils.ScreenParameters?
+  ): List<RSnapshot> {
     return try {
-      rInterop.graphicsPullChangedNumbers().mapNotNull { number ->
+      number2Parameters.asIterable().mapNotNull { (number, actualParameters) ->
+        if (parameters != null && actualParameters != parameters) {
+          val result = rInterop.graphicsRescale(number, parameters)
+          parseExecutionResult(result, createHintForInMemory(number))
+        }
         pullInMemorySnapshot(number)
       }
     } catch (e: Exception) {
-      LOGGER.error("Cannot pull numbers of rescaled snapshots", e)
+      LOGGER.error("Cannot rescale last in-memory snapshots", e)
       emptyList()
     }
   }
@@ -282,7 +304,7 @@ class RGraphicsDevice(
           }
         }
       }
-    } catch (e: Error) {
+    } catch (e: Exception) {
       val hint = if (groupId != null) createHintForStored(number) else createHintForInMemory(number)
       LOGGER.error("Cannot pull <$hint>", e)
       null
