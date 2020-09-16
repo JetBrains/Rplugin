@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.testFramework.ReadOnlyLightVirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.debugger.RSourcePosition
@@ -92,6 +93,11 @@ class RSourceFileManager(private val rInterop: RInterop): Disposable {
           .let { Optional.ofNullable(it) }
       }.orElse(null)
     }
+  }
+
+  @TestOnly
+  fun createFileForTest(name: String, text: String): VirtualFile {
+    return filesystem.createFile(name, text)
   }
 
   override fun dispose() {

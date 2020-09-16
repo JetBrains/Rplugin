@@ -241,7 +241,25 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testDocumentationCommentForLibraryMethod() {
-    val virtualFile = rInterop.sourceFileManager.createFileForTest("test.R", "# tibble::as_tibble\nfunction(x) {}")
+    doDocumentationCommentTest("# tibble::as_tibble\nfunction(x) {}", "Coerce lists, matrices, and more to data frames")
+  }
+
+  fun testDocumentationCommentForMethodWithBackticks() {
+    doDocumentationCommentTest("# base::`+`", "These unary and binary operators perform arithmetic on numeric or")
+  }
+
+  fun testDocumentationCommentForMethodDoubleColon() {
+    doDocumentationCommentTest("# base::`::`", "Double Colon and Triple Colon Operators")
+  }
+
+  // ---- END OF TESTS ---
+
+  private fun makeHelper(page: String, pack: String): (String) -> Unit {
+    return { doTest(it, page, pack) }
+  }
+
+  private fun doDocumentationCommentTest(fileText: String, documentationFragment: String) {
+    val virtualFile = rInterop.sourceFileManager.createFileForTest("test.R", fileText)
     myFixture.openFileInEditor(virtualFile);
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
 
@@ -249,13 +267,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     docProvider.collectDocComments(myFixture.file, consumer)
     val result = docProvider.generateRenderedDoc(consumer.result.first())
 
-    assertTrue(result != null && result.contains("Coerce lists, matrices, and more to data frames"))
-  }
-
-  // ---- END OF TESTS ---
-
-  private fun makeHelper(page: String, pack: String): (String) -> Unit {
-    return { doTest(it, page, pack) }
+    assertTrue(result != null && result.contains(documentationFragment))
   }
 
   private fun doTest(text: String, page: String = "", pack: String = "", documentationExist: Boolean = true) {

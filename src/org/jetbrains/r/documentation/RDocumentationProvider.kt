@@ -278,12 +278,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     val containingFile = comment.containingFile as RFile
     val rInterop = containingFile.runtimeInfo?.rInterop
     if (rInterop != null) {
-      val commentText = comment.text.substring(2)
-      val nameAndPackage = commentText.split("::")
-      if (nameAndPackage.size != 2) {
-        return null
-      }
-      val documentationPromise = rInterop.getDocumentationForSymbol(nameAndPackage[1], nameAndPackage[0])
+      val methodNameAndPackage = getMethodNameAndPackage(comment.text)
+      val documentationPromise = rInterop.getDocumentationForSymbol(methodNameAndPackage.first, methodNameAndPackage.second)
       val documentationResponse = documentationPromise.get()
       if (documentationResponse != null) {
         val htmlDocumentation = StringBuilder(convertHelpPage(documentationResponse))
@@ -303,11 +299,23 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   private class RequiredPackageException(message: String?) : RuntimeException(message)
 
   companion object {
+    private const val PACKAGE_METHOD_SEPARATOR = "::"
+    private const val BACKTICK = '`'
     private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
     private val INTERCEPTED_LINK = Key<Boolean>("org.jetbrains.r.documentation.InterceptedLink")
-    private val DOCUMENTATION_COMMENT_REGEX = "^# \\w+::\\w+$".toRegex()
+    private val DOCUMENTATION_COMMENT_REGEX = "^# `?\\w+`?::`?.+`?$".toRegex()
 
-    fun adjustHtmlDocumentationForEditor(documentation: StringBuilder) {
+    private fun getMethodNameAndPackage(documentationComment: String): Pair<String, String?> {
+      val text = documentationComment.substring(PACKAGE_METHOD_SEPARATOR.length)
+      val commaSeparatorIndex = text.indexOf(PACKAGE_METHOD_SEPARATOR)
+      if (commaSeparatorIndex < 0) {
+        return Pair(text, null)
+      }
+      val packageAndMethod = text.split(PACKAGE_METHOD_SEPARATOR.toRegex(), 2).map { s -> StringUtil.unquoteString(s, BACKTICK) }
+      return Pair(packageAndMethod[1], packageAndMethod[0])
+    }
+
+    private fun adjustHtmlDocumentationForEditor(documentation: StringBuilder) {
       // remove the horizontal line at the bottom and centered text [Package <em><package-name></em> version]
       val horizontalLineIndex = documentation.lastIndexOf("<hr")
       if (horizontalLineIndex > 0) {
