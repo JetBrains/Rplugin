@@ -152,7 +152,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
 
         lineMarkerRenderer = LineMarkerRenderer { _, g, r ->
           @Suppress("INACCESSIBLE_TYPE")
-          val gutterWidth = ((editor as EditorImpl).gutterComponentEx as JComponent).width
+          val gutterWidth = (editor.gutterComponentEx as JComponent).width
 
           val y = r.y + r.height - editor.lineHeight
           g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
