@@ -58,6 +58,17 @@ class RShinyCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testTagAttributes() {
+    checkCompletion(
+      """
+     ui <- fluidPage(
+       h1(<caret>)
+     )
+      """.trimIndent(),
+      listOf("class", "id", "style")
+    )
+  }
+
   private fun checkCompletion(text: String, expectedToBePresent: List<String>) {
     myFixture.configureByText("a.R", text)
     val result = myFixture.completeBasic()

@@ -83,19 +83,6 @@ class RShinySupportProvider : RLibrarySupportProvider {
     if (call !is RCallExpression) {
       return
     }
-    val receiver = call.expression
-    if (receiver !is RMemberExpression) {
-      return
-    }
-
-    val tagsObject = receiver.leftExpr
-    if (tagsObject !is RIdentifierExpression || tagsObject.name != "tags") {
-      return
-    }
-    val tagsMethod = receiver.rightExpr
-    if (tagsMethod !is RIdentifierExpression) {
-      return
-    }
 
     val uiAndServerElements = getUiAndServerElements(call)
     val uiDefinition = uiAndServerElements.first
@@ -103,11 +90,33 @@ class RShinySupportProvider : RLibrarySupportProvider {
       return
     }
 
+    val receiver = call.expression
+    val tagName: String
+    if (receiver is RMemberExpression) {
+      val tagsObject = receiver.leftExpr
+      if (tagsObject !is RIdentifierExpression || tagsObject.name != "tags") {
+        return
+      }
+      val memberElement = receiver.rightExpr
+      if (memberElement !is RIdentifierExpression) {
+        return
+      }
+      tagName = memberElement.name
+    } else if (receiver is RIdentifierExpression && receiver.name in SHINY_TAG_METHODS) {
+      tagName = receiver.name
+    } else {
+      return
+    }
+
+    addCompletionForTag(tagName, lookupElementFactory, completionConsumer)
+  }
+
+  private fun addCompletionForTag(tagName: String, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {
     completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("style"))
     completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("id"))
     completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("class"))
 
-    val customAttributes = SHINY_TAGS_ATTRIBUTES[tagsMethod.name]
+    val customAttributes = SHINY_TAGS_ATTRIBUTES[tagName]
     if (customAttributes != null) {
       for (customAttribute in customAttributes) {
         completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement(customAttribute))
@@ -305,6 +314,10 @@ class RShinySupportProvider : RLibrarySupportProvider {
       "iframe" to listOf( "src", "srcdoc", "scrolling", "seamless", "height", "width", "name"),
       "img" to listOf( "src", "height", "width"),
       "video" to listOf("autoplay", "controls", "src", "height", "width"))
+
+    @NonNls
+    val SHINY_TAG_METHODS = listOf("p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "br", "div", "span", "pre", "code", "img", "strong", "em",
+                                   "hr")
 
     @NonNls
     val SHINY_TAG_CONTAINERS = listOf("absolutePanel", "fixedPanel", "bootstrapPage", "column", "conditionalPanel", "fillPage", "fillRow",
