@@ -9,4 +9,9 @@
     <display-name>htmlTemplate in Shiny</display-name>
     <place><![CDATA[callArgumentPattern("htmlTemplate", "text_")]]></place>
   </injection>
+
+  <injection language="JQuery-CSS" injector-id="R" enabled="true">
+    <display-name>htmlTemplate in Shiny</display-name>
+    <place><![CDATA[callArgumentPattern("insertUI|removeUI", "selector")]]></place>
+  </injection>
 </component>
