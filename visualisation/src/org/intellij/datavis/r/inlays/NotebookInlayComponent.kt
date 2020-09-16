@@ -218,7 +218,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
         addToolbar()
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
-            adjustSize(height, this)
+            adjustSize(height)
           }
         }
       }.also { addState(it) }
@@ -240,7 +240,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       state = NotebookInlayData(editor.project!!, disposable, dataFrame).apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
-            adjustSize(height, this)
+            adjustSize(height)
           }
         }
       }.also { addState(it) }
@@ -269,7 +269,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   }
 
   /** Adjusts size of notebook output. Method called when success data comes with inlay component desired height. */
-  private fun adjustSize(height: Int, output: NotebookInlayState) {
+  private fun adjustSize(height: Int) {
     beforeHeightChanged()
 
     val desiredHeight = min(InlayDimensions.defaultHeight, height + InlayDimensions.topBorder + InlayDimensions.bottomBorder)
@@ -306,7 +306,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       state = NotebookInlayMultiOutput(editor, disposable).apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
-            adjustSize(height, this)
+            adjustSize(height)
           }
         }
         clearAction = cleanup
