@@ -6,9 +6,9 @@ package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 import com.intellij.xdebugger.XDebuggerManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -98,7 +98,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
     val catFile = RReference.expressionRef("cat", rInterop).functionSourcePosition()!!.file
     TestCase.assertTrue(RSourceFileManager.isTemporary(catFile))
     TestCase.assertFalse(RSourceFileManager.isTemporary(file))
-    addBreakpoint(catFile, 1)
+    addBreakpoint(catFile, 2)
 
     helper.invokeAndWait(true) { rInterop.replSourceFile(file, true) }
     TestCase.assertEquals(listOf(file, catFile), rInterop.debugStack.map { it.position?.file })
@@ -684,7 +684,7 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
                          y = 2) { x - y }
       9
     """.trimIndent())
-    rInterop.replSourceFile(file)
+    rInterop.replSourceFile(file).blockingGet(DEFAULT_TIMEOUT)
 
     TestCase.assertEquals(RSourcePosition(file, 3) to "foo <- function(a, b = 3) {",
                           RReference.expressionRef("foo", rInterop).functionSourcePositionWithText())
@@ -709,5 +709,19 @@ class RDebuggerTest : RProcessHandlerBaseTestCase() {
 
     helper.invokeAndWait(false) { rInterop.debugCommandStepOver() }
     TestCase.assertEquals("1", rInterop.executeCode("cat(x)").stdout)
+  }
+
+  fun testTemporaryFileNames() {
+    fun doTest(code: String, name: String) {
+      val file = RReference.expressionRef(code, rInterop).functionSourcePosition()!!.file
+      TestCase.assertEquals(name, file.name)
+      val firstLine = FileDocumentManager.getInstance().getDocument(file)!!.text.lineSequence().first().trim()
+      TestCase.assertEquals("# $name", firstLine)
+    }
+
+    doTest("cat", "base::cat")
+    doTest("`*`", "base::`*`")
+    doTest("compiler::`cmpfun`", "compiler::cmpfun")
+    doTest("{ aa <- stats::rnorm; aa }", "stats::rnorm")
   }
 }

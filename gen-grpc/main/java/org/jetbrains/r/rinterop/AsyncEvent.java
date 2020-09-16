@@ -222,6 +222,25 @@ private static final long serialVersionUID = 0L;
             eventCase_ = 13;
             break;
           }
+          case 112: {
+            eventCase_ = 14;
+            event_ = input.readInt32();
+            break;
+          }
+          case 122: {
+            org.jetbrains.r.rinterop.SourcePosition.Builder subBuilder = null;
+            if (eventCase_ == 15) {
+              subBuilder = ((org.jetbrains.r.rinterop.SourcePosition) event_).toBuilder();
+            }
+            event_ =
+                input.readMessage(org.jetbrains.r.rinterop.SourcePosition.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.SourcePosition) event_);
+              event_ = subBuilder.buildPartial();
+            }
+            eventCase_ = 15;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -830,16 +849,6 @@ private static final long serialVersionUID = 0L;
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
      */
     org.jetbrains.r.rinterop.StackFrameListOrBuilder getStackOrBuilder();
-
-    /**
-     * <code>bool isStep = 3;</code>
-     */
-    boolean getIsStep();
-
-    /**
-     * <code>bool isBreakpoint = 4;</code>
-     */
-    boolean getIsBreakpoint();
   }
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.DebugPrompt}
@@ -904,16 +913,6 @@ private static final long serialVersionUID = 0L;
 
               break;
             }
-            case 24: {
-
-              isStep_ = input.readBool();
-              break;
-            }
-            case 32: {
-
-              isBreakpoint_ = input.readBool();
-              break;
-            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -976,24 +975,6 @@ private static final long serialVersionUID = 0L;
       return getStack();
     }
 
-    public static final int ISSTEP_FIELD_NUMBER = 3;
-    private boolean isStep_;
-    /**
-     * <code>bool isStep = 3;</code>
-     */
-    public boolean getIsStep() {
-      return isStep_;
-    }
-
-    public static final int ISBREAKPOINT_FIELD_NUMBER = 4;
-    private boolean isBreakpoint_;
-    /**
-     * <code>bool isBreakpoint = 4;</code>
-     */
-    public boolean getIsBreakpoint() {
-      return isBreakpoint_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1014,12 +995,6 @@ private static final long serialVersionUID = 0L;
       if (stack_ != null) {
         output.writeMessage(2, getStack());
       }
-      if (isStep_ != false) {
-        output.writeBool(3, isStep_);
-      }
-      if (isBreakpoint_ != false) {
-        output.writeBool(4, isBreakpoint_);
-      }
       unknownFields.writeTo(output);
     }
 
@@ -1036,14 +1011,6 @@ private static final long serialVersionUID = 0L;
       if (stack_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getStack());
-      }
-      if (isStep_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, isStep_);
-      }
-      if (isBreakpoint_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(4, isBreakpoint_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1067,10 +1034,6 @@ private static final long serialVersionUID = 0L;
         if (!getStack()
             .equals(other.getStack())) return false;
       }
-      if (getIsStep()
-          != other.getIsStep()) return false;
-      if (getIsBreakpoint()
-          != other.getIsBreakpoint()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1089,12 +1052,6 @@ private static final long serialVersionUID = 0L;
         hash = (37 * hash) + STACK_FIELD_NUMBER;
         hash = (53 * hash) + getStack().hashCode();
       }
-      hash = (37 * hash) + ISSTEP_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsStep());
-      hash = (37 * hash) + ISBREAKPOINT_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsBreakpoint());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1236,10 +1193,6 @@ private static final long serialVersionUID = 0L;
           stack_ = null;
           stackBuilder_ = null;
         }
-        isStep_ = false;
-
-        isBreakpoint_ = false;
-
         return this;
       }
 
@@ -1272,8 +1225,6 @@ private static final long serialVersionUID = 0L;
         } else {
           result.stack_ = stackBuilder_.build();
         }
-        result.isStep_ = isStep_;
-        result.isBreakpoint_ = isBreakpoint_;
         onBuilt();
         return result;
       }
@@ -1327,12 +1278,6 @@ private static final long serialVersionUID = 0L;
         }
         if (other.hasStack()) {
           mergeStack(other.getStack());
-        }
-        if (other.getIsStep() != false) {
-          setIsStep(other.getIsStep());
-        }
-        if (other.getIsBreakpoint() != false) {
-          setIsBreakpoint(other.getIsBreakpoint());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1504,58 +1449,6 @@ private static final long serialVersionUID = 0L;
           stack_ = null;
         }
         return stackBuilder_;
-      }
-
-      private boolean isStep_ ;
-      /**
-       * <code>bool isStep = 3;</code>
-       */
-      public boolean getIsStep() {
-        return isStep_;
-      }
-      /**
-       * <code>bool isStep = 3;</code>
-       */
-      public Builder setIsStep(boolean value) {
-        
-        isStep_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool isStep = 3;</code>
-       */
-      public Builder clearIsStep() {
-        
-        isStep_ = false;
-        onChanged();
-        return this;
-      }
-
-      private boolean isBreakpoint_ ;
-      /**
-       * <code>bool isBreakpoint = 4;</code>
-       */
-      public boolean getIsBreakpoint() {
-        return isBreakpoint_;
-      }
-      /**
-       * <code>bool isBreakpoint = 4;</code>
-       */
-      public Builder setIsBreakpoint(boolean value) {
-        
-        isBreakpoint_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool isBreakpoint = 4;</code>
-       */
-      public Builder clearIsBreakpoint() {
-        
-        isBreakpoint_ = false;
-        onChanged();
-        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -4610,6 +4503,8 @@ private static final long serialVersionUID = 0L;
     SUBPROCESSINPUT(11),
     BROWSEURLREQUEST(12),
     RSTUDIOAPIREQUEST(13),
+    DEBUGREMOVEBREAKPOINTREQUEST(14),
+    DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST(15),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -4638,6 +4533,8 @@ private static final long serialVersionUID = 0L;
         case 11: return SUBPROCESSINPUT;
         case 12: return BROWSEURLREQUEST;
         case 13: return RSTUDIOAPIREQUEST;
+        case 14: return DEBUGREMOVEBREAKPOINTREQUEST;
+        case 15: return DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -5008,6 +4905,43 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.getDefaultInstance();
   }
 
+  public static final int DEBUGREMOVEBREAKPOINTREQUEST_FIELD_NUMBER = 14;
+  /**
+   * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   */
+  public int getDebugRemoveBreakpointRequest() {
+    if (eventCase_ == 14) {
+      return (java.lang.Integer) event_;
+    }
+    return 0;
+  }
+
+  public static final int DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST_FIELD_NUMBER = 15;
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  public boolean hasDebugPrintSourcePositionToConsoleRequest() {
+    return eventCase_ == 15;
+  }
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  public org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest() {
+    if (eventCase_ == 15) {
+       return (org.jetbrains.r.rinterop.SourcePosition) event_;
+    }
+    return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  public org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder() {
+    if (eventCase_ == 15) {
+       return (org.jetbrains.r.rinterop.SourcePosition) event_;
+    }
+    return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -5060,6 +4994,13 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 13) {
       output.writeMessage(13, (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_);
+    }
+    if (eventCase_ == 14) {
+      output.writeInt32(
+          14, (int)((java.lang.Integer) event_));
+    }
+    if (eventCase_ == 15) {
+      output.writeMessage(15, (org.jetbrains.r.rinterop.SourcePosition) event_);
     }
     unknownFields.writeTo(output);
   }
@@ -5120,6 +5061,15 @@ private static final long serialVersionUID = 0L;
     if (eventCase_ == 13) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(13, (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_);
+    }
+    if (eventCase_ == 14) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(
+            14, (int)((java.lang.Integer) event_));
+    }
+    if (eventCase_ == 15) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(15, (org.jetbrains.r.rinterop.SourcePosition) event_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -5190,6 +5140,14 @@ private static final long serialVersionUID = 0L;
         if (!getRStudioApiRequest()
             .equals(other.getRStudioApiRequest())) return false;
         break;
+      case 14:
+        if (getDebugRemoveBreakpointRequest()
+            != other.getDebugRemoveBreakpointRequest()) return false;
+        break;
+      case 15:
+        if (!getDebugPrintSourcePositionToConsoleRequest()
+            .equals(other.getDebugPrintSourcePositionToConsoleRequest())) return false;
+        break;
       case 0:
       default:
     }
@@ -5256,6 +5214,14 @@ private static final long serialVersionUID = 0L;
       case 13:
         hash = (37 * hash) + RSTUDIOAPIREQUEST_FIELD_NUMBER;
         hash = (53 * hash) + getRStudioApiRequest().hashCode();
+        break;
+      case 14:
+        hash = (37 * hash) + DEBUGREMOVEBREAKPOINTREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getDebugRemoveBreakpointRequest();
+        break;
+      case 15:
+        hash = (37 * hash) + DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getDebugPrintSourcePositionToConsoleRequest().hashCode();
         break;
       case 0:
       default:
@@ -5508,6 +5474,16 @@ private static final long serialVersionUID = 0L;
           result.event_ = rStudioApiRequestBuilder_.build();
         }
       }
+      if (eventCase_ == 14) {
+        result.event_ = event_;
+      }
+      if (eventCase_ == 15) {
+        if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+          result.event_ = event_;
+        } else {
+          result.event_ = debugPrintSourcePositionToConsoleRequestBuilder_.build();
+        }
+      }
       result.eventCase_ = eventCase_;
       onBuilt();
       return result;
@@ -5610,6 +5586,14 @@ private static final long serialVersionUID = 0L;
         }
         case RSTUDIOAPIREQUEST: {
           mergeRStudioApiRequest(other.getRStudioApiRequest());
+          break;
+        }
+        case DEBUGREMOVEBREAKPOINTREQUEST: {
+          setDebugRemoveBreakpointRequest(other.getDebugRemoveBreakpointRequest());
+          break;
+        }
+        case DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST: {
+          mergeDebugPrintSourcePositionToConsoleRequest(other.getDebugPrintSourcePositionToConsoleRequest());
           break;
         }
         case EVENT_NOT_SET: {
@@ -7370,6 +7354,172 @@ private static final long serialVersionUID = 0L;
       eventCase_ = 13;
       onChanged();;
       return rStudioApiRequestBuilder_;
+    }
+
+    /**
+     * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     */
+    public int getDebugRemoveBreakpointRequest() {
+      if (eventCase_ == 14) {
+        return (java.lang.Integer) event_;
+      }
+      return 0;
+    }
+    /**
+     * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     */
+    public Builder setDebugRemoveBreakpointRequest(int value) {
+      eventCase_ = 14;
+      event_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     */
+    public Builder clearDebugRemoveBreakpointRequest() {
+      if (eventCase_ == 14) {
+        eventCase_ = 0;
+        event_ = null;
+        onChanged();
+      }
+      return this;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> debugPrintSourcePositionToConsoleRequestBuilder_;
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public boolean hasDebugPrintSourcePositionToConsoleRequest() {
+      return eventCase_ == 15;
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest() {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        if (eventCase_ == 15) {
+          return (org.jetbrains.r.rinterop.SourcePosition) event_;
+        }
+        return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+      } else {
+        if (eventCase_ == 15) {
+          return debugPrintSourcePositionToConsoleRequestBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public Builder setDebugPrintSourcePositionToConsoleRequest(org.jetbrains.r.rinterop.SourcePosition value) {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        event_ = value;
+        onChanged();
+      } else {
+        debugPrintSourcePositionToConsoleRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 15;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public Builder setDebugPrintSourcePositionToConsoleRequest(
+        org.jetbrains.r.rinterop.SourcePosition.Builder builderForValue) {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        event_ = builderForValue.build();
+        onChanged();
+      } else {
+        debugPrintSourcePositionToConsoleRequestBuilder_.setMessage(builderForValue.build());
+      }
+      eventCase_ = 15;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public Builder mergeDebugPrintSourcePositionToConsoleRequest(org.jetbrains.r.rinterop.SourcePosition value) {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        if (eventCase_ == 15 &&
+            event_ != org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance()) {
+          event_ = org.jetbrains.r.rinterop.SourcePosition.newBuilder((org.jetbrains.r.rinterop.SourcePosition) event_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          event_ = value;
+        }
+        onChanged();
+      } else {
+        if (eventCase_ == 15) {
+          debugPrintSourcePositionToConsoleRequestBuilder_.mergeFrom(value);
+        }
+        debugPrintSourcePositionToConsoleRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 15;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public Builder clearDebugPrintSourcePositionToConsoleRequest() {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        if (eventCase_ == 15) {
+          eventCase_ = 0;
+          event_ = null;
+          onChanged();
+        }
+      } else {
+        if (eventCase_ == 15) {
+          eventCase_ = 0;
+          event_ = null;
+        }
+        debugPrintSourcePositionToConsoleRequestBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public org.jetbrains.r.rinterop.SourcePosition.Builder getDebugPrintSourcePositionToConsoleRequestBuilder() {
+      return getDebugPrintSourcePositionToConsoleRequestFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    public org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder() {
+      if ((eventCase_ == 15) && (debugPrintSourcePositionToConsoleRequestBuilder_ != null)) {
+        return debugPrintSourcePositionToConsoleRequestBuilder_.getMessageOrBuilder();
+      } else {
+        if (eventCase_ == 15) {
+          return (org.jetbrains.r.rinterop.SourcePosition) event_;
+        }
+        return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> 
+        getDebugPrintSourcePositionToConsoleRequestFieldBuilder() {
+      if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
+        if (!(eventCase_ == 15)) {
+          event_ = org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
+        }
+        debugPrintSourcePositionToConsoleRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder>(
+                (org.jetbrains.r.rinterop.SourcePosition) event_,
+                getParentForChildren(),
+                isClean());
+        event_ = null;
+      }
+      eventCase_ = 15;
+      onChanged();;
+      return debugPrintSourcePositionToConsoleRequestBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -337,58 +337,89 @@ public final class RPIServiceGrpc {
     return getGetAsyncEventsMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddBreakpointRequest,
-      com.google.protobuf.Empty> getDebugAddBreakpointMethod;
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest,
+      com.google.protobuf.Empty> getDebugAddOrModifyBreakpointMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "debugAddBreakpoint",
-      requestType = org.jetbrains.r.rinterop.DebugAddBreakpointRequest.class,
+      fullMethodName = SERVICE_NAME + '/' + "debugAddOrModifyBreakpoint",
+      requestType = org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.class,
       responseType = com.google.protobuf.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddBreakpointRequest,
-      com.google.protobuf.Empty> getDebugAddBreakpointMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddBreakpointRequest, com.google.protobuf.Empty> getDebugAddBreakpointMethod;
-    if ((getDebugAddBreakpointMethod = RPIServiceGrpc.getDebugAddBreakpointMethod) == null) {
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest,
+      com.google.protobuf.Empty> getDebugAddOrModifyBreakpointMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest, com.google.protobuf.Empty> getDebugAddOrModifyBreakpointMethod;
+    if ((getDebugAddOrModifyBreakpointMethod = RPIServiceGrpc.getDebugAddOrModifyBreakpointMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getDebugAddBreakpointMethod = RPIServiceGrpc.getDebugAddBreakpointMethod) == null) {
-          RPIServiceGrpc.getDebugAddBreakpointMethod = getDebugAddBreakpointMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.DebugAddBreakpointRequest, com.google.protobuf.Empty>newBuilder()
+        if ((getDebugAddOrModifyBreakpointMethod = RPIServiceGrpc.getDebugAddOrModifyBreakpointMethod) == null) {
+          RPIServiceGrpc.getDebugAddOrModifyBreakpointMethod = getDebugAddOrModifyBreakpointMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest, com.google.protobuf.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugAddBreakpoint"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugAddOrModifyBreakpoint"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.DebugAddBreakpointRequest.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugAddBreakpoint"))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugAddOrModifyBreakpoint"))
               .build();
         }
       }
     }
-    return getDebugAddBreakpointMethod;
+    return getDebugAddOrModifyBreakpointMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SourcePosition,
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest,
+      com.google.protobuf.Empty> getDebugSetMasterBreakpointMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "debugSetMasterBreakpoint",
+      requestType = org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest,
+      com.google.protobuf.Empty> getDebugSetMasterBreakpointMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest, com.google.protobuf.Empty> getDebugSetMasterBreakpointMethod;
+    if ((getDebugSetMasterBreakpointMethod = RPIServiceGrpc.getDebugSetMasterBreakpointMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getDebugSetMasterBreakpointMethod = RPIServiceGrpc.getDebugSetMasterBreakpointMethod) == null) {
+          RPIServiceGrpc.getDebugSetMasterBreakpointMethod = getDebugSetMasterBreakpointMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest, com.google.protobuf.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugSetMasterBreakpoint"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugSetMasterBreakpoint"))
+              .build();
+        }
+      }
+    }
+    return getDebugSetMasterBreakpointMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
       com.google.protobuf.Empty> getDebugRemoveBreakpointMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "debugRemoveBreakpoint",
-      requestType = org.jetbrains.r.rinterop.SourcePosition.class,
+      requestType = com.google.protobuf.Int32Value.class,
       responseType = com.google.protobuf.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SourcePosition,
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
       com.google.protobuf.Empty> getDebugRemoveBreakpointMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.SourcePosition, com.google.protobuf.Empty> getDebugRemoveBreakpointMethod;
+    io.grpc.MethodDescriptor<com.google.protobuf.Int32Value, com.google.protobuf.Empty> getDebugRemoveBreakpointMethod;
     if ((getDebugRemoveBreakpointMethod = RPIServiceGrpc.getDebugRemoveBreakpointMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
         if ((getDebugRemoveBreakpointMethod = RPIServiceGrpc.getDebugRemoveBreakpointMethod) == null) {
           RPIServiceGrpc.getDebugRemoveBreakpointMethod = getDebugRemoveBreakpointMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.SourcePosition, com.google.protobuf.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<com.google.protobuf.Int32Value, com.google.protobuf.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugRemoveBreakpoint"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance()))
+                  com.google.protobuf.Int32Value.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.google.protobuf.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugRemoveBreakpoint"))
@@ -428,37 +459,6 @@ public final class RPIServiceGrpc {
       }
     }
     return getDebugCommandContinueMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "debugCommandKeepPrevious",
-      requestType = com.google.protobuf.Empty.class,
-      responseType = com.google.protobuf.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
-      com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Empty> getDebugCommandKeepPreviousMethod;
-    if ((getDebugCommandKeepPreviousMethod = RPIServiceGrpc.getDebugCommandKeepPreviousMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getDebugCommandKeepPreviousMethod = RPIServiceGrpc.getDebugCommandKeepPreviousMethod) == null) {
-          RPIServiceGrpc.getDebugCommandKeepPreviousMethod = getDebugCommandKeepPreviousMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debugCommandKeepPrevious"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("debugCommandKeepPrevious"))
-              .build();
-        }
-      }
-    }
-    return getDebugCommandKeepPreviousMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
@@ -707,6 +707,99 @@ public final class RPIServiceGrpc {
       }
     }
     return getDebugMuteBreakpointsMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> getGetFunctionSourcePositionMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getFunctionSourcePosition",
+      requestType = org.jetbrains.r.rinterop.RRef.class,
+      responseType = org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> getGetFunctionSourcePositionMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> getGetFunctionSourcePositionMethod;
+    if ((getGetFunctionSourcePositionMethod = RPIServiceGrpc.getGetFunctionSourcePositionMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetFunctionSourcePositionMethod = RPIServiceGrpc.getGetFunctionSourcePositionMethod) == null) {
+          RPIServiceGrpc.getGetFunctionSourcePositionMethod = getGetFunctionSourcePositionMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getFunctionSourcePosition"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getFunctionSourcePosition"))
+              .build();
+        }
+      }
+    }
+    return getGetFunctionSourcePositionMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      com.google.protobuf.StringValue> getGetSourceFileTextMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getSourceFileText",
+      requestType = com.google.protobuf.StringValue.class,
+      responseType = com.google.protobuf.StringValue.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      com.google.protobuf.StringValue> getGetSourceFileTextMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, com.google.protobuf.StringValue> getGetSourceFileTextMethod;
+    if ((getGetSourceFileTextMethod = RPIServiceGrpc.getGetSourceFileTextMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetSourceFileTextMethod = RPIServiceGrpc.getGetSourceFileTextMethod) == null) {
+          RPIServiceGrpc.getGetSourceFileTextMethod = getGetSourceFileTextMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, com.google.protobuf.StringValue>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getSourceFileText"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getSourceFileText"))
+              .build();
+        }
+      }
+    }
+    return getGetSourceFileTextMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      com.google.protobuf.StringValue> getGetSourceFileNameMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getSourceFileName",
+      requestType = com.google.protobuf.StringValue.class,
+      responseType = com.google.protobuf.StringValue.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      com.google.protobuf.StringValue> getGetSourceFileNameMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, com.google.protobuf.StringValue> getGetSourceFileNameMethod;
+    if ((getGetSourceFileNameMethod = RPIServiceGrpc.getGetSourceFileNameMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetSourceFileNameMethod = RPIServiceGrpc.getGetSourceFileNameMethod) == null) {
+          RPIServiceGrpc.getGetSourceFileNameMethod = getGetSourceFileNameMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, com.google.protobuf.StringValue>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getSourceFileName"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getSourceFileName"))
+              .build();
+        }
+      }
+    }
+    return getGetSourceFileNameMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.GraphicsInitRequest,
@@ -1544,99 +1637,6 @@ public final class RPIServiceGrpc {
       }
     }
     return getGetDistinctStringsMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.SourcePosition> getGetFunctionSourcePositionMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getFunctionSourcePosition",
-      requestType = org.jetbrains.r.rinterop.RRef.class,
-      responseType = org.jetbrains.r.rinterop.SourcePosition.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.SourcePosition> getGetFunctionSourcePositionMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.SourcePosition> getGetFunctionSourcePositionMethod;
-    if ((getGetFunctionSourcePositionMethod = RPIServiceGrpc.getGetFunctionSourcePositionMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getGetFunctionSourcePositionMethod = RPIServiceGrpc.getGetFunctionSourcePositionMethod) == null) {
-          RPIServiceGrpc.getGetFunctionSourcePositionMethod = getGetFunctionSourcePositionMethod =
-              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.SourcePosition>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getFunctionSourcePosition"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getFunctionSourcePosition"))
-              .build();
-        }
-      }
-    }
-    return getGetFunctionSourcePositionMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      com.google.protobuf.StringValue> getGetSourceFileTextMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getSourceFileText",
-      requestType = com.google.protobuf.StringValue.class,
-      responseType = com.google.protobuf.StringValue.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      com.google.protobuf.StringValue> getGetSourceFileTextMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, com.google.protobuf.StringValue> getGetSourceFileTextMethod;
-    if ((getGetSourceFileTextMethod = RPIServiceGrpc.getGetSourceFileTextMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getGetSourceFileTextMethod = RPIServiceGrpc.getGetSourceFileTextMethod) == null) {
-          RPIServiceGrpc.getGetSourceFileTextMethod = getGetSourceFileTextMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, com.google.protobuf.StringValue>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getSourceFileText"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.StringValue.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.StringValue.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getSourceFileText"))
-              .build();
-        }
-      }
-    }
-    return getGetSourceFileTextMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      com.google.protobuf.StringValue> getGetSourceFileNameMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getSourceFileName",
-      requestType = com.google.protobuf.StringValue.class,
-      responseType = com.google.protobuf.StringValue.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
-      com.google.protobuf.StringValue> getGetSourceFileNameMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, com.google.protobuf.StringValue> getGetSourceFileNameMethod;
-    if ((getGetSourceFileNameMethod = RPIServiceGrpc.getGetSourceFileNameMethod) == null) {
-      synchronized (RPIServiceGrpc.class) {
-        if ((getGetSourceFileNameMethod = RPIServiceGrpc.getGetSourceFileNameMethod) == null) {
-          RPIServiceGrpc.getGetSourceFileNameMethod = getGetSourceFileNameMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, com.google.protobuf.StringValue>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getSourceFileName"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.StringValue.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.StringValue.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getSourceFileName"))
-              .build();
-        }
-      }
-    }
-    return getGetSourceFileNameMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
@@ -2857,14 +2857,21 @@ public final class RPIServiceGrpc {
      * Debugger
      * </pre>
      */
-    public void debugAddBreakpoint(org.jetbrains.r.rinterop.DebugAddBreakpointRequest request,
+    public void debugAddOrModifyBreakpoint(org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getDebugAddBreakpointMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getDebugAddOrModifyBreakpointMethod(), responseObserver);
     }
 
     /**
      */
-    public void debugRemoveBreakpoint(org.jetbrains.r.rinterop.SourcePosition request,
+    public void debugSetMasterBreakpoint(org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getDebugSetMasterBreakpointMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void debugRemoveBreakpoint(com.google.protobuf.Int32Value request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getDebugRemoveBreakpointMethod(), responseObserver);
     }
@@ -2874,13 +2881,6 @@ public final class RPIServiceGrpc {
     public void debugCommandContinue(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getDebugCommandContinueMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void debugCommandKeepPrevious(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getDebugCommandKeepPreviousMethod(), responseObserver);
     }
 
     /**
@@ -2937,6 +2937,27 @@ public final class RPIServiceGrpc {
     public void debugMuteBreakpoints(com.google.protobuf.BoolValue request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getDebugMuteBreakpointsMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetFunctionSourcePositionMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getSourceFileText(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetSourceFileTextMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getSourceFileName(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetSourceFileNameMethod(), responseObserver);
     }
 
     /**
@@ -3141,27 +3162,6 @@ public final class RPIServiceGrpc {
     public void getDistinctStrings(org.jetbrains.r.rinterop.RRef request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetDistinctStringsMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SourcePosition> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetFunctionSourcePositionMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void getSourceFileText(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetSourceFileTextMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void getSourceFileName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetSourceFileNameMethod(), responseObserver);
     }
 
     /**
@@ -3498,17 +3498,24 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.AsyncEvent>(
                   this, METHODID_GET_ASYNC_EVENTS)))
           .addMethod(
-            getDebugAddBreakpointMethod(),
+            getDebugAddOrModifyBreakpointMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                org.jetbrains.r.rinterop.DebugAddBreakpointRequest,
+                org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest,
                 com.google.protobuf.Empty>(
-                  this, METHODID_DEBUG_ADD_BREAKPOINT)))
+                  this, METHODID_DEBUG_ADD_OR_MODIFY_BREAKPOINT)))
+          .addMethod(
+            getDebugSetMasterBreakpointMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest,
+                com.google.protobuf.Empty>(
+                  this, METHODID_DEBUG_SET_MASTER_BREAKPOINT)))
           .addMethod(
             getDebugRemoveBreakpointMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                org.jetbrains.r.rinterop.SourcePosition,
+                com.google.protobuf.Int32Value,
                 com.google.protobuf.Empty>(
                   this, METHODID_DEBUG_REMOVE_BREAKPOINT)))
           .addMethod(
@@ -3518,13 +3525,6 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty,
                 com.google.protobuf.Empty>(
                   this, METHODID_DEBUG_COMMAND_CONTINUE)))
-          .addMethod(
-            getDebugCommandKeepPreviousMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.google.protobuf.Empty,
-                com.google.protobuf.Empty>(
-                  this, METHODID_DEBUG_COMMAND_KEEP_PREVIOUS)))
           .addMethod(
             getDebugCommandPauseMethod(),
             asyncUnaryCall(
@@ -3581,6 +3581,27 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.BoolValue,
                 com.google.protobuf.Empty>(
                   this, METHODID_DEBUG_MUTE_BREAKPOINTS)))
+          .addMethod(
+            getGetFunctionSourcePositionMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                org.jetbrains.r.rinterop.RRef,
+                org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse>(
+                  this, METHODID_GET_FUNCTION_SOURCE_POSITION)))
+          .addMethod(
+            getGetSourceFileTextMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.StringValue,
+                com.google.protobuf.StringValue>(
+                  this, METHODID_GET_SOURCE_FILE_TEXT)))
+          .addMethod(
+            getGetSourceFileNameMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.StringValue,
+                com.google.protobuf.StringValue>(
+                  this, METHODID_GET_SOURCE_FILE_NAME)))
           .addMethod(
             getGraphicsInitMethod(),
             asyncServerStreamingCall(
@@ -3770,27 +3791,6 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.RRef,
                 org.jetbrains.r.rinterop.StringList>(
                   this, METHODID_GET_DISTINCT_STRINGS)))
-          .addMethod(
-            getGetFunctionSourcePositionMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                org.jetbrains.r.rinterop.RRef,
-                org.jetbrains.r.rinterop.SourcePosition>(
-                  this, METHODID_GET_FUNCTION_SOURCE_POSITION)))
-          .addMethod(
-            getGetSourceFileTextMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.google.protobuf.StringValue,
-                com.google.protobuf.StringValue>(
-                  this, METHODID_GET_SOURCE_FILE_TEXT)))
-          .addMethod(
-            getGetSourceFileNameMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.google.protobuf.StringValue,
-                com.google.protobuf.StringValue>(
-                  this, METHODID_GET_SOURCE_FILE_NAME)))
           .addMethod(
             getLoadObjectNamesMethod(),
             asyncUnaryCall(
@@ -4150,15 +4150,23 @@ public final class RPIServiceGrpc {
      * Debugger
      * </pre>
      */
-    public void debugAddBreakpoint(org.jetbrains.r.rinterop.DebugAddBreakpointRequest request,
+    public void debugAddOrModifyBreakpoint(org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getDebugAddBreakpointMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getDebugAddOrModifyBreakpointMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
      */
-    public void debugRemoveBreakpoint(org.jetbrains.r.rinterop.SourcePosition request,
+    public void debugSetMasterBreakpoint(org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getDebugSetMasterBreakpointMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void debugRemoveBreakpoint(com.google.protobuf.Int32Value request,
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getDebugRemoveBreakpointMethod(), getCallOptions()), request, responseObserver);
@@ -4170,14 +4178,6 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getDebugCommandContinueMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void debugCommandKeepPrevious(com.google.protobuf.Empty request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getDebugCommandKeepPreviousMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4242,6 +4242,30 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getDebugMuteBreakpointsMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetFunctionSourcePositionMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getSourceFileText(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetSourceFileTextMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getSourceFileName(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetSourceFileNameMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4473,30 +4497,6 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetDistinctStringsMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request,
-        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SourcePosition> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getGetFunctionSourcePositionMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void getSourceFileText(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getGetSourceFileTextMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void getSourceFileName(com.google.protobuf.StringValue request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.StringValue> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getGetSourceFileNameMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4893,14 +4893,21 @@ public final class RPIServiceGrpc {
      * Debugger
      * </pre>
      */
-    public com.google.protobuf.Empty debugAddBreakpoint(org.jetbrains.r.rinterop.DebugAddBreakpointRequest request) {
+    public com.google.protobuf.Empty debugAddOrModifyBreakpoint(org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest request) {
       return blockingUnaryCall(
-          getChannel(), getDebugAddBreakpointMethod(), getCallOptions(), request);
+          getChannel(), getDebugAddOrModifyBreakpointMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public com.google.protobuf.Empty debugRemoveBreakpoint(org.jetbrains.r.rinterop.SourcePosition request) {
+    public com.google.protobuf.Empty debugSetMasterBreakpoint(org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getDebugSetMasterBreakpointMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty debugRemoveBreakpoint(com.google.protobuf.Int32Value request) {
       return blockingUnaryCall(
           getChannel(), getDebugRemoveBreakpointMethod(), getCallOptions(), request);
     }
@@ -4910,13 +4917,6 @@ public final class RPIServiceGrpc {
     public com.google.protobuf.Empty debugCommandContinue(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getDebugCommandContinueMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.google.protobuf.Empty debugCommandKeepPrevious(com.google.protobuf.Empty request) {
-      return blockingUnaryCall(
-          getChannel(), getDebugCommandKeepPreviousMethod(), getCallOptions(), request);
     }
 
     /**
@@ -4973,6 +4973,27 @@ public final class RPIServiceGrpc {
     public com.google.protobuf.Empty debugMuteBreakpoints(com.google.protobuf.BoolValue request) {
       return blockingUnaryCall(
           getChannel(), getDebugMuteBreakpointsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request) {
+      return blockingUnaryCall(
+          getChannel(), getGetFunctionSourcePositionMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.StringValue getSourceFileText(com.google.protobuf.StringValue request) {
+      return blockingUnaryCall(
+          getChannel(), getGetSourceFileTextMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.StringValue getSourceFileName(com.google.protobuf.StringValue request) {
+      return blockingUnaryCall(
+          getChannel(), getGetSourceFileNameMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5189,27 +5210,6 @@ public final class RPIServiceGrpc {
     public org.jetbrains.r.rinterop.StringList getDistinctStrings(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
           getChannel(), getGetDistinctStringsMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public org.jetbrains.r.rinterop.SourcePosition getFunctionSourcePosition(org.jetbrains.r.rinterop.RRef request) {
-      return blockingUnaryCall(
-          getChannel(), getGetFunctionSourcePositionMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.google.protobuf.StringValue getSourceFileText(com.google.protobuf.StringValue request) {
-      return blockingUnaryCall(
-          getChannel(), getGetSourceFileTextMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.google.protobuf.StringValue getSourceFileName(com.google.protobuf.StringValue request) {
-      return blockingUnaryCall(
-          getChannel(), getGetSourceFileNameMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5553,16 +5553,24 @@ public final class RPIServiceGrpc {
      * Debugger
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugAddBreakpoint(
-        org.jetbrains.r.rinterop.DebugAddBreakpointRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugAddOrModifyBreakpoint(
+        org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getDebugAddBreakpointMethod(), getCallOptions()), request);
+          getChannel().newCall(getDebugAddOrModifyBreakpointMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugSetMasterBreakpoint(
+        org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getDebugSetMasterBreakpointMethod(), getCallOptions()), request);
     }
 
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugRemoveBreakpoint(
-        org.jetbrains.r.rinterop.SourcePosition request) {
+        com.google.protobuf.Int32Value request) {
       return futureUnaryCall(
           getChannel().newCall(getDebugRemoveBreakpointMethod(), getCallOptions()), request);
     }
@@ -5573,14 +5581,6 @@ public final class RPIServiceGrpc {
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
           getChannel().newCall(getDebugCommandContinueMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> debugCommandKeepPrevious(
-        com.google.protobuf.Empty request) {
-      return futureUnaryCall(
-          getChannel().newCall(getDebugCommandKeepPreviousMethod(), getCallOptions()), request);
     }
 
     /**
@@ -5645,6 +5645,30 @@ public final class RPIServiceGrpc {
         com.google.protobuf.BoolValue request) {
       return futureUnaryCall(
           getChannel().newCall(getDebugMuteBreakpointsMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse> getFunctionSourcePosition(
+        org.jetbrains.r.rinterop.RRef request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetFunctionSourcePositionMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.StringValue> getSourceFileText(
+        com.google.protobuf.StringValue request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetSourceFileTextMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.StringValue> getSourceFileName(
+        com.google.protobuf.StringValue request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetSourceFileNameMethod(), getCallOptions()), request);
     }
 
     /**
@@ -5768,30 +5792,6 @@ public final class RPIServiceGrpc {
         org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
           getChannel().newCall(getGetDistinctStringsMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.SourcePosition> getFunctionSourcePosition(
-        org.jetbrains.r.rinterop.RRef request) {
-      return futureUnaryCall(
-          getChannel().newCall(getGetFunctionSourcePositionMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.StringValue> getSourceFileText(
-        com.google.protobuf.StringValue request) {
-      return futureUnaryCall(
-          getChannel().newCall(getGetSourceFileTextMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.StringValue> getSourceFileName(
-        com.google.protobuf.StringValue request) {
-      return futureUnaryCall(
-          getChannel().newCall(getGetSourceFileNameMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6102,10 +6102,10 @@ public final class RPIServiceGrpc {
   private static final int METHODID_SEND_EOF = 7;
   private static final int METHODID_REPL_INTERRUPT = 8;
   private static final int METHODID_GET_ASYNC_EVENTS = 9;
-  private static final int METHODID_DEBUG_ADD_BREAKPOINT = 10;
-  private static final int METHODID_DEBUG_REMOVE_BREAKPOINT = 11;
-  private static final int METHODID_DEBUG_COMMAND_CONTINUE = 12;
-  private static final int METHODID_DEBUG_COMMAND_KEEP_PREVIOUS = 13;
+  private static final int METHODID_DEBUG_ADD_OR_MODIFY_BREAKPOINT = 10;
+  private static final int METHODID_DEBUG_SET_MASTER_BREAKPOINT = 11;
+  private static final int METHODID_DEBUG_REMOVE_BREAKPOINT = 12;
+  private static final int METHODID_DEBUG_COMMAND_CONTINUE = 13;
   private static final int METHODID_DEBUG_COMMAND_PAUSE = 14;
   private static final int METHODID_DEBUG_COMMAND_STOP = 15;
   private static final int METHODID_DEBUG_COMMAND_STEP_OVER = 16;
@@ -6114,36 +6114,36 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DEBUG_COMMAND_STEP_OUT = 19;
   private static final int METHODID_DEBUG_COMMAND_RUN_TO_POSITION = 20;
   private static final int METHODID_DEBUG_MUTE_BREAKPOINTS = 21;
-  private static final int METHODID_GRAPHICS_INIT = 22;
-  private static final int METHODID_GRAPHICS_DUMP = 23;
-  private static final int METHODID_GRAPHICS_RESCALE = 24;
-  private static final int METHODID_GRAPHICS_RESCALE_STORED = 25;
-  private static final int METHODID_GRAPHICS_GET_SNAPSHOT_PATH = 26;
-  private static final int METHODID_GRAPHICS_CREATE_GROUP = 27;
-  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 28;
-  private static final int METHODID_GRAPHICS_SHUTDOWN = 29;
-  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 30;
-  private static final int METHODID_AFTER_CHUNK_EXECUTION = 31;
-  private static final int METHODID_PULL_CHUNK_OUTPUT_PATHS = 32;
-  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 33;
-  private static final int METHODID_REPO_INSTALL_PACKAGE = 34;
-  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 35;
-  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 36;
-  private static final int METHODID_REPO_REMOVE_PACKAGE = 37;
-  private static final int METHODID_PREVIEW_DATA_IMPORT = 38;
-  private static final int METHODID_COMMIT_DATA_IMPORT = 39;
-  private static final int METHODID_COPY_TO_PERSISTENT_REF = 40;
-  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 41;
-  private static final int METHODID_LOADER_GET_PARENT_ENVS = 42;
-  private static final int METHODID_LOADER_GET_VARIABLES = 43;
-  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 44;
-  private static final int METHODID_LOADER_GET_VALUE_INFO = 45;
-  private static final int METHODID_EVALUATE_AS_TEXT = 46;
-  private static final int METHODID_EVALUATE_AS_BOOLEAN = 47;
-  private static final int METHODID_GET_DISTINCT_STRINGS = 48;
-  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 49;
-  private static final int METHODID_GET_SOURCE_FILE_TEXT = 50;
-  private static final int METHODID_GET_SOURCE_FILE_NAME = 51;
+  private static final int METHODID_GET_FUNCTION_SOURCE_POSITION = 22;
+  private static final int METHODID_GET_SOURCE_FILE_TEXT = 23;
+  private static final int METHODID_GET_SOURCE_FILE_NAME = 24;
+  private static final int METHODID_GRAPHICS_INIT = 25;
+  private static final int METHODID_GRAPHICS_DUMP = 26;
+  private static final int METHODID_GRAPHICS_RESCALE = 27;
+  private static final int METHODID_GRAPHICS_RESCALE_STORED = 28;
+  private static final int METHODID_GRAPHICS_GET_SNAPSHOT_PATH = 29;
+  private static final int METHODID_GRAPHICS_CREATE_GROUP = 30;
+  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 31;
+  private static final int METHODID_GRAPHICS_SHUTDOWN = 32;
+  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 33;
+  private static final int METHODID_AFTER_CHUNK_EXECUTION = 34;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_PATHS = 35;
+  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 36;
+  private static final int METHODID_REPO_INSTALL_PACKAGE = 37;
+  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 38;
+  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 39;
+  private static final int METHODID_REPO_REMOVE_PACKAGE = 40;
+  private static final int METHODID_PREVIEW_DATA_IMPORT = 41;
+  private static final int METHODID_COMMIT_DATA_IMPORT = 42;
+  private static final int METHODID_COPY_TO_PERSISTENT_REF = 43;
+  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 44;
+  private static final int METHODID_LOADER_GET_PARENT_ENVS = 45;
+  private static final int METHODID_LOADER_GET_VARIABLES = 46;
+  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 47;
+  private static final int METHODID_LOADER_GET_VALUE_INFO = 48;
+  private static final int METHODID_EVALUATE_AS_TEXT = 49;
+  private static final int METHODID_EVALUATE_AS_BOOLEAN = 50;
+  private static final int METHODID_GET_DISTINCT_STRINGS = 51;
   private static final int METHODID_LOAD_OBJECT_NAMES = 52;
   private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 53;
   private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 54;
@@ -6238,20 +6238,20 @@ public final class RPIServiceGrpc {
           serviceImpl.getAsyncEvents((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.AsyncEvent>) responseObserver);
           break;
-        case METHODID_DEBUG_ADD_BREAKPOINT:
-          serviceImpl.debugAddBreakpoint((org.jetbrains.r.rinterop.DebugAddBreakpointRequest) request,
+        case METHODID_DEBUG_ADD_OR_MODIFY_BREAKPOINT:
+          serviceImpl.debugAddOrModifyBreakpoint((org.jetbrains.r.rinterop.DebugAddOrModifyBreakpointRequest) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_DEBUG_SET_MASTER_BREAKPOINT:
+          serviceImpl.debugSetMasterBreakpoint((org.jetbrains.r.rinterop.DebugSetMasterBreakpointRequest) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_DEBUG_REMOVE_BREAKPOINT:
-          serviceImpl.debugRemoveBreakpoint((org.jetbrains.r.rinterop.SourcePosition) request,
+          serviceImpl.debugRemoveBreakpoint((com.google.protobuf.Int32Value) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_DEBUG_COMMAND_CONTINUE:
           serviceImpl.debugCommandContinue((com.google.protobuf.Empty) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
-          break;
-        case METHODID_DEBUG_COMMAND_KEEP_PREVIOUS:
-          serviceImpl.debugCommandKeepPrevious((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         case METHODID_DEBUG_COMMAND_PAUSE:
@@ -6285,6 +6285,18 @@ public final class RPIServiceGrpc {
         case METHODID_DEBUG_MUTE_BREAKPOINTS:
           serviceImpl.debugMuteBreakpoints((com.google.protobuf.BoolValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_GET_FUNCTION_SOURCE_POSITION:
+          serviceImpl.getFunctionSourcePosition((org.jetbrains.r.rinterop.RRef) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GetFunctionSourcePositionResponse>) responseObserver);
+          break;
+        case METHODID_GET_SOURCE_FILE_TEXT:
+          serviceImpl.getSourceFileText((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.StringValue>) responseObserver);
+          break;
+        case METHODID_GET_SOURCE_FILE_NAME:
+          serviceImpl.getSourceFileName((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.StringValue>) responseObserver);
           break;
         case METHODID_GRAPHICS_INIT:
           serviceImpl.graphicsInit((org.jetbrains.r.rinterop.GraphicsInitRequest) request,
@@ -6393,18 +6405,6 @@ public final class RPIServiceGrpc {
         case METHODID_GET_DISTINCT_STRINGS:
           serviceImpl.getDistinctStrings((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.StringList>) responseObserver);
-          break;
-        case METHODID_GET_FUNCTION_SOURCE_POSITION:
-          serviceImpl.getFunctionSourcePosition((org.jetbrains.r.rinterop.RRef) request,
-              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.SourcePosition>) responseObserver);
-          break;
-        case METHODID_GET_SOURCE_FILE_TEXT:
-          serviceImpl.getSourceFileText((com.google.protobuf.StringValue) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.StringValue>) responseObserver);
-          break;
-        case METHODID_GET_SOURCE_FILE_NAME:
-          serviceImpl.getSourceFileName((com.google.protobuf.StringValue) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.StringValue>) responseObserver);
           break;
         case METHODID_LOAD_OBJECT_NAMES:
           serviceImpl.loadObjectNames((org.jetbrains.r.rinterop.RRef) request,
@@ -6621,10 +6621,10 @@ public final class RPIServiceGrpc {
               .addMethod(getSendEofMethod())
               .addMethod(getReplInterruptMethod())
               .addMethod(getGetAsyncEventsMethod())
-              .addMethod(getDebugAddBreakpointMethod())
+              .addMethod(getDebugAddOrModifyBreakpointMethod())
+              .addMethod(getDebugSetMasterBreakpointMethod())
               .addMethod(getDebugRemoveBreakpointMethod())
               .addMethod(getDebugCommandContinueMethod())
-              .addMethod(getDebugCommandKeepPreviousMethod())
               .addMethod(getDebugCommandPauseMethod())
               .addMethod(getDebugCommandStopMethod())
               .addMethod(getDebugCommandStepOverMethod())
@@ -6633,6 +6633,9 @@ public final class RPIServiceGrpc {
               .addMethod(getDebugCommandStepOutMethod())
               .addMethod(getDebugCommandRunToPositionMethod())
               .addMethod(getDebugMuteBreakpointsMethod())
+              .addMethod(getGetFunctionSourcePositionMethod())
+              .addMethod(getGetSourceFileTextMethod())
+              .addMethod(getGetSourceFileNameMethod())
               .addMethod(getGraphicsInitMethod())
               .addMethod(getGraphicsDumpMethod())
               .addMethod(getGraphicsRescaleMethod())
@@ -6660,9 +6663,6 @@ public final class RPIServiceGrpc {
               .addMethod(getEvaluateAsTextMethod())
               .addMethod(getEvaluateAsBooleanMethod())
               .addMethod(getGetDistinctStringsMethod())
-              .addMethod(getGetFunctionSourcePositionMethod())
-              .addMethod(getGetSourceFileTextMethod())
-              .addMethod(getGetSourceFileNameMethod())
               .addMethod(getLoadObjectNamesMethod())
               .addMethod(getFindInheritorNamedArgumentsMethod())
               .addMethod(getFindExtraNamedArgumentsMethod())

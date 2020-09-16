@@ -173,5 +173,23 @@ public interface AsyncEventOrBuilder extends
    */
   org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder();
 
+  /**
+   * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   */
+  int getDebugRemoveBreakpointRequest();
+
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  boolean hasDebugPrintSourcePositionToConsoleRequest();
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest();
+  /**
+   * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   */
+  org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder();
+
   public org.jetbrains.r.rinterop.AsyncEvent.EventCase getEventCase();
 }
