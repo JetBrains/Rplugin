@@ -183,7 +183,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
     return size.height
   }
 
-  /** Changes size of component and also calls inlay.updateSize. */
+  /** Changes size of component and also calls inlay.update. */
   open fun deltaSize(dx: Int, dy: Int) {
 
     if ((dx == 0 && dy == 0) /* || size.width + dx < 32 || size.height + dy < 32*/) {
@@ -192,7 +192,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
 
     size = Dimension(size.width + dx, size.height + dy)
 
-    inlay?.updateSize()
+    inlay?.update()
 
     revalidate()
     repaint()
@@ -207,7 +207,7 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
     this.inlay = inlay
 
     // This method force inlay to query the size from us.
-    inlay.updateSize()
+    inlay.update()
   }
 
   /** Fits size and position of component to inlay's size and position. */
