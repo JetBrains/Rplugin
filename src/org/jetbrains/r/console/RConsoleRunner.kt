@@ -104,7 +104,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           null
         } else {
           val screenParameters = RGraphicsSettings.getScreenParameters(project)
-          RGraphicsUtils.createGraphicsDevice(rInterop, null, screenParameters.resolution).apply {
+          RGraphicsUtils.createGraphicsDevice(rInterop).apply {
             configuration = configuration.copy(screenParameters = screenParameters)
             addListener(RGraphicsToolWindowListener(project))
           }.also {

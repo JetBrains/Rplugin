@@ -44,8 +44,8 @@ object RGraphicsUtils {
     return createParameters(parameters?.dimension, parameters?.resolution)
   }
 
-  fun createGraphicsDevice(rInterop: RInterop, parameters: ScreenParameters): RGraphicsDevice {
-    return createGraphicsDevice(rInterop, parameters.dimension, parameters.resolution)
+  fun createGraphicsDevice(rInterop: RInterop): RGraphicsDevice {
+    return createGraphicsDevice(rInterop, Dimension(1920, 1080), 72)
   }
 
   fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
