@@ -1,5 +1,6 @@
 import socketserver
 import numpy as np
+from utils import bind_to_free_port
 
 
 class RequestHandler(socketserver.BaseRequestHandler):
@@ -26,10 +27,10 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
 
 host, port = "localhost", 7337
-socketserver.TCPServer.allow_reuse_address = True
-with socketserver.TCPServer((host, port), RequestHandler) as server:
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        server.shutdown()
-        server.socket.close()
+with bind_to_free_port(
+    server_class=socketserver.TCPServer,
+    host=host,
+    start_port=port,
+    handler=RequestHandler
+) as server:
+    server.serve_forever()
