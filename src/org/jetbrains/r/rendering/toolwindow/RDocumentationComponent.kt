@@ -287,7 +287,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
                                            rec0: Rectangle,
                                            rec1: Rectangle,
                                            g2d: Graphics2D,
-                                           backgroundColor: Color,
+                                           backgroundColor: Color?,
                                            borderColor: Color) {
         val area = bounds.bounds
         val rec0ToMarginWidth = area.x + area.width - rec0.x
@@ -321,10 +321,12 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
 
       private fun drawRectangle(g2d: Graphics2D,
                                 target: Rectangle,
-                                backgroundColor: Color,
+                                backgroundColor: Color?,
                                 borderColor: Color) {
-        g2d.color = backgroundColor
-        g2d.fillRect(target.x, target.y, target.width, target.height - 1)
+        if (backgroundColor != null) {
+          g2d.color = backgroundColor
+          g2d.fillRect(target.x, target.y, target.width, target.height - 1)
+        }
         g2d.color = borderColor
         g2d.drawRect(target.x, target.y, target.width, target.height - 1)
       }
@@ -333,11 +335,11 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
         return EditorColorsManager.getInstance().globalScheme.defaultForeground
       }
 
-      private fun getBackgroundColor(current: Boolean): Color {
+      private fun getBackgroundColor(current: Boolean): Color? {
         val globalScheme = EditorColorsManager.getInstance().globalScheme
         return if (current) {
           if (ColorUtil.isDark(globalScheme.defaultBackground)) {
-            EditorColorsManager.getInstance().globalScheme.getColor(SELECTION_BACKGROUND_COLOR)!!
+            EditorColorsManager.getInstance().globalScheme.getColor(SELECTION_BACKGROUND_COLOR)
           } else {
             globalScheme.getAttributes(SEARCH_RESULT_ATTRIBUTES).backgroundColor
           }
