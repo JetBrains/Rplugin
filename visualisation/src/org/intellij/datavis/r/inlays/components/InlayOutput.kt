@@ -285,7 +285,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
       }.let { outputs ->
         SwingUtilities.invokeLater {
           if (outputs == null) {
-            console.addData(data.trimEnd('\n'), ProcessOutputType.STDOUT)
+            // DS-763 "\r\n" patterns would trim the whole last line.
+            console.addData(data.replace("\r\n", "\n").trimEnd('\n'), ProcessOutputType.STDOUT)
           }
           else {
             outputs.forEach { console.addData(it.text, it.kind) }
