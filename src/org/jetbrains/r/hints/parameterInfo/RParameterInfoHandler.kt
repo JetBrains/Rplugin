@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.hints.parameterInfo
 
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.lang.parameterInfo.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -20,7 +19,6 @@ import org.jetbrains.r.psi.api.RFunctionExpression
 class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfoHandler.RParameterInfoArgumentList> {
 
   override fun couldShowInLookup(): Boolean = true
-  override fun getParametersForLookup(item: LookupElement?, context: ParameterInfoContext?) = emptyArray<Any>()
 
   override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): RArgumentList? {
     return findArgumentList(context, context.parameterListStart)
