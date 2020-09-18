@@ -39,6 +39,14 @@ class RInjectionsTest : RUsefulTestCase() {
     doTest("removeUI(selector = \"#my_<caret>id\")")
   }
 
+  fun testInjectionInShinyTagMembers() {
+    doTest("tags${"$"}input(style=\"co<caret>lor:red\")")
+  }
+
+  fun testInjectionInShinyTags() {
+    doTest("h1(style=\"co<caret>lor:red\")")
+  }
+
   private fun doTest(code: String) {
     addLibraries()
     myFixture.configureByText("test.r", code)

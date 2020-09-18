@@ -2,16 +2,30 @@
 <component name="LanguageInjectionConfiguration">
   <injection language="Markdown" injector-id="R" enabled="true">
     <display-name>Markdown in Shiny</display-name>
-    <place><![CDATA[callArgumentPattern("markdown", "mds")]]></place>
+    <place><![CDATA[identifierCallArgument("markdown", "mds")]]></place>
   </injection>
 
   <injection language="HTML" injector-id="R" enabled="true">
     <display-name>htmlTemplate in Shiny</display-name>
-    <place><![CDATA[callArgumentPattern("htmlTemplate", "text_")]]></place>
+    <place><![CDATA[identifierCallArgument("htmlTemplate", "text_")]]></place>
   </injection>
 
   <injection language="JQuery-CSS" injector-id="R" enabled="true">
-    <display-name>htmlTemplate in Shiny</display-name>
-    <place><![CDATA[callArgumentPattern("insertUI|removeUI", "selector")]]></place>
+    <display-name>insertUI and removeUI in Shiny</display-name>
+    <place><![CDATA[identifierCallArgument("insertUI|removeUI", "selector")]]></place>
+  </injection>
+
+  <injection language="CSS" injector-id="R" enabled="true">
+    <display-name>tags member in Shiny</display-name>
+    <prefix>dummy_selector {</prefix>
+    <suffix>}</suffix>
+    <place><![CDATA[memberCallArgument("tags$*", "style")]]></place>
+  </injection>
+
+  <injection language="CSS" injector-id="R" enabled="true">
+    <display-name>tags member in Shiny</display-name>
+    <prefix>dummy_selector {</prefix>
+    <suffix>}</suffix>
+    <place><![CDATA[identifierCallArgument("p|h1|h2|h3|h4|h5|h6|a|br|div|span|pre|code|img|strong|em|hr", "style")]]></place>
   </injection>
 </component>
