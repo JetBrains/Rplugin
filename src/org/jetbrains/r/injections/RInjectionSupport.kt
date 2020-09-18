@@ -2,6 +2,7 @@ package org.jetbrains.r.injections
 
 import com.intellij.psi.PsiLanguageInjectionHost
 import org.intellij.plugins.intelliLang.inject.AbstractLanguageInjectionSupport
+import org.jetbrains.r.RLanguage
 
 class RInjectionSupport : AbstractLanguageInjectionSupport() {
   override fun getId(): String {
@@ -13,7 +14,7 @@ class RInjectionSupport : AbstractLanguageInjectionSupport() {
   }
 
   override fun isApplicableTo(host: PsiLanguageInjectionHost?): Boolean {
-    return host != null
+    return host != null && host.language == RLanguage.INSTANCE
   }
 
   override fun useDefaultInjector(host: PsiLanguageInjectionHost?): Boolean {
