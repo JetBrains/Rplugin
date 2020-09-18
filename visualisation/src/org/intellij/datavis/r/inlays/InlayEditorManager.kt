@@ -64,7 +64,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private val inlays: MutableMap<PsiElement, NotebookInlayComponent> = LinkedHashMap()
   private val inlayElements = LinkedHashSet<PsiElement>()
-  private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
+  private val toolbarsManager: EditorToolbarInlaysManager? = descriptor.toolbars?.let { EditorToolbarInlaysManager(editor, it) }
   private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, project)
   @Volatile private var toolbarUpdateScheduled: Boolean = false
@@ -97,10 +97,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayElements.clear()
   }
 
-  fun removeOutput(psi: PsiElement): Future<Unit> {
-    return updateCell(psi, emptyList())
-  }
-
   fun updateCell(psi: PsiElement, inlayOutputs: List<InlayOutput>? = null, createTextOutput: Boolean = false): Future<Unit> {
     val result = FutureResult<Unit>()
     if (ApplicationManager.getApplication().isUnitTestMode && !isEnabledInTests) return result.apply { set(Unit) }
@@ -120,11 +116,11 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           return@invokeLater
         }
         val outputs = inlayOutputs ?: descriptor.getInlayOutputs(psi)
-        scrollKeeper.savePosition()
-        if (!descriptor.isGettingInlayOutputsSupported() && inlayOutputs == null) {
+        if (outputs == null) {
           result.set(Unit)
           return@invokeLater
         }
+        scrollKeeper.savePosition()
         getInlayComponent(psi)?.let { oldInlay -> removeInlay(oldInlay, cleanup = false) }
         if (outputs.isEmpty() && !createTextOutput) {
           result.set(Unit)
@@ -259,7 +255,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           toolbarUpdateScheduled = true
           PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
             try {
-              removeInvalidToolbars()
+              toolbarsManager?.removeInvalidToolbars()
               scheduleIntervalUpdate(event.offset, event.newFragment.length)
             } finally {
               toolbarUpdateScheduled = false
@@ -276,9 +272,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     })
   }
 
-  private fun updateHighlighting() {
-    descriptor.onUpdateHighlighting(toolbars.keys)
-  }
+  private fun updateHighlighting() = toolbarsManager?.onUpdateHighlighting()
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {
     val psiFile = descriptor.psiFile
@@ -290,10 +284,10 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayElements.filter { !it.isValid }.forEach { getInlayComponent(it)?.let { inlay -> removeInlay(inlay) } }
     inlayElements.removeIf { !it.isValid }
     while (node != null && node.textRange.startOffset < offset + length) {
-      PsiTreeUtil.collectElements(node) { psi -> descriptor.isToolbarActionElement(psi) || descriptor.isInlayElement(psi) }.forEach { psi ->
-        if (descriptor.isToolbarActionElement(psi)) {
-          if (psi !in toolbars) {
-            addToolbar(psi, descriptor.getToolbarActions(psi)!!)
+      PsiTreeUtil.collectElements(node) { psi -> (toolbarsManager?.isToolbarActionElement(psi)?:false) || descriptor.isInlayElement(psi) }.forEach { psi ->
+        if (toolbarsManager != null && toolbarsManager.isToolbarActionElement(psi)) {
+          if (psi !in toolbarsManager) {
+            toolbarsManager.addToolbar(psi, toolbarsManager.getToolbarActions(psi)!!)
             isAdded = true
           }
         } else {
@@ -305,15 +299,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     updateHighlighting()
     if (isAdded) {
       updateToolbarPositions()
-    }
-  }
-
-  private fun removeInvalidToolbars() {
-    toolbars.entries.toList().forEach { (psi, inlay) ->
-      if (!psi.isValid) {
-        toolbars.remove(psi)
-        editor.contentComponent.remove(inlay)
-      }
     }
   }
 
@@ -359,7 +344,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     val inlaysPsiElements = ArrayList<PsiElement>()
     return ReadAction.nonBlocking {
       PsiTreeUtil.processElements(descriptor.psiFile) { element ->
-        descriptor.getToolbarActions(element)?.let { toolbars.add(element to it) }
+        toolbarsManager?.getToolbarActions(element)?.let { toolbars.add(element to it) }
         if (descriptor.isInlayElement(element)) inlaysPsiElements.add(element)
         true
       }
@@ -367,17 +352,11 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       inlayElements.clear()
       inlayElements.addAll(inlaysPsiElements)
       toolbars.forEach { (psi, action) ->
-        addToolbar(psi, action)
+        toolbarsManager?.addToolbar(psi, action)
       }
       updateHighlighting()
       updateToolbarPositions()
     }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
-  }
-
-  private fun addToolbar(psi: PsiElement, action: ActionGroup) {
-    val inlineToolbar = InlineToolbar(psi, editor, action)
-    editor.contentComponent.add(inlineToolbar)
-    toolbars[psi] = inlineToolbar
   }
 
   private fun getInlayComponentByOffset(offset: Int): NotebookInlayComponent? {
@@ -469,12 +448,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
   }
 
-  private fun updateToolbarPositions() {
-    invokeLater {
-      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
-      toolbars.values.forEach { it.updateBounds() }
-    }
-  }
+  private fun updateToolbarPositions() = toolbarsManager?.updateToolbarPositions()
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
     return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)!!
@@ -528,3 +502,35 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 }
 
 const val VIEWPORT_INLAY_RANGE = 20
+
+
+private class EditorToolbarInlaysManager(private val editor: EditorImpl,
+                                         private val toolbarDescriptor: InlayToolbarElementDescriptor) : InlayToolbarElementDescriptor by toolbarDescriptor {
+  private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
+
+  fun removeInvalidToolbars() {
+    toolbars.entries.toList().forEach { (psi, inlay) ->
+      if (!psi.isValid) {
+        toolbars.remove(psi)
+        editor.contentComponent.remove(inlay)
+      }
+    }
+  }
+
+  fun updateToolbarPositions() {
+    invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
+      toolbars.values.forEach { it.updateBounds() }
+    }
+  }
+
+  fun addToolbar(psi: PsiElement, action: ActionGroup) {
+    val inlineToolbar = InlineToolbar(psi, editor, action)
+    editor.contentComponent.add(inlineToolbar)
+    toolbars[psi] = inlineToolbar
+  }
+
+  operator fun contains(psi: PsiElement): Boolean = psi in toolbars
+
+  fun onUpdateHighlighting() = toolbarDescriptor.onUpdateHighlighting(toolbars.keys)
+}

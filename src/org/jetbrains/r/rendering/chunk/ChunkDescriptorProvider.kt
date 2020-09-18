@@ -16,10 +16,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.util.IconUtil
-import org.intellij.datavis.r.inlays.InlayDescriptorProvider
-import org.intellij.datavis.r.inlays.InlayDimensions
-import org.intellij.datavis.r.inlays.InlayElementDescriptor
-import org.intellij.datavis.r.inlays.InlayOutput
+import org.intellij.datavis.r.inlays.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator.createRunChunkActionGroup
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -41,10 +38,10 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
   }
 }
 
-class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor: Editor) : InlayElementDescriptor {
+class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor: Editor) : InlayElementDescriptor, InlayToolbarElementDescriptor {
   private val highlighters: ArrayList<RangeHighlighter> = ArrayList()
 
-  override fun cleanup(psi: PsiElement): Future<Void> {
+  override fun cleanup(psi: PsiElement): Future<Void>? {
     val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
     return FileUtil.asyncDelete(File(cacheDirectory))
   }
@@ -57,6 +54,9 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile, private val editor
   override fun getInlayOutputs(psi: PsiElement): List<InlayOutput> {
     return getImages(psi) + getUrls(psi) + getTables(psi) + getOutputs(psi)
   }
+
+  override val toolbars: InlayToolbarElementDescriptor?
+    get() = this
 
   override fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>) {
     val markupModel = editor.markupModel

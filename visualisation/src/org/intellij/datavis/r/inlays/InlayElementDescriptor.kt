@@ -28,16 +28,45 @@ interface InlayElementDescriptor {
   val psiFile: PsiFile
 
   /**
+   * toolbar inlays, null if unsupported
+   */
+  @JvmDefault
+  val toolbars: InlayToolbarElementDescriptor?
+    get() = null
+
+  /**
    * returns true if the [psi] could have inlay outputs
    */
   fun isInlayElement(psi: PsiElement): Boolean
 
   /**
-   * @return the output for the [inlayElement] or empty list if there is no outputs for the [inlayElement]
+   * @return the output for the [inlayElement], empty list if there is no outputs for the [inlayElement] and null if descriptor doesn't
+   * store inlay outputs
    * @param inlayElement `isInlayElement(inlayElement)` is true
    */
-  fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutput>
+  @JvmDefault
+  fun getInlayOutputs(inlayElement: PsiElement): List<InlayOutput>? = null
 
+  /**
+   * the method is called when inlay output of [psi] is intentionally removed by a user.
+   */
+  @JvmDefault
+  fun cleanup(psi: PsiElement): Future<Void>? = null
+
+  /**
+   * Returns offset in the document, to which an output inlay should be appended.
+   */
+  @JvmDefault
+  fun getInlayOffset(psiElement: PsiElement): Int =
+    // By default returns the offset to the last non-whitespace character in psiCell text.
+    psiElement.textRange.endOffset - 1
+
+  @JvmDefault
+  fun shouldUpdateInlays(event: DocumentEvent): Boolean =
+    event.oldFragment.contains("\n") || event.newFragment.contains("\n")
+}
+
+interface InlayToolbarElementDescriptor {
   /**
    * @return true if the [psi] have inlay toolbar actions
    */
@@ -54,28 +83,6 @@ interface InlayElementDescriptor {
    * The method is called when the highlighting of [toolbarElements] should be repainted.
    */
   fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>)
-
-  /**
-   * the method is called when inlay output of [psi] is intentionally removed by a user.
-   */
-  fun cleanup(psi: PsiElement): Future<Void>
-
-  /**
-   * @return true if descriptor stores inlay output data for each psi element
-   */
-  fun isGettingInlayOutputsSupported(): Boolean = true
-
-  /**
-   * Returns offset in the document, to which an output inlay should be appended.
-   */
-  @JvmDefault
-  fun getInlayOffset(psiElement: PsiElement): Int =
-    // By default returns the offset to the last non-whitespace character in psiCell text.
-    psiElement.textRange.endOffset - 1
-
-  @JvmDefault
-  fun shouldUpdateInlays(event: DocumentEvent): Boolean =
-    event.oldFragment.contains("\n") || event.newFragment.contains("\n")
 }
 
 interface InlayDescriptorProvider {
