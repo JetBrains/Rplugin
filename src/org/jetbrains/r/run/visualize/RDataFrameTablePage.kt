@@ -23,6 +23,7 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SideBorder
@@ -137,7 +138,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
         if (row == -1 || col == -1) return
         table.setRowSelectionInterval(row, row)
         table.setColumnSelectionInterval(col, col)
-        popupMenu.show(table, e.point.x, e.point.y)
+        JBPopupMenu.showByEvent(e, popupMenu)
       }
     })
   }

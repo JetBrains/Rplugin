@@ -8,6 +8,7 @@ import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.editor
@@ -15,14 +16,11 @@ import java.awt.event.MouseEvent
 
 object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
   override fun navigate(e: MouseEvent, element: PsiElement) {
-    val actionManager = ActionManager.getInstance()
     if (isChunkRunning(element)) {
       RunChunkHandler.interruptChunkExecution(element.project)
     } else if (canRunChunk(element.project)) {
       val actions = createRunChunkActionGroup(element)
-      actionManager.createActionPopupMenu(ActionPlaces.EDITOR_GUTTER_POPUP, actions as ActionGroup)
-        .getComponent()
-        .show(e.component, e.getX(), e.getY())
+      JBPopupMenu.showByEvent(e, ActionPlaces.EDITOR_GUTTER_POPUP, actions as ActionGroup)
     }
   }
 
