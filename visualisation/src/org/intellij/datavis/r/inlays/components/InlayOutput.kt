@@ -235,7 +235,6 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
 
   private val console = ColoredTextConsole(project, viewer = true)
 
-  private val maxHeight = 500
   private val scrollPaneTopBorderHeight = 5
 
   init {
@@ -310,7 +309,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
                 override fun recalculationEnds() {
                   val height = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
                   component.preferredSize = Dimension(preferredSize.width, height)
-                  onHeightCalculated?.invoke(min(height, maxHeight))
+                  onHeightCalculated?.invoke(height)
                 }
 
                 override fun softWrapsChanged() {}
