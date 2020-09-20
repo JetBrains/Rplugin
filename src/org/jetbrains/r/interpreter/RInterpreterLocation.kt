@@ -9,9 +9,13 @@ import com.intellij.execution.process.BaseProcessHandler
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
+import org.jetbrains.annotations.Nls
 import java.io.File
 
 interface RInterpreterLocation {
+  @Nls
+  fun additionalShortRepresentationSuffix(): String = ""
+
   // workingDirectory is a separate parameter and not a part of GeneralCommandLine because it does not work well with remote paths
   fun runProcessOnHost(command: GeneralCommandLine, workingDirectory: String? = null, isSilent: Boolean = false): BaseProcessHandler<*>
 

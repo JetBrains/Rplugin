@@ -368,6 +368,10 @@ You can find the source code in the following repositories:
 
         <actionPromoter implementation="org.jetbrains.r.actions.RActionPromoter"/>
 
+        <statusBarWidgetFactory id="rInterpreterWidget"
+                                implementation="org.jetbrains.r.configuration.RInterpreterBarWidgetFactory"
+                                order="after codeStyleWidget, before pythonInterpreterWidget, before gitWidget, before hgWidget, before notificationsWidget"/>
+
         <!-- Code style and formatting -->
         <codeStyleSettingsProvider implementation="org.jetbrains.r.editor.formatting.RCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider

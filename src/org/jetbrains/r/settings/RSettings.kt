@@ -5,9 +5,11 @@
 
 package org.jetbrains.r.settings
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RInterpreterUtil
@@ -16,17 +18,21 @@ import org.jetbrains.r.interpreter.toLocalPathOrNull
 
 @State(name = "RSettings", storages = [Storage("rSettings.xml")])
 class RSettings(private val project: Project) : SimplePersistentStateComponent<RSettings.State>(State()) {
+  private val interpreterLocationListeners = mutableListOf<RInterpreterLocationListener>()
+
   var interpreterLocation: RInterpreterLocation?
     get() = RInterpreterSettingsProvider.getProviders().asSequence().mapNotNull { it.getLocationFromState(state) }.firstOrNull()
     set(value) {
       if (value != null) {
         RInterpreterSettingsProvider.getProviders().forEach {
           if (it.putLocationToState(state, value)) {
+            fireListeners(value)
             return
           }
         }
       }
       state.setNoInterpreter()
+      fireListeners(null)
     }
 
   var loadWorkspace: Boolean
@@ -41,11 +47,26 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
       state.saveWorkspace = value
     }
 
+  fun addInterpreterLocationListener(listener: RInterpreterLocationListener, parentDisposable: Disposable? = null) {
+    interpreterLocationListeners.add(listener)
+    if (parentDisposable != null) {
+      Disposer.register(parentDisposable, { interpreterLocationListeners.remove(listener) })
+    }
+  }
+
   @Synchronized
   private fun fetchInterpreterLocation(): RInterpreterLocation? {
     return getSuggestedPath()
       ?.let { RLocalInterpreterLocation(it) }
       ?.also { state.interpreterPath = it.toLocalPathOrNull() ?: "" }
+  }
+
+  private fun fireListeners(actualInterpreterLocation: RInterpreterLocation?) {
+    interpreterLocationListeners.forEach { it.projectInterpreterLocationChanged(actualInterpreterLocation) }
+  }
+
+  interface RInterpreterLocationListener {
+    fun projectInterpreterLocationChanged(actualInterpreterLocation: RInterpreterLocation?)
   }
 
   class State : BaseState() {
