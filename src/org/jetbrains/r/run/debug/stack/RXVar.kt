@@ -77,8 +77,12 @@ internal class RXVar internal constructor(val rVar: RVar, val stackFrame: RXStac
     val rxVars = mutableListOf<RXVar>()
     vars.forEachIndexed { index, it ->
       if (it.name.isEmpty()) {
-        val message = if (isVector) "rx.presentation.utils.vector.element.name" else "rx.presentation.utils.list.element.name"
-        rxVars.add(RXVar(it.copy(name = RBundle.message(message, offset + index + 1)), stackFrame))
+        val message = if (isVector) {
+          RBundle.message("rx.presentation.utils.vector.element.name", offset + index + 1)
+        } else {
+          RBundle.message("rx.presentation.utils.list.element.name", offset + index + 1)
+        }
+        rxVars.add(RXVar(it.copy(name = message), stackFrame))
       } else {
         rxVars.add(RXVar(it, stackFrame))
       }
