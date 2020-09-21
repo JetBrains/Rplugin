@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 10
+  private const val CUR_SKELETON_VERSION = 9
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
