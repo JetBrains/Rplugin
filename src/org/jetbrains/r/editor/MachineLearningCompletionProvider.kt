@@ -11,16 +11,23 @@ import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.icons.AllIcons
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.editor.completion.RLookupElement
+import org.jetbrains.r.settings.MLCompletionSettings
 import java.net.Socket
 
-internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
-  private val host = "localhost"
-  private val port = 7337
+internal class MachineLearningCompletionProvider(
+  host : String?, private val port : Int
+) : CompletionProvider<CompletionParameters>() {
+
+  private val host : String = host ?: "localhost"
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    if (!MLCompletionSettings.isEnabled()) {
+      return
+    }
     val offset = parameters.offset
     val pre_text = parameters.originalFile.text.subSequence(0, offset)
     var answer = ""
+    // Use closes the resource!
     Socket(host, port).use {
       it.getOutputStream().write((pre_text as String).toByteArray())
       answer = it.getInputStream().readAllBytes().toString(Charsets.UTF_8)

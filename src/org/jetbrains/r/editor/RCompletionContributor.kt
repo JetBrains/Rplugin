@@ -38,6 +38,7 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
+import org.jetbrains.r.settings.MLCompletionSettings
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.parsing.RElementTypes.*
@@ -63,9 +64,7 @@ class RCompletionContributor : CompletionContributor() {
     addAtAccessCompletion()
     addS4ClassContextCompletion()
     addIdentifierCompletion()
-    if (Registry.get("r.editor.mlcompletion").asBoolean()) {
-      addMachineLearningCompletion()
-    }
+    addMachineLearningCompletion()
   }
 
   private fun addNamespaceAccessExpression() {
@@ -111,7 +110,9 @@ class RCompletionContributor : CompletionContributor() {
   }
 
   private fun addMachineLearningCompletion() {
-    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE), MachineLearningCompletionProvider())
+    val state = MLCompletionSettings.getInstance().state
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE),
+           MachineLearningCompletionProvider(state.host, state.port))
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
