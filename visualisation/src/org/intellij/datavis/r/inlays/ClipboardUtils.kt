@@ -44,7 +44,9 @@ object ClipboardUtils {
           builder.append(cellBreak)
         }
       }
-      builder.append(LINE_BREAK)
+      if (i != table.rowCount - 1) {
+        builder.append(LINE_BREAK)
+      }
     }
 
     return builder.toString()
@@ -79,7 +81,9 @@ object ClipboardUtils {
           builder.append(cellBreak)
         }
       }
-      builder.append(LINE_BREAK)
+      if (i != selectedRowCount - 1) {
+        builder.append(LINE_BREAK)
+      }
     }
     return builder.toString()
   }
