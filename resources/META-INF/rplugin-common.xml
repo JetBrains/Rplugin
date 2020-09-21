@@ -422,6 +422,7 @@ You can find the source code in the following repositories:
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.psi.references.RFindUsagesProvider" language="R"/>
         <lang.findUsagesProvider implementationClass="org.jetbrains.r.roxygen.usage.RoxygenFindUsagesProvider" language="Roxygen"/>
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
+        <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
         <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RCompletionContributor"/>
         <completion.contributor language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenCompletionContributor"/>
