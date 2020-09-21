@@ -18,8 +18,6 @@ import org.jetbrains.r.psi.api.RFunctionExpression
 
 class RParameterInfoHandler : ParameterInfoHandler<RArgumentList, RParameterInfoHandler.RParameterInfoArgumentList> {
 
-  override fun couldShowInLookup(): Boolean = true
-
   override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): RArgumentList? {
     return findArgumentList(context, context.parameterListStart)
   }
