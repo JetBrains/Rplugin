@@ -16,6 +16,5 @@ class MLCompletionSettings: SimplePersistentStateComponent<MLCompletionSettings.
 
   companion object {
     fun getInstance() = service<MLCompletionSettings>()
-    fun isEnabled() = getInstance().state.isEnabled
   }
 }

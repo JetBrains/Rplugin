@@ -14,21 +14,18 @@ import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.settings.MLCompletionSettings
 import java.net.Socket
 
-internal class MachineLearningCompletionProvider(
-  host : String?, private val port : Int
-) : CompletionProvider<CompletionParameters>() {
+internal class MachineLearningCompletionProvider() : CompletionProvider<CompletionParameters>() {
 
-  private val host : String = host ?: "localhost"
+  private val settings = MLCompletionSettings.getInstance()
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-    if (!MLCompletionSettings.isEnabled()) {
+    if (!settings.state.isEnabled) {
       return
     }
     val offset = parameters.offset
     val pre_text = parameters.originalFile.text.subSequence(0, offset)
     var answer = ""
-    // Use closes the resource!
-    Socket(host, port).use {
+    Socket(settings.state.host, settings.state.port).use {
       it.getOutputStream().write((pre_text as String).toByteArray())
       answer = it.getInputStream().readAllBytes().toString(Charsets.UTF_8)
     }

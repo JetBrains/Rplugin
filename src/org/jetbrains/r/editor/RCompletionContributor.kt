@@ -110,9 +110,7 @@ class RCompletionContributor : CompletionContributor() {
   }
 
   private fun addMachineLearningCompletion() {
-    val state = MLCompletionSettings.getInstance().state
-    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE),
-           MachineLearningCompletionProvider(state.host, state.port))
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE), MachineLearningCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
