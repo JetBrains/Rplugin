@@ -26,7 +26,7 @@
               class="org.intellij.datavis.r.inlays.components.SaveOutputAction"
               description="Save as"
               text="Save As"
-              icon="AllIcons.Actions.Menu_saveall"/>
+              icon="AllIcons.Actions.MenuSaveall"/>
       <action id="org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction"
               class="org.intellij.datavis.r.inlays.components.CopyImageToClipboardAction"
               description="Copy image to clipboard"
