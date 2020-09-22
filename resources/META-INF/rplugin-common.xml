@@ -516,6 +516,8 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.settings.MLCompletionSettings"/>
 
+        <codeCompletionConfigurable instance="org.jetbrains.r.settings.MLCompletionConfigurable"/>
+
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
 
