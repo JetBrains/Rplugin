@@ -50,7 +50,7 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
   fun addInterpreterLocationListener(listener: RInterpreterLocationListener, parentDisposable: Disposable? = null) {
     interpreterLocationListeners.add(listener)
     if (parentDisposable != null) {
-      Disposer.register(parentDisposable, { interpreterLocationListeners.remove(listener) })
+      Disposer.register(parentDisposable, Disposable { interpreterLocationListeners.remove(listener) })
     }
   }
 

@@ -65,7 +65,7 @@ protobuf {
 
 plugins {
     idea
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.4.10"
     id("org.jetbrains.intellij") version "0.4.10"
     id("org.jetbrains.grammarkit") version "2019.2.1"
     id("de.undercouch.download") version "3.4.3"
@@ -182,7 +182,7 @@ project(":") {
     intellij {
         val plugins = arrayOf("markdown", "yaml") +
                       (if (isPyCharm()) arrayOf("python-ce") else emptyArray()) +
-                      arrayOf("platform-images")
+                      arrayOf("platform-images", "IntelliLang", "git4idea", "terminal")
         pluginName = "rplugin"
         setPlugins(*plugins)
     }
@@ -229,7 +229,7 @@ project(":") {
             delete(prepareSandboxTask.destinationDir.toString() + "/" + name + "/" + name.toLowerCase() + ".jar")
         }
         jvmArgs = listOf("-Dsun.java2d.uiScale.enabled=false", "-Xmx1024M")
-        jbrVersion("11_0_5b674.2")
+        jbrVersion("11_0_8b1098.2")
     }
 
     tasks.buildPlugin {
