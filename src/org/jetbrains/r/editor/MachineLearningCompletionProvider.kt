@@ -14,7 +14,7 @@ import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.settings.MLCompletionSettings
 import java.net.Socket
 
-internal class MachineLearningCompletionProvider() : CompletionProvider<CompletionParameters>() {
+internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
 
   private val settings = MLCompletionSettings.getInstance()
 

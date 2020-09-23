@@ -2,7 +2,6 @@ package org.jetbrains.r.settings
 
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 
