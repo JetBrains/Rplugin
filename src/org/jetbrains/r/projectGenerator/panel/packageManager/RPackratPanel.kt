@@ -79,7 +79,6 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
   init {
     layout = BorderLayout()
     table.getColumnModel().getColumn(SETTINGS_VALUE_COLUMN).setCellEditor(tableCellEditor)
-    table.isStriped = true
     tablePanel = ToolbarDecorator.createDecorator(table).disableUpDownActions().disableAddAction().disableRemoveAction().createPanel()
     add(tablePanel)
   }
@@ -262,7 +261,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
     }
 
     override fun getTableCellEditorComponent(table: JTable?, value: Any?, isSelected: Boolean, row: Int, column: Int): Component {
-      val defaultBackgroundColor = if (row % 2 == 1) background else UIUtil.getDecoratedRowColor() // Due of stripes
+      val defaultBackgroundColor = background
       component = when (value) {
         is PackartLogicalConstants -> ComboBox<PackartLogicalConstants>(
           PackartLogicalConstants.values()).apply {
