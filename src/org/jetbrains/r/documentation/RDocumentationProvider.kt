@@ -263,7 +263,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   }
 
   override fun collectDocComments(file: PsiFile, sink: Consumer<in PsiDocCommentBase>) {
-    if (!RSourceFileManager.isTemporary(file.virtualFile)) {
+    val virtualFile = file.virtualFile
+    if (virtualFile == null || !RSourceFileManager.isTemporary(virtualFile)) {
       return
     }
     val first = file.children.firstOrNull()
