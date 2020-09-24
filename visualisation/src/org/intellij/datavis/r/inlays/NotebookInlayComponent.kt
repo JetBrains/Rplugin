@@ -272,7 +272,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   private fun adjustSize(height: Int) {
     beforeHeightChanged()
 
-    val desiredHeight = min(InlayDimensions.defaultHeight, height + InlayDimensions.topBorder + InlayDimensions.bottomBorder)
+    val desiredHeight = height + InlayDimensions.topBorder + InlayDimensions.bottomBorder
 
     deltaSize(0, desiredHeight - size.height)
 
