@@ -38,7 +38,6 @@ import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.*
-import org.jetbrains.r.settings.MLCompletionSettings
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.parsing.RElementTypes.*
