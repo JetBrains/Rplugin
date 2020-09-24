@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import org.intellij.datavis.r.inlays.NotebookInlayComponent
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ToolbarPane
 import org.intellij.images.editor.ImageEditor
 import java.awt.Color
@@ -28,6 +29,8 @@ interface UiCustomizer {
   fun createNotebookInlayComponent(cell: PsiElement, editor: EditorImpl): NotebookInlayComponent
 
   fun getTextOutputBackground(editor: Editor): Color
+
+  fun buildInlayProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent?
 
   @JvmDefault
   val isResizeOutputToPreviewHeight: Boolean

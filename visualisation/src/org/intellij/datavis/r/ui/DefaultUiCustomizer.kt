@@ -9,7 +9,9 @@ import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.NotebookInlayComponent
 import org.intellij.datavis.r.inlays.NotebookInlayComponentImpl
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ToolbarPane
+import org.intellij.datavis.r.inlays.components.buildProgressStatusComponent
 import org.intellij.images.editor.ImageEditor
 import org.intellij.images.editor.impl.ImageEditorImpl
 import javax.swing.JComponent
@@ -29,6 +31,10 @@ class DefaultUiCustomizer : UiCustomizer {
     NotebookInlayComponentImpl(cell, editor)
 
   override fun getTextOutputBackground(editor: Editor) = UIUtil.getPanelBackground()
+
+  override fun buildInlayProgressStatusComponent(progressStatus: InlayProgressStatus, editor: Editor): JComponent? {
+    return buildProgressStatusComponent(progressStatus, editor)
+  }
 
   override val showUpdateCellSeparator: Boolean = true
 }
