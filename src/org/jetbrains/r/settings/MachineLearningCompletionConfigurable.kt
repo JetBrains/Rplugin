@@ -5,13 +5,13 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 
-class MLCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
+class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
 
   companion object {
     private const val PORT_FIELD_WIDTH = 5
   }
 
-  private val settings = MLCompletionSettings.getInstance()
+  private val settings = MachineLearningCompletionSettings.getInstance()
 
   override fun createPanel(): DialogPanel {
     return panel {

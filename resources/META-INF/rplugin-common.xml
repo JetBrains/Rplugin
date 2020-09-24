@@ -514,9 +514,9 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.packages.remote.RPackageDescriptionCache"/>
 
-        <applicationService serviceImplementation="org.jetbrains.r.settings.MLCompletionSettings"/>
+        <applicationService serviceImplementation="org.jetbrains.r.settings.MachineLearningCompletionSettings"/>
 
-        <codeCompletionConfigurable instance="org.jetbrains.r.settings.MLCompletionConfigurable"/>
+        <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
 
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>

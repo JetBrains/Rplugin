@@ -11,12 +11,12 @@ import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.icons.AllIcons
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.editor.completion.RLookupElement
-import org.jetbrains.r.settings.MLCompletionSettings
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.net.Socket
 
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
 
-  private val settings = MLCompletionSettings.getInstance()
+  private val settings = MachineLearningCompletionSettings.getInstance()
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
     if (!settings.state.isEnabled) {
