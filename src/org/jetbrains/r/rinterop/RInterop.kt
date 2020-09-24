@@ -1012,17 +1012,15 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           {
             val id = RStudioApiFunctionId.fromInt(request.functionID)
             if (id != null) {
-              val response = it.onRStudioApiRequest(id, request.args)
+              val response = it.onRStudioApiRequest(id, request.args) ?: return@fireListenersAsync resolvedPromise()
               response.then { result ->
                 rStudioApiResponse = result
               }.onError {
                 rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
               }
             } else {
-              val response = AsyncPromise<Unit>()
               rStudioApiResponse = RObject.newBuilder().setError("Unknown function id").build()
-              response.setResult(Unit)
-              response
+              resolvedPromise()
             }
           }) {
           executeAsync(asyncStub::rStudioApiResponse, rStudioApiResponse)
@@ -1276,7 +1274,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
-    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject> = resolvedPromise()
+    fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject>? = null
     fun onSubprocessInput() {}
     fun onBrowseURLRequest(url: String) {}
     fun onRemoveBreakpointByIdRequest(id: Int) {}
