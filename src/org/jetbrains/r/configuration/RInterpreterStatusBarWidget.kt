@@ -164,7 +164,7 @@ class RInterpreterPopupFactory(private val project: Project) {
       val representation = interpreterInfo.stringRepresentation
       presentation.setText(representation, false)
       presentation.description = RBundle.message("interpreter.status.bar.switch.to.action.description", representation)
-      presentation.icon = RIcons.R_logo_16
+      presentation.icon = RIcons.R
     }
 
     override fun actionPerformed(e: AnActionEvent) = switchToInterpreter(interpreterInfo)
