@@ -353,6 +353,11 @@ You can find the source code in the following repositories:
       </action>
     </actions>
 
+    <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
+        <notebookCellTypeAwareLexerProvider language="RMarkdown"
+                                            implementationClass="org.jetbrains.r.editor.RMarkdownCellTypeAwareLexerProvider"/>
+    </extensions>
+
     <extensions defaultExtensionNs="com.intellij">
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
