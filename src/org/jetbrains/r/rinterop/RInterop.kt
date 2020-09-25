@@ -588,6 +588,14 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return GraphicsGetPathResponse(response.snapshotName, response.directory)
   }
 
+  fun graphicsFetchPlot(number: Int): Plot {
+    val response = executeWithCheckCancel(asyncStub::graphicsFetchPlot, Int32Value.of(number))
+    if (response.message.isNotBlank()) {
+      throw RuntimeException(response.message)
+    }
+    return response.plot
+  }
+
   fun graphicsCreateGroup(): RIExecutionResult {
     return executeRequest(RPIServiceGrpc.getGraphicsCreateGroupMethod(), Empty.getDefaultInstance())
   }
