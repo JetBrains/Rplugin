@@ -13,6 +13,7 @@ import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.packages.RPackage
+import org.jetbrains.r.psi.TableManipulationColumn
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
@@ -46,6 +47,20 @@ class RLookupElement(val lookup: String,
     presentation.typeText = packageName
     if (tailText != null) presentation.appendTailText(tailText, true)
   }
+}
+
+data class TableManipulationColumnLookup(val column: TableManipulationColumn, val needsToQuote: Boolean = false) {
+  override fun equals(other: Any?): Boolean {
+    if (other !is TableManipulationColumnLookup) return false
+    return other.quotedNameIfNeeded == quotedNameIfNeeded && other.column.type == column.type
+  }
+
+  override fun hashCode(): Int {
+    return quotedNameIfNeeded.hashCode() * 31 + column.type.hashCode()
+  }
+
+  private val quotedNameIfNeeded
+    get() =  if (needsToQuote) "\"${column.name}\"" else column.name
 }
 
 interface RLookupElementInsertHandler {
@@ -143,6 +158,18 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
     return PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true, AllIcons.Nodes.Function), priority)
   }
 
+  fun createQuotedLookupElement(lookupString: String,
+                                priority: Double,
+                                bold: Boolean,
+                                icon: Icon? = null,
+                                packageName: String? = null,
+                                tailText: String? = null): LookupElement {
+    return createLookupElementWithPriority(
+      RLookupElement(lookupString, bold, icon, packageName = packageName, itemText = "\"$lookupString\"", tailText = tailText),
+      QUOTE_INSERT_HANDLER, priority
+    )
+  }
+
   private fun createOperatorLookupElement(functionAssignment: RAssignmentStatement, isLocal: Boolean): LookupElement {
     val packageName = if (isLocal) null else RPackage.getOrCreateRPackageBySkeletonFile(functionAssignment.containingFile)?.name
     val icon = AllIcons.Nodes.Function
@@ -172,6 +199,15 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
                                         priority: Double): LookupElement {
       val lookupElementWithInsertHandler = PrioritizedLookupElement.withInsertHandler(lookupElement, insertHandler)
       return PrioritizedLookupElement.withPriority(lookupElementWithInsertHandler, priority)
+    }
+
+    private val QUOTE_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
+      val document = insertHandlerContext.document
+      val startOffset = insertHandlerContext.startOffset
+      val tailOffset = insertHandlerContext.tailOffset
+      document.insertString(startOffset, "\"")
+      document.insertString(tailOffset + 1, "\"")
+      insertHandlerContext.editor.caretModel.moveToOffset(tailOffset + 2)
     }
   }
 }

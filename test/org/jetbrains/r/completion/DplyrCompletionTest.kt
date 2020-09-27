@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.completion
 
+import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.UsefulTestCase
 import junit.framework.TestCase
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
@@ -388,7 +389,11 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
     addRuntimeInfo()
     val result = myFixture.completeBasic()
     TestCase.assertNotNull(result)
-    val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
+    val lookupStrings = result.map {
+      val elementPresentation = LookupElementPresentation()
+      it.renderElement(elementPresentation)
+      elementPresentation.itemText!!
+    }.filter { it != "table" }
     TestCase.assertEquals(expected, lookupStrings)
   }
 

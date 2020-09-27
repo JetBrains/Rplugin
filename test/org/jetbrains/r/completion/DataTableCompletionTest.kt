@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.completion
 
+import com.intellij.codeInsight.lookup.LookupElementPresentation
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
@@ -209,7 +210,11 @@ class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
     val result = myFixture.completeBasic().toList()
     assertNotNull(result)
 
-    val lookupStrings = result.map { it.lookupString }
+    val lookupStrings = result.map {
+      val elementPresentation = LookupElementPresentation()
+      it.renderElement(elementPresentation)
+      elementPresentation.itemText!!
+    }
     lookupStrings.filter { expected.contains(it) }.apply {
       assertEquals(distinct(), this)
     }

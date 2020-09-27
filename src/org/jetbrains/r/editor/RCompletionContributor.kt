@@ -426,14 +426,20 @@ class RCompletionContributor : CompletionContributor() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
       val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      val columns = mutableListOf<TableManipulationColumn>()
+      val columns = mutableListOf<TableManipulationColumnLookup>()
       addTableCompletion(RDplyrAnalyzer, position, runtimeInfo, columns)
       addTableCompletion(RDataTableAnalyzer, position, runtimeInfo, columns)
       result.addAllElements(columns.distinct().map {
-        PrioritizedLookupElement.withPriority(
-          RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
-          TABLE_MANIPULATION_PRIORITY
-        )
+        val column = it.column
+        if (it.needsToQuote) {
+          rCompletionElementFactory.createQuotedLookupElement(column.name, TABLE_MANIPULATION_PRIORITY, true, AllIcons.Nodes.Field, column.type)
+        }
+        else {
+          PrioritizedLookupElement.withPriority(
+            RLookupElement(column.name, true, AllIcons.Nodes.Field, packageName = column.type),
+            TABLE_MANIPULATION_PRIORITY
+          )
+        }
       })
     }
   }
@@ -546,10 +552,7 @@ class RCompletionContributor : CompletionContributor() {
           STRING_LITERAL_INSERT_HANDLER, priority))
       }
       else {
-        addElement(PrioritizedLookupElement.withPriority(
-          RLookupElement("\"$className\"", true, AllIcons.Nodes.Field, packageName = packageName),
-          priority
-        ))
+        addElement(rCompletionElementFactory.createQuotedLookupElement(className, priority, true, AllIcons.Nodes.Field, packageName))
       }
     }
   }
@@ -634,7 +637,7 @@ class RCompletionContributor : CompletionContributor() {
     private fun <T : TableManipulationFunction> addTableCompletion(tableAnalyser: TableManipulationAnalyzer<T>,
                                                                    position: PsiElement,
                                                                    runtimeInfo: RConsoleRuntimeInfo,
-                                                                   result: MutableList<TableManipulationColumn>) {
+                                                                   result: MutableList<TableManipulationColumnLookup>) {
       val (tableCallInfo, currentArgument) = tableAnalyser.getContextInfo(position, runtimeInfo) ?: return
       val tableInfos = tableCallInfo.passedTableArguments.map { tableAnalyser.getTableColumns(it, runtimeInfo) }
       val isCorrectTableType = tableInfos.all { it.type == tableAnalyser.tableColumnType }
@@ -651,10 +654,9 @@ class RCompletionContributor : CompletionContributor() {
       if (tableAnalyser is RDplyrAnalyzer)
         columns = tableAnalyser.addCurrentColumns(columns, tableCallInfo, currentArgument)
 
-      if (isQuotesNeeded && position.parent !is RStringLiteralExpression) {
-        columns = columns.map { TableManipulationColumn("\"${it.name}\"", it.type) }
-      }
-      result.addAll(columns)
+      val isQuoteNeeded = isQuotesNeeded && position.parent !is RStringLiteralExpression
+      val columnsLookup = columns.map { TableManipulationColumnLookup(it, isQuoteNeeded) }
+      result.addAll(columnsLookup)
 
       val columnNamesFromConsole = columns.map { it.name }
       val collectProcessor = CommonProcessors.CollectProcessor<PsiTableColumnInfo>()
@@ -664,7 +666,9 @@ class RCompletionContributor : CompletionContributor() {
         }
       }
 
-      result.addAll(collectProcessor.results.filter { !columnNamesFromConsole.contains(it.name) }.map { TableManipulationColumn(it.name) })
+      result.addAll(collectProcessor.results
+                      .filter { !columnNamesFromConsole.contains(it.name) }
+                      .map { TableManipulationColumnLookup(TableManipulationColumn(it.name)) })
     }
 
     private fun addFilePathCompletion(parameters: CompletionParameters,

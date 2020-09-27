@@ -247,6 +247,10 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
       setClass('MyClass2')
       setClass('MyClass3', representation = representation(MyC<caret>))
     """.trimIndent(), "\"MyClass1\"" to "", "\"MyClass2\"" to "", strict = false)
+    doTest("""
+      setClass('Test', slots = c(name = 'numeric'))
+      new_test <- new(Tes<caret>)
+    """.trimIndent(), "\"Test\"" to "", strict = false)
   }
 
   fun testOmitSetClassName() {
@@ -346,6 +350,16 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
                           "setClass('MyClass', slots = c(cl = 'classRepresentation'<caret>))")
   }
 
+  fun testApplyCompletionClassNameWithoutQuotes() {
+    doApplyCompletionTest("""
+      setClass('Test', slots = c(name = 'numeric'))
+      new_test <- new(Tes<caret>)
+    """.trimIndent(), "Test", """
+      setClass('Test', slots = c(name = 'numeric'))
+      new_test <- new("Test"<caret>)
+    """.trimIndent())
+  }
+
   private fun doWrongVariantsTest(text: String, vararg variants: String, withRuntimeInfo: Boolean = false, inConsole: Boolean = false) {
     val result = doTestBase(text, withRuntimeInfo, inConsole)
     assertNotNull(result)
@@ -363,7 +377,7 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     val lookupStrings = result.map {
       val elementPresentation = LookupElementPresentation()
       it.renderElement(elementPresentation)
-      it.lookupString to elementPresentation.typeText
+      elementPresentation.itemText to elementPresentation.typeText
     }
     if (strict) {
       assertOrderedEquals(lookupStrings, *variants)
