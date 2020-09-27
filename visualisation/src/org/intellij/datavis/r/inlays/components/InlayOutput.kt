@@ -51,6 +51,7 @@ import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
+import kotlin.math.max
 import kotlin.math.min
 
 abstract class InlayOutput(parent: Disposable, val editor: Editor, private val clearAction: () -> Unit) {
@@ -307,9 +308,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() {
-                  val height = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
-                  component.preferredSize = Dimension(preferredSize.width, height)
-                  onHeightCalculated?.invoke(height)
+                  onHeightCalculated?.invoke(toolbarPane.preferredSize.height)
                 }
 
                 override fun softWrapsChanged() {}
