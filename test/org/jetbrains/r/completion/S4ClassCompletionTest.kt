@@ -335,6 +335,11 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     """.trimIndent(), "person_age", "person_name")
   }
 
+  fun testSlotInConsoleNew() {
+    rInterop.executeCode("setClass('OldDevice', slots = c(imei = 'character'))")
+    doTest("new('OldDevice', ime<caret>)", "imei" to "character", strict = false, withRuntimeInfo = true, inConsole = true)
+  }
+
   fun testApplyCompletionField() {
     doApplyCompletionTest("""
       obj <- new('classRepresentation')

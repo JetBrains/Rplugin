@@ -190,7 +190,11 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
       throw NotImplementedError()
     }
 
-    override fun loadS4ClassInfo(objectName: String): RS4ClassInfo? {
+    override fun loadS4ClassInfoByObjectName(objectName: String): RS4ClassInfo? {
+      throw NotImplementedError()
+    }
+
+    override fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo? {
       throw NotImplementedError()
     }
 

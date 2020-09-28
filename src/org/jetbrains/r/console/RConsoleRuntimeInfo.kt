@@ -31,7 +31,8 @@ interface RConsoleRuntimeInfo {
   fun loadExtraNamedArguments(functionName: String): RExtraNamedArgumentsInfo
   fun loadExtraNamedArguments(functionName: String, functionExpression: RFunctionExpression): RExtraNamedArgumentsInfo
   fun loadShortS4ClassInfos(): List<RS4ClassInfo>
-  fun loadS4ClassInfo(objectName: String): RS4ClassInfo?
+  fun loadS4ClassInfoByObjectName(objectName: String): RS4ClassInfo?
+  fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo?
   fun getFormalArguments(expression: String) : List<String>
   fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
@@ -58,7 +59,8 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val extraNamedArgumentsStampCache by rInterop.Cached { mutableMapOf<String, Long>() }
   private val formalArgumentsCache by rInterop.Cached { mutableMapOf<String, List<String>>() }
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
-  private val s4ClassInfosCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
+  private val s4ClassInfosByObjectNameCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
+  private val s4ClassInfosByClassNameCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
   private val loadedShortS4ClassInfosCache by rInterop.Cached { AtomicReference<List<RS4ClassInfo>?>(null) }
 
   override val rMarkdownChunkOptions by lazy { rInterop.rMarkdownChunkOptions }
@@ -119,9 +121,15 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
     }
   }
 
-  override fun loadS4ClassInfo(objectName: String): RS4ClassInfo? {
-    return s4ClassInfosCache.getOrPut(objectName) {
-      rInterop.getS4ClassInfo(RReference.expressionRef(objectName, rInterop))
+  override fun loadS4ClassInfoByObjectName(objectName: String): RS4ClassInfo? {
+    return s4ClassInfosByObjectNameCache.getOrPut(objectName) {
+      rInterop.getS4ClassInfoByObjectName(RReference.expressionRef(objectName, rInterop))
+    }
+  }
+
+  override fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo? {
+    return s4ClassInfosByClassNameCache.getOrPut(className) {
+      rInterop.getS4ClassInfoByClassName(className)
     }
   }
 

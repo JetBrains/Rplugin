@@ -820,9 +820,18 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     }
   }
 
-  fun getS4ClassInfo(ref: RReference): RS4ClassInfo? {
+  fun getS4ClassInfoByObjectName(ref: RReference): RS4ClassInfo? {
     return try {
-      val res = executeWithCheckCancel(asyncStub::getS4ClassInfo, ref.proto)
+      val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByObjectName, ref.proto)
+      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList, res.isVirtual)
+    } catch (e: RInteropTerminated) {
+      null
+    }
+  }
+
+  fun getS4ClassInfoByClassName(className: String): RS4ClassInfo? {
+    return try {
+      val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByClassName, StringValue.of(className))
       RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList, res.isVirtual)
     } catch (e: RInteropTerminated) {
       null

@@ -1733,34 +1733,34 @@ public final class RPIServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod;
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfo",
+      fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfoByObjectName",
       requestType = org.jetbrains.r.rinterop.RRef.class,
       responseType = org.jetbrains.r.rinterop.S4ClassInfo.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
-      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod() {
-    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoMethod;
-    if ((getGetS4ClassInfoMethod = RPIServiceGrpc.getGetS4ClassInfoMethod) == null) {
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByObjectNameMethod;
+    if ((getGetS4ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getGetS4ClassInfoMethod = RPIServiceGrpc.getGetS4ClassInfoMethod) == null) {
-          RPIServiceGrpc.getGetS4ClassInfoMethod = getGetS4ClassInfoMethod =
+        if ((getGetS4ClassInfoByObjectNameMethod = RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod) == null) {
+          RPIServiceGrpc.getGetS4ClassInfoByObjectNameMethod = getGetS4ClassInfoByObjectNameMethod =
               io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.S4ClassInfo>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfo"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfoByObjectName"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   org.jetbrains.r.rinterop.S4ClassInfo.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfo"))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfoByObjectName"))
               .build();
         }
       }
     }
-    return getGetS4ClassInfoMethod;
+    return getGetS4ClassInfoByObjectNameMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.TableColumnsInfoRequest,
@@ -2755,6 +2755,37 @@ public final class RPIServiceGrpc {
     return getGetLoadedShortS4ClassInfosMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getS4ClassInfoByClassName",
+      requestType = com.google.protobuf.StringValue.class,
+      responseType = org.jetbrains.r.rinterop.S4ClassInfo.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.StringValue,
+      org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.S4ClassInfo> getGetS4ClassInfoByClassNameMethod;
+    if ((getGetS4ClassInfoByClassNameMethod = RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGetS4ClassInfoByClassNameMethod = RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod) == null) {
+          RPIServiceGrpc.getGetS4ClassInfoByClassNameMethod = getGetS4ClassInfoByClassNameMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.StringValue, org.jetbrains.r.rinterop.S4ClassInfo>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getS4ClassInfoByClassName"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.StringValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.S4ClassInfo.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("getS4ClassInfoByClassName"))
+              .build();
+        }
+      }
+    }
+    return getGetS4ClassInfoByClassNameMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -3187,9 +3218,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void getS4ClassInfo(org.jetbrains.r.rinterop.RRef request,
+    public void getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetS4ClassInfoMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getGetS4ClassInfoByObjectNameMethod(), responseObserver);
     }
 
     /**
@@ -3423,6 +3454,13 @@ public final class RPIServiceGrpc {
     public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetLoadedShortS4ClassInfosMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void getS4ClassInfoByClassName(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetS4ClassInfoByClassNameMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -3813,12 +3851,12 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.ExtraNamedArguments>(
                   this, METHODID_FIND_EXTRA_NAMED_ARGUMENTS)))
           .addMethod(
-            getGetS4ClassInfoMethod(),
+            getGetS4ClassInfoByObjectNameMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 org.jetbrains.r.rinterop.RRef,
                 org.jetbrains.r.rinterop.S4ClassInfo>(
-                  this, METHODID_GET_S4CLASS_INFO)))
+                  this, METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME)))
           .addMethod(
             getGetTableColumnsInfoMethod(),
             asyncUnaryCall(
@@ -4043,6 +4081,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Empty,
                 org.jetbrains.r.rinterop.ShortS4ClassInfoList>(
                   this, METHODID_GET_LOADED_SHORT_S4CLASS_INFOS)))
+          .addMethod(
+            getGetS4ClassInfoByClassNameMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.StringValue,
+                org.jetbrains.r.rinterop.S4ClassInfo>(
+                  this, METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME)))
           .build();
     }
   }
@@ -4525,10 +4570,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void getS4ClassInfo(org.jetbrains.r.rinterop.RRef request,
+    public void getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getGetS4ClassInfoMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getGetS4ClassInfoByObjectNameMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -4794,6 +4839,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getS4ClassInfoByClassName(com.google.protobuf.StringValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetS4ClassInfoByClassNameMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -5235,9 +5288,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfo(org.jetbrains.r.rinterop.RRef request) {
+    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfoByObjectName(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
-          getChannel(), getGetS4ClassInfoMethod(), getCallOptions(), request);
+          getChannel(), getGetS4ClassInfoByObjectNameMethod(), getCallOptions(), request);
     }
 
     /**
@@ -5471,6 +5524,13 @@ public final class RPIServiceGrpc {
     public org.jetbrains.r.rinterop.ShortS4ClassInfoList getLoadedShortS4ClassInfos(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getGetLoadedShortS4ClassInfosMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public org.jetbrains.r.rinterop.S4ClassInfo getS4ClassInfoByClassName(com.google.protobuf.StringValue request) {
+      return blockingUnaryCall(
+          getChannel(), getGetS4ClassInfoByClassNameMethod(), getCallOptions(), request);
     }
   }
 
@@ -5820,10 +5880,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfo(
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfoByObjectName(
         org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
-          getChannel().newCall(getGetS4ClassInfoMethod(), getCallOptions()), request);
+          getChannel().newCall(getGetS4ClassInfoByObjectNameMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6090,6 +6150,14 @@ public final class RPIServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getGetLoadedShortS4ClassInfosMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.S4ClassInfo> getS4ClassInfoByClassName(
+        com.google.protobuf.StringValue request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetS4ClassInfoByClassNameMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_GET_INFO = 0;
@@ -6147,7 +6215,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_LOAD_OBJECT_NAMES = 52;
   private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 53;
   private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 54;
-  private static final int METHODID_GET_S4CLASS_INFO = 55;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME = 55;
   private static final int METHODID_GET_TABLE_COLUMNS_INFO = 56;
   private static final int METHODID_GET_FORMAL_ARGUMENTS = 57;
   private static final int METHODID_GET_EQUALITY_OBJECT = 58;
@@ -6180,6 +6248,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_R_STUDIO_API_RESPONSE = 85;
   private static final int METHODID_SET_SAVE_ON_EXIT = 86;
   private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 87;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 88;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6418,8 +6487,8 @@ public final class RPIServiceGrpc {
           serviceImpl.findExtraNamedArguments((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ExtraNamedArguments>) responseObserver);
           break;
-        case METHODID_GET_S4CLASS_INFO:
-          serviceImpl.getS4ClassInfo((org.jetbrains.r.rinterop.RRef) request,
+        case METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME:
+          serviceImpl.getS4ClassInfoByObjectName((org.jetbrains.r.rinterop.RRef) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo>) responseObserver);
           break;
         case METHODID_GET_TABLE_COLUMNS_INFO:
@@ -6550,6 +6619,10 @@ public final class RPIServiceGrpc {
           serviceImpl.getLoadedShortS4ClassInfos((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList>) responseObserver);
           break;
+        case METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME:
+          serviceImpl.getS4ClassInfoByClassName((com.google.protobuf.StringValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.S4ClassInfo>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -6666,7 +6739,7 @@ public final class RPIServiceGrpc {
               .addMethod(getLoadObjectNamesMethod())
               .addMethod(getFindInheritorNamedArgumentsMethod())
               .addMethod(getFindExtraNamedArgumentsMethod())
-              .addMethod(getGetS4ClassInfoMethod())
+              .addMethod(getGetS4ClassInfoByObjectNameMethod())
               .addMethod(getGetTableColumnsInfoMethod())
               .addMethod(getGetFormalArgumentsMethod())
               .addMethod(getGetEqualityObjectMethod())
@@ -6699,6 +6772,7 @@ public final class RPIServiceGrpc {
               .addMethod(getRStudioApiResponseMethod())
               .addMethod(getSetSaveOnExitMethod())
               .addMethod(getGetLoadedShortS4ClassInfosMethod())
+              .addMethod(getGetS4ClassInfoByClassNameMethod())
               .build();
         }
       }
