@@ -38,6 +38,8 @@ object RGraphicsUtils {
   private const val QUAD_HD_RESOLUTION = 450
   private const val ULTRA_HD_RESOLUTION = 600
 
+  const val DEFAULT_RESOLUTION = 72
+
   private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
 
   fun createParameters(parameters: ScreenParameters?): ScreenParameters {
@@ -45,7 +47,7 @@ object RGraphicsUtils {
   }
 
   fun createGraphicsDevice(rInterop: RInterop): RGraphicsDevice {
-    return createGraphicsDevice(rInterop, Dimension(1920, 1080), 72)
+    return createGraphicsDevice(rInterop, Dimension(1920, 1080), DEFAULT_RESOLUTION)
   }
 
   fun createGraphicsDevice(rInterop: RInterop, screenDimension: Dimension?, resolution: Int?): RGraphicsDevice {
