@@ -42,7 +42,6 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
-import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -51,7 +50,6 @@ import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
-import kotlin.math.max
 import kotlin.math.min
 
 abstract class InlayOutput(parent: Disposable, val editor: Editor, private val clearAction: () -> Unit) {
