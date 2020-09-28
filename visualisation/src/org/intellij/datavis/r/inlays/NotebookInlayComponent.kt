@@ -63,6 +63,9 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
 
   private val disposable = Disposer.newDisposable()
 
+  /** If the value is `false`, the component won't limit its height and apply the height passed to [adjustSize] method directly. */
+  private var shouldLimitMaxHeight = true
+
   init {
     cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
     border = JBUI.Borders.empty(InlayDimensions.topBorderUnscaled,
@@ -272,17 +275,17 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   private fun adjustSize(height: Int) {
     beforeHeightChanged()
 
-    val desiredHeight = height + InlayDimensions.topBorder + InlayDimensions.bottomBorder
+    var desiredHeight = height + InlayDimensions.topBorder + InlayDimensions.bottomBorder
+    if (shouldLimitMaxHeight) {
+      desiredHeight = min(InlayDimensions.defaultHeight, desiredHeight)
+    }
 
     deltaSize(0, desiredHeight - size.height)
 
     afterHeightChanged()
   }
 
-  /**
-   * Event from notebook with console output. This output contains intermediate data from console.
-   * @param update if true than current data in output will be cleared
-   */
+  /** Event from notebook with console output. This output contains intermediate data from console. */
   private fun onOutput(data: String, type: String, progressStatus: InlayProgressStatus?, cleanup: () -> Unit) {
     state?.clear()
 
@@ -298,6 +301,8 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
   private fun onMultiOutput(inlayOutputs: List<InlayOutput>, cleanup: () -> Unit) {
     state?.clear()
     removeToolbar()
+
+    shouldLimitMaxHeight = false
 
     if (state !is NotebookInlayMultiOutput) {
       if (state != null) {

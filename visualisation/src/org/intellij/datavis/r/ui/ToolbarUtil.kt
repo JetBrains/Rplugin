@@ -4,8 +4,10 @@
 
 package org.intellij.datavis.r.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.DumbAwareActionButton
 import javax.swing.Icon
@@ -73,6 +75,24 @@ object ToolbarUtil {
 
   fun createActionHolder(id: String, onClick: () -> Unit): ActionHolder {
     return createActionHolder(id, { true }, onClick)
+  }
+
+  fun createEllipsisToolbar(actions: List<AnAction>): JComponent {
+    val ellipsis = createEllipsisActionGroup(actions)
+    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, DefaultActionGroup(ellipsis),
+                                                                  false)
+    return toolbar.component
+  }
+
+  private fun createEllipsisActionGroup(actions: List<AnAction>): ActionGroup {
+    return DefaultActionGroup().apply {
+      addAll(actions)
+      isPopup = true
+      with(templatePresentation) {
+        putClientProperty(ActionButton.HIDE_DROPDOWN_ICON, true)
+        icon = AllIcons.Actions.More
+      }
+    }
   }
 
   fun createActionHolder(id: String, canClick: () -> Boolean, onClick: () -> Unit) = object : ActionHolder {

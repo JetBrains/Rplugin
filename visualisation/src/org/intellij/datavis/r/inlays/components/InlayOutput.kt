@@ -7,13 +7,8 @@ package org.intellij.datavis.r.inlays.components
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
@@ -42,6 +37,7 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -50,6 +46,7 @@ import javax.swing.AbstractAction
 import javax.swing.JComponent
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
+import kotlin.math.max
 import kotlin.math.min
 
 abstract class InlayOutput(parent: Disposable, val editor: Editor, private val clearAction: () -> Unit) {
@@ -119,17 +116,7 @@ abstract class InlayOutput(parent: Disposable, val editor: Editor, private val c
   }
 
   private fun createToolbar(): JComponent {
-    val ellipsis = DefaultActionGroup().apply {
-      addAll(actions)
-      add(createClearAction())
-      isPopup = true
-      with(templatePresentation) {
-        putClientProperty(ActionButton.HIDE_DROPDOWN_ICON, true)
-        icon = AllIcons.Actions.More
-      }
-    }
-    val toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, DefaultActionGroup(ellipsis), false)
-    return toolbar.component.apply {
+    return ToolbarUtil.createEllipsisToolbar(actions + createClearAction()).apply {
       isOpaque = true
       background = UiCustomizer.instance.getTextOutputBackground(editor)
     }
@@ -306,7 +293,9 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() {
-                  onHeightCalculated?.invoke(toolbarPane.preferredSize.height)
+                  val textHeight = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
+                  component.preferredSize = Dimension(preferredSize.width, textHeight)
+                  onHeightCalculated?.invoke(max(textHeight, toolbarPane.preferredSize.height))
                 }
 
                 override fun softWrapsChanged() {}

@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 import com.intellij.ui.RelativeFont
 import com.intellij.util.ui.UIUtil
+import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.Rectangle
 import java.awt.event.ComponentAdapter
@@ -34,8 +35,12 @@ class ProcessOutput(val text: String, kind: Key<*>) {
 }
 
 
-/** Notebook console logs and html result view. */
+/** Notebook console logs, HTML, and table result view. */
 class NotebookInlayOutput(private val editor: Editor, private val parent: Disposable) : NotebookInlayState(), ToolBarProvider {
+
+  init {
+    layout = BorderLayout()
+  }
 
   companion object {
     private const val RESIZE_TASK_NAME = "Resize graphics"
@@ -61,7 +66,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     this.output?.let { remove(it.getComponent()) }
     this.output = output
     output.onHeightCalculated = { height -> onHeightCalculated?.invoke(height) }
-    add(output.getComponent(), DEFAULT_LAYER)
+    add(output.getComponent(), BorderLayout.CENTER)
 
     addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent) {
