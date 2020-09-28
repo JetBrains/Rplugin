@@ -149,7 +149,7 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
       private val interopCache = ArrayList<RInterop>()
       private val interopPromises = ArrayList<Promise<RInterop>>()
 
-      fun run(interpreter: RInterpreter, workingDirectory: String): RInterop {
+      fun run(interpreter: RInterpreter, workingDirectory: String, tries: Int = 5): RInterop {
         val result : Promise<RInterop>
         synchronized(this) {
           while (interopPromises.size + interopCache.size < maxInteropNumber) {
@@ -173,7 +173,17 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
             interopPromises.remove(it)
           }
         }
-        return result.blockingGet(DEFAULT_TIMEOUT)!!
+        try {
+          val blockingGet = result.blockingGet(DEFAULT_TIMEOUT)
+          return blockingGet!!
+        }
+        catch (e: Throwable) {
+          if (tries > 0) {
+            Thread.sleep(100)
+            return run(interpreter, workingDirectory, tries - 1)
+          }
+        }
+        throw IllegalStateException("Should not happen")
       }
 
       override fun dispose() {
