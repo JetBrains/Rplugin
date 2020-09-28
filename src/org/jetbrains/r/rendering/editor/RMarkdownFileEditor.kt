@@ -240,12 +240,20 @@ var Project.chunkExecutionState: ChunkExecutionState?
   }
 
 
-private fun createRunAllAction(project: Project): AnAction =
-  object : SameTextAction(RBundle.message("rmarkdown.editor.toolbar.runAllChunks")) {
+private fun createRunAllAction(project: Project): AnAction {
+  val runText = RBundle.message("rmarkdown.editor.toolbar.runAllChunks")
+  val interruptText = RBundle.message("rmarkdown.editor.toolbar.interruptAllChunks")
+  return object : SameTextAction(runText) {
 
     override fun update(e: AnActionEvent) {
       val state = e.editor?.chunkExecutionState
-      e.presentation.icon = if (state == null) AllIcons.Actions.RunAll else AllIcons.Actions.Suspend
+      if (state == null) {
+        e.presentation.icon = AllIcons.Actions.RunAll
+        e.presentation.text = runText
+      } else {
+        e.presentation.icon = AllIcons.Actions.Suspend
+        e.presentation.text = interruptText
+      }
       e.presentation.isEnabled = state != null || canRunChunk(project)
     }
 
@@ -265,6 +273,7 @@ private fun createRunAllAction(project: Project): AnAction =
       }
     }
   }
+}
 
 
 private fun createOutputDirectoryAction(project: Project, report: VirtualFile): ComboBoxAction =
