@@ -95,7 +95,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     return addTextOutput()
   }
 
-  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?) {
+  fun addData(type: String, data: String, progressStatus: InlayProgressStatus?): InlayOutputProvider? {
     val provider = InlayOutputProvider.EP.extensionList.asSequence().filter { it.acceptType(type) }.firstOrNull()
     val inlayOutput: InlayOutput
     if (provider != null) {
@@ -114,6 +114,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
       inlayOutput.updateProgressStatus(editor, it)
     }
     inlayOutput.addData(data, type)
+    return provider
   }
 
   fun addText(message: String, outputType: Key<*>) {

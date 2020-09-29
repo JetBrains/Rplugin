@@ -10,6 +10,11 @@ import com.intellij.openapi.extensions.ExtensionPointName
 
 interface InlayOutputProvider {
   fun acceptType(type: String): Boolean
+  /**
+   * If true, then this output can have a huge height, and IDE can limit it by adding scrollbar.
+   * In other case scrollbar should never be displayed
+   */
+  fun shouldLimitHeight() = true
 
   fun create(parent: Disposable, editor: Editor, clearAction: () -> Unit): InlayOutput
 

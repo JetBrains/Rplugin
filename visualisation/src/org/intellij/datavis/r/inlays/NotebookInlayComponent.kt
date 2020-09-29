@@ -291,7 +291,9 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
 
     val output = getOrCreateOutput()
     output.clearAction = cleanup
-    output.addData(type, data, progressStatus)
+    if (output.addData(type, data, progressStatus)?.shouldLimitHeight() == false) {
+      shouldLimitMaxHeight = false
+    }
 
     if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
       deltaSize(0, InlayDimensions.previewHeight - size.height)
