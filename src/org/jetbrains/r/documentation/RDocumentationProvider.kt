@@ -188,10 +188,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   }
 
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
-    if (psiElement == null || psiElement.language != RLanguage.INSTANCE) return null
+    if (psiElement == null || psiElement.language != RLanguage.INSTANCE || psiElement is PsiComment) return null
     psiElement.getCopyableUserData(ELEMENT_TEXT)?.let { return it() }
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
-    if (psiElement is RStringLiteralExpression && psiElement.getCopyableUserData(INTERCEPTED_LINK) == true) {
+    if (psiElement is RDocumentationFakeTargetElement) {
       val url = psiElement.name.orEmpty()
       if (url.startsWith("http")) {
         val stream = URL(url).openStream()
@@ -248,9 +248,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
         .installPackagesWithUserPermission(RBundle.message("documentation.utility.name"), localFunctionRequiredPackage, false)
       return null
     }
-    return RElementFactory.createRPsiElementFromText(psiManager.project, "\"${StringUtil.escapeStringCharacters(link)}\"").also {
-      it.putCopyableUserData(INTERCEPTED_LINK, true)
-    }
+    val stringLiteral = RElementFactory.createRPsiElementFromText(psiManager.project, "\"${StringUtil.escapeStringCharacters(link)}\"")
+    return RDocumentationFakeTargetElement(stringLiteral as RStringLiteralExpression)
   }
 
   override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, item: Any?, element: PsiElement?): PsiElement? {
@@ -303,7 +302,6 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     private const val PACKAGE_METHOD_SEPARATOR = "::"
     private const val BACKTICK = '`'
     private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
-    private val INTERCEPTED_LINK = Key<Boolean>("org.jetbrains.r.documentation.InterceptedLink")
     private val DOCUMENTATION_COMMENT_REGEX = "^# `?\\w+`?::`?.+`?$".toRegex()
 
     private fun getMethodNameAndPackage(documentationComment: String): Pair<String, String?> {
