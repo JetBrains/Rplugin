@@ -26,6 +26,7 @@ import com.intellij.psi.PsiElement
 import icons.RIcons
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RMarkdownInterruptAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.actions.editor
 import org.jetbrains.r.console.RConsoleManager
@@ -239,7 +240,6 @@ var Project.chunkExecutionState: ChunkExecutionState?
     RConsoleManager.getInstance(this).currentConsoleOrNull?.executeActionHandler?.chunkState = value
   }
 
-
 private fun createRunAllAction(project: Project): AnAction {
   val runText = RBundle.message("rmarkdown.editor.toolbar.runAllChunks")
   val interruptText = RBundle.message("rmarkdown.editor.toolbar.interruptAllChunks")
@@ -267,9 +267,7 @@ private fun createRunAllAction(project: Project): AnAction {
           RunChunkHandler.runAllChunks(psiFile, editor, currentPsiElement, terminationRequired).onProcessed { editor.chunkExecutionState = null }
         }
       } else {
-        state.terminationRequired.set(true)
-        val element = state.currentPsiElement.get() ?: return
-        RunChunkHandler.interruptChunkExecution(element.project)
+        RMarkdownInterruptAction.interruptChunkExecution(state)
       }
     }
   }

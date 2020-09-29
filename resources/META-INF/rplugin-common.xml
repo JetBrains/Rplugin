@@ -190,6 +190,13 @@ You can find the source code in the following repositories:
           <keyboard-shortcut keymap="Mac OS X" first-keystroke="shift ENTER" replace-all="true"/>
           <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="shift ENTER" replace-all="true"/>
         </action>
+        <action id="org.jetbrains.r.actions.RMarkdownInterruptAction"
+                class="org.jetbrains.r.actions.RMarkdownInterruptAction"
+                icon="AllIcons.Actions.Suspend">
+          <keyboard-shortcut keymap="$default" first-keystroke="control alt D"/>
+          <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt D" replace-all="true"/>
+          <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt D" replace-all="true"/>
+        </action>
         <action id="RConsole.History.Older" class="com.intellij.openapi.actionSystem.EmptyAction"/>
     </actions>
 
@@ -209,13 +216,6 @@ You can find the source code in the following repositories:
                 <keyboard-shortcut keymap="$default" first-keystroke="control alt X"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt X" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt X" replace-all="true"/>
-            </action>
-            <action id="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
-                    class="org.jetbrains.r.rendering.chunk.InterruptChunkExecutionAction"
-                    icon="AllIcons.Actions.Suspend">
-                <keyboard-shortcut keymap="$default" first-keystroke="control alt D"/>
-                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt D" replace-all="true"/>
-                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt D" replace-all="true"/>
             </action>
             <action id="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
                     class="org.jetbrains.r.rendering.chunk.RunChunksAboveAction"

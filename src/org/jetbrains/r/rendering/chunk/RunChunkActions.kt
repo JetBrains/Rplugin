@@ -91,18 +91,6 @@ class DebugChunkAction : DumbAwareAction(), RPromotedAction {
   }
 }
 
-class InterruptChunkExecutionAction : DumbAwareAction(), RPromotedAction {
-
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = e.virtualFile?.fileType == RMarkdownFileType &&
-                               e.project?.chunkExecutionState?.let { getCodeFenceByEvent(e) == it.currentPsiElement.get() } == true
-  }
-
-  override fun actionPerformed(e: AnActionEvent) {
-    RunChunkHandler.interruptChunkExecution(e.project!!)
-  }
-}
-
 fun isChunkRunning(psiElement: PsiElement?) = psiElement?.let { it.project.chunkExecutionState?.currentPsiElement?.get() == it } == true
 
 fun canRunChunk(editor: Editor?): Boolean =
