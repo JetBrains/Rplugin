@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.components.JBScrollPane
+import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
@@ -42,11 +43,6 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
   private var totalHeight = 0
 
   private val project = editor.project!!
-
-  /** If [totalHeight] becomes bigger than this value, the component height should fall back to [defaultHeight]. */
-  private val heightThreshold = 500
-
-  private val defaultHeight = 300
 
   private fun NotebookInlayOutput.getToolbarPane(): ToolbarPane? = components.filterIsInstance<ToolbarPane>().first()
 
@@ -104,10 +100,10 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
 
   private fun updateHeight(height: Int) {
     totalHeight += height
-    if (totalHeight < heightThreshold) {
+    if (totalHeight < InlayDimensions.multiOutputHeightThreshold) {
       onHeightCalculated?.invoke(totalHeight)
     } else {
-      onHeightCalculated?.invoke(defaultHeight)
+      onHeightCalculated?.invoke(InlayDimensions.multiOutputDefaultHeight)
     }
   }
 

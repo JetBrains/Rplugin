@@ -30,6 +30,10 @@ object InlayDimensions {
   const val leftBorderUnscaled = 0
   const val rightBorderUnscaled = 0
 
+  /** If multi-output inlay height exceeds this value its height falls back to [multiOutputDefaultHeight]. */
+  const val multiOutputHeightThreshold = 500
+
+  const val multiOutputDefaultHeight = 300
 
   /** Real borders for inner inlay component */
   val topBorder = JBUI.scale(topBorderUnscaled)
