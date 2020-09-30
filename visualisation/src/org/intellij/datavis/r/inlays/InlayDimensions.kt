@@ -11,6 +11,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import java.awt.Dimension
 import java.awt.Font
+import java.awt.Toolkit
 import kotlin.math.max
 
 object InlayDimensions {
@@ -31,7 +32,9 @@ object InlayDimensions {
   const val rightBorderUnscaled = 0
 
   /** If multi-output inlay height exceeds this value its height falls back to [multiOutputDefaultHeight]. */
-  const val multiOutputHeightThreshold = 500
+  var multiOutputHeightThreshold: Int = 500
+    get() = 2 * Toolkit.getDefaultToolkit().screenSize.height / 3
+    private set
 
   const val multiOutputDefaultHeight = 300
 
