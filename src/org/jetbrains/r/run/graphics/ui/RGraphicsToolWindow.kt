@@ -189,7 +189,15 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun zoomCurrentOutput() {
-    TODO()
+    lastOutput?.let { output ->
+      if (isStandalone) {
+        RGraphicsZoomDialog.show(project, output.plot, resolution)
+      } else {
+        output.snapshot?.let { snapshot ->
+          RGraphicsZoomDialog.show(project, project, snapshot)
+        }
+      }
+    }
   }
 
   private fun clearCurrentOutput() {

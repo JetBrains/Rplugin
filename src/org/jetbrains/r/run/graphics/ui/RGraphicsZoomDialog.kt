@@ -11,30 +11,22 @@ import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
 import org.intellij.datavis.r.inlays.components.DialogUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
+import org.jetbrains.r.run.graphics.RPlot
+import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class RGraphicsZoomDialog(project: Project, parent: Disposable, imagePath: String) :
+class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private val zoomGroup: Disposable? = null) :
   BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
-  private val manager = ChunkGraphicsManager(project)
-  private val wrapper = RGraphicsPanelWrapper(project, parent)
-
   private val rootPanel = JPanel(BorderLayout()).apply {
     preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.VERY_WIDE)
-    add(wrapper.component, BorderLayout.CENTER)
+    add(viewerComponent, BorderLayout.CENTER)
   }
-
-  private var zoomGroup: Disposable? = null
 
   init {
     init()
-    manager.createImageGroup(imagePath)?.let { pair ->
-      wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
-      Disposer.register(parent, pair.second)
-      zoomGroup = pair.second
-    }
   }
 
   override fun createCenterPanel(): JComponent? {
@@ -48,5 +40,24 @@ class RGraphicsZoomDialog(project: Project, parent: Disposable, imagePath: Strin
 
   companion object {
     private val TITLE = RBundle.message("graphics.panel.zoom.dialog.title")
+
+    fun show(project: Project, parent: Disposable, snapshot: RSnapshot) {
+      val wrapper = RGraphicsPanelWrapper(project, parent)
+      val manager = ChunkGraphicsManager(project)
+      var zoomGroup: Disposable? = null
+      manager.createImageGroup(snapshot.file.absolutePath)?.let { pair ->
+        wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
+        Disposer.register(parent, pair.second)
+        zoomGroup = pair.second
+      }
+      RGraphicsZoomDialog(project, wrapper.component, zoomGroup).show()
+    }
+
+    fun show(project: Project, plot: RPlot, resolution: Int?) {
+      val viewer = RPlotViewer()
+      viewer.resolution = resolution
+      viewer.plot = plot
+      RGraphicsZoomDialog(project, viewer).show()
+    }
   }
 }
