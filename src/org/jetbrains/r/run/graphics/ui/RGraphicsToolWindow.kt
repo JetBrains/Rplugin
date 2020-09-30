@@ -14,7 +14,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.components.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -24,40 +23,38 @@ import org.jetbrains.r.run.graphics.*
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.io.File
 import javax.swing.JComponent
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
-  private var lastNormal = listOf<RSnapshot>()
+  private var lastOutputs = listOf<RGraphicsOutput>()
   private var lastIndex = -1
   private var maxNumber = -1
 
-  private val lastSnapshot: RSnapshot?
-    get() = if (lastIndex in lastNormal.indices) lastNormal[lastIndex] else null
+  private val lastOutput: RGraphicsOutput?
+    get() = if (lastIndex in lastOutputs.indices) lastOutputs[lastIndex] else null
 
   private val lastNumber: Int?
-    get() = lastSnapshot?.number
+    get() = lastOutput?.number
 
-  private val lastFile: File?
-    get() = lastSnapshot?.file
-
-  private var isAutoResizeEnabled: Boolean = true
+  private var resolution = RGraphicsSettings.getScreenParameters(project).resolution ?: RGraphicsUtils.DEFAULT_RESOLUTION
+  private var isStandalone = RGraphicsSettings.isStandalone(project)
 
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
   private val graphicsPanel = GraphicsPanel(project, project)
+  private val plotViewer = RPlotViewer()
 
   init {
-    setContent(graphicsPanel.component)
+    updateContent()
     toolbar = createToolbar(project)
     project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
 
     graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent?) {
-        if (isAutoResizeEnabled) {
+        if (!isStandalone) {
           queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
             override fun run() {
-              postScreenDimension()
+              postScreenParameters()
             }
           })
         }
@@ -71,55 +68,72 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     }
   }
 
+  private fun updateContent() {
+    val targetContent = if (isStandalone) plotViewer else graphicsPanel.component
+    if (content !== targetContent) {
+      setContent(targetContent)
+    }
+  }
+
   private fun refresh(update: RGraphicsUpdate) {
     when (update) {
       is RGraphicsLoadingUpdate -> refreshLoading(update.loadedCount, update.totalCount)
-      is RGraphicsCompletedUpdate -> refreshCompleted(update.snapshots)
+      is RGraphicsCompletedUpdate -> refreshCompleted(update.outputs)
     }
   }
 
   private fun refreshLoading(loadedCount: Int, totalCount: Int) {
     val message = RBundle.message("graphics.panel.loading.snapshots.hint", loadedCount, totalCount)
+    updateContent()
     graphicsPanel.showLoadingMessage(message)
   }
 
-  private fun refreshCompleted(normal: List<RSnapshot>) {
-    if (normal.isNotEmpty()) {
-      val newMaxNumber = normal.last().number
-      // Note: `newMaxNumber` is bigger if there is a new plot
-      lastIndex = if (maxNumber == newMaxNumber) suggestSnapshotIndex(normal) else normal.lastIndex
+  private fun refreshCompleted(outputs: List<RGraphicsOutput>) {
+    if (outputs.isNotEmpty()) {
+      val newMaxNumber = outputs.last().number
+      // Note: `newMaxNumber` is bigger if there is a new output
+      lastIndex = if (maxNumber == newMaxNumber) suggestOutputIndex(outputs) else outputs.lastIndex
       maxNumber = newMaxNumber
-      lastNormal = normal
+      lastOutputs = outputs
       showCurrent()
     } else {
       reset()
     }
-    postSnapshotNumber()
-    if (isAutoResizeEnabled) {
-      postScreenDimension()
-    }
+    postOutputNumber()
+    postScreenParametersIfNeeded()
   }
 
-  private fun suggestSnapshotIndex(normal: List<RSnapshot>): Int {
-    return suggestSnapshotIndexOrNull(normal)?.takeIf { it in normal.indices } ?: normal.lastIndex
+  private fun suggestOutputIndex(outputs: List<RGraphicsOutput>): Int {
+    return suggestOutputIndexOrNull(outputs)?.takeIf { it in outputs.indices } ?: outputs.lastIndex
   }
 
-  private fun suggestSnapshotIndexOrNull(normal: List<RSnapshot>): Int? {
-    return loadSnapshotNumber()?.let { number ->
-      normal.indexWith(number) ?: lastNormal.indexWith(number)
+  private fun suggestOutputIndexOrNull(outputs: List<RGraphicsOutput>): Int? {
+    return loadOutputNumber()?.let { number ->
+      outputs.indexWith(number) ?: lastOutputs.indexWith(number)
     }
   }
 
   private fun reset() {
-    lastNormal = listOf()
+    lastOutputs = listOf()
     lastIndex = -1
     maxNumber = -1
+    setContent(graphicsPanel.component)  // Note: fall back to graphics panel which will show "No graphics" message
     graphicsPanel.reset()
   }
 
   private fun showCurrent() {
-    lastSnapshot?.let { snapshot ->
-      graphicsPanel.showImage(snapshot.file)
+    lastOutput?.let { output ->
+      updateContent()
+      if (isStandalone) {
+        plotViewer.resolution = resolution
+        plotViewer.plot = output.plot
+      } else {
+        if (output.snapshot != null) {
+          graphicsPanel.showImage(output.snapshot.file)
+        } else {
+          graphicsPanel.showLoadingMessage(RESCALING_HINT)
+        }
+      }
     }
   }
 
@@ -128,20 +142,20 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun createActionHolderGroups(): List<List<ToolbarUtil.ActionHolder>> {
-    val hasSnapshots = { lastNormal.isNotEmpty() }
+    val hasOutputs = { lastOutputs.isNotEmpty() }
     val groups = listOf(
       listOf(
-        Triple(PREVIOUS_GRAPHICS_ACTION_ID, { lastIndex > 0 }, this::moveToPreviousSnapshot),
-        Triple(NEXT_GRAPHICS_ACTION_ID, { lastIndex < lastNormal.lastIndex }, this::moveToNextSnapshot)
+        Triple(PREVIOUS_GRAPHICS_ACTION_ID, { lastIndex > 0 }, this::moveToPreviousOutput),
+        Triple(NEXT_GRAPHICS_ACTION_ID, { lastIndex < lastOutputs.lastIndex }, this::moveToNextOutput)
       ),
       listOf(
-        Triple(EXPORT_GRAPHICS_ACTION_ID, hasSnapshots, this::exportCurrentSnapshot),
-        Triple(COPY_GRAPHICS_ACTION_ID, hasSnapshots, this::copyCurrentSnapshot),
-        Triple(ZOOM_GRAPHICS_ACTION_ID, hasSnapshots, this::zoomCurrentSnapshot),
-        Triple(CLEAR_GRAPHICS_ACTION_ID, hasSnapshots, this::clearCurrentSnapshot)
+        Triple(EXPORT_GRAPHICS_ACTION_ID, hasOutputs, this::exportCurrentOutput),
+        Triple(COPY_GRAPHICS_ACTION_ID, hasOutputs, this::copyCurrentOutput),
+        Triple(ZOOM_GRAPHICS_ACTION_ID, hasOutputs, this::zoomCurrentOutput),
+        Triple(CLEAR_GRAPHICS_ACTION_ID, hasOutputs, this::clearCurrentOutput)
       ),
       listOf(
-        Triple(CLEAR_ALL_GRAPHICS_ACTION_ID, hasSnapshots, this::clearAllSnapshots)
+        Triple(CLEAR_ALL_GRAPHICS_ACTION_ID, hasOutputs, this::clearAllOutputs)
       ),
       listOf(
         Triple(TUNE_GRAPHICS_DEVICE_ACTION_ID, { true }, this::showSettingsDialog)
@@ -154,94 +168,73 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     }
   }
 
-  private fun moveToPreviousSnapshot() {
+  private fun moveToPreviousOutput() {
     lastIndex--
     showCurrent()
-    postSnapshotNumber()
+    postOutputNumber()
   }
 
-  private fun moveToNextSnapshot() {
+  private fun moveToNextOutput() {
     lastIndex++
     showCurrent()
-    postSnapshotNumber()
+    postOutputNumber()
   }
 
-  private fun exportCurrentSnapshot() {
-    lastFile?.absolutePath?.let { imagePath ->
-      val imageSize = getAdjustedScreenDimension()
-      if (imageSize.isValid) {
-        RGraphicsExportDialog(project, project, imagePath, imageSize).show()
-      }
-    }
+  private fun exportCurrentOutput() {
+    TODO()
   }
 
-  private fun copyCurrentSnapshot() {
-    graphicsPanel.image?.let { image ->
-      ClipboardUtils.copyImageToClipboard(image)
-    }
+  private fun copyCurrentOutput() {
+    TODO()
   }
 
-  private fun zoomCurrentSnapshot() {
-    lastFile?.absolutePath?.let { imagePath ->
-      RGraphicsZoomDialog(project, project, imagePath).show()
-    }
+  private fun zoomCurrentOutput() {
+    TODO()
   }
 
-  private fun clearCurrentSnapshot() {
+  private fun clearCurrentOutput() {
     lastNumber?.let { number ->
-      repository.clearSnapshot(number)
+      repository.clearOutput(number)
     }
   }
 
-  private fun clearAllSnapshots() {
-    repository.clearAllSnapshots()
+  private fun clearAllOutputs() {
+    repository.clearAllOutputs()
   }
 
   private fun showSettingsDialog() {
-    val panelDimension = getAdjustedScreenDimension()
-    val initialParameters = getInitialScreenParameters()
-    RGraphicsSettingsDialog(panelDimension, initialParameters, isAutoResizeEnabled) { parameters, isEnabled ->
-      // Note: if auto resize is enabled, you can assume here that
-      // `parameters.dimension` equals to current panel size
-      // so there is no need to call `postScreenDimension()`
-      RGraphicsSettings.setScreenParameters(project, parameters)
-      graphicsPanel.isAdvancedMode = !isEnabled
-      isAutoResizeEnabled = isEnabled
-      repository.apply {
-        configuration?.let { oldConfiguration ->
-          configuration = oldConfiguration.copy(screenParameters = parameters)
-        }
-      }
-    }.show()
-  }
-
-  private fun getInitialScreenParameters(): RGraphicsUtils.ScreenParameters {
-    return repository.configuration?.screenParameters ?: RGraphicsSettings.getScreenParameters(project)
+    TODO()
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
-    return graphicsPanel.imageComponentSize
+    return if (isStandalone) plotViewer.size else graphicsPanel.imageComponentSize
   }
 
-  private fun postScreenDimension() {
+  private fun postScreenParametersIfNeeded() {
+    if (!isStandalone) {
+      postScreenParameters()
+    }
+  }
+
+  private fun postScreenParameters() {
     val newDimension = getAdjustedScreenDimension()
     if (newDimension.isValid) {
       RGraphicsSettings.setScreenDimension(project, newDimension)
       repository.configuration?.let { oldConfiguration ->
         val parameters = oldConfiguration.screenParameters
-        val newParameters = parameters.copy(dimension = newDimension)
+        val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
         repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
       }
     }
   }
 
-  private fun postSnapshotNumber() {
+  private fun postOutputNumber() {
     repository.configuration?.let { oldConfiguration ->
       repository.configuration = oldConfiguration.copy(snapshotNumber = lastNumber)
     }
   }
 
-  private fun loadSnapshotNumber(): Int? {
+  private fun loadOutputNumber(): Int? {
     return repository.configuration?.snapshotNumber
   }
 
@@ -268,8 +261,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   companion object {
-    const val TOOL_WINDOW_ID = "R Graphics"
-
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private const val RESIZE_TIME_SPAN = 500
@@ -283,9 +274,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private const val CLEAR_ALL_GRAPHICS_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RClearAllGraphicsAction"
     private const val TUNE_GRAPHICS_DEVICE_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
 
-    private val EXPORT_GRAPHICS_DESCRIPTOR_TITLE = RBundle.message("graphics.panel.file.saver.title")
-    private val EXPORT_GRAPHICS_DESCRIPTOR_DESCRIPTION = RBundle.message("graphics.panel.file.saver.description")
-    private val EXPORT_GRAPHICS_FAILURE_HEADER = RBundle.message("graphics.panel.file.saver.failure.header")
+    private val RESCALING_HINT = RBundle.message("graphics.panel.rescaling.hint")
 
     private val DARK_MODE_TITLE = RBundle.message("graphics.panel.action.darkMode.title")
     private val DARK_MODE_DESCRIPTION = RBundle.message("graphics.panel.action.darkMode.description")
@@ -293,13 +282,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private val Dimension.isValid: Boolean
       get() = width > 0 && height > 0
 
-    private fun createDestinationFile(file: File) {
-      if (!file.exists() && !file.createNewFile()) {
-        throw RuntimeException(RBundle.message("graphics.panel.file.saver.failure.details"))
-      }
-    }
-
-    private fun List<RSnapshot>.indexWith(number: Int): Int? {
+    private fun List<RGraphicsOutput>.indexWith(number: Int): Int? {
       return indexOfLast { it.number == number }.takeIf { it >= 0 }
     }
   }

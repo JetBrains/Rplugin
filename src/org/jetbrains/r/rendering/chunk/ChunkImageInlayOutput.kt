@@ -106,9 +106,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   private fun zoomImage() {
-    wrapper.imagePath?.let { path ->
-      RGraphicsZoomDialog(project, parent, path).show()
-    }
+    TODO()
   }
 
   private fun canZoomImage(): Boolean {

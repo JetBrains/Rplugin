@@ -14,7 +14,7 @@ class RGraphicsToolWindowListener(project: Project) : (RGraphicsUpdate) -> Unit 
   private val invoker = RNonStealingToolWindowInvoker(project, RToolWindowFactory.PLOTS)
 
   override fun invoke(update: RGraphicsUpdate) {
-    if (update is RGraphicsCompletedUpdate && update.snapshots.isEmpty()) {
+    if (update is RGraphicsCompletedUpdate && update.outputs.isEmpty()) {
       return
     }
     invoker.showWindow()

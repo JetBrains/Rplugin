@@ -39,9 +39,7 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
     graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
     RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
     graphicsDevice.addListener { update ->
-      if (update is RGraphicsCompletedUpdate) {
-        currentSnapshots = update.snapshots
-      }
+      TODO()
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     graphicsManager = ChunkGraphicsManager(project)

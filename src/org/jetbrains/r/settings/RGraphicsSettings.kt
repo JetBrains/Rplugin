@@ -45,6 +45,14 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
     }
 
+    fun isStandalone(project: Project): Boolean {
+      return getInstance(project).state.isStandalone
+    }
+
+    fun setStandalone(project: Project, value: Boolean) {
+      getInstance(project).state.isStandalone = value
+    }
+
     fun getImageNumber(project: Project): Int {
       return getInstance(project).state.imageNumber
     }
@@ -82,4 +90,5 @@ class RGraphicsSettingsState : BaseState() {
   var imageNumber: Int by property(0)
   var outputDirectory: String? by string()
   var darkMode: Boolean by property(true)
+  var isStandalone: Boolean by property(true)
 }

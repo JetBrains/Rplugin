@@ -58,13 +58,13 @@ class RGraphicsRepository(private val project: Project) {
   }
 
   @Synchronized
-  fun clearSnapshot(number: Int) {
-    currentDevice?.clearSnapshot(number)
+  fun clearOutput(number: Int) {
+    currentDevice?.clearOutput(number)
   }
 
   @Synchronized
-  fun clearAllSnapshots() {
-    currentDevice?.clearAllSnapshots()
+  fun clearAllOutputs() {
+    currentDevice?.clearAllOutputs()
   }
 
   @Synchronized

@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
+import org.jetbrains.r.settings.RGraphicsSettings
 import java.io.File
 
 class RGraphicsDevice(
@@ -18,10 +19,11 @@ class RGraphicsDevice(
   inMemory: Boolean
 ) {
 
-  private var lastNormal = emptyList<RSnapshot>()
+  private var lastOutputs = emptyList<RGraphicsOutput>()
+  private var deviceDirectory: String? = null
 
   private val directory2GroupPromises = mutableMapOf<String, Promise<DeviceGroup>>()
-  private val number2SnapshotInfos = mutableMapOf<Int, SnapshotInfo>()
+  private val number2OutputInfos = mutableMapOf<Int, OutputInfo>()
   private val listeners = mutableListOf<(RGraphicsUpdate) -> Unit>()
   private val devicePromise = AsyncPromise<Unit>()
 
@@ -29,57 +31,64 @@ class RGraphicsDevice(
   private val queue = RGraphicsRescaleQueue(deviceId, rInterop)
 
   @Volatile
-  var lastUpdate: RGraphicsUpdate = RGraphicsCompletedUpdate(lastNormal)
+  var lastUpdate: RGraphicsUpdate = RGraphicsCompletedUpdate(lastOutputs)
     private set
 
   var configuration: Configuration = Configuration(initialParameters, null)
     set(value) {
       field = value
       value.snapshotNumber?.let { number ->
-        number2SnapshotInfos[number]?.parameters?.let { previousParameters ->
-          val newParameters = value.screenParameters
-          if (previousParameters != newParameters) {
-            rescaleInMemoryAsync(number, newParameters)
+        if (!RGraphicsSettings.isStandalone(rInterop.project)) {
+          number2OutputInfos[number]?.let { info ->
+            if (info.output.snapshot == null || info.parameters != value.screenParameters) {
+              rescaleInMemoryAsync(number, value.screenParameters)
+            }
           }
         }
       }
     }
 
   init {
-    val parameters = RGraphicsUtils.createParameters(initialParameters)
-    val result = rInterop.graphicsInit(parameters, inMemory)
-    val stderr = result.stderr
-    if (stderr.isNotBlank()) {
-      devicePromise.setError(stderr)
-      LOGGER.error(stderr)
-    } else {
-      devicePromise.setResult(Unit)
+    try {
+      val parameters = RGraphicsUtils.createParameters(initialParameters)
+      val result = rInterop.graphicsInit(parameters, inMemory)
+      val stderr = result.stderr
+      if (stderr.isNotBlank()) {
+        devicePromise.setError(stderr)
+        LOGGER.error(stderr)
+      } else {
+        deviceDirectory = extractGroupIdFrom(result.stdout)
+        devicePromise.setResult(Unit)
+      }
+    } catch (e: Exception) {
+      devicePromise.setError(e)
+      LOGGER.error(e)
     }
   }
 
   fun update() {
-    dumpAndRescaleLastAsync(configuration.screenParameters)
+    dumpLastAsync()
   }
 
   fun reset() {
     // Nothing to do here
   }
 
-  fun clearSnapshot(number: Int) {
-    lastNormal = removeSnapshotByNumber(lastNormal, number)
-    number2SnapshotInfos.remove(number)
+  fun clearOutput(number: Int) {
+    lastOutputs = removeOutputByNumber(lastOutputs, number)
+    number2OutputInfos.remove(number)
     postCompletedUpdate()
   }
 
-  fun clearAllSnapshots() {
-    deleteSnapshots(lastNormal, true)
-    lastNormal = listOf()
-    number2SnapshotInfos.clear()
+  fun clearAllOutputs() {
+    deleteOutputs(lastOutputs)
+    lastOutputs = listOf()
+    number2OutputInfos.clear()
     postCompletedUpdate()
   }
 
   fun dumpAndShutdownAsync(): Promise<Unit> {
-    return dumpAllAsync().then<Unit> {  // Note: explicit cast `RIExecutionResult` -> `Unit`
+    return dumpLastAsync().then<Unit> {  // Note: explicit cast `RIExecutionResult` -> `Unit`
       rInterop.graphicsShutdown()
     }.onProcessed {
       rInterop.graphicsDeviceManager.unregisterLastDevice()
@@ -132,10 +141,6 @@ class RGraphicsDevice(
     return stdout.substring(5, stdout.length - 2)
   }
 
-  private fun dumpAllAsync(): Promise<Unit> {
-    return dumpAndRescaleLastAsync(null)
-  }
-
   fun rescaleStoredAsync(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters): Promise<RSnapshot?> {
     return createDeviceGroupIfNeededAsync(snapshot.file.parentFile).thenAsync { group ->
       val hint = createHintForStored(snapshot.number)
@@ -173,14 +178,14 @@ class RGraphicsDevice(
       }
       promise.thenIfTrue {
         pullInMemorySnapshot(snapshotNumber)?.let { pulled ->
-          onNewSnapshots(listOf(pulled), parameters, snapshotNumber)
+          onNewSnapshot(pulled, parameters, snapshotNumber)
         }
       }
     }
   }
 
-  private fun dumpAndRescaleLastAsync(parameters: RGraphicsUtils.ScreenParameters?): Promise<Unit> {
-    return queue.submit(null, parameters) {
+  private fun dumpLastAsync(): Promise<Unit> {
+    return queue.submit(null, null) {
       val promise = executeWithLogAsync(createHintForInMemory(null)) {
         rInterop.graphicsDump()
       }
@@ -188,9 +193,9 @@ class RGraphicsDevice(
         if (number2Parameters.isEmpty()) {
           return@then
         }
-        val pulled = pullAndRescaleInMemory(number2Parameters, parameters)
+        val pulled = pullInMemoryOutputs(number2Parameters)
         if (pulled.isNotEmpty()) {
-          onNewSnapshots(pulled, parameters, null)
+          onNewOutputs(pulled, null, null)
         }
       }
     }
@@ -229,43 +234,49 @@ class RGraphicsDevice(
     }
   }
 
-  private fun onNewSnapshots(pulledSnapshots: List<RSnapshot>, parameters: RGraphicsUtils.ScreenParameters?, tracedSnapshotNumber: Int?) {
-    for (snapshot in pulledSnapshots) {
-      val snapshotInfo = SnapshotInfo(snapshot, parameters ?: configuration.screenParameters)
-      number2SnapshotInfos[snapshot.number] = snapshotInfo
+  private fun onNewSnapshot(snapshot: RSnapshot, parameters: RGraphicsUtils.ScreenParameters, tracedSnapshotNumber: Int) {
+    number2OutputInfos[snapshot.number]?.let { info ->  // Note: must always be not null
+      val output = info.output.copy(snapshot = snapshot)
+      onNewOutputs(listOf(output), parameters, tracedSnapshotNumber)
     }
-    lastNormal = collectLatestSnapshots()
+  }
+
+  private fun onNewOutputs(outputs: List<RGraphicsOutput>, parameters: RGraphicsUtils.ScreenParameters?, tracedSnapshotNumber: Int?) {
+    for (output in outputs) {
+      val outputInfo = OutputInfo(output, parameters)
+      number2OutputInfos[output.number] = outputInfo
+    }
+    lastOutputs = collectLatestOutputs()
     postSnapshotNumber(tracedSnapshotNumber)
     postCompletedUpdate()
   }
 
-  private fun collectLatestSnapshots(): List<RSnapshot> {
-    return number2SnapshotInfos.values.map { it.snapshot }.sortedBy { it.number }
+  private fun collectLatestOutputs(): List<RGraphicsOutput> {
+    return number2OutputInfos.values.map { it.output }.sortedBy { it.number }
   }
 
-  private fun pullAndRescaleInMemory(
-    number2Parameters: Map<Int, RGraphicsUtils.ScreenParameters>,
-    parameters: RGraphicsUtils.ScreenParameters?
-  ): List<RSnapshot> {
+  private fun pullInMemoryOutputs(number2Parameters: Map<Int, RGraphicsUtils.ScreenParameters>): List<RGraphicsOutput> {
     return try {
       number2Parameters.asIterable().withIndex().mapNotNull { (index, entry) ->
         postLoadingUpdate(index, number2Parameters.size)
-        val (number, actualParameters) = entry
-        if (parameters != null && actualParameters != parameters) {
-          val result = rInterop.graphicsRescale(number, parameters)
-          parseExecutionResult(result, createHintForInMemory(number))
+        val number = entry.key
+        val recordedFileName = RSnapshot.createRecordedFileName(number)
+        deviceDirectory?.let { remoteDirectory ->
+          pullFile(recordedFileName, remoteDirectory, shadowDirectory)?.let {
+            val plot = RPlotUtil.convert(rInterop.graphicsFetchPlot(number), number)
+            RGraphicsOutput(number, null, plot)
+          }
         }
-        pullInMemorySnapshot(number)
       }
     } catch (e: Exception) {
-      LOGGER.error("Cannot rescale last in-memory snapshots", e)
+      LOGGER.error("Cannot pull last in-memory outputs", e)
       emptyList()
     }
   }
 
   private fun pullInMemorySnapshot(number: Int): RSnapshot? {
-    val previous = number2SnapshotInfos[number]?.snapshot
-    val withRecorded = !number2SnapshotInfos.containsKey(number)
+    val previous = number2OutputInfos[number]?.output?.snapshot
+    val withRecorded = !number2OutputInfos.containsKey(number)
     return pullSnapshotTo(shadowDirectory, number, previous, groupId = null, withRecorded = withRecorded)
   }
 
@@ -329,7 +340,7 @@ class RGraphicsDevice(
   }
 
   private fun postCompletedUpdate() {
-    lastUpdate = RGraphicsCompletedUpdate(lastNormal)
+    lastUpdate = RGraphicsCompletedUpdate(lastOutputs)
     notifyListenersOnUpdate()
   }
 
@@ -349,7 +360,7 @@ class RGraphicsDevice(
     val snapshotNumber: Int?
   )
 
-  private data class SnapshotInfo(val snapshot: RSnapshot, val parameters: RGraphicsUtils.ScreenParameters)
+  private data class OutputInfo(val output: RGraphicsOutput, val parameters: RGraphicsUtils.ScreenParameters?)
 
   /*
    * Abstraction of (potentially remote) directory where a graphics device
@@ -381,7 +392,7 @@ class RGraphicsDevice(
       return if (type != RSnapshotType.SKETCH) {
         Pair(type, snapshots.groupAndShrinkBy { it.version })
       } else {
-        deleteSnapshots(snapshots, false)
+        deleteSnapshots(snapshots)
         null
       }
     }
@@ -403,25 +414,30 @@ class RGraphicsDevice(
       }
     }
 
-    private fun removeSnapshotByNumber(snapshots: List<RSnapshot>, number: Int): List<RSnapshot> {
-      val snapshot = snapshots.find { it.number == number }
-      return if (snapshot != null) {
-        if (snapshot.file.delete()) {
-          snapshot.recordedFile.delete()
-          snapshots.minus(snapshot)
-        } else {
-          snapshots
+    private fun removeOutputByNumber(outputs: List<RGraphicsOutput>, number: Int): List<RGraphicsOutput> {
+      val output = outputs.find { it.number == number }
+      return if (output != null) {
+        output.snapshot?.apply {
+          recordedFile.delete()
+          file.delete()
         }
+        outputs.minus(output)
       } else {
-        snapshots
+        outputs
       }
     }
 
-    private fun deleteSnapshots(snapshots: List<RSnapshot>, deleteRecorded: Boolean) {
-      for (snapshot in snapshots) {
-        if (deleteRecorded) {
-          snapshot.recordedFile.delete()
+    private fun deleteOutputs(outputs: List<RGraphicsOutput>) {
+      for (output in outputs) {
+        output.snapshot?.apply {
+          recordedFile.delete()
+          file.delete()
         }
+      }
+    }
+
+    private fun deleteSnapshots(snapshots: List<RSnapshot>) {
+      for (snapshot in snapshots) {
         snapshot.file.delete()
       }
     }
