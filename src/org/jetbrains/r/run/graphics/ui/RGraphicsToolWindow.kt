@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
+import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.components.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -185,7 +186,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun copyCurrentOutput() {
-    TODO()
+    lastOutput?.let { output ->
+      val image = if (isStandalone) RPlotUtil.createImage(output.plot, plotViewer.parameters) else graphicsPanel.image
+      if (image != null) {
+        ClipboardUtils.copyImageToClipboard(image)
+      }
+    }
   }
 
   private fun zoomCurrentOutput() {

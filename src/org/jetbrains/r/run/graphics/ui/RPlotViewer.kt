@@ -26,12 +26,14 @@ class RPlotViewer : JComponent() {
       }
     }
 
+  val parameters: RGraphicsUtils.ScreenParameters
+    get() = RGraphicsUtils.ScreenParameters(size, resolution)
+
   override fun paintComponent(g: Graphics) {
     super.paintComponent(g)
     plot?.let { plot ->
       if (g is Graphics2D) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        val parameters = RGraphicsUtils.ScreenParameters(size, resolution)
         val provider = RCanvasPlotterProvider(parameters, g)
         RPlotUtil.replay(plot, provider)
       }

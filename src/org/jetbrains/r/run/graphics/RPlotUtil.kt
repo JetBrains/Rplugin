@@ -1,8 +1,12 @@
 package org.jetbrains.r.run.graphics
 
+import com.intellij.util.ui.ImageUtil
 import org.jetbrains.r.rinterop.*
 import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
 
 object RPlotUtil {
   fun convert(plot: Plot, number: Int): RPlot {
@@ -79,6 +83,15 @@ object RPlotUtil {
 
   private fun convert(point: AffinePoint): RAffinePoint {
     return RAffinePoint(point.xScale, point.xOffset, point.yScale, point.yOffset)
+  }
+
+  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters): BufferedImage {
+    return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
+      val graphics = image.graphics as Graphics2D
+      graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+      val provider = RCanvasPlotterProvider(parameters, graphics)
+      replay(plot, provider)
+    }
   }
 
   fun replay(plot: RPlot, provider: RPlotterProvider) {
