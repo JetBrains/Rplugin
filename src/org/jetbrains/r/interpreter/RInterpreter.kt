@@ -46,7 +46,7 @@ interface RInterpreter : RInterpreterInfo {
   }
 
   fun downloadFileFromHost(path: String, localPath: String) {
-    File(path).takeIf { it.exists() }?.copyTo(File(localPath))
+    File(path).takeIf { it.exists() }?.copyTo(File(localPath), overwrite = true)
   }
 
   fun getHelpersRootOnHost(): String = RPluginUtil.helpersPath
