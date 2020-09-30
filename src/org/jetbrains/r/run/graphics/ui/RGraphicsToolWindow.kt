@@ -203,7 +203,20 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun showSettingsDialog() {
-    TODO()
+    RGraphicsSettingsDialogEx.show(resolution, isStandalone) { newResolution, newStandalone ->
+      if (newResolution != resolution) {
+        val oldParameters = RGraphicsSettings.getScreenParameters(project)
+        val newParameters = oldParameters.copy(resolution = newResolution)
+        RGraphicsSettings.setScreenParameters(project, newParameters)
+        resolution = newResolution
+      }
+      if (newStandalone != isStandalone) {
+        RGraphicsSettings.setStandalone(project, newStandalone)
+        isStandalone = newStandalone
+      }
+      showCurrent()
+      postScreenParametersIfNeeded()
+    }
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
