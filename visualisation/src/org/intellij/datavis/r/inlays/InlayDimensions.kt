@@ -32,9 +32,7 @@ object InlayDimensions {
   const val rightBorderUnscaled = 0
 
   /** If multi-output inlay height exceeds this value its height falls back to [multiOutputDefaultHeight]. */
-  var multiOutputHeightThreshold: Int = 500
-    get() = 2 * Toolkit.getDefaultToolkit().screenSize.height / 3
-    private set
+  val multiOutputHeightThreshold: Int = 2 * Toolkit.getDefaultToolkit().screenSize.height / 3
 
   const val multiOutputDefaultHeight = 300
 
