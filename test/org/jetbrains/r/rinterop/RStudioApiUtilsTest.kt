@@ -236,6 +236,19 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
                           myFixture.editor.caretModel.allCarets.filter { it.hasSelection() }.map { it.selectionStart to it.selectionEnd })
   }
 
+  fun testBasic_setSelectionRangesWithOutOfBounds() {
+    myFixture.configureByText("foo.R", """
+      a <- 3
+      # b
+    """.trimIndent())
+    console.executeText("""
+      |cntx <- rstudioapi::getSourceEditorContext()
+      |rstudioapi::setSelectionRanges(c(20, 4, 2, 1), cntx${"$"}id)
+    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals(listOf("# b"),
+                          myFixture.editor.caretModel.allCarets.filter { it.hasSelection() }.map { it.selectedText })
+  }
+
   fun testBasic_setSelectionRangesWithRepeatedCalls() {
     myFixture.configureByText("foo.R", """
       a <- 3

@@ -26,7 +26,6 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
-import kotlin.math.min
 import kotlin.streams.toList
 
 object DocumentUtils {
@@ -122,35 +121,16 @@ object DocumentUtils {
     }
 
     for (insertion in insertions) {
-      val range = insertion.list.getRObjects(0).rInt.intsList
+      val range = insertion.list.getRObjects(0).rInt.intsList.map { it.toInt() }.let {
+        listOf(it[0] to it[1], it[2] to it[3])
+      }.sortedWith(compareBy({ it.first }, { it.second }))
       WriteCommandAction.runWriteCommandAction(rInterop.project) {
-        when {
-          range[0] >= document.lineCount -> {
-            document.insertString(document.getLineEndOffset(if (document.lineCount == 0) 0 else document.lineCount - 1),
-                                  insertion.list.getRObjects(1).rString.getStrings(0))
-          }
-          range[2] >= document.lineCount -> {
-            document.setText(insertion.list.getRObjects(1).rString.getStrings(0))
-          }
-          else -> {
-            val (startPos, endPos) = listOf(0, 2).map {
-              if (document.getLineEndOffset(range[it].toInt()) - document.getLineStartOffset(range[it].toInt()) <
-                  range[it + 1].toInt()) {
-                document.getLineEndOffset(range[it].toInt()) - document.getLineStartOffset(range[it].toInt())
-              }
-              else {
-                range[it + 1].toInt()
-              }
-            }
-            document.replaceString(
-              document.getLineStartOffset(range[0].toInt()) +
-              startPos,
-              document.getLineStartOffset(range[2].toInt()) +
-              endPos,
-              insertion.list.getRObjects(1).rString.getStrings(0)
-            )
-          }
-        }
+        val offset = convertRanges(range, document)
+        document.replaceString(
+          offset.first,
+          offset.second,
+          insertion.list.getRObjects(1).rString.getStrings(0)
+        )
       }
     }
     return getRNull()
@@ -162,12 +142,12 @@ object DocumentUtils {
     val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
     editors.map { editor ->
       editor.caretModel.caretsAndSelections = ranges.map { r ->
-        val (selectionStart, selectionEnd) = listOf(0, 2).map { pos ->
-          editor.offsetToLogicalPosition(
-            min(document.getLineEndOffset(r[pos]), document.getLineStartOffset(r[pos]) + r[pos + 1])
-          )
-        }
-        CaretState(selectionEnd, selectionStart, selectionEnd)
+        val range = r.let {
+          listOf(it[0] to it[1], it[2] to it[3])
+        }.sortedWith(compareBy({ it.first }, { it.second }))
+        val (selectionStart, selectionEnd) = convertRanges(range, document)
+        CaretState(editor.offsetToLogicalPosition(selectionEnd), editor.offsetToLogicalPosition(selectionStart),
+                   editor.offsetToLogicalPosition(selectionEnd))
       }
     }
     return getRNull()
@@ -307,6 +287,29 @@ object DocumentUtils {
       file?.let { FileDocumentManager.getInstance().getDocument(file) }
     }
   }
+
+  private fun convertRanges(rng: List<Pair<Int, Int>>, document: Document): Pair<Int, Int> {
+    val lastLine = if (document.lineCount == 0) 0 else document.lineCount - 1
+    val line = listOf(rng[0], rng[1]).map {
+      if (it.first < document.lineCount) it.first else lastLine
+    }
+    val (startPos, endPos) = listOf(0, 1).map {
+      when {
+        rng[it].first >= document.lineCount -> {
+          document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it])
+        }
+        document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it]) < rng[it].second -> {
+          document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it])
+        }
+        else -> {
+          rng[it].second
+        }
+      }
+    }
+    return document.getLineStartOffset(line[0]) + startPos to
+      document.getLineStartOffset(line[1]) + endPos
+  }
 }
+
 
 
