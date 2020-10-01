@@ -39,7 +39,7 @@ object InlayDimensions {
       // Can happen in a test environment when `HeadlessToolkit` is used.
       return@lazy 500
     }
-    2 * screenSize.height / 3
+    3 * screenSize.height / 4
   }
 
   const val multiOutputDefaultHeight = 300
