@@ -25,7 +25,7 @@ class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
   }
 
   fun testDplyrInternal() {
-    completeSingle("dplyr:::stop_filter_n<caret>", "dplyr:::stop_filter_named(<caret>)")
+    completeSingle("dplyr:::abort_case_when_formu<caret>", "dplyr:::abort_case_when_formula(<caret>)")
   }
 
   private fun doTest(text: String, vararg variants: String) {
@@ -38,6 +38,7 @@ class NamespaceCompletionTest : RLightCodeInsightFixtureTestCase() {
   private fun completeSingle(@Language("R") text: String, @Language("R") expected: String) {
     myFixture.configureByText("foo.R", text)
     val completion = myFixture.completeBasic()
+    LOG.warn("")
     assertNull("Got ${completion?.joinToString(", ") { it.lookupString }} instead of null", completion) // means a single variant completed
     myFixture.checkResult(expected)
   }
