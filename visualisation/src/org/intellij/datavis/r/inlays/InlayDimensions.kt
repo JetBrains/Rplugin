@@ -42,7 +42,7 @@ object InlayDimensions {
     3 * screenSize.height / 4
   }
 
-  val multiOutputDefaultHeight = multiOutputHeightThreshold
+  val multiOutputDefaultHeight: Int by lazy { multiOutputHeightThreshold }
 
   /** Real borders for inner inlay component */
   val topBorder = JBUI.scale(topBorderUnscaled)
