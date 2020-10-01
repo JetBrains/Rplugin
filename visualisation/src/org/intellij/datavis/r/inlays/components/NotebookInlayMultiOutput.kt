@@ -23,6 +23,7 @@ import java.awt.Insets
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.JScrollBar
 
 /** Page control with table and chart pages. */
 class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : NotebookInlayState() {
@@ -59,10 +60,9 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
       background = UiCustomizer.instance.getTextOutputBackground(editor)
     }
 
-    scrollPane = JBScrollPane(outputsPanel).apply {
+    scrollPane = MultiOutputScrollPane(outputsPanel).apply {
       MouseWheelUtils.wrapMouseWheelListeners(this, parent)
       mainPanel.add(this, BorderLayout.CENTER)
-      border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 0, 0))
     }
 
     mainPanel.add(createToolbar(), BorderLayout.LINE_END)
@@ -128,6 +128,37 @@ class NotebookInlayMultiOutput(val editor: Editor, parent: Disposable) : Noteboo
     return ToolbarUtil.createEllipsisToolbar(listOf(createClearAction())).apply {
       isOpaque = true
       background = UiCustomizer.instance.getTextOutputBackground(editor)
+    }
+  }
+}
+
+/** A scroll pane that always shows the scroll bars. */
+private class MultiOutputScrollPane(private val view: JComponent) : JBScrollPane(view) {
+  init {
+    border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 0, 0))
+    setScrollBars()
+    setCorners()
+  }
+
+  private fun setScrollBars() {
+    setScrollBar(verticalScrollBar)
+    setScrollBar(horizontalScrollBar)
+  }
+
+  private fun setScrollBar(scrollBar: JScrollBar) {
+    scrollBar.apply {
+      isOpaque = true
+      background = view.background
+    }
+  }
+
+  private fun setCorners() {
+    setCorner(LOWER_RIGHT_CORNER, Corner())
+  }
+
+  private inner class Corner : JPanel() {
+    init {
+      background = view.background
     }
   }
 }
