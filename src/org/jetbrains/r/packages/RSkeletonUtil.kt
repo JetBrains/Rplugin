@@ -330,8 +330,18 @@ object RSkeletonUtil {
 
     override fun onTerminated(exitCode: Int, stderr: String) {
       if (exitCode != 0) {
-        LOG.error("Failed to generate skeleton for '" + rPackages[curPackage] + "'. The error was:\n\n" + stderr +
-                  "\n\nIf you think this issue with plugin and not your R installation, please file a ticket")
+        val errorSuffix = """
+          The error was:
+          
+          $stderr
+          
+          If you think this issue with plugin and not your R installation, please file a ticket
+        """.trimIndent()
+        if (curPackage < rPackages.size) {
+          LOG.error("Failed to generate skeleton for '" + rPackages[curPackage] + "'. $errorSuffix")
+        } else {
+          LOG.error("Skeleton generation has not zero exit code. $errorSuffix")
+        }
         if (curPackage < rPackages.size - 1) {
           runSkeletonHelper() // Rerun helper for tail
           return
