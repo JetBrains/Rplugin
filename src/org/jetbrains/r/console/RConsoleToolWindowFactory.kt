@@ -147,8 +147,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       content.putUserData(CONSOLE_CONTENT_KEY, Unit)
       val indexOfPlaceholder = contentManager.contents.indexOfFirst { isPlaceholder(it) }
       if (indexOfPlaceholder >= 0) {
-        contentManager.removeContent(contentManager.getContent(indexOfPlaceholder)!!, true)
+        val oldContent = contentManager.getContent(indexOfPlaceholder)!!
         contentManager.addContent(content, indexOfPlaceholder)
+        contentManager.setSelectedContent(content)
+        contentManager.removeContent(oldContent, true)
       }
       else {
         val lastConsoleIndex = contentManager.contents.indexOfLast { isConsole(it) }
@@ -175,8 +177,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val toolWindow = getRConsoleToolWindows(console.project) ?: return
       val content = getConsoleContent(console) ?: return
       val index = toolWindow.contentManager.getIndexOfContent(content)
-      Disposer.dispose(console.rInterop)
-      console.rInterop.executeOnTermination {
+      val rInterop = console.rInterop
+      rInterop.state.cancelStateUpdating()
+      Disposer.dispose(rInterop)
+      rInterop.executeOnTermination {
         invokeLater {
           val interpreter = console.interpreter
           val workingDir = console.rInterop.workingDir.takeIf { it.isNotEmpty() } ?: interpreter.basePath

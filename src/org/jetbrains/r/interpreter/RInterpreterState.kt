@@ -17,11 +17,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.PsiDocumentManagerImpl
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.common.ExpiringList
 import org.jetbrains.r.common.emptyExpiringList
@@ -62,6 +62,8 @@ interface RInterpreterState {
   fun getSkeletonFileByPackageName(name: String): PsiFile?
 
   fun updateState(): Promise<Unit>
+
+  fun cancelStateUpdating()
 
   fun scheduleSkeletonUpdate(): Promise<Unit>
 
@@ -143,14 +145,47 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     }
   }
 
+  @Synchronized
+  override fun cancelStateUpdating() {
+    (updatePromise as? AsyncPromise<Unit>)?.cancel()
+  }
+
   private fun createUpdatePromise(): Promise<Unit> {
-    return runAsync { doUpdateState() }
-      .onProcessed { resetUpdatePromise() }
-      .onError {
-        if (it !is IllegalStateException) {
-          LOG.error("Unable to update state", it)
-        }
+    val promise = AsyncPromise<Unit>()
+    val asyncEventsListener = object : RInterop.AsyncEventsListener {
+      override fun onTermination() {
+        promise.setError(IllegalStateException("RInterop had been terminated during state updating"))
       }
+    }
+
+    promise.onProcessed {
+      rInterop.removeAsyncEventsListener(asyncEventsListener)
+      resetUpdatePromise()
+    }.onError { e ->
+      if (!promise.isCancelled) {
+        LOG.error("Unable to update state", e)
+      }
+    }
+
+    rInterop.addAsyncEventsListener(asyncEventsListener)
+    if (!rInterop.isAlive) {
+      rInterop.removeAsyncEventsListener(asyncEventsListener)
+      return promise.also {
+        it.setError(IllegalStateException("RInterop had been terminated before state updating"))
+      }
+    }
+
+    AppExecutorUtil.getAppExecutorService().execute {
+      try {
+        doUpdateState()
+      }
+      catch (e: Throwable) {
+        promise.setError(e)
+        return@execute
+      }
+      promise.setResult(Unit)
+    }
+    return promise
   }
 
   @Synchronized
@@ -160,10 +195,6 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
 
   @Throws(IllegalStateException::class)
   private fun doUpdateState() {
-    if (!rInterop.isAlive) throw IllegalStateException("RInterop is dead")
-    if (interpreterLocation != RInterpreterManager.getInterpreterOrNull(project)?.interpreterLocation) {
-      throw IllegalStateException("RInterop is out of date")
-    }
     updateEpoch.incrementAndGet()
     val installedPackages = makeExpiring(rInterop.loadInstalledPackages())
     val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
@@ -235,7 +266,11 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
   }
 
   private fun loadLibraryPaths(): List<RInterpreterState.LibraryPath> {
-    return rInterop.loadLibPaths().toList().also { if (it.isEmpty()) LOG.error("Got empty library paths") }
+    return rInterop.loadLibPaths().toList().also {
+      if (it.isEmpty()) {
+        throw RuntimeException("Got empty library paths")
+      }
+    }
   }
 
   @Synchronized
@@ -246,13 +281,7 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
   }
 
   private fun createSkeletonPromise(): Promise<Unit> {
-    return doScheduleSkeletonUpdate()
-      .onProcessed {
-        resetSkeletonPromise()
-      }
-      .onError { e ->
-        LOG.error("Cannot schedule skeleton update", e)
-      }
+    return doScheduleSkeletonUpdate().onProcessed { resetSkeletonPromise() }
   }
 
   @Synchronized

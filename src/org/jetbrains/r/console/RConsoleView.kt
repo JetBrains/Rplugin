@@ -176,8 +176,10 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     for (listener in onSelectListeners) {
       listener()
     }
-    rInterop.state.scheduleSkeletonUpdate()
-    RToolWindowFactory.refreshPackagePanel(project)
+    if (rInterop.isAlive) {
+      rInterop.state.scheduleSkeletonUpdate()
+      RToolWindowFactory.refreshPackagePanel(project)
+    }
   }
 
   private fun splitWindow(splitView: JComponent) {

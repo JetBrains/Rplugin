@@ -150,6 +150,7 @@ class RConsoleManager(private val project: Project) {
       getContentDescription(project)?.let { description ->
         for ((content, console) in description.contentConsolePairs) {
           if (console.interpreter != interpreter) {
+            console.rInterop.state.cancelStateUpdating()
             description.contentManager.removeContent(content, true)
           }
         }
