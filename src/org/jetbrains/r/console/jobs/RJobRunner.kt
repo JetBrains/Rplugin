@@ -13,6 +13,7 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.util.EventDispatcher
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -27,11 +28,13 @@ import org.jetbrains.r.interpreter.runHelperProcess
 import org.jetbrains.r.rinterop.RInterop
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import java.util.*
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
 @Service
 class RJobRunner(private val project: Project) {
+  internal val eventDispatcher = EventDispatcher.create(Listener::class.java)
 
   fun canRun(): Boolean = RInterpreterManager.getInstance(project).hasInterpreter()
 
@@ -105,6 +108,7 @@ class RJobRunner(private val project: Project) {
       val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
       setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
       val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView)
+      eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
       processHandler.startNotify()
       invokeLater {
         RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
@@ -125,6 +129,10 @@ class RJobRunner(private val project: Project) {
       modifiersField.setInt(field, field.modifiers and Modifier.FINAL.inv())
       field.set(o, newValue)
     }
+  }
+
+  internal interface Listener : EventListener {
+    fun onJobDescriptionCreated(rJobDescriptor: RJobDescriptor)
   }
 
   private fun String.toRString(): String =

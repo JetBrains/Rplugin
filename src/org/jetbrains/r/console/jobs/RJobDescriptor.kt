@@ -34,7 +34,7 @@ class RJobDescriptorImpl(
   private val progressProvider: RJobProgressProvider,
   private val processHandler: ProcessHandler,
   private val consoleView: ConsoleView
-  ): RJobDescriptor {
+): RJobDescriptor {
 
   @Volatile
   private var progressChanged: ((current: Int, total: Int) -> Unit)? = null

@@ -6,8 +6,13 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.vfs.VirtualFileManager
 import junit.framework.TestCase
+import org.jetbrains.concurrency.AsyncPromise
+import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.console.RConsoleBaseTestCase
+import org.jetbrains.r.console.jobs.RJobDescriptor
+import org.jetbrains.r.console.jobs.RJobRunner
+import org.jetbrains.r.console.jobs.RJobRunner.Listener
 import java.nio.file.Paths
 import kotlin.streams.toList
 
@@ -265,30 +270,36 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
 
   fun testBasic_jobRunScript() {
     rInterop.setWorkingDir(myFixture.testDataPath)
+    val promise = createJobDonePromise()
     console.executeText("""
       |c <- 5
       |rstudioapi::jobRunScript("rstudioapi/testJobs.R", importEnv = TRUE, exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    promise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals("[1] 3", (console.consoleRuntimeInfo.variables["a"] as RValueSimple).text)
     TestCase.assertEquals("[1] 8", (console.consoleRuntimeInfo.variables["b"] as RValueSimple).text)
   }
 
   fun testBasic_jobRunScriptWithoutExport() {
     rInterop.setWorkingDir(myFixture.testDataPath)
+    val promise = createJobDonePromise()
     console.executeText("""
       |c <- 5
       |rstudioapi::jobRunScript("rstudioapi/testJobs.R")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    promise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["a"])
   }
 
   fun testBasic_jobRunScriptWithoutImport() {
     rInterop.setWorkingDir(myFixture.testDataPath)
+    val promise = createJobDonePromise()
     console.executeText("""
       |c <- 5
       |id <- rstudioapi::jobRunScript("rstudioapi/testJobs2.R", exportEnv = "R_GlobalEnv")
       |rstudioapi::jobRunScript("rstudioapi/testJobs.R", exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    promise.blockingGet(DEFAULT_TIMEOUT)
     TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["a"])
     TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["b"])
     TestCase.assertEquals("[1] 3", (console.consoleRuntimeInfo.variables["e"] as RValueSimple).text)
@@ -339,5 +350,16 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(2,
                           editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
     TestCase.assertEquals(0, editor.caretModel.primaryCaret.offset)
+  }
+
+  private fun createJobDonePromise(): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    val lambda = object : Listener {
+      override fun onJobDescriptionCreated(rJobDescriptor: RJobDescriptor) {
+        rJobDescriptor.onProcessTerminated { promise.setResult(Unit) }
+      }
+    }
+    RJobRunner.getInstance(project).eventDispatcher.addListener(lambda)
+    return promise
   }
 }
