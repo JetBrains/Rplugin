@@ -21,6 +21,7 @@ interface RJobDescriptor {
   val startedAt: Date
   val duration: Long
   val scriptFile: VirtualFile
+  val name: String?
 
   fun onProgressChanged(lambda: (current: Int, total: Int) -> Unit)
   fun onProcessTerminated(lambda: () -> Unit)
@@ -33,7 +34,8 @@ class RJobDescriptorImpl(
   private val task: RJobTask,
   private val progressProvider: RJobProgressProvider,
   private val processHandler: ProcessHandler,
-  private val consoleView: ConsoleView
+  private val consoleView: ConsoleView,
+  override val name: String? = null
 ): RJobDescriptor {
 
   @Volatile

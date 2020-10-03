@@ -13,6 +13,7 @@ import org.jetbrains.r.rinterop.RObject
 object JobUtils {
   fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {
     val path = args.list.getRObjects(0).rString.getStrings(0)
+    val name = args.list.getRObjects(1).toStringOrNull()
     val filePromise = findFileByPathAtHostHelper(rInterop, path)
     val workingDir = args.list.getRObjects(3).toStringOrNull() ?: PathUtil.getParentPath(path)
     val importEnv = args.list.getRObjects(4).rBoolean.getBooleans(0)
@@ -25,9 +26,10 @@ object JobUtils {
     val promise = AsyncPromise<RObject>()
     filePromise.then {
       if (it != null) {
-        RJobRunner.getInstance(rInterop.project).runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName).then {
-          promise.setResult("${it.hashCode()}".toRString())
-        }
+        RJobRunner.getInstance(rInterop.project)
+          .runRJob(RJobTask(it, workingDir, importEnv, exportEnv), exportEnvName, name).then {
+            promise.setResult("${it.hashCode()}".toRString())
+          }
       }
       else {
         promise.setResult(getRNull())

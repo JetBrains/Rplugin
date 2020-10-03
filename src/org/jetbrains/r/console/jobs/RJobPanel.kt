@@ -322,7 +322,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
   private val rightComponent: JComponent
 
   private var paintUnbounded: Boolean = false
-  private val filename = jobDescriptor.scriptFile.name
+  private val jobName = jobDescriptor.name ?: jobDescriptor.scriptFile.name
   private val directoryName = jobDescriptor.scriptFile.let { file ->
     if (file.isInLocalFileSystem) {
       return@let FileUtil.getLocationRelativeToUserHome(
@@ -448,7 +448,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
     try {
       val logoWidth = rLogo.width + rLogo.insets.left + rLogo.insets.right
       val fm = graphics.getFontMetrics(graphics.font)
-      val filenameWidth = fm.stringWidth(filename)
+      val filenameWidth = fm.stringWidth(jobName)
       val directoryNameWidth = fm.stringWidth(directoryName)
 
       val firstTextWidth = if (unbounded) filenameWidth else width - rLogo.width - LOGO_OFFSET
@@ -468,7 +468,7 @@ internal class JobEntity(val jobDescriptor: RJobDescriptor,
       }
 
       val firstTextRec = Rectangle(x + logoWidth + LOGO_OFFSET, y, firstTextWidth, height)
-      UIUtil.drawCenteredString(graphics, firstTextRec, filename, false, true)
+      UIUtil.drawCenteredString(graphics, firstTextRec, jobName, false, true)
       val oldColor = graphics.color
       graphics.color = infoColor()
       val secondTextRec = Rectangle(x + logoWidth + filenameWidth + LOGO_OFFSET * 2, y, secondTextWidth, height)

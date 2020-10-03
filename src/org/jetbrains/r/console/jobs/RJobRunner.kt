@@ -98,7 +98,7 @@ class RJobRunner(private val project: Project) {
     return Pair(interpreter.createTempFileOnHost("rjob.R", text.toByteArray()), exportFile)
   }
 
-  fun runRJob(task: RJobTask, exportEnvName: String? = null): Promise<RJobDescriptor> {
+  fun runRJob(task: RJobTask, exportEnvName: String? = null, name: String? = null): Promise<RJobDescriptor> {
     val promise = AsyncPromise<RJobDescriptor>()
     run(task, exportEnvName).then { processHandler ->
       val consoleView = ConsoleViewImpl(project, true)
@@ -107,7 +107,7 @@ class RJobRunner(private val project: Project) {
       val rJobProgressProvider = RJobProgressProvider()
       val rSourceProgressInputFilter = RSourceProgressInputFilter(rJobProgressProvider::onProgressAvailable)
       setFinalStatic(consoleView, myInputMessageFilterField.javaField!!, rSourceProgressInputFilter)
-      val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView)
+      val rJobDescriptor = RJobDescriptorImpl(project, task, rJobProgressProvider, processHandler, consoleView, name)
       eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
       processHandler.startNotify()
       invokeLater {

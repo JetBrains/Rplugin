@@ -284,11 +284,10 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     rInterop.setWorkingDir(myFixture.testDataPath)
     val promise = createJobDonePromise()
     console.executeText("""
-      |c <- 5
-      |rstudioapi::jobRunScript("rstudioapi/testJobs.R")
+      |rstudioapi::jobRunScript("rstudioapi/testJobsWithoutExport.R")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["a"])
+    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["f"])
   }
 
   fun testBasic_jobRunScriptWithoutImport() {
@@ -296,19 +295,16 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     val promise = createJobDonePromise()
     console.executeText("""
       |c <- 5
-      |id <- rstudioapi::jobRunScript("rstudioapi/testJobs2.R", exportEnv = "R_GlobalEnv")
-      |rstudioapi::jobRunScript("rstudioapi/testJobs.R", exportEnv = "R_GlobalEnv")
+      |rstudioapi::jobRunScript("rstudioapi/testJobsWithoutImport.R", exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["a"])
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["b"])
-    TestCase.assertEquals("[1] 3", (console.consoleRuntimeInfo.variables["e"] as RValueSimple).text)
-    TestCase.assertEquals("[1] 4", (console.consoleRuntimeInfo.variables["d"] as RValueSimple).text)
+    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["e"])
+    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["d"])
   }
 
   fun testBasic_sourceMarkersErrorFocus() {
     rInterop.setWorkingDir(myFixture.testDataPath)
-    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
     val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
     FileEditorManager.getInstance(rInterop.project).openFile(file, true)
     val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
@@ -318,12 +314,12 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertEquals(2,
                           editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
-    TestCase.assertEquals(11, editor.caretModel.primaryCaret.offset)
+    TestCase.assertEquals(7, editor.caretModel.primaryCaret.offset)
   }
 
   fun testBasic_sourceMarkersFirstFocus() {
     rInterop.setWorkingDir(myFixture.testDataPath)
-    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
     val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
     FileEditorManager.getInstance(rInterop.project).openFile(file, true)
     val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
@@ -338,7 +334,7 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
 
   fun testBasic_sourceMarkersNoFocus() {
     rInterop.setWorkingDir(myFixture.testDataPath)
-    val path = myFixture.testDataPath + "/rstudioapi/testJobs2.R"
+    val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
     val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
     FileEditorManager.getInstance(rInterop.project).openFile(file, true)
     val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
