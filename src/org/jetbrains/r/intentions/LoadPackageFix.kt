@@ -9,12 +9,17 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleRuntimeInfo
+import org.jetbrains.r.packages.RequiredPackage
 
-class LoadPackageFix(override val packageName: String,
-                     private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix() {
+class LoadPackageFix(private val packageName: String,
+                     private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix(listOf(RequiredPackage(packageName))) {
 
   override fun getName(): String {
     return RBundle.message("load.library.fix.name", packageName)
+  }
+
+  override fun getFamilyName(): String {
+    return RBundle.message("load.library.fix.family.name")
   }
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

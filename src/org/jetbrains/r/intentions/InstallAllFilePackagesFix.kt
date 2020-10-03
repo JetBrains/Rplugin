@@ -11,21 +11,20 @@ import org.jetbrains.r.inspections.MissingPackageInspection
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 
-class InstallAllFileLibraryFix : DependencyManagementFix() {
+class InstallAllFilePackagesFix : DependencyManagementFix() {
 
-  override fun getName(): String {
-    return RBundle.message("install.all.library.fix.name")
+  override fun getFamilyName(): String {
+    return RBundle.message("install.all.library.fix.family.name")
   }
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
     val missing = findAllMissingPackages(project, descriptor)
-    RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(getName(), missing, false)
+    RequiredPackageInstaller.getInstance(project).installPackagesWithUserPermission(name, missing, false)
       .onError { showErrorNotification(project, it) }
   }
 
   private fun findAllMissingPackages(project: Project, descriptor: ProblemDescriptor): List<RequiredPackage> {
     val file = descriptor.psiElement.containingFile
-    val packageNames = getAllPackagesWithSameQuickFix<InstallLibraryFix>(file, project, MissingPackageInspection())
-    return packageNames.map { RequiredPackage(it) }
+    return getAllPackagesWithSameQuickFix<InstallPackagesFix>(file, project, MissingPackageInspection())
   }
 }

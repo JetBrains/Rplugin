@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Holger Brandl
  */
-public class InstallLibraryFixTest extends RUsefulTestCase {
+public class InstallPackagesFixTest extends RUsefulTestCase {
 
     // see https://intellij-support.jetbrains.com/hc/en-us/community/posts/203365330-SetupJDKFix-fails-in-LightCodeInsightFixtureTestCase
     // alsp see org.jetbrains.plugins.groovy.intentions.GroovyConvertJUnitIntentionTest

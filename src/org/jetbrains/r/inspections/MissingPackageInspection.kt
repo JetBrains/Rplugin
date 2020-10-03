@@ -15,9 +15,8 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.intentions.InstallAllFileLibraryFix
-import org.jetbrains.r.intentions.InstallLibrariesFix
-import org.jetbrains.r.intentions.InstallLibraryFix
+import org.jetbrains.r.intentions.InstallAllFilePackagesFix
+import org.jetbrains.r.intentions.InstallPackagesFix
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
@@ -92,7 +91,7 @@ class MissingPackageInspection : RInspection() {
     if (!state.hasPackage(packageName) && !state.rInterop.isLibraryLoaded(packageName)) {
       val descriptionTemplate = RBundle.message("inspection.missingPackage.description", packageName)
       problemsHolder.registerProblem(elementForReporting, descriptionTemplate,
-                                     InstallLibraryFix(packageName), InstallAllFileLibraryFix())
+                                     InstallPackagesFix(packageName), InstallAllFilePackagesFix())
     } else {
       checkImplicitDependenciesFor(packageName, elementForReporting, problemsHolder)
     }
@@ -101,7 +100,7 @@ class MissingPackageInspection : RInspection() {
   private fun checkImplicitDependenciesFor(packageName: String, element: PsiElement, problemsHolder: ProblemsHolder) {
     findImplicitDependenciesFor(packageName, element.project)?.let { dependencies ->
       val description = createImplicitDependenciesDescription(packageName, dependencies)
-      problemsHolder.registerProblem(element, description, ProblemHighlightType.WARNING, InstallLibrariesFix(dependencies))
+      problemsHolder.registerProblem(element, description, ProblemHighlightType.WARNING, InstallPackagesFix(dependencies))
     }
   }
 

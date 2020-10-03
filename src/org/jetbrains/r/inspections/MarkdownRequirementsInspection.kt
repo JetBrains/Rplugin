@@ -10,7 +10,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.intentions.InstallLibrariesFix
+import org.jetbrains.r.intentions.InstallPackagesFix
 import org.jetbrains.r.interpreter.RInterpreterStateManager
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.rmarkdown.RMarkdownUtil
@@ -28,7 +28,7 @@ class MarkdownRequirementsInspection : RInspection() {
     if (RInterpreterStateManager.getCurrentStateOrNull(project)?.isUpdating == false) {
       RMarkdownUtil.getMissingPackages(project)?.let { missing ->
         if (missing.isNotEmpty()) {
-          problemsHolder.registerProblem(file, PROBLEM_DESCRIPTION, InstallLibrariesFix(missing))
+          problemsHolder.registerProblem(file, PROBLEM_DESCRIPTION, InstallPackagesFix(missing))
         }
       }
     }

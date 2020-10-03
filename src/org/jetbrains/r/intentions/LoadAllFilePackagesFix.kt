@@ -11,9 +11,9 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.inspections.UnresolvedReferenceInspection
 
-class LoadAllFileLibraryFix(private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix() {
+class LoadAllFilePackagesFix(private val runtimeInfo: RConsoleRuntimeInfo) : DependencyManagementFix() {
 
-  override fun getName(): String {
+  override fun getFamilyName(): String {
     return RBundle.message("load.all.library.fix.name")
   }
 
@@ -22,9 +22,8 @@ class LoadAllFileLibraryFix(private val runtimeInfo: RConsoleRuntimeInfo) : Depe
 
     runBackgroundableTask(RBundle.message("load.all.library.fix.background"), project, true) {
       val packageNames = getAllPackagesWithSameQuickFix<LoadPackageFix>(file, project, UnresolvedReferenceInspection())
-
       packageNames.forEach {
-        runtimeInfo.loadPackage(it)
+        runtimeInfo.loadPackage(it.name)
       }
     }
   }

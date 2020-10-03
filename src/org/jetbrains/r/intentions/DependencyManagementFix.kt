@@ -15,26 +15,24 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiEditorUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.packages.RequiredPackage
 
-abstract class DependencyManagementFix : LocalQuickFix {
+abstract class DependencyManagementFix(protected val missingPackages: List<RequiredPackage> = emptyList()) : LocalQuickFix {
 
-  open val packageName = ""
+  protected inline fun <reified T : DependencyManagementFix> getAllPackagesWithSameQuickFix(
+    file: PsiFile, project: Project, localInspectionTool: LocalInspectionTool): List<RequiredPackage> {
 
-  override fun getFamilyName(): String {
-    return RBundle.message("dependency.management.fix.family.name")
-  }
-
-  protected inline fun <reified T : DependencyManagementFix> getAllPackagesWithSameQuickFix(file: PsiFile,
-                                                                                            project: Project,
-                                                                                            localInspectionTool: LocalInspectionTool): List<String> {
     val allMissingPackageProblems = runReadAction {
-      InspectionEngine.runInspectionOnFile(file,
-                                           LocalInspectionToolWrapper(localInspectionTool),
+      InspectionEngine.runInspectionOnFile(file, LocalInspectionToolWrapper(localInspectionTool),
                                            InspectionManager.getInstance(project).createNewGlobalContext())
     }
 
     return allMissingPackageProblems
-      .mapNotNull { problem -> problem.fixes?.mapNotNull { (it as? T)?.packageName }?.firstOrNull() }
+      .flatMap { problem ->
+        problem.fixes?.flatMap { fix ->
+          (fix as? T)?.missingPackages ?: emptyList()
+        } ?: emptyList()
+      }
       .distinct()
   }
 
