@@ -10,7 +10,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 
-class InstallLibrariesFix(private val missing: List<RequiredPackage>) : DependencyManagementFix() {
+class InstallPackagesFix(private val missing: List<RequiredPackage>) : DependencyManagementFix() {
   override fun getName(): String {
     val packageNamesString = missing.joinToString { it.toFormat(true) }
     return RBundle.message("install.libraries.fix.name", packageNamesString)
