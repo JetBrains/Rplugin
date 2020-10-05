@@ -43,8 +43,8 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
       val tableContextInfo = RDplyrAnalyzer.getContextInfo(element, runtimeInfo)
 
       if (tableContextInfo != null) {
-        val resolveProcessor = object : Processor<PsiTableColumnInfo> {
-          override fun process(it: PsiTableColumnInfo): Boolean {
+        val resolveProcessor = object : Processor<TableColumnInfo> {
+          override fun process(it: TableColumnInfo): Boolean {
             if (it.name == element.name) {
               resultElementRef.set(it.definition)
               return false

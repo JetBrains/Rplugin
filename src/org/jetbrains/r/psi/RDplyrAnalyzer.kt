@@ -80,7 +80,7 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   fun processColumnsOfSelectFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
                                      @Suppress("UNUSED_PARAMETER") call: RCallExpression,
                                      callInfo: TableManipulationCallInfo<*>,
-                                     processor: Processor<PsiTableColumnInfo>): Boolean {
+                                     processor: Processor<TableColumnInfo>): Boolean {
     processAllDotsColumns(operandProcessorRunner, call, callInfo, processor)
 
     for (expression in callInfo.argumentInfo.allDotsArguments) {
