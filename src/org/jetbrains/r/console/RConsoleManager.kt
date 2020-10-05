@@ -166,7 +166,7 @@ class RConsoleManager(private val project: Project) {
             if (requestFocus) {
               toolWindow?.show {
                 val focusManager = IdeFocusManager.findInstanceByComponent(console)
-                focusManager.requestFocusInProject(focusManager.getFocusTargetFor(console.component) ?: return@show, project)
+                focusManager.requestFocusInProject(console.consoleEditor.contentComponent, project)
               }
             }
             toolWindow?.component?.validate()
