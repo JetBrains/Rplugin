@@ -14,13 +14,16 @@ import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import com.intellij.util.CommonProcessors
 import com.intellij.util.ProcessingContext
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.RDataTableAnalyzer
-import org.jetbrains.r.psi.TableInfo
+import org.jetbrains.r.psi.RDplyrAnalyzer
+import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
+import java.util.function.Consumer
 
 class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParameters>() {
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -57,7 +60,7 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
       } else {
         val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
         val loadTableColumns = runtimeInfo.loadTableColumns(left?.text.toString() + "$" + "data")
-        addCompletionResults(result, loadTableColumns)
+        addCompletionResults(result, loadTableColumns.columns)
       }
     }
   }
@@ -68,12 +71,19 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
     val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
     val dataParameter = RParameterInfoUtil.getArgumentByName(ggplotCall, "data") ?: return // data argument
     val tableInfo = RDataTableAnalyzer.getTableColumns(dataParameter, runtimeInfo)
-    addCompletionResults(result, tableInfo)
+
+    val collectProcessor = CommonProcessors.CollectProcessor<TableColumnInfo>()
+    tableInfo.columns.forEach(Consumer { collectProcessor.process(it) })
+
+    RDataTableAnalyzer.processStaticTableColumns(dataParameter, collectProcessor)
+    RDplyrAnalyzer.processStaticTableColumns(dataParameter, collectProcessor)
+
+    addCompletionResults(result, collectProcessor.results)
   }
 
   private fun addCompletionResults(result: CompletionResultSet,
-                                   tableInfo: TableInfo) {
-    result.addAllElements(tableInfo.columns.map {
+                                   columns: Collection<TableColumnInfo>) {
+    result.addAllElements(columns.map {
       PrioritizedLookupElement.withPriority(RLookupElement(it.name, true, AllIcons.Nodes.Field, packageName = it.type),
                                             TABLE_MANIPULATION_PRIORITY)
     })

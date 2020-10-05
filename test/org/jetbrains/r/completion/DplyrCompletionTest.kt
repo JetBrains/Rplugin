@@ -362,6 +362,23 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
     )
   }
 
+  fun testStaticCompletionInGgplot() {
+    checkStaticCompletion(
+      """
+        library(ggplot2)
+        library(magrittr)
+        library(dplyr)
+
+        my_table <- mpg
+        my_table <- my_table %>% dplyr::mutate(sprarg = cyl)
+
+        ggplot(my_table, aes(spr<caret>, hwy, colour = class)) + geom_point()
+      """.trimIndent(),
+
+      listOf("sprarg"),
+      listOf()
+    )
+  }
   private fun checkStaticCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissed: List<String>) {
     myFixture.configureByText("a.R", text)
     addRuntimeInfo()
