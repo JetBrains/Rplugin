@@ -10,10 +10,10 @@ import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
-import org.jetbrains.r.run.graphics.ui.RGraphicsExportDialog
-import org.jetbrains.r.run.graphics.ui.RGraphicsPanelWrapper
-import org.jetbrains.r.run.graphics.ui.RChunkGraphicsSettingsDialog
-import org.jetbrains.r.run.graphics.ui.RGraphicsZoomDialog
+import org.jetbrains.r.run.graphics.RPlot
+import org.jetbrains.r.run.graphics.RPlotUtil
+import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.run.graphics.ui.*
 import java.io.File
 import javax.swing.SwingUtilities
 
@@ -24,7 +24,6 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     isVisible = false
   }
 
-  private val path2Checks = mutableMapOf<String, Boolean>()
   private val manager = ChunkGraphicsManager(project)
 
   @Volatile
@@ -35,12 +34,16 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   init {
     toolbarPane.dataComponent = wrapper.component
-    globalResolution = manager.globalResolution
+    setResolution(manager.globalResolution)
     val connection = manager.addGlobalResolutionListener { newGlobalResolution ->
-      wrapper.targetResolution = newGlobalResolution
-      globalResolution = newGlobalResolution
+      setResolution(newGlobalResolution)
     }
     Disposer.register(parent, connection)
+  }
+
+  private fun setResolution(resolution: Int) {
+    wrapper.targetResolution = resolution
+    globalResolution = resolution
   }
 
   override fun addToolbar() {
@@ -49,15 +52,29 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   override fun addData(data: String, type: String) {
-    wrapper.isAutoResizeEnabled = false
-    wrapper.addImage(File(data), RGraphicsPanelWrapper.RescaleMode.LEFT_AS_IS, ::runAsyncInlay).onSuccess {
+    runAsyncInlay {
+      val height = addGraphics(File(data))
       SwingUtilities.invokeLater {
-        val maxHeight = wrapper.maximumHeight ?: 0
-        val maxWidth = wrapper.maximumWidth ?: 0
-        val height = InlayDimensions.calculateInlayHeight(maxWidth, maxHeight, editor)
-        onHeightCalculated?.invoke(height)
-        wrapper.isAutoResizeEnabled = manager.canRescale(data)
+        onHeightCalculated?.invoke(height ?: InlayDimensions.defaultHeight)
       }
+    }
+  }
+
+  private fun addGraphics(file: File): Int? {
+    val snapshot = RSnapshot.from(file)
+    return if (snapshot != null) {
+      val plot = findPlotFor(snapshot)
+      wrapper.addGraphics(snapshot, plot)
+      null
+    } else {
+      wrapper.addImage(file)
+      wrapper.maximumHeight
+    }
+  }
+
+  private fun findPlotFor(snapshot: RSnapshot): RPlot? {
+    return RPlotUtil.readFrom(snapshot.file.parentFile, snapshot.number)?.let { plot ->
+      RPlotUtil.convert(plot, snapshot.number)
     }
   }
 
@@ -72,9 +89,8 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   override fun saveAs() {
-    val imagePath = wrapper.imagePath
-    if (imagePath != null && manager.canRescale(imagePath)) {
-      RGraphicsExportDialog(project, parent, imagePath, wrapper.preferredImageSize).show()
+    if (wrapper.snapshot != null) {
+      TODO()
     } else {
       wrapper.image?.let { image ->
         InlayOutputUtil.saveImageWithFileChooser(project, image)
@@ -106,19 +122,19 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   private fun zoomImage() {
-    TODO()
+    if (wrapper.isStandalone) {
+      wrapper.plot?.let { plot ->
+        RGraphicsZoomDialog.show(project, plot, wrapper.localResolution)
+      }
+    } else {
+      wrapper.snapshot?.let { snapshot ->
+        RGraphicsZoomDialog.show(project, parent, snapshot)
+      }
+    }
   }
 
   private fun canZoomImage(): Boolean {
-    return canZoomImageOrNull() == true
-  }
-
-  private fun canZoomImageOrNull(): Boolean? {
-    return wrapper.imagePath?.let { path ->
-      path2Checks.getOrPut(path) {  // Note: speedup FS operations caused by `canRescale(path)`
-        manager.canRescale(path)
-      }
-    }
+    return wrapper.snapshot != null
   }
 
   private fun openImageSettings() {

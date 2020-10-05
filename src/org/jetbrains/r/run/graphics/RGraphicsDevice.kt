@@ -16,7 +16,7 @@ class RGraphicsDevice(
   private val rInterop: RInterop,
   private val shadowDirectory: File,
   initialParameters: RGraphicsUtils.ScreenParameters,
-  inMemory: Boolean
+  private val inMemory: Boolean
 ) {
 
   private var lastOutputs = emptyList<RGraphicsOutput>()
@@ -263,8 +263,15 @@ class RGraphicsDevice(
         val recordedFileName = RSnapshot.createRecordedFileName(number)
         deviceDirectory?.let { remoteDirectory ->
           pullFile(recordedFileName, remoteDirectory, shadowDirectory)?.let {
-            val plot = RPlotUtil.convert(rInterop.graphicsFetchPlot(number), number)
-            RGraphicsOutput(number, null, plot)
+            val fetched = rInterop.graphicsFetchPlot(number)
+            if (!inMemory) {
+              RPlotUtil.writeTo(shadowDirectory, fetched, number)
+              pullInMemorySnapshot(number)
+              null
+            } else {
+              val plot = RPlotUtil.convert(fetched, number)
+              RGraphicsOutput(number, null, plot)
+            }
           }
         }
       }
@@ -276,15 +283,14 @@ class RGraphicsDevice(
 
   private fun pullInMemorySnapshot(number: Int): RSnapshot? {
     val previous = number2OutputInfos[number]?.output?.snapshot
-    val withRecorded = !number2OutputInfos.containsKey(number)
-    return pullSnapshotTo(shadowDirectory, number, previous, groupId = null, withRecorded = withRecorded)
+    return pullSnapshotTo(shadowDirectory, number, previous, groupId = null)
   }
 
   private fun pullStoredSnapshot(previous: RSnapshot, groupId: String): RSnapshot? {
-    return pullSnapshotTo(previous.file.parentFile, previous.number, previous, groupId, withRecorded = false)
+    return pullSnapshotTo(previous.file.parentFile, previous.number, previous, groupId)
   }
 
-  private fun pullSnapshotTo(directory: File, number: Int, previous: RSnapshot?, groupId: String?, withRecorded: Boolean): RSnapshot? {
+  private fun pullSnapshotTo(directory: File, number: Int, previous: RSnapshot?, groupId: String?): RSnapshot? {
     return try {
       rInterop.graphicsGetSnapshotPath(number, groupId)?.let { response ->
         /*
@@ -306,10 +312,6 @@ class RGraphicsDevice(
          */
         pullFile(response.name, response.directory, directory, deleteRemoteAfterPull = true)?.let { file ->
           RSnapshot.from(file)?.also { snapshot ->
-            if (withRecorded) {
-              val recordedFileName = RSnapshot.createRecordedFileName(number)
-              pullFile(recordedFileName, response.directory, directory)
-            }
             if (previous != null && previous.identity != snapshot.identity) {
               previous.file.delete()
             }

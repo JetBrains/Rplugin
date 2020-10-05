@@ -31,8 +31,10 @@ import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
+import javax.imageio.ImageIO
 import javax.swing.JComponent
 import javax.swing.JLabel
 
@@ -134,6 +136,20 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
   fun showImage(imageFile: File) {
     if (!tryShowImage(imageFile)) {
       closeEditor(GRAPHICS_COULD_NOT_BE_LOADED)
+    }
+  }
+
+  fun showBufferedImage(image: BufferedImage) {
+    val content = ByteArrayOutputStream().use { outputStream ->
+      ImageIO.write(image, "png", outputStream)
+      outputStream.flush()
+      outputStream.toByteArray()
+    }
+    invokeAndWaitIfNeeded {
+      if (Disposer.isDisposed(disposableParent)) {
+        return@invokeAndWaitIfNeeded
+      }
+      openEditor(BinaryLightVirtualFile("image.png", content))
     }
   }
 

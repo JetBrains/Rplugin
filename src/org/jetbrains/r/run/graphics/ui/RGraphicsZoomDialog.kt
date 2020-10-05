@@ -46,7 +46,7 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
       val manager = ChunkGraphicsManager(project)
       var zoomGroup: Disposable? = null
       manager.createImageGroup(snapshot.file.absolutePath)?.let { pair ->
-        wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE)
+        wrapper.addGraphics(snapshot)
         Disposer.register(parent, pair.second)
         zoomGroup = pair.second
       }

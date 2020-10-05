@@ -251,7 +251,8 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
 
   private fun createImageGroup(parent: Disposable, imagePath: String) {
     graphicsManager.createImageGroup(imagePath)?.let { pair ->
-      wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
+      // TODO
+      //wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
       Disposer.register(parent, pair.second)
       zoomGroup = pair.second
     }

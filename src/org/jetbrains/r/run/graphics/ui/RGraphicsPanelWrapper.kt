@@ -10,8 +10,13 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
+import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.run.graphics.RPlot
+import org.jetbrains.r.run.graphics.RPlotUtil
+import org.jetbrains.r.run.graphics.RSnapshot
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -32,6 +37,9 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     showLoadingMessage()
   }
 
+  @Volatile
+  private var oldStandalone: Boolean = true
+
   val preferredImageSize: Dimension?
     get() = graphicsPanel.imageComponentSize.takeIf { it.isValid } ?: component.parent?.let { panelParent ->
       GraphicsPanel.calculateImageSizeForRegion(panelParent.preferredSize)
@@ -42,7 +50,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     private set
 
   @Volatile
-  var imagePath: String? = null
+  var snapshot: RSnapshot? = null
+    private set
+
+  @Volatile
+  var plot: RPlot? = null
     private set
 
   @Volatile
@@ -50,6 +62,15 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     set(resolution) {
       if (field != resolution) {
         field = resolution
+        scheduleRescalingIfNecessary()
+      }
+    }
+
+  @Volatile
+  var isStandalone: Boolean = true
+    set(value) {
+      if (field != value) {
+        field = value
         scheduleRescalingIfNecessary()
       }
     }
@@ -93,32 +114,26 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   val component = graphicsPanel.component
 
-  fun addImage(imageFile: File, rescaleMode: RescaleMode) {
-    addImage(imageFile, rescaleMode) { task ->
-      task()
+  fun addGraphics(snapshot: RSnapshot, plot: RPlot? = null) {
+    this.snapshot = snapshot
+    this.plot = plot
+    if (plot == null) {
+      isStandalone = false
     }
+    isAutoResizeEnabled = true
+    localResolution = null
+    graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+    rescaleIfNecessary()
   }
 
-  fun <R> addImage(imageFile: File, rescaleMode: RescaleMode, executor: (() -> Unit) -> R): R {
-    val path = imageFile.absolutePath
-    if (rescaleMode != RescaleMode.LEFT_AS_IS) {
-      isAutoResizeEnabled = manager.canRescale(path)
-    }
-    localResolution = manager.getImageResolution(path)
-    targetResolution = localResolution  // Note: this **schedules** a rescaling as well
-    imagePath = path
-    return executor {
-      if (rescaleMode != RescaleMode.IMMEDIATELY_RESCALE_IF_POSSIBLE || !isAutoResizeEnabled) {
-        graphicsPanel.showImage(imageFile)
-      } else {
-        graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
-        rescaleIfNecessary()
-      }
-    }
+  fun addImage(file: File) {
+    snapshot = null
+    plot = null
+    graphicsPanel.showImage(file)
   }
 
   private fun scheduleRescalingIfNecessary() {
-    if (imagePath != null && (isAutoResizeEnabled || localResolution != targetResolution)) {
+    if (snapshot != null && (isAutoResizeEnabled || localResolution != targetResolution)) {
       scheduleRescaling()
     }
   }
@@ -134,8 +149,8 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   fun rescaleIfNecessary(preferredSize: Dimension? = null) {
     val oldSize = graphicsPanel.imageSize
     val newSize = preferredSize ?: preferredImageSize?.takeIf { isAutoResizeEnabled } ?: oldSize
-    if (newSize != null) {
-      if (oldSize != newSize || localResolution != targetResolution) {
+    if (newSize != null && newSize.isValid) {
+      if (oldSize != newSize || localResolution != targetResolution || oldStandalone != isStandalone) {
         // Note: there might be lots of attempts to resize image on IDE startup
         // but most of them will fail (and throw an exception)
         // due to the parent being disposed
@@ -147,21 +162,40 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   }
 
   private fun rescale(newSize: Dimension, newResolution: Int?) {
-    imagePath?.let { path ->
-      if (!manager.isBusy) {
-        manager.rescaleImage(path, newSize, newResolution) { imageFile ->
-          addImage(imageFile, RescaleMode.LEFT_AS_IS)
-        }
-      } else {
-        scheduleRescaling()  // Out of luck: try again in 500 ms
+    if (isStandalone) {
+      plot?.let { plot ->
+        rescale(plot, newSize, newResolution)
+      }
+    } else {
+      snapshot?.let { snapshot ->
+        rescale(snapshot, newSize, newResolution)
       }
     }
   }
 
-  enum class RescaleMode {
-    IMMEDIATELY_RESCALE_IF_POSSIBLE,
-    SCHEDULE_RESCALE_IF_POSSIBLE,
-    LEFT_AS_IS,
+  private fun rescale(plot: RPlot, newSize: Dimension, newResolution: Int?) {
+    runAsync {
+      val parameters = RGraphicsUtils.ScreenParameters(newSize, newResolution)
+      val image = RPlotUtil.createImage(plot, parameters)
+      localResolution = newResolution
+      oldStandalone = isStandalone
+      graphicsPanel.showBufferedImage(image)
+      scheduleRescalingIfNecessary()
+    }
+  }
+
+  private fun rescale(snapshot: RSnapshot, newSize: Dimension, newResolution: Int?) {
+    if (!manager.isBusy) {
+      manager.rescaleImage(snapshot.file.absolutePath, newSize, newResolution) { imageFile ->
+        localResolution = manager.getImageResolution(imageFile.absolutePath)
+        this.snapshot = RSnapshot.from(imageFile)
+        oldStandalone = isStandalone
+        graphicsPanel.showImage(imageFile)
+        scheduleRescalingIfNecessary()
+      }
+    } else {
+      scheduleRescaling()  // Out of luck: try again in 500 ms
+    }
   }
 
   companion object {

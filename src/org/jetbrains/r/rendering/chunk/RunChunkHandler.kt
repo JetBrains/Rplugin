@@ -17,7 +17,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -28,9 +27,7 @@ import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlaysManager
-import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
@@ -39,7 +36,6 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
-import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
@@ -48,7 +44,6 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -167,7 +162,7 @@ object RunChunkHandler {
     val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
     val rMarkdownParameters = createRMarkdownParameters(file)
     val cacheDirectory = createCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
-    val screenParameters = createScreenParameters(editor, project)
+    val screenParameters = createScreenParameters()
     val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
     val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
 
@@ -248,15 +243,11 @@ object RunChunkHandler {
     logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText))
   }
 
-  private fun createScreenParameters(editor: EditorEx,
-                                     project: Project): RGraphicsUtils.ScreenParameters {
+  private fun createScreenParameters(): RGraphicsUtils.ScreenParameters {
     return if (ApplicationManager.getApplication().isHeadlessEnvironment) {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
-      val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
-      val imageSize = GraphicsPanel.calculateImageSizeForRegion(inlayContentSize)
-      val resolution = RMarkdownGraphicsSettings.getInstance(project).globalResolution
-      RGraphicsUtils.ScreenParameters(imageSize, resolution)
+      RGraphicsUtils.DEFAULT_PARAMETERS
     }
   }
 

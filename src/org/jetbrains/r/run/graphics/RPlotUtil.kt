@@ -7,8 +7,32 @@ import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import java.io.File
+import java.nio.file.Paths
 
 object RPlotUtil {
+  fun writeTo(directory: File, plot: Plot, number: Int) {
+    val plotFile = getPlotFile(directory, number)
+    plot.writeTo(plotFile.outputStream())
+  }
+
+  fun readFrom(directory: File, number: Int): Plot? {
+    val plotFile = getPlotFile(directory, number)
+    if (!plotFile.exists()) {
+      return null
+    }
+    return Plot.parseFrom(plotFile.inputStream())
+  }
+
+  private fun getPlotFile(directory: File, number: Int): File {
+    val plotFileName = createPlotFileName(number)
+    return Paths.get(directory.absolutePath, plotFileName).toFile()
+  }
+
+  private fun createPlotFileName(number: Int): String {
+    return "recorded_${number}.plot"
+  }
+
   fun convert(plot: Plot, number: Int): RPlot {
     val fonts = plot.fontList.map { convert(it) }
     val colors = plot.colorList.map { convert(it) }
