@@ -13,6 +13,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.interpreter.R_UNKNOWN
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Component
 import javax.swing.JList
 
@@ -37,6 +38,9 @@ class RInterpreterListCellRenderer : ColoredListCellRenderer<Any>() {
       is RInterpreterInfo -> {
         appendName(value)
         icon = RIcons.R
+      }
+      is RInterpreterSettingsProvider -> {
+        append(value.getAddInterpreterActionName())
       }
       null -> {
         appendName(null)

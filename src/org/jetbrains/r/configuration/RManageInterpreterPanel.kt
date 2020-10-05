@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.interpreter.RInterpreterInfo
+import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -21,7 +22,7 @@ import javax.swing.JPanel
 class RManageInterpreterPanel(text: String, private val addOnly: Boolean, private val onSelected: (() -> Unit)?) {
   private val panel = JPanel(GridBagLayout())
 
-  private val comboBox = ComboBox<RInterpreterInfo>().apply {
+  private val comboBox = ComboBox<Any>().apply {
     renderer = RInterpreterListCellRenderer()
     addItemListener { e ->
       if (e.stateChange == ItemEvent.SELECTED) {
@@ -113,10 +114,21 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
   }
 
   private fun refreshComboBox() {
-    val interpreters = listOf(null, RInterpreterListCellRenderer.SEPARATOR) + currentInterpreters
-    comboBox.model = object : CollectionComboBoxModel<RInterpreterInfo>(interpreters, currentSelection) {
+    val providers = RInterpreterSettingsProvider.getProviders()
+    val interpreters =
+      (
+        listOf(null, RInterpreterListCellRenderer.SEPARATOR)
+        + currentInterpreters
+        + (if (currentInterpreters.size != 0) listOf(RInterpreterListCellRenderer.SEPARATOR) else listOf<RInterpreterInfo>())
+        + providers
+      )
+    comboBox.model = object : CollectionComboBoxModel<Any>(interpreters, currentSelection) {
       override fun setSelectedItem(item: Any?) {
-        if (item !== RInterpreterListCellRenderer.SEPARATOR) {
+        if (item is RInterpreterSettingsProvider){
+          item.showAddInterpreterDialog(currentInterpreters) { interpreter ->
+            addInterpreter(interpreter)
+          }
+        } else if (item !== RInterpreterListCellRenderer.SEPARATOR) {
           super.setSelectedItem(item)
         }
       }
