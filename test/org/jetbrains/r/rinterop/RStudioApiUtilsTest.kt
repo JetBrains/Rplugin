@@ -275,9 +275,9 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       |c <- 5
       |rstudioapi::jobRunScript("rstudioapi/testJobs.R", importEnv = TRUE, exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertEquals("[1] 3", (console.consoleRuntimeInfo.variables["a"] as RValueSimple).text)
-    TestCase.assertEquals("[1] 8", (console.consoleRuntimeInfo.variables["b"] as RValueSimple).text)
+    TestCase.assertEquals(false, promise.blockingGet(DEFAULT_TIMEOUT))
+    TestCase.assertEquals("[1] 3", rInterop.executeCode("a").stdout.trim())
+    TestCase.assertEquals("[1] 8", rInterop.executeCode("b").stdout.trim())
   }
 
   fun testBasic_jobRunScriptWithoutExport() {
@@ -286,8 +286,8 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.executeText("""
       |rstudioapi::jobRunScript("rstudioapi/testJobsWithoutExport.R")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["f"])
+    TestCase.assertEquals(false, promise.blockingGet(DEFAULT_TIMEOUT))
+    TestCase.assertEquals("Error: object 'f' not found", rInterop.executeCode("f").stderr.trim())
   }
 
   fun testBasic_jobRunScriptWithoutImport() {
@@ -297,9 +297,7 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       |c <- 5
       |rstudioapi::jobRunScript("rstudioapi/testJobsWithoutImport.R", exportEnv = "R_GlobalEnv")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    promise.blockingGet(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["e"])
-    TestCase.assertEquals(null, console.consoleRuntimeInfo.variables["d"])
+    TestCase.assertEquals(true, promise.blockingGet(DEFAULT_TIMEOUT))
   }
 
   fun testBasic_sourceMarkersErrorFocus() {
@@ -348,11 +346,11 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     TestCase.assertEquals(0, editor.caretModel.primaryCaret.offset)
   }
 
-  private fun createJobDonePromise(): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
+  private fun createJobDonePromise(): Promise<Boolean> {
+    val promise = AsyncPromise<Boolean>()
     val lambda = object : Listener {
       override fun onJobDescriptionCreated(rJobDescriptor: RJobDescriptor) {
-        rJobDescriptor.onProcessTerminated { promise.setResult(Unit) }
+        rJobDescriptor.onProcessTerminated { promise.setResult(rJobDescriptor.processFailed) }
       }
     }
     RJobRunner.getInstance(project).eventDispatcher.addListener(lambda)
