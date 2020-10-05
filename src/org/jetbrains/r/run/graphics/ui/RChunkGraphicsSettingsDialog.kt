@@ -15,7 +15,7 @@ class RChunkGraphicsSettingsDialog(
 ) : DialogWrapper(null, true) {
 
   private val settings: Settings
-    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution)
+    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution, isStandalone)
 
   private val isDarkModeEnabledOrNull
     get() = isDarkModeEnabled.takeIf { isDarkModeVisible }
@@ -28,6 +28,8 @@ class RChunkGraphicsSettingsDialog(
 
   private var localResolution = initialSettings.localResolution ?: DEFAULT_RESOLUTION
   private var globalResolution = initialSettings.globalResolution ?: DEFAULT_RESOLUTION
+
+  private var isStandalone = initialSettings.isStandalone
 
   init {
     setResizable(false)
@@ -58,6 +60,11 @@ class RChunkGraphicsSettingsDialog(
           }
         }
       }
+      titledRow(ENGINE_SETTINGS_TITLE) {
+        row {
+          checkBox(STANDALONE_TEXT, self::isStandalone, STANDALONE_COMMENT)
+        }
+      }
     }
   }
 
@@ -70,7 +77,8 @@ class RChunkGraphicsSettingsDialog(
     val isAutoResizedEnabled: Boolean,
     val isDarkModeEnabled: Boolean?,
     val globalResolution: Int?,
-    val localResolution: Int?
+    val localResolution: Int?,
+    val isStandalone: Boolean
   )
 
   companion object {
@@ -86,5 +94,9 @@ class RChunkGraphicsSettingsDialog(
 
     private val GLOBAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.all.plots")
     private val DARK_MODE_TEXT = RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme")
+
+    private val ENGINE_SETTINGS_TITLE = RBundle.message("graphics.panel.settings.dialog.engine")
+    private val STANDALONE_TEXT = RBundle.message("graphics.panel.settings.dialog.standalone.text")
+    private val STANDALONE_COMMENT = RBundle.message("graphics.panel.settings.dialog.standalone.comment")
   }
 }

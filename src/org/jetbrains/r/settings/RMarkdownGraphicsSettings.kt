@@ -28,14 +28,29 @@ class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistent
       updateResolution(newResolution)
     }
 
-  fun addGlobalResolutionListener(listener: (Int) -> Unit): Disposable {
-    return project.messageBus.connect().apply {
-      subscribe(CHANGE_GLOBAL_RESOLUTION_TOPIC, object : GlobalResolutionNotifier {
-        override fun onGlobalResolutionChange(newResolution: Int) {
-          listener(newResolution)
-        }
-      })
+  var isStandalone: Boolean
+    get() = state.isStandalone
+    set(newStandalone) {
+      if (state.isStandalone != newStandalone) {
+        state.isStandalone = newStandalone
+        project.messageBus.syncPublisher(CHANGE_STANDALONE_TOPIC).onStandaloneChange(newStandalone)
+      }
     }
+
+  fun addGlobalResolutionListener(parent: Disposable, listener: (Int) -> Unit) {
+    project.messageBus.connect(parent).subscribe(CHANGE_GLOBAL_RESOLUTION_TOPIC, object : GlobalResolutionNotifier {
+      override fun onGlobalResolutionChange(newResolution: Int) {
+        listener(newResolution)
+      }
+    })
+  }
+
+  fun addStandaloneListener(parent: Disposable, listener: (Boolean) -> Unit) {
+    project.messageBus.connect(parent).subscribe(CHANGE_STANDALONE_TOPIC, object : StandaloneNotifier {
+      override fun onStandaloneChange(isStandalone: Boolean) {
+        listener(isStandalone)
+      }
+    })
   }
 
   private fun updateResolution(newResolution: Int) {
@@ -48,6 +63,7 @@ class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistent
 
   class State : BaseState() {
     var globalResolution by property(0)
+    var isStandalone by property(true)
     var version by property(0)
   }
 
@@ -56,9 +72,14 @@ class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistent
       fun onGlobalResolutionChange(newResolution: Int)
     }
 
+    private interface StandaloneNotifier {
+      fun onStandaloneChange(isStandalone: Boolean)
+    }
+
     private const val CURRENT_VERSION = 1
 
     private val CHANGE_GLOBAL_RESOLUTION_TOPIC = Topic.create("R Markdown Global Resolution Topic", GlobalResolutionNotifier::class.java)
+    private val CHANGE_STANDALONE_TOPIC = Topic.create("R Standalone GE Topic", StandaloneNotifier::class.java)
 
     fun getInstance(project: Project) = project.service<RMarkdownGraphicsSettings>()
   }

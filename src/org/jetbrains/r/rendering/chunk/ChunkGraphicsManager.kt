@@ -41,6 +41,12 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
       settings.globalResolution = newResolution
     }
 
+  var isStandalone: Boolean
+    get() = settings.isStandalone
+    set(newStandalone) {
+      settings.isStandalone = newStandalone
+    }
+
   var outputDirectory: String?
     get() = RGraphicsSettings.getOutputDirectory(project)
     set(directory) {
@@ -86,8 +92,12 @@ class ChunkGraphicsManager(private val project: Project) : GraphicsManager {
     }
   }
 
-  fun addGlobalResolutionListener(listener: (Int) -> Unit): Disposable {
-    return settings.addGlobalResolutionListener(listener)
+  fun addGlobalResolutionListener(parent: Disposable, listener: (Int) -> Unit) {
+    settings.addGlobalResolutionListener(parent, listener)
+  }
+
+  fun addStandaloneListener(parent: Disposable, listener: (Boolean) -> Unit) {
+    settings.addStandaloneListener(parent, listener)
   }
 
   fun rescaleImage(imagePath: String, newSize: Dimension, newResolution: Int? = null, onResize: (File) -> Unit) {
