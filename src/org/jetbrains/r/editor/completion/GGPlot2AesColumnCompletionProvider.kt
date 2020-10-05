@@ -52,7 +52,7 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
     }
     if (operator is ROperatorExpression) {
       while (operator?.leftExpr is ROperatorExpression) {
-        operator = operator?.leftExpr as? ROperatorExpression
+        operator = operator.leftExpr as? ROperatorExpression
       }
       val left = operator?.leftExpr
       if (left is RCallExpression && left.expression.text == "ggplot") {
@@ -90,18 +90,21 @@ class GGPlot2AesColumnCompletionProvider : CompletionProvider<CompletionParamete
   }
 }
 
-val AES_PARAMETER_FILTER = FilterPattern(AesFilter())
+val METHOD_TAKING_COLUMN_PARAMETER_FILTER = FilterPattern(MethodTakingColumnsFilter())
 
-class AesFilter : ElementFilter {
+val GGPLOT_METHODS_WITH_COLUMNS = listOf("aes", "facet_grid", "facet_wrap")
+
+class MethodTakingColumnsFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
     val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false)
     if (expression !is RIdentifierExpression) return false
     val parent = expression.parent ?: return false
     if (!(parent is RNamedArgument && parent.assignedValue == expression || parent is RArgumentList)) return false
-    val aesCall = if (parent is RNamedArgument) parent.parent.parent else parent.parent
-    if (aesCall !is RCallExpression) return false
-    val aesIdentifier = aesCall.expression
-    if (aesIdentifier !is RIdentifierExpression || aesIdentifier.name != "aes") return false
+    val columnContainerCall = if (parent is RNamedArgument) parent.parent.parent else parent.parent
+    if (columnContainerCall !is RCallExpression) return false
+    val columnContainerCallIdentifier = columnContainerCall.expression
+    if (columnContainerCallIdentifier !is RIdentifierExpression
+        || columnContainerCallIdentifier.name !in GGPLOT_METHODS_WITH_COLUMNS) return false
     return true
   }
 

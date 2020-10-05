@@ -100,7 +100,7 @@ class RCompletionContributor : CompletionContributor() {
 
   private fun addGGPlotAesColumnCompletionProvider() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(AES_PARAMETER_FILTER), GGPlot2AesColumnCompletionProvider())
+      .and(METHOD_TAKING_COLUMN_PARAMETER_FILTER), GGPlot2AesColumnCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {

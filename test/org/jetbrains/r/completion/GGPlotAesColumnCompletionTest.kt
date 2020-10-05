@@ -66,6 +66,18 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
                          expected = listOf("yyyy_aa", "yyyy_ab", "yyyy_ac", "yyyy_ad"))
   }
 
+  fun testFacetGrid() {
+    checkCompletionDplyr("ggplot(table, aes(displ, cty)) + geom_point() + facet_grid(yyy<caret>)",
+                         initial = listOf("yyyy_aa", "yyyy_ab"),
+                         expected = listOf("yyyy_aa", "yyyy_ab"))
+  }
+
+
+  fun testFacetWrap() {
+    checkCompletionDplyr("ggplot(table, aes(displ, cty)) + geom_point() + facet_wrap(yyy<caret>)",
+                         initial = listOf("yyyy_aa", "yyyy_ab"),
+                         expected = listOf("yyyy_aa", "yyyy_ab"))
+  }
 
   private fun checkCompletionDataTable(text: String,
                                         expected: List<String> = emptyList(),
