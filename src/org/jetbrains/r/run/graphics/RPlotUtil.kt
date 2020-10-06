@@ -1,6 +1,7 @@
 package org.jetbrains.r.run.graphics
 
 import com.intellij.util.ui.ImageUtil
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
 import java.awt.Color
 import java.awt.Graphics2D
@@ -132,12 +133,28 @@ object RPlotUtil {
     private val clippingAreas = plot.viewports.map { calculateRectangle(it.from, it.to) }
 
     fun replay() {
-      for (layer in plot.layers) {
-        plotter.setClippingArea(clippingAreas[layer.viewportIndex])
-        for (figure in layer.figures) {
-          replay(figure)
+      if (fitsDisplay()) {
+        for (layer in plot.layers) {
+          plotter.setClippingArea(clippingAreas[layer.viewportIndex])
+          for (figure in layer.figures) {
+            replay(figure)
+          }
         }
+      } else {
+        showMarginMessage()
       }
+    }
+
+    private fun fitsDisplay(): Boolean {
+      return clippingAreas.find { it.width <= 0 || it.height <= 0 } == null
+    }
+
+    private fun showMarginMessage() {
+      val displayArea = clippingAreas.first()
+      val x = displayArea.centerX.toInt()
+      val y = displayArea.centerY.toInt()
+      plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, 0, WHITE_COLOR_INDEX, WHITE_COLOR_INDEX)
+      plotter.drawText(MARGINS_TEXT, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
     }
 
     private fun replay(figure: RFigure) {
@@ -234,6 +251,14 @@ object RPlotUtil {
 
     private fun scale(value: Double): Double {
       return value * resolution
+    }
+
+    companion object {
+      private const val DEFAULT_FONT_INDEX = 0
+      private const val BLACK_COLOR_INDEX = 0
+      private const val WHITE_COLOR_INDEX = 1
+
+      private val MARGINS_TEXT = RBundle.message("plot.viewer.figure.margins.too.large")
     }
   }
 }
