@@ -103,6 +103,9 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       graphicsPanel.overlayComponent = component
     }
 
+  val hasGraphics: Boolean
+    get() = snapshot != null || plot != null
+
   val image: BufferedImage?
     get() = graphicsPanel.image
 
@@ -114,11 +117,24 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   val component = graphicsPanel.component
 
-  fun addGraphics(snapshot: RSnapshot, plot: RPlot? = null) {
+  fun addPlot(plot: RPlot) {
+    addGraphics(null, plot)
+  }
+
+  fun addSnapshot(snapshot: RSnapshot) {
+    addGraphics(snapshot, null)
+  }
+
+  fun addGraphics(snapshot: RSnapshot?, plot: RPlot?) {
+    if (snapshot == null && plot == null) {
+      throw RuntimeException("Either snapshot or plot must be not null")
+    }
     this.snapshot = snapshot
     this.plot = plot
     if (plot == null) {
       isStandalone = false
+    } else if (snapshot == null) {
+      isStandalone = true
     }
     isAutoResizeEnabled = true
     localResolution = null
@@ -133,7 +149,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   }
 
   private fun scheduleRescalingIfNecessary() {
-    if (snapshot != null && (isAutoResizeEnabled || localResolution != targetResolution)) {
+    if (hasGraphics && (isAutoResizeEnabled || localResolution != targetResolution)) {
       scheduleRescaling()
     }
   }

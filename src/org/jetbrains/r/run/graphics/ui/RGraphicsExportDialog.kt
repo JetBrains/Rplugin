@@ -23,6 +23,8 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayOutputUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
+import org.jetbrains.r.run.graphics.RPlot
+import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -44,11 +46,14 @@ import kotlin.math.max
 import kotlin.math.round
 import kotlin.reflect.KProperty
 
-class RGraphicsExportDialog(private val project: Project, parent: Disposable, imagePath: String, initialSize: Dimension?) :
-  BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
+class RGraphicsExportDialog(
+  private val project: Project,
+  private val wrapper: RGraphicsPanelWrapper,
+  initialSize: Dimension?,
+  private val zoomGroup: Disposable? = null
+) : BorderlessDialogWrapper(project, TITLE, IdeModalityType.MODELESS)
 {
   private val graphicsManager = ChunkGraphicsManager(project)
-  private val wrapper = RGraphicsPanelWrapper(project, parent)
   private val form = RGraphicsExportDialogForm()
 
   private val resizablePanel = RResizablePanel(wrapper.component, initialSize, this::onImageResize).apply {
@@ -97,8 +102,6 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
   private var imageHeight: Int? by IntFieldDelegate(heightTextField, InputKind.HEIGHT)
   private var imageResolution: Int? by IntFieldDelegate(resolutionTextField, null)
 
-  private var zoomGroup: Disposable? = null
-
   private var aspectRatio: Double? = null
     set(ratio) {
       field = ratio
@@ -121,13 +124,12 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
 
   init {
     setupGraphicsContentPanel(initialSize)
-    createImageGroup(parent, imagePath)
     setOKButtonText(SAVE_BUTTON_TEXT)
     setupAutoResizeCheckBox()
     setupInputControls()
     fillSouthPanel()
     init()
-    imageResolution = wrapper.localResolution
+    imageResolution = wrapper.targetResolution
     updateSize(initialSize)
   }
 
@@ -247,15 +249,6 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
         updateSizeInput(null)
       }
     })
-  }
-
-  private fun createImageGroup(parent: Disposable, imagePath: String) {
-    graphicsManager.createImageGroup(imagePath)?.let { pair ->
-      // TODO
-      //wrapper.addImage(pair.first, RGraphicsPanelWrapper.RescaleMode.SCHEDULE_RESCALE_IF_POSSIBLE)
-      Disposer.register(parent, pair.second)
-      zoomGroup = pair.second
-    }
   }
 
   private fun createButton(action: AnAction): JComponent {
@@ -561,6 +554,28 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
 
     private fun createConfirmReplaceDescription(location: File): String {
       return RBundle.message("graphics.panel.export.dialog.confirm.replace.description", location.name)
+    }
+
+    fun show(project: Project, parent: Disposable, snapshot: RSnapshot, initialSize: Dimension?) {
+      val wrapper = RGraphicsPanelWrapper(project, parent)
+      wrapper.targetResolution = snapshot.resolution
+      val manager = ChunkGraphicsManager(project)
+      var zoomGroup: Disposable? = null
+      manager.createImageGroup(snapshot.file.absolutePath)?.let { (copyFile, group) ->
+        RSnapshot.from(copyFile)?.let { copySnapshot ->
+          wrapper.addSnapshot(copySnapshot)
+        }
+        Disposer.register(parent, group)
+        zoomGroup = group
+      }
+      RGraphicsExportDialog(project, wrapper, initialSize, zoomGroup).show()
+    }
+
+    fun show(project: Project, parent: Disposable, plot: RPlot, initialSize: Dimension?, resolution: Int?) {
+      val wrapper = RGraphicsPanelWrapper(project, parent)
+      wrapper.targetResolution = resolution
+      wrapper.addPlot(plot)
+      RGraphicsExportDialog(project, wrapper, initialSize).show()
     }
   }
 }

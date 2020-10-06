@@ -182,7 +182,16 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun exportCurrentOutput() {
-    TODO()
+    lastOutput?.let { output ->
+      val initialSize = getAdjustedScreenDimension()
+      if (isStandalone) {
+        RGraphicsExportDialog.show(project, project, output.plot, initialSize, resolution)
+      } else {
+        output.snapshot?.let { snapshot ->
+          RGraphicsExportDialog.show(project, project, snapshot, initialSize)
+        }
+      }
+    }
   }
 
   private fun copyCurrentOutput() {

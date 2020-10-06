@@ -92,8 +92,16 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   override fun saveAs() {
-    if (wrapper.snapshot != null) {
-      TODO()
+    if (wrapper.hasGraphics) {
+      if (wrapper.isStandalone) {
+        wrapper.plot?.let { plot ->
+          RGraphicsExportDialog.show(project, parent, plot, wrapper.preferredImageSize, wrapper.localResolution)
+        }
+      } else {
+        wrapper.snapshot?.let { snapshot ->
+          RGraphicsExportDialog.show(project, parent, snapshot, wrapper.preferredImageSize)
+        }
+      }
     } else {
       wrapper.image?.let { image ->
         InlayOutputUtil.saveImageWithFileChooser(project, image)
@@ -137,7 +145,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   }
 
   private fun canZoomImage(): Boolean {
-    return wrapper.snapshot != null
+    return wrapper.hasGraphics
   }
 
   private fun openImageSettings() {

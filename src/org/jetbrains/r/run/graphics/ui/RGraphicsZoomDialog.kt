@@ -47,7 +47,7 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
       var zoomGroup: Disposable? = null
       manager.createImageGroup(snapshot.file.absolutePath)?.let { (copyFile, group) ->
         RSnapshot.from(copyFile)?.let { copySnapshot ->
-          wrapper.addGraphics(copySnapshot)
+          wrapper.addSnapshot(copySnapshot)
         }
         Disposer.register(parent, group)
         zoomGroup = group
