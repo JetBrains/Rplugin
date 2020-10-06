@@ -10,17 +10,18 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellTypeAwareLexerProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RMarkdownCellTypeAwareLexerProvider: NotebookCellTypeAwareLexerProvider {
+class RMarkdownCellTypeAwareLexerProvider : NotebookCellTypeAwareLexerProvider {
   override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
 
   override fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
-    when(tokenType) {
-      RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.RAW
+    when (tokenType) {
+      RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
       else -> null
     }
 }
+
 
 internal enum class RMarkdownCellType(val debugName: String) {
   HEADER_CELL("HEADER_CELL"),
@@ -30,15 +31,50 @@ internal enum class RMarkdownCellType(val debugName: String) {
   val elementType = IElementType(debugName, RMarkdownLanguage)
 }
 
-internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
+
+internal enum class RMarkdownCodeMarkers(debugName: String) {
+  BACKTICK_WITH_LANG("BACKTICK_WITH_LANG"),
+  BACKTICK_NO_LANG("BACKTICK_NO_LANG");
+
+  val elementType = IElementType(debugName, RMarkdownLanguage)
+}
+
+
+/**
+ * merge ```{r} to BACKTICK_WITH_LANG and ``` to BACKTICK_NO_LANG
+ */
+internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
+  override fun getMergeFunction(): MergeFunction = mergeFunction
+
+  private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
+    if (type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
+      if (originalLexer.tokenText.startsWith("{")) {
+        originalLexer.advance()
+        RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType
+      }
+      else {
+        RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType
+      }
+    }
+    else {
+      type
+    }
+  }
+}
+
+
+internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapBackticks()) {
 
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
   private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
     when {
-      type == MarkdownTokenTypes.BACKTICK -> {
-        consumeCode(originalLexer)
-        RMarkdownCellType.CODE_CELL
+      type == RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> {
+        if (consumeCode(originalLexer)) {
+          RMarkdownCellType.CODE_CELL
+        } else {
+          RMarkdownCellType.MARKDOWN_CELL
+        }
       }
       tokenStart == 0 && tokenText == "---" -> {
         consumeHeader(originalLexer)
@@ -52,7 +88,9 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(MarkdownLexer
   }
 
   private fun consumeMarkdown(lexer: Lexer) {
-    while (lexer.tokenType != null && lexer.tokenType != MarkdownTokenTypes.BACKTICK) {
+    while (lexer.tokenType != null &&
+           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType &&
+           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType) {
       lexer.advance()
     }
   }
@@ -60,7 +98,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(MarkdownLexer
   private fun consumeHeader(lexer: Lexer) {
     while (true) {
       when (lexer.tokenType) {
-        null, MarkdownTokenTypes.BACKTICK -> return
+        null, RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType, RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> return
         else -> {
           if (lexer.tokenType == MarkdownTokenTypes.TEXT && lexer.tokenText == "---") {
             lexer.advance()
@@ -73,23 +111,33 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(MarkdownLexer
     }
   }
 
-  private fun consumeCode(lexer: Lexer) {
+  private fun consumeCode(lexer: Lexer): Boolean {
     while (true) {
       when (lexer.tokenType) {
-        null -> return
-        MarkdownTokenTypes.BACKTICK -> {
+        null -> return false
+        RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType -> {
           lexer.advance()
-          consumeEndOfLine(lexer)
-          return
+          consumeToEndOfLine(lexer)
+          return true
+        }
+        RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> {
+          return false
         }
         else -> lexer.advance()
       }
     }
   }
+}
 
-  private fun consumeEndOfLine(lexer: Lexer) {
-    if (lexer.tokenType == MarkdownTokenTypes.EOL) {
-      lexer.advance()
-    }
+private fun consumeEndOfLine(lexer: Lexer) {
+  if (lexer.tokenType == MarkdownTokenTypes.EOL) {
+    lexer.advance()
   }
+}
+
+private fun consumeToEndOfLine(lexer: Lexer) {
+  while (lexer.tokenType != null && lexer.tokenType != MarkdownTokenTypes.EOL) {
+    lexer.advance()
+  }
+  consumeEndOfLine(lexer)
 }
