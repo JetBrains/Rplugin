@@ -109,11 +109,8 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   val image: BufferedImage?
     get() = graphicsPanel.image
 
-  val maximumHeight: Int?
-    get() = graphicsPanel.maximumSize?.height
-
-  val maximumWidth: Int?
-    get() = graphicsPanel.maximumSize?.width
+  val maximumSize: Dimension?
+    get() = graphicsPanel.maximumSize
 
   val component = graphicsPanel.component
 
@@ -145,6 +142,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   fun addImage(file: File) {
     snapshot = null
     plot = null
+    isAutoResizeEnabled = false
     graphicsPanel.showImage(file)
   }
 

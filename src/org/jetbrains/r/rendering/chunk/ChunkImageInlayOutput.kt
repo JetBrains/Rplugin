@@ -14,6 +14,7 @@ import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
 import org.jetbrains.r.run.graphics.ui.*
+import java.awt.Dimension
 import java.io.File
 import javax.swing.SwingUtilities
 
@@ -56,14 +57,19 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   override fun addData(data: String, type: String) {
     runAsyncInlay {
-      val height = addGraphics(File(data))
+      val maxSize = addGraphics(File(data))
       SwingUtilities.invokeLater {
+        val height = maxSize?.let { calculateHeight(it) }
         onHeightCalculated?.invoke(height ?: InlayDimensions.defaultHeight)
       }
     }
   }
 
-  private fun addGraphics(file: File): Int? {
+  private fun calculateHeight(maxSize: Dimension): Int {
+    return InlayDimensions.calculateInlayHeight(maxSize.width, maxSize.height, editor)
+  }
+
+  private fun addGraphics(file: File): Dimension? {
     val snapshot = RSnapshot.from(file)
     return if (snapshot != null) {
       val plot = findPlotFor(snapshot)
@@ -71,7 +77,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
       null
     } else {
       wrapper.addImage(file)
-      wrapper.maximumHeight
+      wrapper.maximumSize
     }
   }
 
