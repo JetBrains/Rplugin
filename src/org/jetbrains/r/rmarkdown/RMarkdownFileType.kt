@@ -17,6 +17,5 @@ object RMarkdownFileType : LanguageFileType(RMarkdownLanguage) {
   override fun getDescription() = "R Markdown"
   override fun getDefaultExtension() = "Rmd"
   override fun getIcon(): Icon? = RIcons.RMarkdown
-  override fun isReadOnly() = false
   override fun getCharset(file: VirtualFile, content: ByteArray): String? = CharsetToolkit.UTF8
 }
