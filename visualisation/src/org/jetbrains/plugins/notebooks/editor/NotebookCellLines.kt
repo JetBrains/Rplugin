@@ -116,6 +116,17 @@ class NotebookCellLines private constructor(private val document: Document,
     it.setResult(this)
   }
 
+  data class DocumentUpdate(
+    val document: Document,
+    val startLine: Int,
+    val startOffset: Int,
+    val endLine: Int,
+    val markerCacheCutStart: Int,
+    val markerCacheCutEndExclusive: Int
+  ) {
+    val endOffset = min(document.getLineEndOffset(endLine) + 1, document.textLength)
+  }
+
   private val documentListener = object : DocumentListener {
     private var previousEndLine: Int = -1
     private var previousEndOffset: Int = -1
@@ -126,32 +137,34 @@ class NotebookCellLines private constructor(private val document: Document,
       previousEndOffset = document.getLineEndOffset(previousEndLine)
     }
 
+    private fun getDocumentUpdate(event: DocumentEvent): DocumentUpdate {
+      val document = event.document
+      if (cellTypeAwareLexerProvider.shouldParseWholeFile()) {
+        val startLine = 0
+        val startOffset = 0
+        val endLine = document.lineCount - 1
+        val markerCacheCutStart = 0
+        val markerCacheCutEndExclusive = markerCache.size
+        return DocumentUpdate(document, startLine, startOffset, endLine, markerCacheCutStart, markerCacheCutEndExclusive)
+      } else {
+        val startLine = document.getLineNumber(event.offset)
+        val startOffset = document.getLineStartOffset(startLine)
+        val endLine = document.getLineNumber(event.offset + event.newLength)
+        val markerCacheCutStart = getMarkerUpperBound(startOffset)
+        val markerCacheCutEndExclusive = getMarkerCacheCutEndExclusive(markerCacheCutStart)
+        return DocumentUpdate(document, startLine, startOffset, endLine, markerCacheCutStart, markerCacheCutEndExclusive)
+      }
+    }
+
     override fun documentChanged(event: DocumentEvent) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
+      val upd = getDocumentUpdate(event)
 
-      val document = event.document
-      val startLine = document.getLineNumber(event.offset)
-      val startOffset = document.getLineStartOffset(startLine)
-      val endLine = document.getLineNumber(event.offset + event.newLength)
-      val eventLineEndOffset = document.getLineEndOffset(endLine)
-      val endOffset = min(eventLineEndOffset + 1, document.textLength)
-
-      val markerCacheCutStart = getMarkerUpperBound(startOffset)
-
-      val markerCacheCutEndExclusive =
-        markerCache
-          .subList(markerCacheCutStart, markerCache.size)
-          .withIndex()
-          .takeWhile { it.value.offset < previousEndOffset }
-          .lastOrNull()
-          ?.let { markerCacheCutStart + it.index + 1 }
-        ?: markerCacheCutStart
-
-      val oldMarkers = markerCache.subList(markerCacheCutStart, markerCacheCutEndExclusive).toList()
-      val newMarkers = markerSequence(document.immutableCharSequence.subSequence(startOffset, endOffset)).toList()
+      val oldMarkers = markerCache.subList(upd.markerCacheCutStart, upd.markerCacheCutEndExclusive).toList()
+      val newMarkers = markerSequence(document.immutableCharSequence.subSequence(upd.startOffset, upd.endOffset)).toList()
 
       val oldIntervals =
-        intervalsIterator(startLine).asSequence().takeWhile { it.lines.first <= previousEndLine }.toList()
+        intervalsIterator(upd.startLine).asSequence().takeWhile { it.lines.first <= previousEndLine }.toList()
 
       val markersChanged = newMarkers != oldMarkers
       val diff = event.newLength - event.oldLength
@@ -159,33 +172,33 @@ class NotebookCellLines private constructor(private val document: Document,
         if (markersChanged) {
           ++modificationStamp
 
-          val rest = markerCache.subList(markerCacheCutEndExclusive, markerCache.size).toList()
-          markerCache.subList(markerCacheCutStart, markerCache.size).clear()
+          val rest = markerCache.subList(upd.markerCacheCutEndExclusive, markerCache.size).toList()
+          markerCache.subList(upd.markerCacheCutStart, markerCache.size).clear()
           for (marker in newMarkers) {
-            markerCache.add(marker.copy(offset = marker.offset + startOffset, ordinal = markerCache.size))
+            markerCache.add(marker.copy(offset = marker.offset + upd.startOffset, ordinal = markerCache.size))
           }
           for (marker in rest) {
             markerCache.add(marker.copy(offset = marker.offset + diff, ordinal = markerCache.size))
           }
         }
-        else if (diff != 0 && markerCacheCutStart < markerCache.size) {
+        else if (diff != 0 && upd.markerCacheCutStart < markerCache.size) {
           val start =
-            markerCacheCutStart + if (markerCache[markerCacheCutStart].offset < event.offset) 1 else 0
+            upd.markerCacheCutStart + if (markerCache[upd.markerCacheCutStart].offset < event.offset) 1 else 0
           for (index in start until markerCache.size) {
             markerCache[index] = markerCache[index].let { it.copy(offset = it.offset + diff) }
           }
         }
 
         if (markersChanged || event.newFragment.count { it == '\n' } != event.oldFragment.count { it == '\n' }) {
-          val intervalStartingOrdinal = max(0, markerCacheCutStart - 1)
+          val intervalStartingOrdinal = max(0, upd.markerCacheCutStart - 1)
           val interestingMarkerSequence: Sequence<Pair<CellType, Int>> = markerCache
             .subList(intervalStartingOrdinal, markerCache.size)
             .asSequence()
             .map { it.type to document.getLineNumber(it.offset) }
-          updateIntervalCache(interestingMarkerSequence, document, markerCacheCutStart, intervalStartingOrdinal)
+          updateIntervalCache(interestingMarkerSequence, document, upd.markerCacheCutStart, intervalStartingOrdinal)
         }
 
-        notifyIntervalListenersIfNeeded(oldIntervals, endLine)
+        notifyIntervalListenersIfNeeded(oldIntervals, upd.endLine)
       }
     }
 
@@ -231,6 +244,15 @@ class NotebookCellLines private constructor(private val document: Document,
         }
       }
     }
+
+    private fun getMarkerCacheCutEndExclusive(markerCacheCutStart: Int): Int =
+      markerCache
+        .subList(markerCacheCutStart, markerCache.size)
+        .withIndex()
+        .takeWhile { it.value.offset < previousEndOffset }
+        .lastOrNull()
+        ?.let { markerCacheCutStart + it.index + 1 }
+      ?: markerCacheCutStart
   }
 
   private fun updateIntervalCache(interestingMarkerSequence: Sequence<Pair<CellType, Int>>,

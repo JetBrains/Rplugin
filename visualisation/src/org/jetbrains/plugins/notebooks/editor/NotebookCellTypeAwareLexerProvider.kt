@@ -12,5 +12,7 @@ interface NotebookCellTypeAwareLexerProvider {
 
   fun getCellType(tokenType: IElementType): NotebookCellLines.CellType?
 
+  fun shouldParseWholeFile(): Boolean = false
+
   companion object : LanguageExtension<NotebookCellTypeAwareLexerProvider>(ID)
 }

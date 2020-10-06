@@ -20,6 +20,8 @@ class RMarkdownCellTypeAwareLexerProvider : NotebookCellTypeAwareLexerProvider {
       RMarkdownCellType.CODE_CELL.elementType -> NotebookCellLines.CellType.CODE
       else -> null
     }
+
+  override fun shouldParseWholeFile(): Boolean = true
 }
 
 
