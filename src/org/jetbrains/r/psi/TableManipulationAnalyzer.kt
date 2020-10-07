@@ -78,16 +78,9 @@ enum class TableType {
   }
 }
 
-data class TableInfo(val columns: List<TableManipulationColumn>, val type: TableType)
+data class TableInfo(val columns: List<TableColumnInfo>, val type: TableType)
 
-data class TableManipulationColumn(val columnName: String, val columnType: String? = null) : TableColumnInfo(columnName, columnType, null)
-
-/**
- * Column information based on PSI definition
- */
-data class PsiTableColumnInfo(val psiName: String, val psiDefinition: PsiElement) : TableColumnInfo(psiName, null, psiDefinition)
-
-open class TableColumnInfo(val name: String, val type: String?, val definition: PsiElement?)
+data class TableColumnInfo(val name: String, val type: String? = null, val definition: PsiElement? = null)
 
 abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 
@@ -416,7 +409,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
           countColumnNameDefinition = nameArgument.parent
         }
       }
-      return processor.process(PsiTableColumnInfo(countColumnName, countColumnNameDefinition))
+      return processor.process(TableColumnInfo(countColumnName, definition = countColumnNameDefinition))
     }
 
     /**
@@ -430,10 +423,10 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       val result = ArrayList<TableColumnInfo>()
       for (expression in callInfo.argumentInfo.allDotsArguments) {
         if (expression is RNamedArgument) {
-          result.add(PsiTableColumnInfo(expression.name, expression))
+          result.add(TableColumnInfo(expression.name, definition = expression))
         }
         else if (expression is RIdentifierExpression) {
-          result.add(PsiTableColumnInfo(expression.name, expression))
+          result.add(TableColumnInfo(expression.name, definition = expression))
         }
       }
       for (column in result) {

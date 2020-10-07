@@ -56,9 +56,9 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
     return parent is ROperatorExpression && parent.operator?.name == PIPE_OPERATOR && expr == parent.rightExpr
   }
 
-  fun addCurrentColumns(columns: List<TableManipulationColumn>,
+  fun addCurrentColumns(columns: List<TableColumnInfo>,
                         callInfo: TableManipulationCallInfo<*>,
-                        currentArg: RExpression): List<TableManipulationColumn> {
+                        currentArg: RExpression): List<TableColumnInfo> {
     if (callInfo.function.tableArguments.contains("...")) return columns
     val arguments = callInfo.argumentInfo.expressionListWithPipeExpression
     val currentArgIndex = arguments.indexOf(currentArg)
@@ -66,11 +66,11 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
       .takeWhile { arguments.indexOf(it) < currentArgIndex }
       .mapNotNull {
         when (it) {
-          is RIdentifierExpression -> TableManipulationColumn(it.name)
+          is RIdentifierExpression -> TableColumnInfo(it.name)
           is RNamedArgument -> {
             val name = it.name
             if (name.startsWith(".")) return@mapNotNull null
-            TableManipulationColumn(name)
+            TableColumnInfo(name)
           }
           else -> null
         }

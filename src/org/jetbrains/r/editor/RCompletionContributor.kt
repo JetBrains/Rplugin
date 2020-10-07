@@ -660,7 +660,7 @@ class RCompletionContributor : CompletionContributor() {
       var columns = tableInfos.map { it.columns }.flatten()
         .groupBy { it.name }
         .map { (name, list) ->
-          TableManipulationColumn(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
+          TableColumnInfo(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
         }
 
       if (tableAnalyser is RDplyrAnalyzer)
@@ -680,7 +680,7 @@ class RCompletionContributor : CompletionContributor() {
 
       result.addAll(collectProcessor.results
                       .filter { !columnNamesFromConsole.contains(it.name) }
-                      .map { TableManipulationColumnLookup(TableManipulationColumn(it.name)) })
+                      .map { TableManipulationColumnLookup(TableColumnInfo(it.name)) })
     }
 
     private fun addFilePathCompletion(parameters: CompletionParameters,

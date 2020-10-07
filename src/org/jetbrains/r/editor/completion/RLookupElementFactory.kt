@@ -13,7 +13,7 @@ import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.TextRange
 import org.jetbrains.r.packages.RPackage
-import org.jetbrains.r.psi.TableManipulationColumn
+import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
@@ -49,7 +49,7 @@ class RLookupElement(val lookup: String,
   }
 }
 
-data class TableManipulationColumnLookup(val column: TableManipulationColumn, val needsToQuote: Boolean = false) {
+data class TableManipulationColumnLookup(val column: TableColumnInfo, val needsToQuote: Boolean = false) {
   override fun equals(other: Any?): Boolean {
     if (other !is TableManipulationColumnLookup) return false
     return other.quotedNameIfNeeded == quotedNameIfNeeded && other.column.type == column.type

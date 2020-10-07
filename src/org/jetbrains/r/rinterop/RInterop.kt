@@ -46,8 +46,8 @@ import org.jetbrains.r.interpreter.RVersion
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RequiredPackageException
+import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.TableInfo
-import org.jetbrains.r.psi.TableManipulationColumn
 import org.jetbrains.r.psi.TableType
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.graphics.RGraphicsDeviceManager
@@ -850,7 +850,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return try {
       val request = TableColumnsInfoRequest.newBuilder().setRef(table.proto).build()
       executeWithCheckCancel(asyncStub::getTableColumnsInfo, request).run {
-        TableInfo(columnsList.map { TableManipulationColumn(it.name, it.type) }, TableType.toTableType(tableType))
+        TableInfo(columnsList.map { TableColumnInfo(it.name, it.type) }, TableType.toTableType(tableType))
       }
     } catch (e: RInteropTerminated) {
       TableInfo(emptyList(), TableType.UNKNOWN)
