@@ -35,4 +35,9 @@ public interface LayerOrBuilder extends
    */
   org.jetbrains.r.rinterop.FigureOrBuilder getFigureOrBuilder(
       int index);
+
+  /**
+   * <code>bool isAxisText = 3;</code>
+   */
+  boolean getIsAxisText();
 }

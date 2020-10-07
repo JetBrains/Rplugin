@@ -27,6 +27,11 @@ class RCanvasPlotter(
     graphics.clip = area
   }
 
+  override fun getWidthOf(text: String, fontIndex: Int): Int {
+    selectFont(fontIndex)
+    return graphics.fontMetrics.stringWidth(text)
+  }
+
   override fun drawCircle(x: Int, y: Int, radius: Int, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
     val xFrom = x - radius
     val yFrom = y - radius

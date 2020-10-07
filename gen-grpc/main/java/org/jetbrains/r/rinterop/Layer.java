@@ -64,6 +64,11 @@ private static final long serialVersionUID = 0L;
                 input.readMessage(org.jetbrains.r.rinterop.Figure.parser(), extensionRegistry));
             break;
           }
+          case 24: {
+
+            isAxisText_ = input.readBool();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -143,6 +148,15 @@ private static final long serialVersionUID = 0L;
     return figure_.get(index);
   }
 
+  public static final int ISAXISTEXT_FIELD_NUMBER = 3;
+  private boolean isAxisText_;
+  /**
+   * <code>bool isAxisText = 3;</code>
+   */
+  public boolean getIsAxisText() {
+    return isAxisText_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -163,6 +177,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < figure_.size(); i++) {
       output.writeMessage(2, figure_.get(i));
     }
+    if (isAxisText_ != false) {
+      output.writeBool(3, isAxisText_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -179,6 +196,10 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < figure_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, figure_.get(i));
+    }
+    if (isAxisText_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(3, isAxisText_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -199,6 +220,8 @@ private static final long serialVersionUID = 0L;
         != other.getViewportIndex()) return false;
     if (!getFigureList()
         .equals(other.getFigureList())) return false;
+    if (getIsAxisText()
+        != other.getIsAxisText()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -216,6 +239,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + FIGURE_FIELD_NUMBER;
       hash = (53 * hash) + getFigureList().hashCode();
     }
+    hash = (37 * hash) + ISAXISTEXT_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getIsAxisText());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -358,6 +384,8 @@ private static final long serialVersionUID = 0L;
       } else {
         figureBuilder_.clear();
       }
+      isAxisText_ = false;
+
       return this;
     }
 
@@ -395,6 +423,7 @@ private static final long serialVersionUID = 0L;
       } else {
         result.figure_ = figureBuilder_.build();
       }
+      result.isAxisText_ = isAxisText_;
       onBuilt();
       return result;
     }
@@ -471,6 +500,9 @@ private static final long serialVersionUID = 0L;
             figureBuilder_.addAllMessages(other.figure_);
           }
         }
+      }
+      if (other.getIsAxisText() != false) {
+        setIsAxisText(other.getIsAxisText());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -766,6 +798,32 @@ private static final long serialVersionUID = 0L;
         figure_ = null;
       }
       return figureBuilder_;
+    }
+
+    private boolean isAxisText_ ;
+    /**
+     * <code>bool isAxisText = 3;</code>
+     */
+    public boolean getIsAxisText() {
+      return isAxisText_;
+    }
+    /**
+     * <code>bool isAxisText = 3;</code>
+     */
+    public Builder setIsAxisText(boolean value) {
+      
+      isAxisText_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool isAxisText = 3;</code>
+     */
+    public Builder clearIsAxisText() {
+      
+      isAxisText_ = false;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

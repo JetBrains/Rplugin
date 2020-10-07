@@ -10,6 +10,8 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
+import kotlin.math.abs
+import kotlin.math.max
 
 object RPlotUtil {
   fun writeTo(directory: File, plot: Plot, number: Int) {
@@ -65,7 +67,7 @@ object RPlotUtil {
 
   private fun convert(layer: Layer): RLayer {
     val figures = layer.figureList.map { convert(it) }
-    return RLayer(layer.viewportIndex, figures)
+    return RLayer(layer.viewportIndex, figures, layer.isAxisText)
   }
 
   private fun convert(figure: Figure): RFigure {
@@ -131,14 +133,12 @@ object RPlotUtil {
 
     private val plotter = provider.create(plot.fonts.map { scale(it) }, plot.colors, plot.strokes.map { scale(it) })
     private val clippingAreas = plot.viewports.map { calculateRectangle(it.from, it.to) }
+    private val gapWidths = IntArray(plot.fonts.size) { 0 }
 
     fun replay() {
       if (fitsDisplay()) {
         for (layer in plot.layers) {
-          plotter.setClippingArea(clippingAreas[layer.viewportIndex])
-          for (figure in layer.figures) {
-            replay(figure)
-          }
+          replay(layer)
         }
       } else {
         showMarginMessage()
@@ -155,6 +155,50 @@ object RPlotUtil {
       val y = displayArea.centerY.toInt()
       plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, 0, WHITE_COLOR_INDEX, WHITE_COLOR_INDEX)
       plotter.drawText(MARGINS_TEXT, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
+    }
+
+    private fun replay(layer: RLayer) {
+      plotter.setClippingArea(clippingAreas[layer.viewportIndex])
+      if (!layer.isAxisText) {
+        for (figure in layer.figures) {
+          replay(figure)
+        }
+      } else {
+        replayAxisText(layer.figures)
+      }
+    }
+
+    private fun replayAxisText(figures: List<RFigure>) {
+      var previousWidth = 0
+      var previousX = 0
+      var previousY = 0
+      var isFirst = true
+      for (figure in figures) {
+        val currentText = figure as RFigure.Text
+        val currentWidth = plotter.getWidthOf(currentText.text, currentText.fontIndex)
+        val currentX = calculateX(currentText.position)
+        val currentY = calculateY(currentText.position)
+        if (!isFirst) {
+          val distance = calculateDistance(previousX, previousY, currentX, currentY)
+          val gapWidth = getGapWidth(currentText.fontIndex)
+          if (previousWidth + currentWidth > 2 * (distance - gapWidth)) {
+            continue
+          }
+        }
+        // Okay, there is enough space for this text
+        replay(currentText, currentX, currentY)
+        previousWidth = currentWidth
+        previousX = currentX
+        previousY = currentY
+        isFirst = false
+      }
+    }
+
+    private fun getGapWidth(fontIndex: Int): Int {
+      if (gapWidths[fontIndex] == 0) {
+        gapWidths[fontIndex] = plotter.getWidthOf(GAP_TEXT, fontIndex)
+      }
+      return gapWidths[fontIndex]
     }
 
     private fun replay(figure: RFigure) {
@@ -206,6 +250,10 @@ object RPlotUtil {
     private fun replay(text: RFigure.Text) {
       val x = calculateX(text.position)
       val y = calculateY(text.position)
+      replay(text, x, y)
+    }
+
+    private fun replay(text: RFigure.Text, x: Int, y: Int) {
       plotter.drawText(text.text, x, y, text.angle, text.anchor, text.fontIndex, text.colorIndex)
     }
 
@@ -258,7 +306,15 @@ object RPlotUtil {
       private const val BLACK_COLOR_INDEX = 0
       private const val WHITE_COLOR_INDEX = 1
 
+      private const val GAP_TEXT = "m"  // Not to be translated
+
       private val MARGINS_TEXT = RBundle.message("plot.viewer.figure.margins.too.large")
+
+      private fun calculateDistance(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int): Int {
+        val xDelta = abs(xFrom - xTo)
+        val yDelta = abs(yFrom - yTo)
+        return max(xDelta, yDelta)
+      }
     }
   }
 }

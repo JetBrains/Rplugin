@@ -10,7 +10,7 @@ data class RStroke(val width: Double)
 
 data class RViewport(val from: RAffinePoint, val to: RAffinePoint)
 
-data class RLayer(val viewportIndex: Int, val figures: List<RFigure>)
+data class RLayer(val viewportIndex: Int, val figures: List<RFigure>, val isAxisText: Boolean)
 
 data class RPlot(
   val number: Int,
