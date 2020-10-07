@@ -174,8 +174,9 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.executeText("""
       |rstudioapi::sendToConsole("s <- 2 + 4")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.split("\n")
-    TestCase.assertEquals(3, commands.size)
+    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    val commands = console.text.trim().split("\n")
+    TestCase.assertEquals(2, commands.size)
     TestCase.assertEquals("> s <- 2 + 4", commands[1])
   }
 
@@ -183,8 +184,9 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.executeText("""
       |rstudioapi::sendToConsole("s <- 2 + 4", FALSE)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.split("\n")
-    TestCase.assertEquals(2, commands.size)
+    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    val commands = console.text.trim().split("\n")
+    TestCase.assertEquals(1, commands.size)
     TestCase.assertEquals("s <- 2 + 4", console.consoleEditor.document.text)
   }
 
@@ -192,8 +194,9 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.executeText("""
       |rstudioapi::sendToConsole("s <- 2 + 4", TRUE, FALSE)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.split("\n")
-    TestCase.assertEquals(3, commands.size)
+    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    val commands = console.text.trim().split("\n")
+    TestCase.assertEquals(2, commands.size)
     TestCase.assertEquals("> s <- 2 + 4", commands[1])
   }
 
@@ -201,8 +204,9 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     console.executeText("""
       |rstudioapi::sendToConsole("s <- 2 + 4", FALSE, FALSE)
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.split("\n")
-    TestCase.assertEquals(2, commands.size)
+    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    val commands = console.text.trim().split("\n")
+    TestCase.assertEquals(1, commands.size)
     TestCase.assertEquals("s <- 2 + 4", console.consoleEditor.document.text)
   }
 
@@ -354,6 +358,14 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
       }
     }
     RJobRunner.getInstance(project).eventDispatcher.addListener(lambda)
+    return promise
+  }
+
+  private fun sendToConsolePromise(): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    console.executeActionHandler.executeLater {
+      promise.setResult(Unit)
+    }
     return promise
   }
 }

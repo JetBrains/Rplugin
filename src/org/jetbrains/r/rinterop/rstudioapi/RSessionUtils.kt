@@ -22,7 +22,10 @@ object RSessionUtils {
 
     if (echo) {
       if (rInterop.isInSourceFileExecution.get()) {
-        console.executeText(call)
+        console.executeActionHandler.executeLater {
+          console.executeText(call)
+        }
+        return
       }
     }
 
@@ -37,27 +40,28 @@ object RSessionUtils {
       }
     }
 
-    if (execute) {
-      val text = console.editorDocument.text
-      console.executeText(code).then {
-        invokeLater {
+    val consoleSetText = { text: String ->
+      invokeLater {
+        runWriteAction {
           val consoleEditor = console.consoleEditor
-          runWriteAction {
-            consoleEditor.document.setText(text)
-            PsiDocumentManager.getInstance(rInterop.project).commitDocument(consoleEditor.document)
-          }
+          consoleEditor.document.setText(text)
+          PsiDocumentManager.getInstance(rInterop.project).commitDocument(consoleEditor.document)
           consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
         }
       }
     }
-    else {
-      invokeLater {
-        val consoleEditor = console.consoleEditor
-        runWriteAction {
-          consoleEditor.document.setText(code)
-          PsiDocumentManager.getInstance(rInterop.project).commitDocument(consoleEditor.document)
+
+    if (execute) {
+      val text = console.editorDocument.text
+      console.executeActionHandler.executeLater {
+        console.executeText(code).then {
+          consoleSetText(text)
         }
-        consoleEditor.caretModel.moveToOffset(consoleEditor.document.textLength)
+      }
+    }
+    else {
+      console.executeActionHandler.executeLater {
+        consoleSetText(code)
       }
     }
   }
@@ -68,7 +72,9 @@ object RSessionUtils {
     RInterpreterManager.restartInterpreter(rInterop.project, Runnable {
       if (command.isNotBlank()) {
         RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
-          it.executeText(command)
+          it.executeActionHandler.executeLater {
+            it.executeText(command)
+          }
         }
       }
     })

@@ -220,8 +220,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
               promise.setResult(DocumentUtils.insertText(rInterop, args))
             }
             RStudioApiFunctionId.SEND_TO_CONSOLE_ID -> {
-              promise.setResult(RObject.getDefaultInstance())
               RSessionUtils.sendToConsole(rInterop, args)
+              promise.setResult(RObject.getDefaultInstance())
             }
             RStudioApiFunctionId.GET_CONSOLE_EDITOR_CONTEXT_ID -> {
               promise.setResult(DocumentUtils.getConsoleEditorContext(rInterop))
@@ -287,8 +287,8 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             }
             RStudioApiFunctionId.JOB_SET_STATE_ID -> TODO()
             RStudioApiFunctionId.RESTART_SESSION_ID -> {
-              promise.setResult(RObject.getDefaultInstance())
               RSessionUtils.restartSession(rInterop, args)
+              promise.setResult(RObject.getDefaultInstance())
             }
             RStudioApiFunctionId.DOCUMENT_NEW_ID -> {
               DocumentUtils.documentNew(rInterop, args).then {
