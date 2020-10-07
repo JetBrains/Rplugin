@@ -299,7 +299,7 @@ object RInterpreterUtil {
   }
 
   fun getRunHelperArgs(helper: String, args: List<String>): List<String> {
-    return listOf("--slave", "--no-restore", "-f", helper, "--args", *args.toTypedArray())
+    return listOf("--slave", "--vanilla", "-f", helper, "--args", *args.toTypedArray())
   }
 
   private fun runRInterpreter(interpreterLocation: RInterpreterLocation,
@@ -347,7 +347,7 @@ object RInterpreterUtil {
   }
 
   fun runScript(scriptText: String, interpreterLocation: RInterpreterLocation): ProcessOutput? {
-    val args = listOf("--no-restore", "--quiet", "--slave", "-e", scriptText)
+    val args = listOf("--vanilla", "--quiet", "--slave", "-e", scriptText)
     try {
       val processHandler = interpreterLocation.runInterpreterOnHost(args)
       return CapturingProcessRunner(processHandler).runProcess(DEFAULT_TIMEOUT)

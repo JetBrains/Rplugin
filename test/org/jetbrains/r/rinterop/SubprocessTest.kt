@@ -110,10 +110,10 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   }
 
   private fun makeRCommand(code: String): String {
-    return "${interpreter.interpreterPathOnHost} --no-save --no-restore --slave -e \"${StringUtil.escapeStringCharacters(code)}\""
+    return "${interpreter.interpreterPathOnHost} --vanilla --slave -e \"${StringUtil.escapeStringCharacters(code)}\""
   }
 
   private fun makeRInteractiveCommand(): String {
-    return "${interpreter.interpreterPathOnHost} --no-save --no-restore --slave --interactive"
+    return "${interpreter.interpreterPathOnHost} --vanilla --slave --interactive"
   }
 }
