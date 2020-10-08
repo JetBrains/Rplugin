@@ -4,9 +4,11 @@
 
 package org.jetbrains.r.settings
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import org.intellij.datavis.r.inlays.components.CHANGE_DARK_MODE_TOPIC
+import org.intellij.datavis.r.inlays.components.DarkModeNotifier
 import org.jetbrains.r.run.graphics.RGraphicsUtils
 import java.awt.Dimension
 
@@ -67,6 +69,14 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
 
     fun setOutputDirectory(project: Project, directory: String?) {
       getInstance(project).state.outputDirectory = directory
+    }
+
+    fun addDarkModeListener(project: Project, parent: Disposable, listener: (Boolean) -> Unit) {
+      project.messageBus.connect(parent).subscribe(CHANGE_DARK_MODE_TOPIC, object : DarkModeNotifier {
+        override fun onDarkModeChanged(isEnabled: Boolean) {
+          listener(isEnabled)
+        }
+      })
     }
     
     private fun setScreenParameters(project: Project, dimension: Dimension, resolutionMaybe: Int?) {

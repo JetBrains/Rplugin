@@ -24,6 +24,7 @@ import org.jetbrains.r.run.graphics.*
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.awt.image.BufferedImage
 import javax.swing.JComponent
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
@@ -43,7 +44,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
   private val repository = RGraphicsRepository.getInstance(project)
   private val graphicsPanel = GraphicsPanel(project, project)
-  private val plotViewer = RPlotViewer()
+  private val plotViewer = RPlotViewer(project, project)
 
   init {
     updateContent()
@@ -196,17 +197,21 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun copyCurrentOutput() {
     lastOutput?.let { output ->
-      val image = if (isStandalone) RPlotUtil.createImage(output.plot, plotViewer.parameters) else graphicsPanel.image
+      val image = if (isStandalone) createImageFrom(output.plot) else graphicsPanel.image
       if (image != null) {
         ClipboardUtils.copyImageToClipboard(image)
       }
     }
   }
 
+  private fun createImageFrom(plot: RPlot): BufferedImage {
+    return RPlotUtil.createImage(plot, plotViewer.parameters, RGraphicsSettings.isDarkModeEnabled(project))
+  }
+
   private fun zoomCurrentOutput() {
     lastOutput?.let { output ->
       if (isStandalone) {
-        RGraphicsZoomDialog.show(project, output.plot, resolution)
+        RGraphicsZoomDialog.show(project, project, output.plot, resolution)
       } else {
         output.snapshot?.let { snapshot ->
           RGraphicsZoomDialog.show(project, project, snapshot)

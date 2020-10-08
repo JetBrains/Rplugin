@@ -1,6 +1,8 @@
 package org.jetbrains.r.run.graphics
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.ImageUtil
+import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
 import java.awt.Color
@@ -112,26 +114,30 @@ object RPlotUtil {
     return RAffinePoint(point.xScale, point.xOffset, point.yScale, point.yOffset)
   }
 
-  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters): BufferedImage {
+  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
     return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
       val graphics = image.graphics as Graphics2D
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
       val provider = RCanvasPlotterProvider(parameters, graphics)
-      replay(plot, provider)
+      replay(plot, provider, darkMode)
     }
   }
 
-  fun replay(plot: RPlot, provider: RPlotterProvider) {
-    val helper = ReplayHelper(plot, provider)
+  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean) {
+    val helper = ReplayHelper(plot, provider, darkMode)
     helper.replay()
   }
 
-  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider) {
+  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider, private val darkMode: Boolean) {
     private val width = provider.parameters.width
     private val height = provider.parameters.height
     private val resolution = provider.parameters.resolution ?: RGraphicsUtils.DEFAULT_RESOLUTION
 
-    private val plotter = provider.create(plot.fonts.map { scale(it) }, plot.colors, plot.strokes.map { scale(it) })
+    private val editorColorsManager = EditorColorsManager.getInstance()
+    private val colorScheme = editorColorsManager.globalScheme
+    private val inverter = ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground)
+
+    private val plotter = provider.create(plot.fonts.map { scale(it) }, fitTheme(plot.colors), plot.strokes.map { scale(it) })
     private val clippingAreas = plot.viewports.map { calculateRectangle(it.from, it.to) }
     private val gapWidths = IntArray(plot.fonts.size) { 0 }
 
@@ -299,6 +305,10 @@ object RPlotUtil {
 
     private fun scale(value: Double): Double {
       return value * resolution
+    }
+
+    private fun fitTheme(colors: List<Color>): List<Color> {
+      return if (darkMode && editorColorsManager.isDarkEditor) colors.map { inverter.invert(it) } else colors
     }
 
     companion object {

@@ -5,6 +5,8 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.ui.update.MergingUpdateQueue
@@ -17,6 +19,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -114,6 +117,15 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
 
   val component = graphicsPanel.component
 
+  init {
+    RGraphicsSettings.addDarkModeListener(project, parent) {
+      rescaleIfStandalone()
+    }
+    project.messageBus.connect(parent).subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+      rescaleIfStandalone()
+    })
+  }
+
   fun addPlot(plot: RPlot) {
     addGraphics(null, plot)
   }
@@ -175,6 +187,17 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     }
   }
 
+  private fun rescaleIfStandalone() {
+    // Note: check for `localResolution` prevents useless rescales on IDE startup
+    // when the first rescale hasn't been completed yet
+    if (isStandalone && localResolution != null) {
+      val newSize = preferredImageSize?.takeIf { isAutoResizeEnabled } ?: graphicsPanel.imageSize
+      if (newSize != null && newSize.isValid) {
+        rescale(newSize, targetResolution)
+      }
+    }
+  }
+
   private fun rescale(newSize: Dimension, newResolution: Int?) {
     if (isStandalone) {
       plot?.let { plot ->
@@ -190,7 +213,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun rescale(plot: RPlot, newSize: Dimension, newResolution: Int?) {
     runAsync {
       val parameters = RGraphicsUtils.ScreenParameters(newSize, newResolution)
-      val image = RPlotUtil.createImage(plot, parameters)
+      val image = RPlotUtil.createImage(plot, parameters, manager.isDarkModeEnabled)
       localResolution = newResolution
       oldStandalone = isStandalone
       graphicsPanel.showBufferedImage(image)

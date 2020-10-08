@@ -55,8 +55,8 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
       RGraphicsZoomDialog(project, wrapper.component, zoomGroup).show()
     }
 
-    fun show(project: Project, plot: RPlot, resolution: Int?) {
-      val viewer = RPlotViewer()
+    fun show(project: Project, parent: Disposable, plot: RPlot, resolution: Int?) {
+      val viewer = RPlotViewer(project, parent)
       viewer.resolution = resolution
       viewer.plot = plot
       RGraphicsZoomDialog(project, viewer).show()

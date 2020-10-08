@@ -24,6 +24,12 @@ class ImageInverter(foreground: Color, background: Color) {
     convertRGBtoHSL(rgb, blackHsl)
   }
 
+  fun invert(color: Color): Color {
+    val alpha = invert(color.rgb)
+    val argb = convertHSLtoRGB(hsl, alpha)
+    return Color(argb, true)
+  }
+
   fun invert(content: ByteArray): ByteArray {
     val image = ImageIO.read(ByteArrayInputStream(content)) ?: return content
     val outputImage = invert(image)

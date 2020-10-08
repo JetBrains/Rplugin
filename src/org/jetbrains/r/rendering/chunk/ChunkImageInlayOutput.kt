@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.util.Disposer
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.components.*
@@ -141,7 +140,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   private fun zoomImage() {
     if (wrapper.isStandalone) {
       wrapper.plot?.let { plot ->
-        RGraphicsZoomDialog.show(project, plot, wrapper.localResolution)
+        RGraphicsZoomDialog.show(project, parent, plot, wrapper.localResolution)
       }
     } else {
       wrapper.snapshot?.let { snapshot ->
