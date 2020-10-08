@@ -518,6 +518,8 @@ You can find the source code in the following repositories:
 
         <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
 
+        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService"/>
+
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
                         serviceImplementation="org.jetbrains.r.interpreter.RInterpreterManagerImpl"/>
 
