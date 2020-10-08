@@ -26,6 +26,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.messages.Topic
 import io.grpc.*
 import io.grpc.stub.ClientCalls
@@ -80,7 +81,11 @@ const val RINTEROP_THREAD_NAME = "RInterop"
 
 class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler,
                address: String, port: Int, val project: Project) : UserDataHolderBase(), Disposable {
-  private val channel = ManagedChannelBuilder.forAddress(address, port).usePlaintext().maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
+  private val channel = ManagedChannelBuilder.forAddress(address, port)
+    .executor(AppExecutorUtil.getAppExecutorService())
+    .usePlaintext()
+    .maxInboundMessageSize(MAX_MESSAGE_SIZE).build()
+
   private val isUnitTestMode = ApplicationManager.getApplication().isUnitTestMode
   private val deadlineTest
     get() = project.getUserData(DEADLINE_TEST_KEY) ?: DEADLINE_TEST_DEFAULT
@@ -139,7 +144,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     future.addListener(Runnable {
       val result = try {
         future.get()
-      } catch (e: Throwable) {
+      }
+      catch (e: Throwable) {
         promise.setError(processError(e, f.name))
         return@Runnable
       }
@@ -424,13 +430,15 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
                   outputConsumer?.invoke(value.output.text.toStringUtf8(), ProcessOutputType.STDERR)
                   if (returnOutput) stderrBuffer.append(value.output.text.toStringUtf8())
                 }
-                else -> {}
+                else -> {
+                }
               }
             }
             ExecuteCodeResponse.MsgCase.EXCEPTION -> {
               exception = value.exception
             }
-            else -> {}
+            else -> {
+            }
           }
         }
 
@@ -823,7 +831,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getS4ClassInfoByObjectName(ref: RReference): RS4ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByObjectName, ref.proto)
-      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList, res.isVirtual)
+      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList,
+                   res.isVirtual)
     } catch (e: RInteropTerminated) {
       null
     }
@@ -832,7 +841,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   fun getS4ClassInfoByClassName(className: String): RS4ClassInfo? {
     return try {
       val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByClassName, StringValue.of(className))
-      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList, res.isVirtual)
+      RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList,
+                   res.isVirtual)
     } catch (e: RInteropTerminated) {
       null
     }
@@ -1006,7 +1016,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       AsyncEvent.EventCase.SHOWFILEREQUEST -> {
         val request = event.showFileRequest
-        fireListenersAsync({it.onShowFileRequest(request.filePath, request.title) }) {
+        fireListenersAsync({ it.onShowFileRequest(request.filePath, request.title) }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -1027,7 +1037,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
               }.onError {
                 rStudioApiResponse = RObject.newBuilder().setError(it.message).build()
               }
-            } else {
+            }
+            else {
               rStudioApiResponse = RObject.newBuilder().setError("Unknown function id").build()
               resolvedPromise()
             }
@@ -1097,7 +1108,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         executeTask {
           if (asyncProcessingStarted) {
             processAsyncEvent(event)
-          } else {
+          }
+          else {
             asyncEventsBeforeStarted.add(event)
           }
           if (event.hasTermination()) {
@@ -1139,7 +1151,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
     RStackFrame(position, indexToEnvironment(index), it.functionName.takeIf { it.isNotEmpty() },
-                  it.equalityObject, extendedPosition, it.sourcePositionText.takeIf { it.isNotEmpty() })
+                it.equalityObject, extendedPosition, it.sourcePositionText.takeIf { it.isNotEmpty() })
     }
   }
 
@@ -1173,7 +1185,8 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
               }
               executor.shutdown()
             }
-          } catch (e: ProcessCanceledException) {
+          }
+          catch (e: ProcessCanceledException) {
             killedByUsed = true
             terminationPromise.setResult(Unit)
             processHandler.destroyProcess()
