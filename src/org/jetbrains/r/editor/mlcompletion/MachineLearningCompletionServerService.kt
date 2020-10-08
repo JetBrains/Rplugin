@@ -10,16 +10,20 @@ class MachineLearningCompletionServerService: Disposable {
 
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
+    private const val RELAUNCH_TIMEOUT_MS = 5_000L
+    private const val LAUNCH_SERVER_COMMAND = "python3"
     private val LOCAL_SERVER_MAIN_FILE_PATH = Paths.get(
       System.getProperty("user.dir"),
       "../rplugin/src/org/jetbrains/r/editor/mlcompletion/python_server"
     ).toString()
+
     fun getInstance() = service<MachineLearningCompletionServerService>()
   }
 
   private var host = settings.state.host
   private var port = settings.state.port
   private var localServer: Process? = null
+  private var lastRelaunchInitializedTime: Long = System.currentTimeMillis();
 
   init {
     launchServer()
@@ -35,6 +39,10 @@ class MachineLearningCompletionServerService: Disposable {
 
   @Synchronized
   fun tryRelaunchServer() {
+    if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
+      return
+    }
+    lastRelaunchInitializedTime = System.currentTimeMillis()
     shutdownServer()
     launchServer()
   }
@@ -54,11 +62,12 @@ class MachineLearningCompletionServerService: Disposable {
   }
 
   private fun launchServer() {
-    // decide on default value
     if (!isLocalHost(host ?: "")) {
       return
     }
-    localServer = ProcessBuilder("python3", LOCAL_SERVER_MAIN_FILE_PATH).start()
+    localServer =
+      ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString())
+        .start()
   }
 
   private fun shutdownServer() {
