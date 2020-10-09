@@ -10,11 +10,11 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.elementType
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.editor.formatting.R_SPACE_TOKENS
 import org.jetbrains.r.editor.formatting.findPrevNonSpaceNode
 import org.jetbrains.r.parsing.RElementTypes
 
@@ -40,7 +40,10 @@ class REnterAdapter : EnterHandlerDelegateAdapter() {
     val offset = editor.caretModel.offset
     val element = file.findElementAt(offset) ?: return false
     val brackets = element.parent ?: return false
-    val content = brackets.node.findChildByType(R_OPEN_PAIRS)?.psi?.nextSibling ?: return false
+    var content: PsiElement = brackets.node.findChildByType(R_OPEN_PAIRS)?.psi?.nextSibling ?: return false
+    while (content is PsiWhiteSpace) {
+      content = content.nextSibling ?: return false
+    }
     if (R_CLOSE_PAIRS.contains(element.elementType)) {
       val prevElementType = findPrevNonSpaceNode(element.node)?.elementType
       if (prevElementType != RElementTypes.R_EMPTY_EXPRESSION && prevElementType != TokenType.ERROR_ELEMENT) return false

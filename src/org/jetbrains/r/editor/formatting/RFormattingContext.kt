@@ -184,6 +184,7 @@ class RFormattingContext(private val settings: CodeStyleSettings) {
       node.psi is RFile -> Indent.getNoneIndent()
       node.psi is RBlockExpression -> Indent.getNormalIndent()
       node.psi is RExpression -> Indent.getContinuationIndent()
+      node.psi is RArgumentList -> Indent.getContinuationIndent()
       else -> Indent.getNoneIndent()
     }
   }

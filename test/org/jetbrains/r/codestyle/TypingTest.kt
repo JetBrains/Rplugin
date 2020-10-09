@@ -104,6 +104,29 @@ class TypingTest : RUsefulTestCase() {
     """)
   }
 
+  fun testEnterInsideParenthesis() {
+    doTest("""
+      y <- c(<caret>)
+    """, """
+      y <- c(
+          <caret>
+      )
+    """)
+  }
+
+  fun testEnterWhenFirstArgumentIsInNextLine() {
+    doTest("""
+      y <- hello(
+          10,<caret>
+      )
+    """, """
+      y <- hello(
+          10,
+          <caret>
+      )
+    """)
+  }
+
   // This behavior does not work in the end of file, see DS-208
   fun testEnterInExpression() {
     doTest("""
