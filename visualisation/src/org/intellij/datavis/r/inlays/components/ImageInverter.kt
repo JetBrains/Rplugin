@@ -4,6 +4,7 @@
 
 package org.intellij.datavis.r.inlays.components
 
+import com.intellij.util.ui.ImageUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
@@ -30,9 +31,16 @@ class ImageInverter(foreground: Color, background: Color) {
     return Color(argb, true)
   }
 
+  fun invert(image: BufferedImage): BufferedImage {
+    return ImageUtil.createImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also { outputImage ->
+      invertInPlace(image, outputImage)
+    }
+  }
+
   fun invert(content: ByteArray): ByteArray {
     val image = ImageIO.read(ByteArrayInputStream(content)) ?: return content
-    val outputImage = invert(image)
+    val outputImage = createImageWithInvertedPalette(image)
+    invertInPlace(image, outputImage)
     return ByteArrayOutputStream().use { outputStream ->
       ImageIO.write(outputImage, "png", outputStream)
       outputStream.flush()
@@ -40,14 +48,12 @@ class ImageInverter(foreground: Color, background: Color) {
     }
   }
 
-  private fun invert(image: BufferedImage): BufferedImage {
-    return createImageWithInvertedPalette(image).also { outputImage ->
-      for (x in 0 until image.width) {
-        for (y in 0 until image.height) {
-          val argb = image.getRGB(x, y)
-          val alpha = invert(argb)
-          outputImage.setRGB(x, y, convertHSLtoRGB(hsl, alpha))
-        }
+  private fun invertInPlace(image: BufferedImage, outputImage: BufferedImage) {
+    for (x in 0 until image.width) {
+      for (y in 0 until image.height) {
+        val argb = image.getRGB(x, y)
+        val alpha = invert(argb)
+        outputImage.setRGB(x, y, convertHSLtoRGB(hsl, alpha))
       }
     }
   }

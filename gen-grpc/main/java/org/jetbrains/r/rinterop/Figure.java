@@ -105,8 +105,22 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 42: {
-            org.jetbrains.r.rinterop.RectangleFigure.Builder subBuilder = null;
+            org.jetbrains.r.rinterop.RasterFigure.Builder subBuilder = null;
             if (kindCase_ == 5) {
+              subBuilder = ((org.jetbrains.r.rinterop.RasterFigure) kind_).toBuilder();
+            }
+            kind_ =
+                input.readMessage(org.jetbrains.r.rinterop.RasterFigure.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.RasterFigure) kind_);
+              kind_ = subBuilder.buildPartial();
+            }
+            kindCase_ = 5;
+            break;
+          }
+          case 50: {
+            org.jetbrains.r.rinterop.RectangleFigure.Builder subBuilder = null;
+            if (kindCase_ == 6) {
               subBuilder = ((org.jetbrains.r.rinterop.RectangleFigure) kind_).toBuilder();
             }
             kind_ =
@@ -115,12 +129,12 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.RectangleFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 5;
+            kindCase_ = 6;
             break;
           }
-          case 50: {
+          case 58: {
             org.jetbrains.r.rinterop.TextFigure.Builder subBuilder = null;
-            if (kindCase_ == 6) {
+            if (kindCase_ == 7) {
               subBuilder = ((org.jetbrains.r.rinterop.TextFigure) kind_).toBuilder();
             }
             kind_ =
@@ -129,7 +143,7 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.TextFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 6;
+            kindCase_ = 7;
             break;
           }
           default: {
@@ -172,8 +186,9 @@ private static final long serialVersionUID = 0L;
     LINE(2),
     POLYGON(3),
     POLYLINE(4),
-    RECTANGLE(5),
-    TEXT(6),
+    RASTER(5),
+    RECTANGLE(6),
+    TEXT(7),
     KIND_NOT_SET(0);
     private final int value;
     private KindCase(int value) {
@@ -193,8 +208,9 @@ private static final long serialVersionUID = 0L;
         case 2: return LINE;
         case 3: return POLYGON;
         case 4: return POLYLINE;
-        case 5: return RECTANGLE;
-        case 6: return TEXT;
+        case 5: return RASTER;
+        case 6: return RECTANGLE;
+        case 7: return TEXT;
         case 0: return KIND_NOT_SET;
         default: return null;
       }
@@ -314,53 +330,79 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
   }
 
-  public static final int RECTANGLE_FIELD_NUMBER = 5;
+  public static final int RASTER_FIELD_NUMBER = 5;
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
    */
-  public boolean hasRectangle() {
+  public boolean hasRaster() {
     return kindCase_ == 5;
   }
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   */
+  public org.jetbrains.r.rinterop.RasterFigure getRaster() {
+    if (kindCase_ == 5) {
+       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+    }
+    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   */
+  public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
+    if (kindCase_ == 5) {
+       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+    }
+    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+  }
+
+  public static final int RECTANGLE_FIELD_NUMBER = 6;
+  /**
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   */
+  public boolean hasRectangle() {
+    return kindCase_ == 6;
+  }
+  /**
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
    */
   public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
-    if (kindCase_ == 5) {
+    if (kindCase_ == 6) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
     }
     return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
    */
   public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
-    if (kindCase_ == 5) {
+    if (kindCase_ == 6) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
     }
     return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
   }
 
-  public static final int TEXT_FIELD_NUMBER = 6;
+  public static final int TEXT_FIELD_NUMBER = 7;
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   public boolean hasText() {
-    return kindCase_ == 6;
+    return kindCase_ == 7;
   }
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   public org.jetbrains.r.rinterop.TextFigure getText() {
-    if (kindCase_ == 6) {
+    if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
     }
     return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
-    if (kindCase_ == 6) {
+    if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
     }
     return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
@@ -393,10 +435,13 @@ private static final long serialVersionUID = 0L;
       output.writeMessage(4, (org.jetbrains.r.rinterop.PolylineFigure) kind_);
     }
     if (kindCase_ == 5) {
-      output.writeMessage(5, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+      output.writeMessage(5, (org.jetbrains.r.rinterop.RasterFigure) kind_);
     }
     if (kindCase_ == 6) {
-      output.writeMessage(6, (org.jetbrains.r.rinterop.TextFigure) kind_);
+      output.writeMessage(6, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+    }
+    if (kindCase_ == 7) {
+      output.writeMessage(7, (org.jetbrains.r.rinterop.TextFigure) kind_);
     }
     unknownFields.writeTo(output);
   }
@@ -425,11 +470,15 @@ private static final long serialVersionUID = 0L;
     }
     if (kindCase_ == 5) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+        .computeMessageSize(5, (org.jetbrains.r.rinterop.RasterFigure) kind_);
     }
     if (kindCase_ == 6) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(6, (org.jetbrains.r.rinterop.TextFigure) kind_);
+        .computeMessageSize(6, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+    }
+    if (kindCase_ == 7) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(7, (org.jetbrains.r.rinterop.TextFigure) kind_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -465,10 +514,14 @@ private static final long serialVersionUID = 0L;
             .equals(other.getPolyline())) return false;
         break;
       case 5:
+        if (!getRaster()
+            .equals(other.getRaster())) return false;
+        break;
+      case 6:
         if (!getRectangle()
             .equals(other.getRectangle())) return false;
         break;
-      case 6:
+      case 7:
         if (!getText()
             .equals(other.getText())) return false;
         break;
@@ -504,10 +557,14 @@ private static final long serialVersionUID = 0L;
         hash = (53 * hash) + getPolyline().hashCode();
         break;
       case 5:
+        hash = (37 * hash) + RASTER_FIELD_NUMBER;
+        hash = (53 * hash) + getRaster().hashCode();
+        break;
+      case 6:
         hash = (37 * hash) + RECTANGLE_FIELD_NUMBER;
         hash = (53 * hash) + getRectangle().hashCode();
         break;
-      case 6:
+      case 7:
         hash = (37 * hash) + TEXT_FIELD_NUMBER;
         hash = (53 * hash) + getText().hashCode();
         break;
@@ -704,13 +761,20 @@ private static final long serialVersionUID = 0L;
         }
       }
       if (kindCase_ == 5) {
+        if (rasterBuilder_ == null) {
+          result.kind_ = kind_;
+        } else {
+          result.kind_ = rasterBuilder_.build();
+        }
+      }
+      if (kindCase_ == 6) {
         if (rectangleBuilder_ == null) {
           result.kind_ = kind_;
         } else {
           result.kind_ = rectangleBuilder_.build();
         }
       }
-      if (kindCase_ == 6) {
+      if (kindCase_ == 7) {
         if (textBuilder_ == null) {
           result.kind_ = kind_;
         } else {
@@ -781,6 +845,10 @@ private static final long serialVersionUID = 0L;
         }
         case POLYLINE: {
           mergePolyline(other.getPolyline());
+          break;
+        }
+        case RASTER: {
+          mergeRaster(other.getRaster());
           break;
         }
         case RECTANGLE: {
@@ -1384,31 +1452,167 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> rectangleBuilder_;
+        org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder> rasterBuilder_;
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
      */
-    public boolean hasRectangle() {
+    public boolean hasRaster() {
       return kindCase_ == 5;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RasterFigure getRaster() {
+      if (rasterBuilder_ == null) {
+        if (kindCase_ == 5) {
+          return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+        }
+        return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+      } else {
+        if (kindCase_ == 5) {
+          return rasterBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public Builder setRaster(org.jetbrains.r.rinterop.RasterFigure value) {
+      if (rasterBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        kind_ = value;
+        onChanged();
+      } else {
+        rasterBuilder_.setMessage(value);
+      }
+      kindCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public Builder setRaster(
+        org.jetbrains.r.rinterop.RasterFigure.Builder builderForValue) {
+      if (rasterBuilder_ == null) {
+        kind_ = builderForValue.build();
+        onChanged();
+      } else {
+        rasterBuilder_.setMessage(builderForValue.build());
+      }
+      kindCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public Builder mergeRaster(org.jetbrains.r.rinterop.RasterFigure value) {
+      if (rasterBuilder_ == null) {
+        if (kindCase_ == 5 &&
+            kind_ != org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance()) {
+          kind_ = org.jetbrains.r.rinterop.RasterFigure.newBuilder((org.jetbrains.r.rinterop.RasterFigure) kind_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          kind_ = value;
+        }
+        onChanged();
+      } else {
+        if (kindCase_ == 5) {
+          rasterBuilder_.mergeFrom(value);
+        }
+        rasterBuilder_.setMessage(value);
+      }
+      kindCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public Builder clearRaster() {
+      if (rasterBuilder_ == null) {
+        if (kindCase_ == 5) {
+          kindCase_ = 0;
+          kind_ = null;
+          onChanged();
+        }
+      } else {
+        if (kindCase_ == 5) {
+          kindCase_ = 0;
+          kind_ = null;
+        }
+        rasterBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RasterFigure.Builder getRasterBuilder() {
+      return getRasterFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
+      if ((kindCase_ == 5) && (rasterBuilder_ != null)) {
+        return rasterBuilder_.getMessageOrBuilder();
+      } else {
+        if (kindCase_ == 5) {
+          return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+        }
+        return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder> 
+        getRasterFieldBuilder() {
+      if (rasterBuilder_ == null) {
+        if (!(kindCase_ == 5)) {
+          kind_ = org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+        }
+        rasterBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder>(
+                (org.jetbrains.r.rinterop.RasterFigure) kind_,
+                getParentForChildren(),
+                isClean());
+        kind_ = null;
+      }
+      kindCase_ = 5;
+      onChanged();;
+      return rasterBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> rectangleBuilder_;
+    /**
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     */
+    public boolean hasRectangle() {
+      return kindCase_ == 6;
+    }
+    /**
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return rectangleBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public Builder setRectangle(org.jetbrains.r.rinterop.RectangleFigure value) {
       if (rectangleBuilder_ == null) {
@@ -1420,11 +1624,11 @@ private static final long serialVersionUID = 0L;
       } else {
         rectangleBuilder_.setMessage(value);
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public Builder setRectangle(
         org.jetbrains.r.rinterop.RectangleFigure.Builder builderForValue) {
@@ -1434,15 +1638,15 @@ private static final long serialVersionUID = 0L;
       } else {
         rectangleBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public Builder mergeRectangle(org.jetbrains.r.rinterop.RectangleFigure value) {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 5 &&
+        if (kindCase_ == 6 &&
             kind_ != org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.RectangleFigure.newBuilder((org.jetbrains.r.rinterop.RectangleFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1451,26 +1655,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           rectangleBuilder_.mergeFrom(value);
         }
         rectangleBuilder_.setMessage(value);
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public Builder clearRectangle() {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1479,32 +1683,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigure.Builder getRectangleBuilder() {
       return getRectangleFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
-      if ((kindCase_ == 5) && (rectangleBuilder_ != null)) {
+      if ((kindCase_ == 6) && (rectangleBuilder_ != null)) {
         return rectangleBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> 
         getRectangleFieldBuilder() {
       if (rectangleBuilder_ == null) {
-        if (!(kindCase_ == 5)) {
+        if (!(kindCase_ == 6)) {
           kind_ = org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
         }
         rectangleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1514,7 +1718,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       onChanged();;
       return rectangleBuilder_;
     }
@@ -1522,29 +1726,29 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.TextFigure, org.jetbrains.r.rinterop.TextFigure.Builder, org.jetbrains.r.rinterop.TextFigureOrBuilder> textBuilder_;
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public boolean hasText() {
-      return kindCase_ == 6;
+      return kindCase_ == 7;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public org.jetbrains.r.rinterop.TextFigure getText() {
       if (textBuilder_ == null) {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return (org.jetbrains.r.rinterop.TextFigure) kind_;
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return textBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public Builder setText(org.jetbrains.r.rinterop.TextFigure value) {
       if (textBuilder_ == null) {
@@ -1556,11 +1760,11 @@ private static final long serialVersionUID = 0L;
       } else {
         textBuilder_.setMessage(value);
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public Builder setText(
         org.jetbrains.r.rinterop.TextFigure.Builder builderForValue) {
@@ -1570,15 +1774,15 @@ private static final long serialVersionUID = 0L;
       } else {
         textBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public Builder mergeText(org.jetbrains.r.rinterop.TextFigure value) {
       if (textBuilder_ == null) {
-        if (kindCase_ == 6 &&
+        if (kindCase_ == 7 &&
             kind_ != org.jetbrains.r.rinterop.TextFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.TextFigure.newBuilder((org.jetbrains.r.rinterop.TextFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1587,26 +1791,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           textBuilder_.mergeFrom(value);
         }
         textBuilder_.setMessage(value);
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public Builder clearText() {
       if (textBuilder_ == null) {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1615,32 +1819,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public org.jetbrains.r.rinterop.TextFigure.Builder getTextBuilder() {
       return getTextFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
-      if ((kindCase_ == 6) && (textBuilder_ != null)) {
+      if ((kindCase_ == 7) && (textBuilder_ != null)) {
         return textBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return (org.jetbrains.r.rinterop.TextFigure) kind_;
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 6;</code>
+     * <code>.rplugininterop.TextFigure text = 7;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.TextFigure, org.jetbrains.r.rinterop.TextFigure.Builder, org.jetbrains.r.rinterop.TextFigureOrBuilder> 
         getTextFieldBuilder() {
       if (textBuilder_ == null) {
-        if (!(kindCase_ == 6)) {
+        if (!(kindCase_ == 7)) {
           kind_ = org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
         }
         textBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1650,7 +1854,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       onChanged();;
       return textBuilder_;
     }

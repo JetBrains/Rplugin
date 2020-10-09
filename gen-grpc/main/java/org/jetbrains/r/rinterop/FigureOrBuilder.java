@@ -60,28 +60,41 @@ public interface FigureOrBuilder extends
   org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder();
 
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   */
+  boolean hasRaster();
+  /**
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   */
+  org.jetbrains.r.rinterop.RasterFigure getRaster();
+  /**
+   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   */
+  org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder();
+
+  /**
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
    */
   boolean hasRectangle();
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
    */
   org.jetbrains.r.rinterop.RectangleFigure getRectangle();
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 5;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
    */
   org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder();
 
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   boolean hasText();
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   org.jetbrains.r.rinterop.TextFigure getText();
   /**
-   * <code>.rplugininterop.TextFigure text = 6;</code>
+   * <code>.rplugininterop.TextFigure text = 7;</code>
    */
   org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder();
 

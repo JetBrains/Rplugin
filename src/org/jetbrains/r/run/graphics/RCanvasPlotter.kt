@@ -1,6 +1,7 @@
 package org.jetbrains.r.run.graphics
 
 import java.awt.*
+import java.awt.geom.AffineTransform
 
 class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParameters, private val graphics: Graphics2D) : RPlotterProvider {
   override fun create(fonts: List<RFont>, colors: List<Color>, strokes: List<RStroke>): RPlotter {
@@ -61,6 +62,14 @@ class RCanvasPlotter(
     selectColor(colorIndex)
     selectStroke(strokeIndex)
     graphics.drawPolyline(xs, ys, xs.size)
+  }
+
+  override fun drawRaster(image: Image, x: Int, y: Int, angle: Double) {
+    val transform = AffineTransform().apply {
+      translate(x.toDouble(), y.toDouble())
+      rotate(Math.toRadians(angle))
+    }
+    graphics.drawImage(image, transform, null)
   }
 
   override fun drawRectangle(x: Int, y: Int, width: Int, height: Int, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {

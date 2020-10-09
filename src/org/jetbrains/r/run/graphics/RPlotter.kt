@@ -1,6 +1,7 @@
 package org.jetbrains.r.run.graphics
 
 import java.awt.Color
+import java.awt.Image
 import java.awt.Rectangle
 
 interface RPlotterProvider {
@@ -15,6 +16,7 @@ interface RPlotter {
   fun drawLine(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int, strokeIndex: Int, colorIndex: Int)
   fun drawPolygon(xs: IntArray, ys: IntArray, strokeIndex: Int, colorIndex: Int, fillIndex: Int)
   fun drawPolyline(xs: IntArray, ys: IntArray, strokeIndex: Int, colorIndex: Int)
+  fun drawRaster(image: Image, x: Int, y: Int, angle: Double)
   fun drawRectangle(x: Int, y: Int, width: Int, height: Int, strokeIndex: Int, colorIndex: Int, fillIndex: Int)
   fun drawText(text: String, x: Int, y: Int, angle: Double, anchor: Double, fontIndex: Int, colorIndex: Int)
 }

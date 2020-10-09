@@ -5,10 +5,9 @@ import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
-import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.Rectangle
-import java.awt.RenderingHints
+import org.jetbrains.r.rinterop.Font
+import org.jetbrains.r.rinterop.Stroke
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
@@ -78,6 +77,7 @@ object RPlotUtil {
       Figure.KindCase.LINE -> convert(figure.line)
       Figure.KindCase.POLYGON -> convert(figure.polygon)
       Figure.KindCase.POLYLINE -> convert(figure.polyline)
+      Figure.KindCase.RASTER -> convert(figure.raster)
       Figure.KindCase.RECTANGLE -> convert(figure.rectangle)
       Figure.KindCase.TEXT -> convert(figure.text)
       else -> throw RuntimeException("Unsupported figure kind: $case")
@@ -102,6 +102,10 @@ object RPlotUtil {
     return RFigure.Polyline(points, polyline.strokeIndex, polyline.colorIndex)
   }
 
+  private fun convert(raster: RasterFigure): RFigure {
+    return RFigure.Raster(convert(raster.image), convert(raster.from), convert(raster.to), raster.angle, raster.interpolate)
+  }
+
   private fun convert(rectangle: RectangleFigure): RFigure {
     return RFigure.Rectangle(convert(rectangle.from), convert(rectangle.to), rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
   }
@@ -112,6 +116,24 @@ object RPlotUtil {
 
   private fun convert(point: AffinePoint): RAffinePoint {
     return RAffinePoint(point.xScale, point.xOffset, point.yScale, point.yOffset)
+  }
+
+  private fun convert(image: RasterImage): BufferedImage {
+    return ImageUtil.createImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also { outputImage ->
+      val data = image.data
+      for (y in 0 until image.height) {
+        for (x in 0 until image.width) {
+          // Note: extract ARGB color from little-endian byte string
+          val baseIndex = ((y * image.width) + x) * 4
+          val b = data.byteAt(baseIndex).toInt()
+          val g = data.byteAt(baseIndex + 1).toInt()
+          val r = data.byteAt(baseIndex + 2).toInt()
+          val a = data.byteAt(baseIndex + 3).toInt()
+          val argb = (a shl 24) or ((r and 0xff) shl 16) or ((g and 0xff) shl 8) or (b and 0xff)
+          outputImage.setRGB(x, y, argb)
+        }
+      }
+    }
   }
 
   fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
@@ -213,6 +235,7 @@ object RPlotUtil {
         is RFigure.Line -> replay(figure)
         is RFigure.Polygon -> replay(figure)
         is RFigure.Polyline -> replay(figure)
+        is RFigure.Raster -> replay(figure)
         is RFigure.Rectangle -> replay(figure)
         is RFigure.Text -> replay(figure)
       }
@@ -243,6 +266,17 @@ object RPlotUtil {
       val xs = calculateXs(polyline.points)
       val ys = calculateYs(polyline.points)
       plotter.drawPolyline(xs, ys, polyline.strokeIndex, polyline.colorIndex)
+    }
+
+    private fun replay(raster: RFigure.Raster) {
+      val xFrom = calculateX(raster.from)
+      val yFrom = calculateY(raster.from)
+      val xTo = calculateX(raster.to)
+      val yTo = calculateY(raster.to)
+      val original = fitTheme(raster.image)
+      val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
+      val scaled = original.getScaledInstance(xTo - xFrom, yTo - yFrom, mode)
+      plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
     }
 
     private fun replay(rectangle: RFigure.Rectangle) {
@@ -305,6 +339,10 @@ object RPlotUtil {
 
     private fun scale(value: Double): Double {
       return value * resolution
+    }
+
+    private fun fitTheme(image: BufferedImage): BufferedImage {
+      return if (darkMode && editorColorsManager.isDarkEditor) inverter.invert(image) else image
     }
 
     private fun fitTheme(colors: List<Color>): List<Color> {
