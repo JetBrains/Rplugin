@@ -49,7 +49,7 @@ class RLookupElement(val lookup: String,
   }
 }
 
-data class TableManipulationColumnLookup(val column: TableColumnInfo, val needsToQuote: Boolean = false) {
+data class TableManipulationColumnLookup(val column: TableColumnInfo) {
   override fun equals(other: Any?): Boolean {
     if (other !is TableManipulationColumnLookup) return false
     return other.quotedNameIfNeeded == quotedNameIfNeeded && other.column.type == column.type
@@ -60,7 +60,7 @@ data class TableManipulationColumnLookup(val column: TableColumnInfo, val needsT
   }
 
   private val quotedNameIfNeeded
-    get() =  if (needsToQuote) "\"${column.name}\"" else column.name
+    get() =  if (column.quoteNeeded) "\"${column.name}\"" else column.name
 }
 
 interface RLookupElementInsertHandler {

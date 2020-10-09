@@ -56,13 +56,14 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
     return parent is ROperatorExpression && parent.operator?.name == PIPE_OPERATOR && expr == parent.rightExpr
   }
 
-  fun addCurrentColumns(columns: List<TableColumnInfo>,
-                        callInfo: TableManipulationCallInfo<*>,
-                        currentArg: RExpression): List<TableColumnInfo> {
-    if (callInfo.function.tableArguments.contains("...")) return columns
+  fun processCurrentColumns(callInfo: TableManipulationCallInfo<*>,
+                            currentArg: RExpression,
+                            processor: Processor<TableColumnInfo>): Boolean {
+    if (callInfo.function.tableArguments.contains("...")) return true
     val arguments = callInfo.argumentInfo.expressionListWithPipeExpression
     val currentArgIndex = arguments.indexOf(currentArg)
-    return columns + callInfo.argumentInfo.allDotsArguments
+
+    val columns = callInfo.argumentInfo.allDotsArguments
       .takeWhile { arguments.indexOf(it) < currentArgIndex }
       .mapNotNull {
         when (it) {
@@ -75,6 +76,12 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
           else -> null
         }
       }
+    for (column in columns) {
+      if (!processor.process(column)) {
+        return false
+      }
+    }
+    return true
   }
 
   fun processColumnsOfSelectFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,

@@ -80,7 +80,7 @@ enum class TableType {
 
 data class TableInfo(val columns: List<TableColumnInfo>, val type: TableType)
 
-data class TableColumnInfo(val name: String, val type: String? = null, val definition: PsiElement? = null)
+data class TableColumnInfo(val name: String, val type: String? = null, val definition: PsiElement? = null, var quoteNeeded: Boolean = false)
 
 abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
 

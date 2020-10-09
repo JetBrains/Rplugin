@@ -726,13 +726,17 @@ You can find the source code in the following repositories:
     <languageSupport implementation="org.jetbrains.r.injections.RInjectionSupport"/>
   </extensions>
 
-  <extensions defaultExtensionNs="org.jetbrains.r">
-    <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RShinySupportProvider"/>
-  </extensions>
-
   <extensionPoints>
     <extensionPoint qualifiedName="org.jetbrains.r.librarySupportProvider"
                     interface="org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider" dynamic="true"/>
+    <extensionPoint qualifiedName="org.jetbrains.r.tableContextProvider"
+                    interface="org.jetbrains.r.codeInsight.table.RTableContextManager" dynamic="true"/>
   </extensionPoints>
 
+  <extensions defaultExtensionNs="org.jetbrains.r">
+    <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RShinySupportProvider"/>
+    <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDplyrTableContextManager"/>
+    <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDataTableContextManager"/>
+    <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RGgplotTableContextManager"/>
+  </extensions>
 </idea-plugin>

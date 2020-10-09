@@ -15,15 +15,15 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.CommonProcessors
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
-import org.apache.commons.lang.StringUtils
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.RS4ClassInfo
 import org.jetbrains.r.classes.RS4ClassInfoUtil
 import org.jetbrains.r.classes.RS4ClassSlot
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
+import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
+import org.jetbrains.r.codeInsight.table.RTableContextManager
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.console.runtimeInfo
@@ -46,7 +46,6 @@ class RCompletionContributor : CompletionContributor() {
 
   init {
     addTableContextCompletion()
-    addGGPlotAesColumnCompletionProvider()
     addStringLiteralCompletion()
     addInstalledPackageCompletion()
     addNamespaceAccessExpression()
@@ -96,11 +95,6 @@ class RCompletionContributor : CompletionContributor() {
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.STRING_FILTER), StringLiteralCompletionProvider())
-  }
-
-  private fun addGGPlotAesColumnCompletionProvider() {
-    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(METHOD_TAKING_COLUMN_PARAMETER_FILTER), GGPlot2AesColumnCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -415,13 +409,12 @@ class RCompletionContributor : CompletionContributor() {
   private class TableContextCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
       val position = parameters.position
-      val runtimeInfo = parameters.originalFile.runtimeInfo ?: return
-      val columns = mutableListOf<TableManipulationColumnLookup>()
-      addTableCompletion(RDplyrAnalyzer, position, runtimeInfo, columns)
-      addTableCompletion(RDataTableAnalyzer, position, runtimeInfo, columns)
-      result.addAllElements(columns.distinct().map {
+      val completionProcessor = RTableColumnCollectProcessor()
+      RTableContextManager.processColumnsInContext(position, completionProcessor)
+      val lookupElements = completionProcessor.results.map { TableManipulationColumnLookup(it) }
+      result.addAllElements(lookupElements.map {
         val column = it.column
-        if (it.needsToQuote) {
+        if (column.quoteNeeded) {
           rCompletionElementFactory.createQuotedLookupElement(column.name, TABLE_MANIPULATION_PRIORITY, true, AllIcons.Nodes.Field, column.type)
         }
         else {
@@ -644,43 +637,6 @@ class RCompletionContributor : CompletionContributor() {
           context.editor.caretModel.moveCaretRelatively(relativeCaretOffset, 0, false, false, false)
         }
       }
-    }
-
-    private fun <T : TableManipulationFunction> addTableCompletion(tableAnalyser: TableManipulationAnalyzer<T>,
-                                                                   position: PsiElement,
-                                                                   runtimeInfo: RConsoleRuntimeInfo,
-                                                                   result: MutableList<TableManipulationColumnLookup>) {
-      val (tableCallInfo, currentArgument) = tableAnalyser.getContextInfo(position, runtimeInfo) ?: return
-      val tableInfos = tableCallInfo.passedTableArguments.map { tableAnalyser.getTableColumns(it, runtimeInfo) }
-      val isCorrectTableType = tableInfos.all { it.type == tableAnalyser.tableColumnType }
-      val isQuotesNeeded = !isCorrectTableType && tableAnalyser.isSubscription(tableCallInfo.function)
-                           || tableCallInfo.function.isQuotesNeeded(tableCallInfo.argumentInfo, currentArgument)
-      if (!isQuotesNeeded && position.parent is RStringLiteralExpression) return
-
-      var columns = tableInfos.map { it.columns }.flatten()
-        .groupBy { it.name }
-        .map { (name, list) ->
-          TableColumnInfo(name, StringUtils.join(list.mapNotNull { it.type }, "/"))
-        }
-
-      if (tableAnalyser is RDplyrAnalyzer)
-        columns = tableAnalyser.addCurrentColumns(columns, tableCallInfo, currentArgument)
-
-      val isQuoteNeeded = isQuotesNeeded && position.parent !is RStringLiteralExpression
-      val columnsLookup = columns.map { TableManipulationColumnLookup(it, isQuoteNeeded) }
-      result.addAll(columnsLookup)
-
-      val columnNamesFromConsole = columns.map { it.name }
-      val collectProcessor = CommonProcessors.CollectProcessor<TableColumnInfo>()
-      for (table in tableCallInfo.passedTableArguments) {
-        if (!tableAnalyser.processStaticTableColumns(table, collectProcessor)) {
-          break
-        }
-      }
-
-      result.addAll(collectProcessor.results
-                      .filter { !columnNamesFromConsole.contains(it.name) }
-                      .map { TableManipulationColumnLookup(TableColumnInfo(it.name)) })
     }
 
     private fun addFilePathCompletion(parameters: CompletionParameters,
