@@ -192,11 +192,7 @@ class NotebookCellLines private constructor(private val document: Document,
     override fun bulkUpdateFinished(document: Document) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
       markerCache.clear()
-      ApplicationManager.getApplication().executeOnPooledThread {
-        runReadAction {
-          markerSequence(document.immutableCharSequence).toCollection(markerCache)
-        }
-      }
+      markerSequence(document.immutableCharSequence).toCollection(markerCache)
     }
 
     private fun notifyIntervalListenersIfNeeded(oldIntervals: List<Interval>, endLine: Int) {
