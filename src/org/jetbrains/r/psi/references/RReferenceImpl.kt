@@ -12,7 +12,7 @@ import com.intellij.psi.ResolveResult
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.Processor
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
-import org.jetbrains.r.console.runtimeInfo
+import org.jetbrains.r.codeInsight.table.RTableContextManager
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -37,31 +37,20 @@ class RReferenceImpl(element: RIdentifierExpression) : RReferenceBase<RIdentifie
   }
 
   private fun resolveColumn() : PsiElementResolveResult? {
-    val runtimeInfo = element.containingFile.originalFile.runtimeInfo
-    if (runtimeInfo != null) {
-      val resultElementRef = Ref<PsiElement>()
-      val tableContextInfo = RDplyrAnalyzer.getContextInfo(element, runtimeInfo)
-
-      if (tableContextInfo != null) {
-        val resolveProcessor = object : Processor<TableColumnInfo> {
-          override fun process(it: TableColumnInfo): Boolean {
-            if (it.name == element.name) {
-              resultElementRef.set(it.definition)
-              return false
-            }
-            return true
-          }
+    val resultElementRef = Ref<PsiElement>()
+    val resolveProcessor = object : Processor<TableColumnInfo> {
+      override fun process(it: TableColumnInfo): Boolean {
+        if (it.name == element.name) {
+          resultElementRef.set(it.definition)
+          return false
         }
-
-        for (table in tableContextInfo.callInfo.passedTableArguments) {
-          if (!RDplyrAnalyzer.processStaticTableColumns(table, resolveProcessor)) {
-            break
-          }
-        }
-        if (!resultElementRef.isNull) {
-          return PsiElementResolveResult(resultElementRef.get())
-        }
+        return true
       }
+    }
+
+    RTableContextManager.processColumnsInContext(element, resolveProcessor)
+    if (!resultElementRef.isNull) {
+      return PsiElementResolveResult(resultElementRef.get())
     }
     return null
   }
