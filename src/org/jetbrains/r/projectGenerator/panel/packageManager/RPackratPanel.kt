@@ -79,6 +79,7 @@ class RPackratPanel(private val rProjectSettings: RProjectSettings) : RPackageMa
   init {
     layout = BorderLayout()
     table.getColumnModel().getColumn(SETTINGS_VALUE_COLUMN).setCellEditor(tableCellEditor)
+    table.setShowGrid(false)
     tablePanel = ToolbarDecorator.createDecorator(table).disableUpDownActions().disableAddAction().disableRemoveAction().createPanel()
     add(tablePanel)
   }
