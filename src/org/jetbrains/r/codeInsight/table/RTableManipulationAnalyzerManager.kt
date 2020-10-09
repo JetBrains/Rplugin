@@ -1,5 +1,6 @@
 package org.jetbrains.r.codeInsight.table
 
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
@@ -31,7 +32,7 @@ abstract class RTableManipulationAnalyzerManager<T : TableManipulationFunction> 
     val tableAnalyser = getTableManipulationAnalyzer()
     val collectProcessor = RTableColumnCollectProcessor()
 
-    var isQuoteNeeded = false
+    var allTableColumnsMustBeQuoted = false
     val tableInfos = tables.map { tableAnalyser.getTableColumns(it, runtimeInfo) }
     if (tableContextInfo != null) {
       val tableCallInfo = tableContextInfo.callInfo
@@ -39,11 +40,11 @@ abstract class RTableManipulationAnalyzerManager<T : TableManipulationFunction> 
       val isQuotesNeeded = !isCorrectTableType && tableAnalyser.isSubscription(tableCallInfo.function)
                            || tableCallInfo.function.isQuotesNeeded(tableCallInfo.argumentInfo, tableContextInfo.currentTableArgument)
       if (!isQuotesNeeded && context.parent is RStringLiteralExpression) return true
-      isQuoteNeeded = isQuotesNeeded && context.parent !is RStringLiteralExpression
+      allTableColumnsMustBeQuoted = isQuotesNeeded && context.parent !is RStringLiteralExpression
     }
 
     tableInfos.map { it.columns }.flatten().forEach(Consumer { t ->
-      t.quoteNeeded = isQuoteNeeded
+      t.quoteNeeded = allTableColumnsMustBeQuoted || columnMustBeQuoted(t.name)
       collectProcessor.process(t)
     })
     tables.forEach(Consumer { table -> tableAnalyser.processStaticTableColumns(table, collectProcessor)})
@@ -62,5 +63,9 @@ abstract class RTableManipulationAnalyzerManager<T : TableManipulationFunction> 
   protected open fun processCurrentColumns(tableContextInfo: TableManipulationContextInfo<T>,
                                            processor: Processor<TableColumnInfo>): Boolean {
     return true
+  }
+
+  private fun columnMustBeQuoted(columnName: String): Boolean {
+    return !StringUtil.isJavaIdentifier(columnName)
   }
 }

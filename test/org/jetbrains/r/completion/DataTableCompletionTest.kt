@@ -198,6 +198,17 @@ class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
                     notExpected = listOf("yyyy_aa", "yyyy_ab", "yyyy_ax", "yyyy_ay"))
   }
 
+  fun testColumnWithSpace() {
+    rInterop.executeCode(
+      """
+        df <- data.frame(c(1,2,3,4,5), c(2,3,4,5,6))
+        colnames(df) <- c("some name", "some another name")
+      """.trimIndent(),
+      false
+    )
+    checkCompletion("setkey(df, som<caret>)", expected = listOf("\"some name\""))
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,
