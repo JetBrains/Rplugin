@@ -6,6 +6,7 @@ package org.jetbrains.r.console.jobs
 
 import com.intellij.codeInsight.hint.HintUtil.RECENT_LOCATIONS_SELECTION_KEY
 import com.intellij.icons.AllIcons
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.ui.AntialiasingType
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.ActionButton
@@ -16,6 +17,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.PsiManager
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.PopupHandler
@@ -59,8 +61,8 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
 
   private val runJob = ActionManager.getInstance().getAction("org.jetbrains.r.console.jobs.RunRJobAction")
   private val jbSplitter = OnePixelSplitter(false, 0.4f)
-  private val toolbarActionGroup = DefaultActionGroup(AddJob(), RemoveCompletedJobs(), RerunJob())
-  private val popupActionGrouping =  DefaultActionGroup(AddJob(), Separator(), RemoveCompletedJobs(), RerunJob())
+  private val toolbarActionGroup = DefaultActionGroup(AddJob(), RemoveCompletedJobs(), RerunJob(), ShowFileInToolwindow())
+  private val popupActionGrouping =  DefaultActionGroup(AddJob(), Separator(), RemoveCompletedJobs(), RerunJob(), ShowFileInToolwindow())
   private val splitterApi = object : SplitterApi {
     override fun setLeftComponent(component: JComponent) {
       jbSplitter.firstComponent = component
@@ -179,6 +181,20 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
 
     override fun update(e: AnActionEvent) {
       e.presentation.isEnabled = jobList.currentlySelected?.jobDescriptor?.processTerminated == true
+    }
+  }
+
+  private inner class ShowFileInToolwindow : DumbAwareAction(RBundle.message("jobs.panel.action.show.file.in.toolwindow.text"),
+                                                 RBundle.message("jobs.panel.action.show.file.in.toolwindow.description"),
+                                                 AllIcons.General.Locate) {
+    override fun actionPerformed(e: AnActionEvent) {
+      val file = jobList.currentlySelected?.jobDescriptor?.scriptFile ?: return
+      val psiFile = PsiManager.getInstance(project).findFile(file) ?: return
+      ProjectView.getInstance(project).selectPsiElement(psiFile, true)
+    }
+
+    override fun update(e: AnActionEvent) {
+      e.presentation.isEnabled = jobList.currentlySelected != null
     }
   }
 }
