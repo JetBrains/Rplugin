@@ -55,7 +55,12 @@ private static final long serialVersionUID = 0L;
             viewportIndex_ = input.readInt32();
             break;
           }
-          case 18: {
+          case 16: {
+
+            clippingAreaIndex_ = input.readInt32();
+            break;
+          }
+          case 26: {
             if (!((mutable_bitField0_ & 0x00000001) != 0)) {
               figure_ = new java.util.ArrayList<org.jetbrains.r.rinterop.Figure>();
               mutable_bitField0_ |= 0x00000001;
@@ -64,7 +69,7 @@ private static final long serialVersionUID = 0L;
                 input.readMessage(org.jetbrains.r.rinterop.Figure.parser(), extensionRegistry));
             break;
           }
-          case 24: {
+          case 32: {
 
             isAxisText_ = input.readBool();
             break;
@@ -113,45 +118,54 @@ private static final long serialVersionUID = 0L;
     return viewportIndex_;
   }
 
-  public static final int FIGURE_FIELD_NUMBER = 2;
+  public static final int CLIPPINGAREAINDEX_FIELD_NUMBER = 2;
+  private int clippingAreaIndex_;
+  /**
+   * <code>int32 clippingAreaIndex = 2;</code>
+   */
+  public int getClippingAreaIndex() {
+    return clippingAreaIndex_;
+  }
+
+  public static final int FIGURE_FIELD_NUMBER = 3;
   private java.util.List<org.jetbrains.r.rinterop.Figure> figure_;
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   public java.util.List<org.jetbrains.r.rinterop.Figure> getFigureList() {
     return figure_;
   }
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   public java.util.List<? extends org.jetbrains.r.rinterop.FigureOrBuilder> 
       getFigureOrBuilderList() {
     return figure_;
   }
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   public int getFigureCount() {
     return figure_.size();
   }
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   public org.jetbrains.r.rinterop.Figure getFigure(int index) {
     return figure_.get(index);
   }
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   public org.jetbrains.r.rinterop.FigureOrBuilder getFigureOrBuilder(
       int index) {
     return figure_.get(index);
   }
 
-  public static final int ISAXISTEXT_FIELD_NUMBER = 3;
+  public static final int ISAXISTEXT_FIELD_NUMBER = 4;
   private boolean isAxisText_;
   /**
-   * <code>bool isAxisText = 3;</code>
+   * <code>bool isAxisText = 4;</code>
    */
   public boolean getIsAxisText() {
     return isAxisText_;
@@ -174,11 +188,14 @@ private static final long serialVersionUID = 0L;
     if (viewportIndex_ != 0) {
       output.writeInt32(1, viewportIndex_);
     }
+    if (clippingAreaIndex_ != 0) {
+      output.writeInt32(2, clippingAreaIndex_);
+    }
     for (int i = 0; i < figure_.size(); i++) {
-      output.writeMessage(2, figure_.get(i));
+      output.writeMessage(3, figure_.get(i));
     }
     if (isAxisText_ != false) {
-      output.writeBool(3, isAxisText_);
+      output.writeBool(4, isAxisText_);
     }
     unknownFields.writeTo(output);
   }
@@ -193,13 +210,17 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, viewportIndex_);
     }
+    if (clippingAreaIndex_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, clippingAreaIndex_);
+    }
     for (int i = 0; i < figure_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, figure_.get(i));
+        .computeMessageSize(3, figure_.get(i));
     }
     if (isAxisText_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(3, isAxisText_);
+        .computeBoolSize(4, isAxisText_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -218,6 +239,8 @@ private static final long serialVersionUID = 0L;
 
     if (getViewportIndex()
         != other.getViewportIndex()) return false;
+    if (getClippingAreaIndex()
+        != other.getClippingAreaIndex()) return false;
     if (!getFigureList()
         .equals(other.getFigureList())) return false;
     if (getIsAxisText()
@@ -235,6 +258,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + VIEWPORTINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getViewportIndex();
+    hash = (37 * hash) + CLIPPINGAREAINDEX_FIELD_NUMBER;
+    hash = (53 * hash) + getClippingAreaIndex();
     if (getFigureCount() > 0) {
       hash = (37 * hash) + FIGURE_FIELD_NUMBER;
       hash = (53 * hash) + getFigureList().hashCode();
@@ -378,6 +403,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       viewportIndex_ = 0;
 
+      clippingAreaIndex_ = 0;
+
       if (figureBuilder_ == null) {
         figure_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -414,6 +441,7 @@ private static final long serialVersionUID = 0L;
       org.jetbrains.r.rinterop.Layer result = new org.jetbrains.r.rinterop.Layer(this);
       int from_bitField0_ = bitField0_;
       result.viewportIndex_ = viewportIndex_;
+      result.clippingAreaIndex_ = clippingAreaIndex_;
       if (figureBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
           figure_ = java.util.Collections.unmodifiableList(figure_);
@@ -474,6 +502,9 @@ private static final long serialVersionUID = 0L;
       if (other == org.jetbrains.r.rinterop.Layer.getDefaultInstance()) return this;
       if (other.getViewportIndex() != 0) {
         setViewportIndex(other.getViewportIndex());
+      }
+      if (other.getClippingAreaIndex() != 0) {
+        setClippingAreaIndex(other.getClippingAreaIndex());
       }
       if (figureBuilder_ == null) {
         if (!other.figure_.isEmpty()) {
@@ -560,6 +591,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int clippingAreaIndex_ ;
+    /**
+     * <code>int32 clippingAreaIndex = 2;</code>
+     */
+    public int getClippingAreaIndex() {
+      return clippingAreaIndex_;
+    }
+    /**
+     * <code>int32 clippingAreaIndex = 2;</code>
+     */
+    public Builder setClippingAreaIndex(int value) {
+      
+      clippingAreaIndex_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 clippingAreaIndex = 2;</code>
+     */
+    public Builder clearClippingAreaIndex() {
+      
+      clippingAreaIndex_ = 0;
+      onChanged();
+      return this;
+    }
+
     private java.util.List<org.jetbrains.r.rinterop.Figure> figure_ =
       java.util.Collections.emptyList();
     private void ensureFigureIsMutable() {
@@ -573,7 +630,7 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.Figure, org.jetbrains.r.rinterop.Figure.Builder, org.jetbrains.r.rinterop.FigureOrBuilder> figureBuilder_;
 
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public java.util.List<org.jetbrains.r.rinterop.Figure> getFigureList() {
       if (figureBuilder_ == null) {
@@ -583,7 +640,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public int getFigureCount() {
       if (figureBuilder_ == null) {
@@ -593,7 +650,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public org.jetbrains.r.rinterop.Figure getFigure(int index) {
       if (figureBuilder_ == null) {
@@ -603,7 +660,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder setFigure(
         int index, org.jetbrains.r.rinterop.Figure value) {
@@ -620,7 +677,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder setFigure(
         int index, org.jetbrains.r.rinterop.Figure.Builder builderForValue) {
@@ -634,7 +691,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder addFigure(org.jetbrains.r.rinterop.Figure value) {
       if (figureBuilder_ == null) {
@@ -650,7 +707,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder addFigure(
         int index, org.jetbrains.r.rinterop.Figure value) {
@@ -667,7 +724,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder addFigure(
         org.jetbrains.r.rinterop.Figure.Builder builderForValue) {
@@ -681,7 +738,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder addFigure(
         int index, org.jetbrains.r.rinterop.Figure.Builder builderForValue) {
@@ -695,7 +752,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder addAllFigure(
         java.lang.Iterable<? extends org.jetbrains.r.rinterop.Figure> values) {
@@ -710,7 +767,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder clearFigure() {
       if (figureBuilder_ == null) {
@@ -723,7 +780,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public Builder removeFigure(int index) {
       if (figureBuilder_ == null) {
@@ -736,14 +793,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public org.jetbrains.r.rinterop.Figure.Builder getFigureBuilder(
         int index) {
       return getFigureFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public org.jetbrains.r.rinterop.FigureOrBuilder getFigureOrBuilder(
         int index) {
@@ -753,7 +810,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public java.util.List<? extends org.jetbrains.r.rinterop.FigureOrBuilder> 
          getFigureOrBuilderList() {
@@ -764,14 +821,14 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public org.jetbrains.r.rinterop.Figure.Builder addFigureBuilder() {
       return getFigureFieldBuilder().addBuilder(
           org.jetbrains.r.rinterop.Figure.getDefaultInstance());
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public org.jetbrains.r.rinterop.Figure.Builder addFigureBuilder(
         int index) {
@@ -779,7 +836,7 @@ private static final long serialVersionUID = 0L;
           index, org.jetbrains.r.rinterop.Figure.getDefaultInstance());
     }
     /**
-     * <code>repeated .rplugininterop.Figure figure = 2;</code>
+     * <code>repeated .rplugininterop.Figure figure = 3;</code>
      */
     public java.util.List<org.jetbrains.r.rinterop.Figure.Builder> 
          getFigureBuilderList() {
@@ -802,13 +859,13 @@ private static final long serialVersionUID = 0L;
 
     private boolean isAxisText_ ;
     /**
-     * <code>bool isAxisText = 3;</code>
+     * <code>bool isAxisText = 4;</code>
      */
     public boolean getIsAxisText() {
       return isAxisText_;
     }
     /**
-     * <code>bool isAxisText = 3;</code>
+     * <code>bool isAxisText = 4;</code>
      */
     public Builder setIsAxisText(boolean value) {
       
@@ -817,7 +874,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bool isAxisText = 3;</code>
+     * <code>bool isAxisText = 4;</code>
      */
     public Builder clearIsAxisText() {
       

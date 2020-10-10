@@ -8,28 +8,30 @@ public interface ViewportOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * <code>.rplugininterop.FixedViewport fixed = 1;</code>
    */
-  boolean hasFrom();
+  boolean hasFixed();
   /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * <code>.rplugininterop.FixedViewport fixed = 1;</code>
    */
-  org.jetbrains.r.rinterop.AffinePoint getFrom();
+  org.jetbrains.r.rinterop.FixedViewport getFixed();
   /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * <code>.rplugininterop.FixedViewport fixed = 1;</code>
    */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder();
+  org.jetbrains.r.rinterop.FixedViewportOrBuilder getFixedOrBuilder();
 
   /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * <code>.rplugininterop.FreeViewport free = 2;</code>
    */
-  boolean hasTo();
+  boolean hasFree();
   /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * <code>.rplugininterop.FreeViewport free = 2;</code>
    */
-  org.jetbrains.r.rinterop.AffinePoint getTo();
+  org.jetbrains.r.rinterop.FreeViewport getFree();
   /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * <code>.rplugininterop.FreeViewport free = 2;</code>
    */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder();
+  org.jetbrains.r.rinterop.FreeViewportOrBuilder getFreeOrBuilder();
+
+  public org.jetbrains.r.rinterop.Viewport.KindCase getKindCase();
 }

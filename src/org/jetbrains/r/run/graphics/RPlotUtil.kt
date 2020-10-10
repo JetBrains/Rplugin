@@ -13,6 +13,7 @@ import java.io.File
 import java.nio.file.Paths
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 
 object RPlotUtil {
   fun writeTo(directory: File, plot: Plot, number: Int) {
@@ -63,12 +64,24 @@ object RPlotUtil {
   }
 
   private fun convert(viewport: Viewport): RViewport {
-    return RViewport(convert(viewport.from), convert(viewport.to))
+    return when (val case = viewport.kindCase) {
+      Viewport.KindCase.FIXED -> convert(viewport.fixed)
+      Viewport.KindCase.FREE -> convert(viewport.free)
+      else -> throw RuntimeException("Unsupported viewport kind: $case")
+    }
+  }
+
+  private fun convert(viewport: FixedViewport): RViewport {
+    return RViewport.Fixed(viewport.ratio, viewport.delta, viewport.parentIndex)
+  }
+
+  private fun convert(viewport: FreeViewport): RViewport {
+    return RViewport.Free(convert(viewport.from), convert(viewport.to), viewport.parentIndex)
   }
 
   private fun convert(layer: Layer): RLayer {
     val figures = layer.figureList.map { convert(it) }
-    return RLayer(layer.viewportIndex, figures, layer.isAxisText)
+    return RLayer(layer.viewportIndex, layer.clippingAreaIndex, figures, layer.isAxisText)
   }
 
   private fun convert(figure: Figure): RFigure {
@@ -160,8 +173,17 @@ object RPlotUtil {
     private val inverter = ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground)
 
     private val plotter = provider.create(plot.fonts.map { scale(it) }, fitTheme(plot.colors), plot.strokes.map { scale(it) })
-    private val clippingAreas = plot.viewports.map { calculateRectangle(it.from, it.to) }
+    private val clippingAreas = Array(plot.viewports.size) { Rectangle() }
     private val gapWidths = IntArray(plot.fonts.size) { 0 }
+
+    private var currentViewport = Rectangle()
+
+    init {
+      clippingAreas[0] = Rectangle(0, 0, width, height)
+      for (index in 1 until plot.viewports.size) {
+        clippingAreas[index] = calculateViewport(plot.viewports[index])
+      }
+    }
 
     fun replay() {
       if (fitsDisplay()) {
@@ -186,7 +208,8 @@ object RPlotUtil {
     }
 
     private fun replay(layer: RLayer) {
-      plotter.setClippingArea(clippingAreas[layer.viewportIndex])
+      currentViewport = clippingAreas[layer.viewportIndex]
+      plotter.setClippingArea(clippingAreas[layer.clippingAreaIndex])
       if (!layer.isAxisText) {
         for (figure in layer.figures) {
           replay(figure)
@@ -309,6 +332,25 @@ object RPlotUtil {
       }
     }
 
+    private fun calculateViewport(viewport: RViewport): Rectangle {
+      currentViewport = clippingAreas[viewport.parentIndex]
+      return when (viewport) {
+        is RViewport.Fixed -> calculateViewport(viewport)
+        is RViewport.Free -> calculateRectangle(viewport.from, viewport.to)
+      }
+    }
+
+    private fun calculateViewport(viewport: RViewport.Fixed): Rectangle {
+      val delta = viewport.delta * resolution
+      val w1 = currentViewport.width
+      val h1 = currentViewport.height
+      val w2 = min(w1, ((h1 - delta) / viewport.ratio).toInt())
+      val h2 = min(h1, (viewport.ratio * w1 + delta).toInt())
+      val dx = (w1 - w2) / 2
+      val dy = (h1 - h2) / 2
+      return Rectangle(currentViewport.x + dx, currentViewport.y + dy, w2, h2)
+    }
+
     private fun calculateRectangle(from: RAffinePoint, to: RAffinePoint): Rectangle {
       val xFrom = calculateX(from)
       val yFrom = calculateY(from)
@@ -318,11 +360,11 @@ object RPlotUtil {
     }
 
     private fun calculateX(point: RAffinePoint): Int {
-      return calculate(point.xScale, point.xOffset, width)
+      return calculate(point.xScale, point.xOffset, currentViewport.width) + currentViewport.x
     }
 
     private fun calculateY(point: RAffinePoint): Int {
-      return calculate(point.yScale, point.yOffset, height)
+      return calculate(point.yScale, point.yOffset, currentViewport.height) + currentViewport.y
     }
 
     private fun calculate(scale: Double, offset: Double, side: Int): Int {

@@ -13,31 +13,36 @@ public interface LayerOrBuilder extends
   int getViewportIndex();
 
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>int32 clippingAreaIndex = 2;</code>
+   */
+  int getClippingAreaIndex();
+
+  /**
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   java.util.List<org.jetbrains.r.rinterop.Figure> 
       getFigureList();
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   org.jetbrains.r.rinterop.Figure getFigure(int index);
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   int getFigureCount();
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   java.util.List<? extends org.jetbrains.r.rinterop.FigureOrBuilder> 
       getFigureOrBuilderList();
   /**
-   * <code>repeated .rplugininterop.Figure figure = 2;</code>
+   * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
   org.jetbrains.r.rinterop.FigureOrBuilder getFigureOrBuilder(
       int index);
 
   /**
-   * <code>bool isAxisText = 3;</code>
+   * <code>bool isAxisText = 4;</code>
    */
   boolean getIsAxisText();
 }
