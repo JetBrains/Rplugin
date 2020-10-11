@@ -186,12 +186,16 @@ object RPlotUtil {
     }
 
     fun replay() {
-      if (fitsDisplay()) {
-        for (layer in plot.layers) {
-          replay(layer)
+      if (plot.layers.isNotEmpty()) {
+        if (fitsDisplay()) {
+          for (layer in plot.layers) {
+            replay(layer)
+          }
+        } else {
+          showMessage(MARGINS_TEXT)
         }
       } else {
-        showMarginMessage()
+        showMessage(PARSING_TEXT)
       }
     }
 
@@ -199,12 +203,12 @@ object RPlotUtil {
       return clippingAreas.find { it.width <= 0 || it.height <= 0 } == null
     }
 
-    private fun showMarginMessage() {
+    private fun showMessage(text: String) {
       val displayArea = clippingAreas.first()
       val x = displayArea.centerX.toInt()
       val y = displayArea.centerY.toInt()
       plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, TRANSPARENT_INDEX, TRANSPARENT_INDEX, WHITE_COLOR_INDEX)
-      plotter.drawText(MARGINS_TEXT, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
+      plotter.drawText(text, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
     }
 
     private fun replay(layer: RLayer) {
@@ -400,6 +404,7 @@ object RPlotUtil {
       private const val GAP_TEXT = "m"  // Not to be translated
 
       private val MARGINS_TEXT = RBundle.message("plot.viewer.figure.margins.too.large")
+      private val PARSING_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
 
       private fun calculateDistance(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int): Int {
         val xDelta = abs(xFrom - xTo)
