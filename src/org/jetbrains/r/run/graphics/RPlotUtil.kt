@@ -16,6 +16,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
+  private const val PROTOCOL_VERSION = 1
+
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
     plot.writeTo(plotFile.outputStream())
@@ -35,7 +37,7 @@ object RPlotUtil {
   }
 
   private fun createPlotFileName(number: Int): String {
-    return "recorded_${number}.plot"
+    return "recorded_v${PROTOCOL_VERSION}_${number}.plot"
   }
 
   fun convert(plot: Plot, number: Int): RPlot {
