@@ -11,6 +11,7 @@ import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
+import javax.swing.JLabel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -154,6 +155,7 @@ object RPlotUtil {
   fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
     return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
       val graphics = image.graphics as Graphics2D
+      graphics.font = JLabel().font
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
       val provider = RCanvasPlotterProvider(parameters, graphics)
       replay(plot, provider, darkMode)
