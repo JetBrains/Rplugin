@@ -13,7 +13,7 @@ import com.intellij.psi.util.elementType
 import org.jetbrains.r.parsing.RParserDefinition
 
 class RCommenter : CodeDocumentationAwareCommenter, IndentedCommenter {
-  override fun getLineCommentPrefix(): String? = "#"
+  override fun getLineCommentPrefix(): String? = "# "
 
   override fun getBlockCommentPrefix(): String? = null
 
