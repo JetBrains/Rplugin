@@ -72,6 +72,10 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun updateContent() {
     val targetContent = if (isStandalone) plotViewer else graphicsPanel.component
+    updateContent(targetContent)
+  }
+
+  private fun updateContent(targetContent: JComponent) {
     if (content !== targetContent) {
       setContent(targetContent)
     }
@@ -86,7 +90,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun refreshLoading(loadedCount: Int, totalCount: Int) {
     val message = RBundle.message("graphics.panel.loading.snapshots.hint", loadedCount, totalCount)
-    updateContent()
+    updateContent(graphicsPanel.component)
     graphicsPanel.showLoadingMessage(message)
   }
 
