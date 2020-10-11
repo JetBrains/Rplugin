@@ -203,7 +203,7 @@ object RPlotUtil {
       val displayArea = clippingAreas.first()
       val x = displayArea.centerX.toInt()
       val y = displayArea.centerY.toInt()
-      plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, 0, WHITE_COLOR_INDEX, WHITE_COLOR_INDEX)
+      plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, TRANSPARENT_INDEX, TRANSPARENT_INDEX, WHITE_COLOR_INDEX)
       plotter.drawText(MARGINS_TEXT, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
     }
 
@@ -395,6 +395,7 @@ object RPlotUtil {
       private const val DEFAULT_FONT_INDEX = 0
       private const val BLACK_COLOR_INDEX = 0
       private const val WHITE_COLOR_INDEX = 1
+      private const val TRANSPARENT_INDEX = -1
 
       private const val GAP_TEXT = "m"  // Not to be translated
 

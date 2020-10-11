@@ -37,31 +37,37 @@ class RCanvasPlotter(
     val xFrom = x - radius
     val yFrom = y - radius
     val diameter = radius * 2
-    selectColor(fillIndex)
-    graphics.fillOval(xFrom, yFrom, diameter, diameter)
-    selectColor(colorIndex)
-    selectStroke(strokeIndex)
-    graphics.drawOval(xFrom, yFrom, diameter, diameter)
+    withColor(fillIndex) {
+      graphics.fillOval(xFrom, yFrom, diameter, diameter)
+    }
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.drawOval(xFrom, yFrom, diameter, diameter)
+    }
   }
 
   override fun drawLine(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int, strokeIndex: Int, colorIndex: Int) {
-    selectColor(colorIndex)
-    selectStroke(strokeIndex)
-    graphics.drawLine(xFrom, yFrom, xTo, yTo)
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.drawLine(xFrom, yFrom, xTo, yTo)
+    }
   }
 
   override fun drawPolygon(xs: IntArray, ys: IntArray, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
-    selectColor(fillIndex)
-    graphics.fillPolygon(xs, ys, xs.size)
-    selectColor(colorIndex)
-    selectStroke(strokeIndex)
-    graphics.drawPolygon(xs, ys, xs.size)
+    withColor(fillIndex) {
+      graphics.fillPolygon(xs, ys, xs.size)
+    }
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.drawPolygon(xs, ys, xs.size)
+    }
   }
 
   override fun drawPolyline(xs: IntArray, ys: IntArray, strokeIndex: Int, colorIndex: Int) {
-    selectColor(colorIndex)
-    selectStroke(strokeIndex)
-    graphics.drawPolyline(xs, ys, xs.size)
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.drawPolyline(xs, ys, xs.size)
+    }
   }
 
   override fun drawRaster(image: Image, x: Int, y: Int, angle: Double) {
@@ -73,20 +79,23 @@ class RCanvasPlotter(
   }
 
   override fun drawRectangle(x: Int, y: Int, width: Int, height: Int, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
-    selectColor(fillIndex)
-    graphics.fillRect(x, y, width, height)
-    selectColor(colorIndex)
-    selectStroke(strokeIndex)
-    graphics.drawRect(x, y, width, height)
+    withColor(fillIndex) {
+      graphics.fillRect(x, y, width, height)
+    }
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.drawRect(x, y, width, height)
+    }
   }
 
   override fun drawText(text: String, x: Int, y: Int, angle: Double, anchor: Double, fontIndex: Int, colorIndex: Int) {
-    selectFont(fontIndex)
-    selectColor(colorIndex)
-    val width = graphics.fontMetrics.stringWidth(text)
-    doRotated(x, y, angle) {
-      val offset = (-width * anchor).toInt()
-      graphics.drawString(text, offset, 0)
+    withColor(colorIndex) {
+      selectFont(fontIndex)
+      val width = graphics.fontMetrics.stringWidth(text)
+      doRotated(x, y, angle) {
+        val offset = (-width * anchor).toInt()
+        graphics.drawString(text, offset, 0)
+      }
     }
   }
 
@@ -99,12 +108,15 @@ class RCanvasPlotter(
     graphics.translate(-x, -y)
   }
 
-  private fun selectFont(index: Int) {
-    graphics.font = fonts[index]
+  private inline fun withColor(colorIndex: Int, task: () -> Unit) {
+    if (colorIndex >= 0) {
+      graphics.color = colors[colorIndex]
+      task()
+    }
   }
 
-  private fun selectColor(index: Int) {
-    graphics.color = colors[index]
+  private fun selectFont(index: Int) {
+    graphics.font = fonts[index]
   }
 
   private fun selectStroke(index: Int) {
