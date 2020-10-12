@@ -22,6 +22,9 @@ import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -46,6 +49,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.ui.RGraphicsToolWindowListener
 import org.jetbrains.r.settings.REditorSettings
 import org.jetbrains.r.settings.RGraphicsSettings
+import org.jetbrains.r.util.RPathUtil
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -61,15 +65,17 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
-    UIUtil.invokeLaterIfNeeded {
-      val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
-      RInteropUtil.runRWrapperAndInterop(interpreter, workingDir).onSuccess { rInterop ->
-        initByInterop(rInterop, promise)
-      }.onError {
-        showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
-        promise.setError(it)
-        UIUtil.invokeLaterIfNeeded {
-          placeholder?.manager?.removeContent(placeholder, true)
+    fixRProfileFile().onProcessed {
+      UIUtil.invokeLaterIfNeeded {
+        val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
+        RInteropUtil.runRWrapperAndInterop(interpreter).onSuccess { rInterop ->
+          initByInterop(rInterop, promise)
+        }.onError {
+          showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
+          promise.setError(it)
+          UIUtil.invokeLaterIfNeeded {
+            placeholder?.manager?.removeContent(placeholder, true)
+          }
         }
       }
     }
@@ -290,6 +296,28 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
   private fun showConsole(defaultExecutor: Executor, contentDescriptor: RunContentDescriptor) {
     RunContentManager.getInstance(project).showRunContent(defaultExecutor, contentDescriptor)
+  }
+
+  // R-509: Newline is required in the end of .Rprofile
+  private fun fixRProfileFile(): Promise<Unit> {
+    val promise = AsyncPromise<Unit>()
+    runAsync {
+      val file = interpreter.findFileByPathAtHost(RPathUtil.join(interpreter.basePath, ".Rprofile")) ?: return@runAsync
+      val needFix = runReadAction {
+        val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction false
+        val text = document.text
+        text.isNotBlank() && !text.endsWith("\n")
+      }
+      if (needFix) {
+        WriteCommandAction.runWriteCommandAction(project) {
+          val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runWriteCommandAction
+          document.insertString(document.textLength, "\n")
+        }
+      }
+    }.onProcessed {
+      interpreter.prepareForExecution().processed(promise)
+    }
+    return promise
   }
 }
 
