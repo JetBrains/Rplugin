@@ -108,6 +108,8 @@ open class MaterialTable : JBTable {
 
   fun isHighlightRowSelected(row: Int) = isRowSelected(row) || row == rollOverRowIndex
 
+  fun isRollOverRowIndex(row: Int): Boolean = row == rollOverRowIndex
+
   /** We are preparing renderer background for mouse hovered row. */
   override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
     val c = super.prepareRenderer(renderer, row, column)
