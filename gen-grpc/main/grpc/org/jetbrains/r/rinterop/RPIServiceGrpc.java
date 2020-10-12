@@ -957,6 +957,37 @@ public final class RPIServiceGrpc {
     return getGraphicsGetSnapshotPathMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
+      org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> getGraphicsFetchPlotMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "graphicsFetchPlot",
+      requestType = com.google.protobuf.Int32Value.class,
+      responseType = org.jetbrains.r.rinterop.GraphicsFetchPlotResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
+      org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> getGraphicsFetchPlotMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Int32Value, org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> getGraphicsFetchPlotMethod;
+    if ((getGraphicsFetchPlotMethod = RPIServiceGrpc.getGraphicsFetchPlotMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getGraphicsFetchPlotMethod = RPIServiceGrpc.getGraphicsFetchPlotMethod) == null) {
+          RPIServiceGrpc.getGraphicsFetchPlotMethod = getGraphicsFetchPlotMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Int32Value, org.jetbrains.r.rinterop.GraphicsFetchPlotResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "graphicsFetchPlot"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Int32Value.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.GraphicsFetchPlotResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("graphicsFetchPlot"))
+              .build();
+        }
+      }
+    }
+    return getGraphicsFetchPlotMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
       org.jetbrains.r.rinterop.CommandOutput> getGraphicsCreateGroupMethod;
 
@@ -3031,6 +3062,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void graphicsFetchPlot(com.google.protobuf.Int32Value request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGraphicsFetchPlotMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void graphicsCreateGroup(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
       asyncUnimplementedUnaryCall(getGraphicsCreateGroupMethod(), responseObserver);
@@ -3675,6 +3713,13 @@ public final class RPIServiceGrpc {
                 org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest,
                 org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse>(
                   this, METHODID_GRAPHICS_GET_SNAPSHOT_PATH)))
+          .addMethod(
+            getGraphicsFetchPlotMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Int32Value,
+                org.jetbrains.r.rinterop.GraphicsFetchPlotResponse>(
+                  this, METHODID_GRAPHICS_FETCH_PLOT)))
           .addMethod(
             getGraphicsCreateGroupMethod(),
             asyncServerStreamingCall(
@@ -4354,6 +4399,14 @@ public final class RPIServiceGrpc {
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGraphicsGetSnapshotPathMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void graphicsFetchPlot(com.google.protobuf.Int32Value request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGraphicsFetchPlotMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5092,6 +5145,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public org.jetbrains.r.rinterop.GraphicsFetchPlotResponse graphicsFetchPlot(com.google.protobuf.Int32Value request) {
+      return blockingUnaryCall(
+          getChannel(), getGraphicsFetchPlotMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> graphicsCreateGroup(
         com.google.protobuf.Empty request) {
       return blockingServerStreamingCall(
@@ -5749,6 +5809,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.GraphicsFetchPlotResponse> graphicsFetchPlot(
+        com.google.protobuf.Int32Value request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGraphicsFetchPlotMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<org.jetbrains.r.rinterop.StringList> pullChunkOutputPaths(
         com.google.protobuf.Empty request) {
       return futureUnaryCall(
@@ -6190,65 +6258,66 @@ public final class RPIServiceGrpc {
   private static final int METHODID_GRAPHICS_RESCALE = 27;
   private static final int METHODID_GRAPHICS_RESCALE_STORED = 28;
   private static final int METHODID_GRAPHICS_GET_SNAPSHOT_PATH = 29;
-  private static final int METHODID_GRAPHICS_CREATE_GROUP = 30;
-  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 31;
-  private static final int METHODID_GRAPHICS_SHUTDOWN = 32;
-  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 33;
-  private static final int METHODID_AFTER_CHUNK_EXECUTION = 34;
-  private static final int METHODID_PULL_CHUNK_OUTPUT_PATHS = 35;
-  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 36;
-  private static final int METHODID_REPO_INSTALL_PACKAGE = 37;
-  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 38;
-  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 39;
-  private static final int METHODID_REPO_REMOVE_PACKAGE = 40;
-  private static final int METHODID_PREVIEW_DATA_IMPORT = 41;
-  private static final int METHODID_COMMIT_DATA_IMPORT = 42;
-  private static final int METHODID_COPY_TO_PERSISTENT_REF = 43;
-  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 44;
-  private static final int METHODID_LOADER_GET_PARENT_ENVS = 45;
-  private static final int METHODID_LOADER_GET_VARIABLES = 46;
-  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 47;
-  private static final int METHODID_LOADER_GET_VALUE_INFO = 48;
-  private static final int METHODID_EVALUATE_AS_TEXT = 49;
-  private static final int METHODID_EVALUATE_AS_BOOLEAN = 50;
-  private static final int METHODID_GET_DISTINCT_STRINGS = 51;
-  private static final int METHODID_LOAD_OBJECT_NAMES = 52;
-  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 53;
-  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 54;
-  private static final int METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME = 55;
-  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 56;
-  private static final int METHODID_GET_FORMAL_ARGUMENTS = 57;
-  private static final int METHODID_GET_EQUALITY_OBJECT = 58;
-  private static final int METHODID_SET_VALUE = 59;
-  private static final int METHODID_GET_OBJECT_SIZES = 60;
-  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 61;
-  private static final int METHODID_DATA_FRAME_REGISTER = 62;
-  private static final int METHODID_DATA_FRAME_GET_INFO = 63;
-  private static final int METHODID_DATA_FRAME_GET_DATA = 64;
-  private static final int METHODID_DATA_FRAME_SORT = 65;
-  private static final int METHODID_DATA_FRAME_FILTER = 66;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 67;
-  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 68;
-  private static final int METHODID_HTTPD_REQUEST = 69;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 70;
-  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 71;
-  private static final int METHODID_START_HTTPD = 72;
-  private static final int METHODID_GET_WORKING_DIR = 73;
-  private static final int METHODID_SET_WORKING_DIR = 74;
-  private static final int METHODID_CLEAR_ENVIRONMENT = 75;
-  private static final int METHODID_GET_SYS_ENV = 76;
-  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 77;
-  private static final int METHODID_LOAD_LIB_PATHS = 78;
-  private static final int METHODID_LOAD_LIBRARY = 79;
-  private static final int METHODID_UNLOAD_LIBRARY = 80;
-  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 81;
-  private static final int METHODID_LOAD_ENVIRONMENT = 82;
-  private static final int METHODID_SET_OUTPUT_WIDTH = 83;
-  private static final int METHODID_CLIENT_REQUEST_FINISHED = 84;
-  private static final int METHODID_R_STUDIO_API_RESPONSE = 85;
-  private static final int METHODID_SET_SAVE_ON_EXIT = 86;
-  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 87;
-  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 88;
+  private static final int METHODID_GRAPHICS_FETCH_PLOT = 30;
+  private static final int METHODID_GRAPHICS_CREATE_GROUP = 31;
+  private static final int METHODID_GRAPHICS_REMOVE_GROUP = 32;
+  private static final int METHODID_GRAPHICS_SHUTDOWN = 33;
+  private static final int METHODID_BEFORE_CHUNK_EXECUTION = 34;
+  private static final int METHODID_AFTER_CHUNK_EXECUTION = 35;
+  private static final int METHODID_PULL_CHUNK_OUTPUT_PATHS = 36;
+  private static final int METHODID_REPO_GET_PACKAGE_VERSION = 37;
+  private static final int METHODID_REPO_INSTALL_PACKAGE = 38;
+  private static final int METHODID_REPO_ADD_LIBRARY_PATH = 39;
+  private static final int METHODID_REPO_CHECK_PACKAGE_INSTALLED = 40;
+  private static final int METHODID_REPO_REMOVE_PACKAGE = 41;
+  private static final int METHODID_PREVIEW_DATA_IMPORT = 42;
+  private static final int METHODID_COMMIT_DATA_IMPORT = 43;
+  private static final int METHODID_COPY_TO_PERSISTENT_REF = 44;
+  private static final int METHODID_DISPOSE_PERSISTENT_REFS = 45;
+  private static final int METHODID_LOADER_GET_PARENT_ENVS = 46;
+  private static final int METHODID_LOADER_GET_VARIABLES = 47;
+  private static final int METHODID_LOADER_GET_LOADED_NAMESPACES = 48;
+  private static final int METHODID_LOADER_GET_VALUE_INFO = 49;
+  private static final int METHODID_EVALUATE_AS_TEXT = 50;
+  private static final int METHODID_EVALUATE_AS_BOOLEAN = 51;
+  private static final int METHODID_GET_DISTINCT_STRINGS = 52;
+  private static final int METHODID_LOAD_OBJECT_NAMES = 53;
+  private static final int METHODID_FIND_INHERITOR_NAMED_ARGUMENTS = 54;
+  private static final int METHODID_FIND_EXTRA_NAMED_ARGUMENTS = 55;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_OBJECT_NAME = 56;
+  private static final int METHODID_GET_TABLE_COLUMNS_INFO = 57;
+  private static final int METHODID_GET_FORMAL_ARGUMENTS = 58;
+  private static final int METHODID_GET_EQUALITY_OBJECT = 59;
+  private static final int METHODID_SET_VALUE = 60;
+  private static final int METHODID_GET_OBJECT_SIZES = 61;
+  private static final int METHODID_GET_RMARKDOWN_CHUNK_OPTIONS = 62;
+  private static final int METHODID_DATA_FRAME_REGISTER = 63;
+  private static final int METHODID_DATA_FRAME_GET_INFO = 64;
+  private static final int METHODID_DATA_FRAME_GET_DATA = 65;
+  private static final int METHODID_DATA_FRAME_SORT = 66;
+  private static final int METHODID_DATA_FRAME_FILTER = 67;
+  private static final int METHODID_DATA_FRAME_DISPOSE = 68;
+  private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 69;
+  private static final int METHODID_HTTPD_REQUEST = 70;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 71;
+  private static final int METHODID_GET_DOCUMENTATION_FOR_SYMBOL = 72;
+  private static final int METHODID_START_HTTPD = 73;
+  private static final int METHODID_GET_WORKING_DIR = 74;
+  private static final int METHODID_SET_WORKING_DIR = 75;
+  private static final int METHODID_CLEAR_ENVIRONMENT = 76;
+  private static final int METHODID_GET_SYS_ENV = 77;
+  private static final int METHODID_LOAD_INSTALLED_PACKAGES = 78;
+  private static final int METHODID_LOAD_LIB_PATHS = 79;
+  private static final int METHODID_LOAD_LIBRARY = 80;
+  private static final int METHODID_UNLOAD_LIBRARY = 81;
+  private static final int METHODID_SAVE_GLOBAL_ENVIRONMENT = 82;
+  private static final int METHODID_LOAD_ENVIRONMENT = 83;
+  private static final int METHODID_SET_OUTPUT_WIDTH = 84;
+  private static final int METHODID_CLIENT_REQUEST_FINISHED = 85;
+  private static final int METHODID_R_STUDIO_API_RESPONSE = 86;
+  private static final int METHODID_SET_SAVE_ON_EXIT = 87;
+  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 88;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 89;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6386,6 +6455,10 @@ public final class RPIServiceGrpc {
         case METHODID_GRAPHICS_GET_SNAPSHOT_PATH:
           serviceImpl.graphicsGetSnapshotPath((org.jetbrains.r.rinterop.GraphicsGetSnapshotPathRequest) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsGetSnapshotPathResponse>) responseObserver);
+          break;
+        case METHODID_GRAPHICS_FETCH_PLOT:
+          serviceImpl.graphicsFetchPlot((com.google.protobuf.Int32Value) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.GraphicsFetchPlotResponse>) responseObserver);
           break;
         case METHODID_GRAPHICS_CREATE_GROUP:
           serviceImpl.graphicsCreateGroup((com.google.protobuf.Empty) request,
@@ -6714,6 +6787,7 @@ public final class RPIServiceGrpc {
               .addMethod(getGraphicsRescaleMethod())
               .addMethod(getGraphicsRescaleStoredMethod())
               .addMethod(getGraphicsGetSnapshotPathMethod())
+              .addMethod(getGraphicsFetchPlotMethod())
               .addMethod(getGraphicsCreateGroupMethod())
               .addMethod(getGraphicsRemoveGroupMethod())
               .addMethod(getGraphicsShutdownMethod())
