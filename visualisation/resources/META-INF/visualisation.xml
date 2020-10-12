@@ -10,6 +10,9 @@
     <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.inlayOutputProvider"
                     interface="org.intellij.datavis.r.inlays.components.InlayOutputProvider"
                     dynamic="true"/>
+    <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.multiOutputProvider"
+                    interface="org.intellij.datavis.r.inlays.components.MultiOutputProvider"
+                    dynamic="true"/>
     <extensionPoint qualifiedName="org.intellij.datavis.r.inlays.visualisation.uiCustomizer"
                     interface="org.intellij.datavis.r.ui.UiCustomizer"
                     dynamic="true"/>

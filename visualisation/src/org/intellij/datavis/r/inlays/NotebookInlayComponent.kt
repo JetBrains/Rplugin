@@ -310,14 +310,20 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       if (state != null) {
         remove(state)
       }
-      state = NotebookInlayMultiOutput(editor, disposable).apply {
-        onHeightCalculated = { height ->
+      MultiOutputProvider.EP.extensionList.firstOrNull()?.let { provider ->
+        state = provider.create(editor, disposable)
+      }
+      if (state == null) {
+        state = TabbedMultiOutput(editor, disposable)
+      }
+      state.apply {
+        this!!.onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
             adjustSize(height)
           }
         }
         clearAction = cleanup
-      }.also { addState(it) }
+      }.also { addState(it!!) }
     }
     resizable = true
     (state as NotebookInlayMultiOutput).onOutputs(inlayOutputs)
