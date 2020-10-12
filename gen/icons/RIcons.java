@@ -15,16 +15,6 @@ public final class RIcons {
   }
   /** 16x16 */ public static final @NotNull Icon ChangeWorkingDirectory = load("/icons/changeWorkingDirectory.svg", 6716644832142778061L, 2);
 
-  public static final class Chart {
-    /** 16x16 */ public static final @NotNull Icon ChartAreaRange = load("/icons/chart/chartAreaRange.svg", -8240125604082800054L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartBar = load("/icons/chart/chartBar.svg", 3518553399833102582L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartBubble = load("/icons/chart/chartBubble.svg", -7436005997376963797L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartLine = load("/icons/chart/chartLine.svg", -7179128587440517469L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartPie = load("/icons/chart/chartPie.svg", -3472582953481794540L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartScatter = load("/icons/chart/chartScatter.svg", -8780407383966386109L, 2);
-    /** 16x16 */ public static final @NotNull Icon ChartStock = load("/icons/chart/chartStock.svg", 5477966691607881314L, 2);
-  }
-
   public static final class Debug {
     /** 16x16 */ public static final @NotNull Icon StepIntoMyCode = load("/icons/debug/StepIntoMyCode.svg", 3415296893210255296L, 2);
   }
@@ -34,10 +24,6 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon Presentation = load("/icons/fileTypes/presentation.svg", -5749946546317599940L, 0);
     /** 16x16 */ public static final @NotNull Icon RMarkdown = load("/icons/fileTypes/rMarkdown.svg", -1649853495621476429L, 0);
     /** 16x16 */ public static final @NotNull Icon Shiny = load("/icons/fileTypes/shiny.svg", 4980048309059873208L, 0);
-  }
-
-  public static final class Graphics {
-    /** 16x16 */ public static final @NotNull Icon ConstraintProportions = load("/icons/graphics/constraintProportions.svg", 5583708402552630410L, 2);
   }
 
   public static final class Packages {
@@ -59,10 +45,6 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon RunBelow = load("/icons/run/runBelow.svg", -9039074364201282396L, 2);
     /** 16x16 */ public static final @NotNull Icon RunCurrent = load("/icons/run/runCurrent.svg", -7030362716036941109L, 2);
     /** 16x16 */ public static final @NotNull Icon RunJob = load("/icons/run/runJob.svg", -4488741369146339306L, 2);
-  }
-
-  public static final class Table {
-    /** 16x16 */ public static final @NotNull Icon Pagination = load("/icons/table/pagination.svg", -8862976910242223129L, 2);
   }
 
   public static final class ToolWindow {

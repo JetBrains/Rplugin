@@ -24,8 +24,8 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
+import icons.VisualisationIcons
 import org.intellij.datavis.r.VisualizationBundle
-import org.intellij.datavis.r.VisualizationIcons
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.dataframe.DataFrame
 import org.intellij.datavis.r.inlays.dataframe.columns.DoubleType
@@ -207,7 +207,7 @@ class InlayTablePage : JPanel(BorderLayout()), ToolBarProvider {
 
     val paginateTable = object : DumbAwareToggleAction(VisualizationBundle.message("inlay.table.pagination.text"),
                                                        VisualizationBundle.message("inlay.table.pagination.description"),
-                                                       VisualizationIcons.TABLE_PAGINATION) {
+                                                       VisualisationIcons.Table.Pagination) {
 
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null

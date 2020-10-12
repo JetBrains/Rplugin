@@ -16,8 +16,11 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.JBUI
-import org.intellij.datavis.r.VisualizationIcons.CONSTRAIN_IMAGE_PROPORTIONS
-import org.intellij.datavis.r.inlays.components.*
+import icons.VisualisationIcons
+import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
+import org.intellij.datavis.r.inlays.components.DialogUtil
+import org.intellij.datavis.r.inlays.components.GraphicsPanel
+import org.intellij.datavis.r.inlays.components.InlayOutputUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.ui.forms.RGraphicsExportDialogForm
@@ -524,7 +527,7 @@ class RGraphicsExportDialog(private val project: Project, parent: Disposable, im
     private val PX_TEXT = RBundle.message("graphics.panel.settings.dialog.pixels")
 
     private val KEEP_ASPECT_RATIO_PRESENTATION =
-      ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, CONSTRAIN_IMAGE_PROPORTIONS, false)
+      ToggleActionPresentation(KEEP_ASPECT_RATIO_ACTIVE_TEXT, KEEP_ASPECT_RATIO_IDLE_TEXT, VisualisationIcons.Graphics.ConstraintProportions, false)
 
     private val defaultImageRegion: Dimension
       get() = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)

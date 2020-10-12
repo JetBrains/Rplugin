@@ -30,7 +30,7 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.TextTransferable
-import org.intellij.datavis.r.VisualizationIcons
+import icons.VisualisationIcons
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.table.filters.gui.TableFilterHeader
 import org.intellij.datavis.r.ui.MaterialTableUtils
@@ -194,7 +194,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     filterTableButton = createButton(filterTable)
 
     val paginateTable = object : DumbAwareToggleAction(RBundle.message("action.dataframe.viewer.pagination.name"),
-                                                       RBundle.message("action.dataframe.viewer.pagination.description"), VisualizationIcons.TABLE_PAGINATION) {
+                                                       RBundle.message("action.dataframe.viewer.pagination.description"),
+                                                       VisualisationIcons.Table.Pagination) {
       override fun isSelected(e: AnActionEvent): Boolean {
         return paginator != null
       }
