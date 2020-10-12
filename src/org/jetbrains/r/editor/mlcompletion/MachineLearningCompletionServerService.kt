@@ -1,9 +1,12 @@
 package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.util.io.isLocalHost
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
+import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
+import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
 import java.nio.file.Paths
 
 class MachineLearningCompletionServerService: Disposable {
@@ -20,49 +23,53 @@ class MachineLearningCompletionServerService: Disposable {
     fun getInstance() = service<MachineLearningCompletionServerService>()
   }
 
-  private var host = settings.state.host
-  private var port = settings.state.port
   private var localServer: Process? = null
   private var lastRelaunchInitializedTime: Long = System.currentTimeMillis();
 
-  init {
-    launchServer()
+  val serverAddress
+  get() = "http://${settings.state.host}:${settings.state.port}"
+
+  private val settingsListener = object : MachineLearningCompletionSettingsChangeListener {
+    override fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
+                                 afterState: MachineLearningCompletionSettings.State) {
+      if (beforeState == afterState) {
+        return
+      }
+      if (beforeState.isEnabled && !afterState.isEnabled) {
+        shutdownServer()
+      } else {
+        tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
+      }
+    }
   }
 
-  val serverAddress: String
-  get() {
-    if (settingsChanged()) {
-      tryRelaunchServer()
+  init {
+    ApplicationManager.getApplication().messageBus.connect(this).apply {
+      subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, settingsListener)
     }
-    return "http://${host}:${port}"
+
+    if (settings.state.isEnabled) {
+      launchServer(settings.state.hostOrDefault(), settings.state.port)
+    }
   }
 
   @Synchronized
-  fun tryRelaunchServer() {
+  fun tryRelaunchServer(host: String = settings.state.hostOrDefault(),
+                        port: Int = settings.state.port) {
     if (System.currentTimeMillis() - lastRelaunchInitializedTime < RELAUNCH_TIMEOUT_MS) {
       return
     }
     lastRelaunchInitializedTime = System.currentTimeMillis()
     shutdownServer()
-    launchServer()
+    launchServer(host, port)
   }
 
   fun shouldAttemptCompletion(): Boolean {
     return settings.state.isEnabled
   }
 
-  private fun settingsChanged(): Boolean {
-    if (host == settings.state.host
-        && port == settings.state.port) {
-      return false
-    }
-    host = settings.state.host
-    port = settings.state.port
-    return true
-  }
-
-  private fun launchServer() {
-    if (!isLocalHost(host ?: "")) {
+  private fun launchServer(host: String, port: Int) {
+    if (!isLocalHost(host)) {
       return
     }
     localServer =

@@ -12,6 +12,10 @@ class MachineLearningCompletionSettings: SimplePersistentStateComponent<MachineL
     var host by string(host)
     var port by property(port)
     var isEnabled by property(isEnabled)
+
+    fun hostOrDefault(): String {
+      return host ?: DEFAULT_HOST
+    }
   }
 
   companion object {
