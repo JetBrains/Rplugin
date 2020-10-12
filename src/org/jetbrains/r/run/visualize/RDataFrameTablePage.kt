@@ -226,7 +226,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath!!))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
-    fun saveSelection(out: BufferedWriter, cellBreak: String, pi: ProgressIndicator) {
+    fun saveSelection(out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {
       val selectedColumnCount = table.selectedColumnCount
       val selectedRowCount = table.selectedRowCount
       val selectedRows = table.selectedRows
@@ -235,7 +235,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       for (i in 0 until selectedRowCount) {
         for (j in 0 until selectedColumnCount) {
           tableModel.viewer.ensureLoaded(selectedRows[i], selectedColumns[j]).blockingGet(Int.MAX_VALUE)
-          tableModel.viewer.getValueAt(selectedRows[i], selectedColumns[j])?.let { out.write(ClipboardUtils.escape(it)) }
+          tableModel.viewer.getValueAt(selectedRows[i], selectedColumns[j])?.let { out.write(escaper(it.toString())) }
 
           if (j < selectedColumnCount - 1) {
             out.write(cellBreak)
@@ -249,11 +249,11 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       }
     }
 
-    fun saveAll(out: BufferedWriter, cellBreak: String, pi: ProgressIndicator) {
+    fun saveAll(out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {
       for (i in 0 until table.rowCount) {
         for (j in 0 until table.columnCount) {
           tableModel.viewer.ensureLoaded(i, j).blockingGet(Int.MAX_VALUE)
-          tableModel.viewer.getValueAt(i, j)?.let { out.write(ClipboardUtils.escape(it)) }
+          tableModel.viewer.getValueAt(i, j)?.let { out.write(escaper(it.toString())) }
 
           if (j < table.columnCount - 1) {
             out.write(cellBreak)
@@ -270,11 +270,35 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     runBackgroundableTask(RBundle.message("data.frame.export.title", fileWrapper.file.path), viewer.project) { pi ->
       try {
         fileWrapper.file.bufferedWriter().use { out ->
-          val cellBreak = if (fileWrapper.file.extension == "csv") ";" else "\t"
-          if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
-            saveAll(out, cellBreak, pi)
+          val cellBreak: String
+          val escaper: (String) -> String
+          if (fileWrapper.file.extension == "csv") {
+            cellBreak = ","
+            val regex = Regex("[,;\"'\\t\\n ]")
+            escaper = { s ->
+              val quoted = s.contains(regex)
+              if (quoted) "\"${s.replace("\"", "\"\"")}\"" else s
+            }
           } else {
-            saveSelection(out, cellBreak, pi)
+            cellBreak = "\t"
+            escaper = { s ->
+              val result = StringBuilder()
+              s.forEach { c ->
+                when (c) {
+                  '\n' -> result.append("\\n")
+                  '\t' -> result.append("\\t")
+                  '\r' -> result.append("\\r")
+                  '\\' -> result.append("\\\\")
+                  else -> result.append(c)
+                }
+              }
+              result.toString()
+            }
+          }
+          if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
+            saveAll(out, cellBreak, escaper, pi)
+          } else {
+            saveSelection(out, cellBreak, escaper, pi)
           }
         }
       } catch (e: IOException) {
