@@ -1,5 +1,6 @@
 package org.jetbrains.r.settings
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.layout.*
@@ -36,4 +37,15 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   }
 
+  override fun apply() {
+    val beforeState = settings.copyState()
+    super.apply()
+    notifySettingsChanged(beforeState, settings.state)
+  }
+
+  private fun notifySettingsChanged(beforeState: MachineLearningCompletionSettings.State,
+                                    afterState: MachineLearningCompletionSettings.State) {
+    ApplicationManager.getApplication().messageBus.syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
+      .settingsChanged(beforeState, afterState)
+  }
 }
