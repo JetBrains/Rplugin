@@ -23,7 +23,23 @@ class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParam
   }
 
   private fun convert(stroke: RStroke): Stroke {
-    return BasicStroke(stroke.width.toFloat())
+    return BasicStroke(stroke.width.toFloat(), convert(stroke.cap), convert(stroke.join), stroke.miterLimit.toFloat(), stroke.pattern, 0.0f)
+  }
+
+  private fun convert(cap: RLineCap): Int {
+    return when (cap) {
+      RLineCap.ROUND -> BasicStroke.CAP_ROUND
+      RLineCap.BUTT -> BasicStroke.CAP_BUTT
+      RLineCap.SQUARE -> BasicStroke.CAP_SQUARE
+    }
+  }
+
+  private fun convert(join: RLineJoin): Int {
+    return when (join) {
+      RLineJoin.ROUND -> BasicStroke.JOIN_ROUND
+      RLineJoin.MITER -> BasicStroke.JOIN_MITER
+      RLineJoin.BEVEL -> BasicStroke.JOIN_BEVEL
+    }
   }
 }
 

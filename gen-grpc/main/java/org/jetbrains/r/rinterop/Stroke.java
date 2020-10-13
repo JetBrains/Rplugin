@@ -53,6 +53,26 @@ private static final long serialVersionUID = 0L;
             width_ = input.readDouble();
             break;
           }
+          case 16: {
+
+            cap_ = input.readInt32();
+            break;
+          }
+          case 24: {
+
+            join_ = input.readInt32();
+            break;
+          }
+          case 33: {
+
+            miterLimit_ = input.readDouble();
+            break;
+          }
+          case 40: {
+
+            pattern_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -94,6 +114,42 @@ private static final long serialVersionUID = 0L;
     return width_;
   }
 
+  public static final int CAP_FIELD_NUMBER = 2;
+  private int cap_;
+  /**
+   * <code>int32 cap = 2;</code>
+   */
+  public int getCap() {
+    return cap_;
+  }
+
+  public static final int JOIN_FIELD_NUMBER = 3;
+  private int join_;
+  /**
+   * <code>int32 join = 3;</code>
+   */
+  public int getJoin() {
+    return join_;
+  }
+
+  public static final int MITERLIMIT_FIELD_NUMBER = 4;
+  private double miterLimit_;
+  /**
+   * <code>double miterLimit = 4;</code>
+   */
+  public double getMiterLimit() {
+    return miterLimit_;
+  }
+
+  public static final int PATTERN_FIELD_NUMBER = 5;
+  private int pattern_;
+  /**
+   * <code>int32 pattern = 5;</code>
+   */
+  public int getPattern() {
+    return pattern_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -111,6 +167,18 @@ private static final long serialVersionUID = 0L;
     if (width_ != 0D) {
       output.writeDouble(1, width_);
     }
+    if (cap_ != 0) {
+      output.writeInt32(2, cap_);
+    }
+    if (join_ != 0) {
+      output.writeInt32(3, join_);
+    }
+    if (miterLimit_ != 0D) {
+      output.writeDouble(4, miterLimit_);
+    }
+    if (pattern_ != 0) {
+      output.writeInt32(5, pattern_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -123,6 +191,22 @@ private static final long serialVersionUID = 0L;
     if (width_ != 0D) {
       size += com.google.protobuf.CodedOutputStream
         .computeDoubleSize(1, width_);
+    }
+    if (cap_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, cap_);
+    }
+    if (join_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, join_);
+    }
+    if (miterLimit_ != 0D) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeDoubleSize(4, miterLimit_);
+    }
+    if (pattern_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(5, pattern_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -142,6 +226,15 @@ private static final long serialVersionUID = 0L;
     if (java.lang.Double.doubleToLongBits(getWidth())
         != java.lang.Double.doubleToLongBits(
             other.getWidth())) return false;
+    if (getCap()
+        != other.getCap()) return false;
+    if (getJoin()
+        != other.getJoin()) return false;
+    if (java.lang.Double.doubleToLongBits(getMiterLimit())
+        != java.lang.Double.doubleToLongBits(
+            other.getMiterLimit())) return false;
+    if (getPattern()
+        != other.getPattern()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -156,6 +249,15 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + WIDTH_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         java.lang.Double.doubleToLongBits(getWidth()));
+    hash = (37 * hash) + CAP_FIELD_NUMBER;
+    hash = (53 * hash) + getCap();
+    hash = (37 * hash) + JOIN_FIELD_NUMBER;
+    hash = (53 * hash) + getJoin();
+    hash = (37 * hash) + MITERLIMIT_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        java.lang.Double.doubleToLongBits(getMiterLimit()));
+    hash = (37 * hash) + PATTERN_FIELD_NUMBER;
+    hash = (53 * hash) + getPattern();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -291,6 +393,14 @@ private static final long serialVersionUID = 0L;
       super.clear();
       width_ = 0D;
 
+      cap_ = 0;
+
+      join_ = 0;
+
+      miterLimit_ = 0D;
+
+      pattern_ = 0;
+
       return this;
     }
 
@@ -318,6 +428,10 @@ private static final long serialVersionUID = 0L;
     public org.jetbrains.r.rinterop.Stroke buildPartial() {
       org.jetbrains.r.rinterop.Stroke result = new org.jetbrains.r.rinterop.Stroke(this);
       result.width_ = width_;
+      result.cap_ = cap_;
+      result.join_ = join_;
+      result.miterLimit_ = miterLimit_;
+      result.pattern_ = pattern_;
       onBuilt();
       return result;
     }
@@ -368,6 +482,18 @@ private static final long serialVersionUID = 0L;
       if (other == org.jetbrains.r.rinterop.Stroke.getDefaultInstance()) return this;
       if (other.getWidth() != 0D) {
         setWidth(other.getWidth());
+      }
+      if (other.getCap() != 0) {
+        setCap(other.getCap());
+      }
+      if (other.getJoin() != 0) {
+        setJoin(other.getJoin());
+      }
+      if (other.getMiterLimit() != 0D) {
+        setMiterLimit(other.getMiterLimit());
+      }
+      if (other.getPattern() != 0) {
+        setPattern(other.getPattern());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -420,6 +546,110 @@ private static final long serialVersionUID = 0L;
     public Builder clearWidth() {
       
       width_ = 0D;
+      onChanged();
+      return this;
+    }
+
+    private int cap_ ;
+    /**
+     * <code>int32 cap = 2;</code>
+     */
+    public int getCap() {
+      return cap_;
+    }
+    /**
+     * <code>int32 cap = 2;</code>
+     */
+    public Builder setCap(int value) {
+      
+      cap_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 cap = 2;</code>
+     */
+    public Builder clearCap() {
+      
+      cap_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int join_ ;
+    /**
+     * <code>int32 join = 3;</code>
+     */
+    public int getJoin() {
+      return join_;
+    }
+    /**
+     * <code>int32 join = 3;</code>
+     */
+    public Builder setJoin(int value) {
+      
+      join_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 join = 3;</code>
+     */
+    public Builder clearJoin() {
+      
+      join_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private double miterLimit_ ;
+    /**
+     * <code>double miterLimit = 4;</code>
+     */
+    public double getMiterLimit() {
+      return miterLimit_;
+    }
+    /**
+     * <code>double miterLimit = 4;</code>
+     */
+    public Builder setMiterLimit(double value) {
+      
+      miterLimit_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>double miterLimit = 4;</code>
+     */
+    public Builder clearMiterLimit() {
+      
+      miterLimit_ = 0D;
+      onChanged();
+      return this;
+    }
+
+    private int pattern_ ;
+    /**
+     * <code>int32 pattern = 5;</code>
+     */
+    public int getPattern() {
+      return pattern_;
+    }
+    /**
+     * <code>int32 pattern = 5;</code>
+     */
+    public Builder setPattern(int value) {
+      
+      pattern_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 pattern = 5;</code>
+     */
+    public Builder clearPattern() {
+      
+      pattern_ = 0;
       onChanged();
       return this;
     }

@@ -13,7 +13,19 @@ enum class RFontStyle {
 
 data class RFont(val name: String?, val size: Double, val style: RFontStyle)
 
-data class RStroke(val width: Double)
+enum class RLineCap {
+  ROUND,
+  BUTT,
+  SQUARE,
+}
+
+enum class RLineJoin {
+  ROUND,
+  MITER,
+  BEVEL,
+}
+
+class RStroke(val width: Double, val cap: RLineCap, val join: RLineJoin, val miterLimit: Double, val pattern: FloatArray?)
 
 data class RLayer(val viewportIndex: Int, val clippingAreaIndex: Int, val figures: List<RFigure>, val isAxisText: Boolean)
 

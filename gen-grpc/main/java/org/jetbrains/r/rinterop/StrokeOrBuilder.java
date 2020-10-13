@@ -11,4 +11,24 @@ public interface StrokeOrBuilder extends
    * <code>double width = 1;</code>
    */
   double getWidth();
+
+  /**
+   * <code>int32 cap = 2;</code>
+   */
+  int getCap();
+
+  /**
+   * <code>int32 join = 3;</code>
+   */
+  int getJoin();
+
+  /**
+   * <code>double miterLimit = 4;</code>
+   */
+  double getMiterLimit();
+
+  /**
+   * <code>int32 pattern = 5;</code>
+   */
+  int getPattern();
 }

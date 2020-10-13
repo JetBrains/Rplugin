@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 2
+  private const val PROTOCOL_VERSION = 4
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -64,7 +64,45 @@ object RPlotUtil {
   }
 
   private fun convert(stroke: Stroke): RStroke {
-    return RStroke(stroke.width)
+    val cap = RLineCap.values()[stroke.cap]
+    val join = RLineJoin.values()[stroke.join]
+    return RStroke(stroke.width, cap, join, stroke.miterLimit, convertPattern(stroke.pattern))
+  }
+
+  private fun convertPattern(packed: Int): FloatArray? {
+    val dashCount = getDashCount(packed)
+    if (dashCount == 0) {
+      return null
+    }
+    return FloatArray(dashCount).also { pattern ->
+      extractDashes(packed, pattern)
+    }
+  }
+
+  private fun getDashCount(packed: Int): Int {
+    return forEachDash(packed) { _, _ ->
+      // do nothing
+    }
+  }
+
+  private fun extractDashes(packed: Int, pattern: FloatArray) {
+    forEachDash(packed) { index, dash ->
+      pattern[index] = dash.toFloat()
+    }
+  }
+
+  /**
+   * @return count of dashes in a packed pattern
+   */
+  private inline fun forEachDash(packed: Int, task: (Int, Int) -> Unit): Int {
+    var copy = packed
+    var index = 0
+    while (copy != 0) {
+      task(index, copy and 0xf)
+      copy = copy ushr 4
+      index++
+    }
+    return index
   }
 
   private fun convert(viewport: Viewport): RViewport {
@@ -385,7 +423,14 @@ object RPlotUtil {
     }
 
     private fun scale(stroke: RStroke): RStroke {
-      return RStroke(scale(stroke.width))
+      return RStroke(scale(stroke.width), stroke.cap, stroke.join, stroke.miterLimit, stroke.pattern?.let { scale(it) })
+    }
+
+    private fun scale(pattern: FloatArray): FloatArray {
+      return FloatArray(pattern.size) { index ->
+        // Each element represents a dash length in points (1/72 of inch)
+        scale(pattern[index] / 72.0).toFloat()
+      }
     }
 
     private fun scale(value: Double): Double {
