@@ -21,4 +21,9 @@ public interface FontOrBuilder extends
    * <code>double size = 2;</code>
    */
   double getSize();
+
+  /**
+   * <code>int32 style = 3;</code>
+   */
+  int getStyle();
 }

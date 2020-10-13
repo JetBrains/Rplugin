@@ -10,7 +10,16 @@ class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParam
 
   private fun convert(font: RFont): Font {
     val baseFont = if (font.name == null) graphics.font else Font(font.name, Font.PLAIN, 12)  // `size` has no effect
-    return baseFont.deriveFont(font.size.toFloat())
+    return baseFont.deriveFont(font.size.toFloat()).deriveFont(convert(font.style))
+  }
+
+  private fun convert(style: RFontStyle): Int {
+    return when (style) {
+      RFontStyle.PLAIN -> Font.PLAIN
+      RFontStyle.BOLD -> Font.BOLD
+      RFontStyle.ITALIC -> Font.ITALIC
+      RFontStyle.BOLD_ITALIC -> Font.BOLD + Font.ITALIC
+    }
   }
 
   private fun convert(stroke: RStroke): Stroke {

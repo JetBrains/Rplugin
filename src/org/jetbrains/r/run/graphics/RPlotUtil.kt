@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 1
+  private const val PROTOCOL_VERSION = 2
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -51,7 +51,8 @@ object RPlotUtil {
   }
 
   private fun convert(font: Font): RFont {
-    return RFont(font.name.takeIf { it.isNotBlank() }, font.size)
+    val style = RFontStyle.values()[font.style]
+    return RFont(font.name.takeIf { it.isNotBlank() }, font.size, style)
   }
 
   private fun convert(color: Int): Color {
@@ -380,7 +381,7 @@ object RPlotUtil {
     }
 
     private fun scale(font: RFont): RFont {
-      return RFont(font.name, scale(font.size))
+      return RFont(font.name, scale(font.size), font.style)
     }
 
     private fun scale(stroke: RStroke): RStroke {

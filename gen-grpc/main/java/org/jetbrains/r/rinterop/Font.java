@@ -60,6 +60,11 @@ private static final long serialVersionUID = 0L;
             size_ = input.readDouble();
             break;
           }
+          case 24: {
+
+            style_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -135,6 +140,15 @@ private static final long serialVersionUID = 0L;
     return size_;
   }
 
+  public static final int STYLE_FIELD_NUMBER = 3;
+  private int style_;
+  /**
+   * <code>int32 style = 3;</code>
+   */
+  public int getStyle() {
+    return style_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -155,6 +169,9 @@ private static final long serialVersionUID = 0L;
     if (size_ != 0D) {
       output.writeDouble(2, size_);
     }
+    if (style_ != 0) {
+      output.writeInt32(3, style_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -170,6 +187,10 @@ private static final long serialVersionUID = 0L;
     if (size_ != 0D) {
       size += com.google.protobuf.CodedOutputStream
         .computeDoubleSize(2, size_);
+    }
+    if (style_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, style_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -191,6 +212,8 @@ private static final long serialVersionUID = 0L;
     if (java.lang.Double.doubleToLongBits(getSize())
         != java.lang.Double.doubleToLongBits(
             other.getSize())) return false;
+    if (getStyle()
+        != other.getStyle()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -207,6 +230,8 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + SIZE_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         java.lang.Double.doubleToLongBits(getSize()));
+    hash = (37 * hash) + STYLE_FIELD_NUMBER;
+    hash = (53 * hash) + getStyle();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -344,6 +369,8 @@ private static final long serialVersionUID = 0L;
 
       size_ = 0D;
 
+      style_ = 0;
+
       return this;
     }
 
@@ -372,6 +399,7 @@ private static final long serialVersionUID = 0L;
       org.jetbrains.r.rinterop.Font result = new org.jetbrains.r.rinterop.Font(this);
       result.name_ = name_;
       result.size_ = size_;
+      result.style_ = style_;
       onBuilt();
       return result;
     }
@@ -426,6 +454,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getSize() != 0D) {
         setSize(other.getSize());
+      }
+      if (other.getStyle() != 0) {
+        setStyle(other.getStyle());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -547,6 +578,32 @@ private static final long serialVersionUID = 0L;
     public Builder clearSize() {
       
       size_ = 0D;
+      onChanged();
+      return this;
+    }
+
+    private int style_ ;
+    /**
+     * <code>int32 style = 3;</code>
+     */
+    public int getStyle() {
+      return style_;
+    }
+    /**
+     * <code>int32 style = 3;</code>
+     */
+    public Builder setStyle(int value) {
+      
+      style_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 style = 3;</code>
+     */
+    public Builder clearStyle() {
+      
+      style_ = 0;
       onChanged();
       return this;
     }
