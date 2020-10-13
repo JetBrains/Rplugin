@@ -16,6 +16,9 @@
     <extensionPoint qualifiedName="org.intellij.datavis.r.inlays.visualisation.uiCustomizer"
                     interface="org.intellij.datavis.r.ui.UiCustomizer"
                     dynamic="true"/>
+    <extensionPoint qualifiedName="org.jetbrains.plugins.notebooks.editor.notebookEditorAppearanceProvider"
+                    interface="org.jetbrains.plugins.notebooks.editor.NotebookEditorAppearanceProvider"
+                    dynamic="true"/>
     <extensionPoint qualifiedName="org.jetbrains.plugins.notebooks.notebookCellTypeAwareLexerProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint" dynamic="true">
       <with attribute="implementationClass" implements="org.jetbrains.plugins.notebooks.editor.NotebookCellTypeAwareLexerProvider"/>
