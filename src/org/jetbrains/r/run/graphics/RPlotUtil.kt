@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 4
+  private const val PROTOCOL_VERSION = 5
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -140,7 +140,8 @@ object RPlotUtil {
   }
 
   private fun convert(circle: CircleFigure): RFigure {
-    return RFigure.Circle(convert(circle.center), circle.radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
+    return RFigure.Circle(convert(circle.center), circle.radiusScale, circle.radiusOffset, circle.strokeIndex,
+                          circle.colorIndex, circle.fillIndex)
   }
 
   private fun convert(line: LineFigure): RFigure {
@@ -314,7 +315,7 @@ object RPlotUtil {
     private fun replay(circle: RFigure.Circle) {
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
-      val radius = scale(circle.radius).toInt()
+      val radius = calculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
       plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
     }
 

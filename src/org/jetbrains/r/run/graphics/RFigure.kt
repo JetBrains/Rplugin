@@ -3,7 +3,8 @@ package org.jetbrains.r.run.graphics
 import java.awt.image.BufferedImage
 
 sealed class RFigure {
-  data class Circle(val center: RAffinePoint, val radius: Double, val strokeIndex: Int, val colorIndex: Int, val fillIndex: Int) : RFigure()
+  data class Circle(val center: RAffinePoint, val radiusScale: Double, val radiusOffset: Double, val strokeIndex: Int,
+                    val colorIndex: Int, val fillIndex: Int) : RFigure()
 
   data class Line(val from: RAffinePoint, val to: RAffinePoint, val strokeIndex: Int, val colorIndex: Int) : RFigure()
 

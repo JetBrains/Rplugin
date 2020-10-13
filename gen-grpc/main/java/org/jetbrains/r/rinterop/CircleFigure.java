@@ -63,20 +63,25 @@ private static final long serialVersionUID = 0L;
           }
           case 17: {
 
-            radius_ = input.readDouble();
+            radiusScale_ = input.readDouble();
             break;
           }
-          case 24: {
+          case 25: {
 
-            strokeIndex_ = input.readInt32();
+            radiusOffset_ = input.readDouble();
             break;
           }
           case 32: {
 
-            colorIndex_ = input.readInt32();
+            strokeIndex_ = input.readInt32();
             break;
           }
           case 40: {
+
+            colorIndex_ = input.readInt32();
+            break;
+          }
+          case 48: {
 
             fillIndex_ = input.readInt32();
             break;
@@ -134,37 +139,46 @@ private static final long serialVersionUID = 0L;
     return getCenter();
   }
 
-  public static final int RADIUS_FIELD_NUMBER = 2;
-  private double radius_;
+  public static final int RADIUSSCALE_FIELD_NUMBER = 2;
+  private double radiusScale_;
   /**
-   * <code>double radius = 2;</code>
+   * <code>double radiusScale = 2;</code>
    */
-  public double getRadius() {
-    return radius_;
+  public double getRadiusScale() {
+    return radiusScale_;
   }
 
-  public static final int STROKEINDEX_FIELD_NUMBER = 3;
+  public static final int RADIUSOFFSET_FIELD_NUMBER = 3;
+  private double radiusOffset_;
+  /**
+   * <code>double radiusOffset = 3;</code>
+   */
+  public double getRadiusOffset() {
+    return radiusOffset_;
+  }
+
+  public static final int STROKEINDEX_FIELD_NUMBER = 4;
   private int strokeIndex_;
   /**
-   * <code>int32 strokeIndex = 3;</code>
+   * <code>int32 strokeIndex = 4;</code>
    */
   public int getStrokeIndex() {
     return strokeIndex_;
   }
 
-  public static final int COLORINDEX_FIELD_NUMBER = 4;
+  public static final int COLORINDEX_FIELD_NUMBER = 5;
   private int colorIndex_;
   /**
-   * <code>int32 colorIndex = 4;</code>
+   * <code>int32 colorIndex = 5;</code>
    */
   public int getColorIndex() {
     return colorIndex_;
   }
 
-  public static final int FILLINDEX_FIELD_NUMBER = 5;
+  public static final int FILLINDEX_FIELD_NUMBER = 6;
   private int fillIndex_;
   /**
-   * <code>int32 fillIndex = 5;</code>
+   * <code>int32 fillIndex = 6;</code>
    */
   public int getFillIndex() {
     return fillIndex_;
@@ -187,17 +201,20 @@ private static final long serialVersionUID = 0L;
     if (center_ != null) {
       output.writeMessage(1, getCenter());
     }
-    if (radius_ != 0D) {
-      output.writeDouble(2, radius_);
+    if (radiusScale_ != 0D) {
+      output.writeDouble(2, radiusScale_);
+    }
+    if (radiusOffset_ != 0D) {
+      output.writeDouble(3, radiusOffset_);
     }
     if (strokeIndex_ != 0) {
-      output.writeInt32(3, strokeIndex_);
+      output.writeInt32(4, strokeIndex_);
     }
     if (colorIndex_ != 0) {
-      output.writeInt32(4, colorIndex_);
+      output.writeInt32(5, colorIndex_);
     }
     if (fillIndex_ != 0) {
-      output.writeInt32(5, fillIndex_);
+      output.writeInt32(6, fillIndex_);
     }
     unknownFields.writeTo(output);
   }
@@ -212,21 +229,25 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, getCenter());
     }
-    if (radius_ != 0D) {
+    if (radiusScale_ != 0D) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(2, radius_);
+        .computeDoubleSize(2, radiusScale_);
+    }
+    if (radiusOffset_ != 0D) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeDoubleSize(3, radiusOffset_);
     }
     if (strokeIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(3, strokeIndex_);
+        .computeInt32Size(4, strokeIndex_);
     }
     if (colorIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, colorIndex_);
+        .computeInt32Size(5, colorIndex_);
     }
     if (fillIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(5, fillIndex_);
+        .computeInt32Size(6, fillIndex_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -248,9 +269,12 @@ private static final long serialVersionUID = 0L;
       if (!getCenter()
           .equals(other.getCenter())) return false;
     }
-    if (java.lang.Double.doubleToLongBits(getRadius())
+    if (java.lang.Double.doubleToLongBits(getRadiusScale())
         != java.lang.Double.doubleToLongBits(
-            other.getRadius())) return false;
+            other.getRadiusScale())) return false;
+    if (java.lang.Double.doubleToLongBits(getRadiusOffset())
+        != java.lang.Double.doubleToLongBits(
+            other.getRadiusOffset())) return false;
     if (getStrokeIndex()
         != other.getStrokeIndex()) return false;
     if (getColorIndex()
@@ -272,9 +296,12 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + CENTER_FIELD_NUMBER;
       hash = (53 * hash) + getCenter().hashCode();
     }
-    hash = (37 * hash) + RADIUS_FIELD_NUMBER;
+    hash = (37 * hash) + RADIUSSCALE_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getRadius()));
+        java.lang.Double.doubleToLongBits(getRadiusScale()));
+    hash = (37 * hash) + RADIUSOFFSET_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        java.lang.Double.doubleToLongBits(getRadiusOffset()));
     hash = (37 * hash) + STROKEINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getStrokeIndex();
     hash = (37 * hash) + COLORINDEX_FIELD_NUMBER;
@@ -420,7 +447,9 @@ private static final long serialVersionUID = 0L;
         center_ = null;
         centerBuilder_ = null;
       }
-      radius_ = 0D;
+      radiusScale_ = 0D;
+
+      radiusOffset_ = 0D;
 
       strokeIndex_ = 0;
 
@@ -459,7 +488,8 @@ private static final long serialVersionUID = 0L;
       } else {
         result.center_ = centerBuilder_.build();
       }
-      result.radius_ = radius_;
+      result.radiusScale_ = radiusScale_;
+      result.radiusOffset_ = radiusOffset_;
       result.strokeIndex_ = strokeIndex_;
       result.colorIndex_ = colorIndex_;
       result.fillIndex_ = fillIndex_;
@@ -514,8 +544,11 @@ private static final long serialVersionUID = 0L;
       if (other.hasCenter()) {
         mergeCenter(other.getCenter());
       }
-      if (other.getRadius() != 0D) {
-        setRadius(other.getRadius());
+      if (other.getRadiusScale() != 0D) {
+        setRadiusScale(other.getRadiusScale());
+      }
+      if (other.getRadiusOffset() != 0D) {
+        setRadiusOffset(other.getRadiusOffset());
       }
       if (other.getStrokeIndex() != 0) {
         setStrokeIndex(other.getStrokeIndex());
@@ -672,41 +705,67 @@ private static final long serialVersionUID = 0L;
       return centerBuilder_;
     }
 
-    private double radius_ ;
+    private double radiusScale_ ;
     /**
-     * <code>double radius = 2;</code>
+     * <code>double radiusScale = 2;</code>
      */
-    public double getRadius() {
-      return radius_;
+    public double getRadiusScale() {
+      return radiusScale_;
     }
     /**
-     * <code>double radius = 2;</code>
+     * <code>double radiusScale = 2;</code>
      */
-    public Builder setRadius(double value) {
+    public Builder setRadiusScale(double value) {
       
-      radius_ = value;
+      radiusScale_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double radius = 2;</code>
+     * <code>double radiusScale = 2;</code>
      */
-    public Builder clearRadius() {
+    public Builder clearRadiusScale() {
       
-      radius_ = 0D;
+      radiusScale_ = 0D;
+      onChanged();
+      return this;
+    }
+
+    private double radiusOffset_ ;
+    /**
+     * <code>double radiusOffset = 3;</code>
+     */
+    public double getRadiusOffset() {
+      return radiusOffset_;
+    }
+    /**
+     * <code>double radiusOffset = 3;</code>
+     */
+    public Builder setRadiusOffset(double value) {
+      
+      radiusOffset_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>double radiusOffset = 3;</code>
+     */
+    public Builder clearRadiusOffset() {
+      
+      radiusOffset_ = 0D;
       onChanged();
       return this;
     }
 
     private int strokeIndex_ ;
     /**
-     * <code>int32 strokeIndex = 3;</code>
+     * <code>int32 strokeIndex = 4;</code>
      */
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
-     * <code>int32 strokeIndex = 3;</code>
+     * <code>int32 strokeIndex = 4;</code>
      */
     public Builder setStrokeIndex(int value) {
       
@@ -715,7 +774,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 strokeIndex = 3;</code>
+     * <code>int32 strokeIndex = 4;</code>
      */
     public Builder clearStrokeIndex() {
       
@@ -726,13 +785,13 @@ private static final long serialVersionUID = 0L;
 
     private int colorIndex_ ;
     /**
-     * <code>int32 colorIndex = 4;</code>
+     * <code>int32 colorIndex = 5;</code>
      */
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
-     * <code>int32 colorIndex = 4;</code>
+     * <code>int32 colorIndex = 5;</code>
      */
     public Builder setColorIndex(int value) {
       
@@ -741,7 +800,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 colorIndex = 4;</code>
+     * <code>int32 colorIndex = 5;</code>
      */
     public Builder clearColorIndex() {
       
@@ -752,13 +811,13 @@ private static final long serialVersionUID = 0L;
 
     private int fillIndex_ ;
     /**
-     * <code>int32 fillIndex = 5;</code>
+     * <code>int32 fillIndex = 6;</code>
      */
     public int getFillIndex() {
       return fillIndex_;
     }
     /**
-     * <code>int32 fillIndex = 5;</code>
+     * <code>int32 fillIndex = 6;</code>
      */
     public Builder setFillIndex(int value) {
       
@@ -767,7 +826,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 fillIndex = 5;</code>
+     * <code>int32 fillIndex = 6;</code>
      */
     public Builder clearFillIndex() {
       
