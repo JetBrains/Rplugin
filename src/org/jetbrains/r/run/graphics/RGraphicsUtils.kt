@@ -43,7 +43,7 @@ object RGraphicsUtils {
   const val DEFAULT_RESOLUTION = 72
   val DEFAULT_PARAMETERS = ScreenParameters(DEFAULT_DIMENSION, DEFAULT_RESOLUTION)
 
-  private val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
+  internal val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
 
   fun createParameters(parameters: ScreenParameters?): ScreenParameters {
     return createParameters(parameters?.dimension, parameters?.resolution)

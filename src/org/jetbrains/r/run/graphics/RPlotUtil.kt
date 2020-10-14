@@ -345,8 +345,9 @@ object RPlotUtil {
       val xTo = calculateX(raster.to)
       val yTo = calculateY(raster.to)
       val original = fitTheme(raster.image)
+      val multiplier = if (RGraphicsUtils.isRetina) 2 else 1
       val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
-      val scaled = original.getScaledInstance(xTo - xFrom, yTo - yFrom, mode)
+      val scaled = original.getScaledInstance((xTo - xFrom) * multiplier, (yTo - yFrom) * multiplier, mode)
       plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
     }
 
