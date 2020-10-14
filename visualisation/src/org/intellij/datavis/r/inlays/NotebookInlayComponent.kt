@@ -317,7 +317,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
         state = TabbedMultiOutput(editor, disposable)
       }
       state?.apply {
-        this.onHeightCalculated = { height ->
+        onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
             adjustSize(height)
           }
