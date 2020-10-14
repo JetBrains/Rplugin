@@ -689,6 +689,10 @@ You can find the source code in the following repositories:
                          bundle="messages.RPluginBundle" key="inspection.virtual.s4class.instance.name"
                          implementationClass="org.jetbrains.r.inspections.s4class.InstanceOfVirtualS4ClassInspection"/>
 
+        <localInspection shortName="RStudioAPISourceMarkerInspection" language="R" enabledByDefault="true" groupName="R"
+                       bundle="messages.RPluginBundle" key="rstudioapi.source.markers.name"
+                       implementationClass="org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection"/>
+
         <intentionAction>
             <category>R</category>
             <className>org.jetbrains.r.intentions.TtoTrueIntention</className>

@@ -1,19 +1,19 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.analysis.problemsView.toolWindow.ProblemsView
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.colors.CodeInsightColors
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.editor.markup.HighlighterLayer
-import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PathUtilRt
 import com.intellij.util.containers.ComparatorUtil
 import git4idea.changes.GitChangesViewRefresher
@@ -25,6 +25,9 @@ import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.Companion.SOURCE_MARKERS_KEY
+import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.streams.toList
 
 enum class RStudioApiFunctionId {
@@ -136,22 +139,20 @@ object RStudioApiUtils {
       if (it == "none") null
       else it
     }
-    val files = markers.map { it[1].rString.getStrings(0) }.toHashSet()
-    for (file in files) {
-      val filePath = (basePath ?: "") + file
-      findFileByPathAtHostHelper(rInterop, filePath).then { virtualFile ->
-        val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
-        if (document == null) {
-          return@then
-        }
-        val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
-        for (e in editors) {
-          e.markupModel.allHighlighters.filter { it.textAttributesKey?.externalName == name }.map {
-            e.markupModel.removeHighlighter(it)
-          }
-        }
-      }
+
+    val projectMarkers = rInterop.project.getUserData(SOURCE_MARKERS_KEY)
+                         ?: rInterop.project.putUserData(SOURCE_MARKERS_KEY, ConcurrentHashMap<String, SourceMarkers>()).let {
+                           rInterop.project.getUserData(SOURCE_MARKERS_KEY) ?: throw Error("projectMarkers is null")
+                         }
+
+    projectMarkers.map { it.value.remove(name) }
+
+    val markerMap = hashMapOf<String, MutableList<RStudioAPISourceMarkerInspection.RStudioAPIMarker>>()
+
+    if (autoSelect == "error" && markers.none { it[0].rString.getStrings(0) == "error" }) {
+      autoSelect = "first"
     }
+
     for (marker in markers) {
       val type = marker[0].rString.getStrings(0)
       val file = marker[1].rString.getStrings(0)
@@ -159,46 +160,34 @@ object RStudioApiUtils {
       val column = marker[3].rInt.getInts(0).toInt()
       val message = marker[4].rString.getStrings(0)
       val filePath = (basePath ?: "") + file
-      val highlighterLayer = when (type) {
-        "error" -> HighlighterLayer.ERROR
-        "warning", "style" -> HighlighterLayer.WARNING
-        "info", "usage" -> HighlighterLayer.WEAK_WARNING
+      val problemHighlightType = when (type) {
+        "error" -> ProblemHighlightType.GENERIC_ERROR
+        "warning", "style" -> ProblemHighlightType.WARNING
+        "info", "usage" -> ProblemHighlightType.WEAK_WARNING
         else -> return
       }
-      findFileByPathAtHostHelper(rInterop, filePath).then { virtualFile ->
-        val document = virtualFile?.let { FileDocumentManager.getInstance().getDocument(it) }
-        if (document == null) {
-          return@then
-        }
-        val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
-        for (e in editors) {
-          val offset = getLineOffset(document, line - 1, column - 1)
-          if (autoSelect == "first" || (autoSelect == "error" && type == "error")) {
+      if (autoSelect == "first" || (autoSelect == "error" && type == "error")) {
+        findFileByPathAtHostHelper(rInterop, filePath).then { virtualFile ->
+          FileEditorManager.getInstance(rInterop.project).openFile(virtualFile ?: return@then, true)
+          val document = virtualFile.let { FileDocumentManager.getInstance().getDocument(it) }
+          if (document == null) {
+            return@then
+          }
+          val editors = EditorFactory.getInstance().editors(document, rInterop.project).toList()
+          for (e in editors) {
+            val offset = getLineOffset(document, line - 1, column - 1)
             e.caretModel.primaryCaret.moveToOffset(offset)
           }
-          val textAttributesKey = TextAttributesKey.createTextAttributesKey(name)
-          val color = e.colorsScheme.getAttributes(
-            when (highlighterLayer) {
-              HighlighterLayer.ERROR -> CodeInsightColors.ERRORS_ATTRIBUTES
-              HighlighterLayer.WARNING -> CodeInsightColors.WARNINGS_ATTRIBUTES
-              HighlighterLayer.WEAK_WARNING -> CodeInsightColors.WEAK_WARNING_ATTRIBUTES
-              else -> return@then
-            }
-          ).errorStripeColor
-          e.markupModel.addLineHighlighter(line - 1, highlighterLayer, null)
-          val rangeHighlighter = e.markupModel.addRangeHighlighter(
-            textAttributesKey,
-            offset, offset,
-            highlighterLayer,
-            HighlighterTargetArea.LINES_IN_RANGE
-          )
-          rangeHighlighter.errorStripeMarkColor = color
-          rangeHighlighter.errorStripeTooltip = message
+          ProblemsView.toggleCurrentFileProblems(rInterop.project, virtualFile)
         }
-      }
-      if (autoSelect == "first" || type == "error") {
         autoSelect = null
       }
+      val problem = RStudioAPISourceMarkerInspection.RStudioAPIMarker(problemHighlightType, message, line, column)
+      markerMap[filePath]?.add(problem) ?: markerMap.put(filePath, mutableListOf(problem))
+    }
+    markerMap.map {
+      projectMarkers.putIfAbsent(it.key, SourceMarkers())
+      projectMarkers[it.key]?.put(name, it.value)
     }
   }
 

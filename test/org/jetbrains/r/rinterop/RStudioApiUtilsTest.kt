@@ -1,10 +1,10 @@
 package org.jetbrains.r.rinterop
 
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.vfs.VirtualFileManager
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -16,7 +16,8 @@ import org.jetbrains.r.console.jobs.RJobRunner.Listener
 import org.jetbrains.r.rinterop.rstudioapi.RSessionUtils
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
-import java.nio.file.Paths
+import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection
+import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.RStudioAPIMarker
 import kotlin.streams.toList
 
 class RStudioApiUtilsTest : RConsoleBaseTestCase() {
@@ -147,7 +148,7 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     """.trimIndent(), myFixture.editor.document.text)
   }
 
-  fun testBasic_InsertTextToConsole() {
+  fun testBasic_insertTextToConsole() {
     console.executeText("""
       |cntx <- rstudioapi::getConsoleEditorContext()
       |rstudioapi::insertText(c(1,1,1,1), "a <- 3", cntx${"$"}id)
@@ -282,49 +283,40 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
   }
 
   fun testBasic_sourceMarkersErrorFocus() {
-    rInterop.setWorkingDir(myFixture.testDataPath)
-    val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
-    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
-    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
-    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
-    console.executeText("""
-      |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
-      |b <- rstudioapi::sourceMarkers("test", markers, NULL, "error")
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(2,
-                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
-    TestCase.assertEquals(7, editor.caretModel.primaryCaret.offset)
+    val offset = sourceMarkersTestHelper("error")
+    TestCase.assertEquals(7, offset)
   }
 
   fun testBasic_sourceMarkersFirstFocus() {
-    rInterop.setWorkingDir(myFixture.testDataPath)
-    val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
-    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
-    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
-    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
-    console.executeText("""
-      |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
-      |b <- rstudioapi::sourceMarkers("test", markers, NULL, "first")
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(2,
-                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
-    TestCase.assertEquals(2, editor.caretModel.primaryCaret.offset)
+    val offset = sourceMarkersTestHelper("first")
+    TestCase.assertEquals(2, offset)
   }
 
   fun testBasic_sourceMarkersNoFocus() {
+    val offset = sourceMarkersTestHelper("none")
+    TestCase.assertEquals(null, offset)
+  }
+
+  private fun sourceMarkersTestHelper(type: String): Int? {
     rInterop.setWorkingDir(myFixture.testDataPath)
     val path = myFixture.testDataPath + "/rstudioapi/testJobsWithoutImport.R"
-    val file = VirtualFileManager.getInstance().findFileByNioPath(Paths.get(path))!!
-    FileEditorManager.getInstance(rInterop.project).openFile(file, true)
-    val editor = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(file)!!).toList().first()
     console.executeText("""
       |markers <- list(list(type = "usage", file = "$path", line = 1, column = 3, message = "msg1"), list(type = "error", file = "$path", line = 2, column = 1, message = "msg2"))
-      |b <- rstudioapi::sourceMarkers("test", markers, NULL)
-      |b <- rstudioapi::sourceMarkers("test", markers, NULL)
+      |print(markers)
+      |b <- rstudioapi::sourceMarkers("test", markers, NULL, "$type")
+      |c <- rstudioapi::sourceMarkers("test", markers, NULL, "$type")
     """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    TestCase.assertEquals(2,
-                          editor.markupModel.allHighlighters.toList().filter { it.textAttributesKey?.externalName == "test" }.size)
-    TestCase.assertEquals(0, editor.caretModel.primaryCaret.offset)
+    val markers = myFixture.project.getUserData(RStudioAPISourceMarkerInspection.SOURCE_MARKERS_KEY)
+    TestCase.assertNotNull(markers)
+    TestCase.assertEquals(1, markers!!.size)
+    TestCase.assertEquals(1, markers[path]?.size)
+    TestCase.assertEquals(listOf(RStudioAPIMarker(type = ProblemHighlightType.WEAK_WARNING, message = "msg1", line = 1, col = 3),
+                                 RStudioAPIMarker(type = ProblemHighlightType.GENERIC_ERROR, message = "msg2", line = 2, col = 1)),
+                          markers[path]!!["test"])
+    val editor = FileEditorManager.getInstance(rInterop.project).selectedEditor ?: return null
+    val editors = EditorFactory.getInstance().editors(FileDocumentManager.getInstance().getDocument(editor.file!!)!!).toList()
+    TestCase.assertEquals(1, editors.size)
+    return editors.first().caretModel.offset
   }
 
   private fun createJobDonePromise(): Promise<Boolean> {
