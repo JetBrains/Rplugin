@@ -279,6 +279,8 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
           console.flushDeferredText()
 
           (console.editor as? EditorImpl)?.apply {
+            updateSize(this)
+
             softWrapModel.setSoftWrapPainter(object : SoftWrapPainter {
               override fun paint(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
 
@@ -292,11 +294,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
             })
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
-                override fun recalculationEnds() {
-                  val textHeight = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
-                  component.preferredSize = Dimension(preferredSize.width, textHeight)
-                  onHeightCalculated?.invoke(max(textHeight, toolbarPane.preferredSize.height))
-                }
+                override fun recalculationEnds() = updateSize(this@apply)
 
                 override fun softWrapsChanged() {}
               }
@@ -304,6 +302,14 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
           }
         }
       }
+    }
+  }
+
+  private fun updateSize(editor: EditorImpl) {
+    with(editor) {
+      val textHeight = offsetToXY(document.textLength).y + lineHeight + scrollPaneTopBorderHeight
+      component.preferredSize = Dimension(preferredSize.width, textHeight)
+      onHeightCalculated?.invoke(max(textHeight, toolbarPane.preferredSize.height))
     }
   }
 
