@@ -15,15 +15,16 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PathUtilRt
+import com.intellij.util.containers.ComparatorUtil
 import git4idea.changes.GitChangesViewRefresher
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
-import kotlin.math.min
 import kotlin.streams.toList
 
 enum class RStudioApiFunctionId {
@@ -154,8 +155,8 @@ object RStudioApiUtils {
     for (marker in markers) {
       val type = marker[0].rString.getStrings(0)
       val file = marker[1].rString.getStrings(0)
-      val line = marker[2].rInt.getInts(0)
-      val column = marker[3].rInt.getInts(0)
+      val line = marker[2].rInt.getInts(0).toInt()
+      val column = marker[3].rInt.getInts(0).toInt()
       val message = marker[4].rString.getStrings(0)
       val filePath = (basePath ?: "") + file
       val highlighterLayer = when (type) {
@@ -184,7 +185,7 @@ object RStudioApiUtils {
               else -> return@then
             }
           ).errorStripeColor
-          e.markupModel.addLineHighlighter(line.toInt() - 1, highlighterLayer, null)
+          e.markupModel.addLineHighlighter(line - 1, highlighterLayer, null)
           val rangeHighlighter = e.markupModel.addRangeHighlighter(
             textAttributesKey,
             offset, offset,
@@ -229,8 +230,8 @@ object RStudioApiUtils {
           runInEdt {
             Messages.showErrorDialog(
               rInterop.project,
-              "The command '$command' is unsupported or does not exist.",
-              "Invalid Command"
+              RBundle.message("rstudioapi.execute.invalid.command.message", command),
+              RBundle.message("rstudioapi.execute.invalid.command.title")
             )
           }
         }
@@ -238,69 +239,77 @@ object RStudioApiUtils {
     }
   }
 
-  private fun getLineOffset(document: Document, line: Long, col: Long): Int {
-    return min(document.getLineEndOffset(line.toInt()), document.getLineStartOffset(line.toInt()) + col.toInt())
-  }
-}
-
-internal fun String.toRString(): RObject {
-  return RObject.newBuilder().setRString(RObject.RString.newBuilder().addStrings(this)).build()
-}
-
-internal fun RObject.toStringOrNull(): String? {
-  return if (this.hasRNull()) return null
-  else {
-    this.rString.getStrings(0)
-  }
-}
-
-internal fun <T : Iterable<RObject>> T.toRList(): RObject {
-  return RObject.newBuilder().setList(RObject.List.newBuilder().addAllRObjects(this)).build()
-}
-
-internal fun Boolean.toRBoolean(): RObject {
-  return RObject.newBuilder().setRBoolean(RObject.RBoolean.newBuilder().addBooleans(this)).build()
-}
-
-internal fun Long.toRInt(): RObject {
-  return RObject.newBuilder().setRInt(RObject.RInt.newBuilder().addInts(this)).build()
-}
-
-internal fun Int.toRInt(): RObject {
-  return RObject.newBuilder().setRInt(RObject.RInt.newBuilder().addInts(this.toLong())).build()
-}
-
-internal fun getRNull(): RObject {
-  return RObject.newBuilder().setRNull(RObject.RNull.getDefaultInstance()).build()
-}
-
-internal fun getConsoleView(rInterop: RInterop): RConsoleView? {
-  return if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
-    RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
-  }
-  else {
-    RConsoleManager.getInstance(rInterop.project).consoles.find { it.rInterop == rInterop }
-  }
-}
-
-internal fun rError(message: String): RObject {
-  return RObject.newBuilder().setError(message).build()
-}
-
-internal fun findFileByPathAtHostHelper(rInterop: RInterop, path: String): Promise<VirtualFile?> {
-  val promise = AsyncPromise<VirtualFile?>()
-  if (rInterop.interpreter.isLocal()) {
-    promise.setResult(rInterop.interpreter.findFileByPathAtHost(path))
-  }
-  else {
-    val name = PathUtilRt.getFileName(path)
-    ProgressManager.getInstance().run(object : Task.Backgroundable(
-      rInterop.project, "remote.host.view.opening.file.title.$name") {
-      override fun run(indicator: ProgressIndicator) {
-        val file = rInterop.interpreter.findFileByPathAtHost(path)
-        promise.setResult(file)
+  internal fun getLineOffset(document: Document, line: Int, col: Int): Int {
+    val lastLine = if (document.lineCount == 0) 0 else document.lineCount - 1
+    return when {
+      line > document.lineCount -> {
+        document.getLineEndOffset(lastLine)
       }
-    })
+      else -> {
+        ComparatorUtil.min(col + document.getLineStartOffset(line), document.getLineEndOffset(line))
+      }
+    }
   }
-  return promise
+
+  internal fun String.toRString(): RObject {
+    return RObject.newBuilder().setRString(RObject.RString.newBuilder().addStrings(this)).build()
+  }
+
+  internal fun RObject.toStringOrNull(): String? {
+    return if (this.hasRNull()) return null
+    else {
+      this.rString.getStrings(0)
+    }
+  }
+
+  internal fun <T : Iterable<RObject>> T.toRList(): RObject {
+    return RObject.newBuilder().setList(RObject.List.newBuilder().addAllRObjects(this)).build()
+  }
+
+  internal fun Boolean.toRBoolean(): RObject {
+    return RObject.newBuilder().setRBoolean(RObject.RBoolean.newBuilder().addBooleans(this)).build()
+  }
+
+  internal fun Long.toRInt(): RObject {
+    return RObject.newBuilder().setRInt(RObject.RInt.newBuilder().addInts(this)).build()
+  }
+
+  internal fun Int.toRInt(): RObject {
+    return RObject.newBuilder().setRInt(RObject.RInt.newBuilder().addInts(this.toLong())).build()
+  }
+
+  internal fun getRNull(): RObject {
+    return RObject.newBuilder().setRNull(RObject.RNull.getDefaultInstance()).build()
+  }
+
+  internal fun getConsoleView(rInterop: RInterop): RConsoleView? {
+    return if (RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull?.rInterop == rInterop) {
+      RConsoleManager.getInstance(rInterop.project).currentConsoleOrNull
+    }
+    else {
+      RConsoleManager.getInstance(rInterop.project).consoles.find { it.rInterop == rInterop }
+    }
+  }
+
+  internal fun rError(message: String): RObject {
+    return RObject.newBuilder().setError(message).build()
+  }
+
+  internal fun findFileByPathAtHostHelper(rInterop: RInterop, path: String): Promise<VirtualFile?> {
+    val promise = AsyncPromise<VirtualFile?>()
+    if (rInterop.interpreter.isLocal()) {
+      promise.setResult(rInterop.interpreter.findFileByPathAtHost(path))
+    }
+    else {
+      val name = PathUtilRt.getFileName(path)
+      ProgressManager.getInstance().run(object : Task.Backgroundable(
+        rInterop.project, RBundle.message("rstudioapi.find.file.at.host", name)) {
+        override fun run(indicator: ProgressIndicator) {
+          val file = rInterop.interpreter.findFileByPathAtHost(path)
+          promise.setResult(file)
+        }
+      })
+    }
+    return promise
+  }
 }

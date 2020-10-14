@@ -9,6 +9,11 @@ import org.jetbrains.r.console.jobs.RJobTask
 import org.jetbrains.r.console.jobs.RJobsToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.findFileByPathAtHostHelper
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 
 object JobUtils {
   fun jobRunScript(rInterop: RInterop, args: RObject): Promise<RObject> {

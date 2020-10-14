@@ -19,6 +19,10 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import javax.swing.JPasswordField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener

@@ -3,6 +3,7 @@ package org.jetbrains.r.rinterop.rstudioapi
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 
 object ProjectsUtils {
   fun getActiveProject(rInterop: RInterop): RObject {

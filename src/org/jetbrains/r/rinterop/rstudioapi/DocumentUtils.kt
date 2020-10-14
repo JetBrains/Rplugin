@@ -21,11 +21,20 @@ import com.intellij.ui.layout.*
 import com.intellij.util.PathUtilRt
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.RunChunkHandler
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.findFileByPathAtHostHelper
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getConsoleView
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRList
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 import kotlin.streams.toList
 
 object DocumentUtils {
@@ -161,11 +170,12 @@ object DocumentUtils {
     val execute = args.list.getRObjects(3).rBoolean.getBooleans(0)
     val fileChooser = rInterop.interpreter.createFileChooserForHost(rInterop.interpreter.basePath, false)
     val panel = panel {
+      noteRow(RBundle.message("rstudioapi.new.document.select.file.message"))
       row { component(fileChooser).focused() }
     }
     val dialogPromise = AsyncPromise<String?>()
     runInEdt {
-      val dialog = dialog("Select file for new document", panel)
+      val dialog = dialog("", panel)
       val result = if (dialog.showAndGet()) {
         fileChooser.text
       }
@@ -187,9 +197,8 @@ object DocumentUtils {
           it
         }
         val newFilePath = rInterop.interpreter.createFileOnHost(path, text.toByteArray(), "")
-        val name = PathUtilRt.getFileName(newFilePath)
         ProgressManager.getInstance().run(object : Task.Backgroundable(
-          rInterop.project, "remote.host.view.opening.file.title.$name") {
+          rInterop.project, RBundle.message("rstudioapi.create.new.document")) {
           override fun run(indicator: ProgressIndicator) {
             val file = rInterop.interpreter.findFileByPathAtHost(newFilePath) ?: return
             invokeAndWaitIfNeeded {
@@ -289,25 +298,8 @@ object DocumentUtils {
   }
 
   private fun convertRanges(rng: List<Pair<Int, Int>>, document: Document): Pair<Int, Int> {
-    val lastLine = if (document.lineCount == 0) 0 else document.lineCount - 1
-    val line = listOf(rng[0], rng[1]).map {
-      if (it.first < document.lineCount) it.first else lastLine
-    }
-    val (startPos, endPos) = listOf(0, 1).map {
-      when {
-        rng[it].first >= document.lineCount -> {
-          document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it])
-        }
-        document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it]) < rng[it].second -> {
-          document.getLineEndOffset(line[it]) - document.getLineStartOffset(line[it])
-        }
-        else -> {
-          rng[it].second
-        }
-      }
-    }
-    return document.getLineStartOffset(line[0]) + startPos to
-      document.getLineStartOffset(line[1]) + endPos
+    return RStudioApiUtils.getLineOffset(document, rng[0].first, rng[0].second) to
+      RStudioApiUtils.getLineOffset(document, rng[1].first, rng[1].second)
   }
 }
 

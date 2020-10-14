@@ -14,8 +14,8 @@ import org.jetbrains.r.console.jobs.RJobDescriptor
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobRunner.Listener
 import org.jetbrains.r.rinterop.rstudioapi.RSessionUtils
-import org.jetbrains.r.rinterop.rstudioapi.toRBoolean
-import org.jetbrains.r.rinterop.rstudioapi.toRString
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import java.nio.file.Paths
 import kotlin.streams.toList
 

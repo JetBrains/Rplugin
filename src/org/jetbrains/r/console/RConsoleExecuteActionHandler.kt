@@ -323,7 +323,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
             RStudioApiFunctionId.TERMINAL_EXITCODE_ID -> TODO()
             RStudioApiFunctionId.TERMINAL_KILL_ID -> {
               TerminalUtils.terminalKill(rInterop, args)
-              promise.setResult(getRNull())
+              promise.setResult(RStudioApiUtils.getRNull())
             }
             RStudioApiFunctionId.TERMINAL_LIST_ID -> {
               promise.setResult(TerminalUtils.terminalList(rInterop))

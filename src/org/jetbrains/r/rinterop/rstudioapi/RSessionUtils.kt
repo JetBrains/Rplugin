@@ -10,6 +10,7 @@ import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getConsoleView
 
 object RSessionUtils {
   fun sendToConsole(rInterop: RInterop, args: RObject): AsyncPromise<Unit> {

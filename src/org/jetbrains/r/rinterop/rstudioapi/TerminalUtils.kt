@@ -7,6 +7,12 @@ import com.intellij.util.execution.ParametersListUtil
 import org.jetbrains.plugins.terminal.*
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.getRNull
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.rError
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRInt
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toStringOrNull
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min

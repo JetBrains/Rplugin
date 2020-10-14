@@ -3,12 +3,13 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.rinterop.RObject
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import java.awt.Color
 import javax.swing.UIManager
 
 object ThemeUtils {
   fun getThemeInfo(): RObject {
-    // TODO global, foreground, background
     return RObject.newBuilder()
       .setNamedList(RObject.NamedList.newBuilder()
                       .addRObjects(0, RObject.KeyValue.newBuilder().setKey("editor").setValue(UIManager.getLookAndFeel().name.toRString()))
