@@ -87,9 +87,9 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 33: {
+          case 37: {
 
-            angle_ = input.readDouble();
+            angle_ = input.readFloat();
             break;
           }
           case 40: {
@@ -193,11 +193,11 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ANGLE_FIELD_NUMBER = 4;
-  private double angle_;
+  private float angle_;
   /**
-   * <code>double angle = 4;</code>
+   * <code>float angle = 4;</code>
    */
-  public double getAngle() {
+  public float getAngle() {
     return angle_;
   }
 
@@ -233,8 +233,8 @@ private static final long serialVersionUID = 0L;
     if (to_ != null) {
       output.writeMessage(3, getTo());
     }
-    if (angle_ != 0D) {
-      output.writeDouble(4, angle_);
+    if (angle_ != 0F) {
+      output.writeFloat(4, angle_);
     }
     if (interpolate_ != false) {
       output.writeBool(5, interpolate_);
@@ -260,9 +260,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(3, getTo());
     }
-    if (angle_ != 0D) {
+    if (angle_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(4, angle_);
+        .computeFloatSize(4, angle_);
     }
     if (interpolate_ != false) {
       size += com.google.protobuf.CodedOutputStream
@@ -298,8 +298,8 @@ private static final long serialVersionUID = 0L;
       if (!getTo()
           .equals(other.getTo())) return false;
     }
-    if (java.lang.Double.doubleToLongBits(getAngle())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getAngle())
+        != java.lang.Float.floatToIntBits(
             other.getAngle())) return false;
     if (getInterpolate()
         != other.getInterpolate()) return false;
@@ -327,8 +327,8 @@ private static final long serialVersionUID = 0L;
       hash = (53 * hash) + getTo().hashCode();
     }
     hash = (37 * hash) + ANGLE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getAngle()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getAngle());
     hash = (37 * hash) + INTERPOLATE_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getInterpolate());
@@ -483,7 +483,7 @@ private static final long serialVersionUID = 0L;
         to_ = null;
         toBuilder_ = null;
       }
-      angle_ = 0D;
+      angle_ = 0F;
 
       interpolate_ = false;
 
@@ -587,7 +587,7 @@ private static final long serialVersionUID = 0L;
       if (other.hasTo()) {
         mergeTo(other.getTo());
       }
-      if (other.getAngle() != 0D) {
+      if (other.getAngle() != 0F) {
         setAngle(other.getAngle());
       }
       if (other.getInterpolate() != false) {
@@ -973,28 +973,28 @@ private static final long serialVersionUID = 0L;
       return toBuilder_;
     }
 
-    private double angle_ ;
+    private float angle_ ;
     /**
-     * <code>double angle = 4;</code>
+     * <code>float angle = 4;</code>
      */
-    public double getAngle() {
+    public float getAngle() {
       return angle_;
     }
     /**
-     * <code>double angle = 4;</code>
+     * <code>float angle = 4;</code>
      */
-    public Builder setAngle(double value) {
+    public Builder setAngle(float value) {
       
       angle_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double angle = 4;</code>
+     * <code>float angle = 4;</code>
      */
     public Builder clearAngle() {
       
-      angle_ = 0D;
+      angle_ = 0F;
       onChanged();
       return this;
     }

@@ -68,14 +68,14 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 25: {
+          case 29: {
 
-            angle_ = input.readDouble();
+            angle_ = input.readFloat();
             break;
           }
-          case 33: {
+          case 37: {
 
-            anchor_ = input.readDouble();
+            anchor_ = input.readFloat();
             break;
           }
           case 40: {
@@ -176,20 +176,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ANGLE_FIELD_NUMBER = 3;
-  private double angle_;
+  private float angle_;
   /**
-   * <code>double angle = 3;</code>
+   * <code>float angle = 3;</code>
    */
-  public double getAngle() {
+  public float getAngle() {
     return angle_;
   }
 
   public static final int ANCHOR_FIELD_NUMBER = 4;
-  private double anchor_;
+  private float anchor_;
   /**
-   * <code>double anchor = 4;</code>
+   * <code>float anchor = 4;</code>
    */
-  public double getAnchor() {
+  public float getAnchor() {
     return anchor_;
   }
 
@@ -231,11 +231,11 @@ private static final long serialVersionUID = 0L;
     if (position_ != null) {
       output.writeMessage(2, getPosition());
     }
-    if (angle_ != 0D) {
-      output.writeDouble(3, angle_);
+    if (angle_ != 0F) {
+      output.writeFloat(3, angle_);
     }
-    if (anchor_ != 0D) {
-      output.writeDouble(4, anchor_);
+    if (anchor_ != 0F) {
+      output.writeFloat(4, anchor_);
     }
     if (fontIndex_ != 0) {
       output.writeInt32(5, fontIndex_);
@@ -259,13 +259,13 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, getPosition());
     }
-    if (angle_ != 0D) {
+    if (angle_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(3, angle_);
+        .computeFloatSize(3, angle_);
     }
-    if (anchor_ != 0D) {
+    if (anchor_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(4, anchor_);
+        .computeFloatSize(4, anchor_);
     }
     if (fontIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -297,11 +297,11 @@ private static final long serialVersionUID = 0L;
       if (!getPosition()
           .equals(other.getPosition())) return false;
     }
-    if (java.lang.Double.doubleToLongBits(getAngle())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getAngle())
+        != java.lang.Float.floatToIntBits(
             other.getAngle())) return false;
-    if (java.lang.Double.doubleToLongBits(getAnchor())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getAnchor())
+        != java.lang.Float.floatToIntBits(
             other.getAnchor())) return false;
     if (getFontIndex()
         != other.getFontIndex()) return false;
@@ -325,11 +325,11 @@ private static final long serialVersionUID = 0L;
       hash = (53 * hash) + getPosition().hashCode();
     }
     hash = (37 * hash) + ANGLE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getAngle()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getAngle());
     hash = (37 * hash) + ANCHOR_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getAnchor()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getAnchor());
     hash = (37 * hash) + FONTINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getFontIndex();
     hash = (37 * hash) + COLORINDEX_FIELD_NUMBER;
@@ -475,9 +475,9 @@ private static final long serialVersionUID = 0L;
         position_ = null;
         positionBuilder_ = null;
       }
-      angle_ = 0D;
+      angle_ = 0F;
 
-      anchor_ = 0D;
+      anchor_ = 0F;
 
       fontIndex_ = 0;
 
@@ -574,10 +574,10 @@ private static final long serialVersionUID = 0L;
       if (other.hasPosition()) {
         mergePosition(other.getPosition());
       }
-      if (other.getAngle() != 0D) {
+      if (other.getAngle() != 0F) {
         setAngle(other.getAngle());
       }
-      if (other.getAnchor() != 0D) {
+      if (other.getAnchor() != 0F) {
         setAnchor(other.getAnchor());
       }
       if (other.getFontIndex() != 0) {
@@ -801,54 +801,54 @@ private static final long serialVersionUID = 0L;
       return positionBuilder_;
     }
 
-    private double angle_ ;
+    private float angle_ ;
     /**
-     * <code>double angle = 3;</code>
+     * <code>float angle = 3;</code>
      */
-    public double getAngle() {
+    public float getAngle() {
       return angle_;
     }
     /**
-     * <code>double angle = 3;</code>
+     * <code>float angle = 3;</code>
      */
-    public Builder setAngle(double value) {
+    public Builder setAngle(float value) {
       
       angle_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double angle = 3;</code>
+     * <code>float angle = 3;</code>
      */
     public Builder clearAngle() {
       
-      angle_ = 0D;
+      angle_ = 0F;
       onChanged();
       return this;
     }
 
-    private double anchor_ ;
+    private float anchor_ ;
     /**
-     * <code>double anchor = 4;</code>
+     * <code>float anchor = 4;</code>
      */
-    public double getAnchor() {
+    public float getAnchor() {
       return anchor_;
     }
     /**
-     * <code>double anchor = 4;</code>
+     * <code>float anchor = 4;</code>
      */
-    public Builder setAnchor(double value) {
+    public Builder setAnchor(float value) {
       
       anchor_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double anchor = 4;</code>
+     * <code>float anchor = 4;</code>
      */
     public Builder clearAnchor() {
       
-      anchor_ = 0D;
+      anchor_ = 0F;
       onChanged();
       return this;
     }

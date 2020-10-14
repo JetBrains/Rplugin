@@ -48,14 +48,14 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 9: {
+          case 13: {
 
-            ratio_ = input.readDouble();
+            ratio_ = input.readFloat();
             break;
           }
-          case 17: {
+          case 21: {
 
-            delta_ = input.readDouble();
+            delta_ = input.readFloat();
             break;
           }
           case 24: {
@@ -96,20 +96,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int RATIO_FIELD_NUMBER = 1;
-  private double ratio_;
+  private float ratio_;
   /**
-   * <code>double ratio = 1;</code>
+   * <code>float ratio = 1;</code>
    */
-  public double getRatio() {
+  public float getRatio() {
     return ratio_;
   }
 
   public static final int DELTA_FIELD_NUMBER = 2;
-  private double delta_;
+  private float delta_;
   /**
-   * <code>double delta = 2;</code>
+   * <code>float delta = 2;</code>
    */
-  public double getDelta() {
+  public float getDelta() {
     return delta_;
   }
 
@@ -136,11 +136,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (ratio_ != 0D) {
-      output.writeDouble(1, ratio_);
+    if (ratio_ != 0F) {
+      output.writeFloat(1, ratio_);
     }
-    if (delta_ != 0D) {
-      output.writeDouble(2, delta_);
+    if (delta_ != 0F) {
+      output.writeFloat(2, delta_);
     }
     if (parentIndex_ != 0) {
       output.writeInt32(3, parentIndex_);
@@ -154,13 +154,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (ratio_ != 0D) {
+    if (ratio_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(1, ratio_);
+        .computeFloatSize(1, ratio_);
     }
-    if (delta_ != 0D) {
+    if (delta_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(2, delta_);
+        .computeFloatSize(2, delta_);
     }
     if (parentIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -181,11 +181,11 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.FixedViewport other = (org.jetbrains.r.rinterop.FixedViewport) obj;
 
-    if (java.lang.Double.doubleToLongBits(getRatio())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getRatio())
+        != java.lang.Float.floatToIntBits(
             other.getRatio())) return false;
-    if (java.lang.Double.doubleToLongBits(getDelta())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getDelta())
+        != java.lang.Float.floatToIntBits(
             other.getDelta())) return false;
     if (getParentIndex()
         != other.getParentIndex()) return false;
@@ -201,11 +201,11 @@ private static final long serialVersionUID = 0L;
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + RATIO_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getRatio()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getRatio());
     hash = (37 * hash) + DELTA_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getDelta()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getDelta());
     hash = (37 * hash) + PARENTINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getParentIndex();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -341,9 +341,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      ratio_ = 0D;
+      ratio_ = 0F;
 
-      delta_ = 0D;
+      delta_ = 0F;
 
       parentIndex_ = 0;
 
@@ -424,10 +424,10 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.FixedViewport other) {
       if (other == org.jetbrains.r.rinterop.FixedViewport.getDefaultInstance()) return this;
-      if (other.getRatio() != 0D) {
+      if (other.getRatio() != 0F) {
         setRatio(other.getRatio());
       }
-      if (other.getDelta() != 0D) {
+      if (other.getDelta() != 0F) {
         setDelta(other.getDelta());
       }
       if (other.getParentIndex() != 0) {
@@ -462,54 +462,54 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private double ratio_ ;
+    private float ratio_ ;
     /**
-     * <code>double ratio = 1;</code>
+     * <code>float ratio = 1;</code>
      */
-    public double getRatio() {
+    public float getRatio() {
       return ratio_;
     }
     /**
-     * <code>double ratio = 1;</code>
+     * <code>float ratio = 1;</code>
      */
-    public Builder setRatio(double value) {
+    public Builder setRatio(float value) {
       
       ratio_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double ratio = 1;</code>
+     * <code>float ratio = 1;</code>
      */
     public Builder clearRatio() {
       
-      ratio_ = 0D;
+      ratio_ = 0F;
       onChanged();
       return this;
     }
 
-    private double delta_ ;
+    private float delta_ ;
     /**
-     * <code>double delta = 2;</code>
+     * <code>float delta = 2;</code>
      */
-    public double getDelta() {
+    public float getDelta() {
       return delta_;
     }
     /**
-     * <code>double delta = 2;</code>
+     * <code>float delta = 2;</code>
      */
-    public Builder setDelta(double value) {
+    public Builder setDelta(float value) {
       
       delta_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double delta = 2;</code>
+     * <code>float delta = 2;</code>
      */
     public Builder clearDelta() {
       
-      delta_ = 0D;
+      delta_ = 0F;
       onChanged();
       return this;
     }

@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 5
+  private const val PROTOCOL_VERSION = 6
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -252,7 +252,7 @@ object RPlotUtil {
       val x = displayArea.centerX.toInt()
       val y = displayArea.centerY.toInt()
       plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, TRANSPARENT_INDEX, TRANSPARENT_INDEX, WHITE_COLOR_INDEX)
-      plotter.drawText(text, x, y, 0.0, 0.5, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
+      plotter.drawText(text, x, y, 0.0f, 0.5f, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
     }
 
     private fun replay(layer: RLayer) {
@@ -415,7 +415,7 @@ object RPlotUtil {
       return calculate(point.yScale, point.yOffset, currentViewport.height) + currentViewport.y
     }
 
-    private fun calculate(scale: Double, offset: Double, side: Int): Int {
+    private fun calculate(scale: Float, offset: Float, side: Int): Int {
       return (scale * side + offset * resolution).toInt()
     }
 
@@ -430,11 +430,11 @@ object RPlotUtil {
     private fun scale(pattern: FloatArray): FloatArray {
       return FloatArray(pattern.size) { index ->
         // Each element represents a dash length in points (1/72 of inch)
-        scale(pattern[index] / 72.0).toFloat()
+        scale(pattern[index] / 72.0f)
       }
     }
 
-    private fun scale(value: Double): Double {
+    private fun scale(value: Float): Float {
       return value * resolution
     }
 

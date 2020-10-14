@@ -31,14 +31,14 @@ public interface TextFigureOrBuilder extends
   org.jetbrains.r.rinterop.AffinePointOrBuilder getPositionOrBuilder();
 
   /**
-   * <code>double angle = 3;</code>
+   * <code>float angle = 3;</code>
    */
-  double getAngle();
+  float getAngle();
 
   /**
-   * <code>double anchor = 4;</code>
+   * <code>float anchor = 4;</code>
    */
-  double getAnchor();
+  float getAnchor();
 
   /**
    * <code>int32 fontIndex = 5;</code>

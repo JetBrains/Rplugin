@@ -55,9 +55,9 @@ private static final long serialVersionUID = 0L;
             name_ = s;
             break;
           }
-          case 17: {
+          case 21: {
 
-            size_ = input.readDouble();
+            size_ = input.readFloat();
             break;
           }
           case 24: {
@@ -132,11 +132,11 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SIZE_FIELD_NUMBER = 2;
-  private double size_;
+  private float size_;
   /**
-   * <code>double size = 2;</code>
+   * <code>float size = 2;</code>
    */
-  public double getSize() {
+  public float getSize() {
     return size_;
   }
 
@@ -166,8 +166,8 @@ private static final long serialVersionUID = 0L;
     if (!getNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
     }
-    if (size_ != 0D) {
-      output.writeDouble(2, size_);
+    if (size_ != 0F) {
+      output.writeFloat(2, size_);
     }
     if (style_ != 0) {
       output.writeInt32(3, style_);
@@ -184,9 +184,9 @@ private static final long serialVersionUID = 0L;
     if (!getNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
     }
-    if (size_ != 0D) {
+    if (size_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(2, size_);
+        .computeFloatSize(2, size_);
     }
     if (style_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -209,8 +209,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getName()
         .equals(other.getName())) return false;
-    if (java.lang.Double.doubleToLongBits(getSize())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getSize())
+        != java.lang.Float.floatToIntBits(
             other.getSize())) return false;
     if (getStyle()
         != other.getStyle()) return false;
@@ -228,8 +228,8 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + NAME_FIELD_NUMBER;
     hash = (53 * hash) + getName().hashCode();
     hash = (37 * hash) + SIZE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getSize()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getSize());
     hash = (37 * hash) + STYLE_FIELD_NUMBER;
     hash = (53 * hash) + getStyle();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -367,7 +367,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       name_ = "";
 
-      size_ = 0D;
+      size_ = 0F;
 
       style_ = 0;
 
@@ -452,7 +452,7 @@ private static final long serialVersionUID = 0L;
         name_ = other.name_;
         onChanged();
       }
-      if (other.getSize() != 0D) {
+      if (other.getSize() != 0F) {
         setSize(other.getSize());
       }
       if (other.getStyle() != 0) {
@@ -556,28 +556,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private double size_ ;
+    private float size_ ;
     /**
-     * <code>double size = 2;</code>
+     * <code>float size = 2;</code>
      */
-    public double getSize() {
+    public float getSize() {
       return size_;
     }
     /**
-     * <code>double size = 2;</code>
+     * <code>float size = 2;</code>
      */
-    public Builder setSize(double value) {
+    public Builder setSize(float value) {
       
       size_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double size = 2;</code>
+     * <code>float size = 2;</code>
      */
     public Builder clearSize() {
       
-      size_ = 0D;
+      size_ = 0F;
       onChanged();
       return this;
     }

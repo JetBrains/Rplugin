@@ -21,14 +21,14 @@ public interface CircleFigureOrBuilder extends
   org.jetbrains.r.rinterop.AffinePointOrBuilder getCenterOrBuilder();
 
   /**
-   * <code>double radiusScale = 2;</code>
+   * <code>float radiusScale = 2;</code>
    */
-  double getRadiusScale();
+  float getRadiusScale();
 
   /**
-   * <code>double radiusOffset = 3;</code>
+   * <code>float radiusOffset = 3;</code>
    */
-  double getRadiusOffset();
+  float getRadiusOffset();
 
   /**
    * <code>int32 strokeIndex = 4;</code>

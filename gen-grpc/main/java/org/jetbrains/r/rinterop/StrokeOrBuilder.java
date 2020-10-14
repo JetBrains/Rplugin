@@ -8,9 +8,9 @@ public interface StrokeOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>double width = 1;</code>
+   * <code>float width = 1;</code>
    */
-  double getWidth();
+  float getWidth();
 
   /**
    * <code>int32 cap = 2;</code>
@@ -23,9 +23,9 @@ public interface StrokeOrBuilder extends
   int getJoin();
 
   /**
-   * <code>double miterLimit = 4;</code>
+   * <code>float miterLimit = 4;</code>
    */
-  double getMiterLimit();
+  float getMiterLimit();
 
   /**
    * <code>int32 pattern = 5;</code>

@@ -47,9 +47,9 @@ public interface RasterFigureOrBuilder extends
   org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder();
 
   /**
-   * <code>double angle = 4;</code>
+   * <code>float angle = 4;</code>
    */
-  double getAngle();
+  float getAngle();
 
   /**
    * <code>bool interpolate = 5;</code>

@@ -818,15 +818,15 @@ public final class Service {
       "d\030\001 \001(\t\022\026\n\016snapshotNumber\030\002 \001(\005\"[\n\037Graph" +
       "icsGetSnapshotPathResponse\022\017\n\007message\030\001 " +
       "\001(\t\022\024\n\014snapshotName\030\002 \001(\t\022\021\n\tdirectory\030\003" +
-      " \001(\t\"1\n\004Font\022\014\n\004name\030\001 \001(\t\022\014\n\004size\030\002 \001(\001" +
-      "\022\r\n\005style\030\003 \001(\005\"W\n\006Stroke\022\r\n\005width\030\001 \001(\001" +
+      " \001(\t\"1\n\004Font\022\014\n\004name\030\001 \001(\t\022\014\n\004size\030\002 \001(\002" +
+      "\022\r\n\005style\030\003 \001(\005\"W\n\006Stroke\022\r\n\005width\030\001 \001(\002" +
       "\022\013\n\003cap\030\002 \001(\005\022\014\n\004join\030\003 \001(\005\022\022\n\nmiterLimi" +
-      "t\030\004 \001(\001\022\017\n\007pattern\030\005 \001(\005\"O\n\013AffinePoint\022" +
-      "\016\n\006xScale\030\001 \001(\001\022\017\n\007xOffset\030\002 \001(\001\022\016\n\006ySca" +
-      "le\030\003 \001(\001\022\017\n\007yOffset\030\004 \001(\001\":\n\013RasterImage" +
+      "t\030\004 \001(\002\022\017\n\007pattern\030\005 \001(\005\"O\n\013AffinePoint\022" +
+      "\016\n\006xScale\030\001 \001(\002\022\017\n\007xOffset\030\002 \001(\002\022\016\n\006ySca" +
+      "le\030\003 \001(\002\022\017\n\007yOffset\030\004 \001(\002\":\n\013RasterImage" +
       "\022\r\n\005width\030\001 \001(\005\022\016\n\006height\030\002 \001(\005\022\014\n\004data\030" +
-      "\003 \001(\014\"B\n\rFixedViewport\022\r\n\005ratio\030\001 \001(\001\022\r\n" +
-      "\005delta\030\002 \001(\001\022\023\n\013parentIndex\030\003 \001(\005\"w\n\014Fre" +
+      "\003 \001(\014\"B\n\rFixedViewport\022\r\n\005ratio\030\001 \001(\002\022\r\n" +
+      "\005delta\030\002 \001(\002\022\023\n\013parentIndex\030\003 \001(\005\"w\n\014Fre" +
       "eViewport\022)\n\004from\030\001 \001(\0132\033.rplugininterop" +
       ".AffinePoint\022\'\n\002to\030\002 \001(\0132\033.rpluginintero" +
       "p.AffinePoint\022\023\n\013parentIndex\030\003 \001(\005\"p\n\010Vi" +
@@ -834,8 +834,8 @@ public final class Service {
       "ixedViewportH\000\022,\n\004free\030\002 \001(\0132\034.rpluginin" +
       "terop.FreeViewportH\000B\006\n\004kind\"\242\001\n\014CircleF" +
       "igure\022+\n\006center\030\001 \001(\0132\033.rplugininterop.A" +
-      "ffinePoint\022\023\n\013radiusScale\030\002 \001(\001\022\024\n\014radiu" +
-      "sOffset\030\003 \001(\001\022\023\n\013strokeIndex\030\004 \001(\005\022\022\n\nco" +
+      "ffinePoint\022\023\n\013radiusScale\030\002 \001(\002\022\024\n\014radiu" +
+      "sOffset\030\003 \001(\002\022\023\n\013strokeIndex\030\004 \001(\005\022\022\n\nco" +
       "lorIndex\030\005 \001(\005\022\021\n\tfillIndex\030\006 \001(\005\"\211\001\n\nLi" +
       "neFigure\022)\n\004from\030\001 \001(\0132\033.rplugininterop." +
       "AffinePoint\022\'\n\002to\030\002 \001(\0132\033.rplugininterop" +
@@ -849,15 +849,15 @@ public final class Service {
       "\n\014RasterFigure\022*\n\005image\030\001 \001(\0132\033.rplugini" +
       "nterop.RasterImage\022)\n\004from\030\002 \001(\0132\033.rplug" +
       "ininterop.AffinePoint\022\'\n\002to\030\003 \001(\0132\033.rplu" +
-      "gininterop.AffinePoint\022\r\n\005angle\030\004 \001(\001\022\023\n" +
+      "gininterop.AffinePoint\022\r\n\005angle\030\004 \001(\002\022\023\n" +
       "\013interpolate\030\005 \001(\010\"\241\001\n\017RectangleFigure\022)" +
       "\n\004from\030\001 \001(\0132\033.rplugininterop.AffinePoin" +
       "t\022\'\n\002to\030\002 \001(\0132\033.rplugininterop.AffinePoi" +
       "nt\022\023\n\013strokeIndex\030\003 \001(\005\022\022\n\ncolorIndex\030\004 " +
       "\001(\005\022\021\n\tfillIndex\030\005 \001(\005\"\217\001\n\nTextFigure\022\014\n" +
       "\004text\030\001 \001(\t\022-\n\010position\030\002 \001(\0132\033.rplugini" +
-      "nterop.AffinePoint\022\r\n\005angle\030\003 \001(\001\022\016\n\006anc" +
-      "hor\030\004 \001(\001\022\021\n\tfontIndex\030\005 \001(\005\022\022\n\ncolorInd" +
+      "nterop.AffinePoint\022\r\n\005angle\030\003 \001(\002\022\016\n\006anc" +
+      "hor\030\004 \001(\002\022\021\n\tfontIndex\030\005 \001(\005\022\022\n\ncolorInd" +
       "ex\030\006 \001(\005\"\344\002\n\006Figure\022.\n\006circle\030\001 \001(\0132\034.rp" +
       "lugininterop.CircleFigureH\000\022*\n\004line\030\002 \001(" +
       "\0132\032.rplugininterop.LineFigureH\000\0220\n\007polyg" +

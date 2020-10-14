@@ -48,9 +48,9 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 9: {
+          case 13: {
 
-            width_ = input.readDouble();
+            width_ = input.readFloat();
             break;
           }
           case 16: {
@@ -63,9 +63,9 @@ private static final long serialVersionUID = 0L;
             join_ = input.readInt32();
             break;
           }
-          case 33: {
+          case 37: {
 
-            miterLimit_ = input.readDouble();
+            miterLimit_ = input.readFloat();
             break;
           }
           case 40: {
@@ -106,11 +106,11 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int WIDTH_FIELD_NUMBER = 1;
-  private double width_;
+  private float width_;
   /**
-   * <code>double width = 1;</code>
+   * <code>float width = 1;</code>
    */
-  public double getWidth() {
+  public float getWidth() {
     return width_;
   }
 
@@ -133,11 +133,11 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int MITERLIMIT_FIELD_NUMBER = 4;
-  private double miterLimit_;
+  private float miterLimit_;
   /**
-   * <code>double miterLimit = 4;</code>
+   * <code>float miterLimit = 4;</code>
    */
-  public double getMiterLimit() {
+  public float getMiterLimit() {
     return miterLimit_;
   }
 
@@ -164,8 +164,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (width_ != 0D) {
-      output.writeDouble(1, width_);
+    if (width_ != 0F) {
+      output.writeFloat(1, width_);
     }
     if (cap_ != 0) {
       output.writeInt32(2, cap_);
@@ -173,8 +173,8 @@ private static final long serialVersionUID = 0L;
     if (join_ != 0) {
       output.writeInt32(3, join_);
     }
-    if (miterLimit_ != 0D) {
-      output.writeDouble(4, miterLimit_);
+    if (miterLimit_ != 0F) {
+      output.writeFloat(4, miterLimit_);
     }
     if (pattern_ != 0) {
       output.writeInt32(5, pattern_);
@@ -188,9 +188,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (width_ != 0D) {
+    if (width_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(1, width_);
+        .computeFloatSize(1, width_);
     }
     if (cap_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -200,9 +200,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(3, join_);
     }
-    if (miterLimit_ != 0D) {
+    if (miterLimit_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(4, miterLimit_);
+        .computeFloatSize(4, miterLimit_);
     }
     if (pattern_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -223,15 +223,15 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.Stroke other = (org.jetbrains.r.rinterop.Stroke) obj;
 
-    if (java.lang.Double.doubleToLongBits(getWidth())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getWidth())
+        != java.lang.Float.floatToIntBits(
             other.getWidth())) return false;
     if (getCap()
         != other.getCap()) return false;
     if (getJoin()
         != other.getJoin()) return false;
-    if (java.lang.Double.doubleToLongBits(getMiterLimit())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getMiterLimit())
+        != java.lang.Float.floatToIntBits(
             other.getMiterLimit())) return false;
     if (getPattern()
         != other.getPattern()) return false;
@@ -247,15 +247,15 @@ private static final long serialVersionUID = 0L;
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + WIDTH_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getWidth()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getWidth());
     hash = (37 * hash) + CAP_FIELD_NUMBER;
     hash = (53 * hash) + getCap();
     hash = (37 * hash) + JOIN_FIELD_NUMBER;
     hash = (53 * hash) + getJoin();
     hash = (37 * hash) + MITERLIMIT_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getMiterLimit()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getMiterLimit());
     hash = (37 * hash) + PATTERN_FIELD_NUMBER;
     hash = (53 * hash) + getPattern();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -391,13 +391,13 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      width_ = 0D;
+      width_ = 0F;
 
       cap_ = 0;
 
       join_ = 0;
 
-      miterLimit_ = 0D;
+      miterLimit_ = 0F;
 
       pattern_ = 0;
 
@@ -480,7 +480,7 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.Stroke other) {
       if (other == org.jetbrains.r.rinterop.Stroke.getDefaultInstance()) return this;
-      if (other.getWidth() != 0D) {
+      if (other.getWidth() != 0F) {
         setWidth(other.getWidth());
       }
       if (other.getCap() != 0) {
@@ -489,7 +489,7 @@ private static final long serialVersionUID = 0L;
       if (other.getJoin() != 0) {
         setJoin(other.getJoin());
       }
-      if (other.getMiterLimit() != 0D) {
+      if (other.getMiterLimit() != 0F) {
         setMiterLimit(other.getMiterLimit());
       }
       if (other.getPattern() != 0) {
@@ -524,28 +524,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private double width_ ;
+    private float width_ ;
     /**
-     * <code>double width = 1;</code>
+     * <code>float width = 1;</code>
      */
-    public double getWidth() {
+    public float getWidth() {
       return width_;
     }
     /**
-     * <code>double width = 1;</code>
+     * <code>float width = 1;</code>
      */
-    public Builder setWidth(double value) {
+    public Builder setWidth(float value) {
       
       width_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double width = 1;</code>
+     * <code>float width = 1;</code>
      */
     public Builder clearWidth() {
       
-      width_ = 0D;
+      width_ = 0F;
       onChanged();
       return this;
     }
@@ -602,28 +602,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private double miterLimit_ ;
+    private float miterLimit_ ;
     /**
-     * <code>double miterLimit = 4;</code>
+     * <code>float miterLimit = 4;</code>
      */
-    public double getMiterLimit() {
+    public float getMiterLimit() {
       return miterLimit_;
     }
     /**
-     * <code>double miterLimit = 4;</code>
+     * <code>float miterLimit = 4;</code>
      */
-    public Builder setMiterLimit(double value) {
+    public Builder setMiterLimit(float value) {
       
       miterLimit_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double miterLimit = 4;</code>
+     * <code>float miterLimit = 4;</code>
      */
     public Builder clearMiterLimit() {
       
-      miterLimit_ = 0D;
+      miterLimit_ = 0F;
       onChanged();
       return this;
     }

@@ -2,7 +2,7 @@ package org.jetbrains.r.run.graphics
 
 import java.awt.Color
 
-data class RAffinePoint(val xScale: Double, val xOffset: Double, val yScale: Double, val yOffset: Double)
+data class RAffinePoint(val xScale: Float, val xOffset: Float, val yScale: Float, val yOffset: Float)
 
 enum class RFontStyle {
   PLAIN,
@@ -11,7 +11,7 @@ enum class RFontStyle {
   BOLD_ITALIC,
 }
 
-data class RFont(val name: String?, val size: Double, val style: RFontStyle)
+data class RFont(val name: String?, val size: Float, val style: RFontStyle)
 
 enum class RLineCap {
   ROUND,
@@ -25,7 +25,7 @@ enum class RLineJoin {
   BEVEL,
 }
 
-class RStroke(val width: Double, val cap: RLineCap, val join: RLineJoin, val miterLimit: Double, val pattern: FloatArray?)
+class RStroke(val width: Float, val cap: RLineCap, val join: RLineJoin, val miterLimit: Float, val pattern: FloatArray?)
 
 data class RLayer(val viewportIndex: Int, val clippingAreaIndex: Int, val figures: List<RFigure>, val isAxisText: Boolean)
 

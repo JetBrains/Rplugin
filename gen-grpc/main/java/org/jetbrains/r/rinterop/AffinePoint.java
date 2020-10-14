@@ -48,24 +48,24 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 9: {
+          case 13: {
 
-            xScale_ = input.readDouble();
+            xScale_ = input.readFloat();
             break;
           }
-          case 17: {
+          case 21: {
 
-            xOffset_ = input.readDouble();
+            xOffset_ = input.readFloat();
             break;
           }
-          case 25: {
+          case 29: {
 
-            yScale_ = input.readDouble();
+            yScale_ = input.readFloat();
             break;
           }
-          case 33: {
+          case 37: {
 
-            yOffset_ = input.readDouble();
+            yOffset_ = input.readFloat();
             break;
           }
           default: {
@@ -101,38 +101,38 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int XSCALE_FIELD_NUMBER = 1;
-  private double xScale_;
+  private float xScale_;
   /**
-   * <code>double xScale = 1;</code>
+   * <code>float xScale = 1;</code>
    */
-  public double getXScale() {
+  public float getXScale() {
     return xScale_;
   }
 
   public static final int XOFFSET_FIELD_NUMBER = 2;
-  private double xOffset_;
+  private float xOffset_;
   /**
-   * <code>double xOffset = 2;</code>
+   * <code>float xOffset = 2;</code>
    */
-  public double getXOffset() {
+  public float getXOffset() {
     return xOffset_;
   }
 
   public static final int YSCALE_FIELD_NUMBER = 3;
-  private double yScale_;
+  private float yScale_;
   /**
-   * <code>double yScale = 3;</code>
+   * <code>float yScale = 3;</code>
    */
-  public double getYScale() {
+  public float getYScale() {
     return yScale_;
   }
 
   public static final int YOFFSET_FIELD_NUMBER = 4;
-  private double yOffset_;
+  private float yOffset_;
   /**
-   * <code>double yOffset = 4;</code>
+   * <code>float yOffset = 4;</code>
    */
-  public double getYOffset() {
+  public float getYOffset() {
     return yOffset_;
   }
 
@@ -150,17 +150,17 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (xScale_ != 0D) {
-      output.writeDouble(1, xScale_);
+    if (xScale_ != 0F) {
+      output.writeFloat(1, xScale_);
     }
-    if (xOffset_ != 0D) {
-      output.writeDouble(2, xOffset_);
+    if (xOffset_ != 0F) {
+      output.writeFloat(2, xOffset_);
     }
-    if (yScale_ != 0D) {
-      output.writeDouble(3, yScale_);
+    if (yScale_ != 0F) {
+      output.writeFloat(3, yScale_);
     }
-    if (yOffset_ != 0D) {
-      output.writeDouble(4, yOffset_);
+    if (yOffset_ != 0F) {
+      output.writeFloat(4, yOffset_);
     }
     unknownFields.writeTo(output);
   }
@@ -171,21 +171,21 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (xScale_ != 0D) {
+    if (xScale_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(1, xScale_);
+        .computeFloatSize(1, xScale_);
     }
-    if (xOffset_ != 0D) {
+    if (xOffset_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(2, xOffset_);
+        .computeFloatSize(2, xOffset_);
     }
-    if (yScale_ != 0D) {
+    if (yScale_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(3, yScale_);
+        .computeFloatSize(3, yScale_);
     }
-    if (yOffset_ != 0D) {
+    if (yOffset_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(4, yOffset_);
+        .computeFloatSize(4, yOffset_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -202,17 +202,17 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.AffinePoint other = (org.jetbrains.r.rinterop.AffinePoint) obj;
 
-    if (java.lang.Double.doubleToLongBits(getXScale())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getXScale())
+        != java.lang.Float.floatToIntBits(
             other.getXScale())) return false;
-    if (java.lang.Double.doubleToLongBits(getXOffset())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getXOffset())
+        != java.lang.Float.floatToIntBits(
             other.getXOffset())) return false;
-    if (java.lang.Double.doubleToLongBits(getYScale())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getYScale())
+        != java.lang.Float.floatToIntBits(
             other.getYScale())) return false;
-    if (java.lang.Double.doubleToLongBits(getYOffset())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getYOffset())
+        != java.lang.Float.floatToIntBits(
             other.getYOffset())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
@@ -226,17 +226,17 @@ private static final long serialVersionUID = 0L;
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + XSCALE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getXScale()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getXScale());
     hash = (37 * hash) + XOFFSET_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getXOffset()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getXOffset());
     hash = (37 * hash) + YSCALE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getYScale()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getYScale());
     hash = (37 * hash) + YOFFSET_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getYOffset()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getYOffset());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -370,13 +370,13 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      xScale_ = 0D;
+      xScale_ = 0F;
 
-      xOffset_ = 0D;
+      xOffset_ = 0F;
 
-      yScale_ = 0D;
+      yScale_ = 0F;
 
-      yOffset_ = 0D;
+      yOffset_ = 0F;
 
       return this;
     }
@@ -456,16 +456,16 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.AffinePoint other) {
       if (other == org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance()) return this;
-      if (other.getXScale() != 0D) {
+      if (other.getXScale() != 0F) {
         setXScale(other.getXScale());
       }
-      if (other.getXOffset() != 0D) {
+      if (other.getXOffset() != 0F) {
         setXOffset(other.getXOffset());
       }
-      if (other.getYScale() != 0D) {
+      if (other.getYScale() != 0F) {
         setYScale(other.getYScale());
       }
-      if (other.getYOffset() != 0D) {
+      if (other.getYOffset() != 0F) {
         setYOffset(other.getYOffset());
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -497,106 +497,106 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private double xScale_ ;
+    private float xScale_ ;
     /**
-     * <code>double xScale = 1;</code>
+     * <code>float xScale = 1;</code>
      */
-    public double getXScale() {
+    public float getXScale() {
       return xScale_;
     }
     /**
-     * <code>double xScale = 1;</code>
+     * <code>float xScale = 1;</code>
      */
-    public Builder setXScale(double value) {
+    public Builder setXScale(float value) {
       
       xScale_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double xScale = 1;</code>
+     * <code>float xScale = 1;</code>
      */
     public Builder clearXScale() {
       
-      xScale_ = 0D;
+      xScale_ = 0F;
       onChanged();
       return this;
     }
 
-    private double xOffset_ ;
+    private float xOffset_ ;
     /**
-     * <code>double xOffset = 2;</code>
+     * <code>float xOffset = 2;</code>
      */
-    public double getXOffset() {
+    public float getXOffset() {
       return xOffset_;
     }
     /**
-     * <code>double xOffset = 2;</code>
+     * <code>float xOffset = 2;</code>
      */
-    public Builder setXOffset(double value) {
+    public Builder setXOffset(float value) {
       
       xOffset_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double xOffset = 2;</code>
+     * <code>float xOffset = 2;</code>
      */
     public Builder clearXOffset() {
       
-      xOffset_ = 0D;
+      xOffset_ = 0F;
       onChanged();
       return this;
     }
 
-    private double yScale_ ;
+    private float yScale_ ;
     /**
-     * <code>double yScale = 3;</code>
+     * <code>float yScale = 3;</code>
      */
-    public double getYScale() {
+    public float getYScale() {
       return yScale_;
     }
     /**
-     * <code>double yScale = 3;</code>
+     * <code>float yScale = 3;</code>
      */
-    public Builder setYScale(double value) {
+    public Builder setYScale(float value) {
       
       yScale_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double yScale = 3;</code>
+     * <code>float yScale = 3;</code>
      */
     public Builder clearYScale() {
       
-      yScale_ = 0D;
+      yScale_ = 0F;
       onChanged();
       return this;
     }
 
-    private double yOffset_ ;
+    private float yOffset_ ;
     /**
-     * <code>double yOffset = 4;</code>
+     * <code>float yOffset = 4;</code>
      */
-    public double getYOffset() {
+    public float getYOffset() {
       return yOffset_;
     }
     /**
-     * <code>double yOffset = 4;</code>
+     * <code>float yOffset = 4;</code>
      */
-    public Builder setYOffset(double value) {
+    public Builder setYOffset(float value) {
       
       yOffset_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double yOffset = 4;</code>
+     * <code>float yOffset = 4;</code>
      */
     public Builder clearYOffset() {
       
-      yOffset_ = 0D;
+      yOffset_ = 0F;
       onChanged();
       return this;
     }

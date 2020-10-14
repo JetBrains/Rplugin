@@ -10,7 +10,7 @@ class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParam
 
   private fun convert(font: RFont): Font {
     val baseFont = if (font.name == null) graphics.font else Font(font.name, Font.PLAIN, 12)  // `size` has no effect
-    return baseFont.deriveFont(font.size.toFloat()).deriveFont(convert(font.style))
+    return baseFont.deriveFont(font.size).deriveFont(convert(font.style))
   }
 
   private fun convert(style: RFontStyle): Int {
@@ -23,7 +23,7 @@ class RCanvasPlotterProvider(override val parameters: RGraphicsUtils.ScreenParam
   }
 
   private fun convert(stroke: RStroke): Stroke {
-    return BasicStroke(stroke.width.toFloat(), convert(stroke.cap), convert(stroke.join), stroke.miterLimit.toFloat(), stroke.pattern, 0.0f)
+    return BasicStroke(stroke.width, convert(stroke.cap), convert(stroke.join), stroke.miterLimit, stroke.pattern, 0.0f)
   }
 
   private fun convert(cap: RLineCap): Int {
@@ -95,10 +95,10 @@ class RCanvasPlotter(
     }
   }
 
-  override fun drawRaster(image: Image, x: Int, y: Int, angle: Double) {
+  override fun drawRaster(image: Image, x: Int, y: Int, angle: Float) {
     val transform = AffineTransform().apply {
       translate(x.toDouble(), y.toDouble())
-      rotate(Math.toRadians(angle))
+      rotate(Math.toRadians(angle.toDouble()))
     }
     graphics.drawImage(image, transform, null)
   }
@@ -113,11 +113,11 @@ class RCanvasPlotter(
     }
   }
 
-  override fun drawText(text: String, x: Int, y: Int, angle: Double, anchor: Double, fontIndex: Int, colorIndex: Int) {
+  override fun drawText(text: String, x: Int, y: Int, angle: Float, anchor: Float, fontIndex: Int, colorIndex: Int) {
     withColor(colorIndex) {
       selectFont(fontIndex)
       val width = graphics.fontMetrics.stringWidth(text)
-      doRotated(x, y, angle) {
+      doRotated(x, y, angle.toDouble()) {
         val offset = (-width * anchor).toInt()
         graphics.drawString(text, offset, 0)
       }

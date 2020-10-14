@@ -8,14 +8,14 @@ public interface FixedViewportOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>double ratio = 1;</code>
+   * <code>float ratio = 1;</code>
    */
-  double getRatio();
+  float getRatio();
 
   /**
-   * <code>double delta = 2;</code>
+   * <code>float delta = 2;</code>
    */
-  double getDelta();
+  float getDelta();
 
   /**
    * <code>int32 parentIndex = 3;</code>

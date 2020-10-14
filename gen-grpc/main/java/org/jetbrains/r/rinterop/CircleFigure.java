@@ -61,14 +61,14 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 17: {
+          case 21: {
 
-            radiusScale_ = input.readDouble();
+            radiusScale_ = input.readFloat();
             break;
           }
-          case 25: {
+          case 29: {
 
-            radiusOffset_ = input.readDouble();
+            radiusOffset_ = input.readFloat();
             break;
           }
           case 32: {
@@ -140,20 +140,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int RADIUSSCALE_FIELD_NUMBER = 2;
-  private double radiusScale_;
+  private float radiusScale_;
   /**
-   * <code>double radiusScale = 2;</code>
+   * <code>float radiusScale = 2;</code>
    */
-  public double getRadiusScale() {
+  public float getRadiusScale() {
     return radiusScale_;
   }
 
   public static final int RADIUSOFFSET_FIELD_NUMBER = 3;
-  private double radiusOffset_;
+  private float radiusOffset_;
   /**
-   * <code>double radiusOffset = 3;</code>
+   * <code>float radiusOffset = 3;</code>
    */
-  public double getRadiusOffset() {
+  public float getRadiusOffset() {
     return radiusOffset_;
   }
 
@@ -201,11 +201,11 @@ private static final long serialVersionUID = 0L;
     if (center_ != null) {
       output.writeMessage(1, getCenter());
     }
-    if (radiusScale_ != 0D) {
-      output.writeDouble(2, radiusScale_);
+    if (radiusScale_ != 0F) {
+      output.writeFloat(2, radiusScale_);
     }
-    if (radiusOffset_ != 0D) {
-      output.writeDouble(3, radiusOffset_);
+    if (radiusOffset_ != 0F) {
+      output.writeFloat(3, radiusOffset_);
     }
     if (strokeIndex_ != 0) {
       output.writeInt32(4, strokeIndex_);
@@ -229,13 +229,13 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, getCenter());
     }
-    if (radiusScale_ != 0D) {
+    if (radiusScale_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(2, radiusScale_);
+        .computeFloatSize(2, radiusScale_);
     }
-    if (radiusOffset_ != 0D) {
+    if (radiusOffset_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
-        .computeDoubleSize(3, radiusOffset_);
+        .computeFloatSize(3, radiusOffset_);
     }
     if (strokeIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -269,11 +269,11 @@ private static final long serialVersionUID = 0L;
       if (!getCenter()
           .equals(other.getCenter())) return false;
     }
-    if (java.lang.Double.doubleToLongBits(getRadiusScale())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getRadiusScale())
+        != java.lang.Float.floatToIntBits(
             other.getRadiusScale())) return false;
-    if (java.lang.Double.doubleToLongBits(getRadiusOffset())
-        != java.lang.Double.doubleToLongBits(
+    if (java.lang.Float.floatToIntBits(getRadiusOffset())
+        != java.lang.Float.floatToIntBits(
             other.getRadiusOffset())) return false;
     if (getStrokeIndex()
         != other.getStrokeIndex()) return false;
@@ -297,11 +297,11 @@ private static final long serialVersionUID = 0L;
       hash = (53 * hash) + getCenter().hashCode();
     }
     hash = (37 * hash) + RADIUSSCALE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getRadiusScale()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getRadiusScale());
     hash = (37 * hash) + RADIUSOFFSET_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        java.lang.Double.doubleToLongBits(getRadiusOffset()));
+    hash = (53 * hash) + java.lang.Float.floatToIntBits(
+        getRadiusOffset());
     hash = (37 * hash) + STROKEINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getStrokeIndex();
     hash = (37 * hash) + COLORINDEX_FIELD_NUMBER;
@@ -447,9 +447,9 @@ private static final long serialVersionUID = 0L;
         center_ = null;
         centerBuilder_ = null;
       }
-      radiusScale_ = 0D;
+      radiusScale_ = 0F;
 
-      radiusOffset_ = 0D;
+      radiusOffset_ = 0F;
 
       strokeIndex_ = 0;
 
@@ -544,10 +544,10 @@ private static final long serialVersionUID = 0L;
       if (other.hasCenter()) {
         mergeCenter(other.getCenter());
       }
-      if (other.getRadiusScale() != 0D) {
+      if (other.getRadiusScale() != 0F) {
         setRadiusScale(other.getRadiusScale());
       }
-      if (other.getRadiusOffset() != 0D) {
+      if (other.getRadiusOffset() != 0F) {
         setRadiusOffset(other.getRadiusOffset());
       }
       if (other.getStrokeIndex() != 0) {
@@ -705,54 +705,54 @@ private static final long serialVersionUID = 0L;
       return centerBuilder_;
     }
 
-    private double radiusScale_ ;
+    private float radiusScale_ ;
     /**
-     * <code>double radiusScale = 2;</code>
+     * <code>float radiusScale = 2;</code>
      */
-    public double getRadiusScale() {
+    public float getRadiusScale() {
       return radiusScale_;
     }
     /**
-     * <code>double radiusScale = 2;</code>
+     * <code>float radiusScale = 2;</code>
      */
-    public Builder setRadiusScale(double value) {
+    public Builder setRadiusScale(float value) {
       
       radiusScale_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double radiusScale = 2;</code>
+     * <code>float radiusScale = 2;</code>
      */
     public Builder clearRadiusScale() {
       
-      radiusScale_ = 0D;
+      radiusScale_ = 0F;
       onChanged();
       return this;
     }
 
-    private double radiusOffset_ ;
+    private float radiusOffset_ ;
     /**
-     * <code>double radiusOffset = 3;</code>
+     * <code>float radiusOffset = 3;</code>
      */
-    public double getRadiusOffset() {
+    public float getRadiusOffset() {
       return radiusOffset_;
     }
     /**
-     * <code>double radiusOffset = 3;</code>
+     * <code>float radiusOffset = 3;</code>
      */
-    public Builder setRadiusOffset(double value) {
+    public Builder setRadiusOffset(float value) {
       
       radiusOffset_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>double radiusOffset = 3;</code>
+     * <code>float radiusOffset = 3;</code>
      */
     public Builder clearRadiusOffset() {
       
-      radiusOffset_ = 0D;
+      radiusOffset_ = 0F;
       onChanged();
       return this;
     }

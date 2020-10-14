@@ -8,22 +8,22 @@ public interface AffinePointOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>double xScale = 1;</code>
+   * <code>float xScale = 1;</code>
    */
-  double getXScale();
+  float getXScale();
 
   /**
-   * <code>double xOffset = 2;</code>
+   * <code>float xOffset = 2;</code>
    */
-  double getXOffset();
+  float getXOffset();
 
   /**
-   * <code>double yScale = 3;</code>
+   * <code>float yScale = 3;</code>
    */
-  double getYScale();
+  float getYScale();
 
   /**
-   * <code>double yOffset = 4;</code>
+   * <code>float yOffset = 4;</code>
    */
-  double getYOffset();
+  float getYOffset();
 }

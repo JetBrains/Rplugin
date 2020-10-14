@@ -18,9 +18,9 @@ public interface FontOrBuilder extends
       getNameBytes();
 
   /**
-   * <code>double size = 2;</code>
+   * <code>float size = 2;</code>
    */
-  double getSize();
+  float getSize();
 
   /**
    * <code>int32 style = 3;</code>
