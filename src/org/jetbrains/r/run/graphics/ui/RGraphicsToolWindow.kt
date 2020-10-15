@@ -51,17 +51,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     toolbar = createToolbar(project)
     project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
 
-    graphicsPanel.component.addComponentListener(object : ComponentAdapter() {
-      override fun componentResized(e: ComponentEvent?) {
-        if (!isStandalone) {
-          queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
-            override fun run() {
-              postScreenParameters()
-            }
-          })
-        }
-      }
-    })
+    graphicsPanel.component.addResizeListener {
+      schedulePostScreenParameters()
+    }
+    plotViewer.addResizeListener {
+      schedulePostScreenParameters()
+    }
 
     repository.addUpdateListener { update ->
       ApplicationManager.getApplication().invokeLater {
@@ -106,7 +101,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
       reset()
     }
     postOutputNumber()
-    postScreenParametersIfNeeded()
+    postScreenParameters()
   }
 
   private fun suggestOutputIndex(outputs: List<RGraphicsOutput>): Int {
@@ -247,7 +242,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         isStandalone = newStandalone
       }
       showCurrent()
-      postScreenParametersIfNeeded()
+      postScreenParameters()
     }
   }
 
@@ -255,20 +250,24 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     return if (isStandalone) plotViewer.size else graphicsPanel.imageComponentSize
   }
 
-  private fun postScreenParametersIfNeeded() {
-    if (!isStandalone) {
-      postScreenParameters()
-    }
+  private fun schedulePostScreenParameters() {
+    queue.queue(object : Update(RESIZE_TASK_IDENTITY) {
+      override fun run() {
+        postScreenParameters()
+      }
+    })
   }
 
   private fun postScreenParameters() {
     val newDimension = getAdjustedScreenDimension()
     if (newDimension.isValid) {
       RGraphicsSettings.setScreenDimension(project, newDimension)
-      repository.configuration?.let { oldConfiguration ->
-        val parameters = oldConfiguration.screenParameters
-        val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
-        repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+      if (!isStandalone) {
+        repository.configuration?.let { oldConfiguration ->
+          val parameters = oldConfiguration.screenParameters
+          val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
+          repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+        }
       }
     }
   }
@@ -329,6 +328,14 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
     private fun List<RGraphicsOutput>.indexWith(number: Int): Int? {
       return indexOfLast { it.number == number }.takeIf { it >= 0 }
+    }
+
+    private fun JComponent.addResizeListener(listener: () -> Unit) {
+      addComponentListener(object : ComponentAdapter() {
+        override fun componentResized(e: ComponentEvent?) {
+          listener()
+        }
+      })
     }
   }
 }

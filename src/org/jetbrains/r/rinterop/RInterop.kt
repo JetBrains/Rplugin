@@ -571,6 +571,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       .build()
   }
 
+  fun graphicsSetParametersAsync(parameters: RGraphicsUtils.ScreenParameters) {
+    executeAsync(asyncStub::graphicsSetParameters, buildScreenParametersMessage(parameters))
+  }
+
   data class GraphicsGetPathResponse(val name: String, val directory: String)
 
   fun graphicsGetSnapshotPath(number: Int, groupId: String?): GraphicsGetPathResponse? {

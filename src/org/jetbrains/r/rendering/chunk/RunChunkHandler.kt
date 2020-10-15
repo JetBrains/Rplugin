@@ -27,7 +27,9 @@ import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.InlaysManager
+import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.inlays.components.ProcessOutput
 import org.intellij.datavis.r.inlays.components.ProgressStatus
@@ -44,6 +46,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RGraphicsUtils
+import org.jetbrains.r.settings.RMarkdownGraphicsSettings
 import java.awt.Dimension
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -162,7 +165,7 @@ object RunChunkHandler {
     val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
     val rMarkdownParameters = createRMarkdownParameters(file)
     val cacheDirectory = createCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
-    val screenParameters = createScreenParameters()
+    val screenParameters = createScreenParameters(editor, project)
     val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
     val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
 
@@ -243,11 +246,14 @@ object RunChunkHandler {
     logNonEmptyError(rInterop.runBeforeChunk(rmarkdownParameters, chunkText))
   }
 
-  private fun createScreenParameters(): RGraphicsUtils.ScreenParameters {
+  private fun createScreenParameters(editor: EditorEx, project: Project): RGraphicsUtils.ScreenParameters {
     return if (ApplicationManager.getApplication().isHeadlessEnvironment) {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
-      RGraphicsUtils.DEFAULT_PARAMETERS
+      val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
+      val imageSize = GraphicsPanel.calculateImageSizeForRegion(inlayContentSize)
+      val resolution = RMarkdownGraphicsSettings.getInstance(project).globalResolution
+      RGraphicsUtils.ScreenParameters(imageSize, resolution)
     }
   }
 

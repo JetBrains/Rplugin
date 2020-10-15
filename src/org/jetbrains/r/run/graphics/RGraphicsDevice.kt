@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.rinterop.RIExecutionResult
 import org.jetbrains.r.rinterop.RInterop
@@ -29,6 +30,9 @@ class RGraphicsDevice(
 
   private val deviceId = rInterop.graphicsDeviceManager.registerNewDevice()
   private val queue = RGraphicsRescaleQueue(deviceId, rInterop)
+
+  val project: Project
+    get() = rInterop.project
 
   @Volatile
   var lastUpdate: RGraphicsUpdate = RGraphicsCompletedUpdate(lastOutputs)
@@ -72,6 +76,10 @@ class RGraphicsDevice(
 
   fun reset() {
     // Nothing to do here
+  }
+
+  fun setParametersAsync(parameters: RGraphicsUtils.ScreenParameters) {
+    rInterop.graphicsSetParametersAsync(parameters)
   }
 
   fun clearOutput(number: Int) {

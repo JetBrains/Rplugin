@@ -104,7 +104,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           null
         } else {
           val screenParameters = RGraphicsSettings.getScreenParameters(project)
-          RGraphicsUtils.createGraphicsDevice(rInterop).apply {
+          RGraphicsUtils.createGraphicsDevice(rInterop, screenParameters.dimension, screenParameters.resolution).apply {
             configuration = configuration.copy(screenParameters = screenParameters)
             addListener(RGraphicsToolWindowListener(project))
           }.also {
@@ -305,6 +305,11 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 internal class UpdateGraphicsHandler(private val device: RGraphicsDevice) : RConsoleExecuteActionHandler.Listener {
   override fun onReset() {
     device.reset()
+  }
+
+  override fun beforeExecution() {
+    val parameters = RGraphicsSettings.getScreenParameters(device.project)
+    device.setParametersAsync(parameters)
   }
 
   override fun onCommandExecuted() {
