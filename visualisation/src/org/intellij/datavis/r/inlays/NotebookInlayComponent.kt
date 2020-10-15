@@ -47,9 +47,6 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
 
   private var state: NotebookInlayState? = null
 
-  /** Settings could be loaded before the data comes and that's why we are storing this settings and trying to apply them later. */
-  private var delayedCurrentTab: String? = null
-
   private var expandedHeight = 0
 
   /** Inlay short view, shown in collapsed state or in empty state. */
@@ -160,11 +157,6 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
           val y = r.y + r.height - editor.lineHeight
           g.color = editor.colorsScheme.getColor(EditorColors.RIGHT_MARGIN_COLOR)
           g.drawLine(0, y, gutterWidth + 10, y)
-
-//          if (selected) {
-//            g.color = editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
-//            g.fillRect(gutterWidth - 10, r.y + 1, 10, r.height - 1 - editor.lineHeight)
-//          }
         }
       }
     } catch (e: Exception) {
