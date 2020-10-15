@@ -3,6 +3,7 @@ package org.jetbrains.r.editor.mlcompletion
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.isLocalHost
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
@@ -13,6 +14,7 @@ class MachineLearningCompletionServerService: Disposable {
 
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
+    private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
     private const val RELAUNCH_TIMEOUT_MS = 5_000L
     private const val LAUNCH_SERVER_COMMAND = "python3"
     private val LOCAL_SERVER_MAIN_FILE_PATH = Paths.get(
@@ -72,9 +74,13 @@ class MachineLearningCompletionServerService: Disposable {
     if (!isLocalHost(host)) {
       return
     }
-    localServer =
-      ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString())
-        .start()
+    try {
+      localServer =
+        ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString())
+          .start()
+    } catch (e: Exception) {
+      LOG.warn("Exception occurred in R ML Completion server thread", e)
+    }
   }
 
   private fun shutdownServer() {
