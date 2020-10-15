@@ -17,7 +17,6 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
-import com.intellij.icons.AllIcons
 import com.intellij.ide.CommonActionsManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
@@ -143,14 +142,13 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     val eofAction = createEofAction(consoleView)
     val helpAction = CommonActionsManager.getInstance().createHelpAction(RWebHelpProvider.R_CONSOLE_ID)
     val historyAction = historyController.browseHistory
-    val addConsoleAction = createAddConsoleAction()
     val toggleSoftWrap = createToggleSoftWrapAction(consoleView)
 
     val actions = listOf(executeAction, interruptAction, eofAction, historyAction,
                          createSetCurrentDirectory(),
                          createRestartRAction(),
                          Separator(),
-                         toggleSoftWrap, addConsoleAction, helpAction)
+                         toggleSoftWrap, helpAction)
     val actionsWhenRunning = actions.filter { it !== executeAction }.toTypedArray()
     val actionsWhenNotRunning = actions.filter { it !== interruptAction }.toTypedArray()
     val toolbarActions = object : ActionGroup() {
@@ -190,24 +188,6 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   private fun createRestartRAction(): AnAction {
     return ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleView.RestartRAction")
   }
-
-  private fun createAddConsoleAction(): AnAction =
-    object : AnAction() {
-      private val addConsoleAction = ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleAction")
-
-      init {
-        copyFrom(addConsoleAction)
-        templatePresentation.icon = AllIcons.General.Add
-      }
-
-      override fun update(e: AnActionEvent) {
-        addConsoleAction.update(e)
-      }
-
-      override fun actionPerformed(e: AnActionEvent) {
-        RActionUtil.performDelegatedAction(addConsoleAction, e)
-      }
-    }
 
   private fun createToggleSoftWrapAction(console: RConsoleView): ToggleSoftWrapAction =
     object : ToggleSoftWrapAction() {

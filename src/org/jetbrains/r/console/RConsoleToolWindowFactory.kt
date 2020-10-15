@@ -8,7 +8,11 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAware
@@ -19,6 +23,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBLabel
@@ -27,6 +32,7 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.console.jobs.RJobPanel
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -54,6 +60,27 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     })
     tryAddContent(toolWindow, project)
     addJobsPanel(toolWindow, project)
+    addCreateConsoleTabAction(toolWindow)
+  }
+
+  private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
+    (toolWindow as? ToolWindowEx)?.setTabActions(
+      object : AnAction() {
+        private val addConsoleAction = ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleAction")
+
+        init {
+          copyFrom(addConsoleAction)
+          templatePresentation.icon = AllIcons.General.Add
+        }
+
+        override fun update(e: AnActionEvent) {
+          addConsoleAction.update(e)
+        }
+
+        override fun actionPerformed(e: AnActionEvent) {
+          RActionUtil.performDelegatedAction(addConsoleAction, e)
+        }
+      })
   }
 
   private fun addJobsPanel(toolWindow: ToolWindow, project: Project) {
