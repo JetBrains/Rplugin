@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.rinterop.Font
 import org.jetbrains.r.rinterop.Stroke
@@ -18,6 +19,10 @@ import kotlin.math.min
 
 object RPlotUtil {
   private const val PROTOCOL_VERSION = 6
+
+  // Not to be translated
+  private const val DEFAULT_FONT_NAME_LINUX = "Liberation Sans"
+  private const val DEFAULT_FONT_NAME = "Arial"
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -41,8 +46,12 @@ object RPlotUtil {
     return "recorded_v${PROTOCOL_VERSION}_${number}.plot"
   }
 
-  fun convert(plot: Plot, number: Int): RPlot {
-    val fonts = plot.fontList.map { convert(it) }
+  fun getDefaultFontName(hostOS: OperatingSystem): String {
+    return if (hostOS == OperatingSystem.LINUX) DEFAULT_FONT_NAME_LINUX else DEFAULT_FONT_NAME
+  }
+
+  fun convert(plot: Plot, number: Int, defaultFontName: String?): RPlot {
+    val fonts = plot.fontList.map { convert(it, defaultFontName) }
     val colors = plot.colorList.map { convert(it) }
     val strokes = plot.strokeList.map { convert(it) }
     val viewports = plot.viewportList.map { convert(it) }
@@ -50,9 +59,10 @@ object RPlotUtil {
     return RPlot(number, fonts, colors, strokes, viewports, layers)
   }
 
-  private fun convert(font: Font): RFont {
+  private fun convert(font: Font, defaultFontName: String?): RFont {
     val style = RFontStyle.values()[font.style]
-    return RFont(font.name.takeIf { it.isNotBlank() }, font.size, style)
+    val name = font.name.takeIf { it.isNotBlank() } ?: defaultFontName
+    return RFont(name, font.size, style)
   }
 
   private fun convert(color: Int): Color {

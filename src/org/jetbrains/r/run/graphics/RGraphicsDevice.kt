@@ -277,7 +277,8 @@ class RGraphicsDevice(
               pullInMemorySnapshot(number)
               null
             } else {
-              val plot = RPlotUtil.convert(fetched, number)
+              val defaultFontName = RPlotUtil.getDefaultFontName(rInterop.interpreter.hostOS)
+              val plot = RPlotUtil.convert(fetched, number, defaultFontName)
               RGraphicsOutput(number, null, plot)
             }
           }

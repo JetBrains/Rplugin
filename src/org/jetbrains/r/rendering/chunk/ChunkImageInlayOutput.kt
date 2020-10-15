@@ -9,6 +9,7 @@ import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
@@ -82,7 +83,9 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private fun findPlotFor(snapshot: RSnapshot): RPlot? {
     return RPlotUtil.readFrom(snapshot.file.parentFile, snapshot.number)?.let { plot ->
-      RPlotUtil.convert(plot, snapshot.number)
+      val hostOS = RConsoleManager.getInstance(project).currentConsoleOrNull?.interpreter?.hostOS
+      val defaultFontName = hostOS?.let { RPlotUtil.getDefaultFontName(it) }
+      RPlotUtil.convert(plot, snapshot.number, defaultFontName)
     }
   }
 
