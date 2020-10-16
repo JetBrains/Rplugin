@@ -31,6 +31,7 @@ data class RLayer(val viewportIndex: Int, val clippingAreaIndex: Int, val figure
 
 enum class RPlotError {
   UNKNOWN,
+  TOO_COMPLEX,
   UNSUPPORTED_ACTION,
   MISMATCHING_ACTIONS,
 }
