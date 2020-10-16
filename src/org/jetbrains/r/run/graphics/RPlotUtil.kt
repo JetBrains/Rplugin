@@ -26,6 +26,7 @@ object RPlotUtil {
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
   private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
+  private val GROWING_TEXT_ERROR_TEXT = RBundle.message("plot.viewer.growing.text.error")
   private val TOO_COMPLEX_ERROR_TEXT = RBundle.message("plot.viewer.too.complex.error")
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
@@ -57,6 +58,7 @@ object RPlotUtil {
   fun getErrorDescription(error: RPlotError): String {
     return when (error) {
       RPlotError.UNKNOWN -> UNKNOWN_PARSING_ERROR_TEXT
+      RPlotError.GROWING_TEXT -> GROWING_TEXT_ERROR_TEXT
       RPlotError.TOO_COMPLEX -> TOO_COMPLEX_ERROR_TEXT
       else -> GENERIC_PARSING_ERROR_TEXT
     }
