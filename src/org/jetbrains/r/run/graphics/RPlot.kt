@@ -29,11 +29,18 @@ class RStroke(val width: Float, val cap: RLineCap, val join: RLineJoin, val mite
 
 data class RLayer(val viewportIndex: Int, val clippingAreaIndex: Int, val figures: List<RFigure>, val isAxisText: Boolean)
 
+enum class RPlotError {
+  UNKNOWN,
+  UNSUPPORTED_ACTION,
+  MISMATCHING_ACTIONS,
+}
+
 data class RPlot(
   val number: Int,
   val fonts: List<RFont>,
   val colors: List<Color>,
   val strokes: List<RStroke>,
   val viewports: List<RViewport>,
-  val layers: List<RLayer>
+  val layers: List<RLayer>,
+  val error: RPlotError?
 )

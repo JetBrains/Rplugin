@@ -15,10 +15,7 @@ import org.intellij.datavis.r.inlays.components.GraphicsPanel
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
-import org.jetbrains.r.run.graphics.RGraphicsUtils
-import org.jetbrains.r.run.graphics.RPlot
-import org.jetbrains.r.run.graphics.RPlotUtil
-import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -147,8 +144,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     }
     isAutoResizeEnabled = true
     localResolution = null
-    graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
-    rescaleIfNecessary()
+    if (isStandalone && plot?.error != null) {
+      showPlotError(plot.error)
+    } else {
+      graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+      rescaleIfNecessary()
+    }
   }
 
   fun addImage(file: File) {
@@ -158,8 +159,25 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     graphicsPanel.showImage(file)
   }
 
+  private fun showPlotError(error: RPlotError) {
+    val message = RPlotUtil.getErrorDescription(error)
+    if (snapshot != null) {
+      graphicsPanel.showMessageWithLink(message, SWITCH_TEXT) {
+        isStandalone = false
+      }
+    } else {
+      graphicsPanel.showMessage(message)
+    }
+  }
+
   private fun scheduleRescalingIfNecessary() {
-    if (hasGraphics && (isAutoResizeEnabled || localResolution != targetResolution)) {
+    if (!hasGraphics) {
+      return
+    }
+    if (oldStandalone != isStandalone) {
+      graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+      scheduleRescaling()
+    } else if (isAutoResizeEnabled || localResolution != targetResolution) {
       scheduleRescaling()
     }
   }
@@ -201,7 +219,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun rescale(newSize: Dimension, newResolution: Int?) {
     if (isStandalone) {
       plot?.let { plot ->
-        rescale(plot, newSize, newResolution)
+        if (plot.error != null) {
+          showPlotError(plot.error)
+        } else {
+          rescale(plot, newSize, newResolution)
+        }
       }
     } else {
       snapshot?.let { snapshot ->
@@ -240,6 +262,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     private const val RESIZE_TASK_NAME = "Resize graphics"
     private const val RESIZE_TASK_IDENTITY = "Resizing graphics"
     private val WAITING_MESSAGE = RBundle.message("graphics.panel.wrapper.waiting")
+    private val SWITCH_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
 
     private val Dimension.isValid: Boolean
       get() = width > 0 && height > 0

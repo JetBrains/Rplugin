@@ -115,4 +115,9 @@ public interface PlotOrBuilder extends
    */
   org.jetbrains.r.rinterop.LayerOrBuilder getLayerOrBuilder(
       int index);
+
+  /**
+   * <code>int32 error = 6;</code>
+   */
+  int getError();
 }

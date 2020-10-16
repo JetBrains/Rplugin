@@ -111,6 +111,11 @@ private static final long serialVersionUID = 0L;
                 input.readMessage(org.jetbrains.r.rinterop.Layer.parser(), extensionRegistry));
             break;
           }
+          case 48: {
+
+            error_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -321,6 +326,15 @@ private static final long serialVersionUID = 0L;
     return layer_.get(index);
   }
 
+  public static final int ERROR_FIELD_NUMBER = 6;
+  private int error_;
+  /**
+   * <code>int32 error = 6;</code>
+   */
+  public int getError() {
+    return error_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -354,6 +368,9 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < layer_.size(); i++) {
       output.writeMessage(5, layer_.get(i));
+    }
+    if (error_ != 0) {
+      output.writeInt32(6, error_);
     }
     unknownFields.writeTo(output);
   }
@@ -394,6 +411,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(5, layer_.get(i));
     }
+    if (error_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(6, error_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -419,6 +440,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getViewportList())) return false;
     if (!getLayerList()
         .equals(other.getLayerList())) return false;
+    if (getError()
+        != other.getError()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -450,6 +473,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + LAYER_FIELD_NUMBER;
       hash = (53 * hash) + getLayerList().hashCode();
     }
+    hash = (37 * hash) + ERROR_FIELD_NUMBER;
+    hash = (53 * hash) + getError();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -613,6 +638,8 @@ private static final long serialVersionUID = 0L;
       } else {
         layerBuilder_.clear();
       }
+      error_ = 0;
+
       return this;
     }
 
@@ -681,6 +708,7 @@ private static final long serialVersionUID = 0L;
       } else {
         result.layer_ = layerBuilder_.build();
       }
+      result.error_ = error_;
       onBuilt();
       return result;
     }
@@ -842,6 +870,9 @@ private static final long serialVersionUID = 0L;
             layerBuilder_.addAllMessages(other.layer_);
           }
         }
+      }
+      if (other.getError() != 0) {
+        setError(other.getError());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1898,6 +1929,32 @@ private static final long serialVersionUID = 0L;
         layer_ = null;
       }
       return layerBuilder_;
+    }
+
+    private int error_ ;
+    /**
+     * <code>int32 error = 6;</code>
+     */
+    public int getError() {
+      return error_;
+    }
+    /**
+     * <code>int32 error = 6;</code>
+     */
+    public Builder setError(int value) {
+      
+      error_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 error = 6;</code>
+     */
+    public Builder clearError() {
+      
+      error_ = 0;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -20,6 +20,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.components.JBLoadingPanel
+import com.intellij.ui.components.labels.LinkLabel
+import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.VisualizationBundle
@@ -29,14 +31,14 @@ import org.intellij.images.editor.ImageZoomModel
 import org.intellij.images.ui.ImageComponent
 import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
-import javax.swing.JComponent
-import javax.swing.JLabel
+import javax.swing.*
 
 val CHANGE_DARK_MODE_TOPIC = Topic.create("Graphics Panel Dark Mode Topic", DarkModeNotifier::class.java)
 
@@ -183,6 +185,11 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     loadingPanel.setLoadingText(message ?: LOADING_MESSAGE)
   }
 
+  fun showMessageWithLink(message: String, linkText: String, linkAction: () -> Unit) {
+    closeEditor("")
+    rootPanel.contentComponent = createInfoPanelWithLink(message, linkText, linkAction)
+  }
+
   fun reset() {
     closeEditor(NO_GRAPHICS)
   }
@@ -299,6 +306,23 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
     }
     UIUtil.findComponentOfType(editor.component, ActionToolbarImpl::class.java)?.let { toolbar ->
       toolbar.parent.remove(toolbar)
+    }
+  }
+
+  private fun createInfoPanelWithLink(message: String, linkText: String, linkAction: () -> Unit): JPanel {
+    return JPanel().apply {
+      layout = BoxLayout(this, BoxLayout.Y_AXIS)
+      add(Box.createVerticalGlue())
+      val infoLabel = JLabel(message).apply {
+        alignmentX = Component.CENTER_ALIGNMENT
+      }
+      add(infoLabel)
+      add(Box.createRigidArea(Dimension(0, JBUIScale.scale(6))))
+      val linkLabel = LinkLabel.create(linkText, linkAction).apply {
+        alignmentX = Component.CENTER_ALIGNMENT
+      }
+      add(linkLabel)
+      add(Box.createVerticalGlue())
     }
   }
 

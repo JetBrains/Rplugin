@@ -126,8 +126,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     lastOutput?.let { output ->
       updateContent()
       if (isStandalone) {
-        plotViewer.resolution = resolution
-        plotViewer.plot = output.plot
+        showPlot(output.plot)
       } else {
         if (output.snapshot != null) {
           graphicsPanel.showImage(output.snapshot.file)
@@ -136,6 +135,24 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
         }
       }
     }
+  }
+
+  private fun showPlot(plot: RPlot) {
+    if (plot.error != null) {
+      updateContent(graphicsPanel.component)
+      val message = RPlotUtil.getErrorDescription(plot.error)
+      graphicsPanel.showMessageWithLink(message, SWITCH_TO_BUILTIN_TEXT, this::switchToBuiltinEngine)
+    } else {
+      plotViewer.resolution = resolution
+      plotViewer.plot = plot
+    }
+  }
+
+  private fun switchToBuiltinEngine() {
+    RGraphicsSettings.setStandalone(project, false)
+    isStandalone = false
+    showCurrent()
+    postScreenParameters()
   }
 
   private fun createToolbar(project: Project): JComponent {
@@ -319,6 +336,8 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private const val TUNE_GRAPHICS_DEVICE_ACTION_ID = "org.jetbrains.r.run.graphics.ui.RTuneGraphicsDeviceAction"
 
     private val RESCALING_HINT = RBundle.message("graphics.panel.rescaling.hint")
+
+    private val SWITCH_TO_BUILTIN_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
 
     private val DARK_MODE_TITLE = RBundle.message("graphics.panel.action.darkMode.title")
     private val DARK_MODE_DESCRIPTION = RBundle.message("graphics.panel.action.darkMode.description")

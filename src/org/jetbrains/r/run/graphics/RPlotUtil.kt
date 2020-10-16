@@ -18,11 +18,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 6
+  private const val PROTOCOL_VERSION = 7
 
   // Not to be translated
   private const val DEFAULT_FONT_NAME_LINUX = "Liberation Sans"
   private const val DEFAULT_FONT_NAME = "Arial"
+
+  private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
+  private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
 
   fun writeTo(directory: File, plot: Plot, number: Int) {
     val plotFile = getPlotFile(directory, number)
@@ -50,13 +53,18 @@ object RPlotUtil {
     return if (hostOS == OperatingSystem.LINUX) DEFAULT_FONT_NAME_LINUX else DEFAULT_FONT_NAME
   }
 
+  fun getErrorDescription(error: RPlotError): String {
+    return if (error == RPlotError.UNKNOWN) UNKNOWN_PARSING_ERROR_TEXT else GENERIC_PARSING_ERROR_TEXT
+  }
+
   fun convert(plot: Plot, number: Int, defaultFontName: String?): RPlot {
     val fonts = plot.fontList.map { convert(it, defaultFontName) }
     val colors = plot.colorList.map { convert(it) }
     val strokes = plot.strokeList.map { convert(it) }
     val viewports = plot.viewportList.map { convert(it) }
     val layers = plot.layerList.map { convert(it) }
-    return RPlot(number, fonts, colors, strokes, viewports, layers)
+    val error = convertError(plot.error)
+    return RPlot(number, fonts, colors, strokes, viewports, layers, error)
   }
 
   private fun convert(font: Font, defaultFontName: String?): RFont {
@@ -202,6 +210,10 @@ object RPlotUtil {
     }
   }
 
+  private fun convertError(error: Int): RPlotError? {
+    return if (error > 0) RPlotError.values()[error - 1] else null
+  }
+
   fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
     return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
       val graphics = image.graphics as Graphics2D
@@ -240,7 +252,7 @@ object RPlotUtil {
     }
 
     fun replay() {
-      if (plot.layers.isNotEmpty()) {
+      if (plot.error == null) {
         if (fitsDisplay()) {
           for (layer in plot.layers) {
             replay(layer)
@@ -249,7 +261,7 @@ object RPlotUtil {
           showMessage(MARGINS_TEXT)
         }
       } else {
-        showMessage(PARSING_TEXT)
+        showMessage(getErrorDescription(plot.error))
       }
     }
 
@@ -466,7 +478,6 @@ object RPlotUtil {
       private const val GAP_TEXT = "m"  // Not to be translated
 
       private val MARGINS_TEXT = RBundle.message("plot.viewer.figure.margins.too.large")
-      private val PARSING_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
 
       private fun calculateDistance(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int): Int {
         val xDelta = abs(xFrom - xTo)
