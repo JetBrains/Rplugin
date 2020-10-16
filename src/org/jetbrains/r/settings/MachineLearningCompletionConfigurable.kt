@@ -9,9 +9,8 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   companion object {
     private const val PORT_FIELD_WIDTH = 5
+    private val settings = MachineLearningCompletionSettings.getInstance()
   }
-
-  private val settings = MachineLearningCompletionSettings.getInstance()
 
   override fun createPanel(): DialogPanel {
     return panel {
