@@ -62,7 +62,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       // Unwrapping
       possiblyWrappedException = possiblyWrappedException.cause as Exception
     }
-    LOG.warn("Exception has occurred during the processing of machine learning completion request",
+    LOG.warn("Exception has occurred during machine learning completion request-response processing",
              possiblyWrappedException)
   }
 
@@ -72,12 +72,12 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       return
     }
     val inputMessage = constructRequest(parameters)
-    val futureAnswer = processRequest(inputMessage)
+    val futureResponse = processRequest(inputMessage)
 
-    awaitWithCheckCanceled(futureAnswer)
+    awaitWithCheckCanceled(futureResponse)
 
     val response = try {
-      futureAnswer.get(TIMEOUT_MS, TimeUnit.MILLISECONDS)
+      futureResponse.get(TIMEOUT_MS, TimeUnit.MILLISECONDS)
     } catch (e: Exception) {
       processException(e)
       return

@@ -79,7 +79,7 @@ class MachineLearningCompletionServerService: Disposable {
         ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString())
           .start()
     } catch (e: Exception) {
-      LOG.warn("Exception occurred in R ML Completion server thread", e)
+      LOG.warn("Exception has occurred in R ML Completion server thread", e)
     }
   }
 
