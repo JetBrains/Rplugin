@@ -5,15 +5,17 @@
 package org.jetbrains.r.editor
 
 import com.google.gson.Gson
-import com.intellij.codeInsight.completion.*
-import com.intellij.icons.AllIcons
+import com.intellij.codeInsight.completion.CompletionInitializationContext
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionProvider
+import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.awaitWithCheckCanceled
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.io.HttpRequests
-import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -26,7 +28,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
   companion object {
     private val serverService = MachineLearningCompletionServerService.getInstance()
     private val executor =
-      AppExecutorUtil.createBoundedApplicationPoolExecutor(MachineLearningCompletionProvider.toString(), 1)
+      AppExecutorUtil.createBoundedApplicationPoolExecutor(MachineLearningCompletionProvider::class.java.simpleName, 1)
     private val GSON = Gson()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
     private const val TIMEOUT_MS = 200L
@@ -39,14 +41,19 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     return MachineLearningCompletionHttpRequest(isInsideToken, previousText)
   }
 
-  private fun processRequest(requestData: MachineLearningCompletionHttpRequest): Future<String> {
+  private fun processRequest(requestData: MachineLearningCompletionHttpRequest):
+    Future<MachineLearningCompletionHttpResponse> {
     return executor.submit(Callable {
       HttpRequests.post(serverService.serverAddress, "application/json")
         .connect { request ->
           request.write(GSON.toJson(requestData))
-          return@connect request.reader.readText()
+          return@connect GSON.fromJson(request.reader.readText(), MachineLearningCompletionHttpResponse::class.java)
         }
     })
+  }
+
+  private fun processResponse(response: MachineLearningCompletionHttpResponse, result: CompletionResultSet) {
+    result.addAllElements(response.completionVariants.map { it.asLookupElement() })
   }
 
   private fun processException(exception: Exception) {
@@ -69,37 +76,16 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
 
     awaitWithCheckCanceled(futureAnswer)
 
-    val answer = try {
+    val response = try {
       futureAnswer.get(TIMEOUT_MS, TimeUnit.MILLISECONDS)
     } catch (e: Exception) {
       processException(e)
       return
     }
 
-    processAnswerText(answer, result)
+    processResponse(response, result)
 
     val endTime = System.currentTimeMillis()
     LOG.info("R ML completion took ${endTime - startTime} ms")
-  }
-
-  private fun processAnswerText(answer: String, result: CompletionResultSet) {
-    var currentCompletionText = ""
-    var isEven = true
-    for (text in answer.split("\n")) {
-      if (isEven) {
-        // `text` is actual completion text
-        currentCompletionText = text
-      } else {
-        // `text` is score of completion
-        val score = text.toDouble()
-        result.addElement(
-          PrioritizedLookupElement.withPriority(
-            RLookupElement(currentCompletionText, true, AllIcons.Nodes.Favorite, tailText = " $text"),
-            score
-          )
-        )
-      }
-      isEven = !isEven
-    }
   }
 }

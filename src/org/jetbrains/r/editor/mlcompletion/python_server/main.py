@@ -2,6 +2,8 @@ import numpy as np
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import json
+
 ENCODING = 'utf-8'
 
 
@@ -20,7 +22,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return
         input_message = self.rfile.read(content_length)
         print("{} wrote:".format(self.client_address[0]))
-        print(input_message.decode('utf-8'))
+        print(input_message.decode(ENCODING))
         completion_variants = ["1",
                                "something",
                                "good completion",
@@ -31,15 +33,17 @@ class RequestHandler(BaseHTTPRequestHandler):
                                "\"String\"",
                                "c(0, 1, 2:3, 700)"]
         scores = np.random.rand(len(completion_variants))
-        answer = []
-        for completion, score in zip(completion_variants, map(lambda x: "%0.2f" % x, scores)):
-            answer.append(completion.encode('utf-8') + b"\n" + score.encode('utf-8'))
+        answer = self.__construct_response_json(completion_variants, scores)
         print(answer)
-        answer_as_bytes = b"\n".join(answer)
+        answer_as_bytes = answer.encode(ENCODING)
         self.send_response(200)
-        self.__make_header(content_length=len(answer_as_bytes),
-                           content_type='text/plain; charset=UTF-8')
+        self.__make_header(len(answer_as_bytes))
         self.wfile.write(answer_as_bytes)
+
+    @staticmethod
+    def __construct_response_json(variants, scores):
+        completions = [{"text": v, "score": s} for v, s, in zip(variants, scores)]
+        return json.dumps({"completionVariants": completions})
 
     def __make_header(self, content_length, content_type='application/json'):
         self.send_header("Content-Type", content_type)
