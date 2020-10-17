@@ -6,7 +6,6 @@ package org.intellij.datavis.r.inlays.components
 
 import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
-import java.awt.Component
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -43,9 +42,10 @@ class ToolbarPane(val inlayOutput: InlayOutput) : JPanel(BorderLayout()) {
 
   private fun updateMainComponent() {
     if (mainPanel == null) {
-      mainPanel = JPanel(BorderLayout())
-      UiCustomizer.instance.toolbarPaneMainPanelCreated(this, mainPanel)
-      add(mainPanel as Component, BorderLayout.CENTER)
+      mainPanel = JPanel(BorderLayout()).also { mainPanel ->
+        UiCustomizer.instance.toolbarPaneMainPanelCreated(this, mainPanel)
+        add(NotebookInlayMouseListener.wrapPanel(mainPanel, inlayOutput.editor), BorderLayout.CENTER)
+      }
     }
     mainPanel?.let { main ->
       main.removeAll()
