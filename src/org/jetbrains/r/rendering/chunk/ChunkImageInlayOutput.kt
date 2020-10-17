@@ -163,8 +163,8 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     val dialog = RChunkGraphicsSettingsDialog(initialSettings) { newSettings ->
       wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
       wrapper.targetResolution = newSettings.localResolution
-      // Note: no need to set `wrapper.isStandalone` here: it will be changed automatically by a listener
-      manager.isStandalone = newSettings.isStandalone
+      wrapper.isStandalone = newSettings.localStandalone
+      manager.isStandalone = newSettings.globalStandalone
       newSettings.isDarkModeEnabled?.let { newDarkModeEnabled ->
         if (newDarkModeEnabled != isDarkModeEnabled) {
           manager.isDarkModeEnabled = newDarkModeEnabled
@@ -185,6 +185,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     isDarkModeEnabled,
     globalResolution,
     wrapper.localResolution,
-    manager.isStandalone
+    manager.isStandalone,
+    wrapper.isStandalone
   )
 }

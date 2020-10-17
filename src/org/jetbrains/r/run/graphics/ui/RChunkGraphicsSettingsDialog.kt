@@ -15,7 +15,7 @@ class RChunkGraphicsSettingsDialog(
 ) : DialogWrapper(null, true) {
 
   private val settings: Settings
-    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution, isStandalone)
+    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution, globalStandalone, localStandalone)
 
   private val isDarkModeEnabledOrNull
     get() = isDarkModeEnabled.takeIf { isDarkModeVisible }
@@ -29,7 +29,8 @@ class RChunkGraphicsSettingsDialog(
   private var localResolution = initialSettings.localResolution ?: DEFAULT_RESOLUTION
   private var globalResolution = initialSettings.globalResolution ?: DEFAULT_RESOLUTION
 
-  private var isStandalone = initialSettings.isStandalone
+  private var localStandalone = initialSettings.localStandalone
+  private var globalStandalone = initialSettings.globalStandalone
 
   init {
     setResizable(false)
@@ -48,6 +49,9 @@ class RChunkGraphicsSettingsDialog(
           intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
           label(DPI_TEXT)
         }
+        row {
+          checkBox(STANDALONE_TEXT, self::localStandalone)
+        }
       }
       titledRow(GLOBAL_SETTINGS_TITLE) {
         row(RESOLUTION_TEXT) {
@@ -59,10 +63,8 @@ class RChunkGraphicsSettingsDialog(
             checkBox(DARK_MODE_TEXT, self::isDarkModeEnabled)
           }
         }
-      }
-      titledRow(ENGINE_SETTINGS_TITLE) {
         row {
-          checkBox(STANDALONE_TEXT, self::isStandalone, STANDALONE_COMMENT)
+          checkBox(STANDALONE_TEXT, self::globalStandalone, STANDALONE_COMMENT)
         }
       }
     }
@@ -78,7 +80,8 @@ class RChunkGraphicsSettingsDialog(
     val isDarkModeEnabled: Boolean?,
     val globalResolution: Int?,
     val localResolution: Int?,
-    val isStandalone: Boolean
+    val globalStandalone: Boolean,
+    val localStandalone: Boolean
   )
 
   companion object {
@@ -95,7 +98,6 @@ class RChunkGraphicsSettingsDialog(
     private val GLOBAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.all.plots")
     private val DARK_MODE_TEXT = RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme")
 
-    private val ENGINE_SETTINGS_TITLE = RBundle.message("graphics.panel.settings.dialog.engine")
     private val STANDALONE_TEXT = RBundle.message("graphics.panel.settings.dialog.standalone.text")
     private val STANDALONE_COMMENT = RBundle.message("graphics.panel.settings.dialog.standalone.comment")
   }
