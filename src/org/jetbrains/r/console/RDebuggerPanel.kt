@@ -5,16 +5,12 @@
 package org.jetbrains.r.console
 
 import com.intellij.icons.AllIcons
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.idea.ActionsBundle
-import com.intellij.largeFilesEditor.editor.LargeFileEditor
-import com.intellij.largeFilesEditor.editor.LargeFileNotificationProvider
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.EditorBundle
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditor
@@ -24,7 +20,6 @@ import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
@@ -45,7 +40,6 @@ import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointItem
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointPanelProvider
 import com.intellij.xdebugger.impl.frame.XDebuggerFramesList
 import com.intellij.xdebugger.impl.ui.ExecutionPointHighlighter
-import icons.PlatformDebuggerImplIcons
 import icons.RIcons
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
@@ -76,6 +70,8 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
           } else {
             remove(actionToolbar.component)
           }
+          validate()
+          repaint()
         }
       }
     }
