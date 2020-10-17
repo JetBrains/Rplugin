@@ -4,11 +4,13 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.ui.Messages
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.components.*
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
@@ -164,6 +166,9 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
       wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
       wrapper.targetResolution = newSettings.localResolution
       wrapper.isStandalone = newSettings.localStandalone
+      if (newSettings.localStandalone && wrapper.isStandalone != newSettings.localStandalone) {
+        Messages.showErrorDialog(project, SWITCH_ERROR_DESCRIPTION, SWITCH_ERROR_TITLE)
+      }
       manager.isStandalone = newSettings.globalStandalone
       newSettings.isDarkModeEnabled?.let { newDarkModeEnabled ->
         if (newDarkModeEnabled != isDarkModeEnabled) {
@@ -188,4 +193,9 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     manager.isStandalone,
     wrapper.isStandalone
   )
+
+  companion object {
+    private val SWITCH_ERROR_TITLE = RBundle.message("plot.viewer.cannot.switch.to.standalone.title")
+    private val SWITCH_ERROR_DESCRIPTION = RBundle.message("plot.viewer.cannot.switch.to.standalone.description")
+  }
 }

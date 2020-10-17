@@ -69,7 +69,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   @Volatile
   var isStandalone: Boolean = true
     set(value) {
-      if (field != value) {
+      if (field != value && canSwitchTo(value)) {
         field = value
         scheduleRescalingIfNecessary()
       }
@@ -157,6 +157,14 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     plot = null
     isAutoResizeEnabled = false
     graphicsPanel.showImage(file)
+  }
+
+  private fun canSwitchTo(newStandalone: Boolean): Boolean {
+    if (newStandalone) {
+      return plot != null
+    } else {
+      return snapshot != null
+    }
   }
 
   private fun showPlotError(error: RPlotError) {
