@@ -227,44 +227,37 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     val virtualBaseDir = LocalFileSystem.getInstance().findFileByIoFile(File(ProjectManager.getInstance().openProjects[0].basePath!!))
     val fileWrapper = chooser.save(virtualBaseDir, "table.csv") ?: return
 
-    fun saveSelection(out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {
-      val selectedColumnCount = table.selectedColumnCount
-      val selectedRowCount = table.selectedRowCount
-      val selectedRows = table.selectedRows
-      val selectedColumns = table.selectedColumns
-
-      for (i in 0 until selectedRowCount) {
-        for (j in 0 until selectedColumnCount) {
-          tableModel.viewer.ensureLoaded(selectedRows[i], selectedColumns[j]).blockingGet(Int.MAX_VALUE)
-          tableModel.viewer.getValueAt(selectedRows[i], selectedColumns[j])?.let { out.write(escaper(it.toString())) }
-
-          if (j < selectedColumnCount - 1) {
-            out.write(cellBreak)
-          }
-          pi.checkCanceled()
-        }
-        if (i < table.rowCount - 1) {
-          out.append(ClipboardUtils.LINE_BREAK)
-        }
-        pi.fraction = (i + 1).toDouble() / selectedRowCount
+    fun save(onlySelected: Boolean, out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {
+      val rows: Iterable<Int>
+      val columns: Iterable<Int>
+      val rowCount: Int
+      val columnCount: Int
+      if (onlySelected) {
+        rows = table.selectedRows.asIterable()
+        rowCount = table.selectedRowCount
+        columns = table.selectedColumns.asIterable()
+        columnCount = table.selectedColumnCount
+      } else {
+        rowCount = table.rowCount
+        rows = 0 until rowCount
+        columnCount = table.columnCount
+        columns = 0 until columnCount
       }
-    }
 
-    fun saveAll(out: BufferedWriter, cellBreak: String, escaper: (String) -> String, pi: ProgressIndicator) {
-      for (i in 0 until table.rowCount) {
-        for (j in 0 until table.columnCount) {
-          tableModel.viewer.ensureLoaded(i, j).blockingGet(Int.MAX_VALUE)
-          tableModel.viewer.getValueAt(i, j)?.let { out.write(escaper(it.toString())) }
-
-          if (j < table.columnCount - 1) {
-            out.write(cellBreak)
-          }
+      columns.forEachIndexed { j, column ->
+        tableModel.viewer.getColumnName(column).let { out.write(escaper(it)) }
+        if (j < columnCount - 1) out.write(cellBreak)
+        pi.checkCanceled()
+      }
+      rows.forEachIndexed { i, row ->
+        out.append(ClipboardUtils.LINE_BREAK)
+        columns.forEachIndexed { j, column ->
+          tableModel.viewer.ensureLoaded(row, column).blockingGet(Int.MAX_VALUE)
+          tableModel.viewer.getValueAt(row, column)?.let { out.write(escaper(it.toString())) }
+          if (j < columnCount - 1) out.write(cellBreak)
           pi.checkCanceled()
         }
-        if (i < table.rowCount - 1) {
-          out.append(ClipboardUtils.LINE_BREAK)
-        }
-        pi.fraction = (i + 1).toDouble() / table.rowCount
+        pi.fraction = (i + 1).toDouble() / rowCount
       }
     }
 
@@ -297,9 +290,9 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
             }
           }
           if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
-            saveAll(out, cellBreak, escaper, pi)
+            save(false, out, cellBreak, escaper, pi)
           } else {
-            saveSelection(out, cellBreak, escaper, pi)
+            save(true, out, cellBreak, escaper, pi)
           }
         }
       } catch (e: IOException) {
