@@ -43,6 +43,7 @@ class RGraphicsZoomDialog(project: Project, viewerComponent: JComponent, private
 
     fun show(project: Project, parent: Disposable, snapshot: RSnapshot) {
       val wrapper = RGraphicsPanelWrapper(project, parent)
+      wrapper.targetResolution = snapshot.resolution
       val manager = ChunkGraphicsManager(project)
       var zoomGroup: Disposable? = null
       manager.createImageGroup(snapshot.file.absolutePath)?.let { (copyFile, group) ->
