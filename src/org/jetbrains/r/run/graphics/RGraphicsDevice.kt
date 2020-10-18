@@ -286,6 +286,7 @@ class RGraphicsDevice(
       }
     } catch (e: Exception) {
       LOGGER.error("Cannot pull last in-memory outputs", e)
+      postCompletedUpdate()
       emptyList()
     }
   }
