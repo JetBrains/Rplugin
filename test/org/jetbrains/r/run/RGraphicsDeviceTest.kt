@@ -12,6 +12,7 @@ import junit.framework.TestCase
 import org.jetbrains.r.console.UpdateGraphicsHandler
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*
+import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.awt.image.DataBuffer
@@ -36,10 +37,19 @@ class RGraphicsDeviceTest : RProcessHandlerBaseTestCase() {
   override fun setUp() {
     super.setUp()
     val screenDimension = DEFAULT_DIMENSION
+    RGraphicsSettings.setStandalone(project, false)
     graphicsDevice = RGraphicsUtils.createGraphicsDevice(rInterop, screenDimension, null)
     RGraphicsRepository.getInstance(project).setActiveDevice(graphicsDevice)
     graphicsDevice.addListener { update ->
-      TODO()
+      if (update is RGraphicsCompletedUpdate) {
+        val firstMissing = update.outputs.find { it.snapshot == null }
+        if (firstMissing != null) {
+          // Note: force device to dump a snapshot with this number
+          graphicsDevice.configuration = graphicsDevice.configuration.copy(snapshotNumber = firstMissing.number)
+        } else {
+          currentSnapshots = update.outputs.mapNotNull { it.snapshot }
+        }
+      }
     }
     graphicsHandler = UpdateGraphicsHandler(graphicsDevice)
     graphicsManager = ChunkGraphicsManager(project)
