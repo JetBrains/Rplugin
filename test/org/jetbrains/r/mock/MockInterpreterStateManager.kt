@@ -12,6 +12,7 @@ import org.jetbrains.r.interpreter.RInterpreterStateManager
 
 class MockInterpreterStateManager(project: Project) : RInterpreterStateManager {
   override val currentStateOrNull: RInterpreterState = MockInterpreterState(project, MockInterpreterStateProvider.DUMMY)
+  override val states: List<RInterpreterState> = listOf(currentStateOrNull)
 
   override fun getCurrentStateAsync(): Promise<RInterpreterState> = resolvedPromise(currentStateOrNull)
 }

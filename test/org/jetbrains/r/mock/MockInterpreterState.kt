@@ -75,6 +75,8 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
 
   override fun updateState() = resolvedPromise<Unit>()
 
+  override fun markOutdated() { }
+
   override fun cancelStateUpdating() { }
 
   override fun scheduleSkeletonUpdate() = resolvedPromise<Unit>()

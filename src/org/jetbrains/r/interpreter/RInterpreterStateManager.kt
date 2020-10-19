@@ -10,6 +10,7 @@ import org.jetbrains.r.console.RConsoleManager
 
 interface RInterpreterStateManager {
   val currentStateOrNull: RInterpreterState?
+  val states: List<RInterpreterState>
 
   fun getCurrentStateAsync(): Promise<RInterpreterState>
 
@@ -36,6 +37,9 @@ interface RInterpreterStateManager {
 class RInterpreterStateManagerImpl(private val project: Project) : RInterpreterStateManager {
   private val rConsoleManager
     get() = RConsoleManager.getInstance(project)
+
+  override val states: List<RInterpreterState>
+    get() = rConsoleManager.consoles.map { it.rInterop.state }
 
   override val currentStateOrNull: RInterpreterState?
     get() = rConsoleManager.currentConsoleOrNull?.rInterop?.state

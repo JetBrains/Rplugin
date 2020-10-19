@@ -110,9 +110,13 @@ class RConsoleManager(private val project: Project) {
       }
 
       override fun selectionChanged(event: ContentManagerEvent) {
-        if (event.content.isSelected && RConsoleToolWindowFactory.isConsole(event.content)) {
-          currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
+        if (!RConsoleToolWindowFactory.isConsole(event.content)) return
+        val eventConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
+        if (event.content.isSelected) {
+          currentConsole = eventConsole
           currentConsole?.onSelect()
+        } else {
+          eventConsole?.rInterop?.state?.markOutdated()
         }
       }
     })

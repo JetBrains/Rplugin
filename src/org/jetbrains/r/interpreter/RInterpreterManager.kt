@@ -12,7 +12,6 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.stubs.StubUpdatingIndex
 import com.intellij.util.indexing.FileBasedIndex
-import org.jetbrains.annotations.Async
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.rejectedPromise
@@ -111,8 +110,16 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
       val location = interpreterLocation
                      ?: return rejectedPromise<RInterpreter>("No R Interpreter").also { interpreterPromise = it }
       if (!initialized) {
-        RLibraryWatcher.subscribe(project, RLibraryWatcher.TimeSlot.FIRST) {
-          RInterpreterStateManager.getCurrentStateAsync(project).thenAsync { it.scheduleSkeletonUpdate() }
+        RLibraryWatcher.subscribeAsync(project, RLibraryWatcher.TimeSlot.FIRST) { roots ->
+          val states = RInterpreterStateManager.getInstance(project).states
+          val statesRoots = states.map { state -> state.libraryPaths.map { it.path } }
+          for (i in states.indices) {
+            val state = states[i]
+            val stateRoots = statesRoots[i]
+            if (roots.any { stateRoots.contains(it) }) {
+              state.scheduleSkeletonUpdate()
+            }
+          }
         }
       }
       initialized = true

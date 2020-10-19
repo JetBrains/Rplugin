@@ -65,6 +65,8 @@ interface RInterpreterState {
 
   fun cancelStateUpdating()
 
+  fun markOutdated()
+
   fun scheduleSkeletonUpdate(): Promise<Unit>
 
   fun hasPackage(name: String): Boolean {
@@ -73,7 +75,7 @@ interface RInterpreterState {
 }
 
 
-class RInterpreterStateImpl(override val project: Project, override val rInterop: RInterop) : RInterpreterState {
+  class RInterpreterStateImpl(override val project: Project, override val rInterop: RInterop) : RInterpreterState {
   @Volatile
   override var isSkeletonInitialized: Boolean = false
     private set
@@ -145,8 +147,13 @@ class RInterpreterStateImpl(override val project: Project, override val rInterop
     }
   }
 
+  override fun markOutdated() {
+    updateEpoch.incrementAndGet() // Expire installedPackages
+  }
+
   @Synchronized
   override fun cancelStateUpdating() {
+    markOutdated()
     (updatePromise as? AsyncPromise<Unit>)?.cancel()
   }
 

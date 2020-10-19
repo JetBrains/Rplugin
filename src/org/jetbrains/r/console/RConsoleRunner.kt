@@ -69,6 +69,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
         val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
         RInteropUtil.runRWrapperAndInterop(interpreter).onSuccess { rInterop ->
           initByInterop(rInterop, promise)
+          rInterop.state.scheduleSkeletonUpdate()
         }.onError {
           showErrorMessage(project, it.message ?: "Cannot find suitable rwrapper", "Cannot run console")
           promise.setError(it)

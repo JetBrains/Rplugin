@@ -40,10 +40,7 @@ import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
-import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.RInterpreterState
-import org.jetbrains.r.interpreter.RInterpreterStateImpl
-import org.jetbrains.r.interpreter.RVersion
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RPackagePriority
 import org.jetbrains.r.packages.RequiredPackageException
@@ -121,7 +118,13 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     private set
 
   private val terminationPromise = AsyncPromise<Unit>()
-    .also { it.onSuccess { fireListeners { listener -> listener.onTermination() } } }
+    .also {
+      it.onSuccess {
+        state.cancelStateUpdating()
+        RLibraryWatcher.getInstance(project).stopWatchingForState(state)
+        fireListeners { listener -> listener.onTermination() }
+      }
+    }
   val isAlive: Boolean
     get() = !terminationPromise.isDone
   @Volatile

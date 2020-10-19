@@ -177,7 +177,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
       listener()
     }
     if (rInterop.isAlive) {
-      rInterop.state.scheduleSkeletonUpdate()
+      rInterop.invalidateCaches()
       RToolWindowFactory.refreshPackagePanel(project)
     }
   }

@@ -16,38 +16,62 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.util.tryRegisterDisposable
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 class RLibraryWatcher(private val project: Project) : Disposable {
   private val switch = RLibraryWatcherSwitch()
   private val changed = AtomicBoolean(false)
+  private val changedRoots = AtomicReference<List<String>>(emptyList())
+  private val currentRoots: MutableMap<String, MutableSet<RInterpreterState>> = mutableMapOf()
   private var currentDisposable: Disposable? = null
-  private var currentRoots: List<String>? = null
 
   @Synchronized
   fun updateRootsToWatch(state: RInterpreterState) {
     val roots = state.libraryPaths.map { it.path }
-    if (currentRoots == roots) {
-      return
+    var hasNewAppeared = false
+    for (root in roots) {
+      if (!currentRoots.containsKey(root)) {
+        hasNewAppeared = true
+        currentRoots[root] = mutableSetOf()
+      }
+      currentRoots.getValue(root).add(state)
     }
-    currentRoots = roots
+    if (!hasNewAppeared) return
+
     currentDisposable?.let {
       Disposer.dispose(it)
       currentDisposable = null
     }
-    if (roots.isNotEmpty()) {
+    if (currentRoots.isNotEmpty()) {
       val disposable = Disposer.newDisposable()
       currentDisposable = disposable
       state.rInterop.tryRegisterDisposable(disposable)
-      state.rInterop.interpreter.addFsNotifierListenerForHost(roots, disposable) {
+      val currentsRoots = currentRoots.keys.toList()
+      state.rInterop.interpreter.addFsNotifierListenerForHost(currentsRoots, disposable) { path ->
+        val newChangedRoots = currentsRoots.filter { path.startsWith(it) }
+        changedRoots.getAndUpdate { it + newChangedRoots }
         changed.set(true)
+        runAsync { refresh() }
+      }
+    }
+  }
+
+  fun stopWatchingForState(state: RInterpreterState) {
+    val roots = state.libraryPaths.map { it.path }
+    for (root in roots) {
+      currentRoots[root]?.remove(state) ?: continue
+      if (currentRoots.getValue(root).isEmpty()) {
+        currentRoots.remove(root)
       }
     }
   }
 
   fun refresh() {
     if (changed.compareAndSet(true, false)) {
+      val roots = changedRoots.getAndSet(emptyList())
+      if (roots.isEmpty()) return
       switch.onActive {
-        project.messageBus.syncPublisher(TOPIC).libraryChanged()
+        project.messageBus.syncPublisher(TOPIC).libraryChanged(roots.distinct())
       }
     }
   }
@@ -80,31 +104,31 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     private val LOGGER = Logger.getInstance(RLibraryWatcher::class.java)
 
     private class SlottedListenerDispatcher(project: Project) {
-      private val groups = TimeSlot.values().map { mutableListOf<() -> Promise<Unit>>() }
+      private val groups = TimeSlot.values().map { mutableListOf<(List<String>) -> Promise<Unit>>() }
 
       init {
         val connection = project.messageBus.connect(getInstance(project))
         connection.subscribe(TOPIC, object : RLibraryListener {
-          override fun libraryChanged() {
+          override fun libraryChanged(changedRoots: List<String>) {
             val copy = groups.map { it.toList() }  // Note: if new listeners are going to be added during refresh they won't be taken into account
-            updateAllGroups(copy)
+            updateAllGroups(copy, changedRoots)
           }
         })
       }
 
-      private fun updateAllGroups(groups: List<List<() -> Promise<Unit>>>) {
-        updateRemainingGroups(groups, 0)
+      private fun updateAllGroups(groups: List<List<(List<String>) -> Promise<Unit>>>, changedRoots: List<String>) {
+        updateRemainingGroups(groups, 0, changedRoots)
       }
 
-      private fun updateRemainingGroups(groups: List<List<() -> Promise<Unit>>>, groupIndex: Int) {
+      private fun updateRemainingGroups(groups: List<List<(List<String>) -> Promise<Unit>>>, groupIndex: Int, changedRoots: List<String>) {
         if (groupIndex < groups.size) {
-          updateGroup(groups[groupIndex])
-            .onSuccess { updateRemainingGroups(groups, groupIndex + 1) }
+          updateGroup(groups[groupIndex], changedRoots)
+            .onSuccess { updateRemainingGroups(groups, groupIndex + 1, changedRoots) }
             .onError { LOGGER.error(it) }
         }
       }
 
-      private fun updateGroup(group: List<() -> Promise<Unit>>): Promise<Unit> {
+      private fun updateGroup(group: List<(List<String>) -> Promise<Unit>>, changedRoots: List<String>): Promise<Unit> {
         return AsyncPromise<Unit>().also { promise ->
           if (group.isEmpty()) {
             promise.setResult(Unit)
@@ -112,7 +136,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
           }
           val counter = AtomicInteger(group.size)
           for (listener in group) {
-            listener()
+            listener(changedRoots)
               .onSuccess { decreaseCounter(counter, promise) }
               .onError {
                 LOGGER.error("Error occurred when triggering RLibraryWatcher listener", it)
@@ -129,7 +153,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
         }
       }
 
-      fun addListener(timeSlot: TimeSlot, listener: () -> Promise<Unit>) {
+      fun addListener(timeSlot: TimeSlot, listener: (List<String>) -> Promise<Unit>) {
         groups[timeSlot.ordinal].add(listener)
       }
     }
@@ -137,15 +161,15 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     private val dispatchers = mutableMapOf<String, SlottedListenerDispatcher>()
 
     @Synchronized
-    fun subscribe(project: Project, timeSlot: TimeSlot, listener: () -> Promise<Unit>) {
+    fun subscribe(project: Project, timeSlot: TimeSlot, listener: (List<String>) -> Promise<Unit>) {
       val dispatcher = dispatchers.getOrPut(project.name) { SlottedListenerDispatcher(project) }
       dispatcher.addListener(timeSlot, listener)
     }
 
     @Synchronized
-    fun subscribeAsync(project: Project, timeSlot: TimeSlot, listener: () -> Unit) {
+    fun subscribeAsync(project: Project, timeSlot: TimeSlot, listener: (List<String>) -> Unit) {
       subscribe(project, timeSlot) {
-        runAsync(listener)
+        runAsync { listener(it) }
       }
     }
 
@@ -154,5 +178,5 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 }
 
 interface RLibraryListener {
-  fun libraryChanged()
+  fun libraryChanged(changedRoots: List<String>)
 }
