@@ -318,8 +318,10 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       NotebookCellInlayManager(editor).initialize(addListeners)
     }
 
-    @JvmField
-    val key = Key.create<NotebookCellInlayManager>(NotebookCellInlayManager::class.java.name)
+    @JvmStatic
+    fun get(editor: Editor): NotebookCellInlayManager? = key.get(editor)
+
+    private val key = Key.create<NotebookCellInlayManager>(NotebookCellInlayManager::class.java.name)
     private const val VIEWPORT_TASK = "Viewport Update"
     private const val VIEWPORT_TIME_SPAN = 100
   }
