@@ -190,6 +190,6 @@ class RunChunkTest : RConsoleBaseTestCase() {
     val firstPromise = result.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
     TestCase.assertNotNull(firstPromise)
     firstPromise?.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    return RMarkdownInlayDescriptor(myFixture.file, myFixture.editor).getInlayOutputs(fenceLang!!)
+    return RMarkdownInlayDescriptor(myFixture.file).getInlayOutputs(fenceLang!!)
   }
 }

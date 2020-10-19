@@ -4,7 +4,6 @@
 
 package org.intellij.datavis.r.inlays
 
-import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.extensions.ExtensionPointName
@@ -26,13 +25,6 @@ interface InlayElementDescriptor {
    * psi arguments of the interface methods belong to the [psiFile]
    */
   val psiFile: PsiFile
-
-  /**
-   * toolbar inlays, null if unsupported
-   */
-  @JvmDefault
-  val toolbars: InlayToolbarElementDescriptor?
-    get() = null
 
   /**
    * returns true if the [psi] could have inlay outputs
@@ -64,25 +56,6 @@ interface InlayElementDescriptor {
   @JvmDefault
   fun shouldUpdateInlays(event: DocumentEvent): Boolean =
     event.oldFragment.contains("\n") || event.newFragment.contains("\n")
-}
-
-interface InlayToolbarElementDescriptor {
-  /**
-   * @return true if the [psi] have inlay toolbar actions
-   */
-  fun isToolbarActionElement(psi: PsiElement): Boolean
-
-  /**
-   * @return actions for an inlay toolbar
-   * @param toolbarElement `isToolbarActionElement(toolbarElement)` is true
-   */
-  fun getToolbarActions(toolbarElement: PsiElement): ActionGroup?
-
-  /**
-   * Callback for updating toolbar elements highlighting.
-   * The method is called when the highlighting of [toolbarElements] should be repainted.
-   */
-  fun onUpdateHighlighting(toolbarElements: Collection<PsiElement>)
 }
 
 interface InlayDescriptorProvider {
