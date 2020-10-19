@@ -19,6 +19,7 @@ import kotlin.math.min
 
 object RPlotUtil {
   private const val PROTOCOL_VERSION = 7
+  private const val STROKE_WIDTH_SCALE = 1.25f
 
   // Not to be translated
   private const val DEFAULT_FONT_NAME_LINUX = "Liberation Sans"
@@ -454,7 +455,7 @@ object RPlotUtil {
     }
 
     private fun scale(stroke: RStroke): RStroke {
-      return RStroke(scale(stroke.width), stroke.cap, stroke.join, stroke.miterLimit, stroke.pattern?.let { scale(it) })
+      return RStroke(scale(stroke.width) / STROKE_WIDTH_SCALE, stroke.cap, stroke.join, stroke.miterLimit, stroke.pattern?.let { scale(it) })
     }
 
     private fun scale(pattern: FloatArray): FloatArray {
