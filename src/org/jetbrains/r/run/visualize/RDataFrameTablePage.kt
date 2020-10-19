@@ -171,13 +171,23 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
       return button
     }
 
-    val actionSaveAsCsv = object : DumbAwareAction(RBundle.message("action.dataframe.viewer.export.as.text.name"),
-                                                   RBundle.message("action.dataframe.viewer.export.as.csv.tsv.description"), AllIcons.ToolbarDecorator.Export) {
+    val actionSaveAsCsv = object : DumbAwareAction(RBundle.message("action.dataframe.viewer.export.as.text"),
+                                                   RBundle.message("action.dataframe.viewer.export.as.description"), AllIcons.ToolbarDecorator.Export) {
       override fun actionPerformed(e: AnActionEvent) {
         saveAsCsv()
       }
     }
     createButton(actionSaveAsCsv)
+    table.selectionModel.addListSelectionListener {
+      val presentation = actionSaveAsCsv.templatePresentation
+      if (table.selectedColumnCount == 0 || table.selectedRowCount == 0) {
+        presentation.text = RBundle.message("action.dataframe.viewer.export.as.text")
+        presentation.description = RBundle.message("action.dataframe.viewer.export.as.description")
+      } else {
+        presentation.text = RBundle.message("action.dataframe.viewer.export.selection.as.text")
+        presentation.description = RBundle.message("action.dataframe.viewer.export.selection.as.description")
+      }
+    }
 
     val filterTable = object : DumbAwareToggleAction(FILTER_TOOLTIP_ESCAPED, RBundle.message("action.dataframe.viewer.filter.description"), AllIcons.Actions.Find) {
       override fun isSelected(e: AnActionEvent) = filterHeader != null
