@@ -6,4 +6,7 @@
       <option name="BACKGROUND" value="373737" />
     </value>
   </option>
+  <colors>
+    <option name="RMARKDOWN_CHUNK.BACKGROUND" value="373737"/>
+  </colors>
 </list>

@@ -356,6 +356,7 @@ You can find the source code in the following repositories:
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
         <notebookCellTypeAwareLexerProvider language="RMarkdown"
                                             implementationClass="org.jetbrains.r.editor.RMarkdownCellTypeAwareLexerProvider"/>
+        <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -480,6 +481,8 @@ You can find the source code in the following repositories:
         <editorFactoryListener implementation="org.jetbrains.r.console.RConsoleEditorFactoryListener"/>
         <editorFactoryListener implementation="org.jetbrains.r.settings.RUpdateComponent"/>
         <editorFactoryListener implementation="org.jetbrains.r.hints.RReturnHintEditorFactoryListener"/>
+        <editorFactoryListener implementation="org.jetbrains.r.rendering.editor.RMarkdownEditorFactoryListener"
+                               order="before org.intellij.datavis.r.inlays.InlaysManager"/>
         <highlightingPassFactory implementation="org.jetbrains.r.hints.RReturnHintPass$Factory"/>
 
         <!-- Settings -->
