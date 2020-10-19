@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.isLocalHost
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
@@ -17,16 +18,14 @@ class MachineLearningCompletionServerService: Disposable {
     private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
     private const val RELAUNCH_TIMEOUT_MS = 5_000L
     private const val LAUNCH_SERVER_COMMAND = "python3"
-    private val LOCAL_SERVER_MAIN_FILE_PATH = Paths.get(
-      System.getProperty("user.dir"),
-      "../rplugin/src/org/jetbrains/r/editor/mlcompletion/python_server"
-    ).toString()
-
+    private val LOCAL_SERVER_MAIN_FILE_PATH = RPluginUtil.helperPathOrNull?.let {
+      Paths.get(it, "python_server").toString()
+    }
     fun getInstance() = service<MachineLearningCompletionServerService>()
   }
 
   private var localServer: Process? = null
-  private var lastRelaunchInitializedTime: Long = System.currentTimeMillis();
+  private var lastRelaunchInitializedTime: Long = System.currentTimeMillis()
 
   val serverAddress
   get() = "http://${settings.state.host}:${settings.state.port}"
@@ -71,7 +70,7 @@ class MachineLearningCompletionServerService: Disposable {
   }
 
   private fun launchServer(host: String, port: Int) {
-    if (!isLocalHost(host)) {
+    if (!isLocalHost(host) || LOCAL_SERVER_MAIN_FILE_PATH == null) {
       return
     }
     try {
