@@ -19,7 +19,6 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.console.RConsoleManager
-import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.RConsoleView
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -111,8 +110,8 @@ class RJobRunner(private val project: Project) {
       eventDispatcher.multicaster.onJobDescriptionCreated(rJobDescriptor)
       processHandler.startNotify()
       invokeLater {
-        RConsoleToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
-        RConsoleToolWindowFactory.focusOnJobs(project)
+        RJobsToolWindowFactory.getJobsPanel(project)?.addJobDescriptor(rJobDescriptor)
+        RJobsToolWindowFactory.focusOnJobs(project)
       }
       promise.setResult(rJobDescriptor)
     }

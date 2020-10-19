@@ -35,7 +35,6 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
-import org.jetbrains.r.console.jobs.RJobPanel
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
@@ -61,7 +60,6 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     })
     runInEdt {
       tryAddContent(toolWindow, project)
-      addJobsPanel(toolWindow, project)
       addCreateConsoleTabAction(toolWindow)
     }
   }
@@ -86,49 +84,11 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       })
   }
 
-  private fun addJobsPanel(toolWindow: ToolWindow, project: Project) {
-    val rJobsPanel = RJobPanel(project)
-    val content = ContentFactory.SERVICE.getInstance().createContent(rJobsPanel, RBundle.message("jobs.panel.title"), false)
-    rJobsPanel.jobsStatusCallback = { ongoing: Int, finished: Int, failed: Int ->
-      content.displayName = buildDisplayName(ongoing, finished, failed)
-    }
-    content.putUserData(JOBS_CONTENT_KEY, Unit)
-    content.executionId
-    content.isCloseable = false
-    toolWindow.contentManager.addContent(content)
-  }
-
-  private fun buildDisplayName(ongoing: Int, finished: Int, failed: Int): String {
-    val builder = StringBuilder()
-    builder.append(RBundle.message("jobs.panel.title"))
-    if (ongoing + finished + failed > 0) {
-      builder.append(": ")
-    }
-    if (ongoing > 0) {
-      builder.append(RBundle.message("jobs.panel.title.ongoing", ongoing))
-      if (finished + failed > 0) {
-        builder.append(", ")
-      }
-    }
-    if (finished > 0) {
-      builder.append(RBundle.message("jobs.panel.title.finished", finished))
-      if (failed > 0) {
-        builder.append(", ")
-      }
-    }
-    if (failed > 0) {
-      builder.append(RBundle.message("jobs.panel.title.failed", failed))
-    }
-    return builder.toString()
-  }
-
   companion object {
     internal const val ID = "R Console"
-    private val JOBS_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.job")
     private val CONSOLE_CONTENT_KEY = Key.create<Unit>("org.jetbrains.r.console.content.console")
     private val CONSOLE_PLACEHOLDER_KEY = Key.create<Unit>("org.jetbrains.r.console.content.placeholder")
 
-    private fun isJob(content: Content): Boolean = content.getUserData(JOBS_CONTENT_KEY) != null
     private fun isPlaceholder(content: Content): Boolean = content.getUserData(CONSOLE_PLACEHOLDER_KEY) != null
     internal fun isConsole(content: Content): Boolean = content.getUserData(CONSOLE_CONTENT_KEY) != null
 
@@ -143,22 +103,9 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     }
 
-    fun focusOnJobs(project: Project) {
-      val rConsoleToolWindows = getRConsoleToolWindows(project)
-      rConsoleToolWindows?.show(null)
-      rConsoleToolWindows?.contentManager?.let { contentManager ->
-        contentManager.contents.firstOrNull { isJob(it) }?.let { content ->
-          contentManager.setSelectedContent(content)
-        }
-      }
-    }
-
     fun getRConsoleToolWindows(project: Project): ToolWindow? {
       return ToolWindowManager.getInstance(project).getToolWindow(ID)
     }
-
-    fun getJobsPanel(project: Project): RJobPanel? =
-      getRConsoleToolWindows(project)?.contentManager?.contents?.firstOrNull { isJob(it) }?.component as RJobPanel?
 
     fun addContent(project: Project, contentDescriptor: RunContentDescriptor) {
       val toolWindow = getRConsoleToolWindows(project) ?: throw IllegalStateException("R Console Tool Window doesn't exist")

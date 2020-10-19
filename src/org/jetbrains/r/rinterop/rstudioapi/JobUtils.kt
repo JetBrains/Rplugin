@@ -3,10 +3,10 @@ package org.jetbrains.r.rinterop.rstudioapi
 import com.intellij.util.PathUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.console.jobs.ExportGlobalEnvPolicy
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobTask
+import org.jetbrains.r.console.jobs.RJobsToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 
@@ -40,7 +40,7 @@ object JobUtils {
 
   fun jobRemove(rInterop: RInterop, args: RObject): RObject {
     val id = args.rString.getStrings(0).toInt()
-    val jobList = RConsoleToolWindowFactory.getJobsPanel(rInterop.project)?.jobList ?: return getRNull()
+    val jobList = RJobsToolWindowFactory.getJobsPanel(rInterop.project)?.jobList ?: return getRNull()
     jobList.removeJobEntity(jobList.jobEntities.find {
       it.jobDescriptor.hashCode() == id
     } ?: return rError("Job ID '${id}' does not exist."))
