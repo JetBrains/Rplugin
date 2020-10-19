@@ -65,7 +65,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
 
   private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
     (toolWindow as? ToolWindowEx)?.setTabActions(
-      object : AnAction() {
+      object : AnAction(), DumbAware {
         private val addConsoleAction = ActionManager.getInstance().getAction("org.jetbrains.r.console.RConsoleAction")
 
         init {
