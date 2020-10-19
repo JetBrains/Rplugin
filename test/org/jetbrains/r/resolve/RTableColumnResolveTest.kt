@@ -154,6 +154,18 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testDataTableSubscription() {
+    doTest(
+      "\"my_column1\"",
+
+      """
+      df <- data.table(my_column1 = c(1, 2), my_column2 = c(3, 4))
+      df <- df[, c("my_column1", "my_column2")]
+      df[my_colu<caret>mn1]
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
