@@ -9,14 +9,18 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.CommonProcessors
 import com.intellij.util.Processor
 import org.jetbrains.r.console.RConsoleRuntimeInfo
+import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.rinterop.TableColumnsInfo
-import java.util.concurrent.Callable
 
-typealias TableColumnsProvider = (operandProcessorRunner: Callable<Boolean>?, call: RCallExpression, callInfo: TableManipulationCallInfo<*>,
+typealias ProcessOperandColumnRunner = (processor: Processor<TableColumnInfo>) -> Boolean
+
+typealias TableColumnsProvider = (operandProcessorRunner: ProcessOperandColumnRunner?,
+                                  call: RExpression,
+                                  callInfo: TableManipulationCallInfo<*>,
                                   processor: Processor<TableColumnInfo>) -> Boolean
 
 interface TableManipulationFunction {
@@ -45,6 +49,10 @@ interface TableManipulationFunction {
   }
 
   fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean
+
+  fun isComplexColumnName(columnName: String): Boolean {
+    return false
+  }
 }
 
 data class TableManipulationCallInfo<T : TableManipulationFunction>(
@@ -149,18 +157,18 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     return true
   }
 
-  private fun processColumnsFromCall(call: RCallExpression, processor: Processor<TableColumnInfo>): Boolean {
-    val callInfo = getCallInfo(call, null)
+  private fun processColumnsFromExpression(expression: RExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val callInfo = getCallInfo(expression, expression.containingFile.originalFile.runtimeInfo)
     if (callInfo != null) {
-      val processOperandColumnsRunner = Callable {
+      val processOperandColumnsRunner = fun (operandColumnsProcessor: Processor<TableColumnInfo>): Boolean {
         for (table in callInfo.passedTableArguments) {
-          if (!processStaticTableColumns(table, processor)) {
-            return@Callable false
+          if (!processStaticTableColumns(table, operandColumnsProcessor)) {
+            return false
           }
         }
-        return@Callable true
+        return true
       }
-      return callInfo.function.tableColumnsProvider(processOperandColumnsRunner, call, callInfo, processor)
+      return callInfo.function.tableColumnsProvider(processOperandColumnsRunner, expression, callInfo, processor)
     }
     return true
   }
@@ -179,11 +187,13 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       }
       val rightExpr = element.rightExpr
       if (rightExpr is RCallExpression) {
-        return processColumnsFromCall(rightExpr, processor)
+        return processColumnsFromExpression(rightExpr, processor)
       }
     }
     else if (element is RCallExpression) {
-      return processColumnsFromCall(element, processor)
+      return processColumnsFromExpression(element, processor)
+    } else if (element is RSubscriptionExpression) {
+      return processColumnsFromExpression(element, processor)
     }
     return true
   }
@@ -373,12 +383,12 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
   companion object {
     private const val PIPE_OPERATOR = "%>%"
 
-    fun processOperandColumns(operandProcessorRunner: Callable<Boolean>?,
-                              @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+    fun processOperandColumns(operandProcessorRunner: ProcessOperandColumnRunner?,
+                              @Suppress("UNUSED_PARAMETER") expression: RExpression,
                               @Suppress("UNUSED_PARAMETER") callInfo: TableManipulationCallInfo<*>,
                               @Suppress("UNUSED_PARAMETER") processor: Processor<TableColumnInfo>): Boolean {
       if (operandProcessorRunner != null) {
-        return operandProcessorRunner.call()
+        return operandProcessorRunner(processor)
       }
       return true
     }
@@ -386,12 +396,12 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     /**
      * Retrieves columns from dot arguments and the column "n" from named argument
      */
-    fun processColumnsOfCountFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
-                                      @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+    fun processColumnsOfCountFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: ProcessOperandColumnRunner?,
+                                      expression: RExpression,
                                       callInfo: TableManipulationCallInfo<*>,
                                       processor: Processor<TableColumnInfo>): Boolean {
       val collectProcessor = CommonProcessors.CollectProcessor<TableColumnInfo>()
-      processAllDotsColumns(null, call, callInfo, collectProcessor)
+      processAllDotsColumns(null, expression, callInfo, collectProcessor)
 
       for (column in collectProcessor.results) {
         if (!processor.process(column)) {
@@ -400,7 +410,7 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
       }
 
       val nameArgument = callInfo.argumentInfo.getArgumentPassedToParameter("name")
-      var countColumnNameDefinition: PsiElement = call
+      var countColumnNameDefinition: PsiElement = expression
       var countColumnName = getDefaultCountColumnName(collectProcessor.results)
       if (nameArgument != null && nameArgument is RStringLiteralExpression) {
         val countColumnNameFromCall = nameArgument.name
@@ -416,17 +426,17 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
      * Retrieves column from call dot arguments. Columns from argument table ignored.
      * Useful for functions like "summarize".
      */
-    fun processAllDotsColumns(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
-                              @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+    fun processAllDotsColumns(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: ProcessOperandColumnRunner?,
+                              @Suppress("UNUSED_PARAMETER") expression: RExpression,
                               callInfo: TableManipulationCallInfo<*>,
                               processor: Processor<TableColumnInfo>): Boolean {
       val result = ArrayList<TableColumnInfo>()
-      for (expression in callInfo.argumentInfo.allDotsArguments) {
-        if (expression is RNamedArgument) {
-          result.add(TableColumnInfo(expression.name, definition = expression))
+      for (argument in callInfo.argumentInfo.allDotsArguments) {
+        if (argument is RNamedArgument) {
+          result.add(TableColumnInfo(argument.name, definition = argument))
         }
-        else if (expression is RIdentifierExpression) {
-          result.add(TableColumnInfo(expression.name, definition = expression))
+        else if (argument is RIdentifierExpression) {
+          result.add(TableColumnInfo(argument.name, definition = argument))
         }
       }
       for (column in result) {
@@ -440,14 +450,14 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
     /**
      * @return joined columns from argument table and call dot arguments
      */
-    fun processOperandTableAndAllDotsColumns(operandProcessorRunner: Callable<Boolean>?,
-                                             @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+    fun processOperandTableAndAllDotsColumns(operandProcessorRunner: ProcessOperandColumnRunner?,
+                                             @Suppress("UNUSED_PARAMETER") expression: RExpression,
                                              callInfo: TableManipulationCallInfo<*>,
                                              processor: Processor<TableColumnInfo>): Boolean {
-      if (operandProcessorRunner != null && !operandProcessorRunner.call()) {
+      if (operandProcessorRunner != null && !operandProcessorRunner(processor)) {
         return false
       }
-      if (!processAllDotsColumns(null, call, callInfo, processor)) {
+      if (!processAllDotsColumns(null, expression, callInfo, processor)) {
         return false
       }
       return true

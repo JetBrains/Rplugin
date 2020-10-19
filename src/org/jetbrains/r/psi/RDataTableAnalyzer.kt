@@ -4,10 +4,16 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.util.CommonProcessors
+import com.intellij.util.Processor
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import org.jetbrains.r.psi.RDataTableAnalyzer.processSetnames
+import org.jetbrains.r.psi.RDataTableAnalyzer.processSubscription
+import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
-import org.jetbrains.r.psi.api.RExpression
+import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.refactoring.RNamesValidator
 
 object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
   override val nameToFunction = DataTableFunction.values()
@@ -43,6 +49,77 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
       command.append("(data.table::data.table())")
     }
   }
+
+  fun processSetnames(operandProcessorRunner: ProcessOperandColumnRunner?,
+                      @Suppress("UNUSED_PARAMETER") expression: RExpression,
+                      callInfo: TableManipulationCallInfo<*>,
+                      processor: Processor<TableColumnInfo>): Boolean {
+    val collectProcessor = CommonProcessors.CollectProcessor<TableColumnInfo>()
+    if (operandProcessorRunner != null) {
+      operandProcessorRunner(collectProcessor)
+    }
+    var result = ArrayList<TableColumnInfo>()
+    result.addAll(collectProcessor.results)
+    val oldColumnNames = getColumnsFromArgument(callInfo.argumentInfo.getArgumentPassedToParameter("old")).mapNotNull { t -> t.name }
+    result = ArrayList(result.filter {t -> t.name !in oldColumnNames})
+
+    getColumnsFromArgument(callInfo.argumentInfo.getArgumentPassedToParameter("new")).forEach {
+      val columnName = it.name
+      if (columnName != null) {
+        result.add(TableColumnInfo(columnName, definition = it))
+      }
+    }
+
+    return result.all { processor.process(it) }
+  }
+
+  fun processSubscription(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: ProcessOperandColumnRunner?,
+                          @Suppress("UNUSED_PARAMETER") expression: RExpression,
+                          callInfo: TableManipulationCallInfo<*>,
+                          processor: Processor<TableColumnInfo>): Boolean {
+    val parameterJ = callInfo.argumentInfo.getArgumentPassedToParameter("j")
+    if (parameterJ is RIdentifierExpression) {
+      return processor.process(TableColumnInfo(parameterJ.name, definition = parameterJ))
+    } else if (parameterJ is RCallExpression) {
+      val columns = getNamesOfVectorCall(parameterJ)
+      for (column in columns) {
+        val columnName = column.name
+        if (columnName != null) {
+          if (!processor.process(TableColumnInfo(columnName, definition = column))) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  }
+
+  fun getNamesOfVectorCall(call: RCallExpression): List<RExpression> {
+    if (call.expression.name == "c") {
+      return call.argumentList.expressionList.filter { t -> t is RStringLiteralExpression }
+    }
+    return emptyList()
+  }
+
+  private fun getColumnsFromArgument(argument: RExpression?): Collection<RStringLiteralExpression> {
+    if (argument == null) {
+      return emptySet()
+    }
+
+    if (argument is RStringLiteralExpression) {
+      return listOf(argument)
+    } else if (argument is RCallExpression && argument.expression.name == "c") {
+      // c("column1", "column2")
+      val result = ArrayList<RStringLiteralExpression>()
+      for (cArgument in argument.argumentList.expressionList) {
+        if (cArgument is RStringLiteralExpression) {
+          result.add(cArgument)
+        }
+      }
+      return result
+    }
+    return emptySet()
+  }
 }
 
 @Suppress("SpellCheckingInspection")
@@ -66,7 +143,7 @@ enum class DataTableFunction(
   AS_MATRIX("as.matrix", s3Function = true),
   AS_XTS("as.xts", s3Function = true, returnsTable = false),
   CUBE("cube", allowWithoutQuotes = listOf("j"), s3Function = true),
-  DATA_TABLE("data.table", allowWithoutQuotes = listOf("...")),
+  DATA_TABLE("data.table", allowWithoutQuotes = listOf("..."), tableColumnsProvider = ::processAllDotsColumns),
   DCAST("dcast", allowWithoutQuotes = listOf("formula"), tableArguments = listOf("data"), s3Function = true),
   DUPLICATED("duplicated", s3Function = true, returnsTable = false),
   FINTERSECT("fintersect", tableArguments = listOf("x", "y")),
@@ -102,7 +179,7 @@ enum class DataTableFunction(
   SET_INDEXV("setindexv", ignoreInTransform = true),
   SET_KEY("setkey", allowWithoutQuotes = listOf("..."), ignoreInTransform = true),
   SET_KEYV("setkeyv", ignoreInTransform = true),
-  SET_NAMES("setnames", ignoreInTransform = true),
+  SET_NAMES("setnames", ignoreInTransform = true, tableColumnsProvider = ::processSetnames),
   SET_ORDER("setorder", allowWithoutQuotes = listOf("..."), ignoreInTransform = true),
   SET_ORDERV("setorderv", ignoreInTransform = true),
   SHIFT("shift", returnsTable = false),
@@ -122,11 +199,15 @@ enum class DataTableFunction(
   SUBSCRIPTION_OPERATOR(
     "`[.data.table`",
     extraFunctionNames = listOf("\"[.data.table\"", "`[<-.data.table`", "\"[<-.data.table\""),
-    allowWithoutQuotes = listOf("i", "j", "by"), s3Function = true);
+    allowWithoutQuotes = listOf("i", "j", "by"), s3Function = true, tableColumnsProvider = ::processSubscription);
 
   override fun isQuotesNeeded(argumentInfo: RArgumentInfo, currentArgument: RExpression): Boolean {
     val parameterName = argumentInfo.getParameterNameForArgument(currentArgument)
     return !allowWithoutQuotes.contains(parameterName)
+  }
+
+  override fun isComplexColumnName(columnName: String): Boolean {
+    return !RNamesValidator.isIdentifier(columnName)
   }
 
   //Inner functions

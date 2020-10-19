@@ -208,6 +208,41 @@ class DataTableCompletionTest : RColumnCompletionTest() {
     checkCompletion("setkey(df, som<caret>)", expected = listOf("\"some name\""))
   }
 
+  fun testStaticColumnsFromDataTable() {
+    checkStaticCompletion(
+      """
+        df <- data.table(my_column_1=c(1,2,3,4,5), my_column_2=c(2,3,4,5,6))
+        setkey(df, my_colum<caret>)        
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_column_1", "my_column_2"),
+      expectedToBeMissed = emptyList()
+    )
+  }
+
+  fun testStaticColumnsFromSetnames() {
+    checkStaticCompletion(
+      """
+        df <- data.table(my_column_1=c(1,2,3,4,5), my_column_2=c(2,3,4,5,6))
+        df <- df %>% setnames(c("my_column_1", "my_column_2"), c("my_new_column1", "my_new_column2"))
+        
+        setkey(df, my_<caret>)
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_new_column1", "my_new_column2"),
+      expectedToBeMissed = listOf("my_column_1", "my_column_2")
+    )
+  }
+
+  fun testStaticColumnsForSubscription() {
+    checkStaticCompletion(
+      """
+        df <- df[ , c("my_new_column1", "my_new_column2")]
+        df[, my_new_<caret>]
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_new_column1"),
+      expectedToBeMissed = emptyList()
+    )
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,

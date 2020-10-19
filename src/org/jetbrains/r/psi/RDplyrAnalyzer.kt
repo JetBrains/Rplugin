@@ -14,7 +14,6 @@ import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processColumnsOfC
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandTableAndAllDotsColumns
 import org.jetbrains.r.psi.api.*
-import java.util.concurrent.Callable
 
 object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
   @NonNls const val PIPE_OPERATOR = "%>%"
@@ -84,15 +83,17 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
     return true
   }
 
-  fun processColumnsOfSelectFunction(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: Callable<Boolean>?,
-                                     @Suppress("UNUSED_PARAMETER") call: RCallExpression,
+  fun processColumnsOfSelectFunction(operandProcessorRunner: ProcessOperandColumnRunner?,
+                                     expression: RExpression,
                                      callInfo: TableManipulationCallInfo<*>,
                                      processor: Processor<TableColumnInfo>): Boolean {
-    processAllDotsColumns(operandProcessorRunner, call, callInfo, processor)
+    processAllDotsColumns(operandProcessorRunner, expression, callInfo, processor)
 
-    for (expression in callInfo.argumentInfo.allDotsArguments) {
-      if (expression is RCallExpression && expression.expression.name == EVERYTHING_FUNCTION) {
-        operandProcessorRunner?.call()
+    for (argument in callInfo.argumentInfo.allDotsArguments) {
+      if (argument is RCallExpression && argument.expression.name == EVERYTHING_FUNCTION) {
+        if (operandProcessorRunner != null && !operandProcessorRunner(processor)) {
+          return false
+        }
       }
     }
 
