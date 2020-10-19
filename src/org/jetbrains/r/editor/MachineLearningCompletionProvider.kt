@@ -56,15 +56,15 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     })
   }
 
-  private fun <T> safeAwaitWithCheckCanceled(future: Future<T>) {
+  private fun <T> safeAwaitWithCheckCanceled(future: Future<T>): T? {
     try {
-      awaitWithCheckCanceled(future)
-    }
-    catch (e: RuntimeException) {
+      return awaitWithCheckCanceled(future)
+    } catch (e: RuntimeException) {
       if (e is ProcessCanceledException) {
         throw e
       }
       LOG.warn("Exception has occurred during machine learning completion request-response processing", e)
+      return null
     }
   }
 
@@ -80,8 +80,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val inputMessage = constructRequest(parameters)
     val futureResponse = processRequest(inputMessage)
 
-    safeAwaitWithCheckCanceled(futureResponse)
-    val response = futureResponse.get()
+    val response = safeAwaitWithCheckCanceled(futureResponse) ?: MachineLearningCompletionHttpResponse.emptyResponse
 
     processResponse(response, result)
 
