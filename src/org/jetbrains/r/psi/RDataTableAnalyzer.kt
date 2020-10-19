@@ -95,7 +95,7 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
   }
 
   fun getNamesOfVectorCall(call: RCallExpression): List<RExpression> {
-    if (call.expression.name == "c") {
+    if (call.isFunctionFromLibrary("c", "base")) {
       return call.argumentList.expressionList.filter { t -> t is RStringLiteralExpression }
     }
     return emptyList()
