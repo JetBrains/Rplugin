@@ -2,6 +2,7 @@ package org.jetbrains.r.editor
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.ColorKey
+import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.jetbrains.plugins.notebooks.editor.*
@@ -21,7 +22,9 @@ class RMarkdownNotebookEditorAppearanceProvider: NotebookEditorAppearanceProvide
 object RMarkdownNotebookEditorAppearance: NotebookEditorAppearance, NotebookEditorAppearanceSizes by DefaultNotebookEditorAppearanceSizes {
   // TODO Sort everything lexicographically.
 
-  override val CODE_CELL_BACKGROUND = ColorKey.createColorKey("RMARKDOWN_CHUNK.BACKGROUND")
+  private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
+  override fun getCodeCellBackground(scheme: EditorColorsScheme): Color? = scheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
+
   override val GUTTER_INPUT_EXECUTION_COUNT = TextAttributesKey.createTextAttributesKey("")
   override val GUTTER_OUTPUT_EXECUTION_COUNT = TextAttributesKey.createTextAttributesKey("")
   override val PROGRESS_STATUS_RUNNING_COLOR = ColorKey.createColorKey("")
@@ -38,7 +41,7 @@ object RMarkdownNotebookEditorAppearance: NotebookEditorAppearance, NotebookEdit
   override fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color? {
     val underCaret = editor.caretModel.logicalPosition.line in interval.lines
     if (underCaret) {
-      return editor.colorsScheme.getColor(CODE_CELL_BACKGROUND)
+      return getCodeCellBackground(editor.colorsScheme)
     }
     return null
   }
