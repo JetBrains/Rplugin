@@ -58,10 +58,8 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
         previousVisibility.set(visible)
       }
     })
-    runInEdt {
-      tryAddContent(toolWindow, project)
-      addCreateConsoleTabAction(toolWindow)
-    }
+    tryAddContent(toolWindow, project)
+    addCreateConsoleTabAction(toolWindow)
   }
 
   private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
@@ -224,7 +222,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
                                                      true)
           console.putUserData(CONSOLE_CONTENT_KEY, Unit)
           console.isCloseable = false
-          toolWindow.contentManager.addContent(console, 0)
+          runInEdt { toolWindow.contentManager.addContent(console, 0) }
         } else {
           RConsoleManager.getInstance(project).currentConsoleAsync
         }
