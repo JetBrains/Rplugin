@@ -31,7 +31,6 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       AppExecutorUtil.createBoundedApplicationPoolExecutor(MachineLearningCompletionProvider::class.java.simpleName, 1)
     private val GSON = Gson()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
-    private const val TIMEOUT_MS = 200L
   }
 
   private fun constructRequest(parameters: CompletionParameters) : MachineLearningCompletionHttpRequest {
