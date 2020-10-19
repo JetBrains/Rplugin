@@ -21,11 +21,18 @@ class RMaterialTable(model: TableModel, columnModel: TableColumnModel) : Materia
   }
 
   override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
-    return super.prepareRenderer(renderer, row, column).apply {
-      if (model.getValueAt(row, column) == null) {
-        foreground = NA_COLOR
-      }
+    val c = super.prepareRenderer(renderer, row, column)
+    if ((isRowSelected(row) && isColumnSelected(column)) || isRollOverRowIndex(row)) {
+      c.foreground = getSelectionForeground()
+      c.background = getSelectionBackground()
+    } else {
+      c.foreground = foreground
+      c.background = background
     }
+    if (model.getValueAt(row, column) == null) {
+      c.foreground = NA_COLOR
+    }
+    return c
   }
 
   private class NaAwareTableCellRenderer : DefaultTableCellRenderer() {
