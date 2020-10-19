@@ -80,6 +80,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
     setupTablePopupMenu()
     setupSelectAllAction()
+    setupClearSelectionAction()
 
     DataManager.registerDataProvider(table) { dataId ->
       if (PlatformDataKeys.COPY_PROVIDER.`is`(dataId)) TableCopyProvider(table) else null
@@ -153,6 +154,17 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
     table.actionMap.put(actionName, action)
     table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK), actionName)
+  }
+
+  private fun setupClearSelectionAction() {
+    val actionName = "TABLE_CLEAR_SELECTION" //NON-NLS
+    val action = object : AbstractAction(actionName) {
+      override fun actionPerformed(e: ActionEvent) {
+        table.clearSelection()
+      }
+    }
+    table.actionMap.put(actionName, action)
+    table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), actionName)
   }
 
   private fun addTableFilterHeader() {
