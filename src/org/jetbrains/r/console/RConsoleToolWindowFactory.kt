@@ -14,6 +14,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -58,9 +59,11 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
         previousVisibility.set(visible)
       }
     })
-    tryAddContent(toolWindow, project)
-    addJobsPanel(toolWindow, project)
-    addCreateConsoleTabAction(toolWindow)
+    runInEdt {
+      tryAddContent(toolWindow, project)
+      addJobsPanel(toolWindow, project)
+      addCreateConsoleTabAction(toolWindow)
+    }
   }
 
   private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
