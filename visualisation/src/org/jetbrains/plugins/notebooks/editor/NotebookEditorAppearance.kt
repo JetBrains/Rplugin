@@ -1,8 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
-import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.intellij.datavis.r.inlays.EditorInlaysManager
 import java.awt.Color
@@ -40,16 +38,16 @@ interface NotebookEditorAppearanceSizes {
 interface NotebookEditorAppearanceColors {
   // TODO Sort everything lexicographically.
 
-  fun getCodeCellBackground(scheme: EditorColorsScheme): Color?
+  fun getCodeCellBackground(scheme: EditorColorsScheme): Color? = null
+  fun getGutterInputExecutionCountForegroundColor(scheme: EditorColorsScheme): Color? = null
+  fun getGutterOutputExecutionCountForegroundColor(scheme: EditorColorsScheme): Color? = null
+  fun getProgressStatusRunningColor(scheme: EditorColorsScheme): Color = Color.BLUE
 
-  val GUTTER_INPUT_EXECUTION_COUNT: TextAttributesKey
-  val GUTTER_OUTPUT_EXECUTION_COUNT: TextAttributesKey
-  val PROGRESS_STATUS_RUNNING_COLOR: ColorKey
-  val CELL_UNDER_CARET_COMMAND_MODE_STRIPE_COLOR: ColorKey
-  val CELL_UNDER_CARET_EDITOR_MODE_STRIPE_COLOR: ColorKey
-  val SAUSAGE_BUTTON_APPEARANCE: TextAttributesKey
-  val SAUSAGE_BUTTON_SHORTCUT_COLOR: ColorKey
-  val SAUSAGE_BUTTON_BORDER_COLOR: ColorKey
+  fun getSausageButtonAppearanceBackgroundColor(scheme: EditorColorsScheme): Color = Color.WHITE
+  fun getSausageButtonAppearanceForegroundColor(scheme: EditorColorsScheme): Color = Color.BLACK
+
+  fun getSausageButtonShortcutColor(scheme: EditorColorsScheme): Color = Color.GRAY
+  fun getSausageButtonBorderColor(scheme: EditorColorsScheme): Color = Color.GRAY
 
   /**
    * Takes lines of the cell and returns a color for the stripe that will be drawn behind the folding markers.
