@@ -158,12 +158,12 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       val content = getConsoleContent(console) ?: return
       val index = toolWindow.contentManager.getIndexOfContent(content)
       val rInterop = console.rInterop
+      val interpreter = console.interpreter
+      val workingDir = rInterop.workingDir.takeIf { it.isNotEmpty() } ?: interpreter.basePath
       rInterop.state.cancelStateUpdating()
       Disposer.dispose(rInterop)
       rInterop.executeOnTermination {
         invokeLater {
-          val interpreter = console.interpreter
-          val workingDir = console.rInterop.workingDir.takeIf { it.isNotEmpty() } ?: interpreter.basePath
           RConsoleRunner(interpreter, workingDir, index).initAndRun().then {
             invokeLater {
               toolWindow.contentManager.removeContent(content, true)
