@@ -7,9 +7,8 @@ package org.jetbrains.r.completion
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
-import org.jetbrains.r.run.RProcessHandlerBaseTestCase
 
-class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
+class DataTableCompletionTest : RColumnCompletionTest() {
 
   override fun setUp() {
     super.setUp()
@@ -201,7 +200,7 @@ class DataTableCompletionTest : RProcessHandlerBaseTestCase() {
   fun testColumnWithSpace() {
     rInterop.executeCode(
       """
-        df <- data.frame(c(1,2,3,4,5), c(2,3,4,5,6))
+        df <- data.table(c(1,2,3,4,5), c(2,3,4,5,6))
         colnames(df) <- c("some name", "some another name")
       """.trimIndent(),
       false
