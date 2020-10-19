@@ -30,7 +30,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         my.local.variable
        Found usages (2 usages)
-        Unclassified usage (2 usages)
+        Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
            test.R (2 usages)
@@ -53,7 +53,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         my.local.function
        Found usages (2 usages)
-        Unclassified usage (2 usages)
+        Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
            test.R (2 usages)
@@ -71,7 +71,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         packageDescription(pkg, lib.loc = NULL, fields = NULL, drop = TRUE, encoding = "")
        Found usages (2 usages)
-        Unclassified usage (2 usages)
+        Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
            test.R (2 usages)
@@ -94,7 +94,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         x
        Found usages (2 usages)
-        Unclassified usage (2 usages)
+        Unclassified (2 usages)
          light_idea_test_case (2 usages)
            (2 usages)
            test.R (2 usages)
@@ -121,7 +121,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         x
        Found usages (2 usages)
-        Unclassified usage (1 usage)
+        Unclassified (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
            test.R (1 usage)
@@ -154,7 +154,7 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
        Variable
         bar
        Found usages (2 usages)
-        Unclassified usage (1 usage)
+        Unclassified (1 usage)
          light_idea_test_case (1 usage)
            (1 usage)
            test.R (1 usage)
