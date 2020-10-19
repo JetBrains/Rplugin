@@ -20,7 +20,7 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
   companion object {
     fun onRMarkdownFileEditorCreated(editor: EditorImpl) {
       NotebookEditorAppearanceProvider.install(editor)
-      NotebookCellInlayManager.install(editor){}
+      NotebookCellInlayManager.install(editor)
     }
 
     fun isRMarkdown(editor: Editor): Boolean {
