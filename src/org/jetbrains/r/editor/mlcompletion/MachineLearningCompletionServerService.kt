@@ -31,21 +31,21 @@ class MachineLearningCompletionServerService: Disposable {
   val serverAddress
   get() = "http://${settings.state.host}:${settings.state.port}"
 
-  private val settingsListener = object : MachineLearningCompletionSettingsChangeListener {
-    override fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
-                                 afterState: MachineLearningCompletionSettings.State) {
-      if (beforeState == afterState) {
-        return
-      }
-      if (beforeState.isEnabled && !afterState.isEnabled) {
-        shutdownServer()
-      } else {
-        tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
+  init {
+    val settingsListener = object : MachineLearningCompletionSettingsChangeListener {
+      override fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
+                                   afterState: MachineLearningCompletionSettings.State) {
+        if (beforeState == afterState) {
+          return
+        }
+        if (beforeState.isEnabled && !afterState.isEnabled) {
+          shutdownServer()
+        } else {
+          tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
+        }
       }
     }
-  }
 
-  init {
     ApplicationManager.getApplication().messageBus.connect(this).apply {
       subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, settingsListener)
     }
@@ -75,9 +75,7 @@ class MachineLearningCompletionServerService: Disposable {
       return
     }
     try {
-      localServer =
-        ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString())
-          .start()
+      localServer = ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString()).start()
     } catch (e: Exception) {
       LOG.warn("Exception has occurred in R ML Completion server thread", e)
     }
