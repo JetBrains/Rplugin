@@ -60,6 +60,7 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
     })
     tryAddContent(toolWindow, project)
     addCreateConsoleTabAction(toolWindow)
+    addRenameConsoleDoubleClickAction(toolWindow)
   }
 
   private fun addCreateConsoleTabAction(toolWindow: ToolWindow) {
@@ -80,6 +81,10 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
           RActionUtil.performDelegatedAction(addConsoleAction, e)
         }
       })
+  }
+
+  private fun addRenameConsoleDoubleClickAction(toolWindow: ToolWindow) {
+    (toolWindow as? ToolWindowEx)?.setTabDoubleClickActions(listOf(RConsoleRenameAction()))
   }
 
   companion object {
