@@ -58,10 +58,11 @@ class RCanvasPlotter(
     return graphics.fontMetrics.stringWidth(text)
   }
 
-  override fun drawCircle(x: Int, y: Int, radius: Int, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
-    val xFrom = x - radius
-    val yFrom = y - radius
-    val diameter = radius * 2
+  override fun drawCircle(x: Int, y: Int, radius: Float, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
+    val diameter = (radius * 2.0f).toInt()
+    val half = diameter / 2
+    val xFrom = x - half
+    val yFrom = y - half
     withColor(fillIndex) {
       graphics.fillOval(xFrom, yFrom, diameter, diameter)
     }

@@ -345,7 +345,7 @@ object RPlotUtil {
     private fun replay(circle: RFigure.Circle) {
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
-      val radius = calculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
+      val radius = fCalculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
       plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
     }
 
@@ -448,6 +448,10 @@ object RPlotUtil {
 
     private fun calculate(scale: Float, offset: Float, side: Int): Int {
       return (scale * side + offset * resolution).toInt()
+    }
+
+    private fun fCalculate(scale: Float, offset: Float, side: Int): Float {
+      return scale * side + offset * resolution
     }
 
     private fun scale(font: RFont): RFont {
