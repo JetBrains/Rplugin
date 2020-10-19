@@ -5,7 +5,6 @@
 package org.intellij.datavis.r.inlays
 
 import com.intellij.ide.ui.UISettings
-import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
@@ -13,9 +12,6 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.FoldRegion
 import com.intellij.openapi.editor.Inlay
-import com.intellij.openapi.editor.InlayModel
-import com.intellij.openapi.editor.colors.EditorColorsListener
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -64,7 +60,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 
   private val inlays: MutableMap<PsiElement, NotebookInlayComponent> = LinkedHashMap()
   private val inlayElements = LinkedHashSet<PsiElement>()
-  private val toolbarsManager: EditorToolbarInlaysManager? = descriptor.toolbars?.let { EditorToolbarInlaysManager(editor, it) }
   private val scrollKeeper: EditorScrollingPositionKeeper = EditorScrollingPositionKeeper(editor)
   private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, project)
   @Volatile private var toolbarUpdateScheduled: Boolean = false
@@ -74,14 +69,12 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     addCaretListener()
     addFoldingListener()
     addDocumentListener()
-    addInlayModelListener()
     addViewportListener()
     editor.settings.isRightMarginShown = false
     UISettings.instance.showEditorToolTip = false
     MouseWheelUtils.wrapEditorMouseWheelListeners(editor)
     restoreToolbars().onSuccess { restoreOutputs() }
     onCaretPositionChanged()
-    onColorSchemeChanged()
     ApplicationManager.getApplication().invokeLater {
       if (Disposer.isDisposed(editor.disposable)) return@invokeLater
       updateInlayComponentsWidth()
@@ -240,7 +233,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           updateCell(it)
         }
         regions.clear()
-        updateToolbarPositions()
         updateInlays()
       }
     }
@@ -255,7 +247,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           toolbarUpdateScheduled = true
           PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
             try {
-              toolbarsManager?.removeInvalidToolbars()
               scheduleIntervalUpdate(event.offset, event.newFragment.length)
             } finally {
               toolbarUpdateScheduled = false
@@ -265,14 +256,10 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
         if (!descriptor.shouldUpdateInlays(event)) return
         PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
           updateInlays()
-          updateToolbarPositions()
-          updateHighlighting()
         }
       }
     })
   }
-
-  private fun updateHighlighting() = toolbarsManager?.onUpdateHighlighting()
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {
     val psiFile = descriptor.psiFile
@@ -280,25 +267,13 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     while (node != null && node.parent != psiFile) {
       node = node.parent
     }
-    var isAdded = false
     inlayElements.filter { !it.isValid }.forEach { getInlayComponent(it)?.let { inlay -> removeInlay(inlay) } }
     inlayElements.removeIf { !it.isValid }
     while (node != null && node.textRange.startOffset < offset + length) {
-      PsiTreeUtil.collectElements(node) { psi -> (toolbarsManager?.isToolbarActionElement(psi)?:false) || descriptor.isInlayElement(psi) }.forEach { psi ->
-        if (toolbarsManager != null && toolbarsManager.isToolbarActionElement(psi)) {
-          if (psi !in toolbarsManager) {
-            toolbarsManager.addToolbar(psi, toolbarsManager.getToolbarActions(psi)!!)
-            isAdded = true
-          }
-        } else {
-          inlayElements.add(psi)
-        }
+      PsiTreeUtil.collectElements(node) { psi -> descriptor.isInlayElement(psi) }.forEach { psi ->
+        inlayElements.add(psi)
       }
       node = node.nextSibling
-    }
-    updateHighlighting()
-    if (isAdded) {
-      updateToolbarPositions()
     }
   }
 
@@ -307,19 +282,9 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     editor.component.addComponentListener(object : ComponentAdapter() {
       override fun componentResized(e: ComponentEvent) {
         updateInlayComponentsWidth()
-        updateToolbarPositions()
       }
     })
   }
-
-  private fun addInlayModelListener() {
-    editor.inlayModel.addListener(object : InlayModel.SimpleAdapter() {
-      override fun onUpdated(inlay: Inlay<*>) {
-        updateToolbarPositions()
-      }
-    }, editor.disposable)
-  }
-
 
   private fun addViewportListener() {
     editor.scrollPane.viewport.addChangeListener {
@@ -331,31 +296,20 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     }
   }
 
-  private fun onColorSchemeChanged() {
-    project.messageBus.connect(editor.disposable).subscribe(EditorColorsManager.TOPIC, EditorColorsListener { updateHighlighting() })
-  }
-
   private fun restoreOutputs() {
     updateInlaysForViewport()
   }
 
   private fun restoreToolbars(): CancellablePromise<*> {
-    val toolbars = ArrayList<Pair<PsiElement, ActionGroup>>()
     val inlaysPsiElements = ArrayList<PsiElement>()
     return ReadAction.nonBlocking {
       PsiTreeUtil.processElements(descriptor.psiFile) { element ->
-        toolbarsManager?.getToolbarActions(element)?.let { toolbars.add(element to it) }
         if (descriptor.isInlayElement(element)) inlaysPsiElements.add(element)
         true
       }
     }.finishOnUiThread(ModalityState.NON_MODAL) {
       inlayElements.clear()
       inlayElements.addAll(inlaysPsiElements)
-      toolbars.forEach { (psi, action) ->
-        toolbarsManager?.addToolbar(psi, action)
-      }
-      updateHighlighting()
-      updateToolbarPositions()
     }.inSmartMode(project).submit(NonUrgentExecutor.getInstance())
   }
 
@@ -419,7 +373,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
       scrollKeeper.savePosition()
     }
     inlayComponent.afterHeightChanged = {
-      updateToolbarPositions()
       updateInlaysInEditor(editor)
       scrollKeeper.restorePosition(true)
     }
@@ -447,8 +400,6 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
     }
     inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
   }
-
-  private fun updateToolbarPositions() = toolbarsManager?.updateToolbarPositions()
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
     return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)!!
@@ -502,35 +453,3 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
 }
 
 const val VIEWPORT_INLAY_RANGE = 20
-
-
-private class EditorToolbarInlaysManager(private val editor: EditorImpl,
-                                         private val toolbarDescriptor: InlayToolbarElementDescriptor) : InlayToolbarElementDescriptor by toolbarDescriptor {
-  private val toolbars: MutableMap<PsiElement, InlineToolbar> = LinkedHashMap()
-
-  fun removeInvalidToolbars() {
-    toolbars.entries.toList().forEach { (psi, inlay) ->
-      if (!psi.isValid) {
-        toolbars.remove(psi)
-        editor.contentComponent.remove(inlay)
-      }
-    }
-  }
-
-  fun updateToolbarPositions() {
-    invokeLater {
-      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
-      toolbars.values.forEach { it.updateBounds() }
-    }
-  }
-
-  fun addToolbar(psi: PsiElement, action: ActionGroup) {
-    val inlineToolbar = InlineToolbar(psi, editor, action)
-    editor.contentComponent.add(inlineToolbar)
-    toolbars[psi] = inlineToolbar
-  }
-
-  operator fun contains(psi: PsiElement): Boolean = psi in toolbars
-
-  fun onUpdateHighlighting() = toolbarDescriptor.onUpdateHighlighting(toolbars.keys)
-}
