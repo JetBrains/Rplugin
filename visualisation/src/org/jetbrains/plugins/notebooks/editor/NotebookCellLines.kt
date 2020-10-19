@@ -116,7 +116,7 @@ class NotebookCellLines private constructor(private val document: Document,
     it.setResult(this)
   }
 
-  data class DocumentUpdate(
+  private data class DocumentUpdate(
     val document: Document,
     val startLine: Int,
     val startOffset: Int,
