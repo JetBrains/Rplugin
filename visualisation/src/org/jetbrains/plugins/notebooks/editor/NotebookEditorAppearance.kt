@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.openapi.editor.colors.ColorKey
+import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.intellij.datavis.r.inlays.EditorInlaysManager
@@ -38,7 +39,9 @@ interface NotebookEditorAppearanceSizes {
 
 interface NotebookEditorAppearanceColors {
   // TODO Sort everything lexicographically.
-  val CODE_CELL_BACKGROUND: ColorKey
+
+  fun getCodeCellBackground(scheme: EditorColorsScheme): Color?
+
   val GUTTER_INPUT_EXECUTION_COUNT: TextAttributesKey
   val GUTTER_OUTPUT_EXECUTION_COUNT: TextAttributesKey
   val PROGRESS_STATUS_RUNNING_COLOR: ColorKey

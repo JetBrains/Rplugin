@@ -287,7 +287,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun textAttributesForHighlighter() = TextAttributes().apply {
-    backgroundColor = editor.colorsScheme.getColor(editor.notebookAppearance.CODE_CELL_BACKGROUND)
+    backgroundColor = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
   }
 
   private fun NotebookCellLines.getMatchingCells(logicalLines: IntRange): List<NotebookCellLines.Interval> =

@@ -107,7 +107,7 @@ private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pane
 
   override fun paint(g: Graphics, c: JComponent) {
     @Suppress("NAME_SHADOWING") g.create().use { g ->
-      g.color = editor.colorsScheme.getColor(editor.notebookAppearance.CODE_CELL_BACKGROUND)
+      g.color = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
       g.fillRect(0, 0, editor.scrollPane.let { it.viewport.width - it.verticalScrollBar.width }, c.height)
     }
     super.paint(g, c)
@@ -121,7 +121,7 @@ private class RMarkdownCellToolbarPanel(editor: EditorImpl, offset: Int) : JPane
 
   init {
     isOpaque = false
-    background = editor.colorsScheme.getColor(editor.notebookAppearance.CODE_CELL_BACKGROUND)
+    background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     add(toolbar.component)
     toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
