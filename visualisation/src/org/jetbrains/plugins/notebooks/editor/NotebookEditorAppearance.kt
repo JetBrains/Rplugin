@@ -3,6 +3,7 @@ package org.jetbrains.plugins.notebooks.editor
 import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.impl.EditorImpl
+import org.intellij.datavis.r.inlays.EditorInlaysManager
 import java.awt.Color
 
 
@@ -52,4 +53,30 @@ interface NotebookEditorAppearanceColors {
    * Currently only code cells are supported.
    */
   fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color?
+}
+
+
+object DefaultNotebookEditorAppearanceSizes: NotebookEditorAppearanceSizes {
+  // TODO it's hardcoded, but it should be equal to distance between a folding line and an editor.
+  override val CODE_CELL_LEFT_LINE_PADDING = 5
+
+  // TODO it's hardcoded, but it should be EditorGutterComponentImpl.getLineNumberAreaWidth()
+  override val LINE_NUMBERS_MARGIN = 10
+
+  // TODO Do the pixel constants need JBUI.scale?
+  override val COMMAND_MODE_CELL_LEFT_LINE_WIDTH = 4
+  override val EDIT_MODE_CELL_LEFT_LINE_WIDTH = 2
+  override val CODE_AND_CODE_TOP_GRAY_HEIGHT = 6
+  override val CODE_AND_CODE_BOTTOM_GRAY_HEIGHT = 6
+  override val INNER_CELL_TOOLBAR_HEIGHT = 25
+  override val CELL_BORDER_HEIGHT = 20
+  override val SPACE_BELOW_CELL_TOOLBAR = 12
+  override val CELL_TOOLBAR_TOTAL_HEIGHT = INNER_CELL_TOOLBAR_HEIGHT + SPACE_BELOW_CELL_TOOLBAR
+  override val PROGRESS_STATUS_HEIGHT = 2
+
+  override val JUPYTER_CELL_SPACERS_INLAY_PRIORITY = EditorInlaysManager.INLAY_PRIORITY + 1
+  override val JUPYTER_BELOW_OUTPUT_CELL_SPACERS_INLAY_PRIORITY = EditorInlaysManager.INLAY_PRIORITY - 1
+  override val JUPYTER_CELL_TOOLBAR_INLAY_PRIORITY = JUPYTER_CELL_SPACERS_INLAY_PRIORITY + 1
+
+  override  val EXTRA_PADDING_EXECUTION_COUNT = 25
 }
