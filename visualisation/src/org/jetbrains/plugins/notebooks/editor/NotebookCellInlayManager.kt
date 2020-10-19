@@ -75,7 +75,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     }
   }
 
-  private fun initialize(addListeners: (NotebookCellInlayManager) -> Unit) {
+  private fun initialize() {
     // TODO It would be a cool approach to add inlays lazily while scrolling.
 
     editor.putUserData(key, this)
@@ -93,7 +93,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       refreshHighlightersLookAndFeel()
     })
 
-    addListeners(this)
     addViewportChangeListener()
 
     initialized = true
@@ -314,8 +313,8 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     private val LOG = logger<NotebookCellInlayManager>()
 
     @JvmStatic
-    fun install(editor: EditorImpl, addListeners: (NotebookCellInlayManager) -> Unit) {
-      NotebookCellInlayManager(editor).initialize(addListeners)
+    fun install(editor: EditorImpl) {
+      NotebookCellInlayManager(editor).initialize()
     }
 
     @JvmStatic
