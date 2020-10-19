@@ -67,7 +67,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     fixRProfileFile().onProcessed {
       UIUtil.invokeLaterIfNeeded {
         val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
-        RInteropUtil.runRWrapperAndInterop(interpreter).onSuccess { rInterop ->
+        RInteropUtil.runRWrapperAndInterop(interpreter, workingDir).onSuccess { rInterop ->
           initByInterop(rInterop, promise)
           rInterop.state.scheduleSkeletonUpdate()
         }.onError {
@@ -283,7 +283,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   private fun fixRProfileFile(): Promise<Unit> {
     val promise = AsyncPromise<Unit>()
     runAsync {
-      val file = interpreter.findFileByPathAtHost(RPathUtil.join(interpreter.basePath, ".Rprofile")) ?: return@runAsync
+      val file = interpreter.findFileByPathAtHost(RPathUtil.join(workingDir, ".Rprofile")) ?: return@runAsync
       val needFix = runReadAction {
         val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction false
         val text = document.text
