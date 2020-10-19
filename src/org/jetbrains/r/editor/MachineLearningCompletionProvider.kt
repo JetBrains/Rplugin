@@ -10,6 +10,7 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.util.ProgressIndicatorUtils.awaitWithCheckCanceled
 import com.intellij.util.ProcessingContext
 import com.intellij.util.concurrency.AppExecutorUtil
@@ -17,10 +18,9 @@ import com.intellij.util.io.HttpRequests
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpRequest
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionHttpResponse
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
+import java.io.IOException
 import java.util.concurrent.Callable
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
 
 
 internal class MachineLearningCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -44,26 +44,33 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
   private fun processRequest(requestData: MachineLearningCompletionHttpRequest):
     Future<MachineLearningCompletionHttpResponse> {
     return executor.submit(Callable {
-      HttpRequests.post(serverService.serverAddress, "application/json")
-        .connect { request ->
-          request.write(GSON.toJson(requestData))
-          return@connect GSON.fromJson(request.reader.readText(), MachineLearningCompletionHttpResponse::class.java)
-        }
+      try {
+        HttpRequests.post(serverService.serverAddress, "application/json")
+          .connect { request ->
+            request.write(GSON.toJson(requestData))
+            return@connect GSON.fromJson(request.reader.readText(), MachineLearningCompletionHttpResponse::class.java)
+          }
+      } catch (e: IOException) {
+        serverService.tryRelaunchServer()
+        return@Callable MachineLearningCompletionHttpResponse.emptyResponse
+      }
     })
+  }
+
+  private fun <T> safeAwaitWithCheckCanceled(future: Future<T>) {
+    try {
+      awaitWithCheckCanceled(future)
+    }
+    catch (e: RuntimeException) {
+      if (e is ProcessCanceledException) {
+        throw e
+      }
+      LOG.warn("Exception has occurred during machine learning completion request-response processing", e)
+    }
   }
 
   private fun processResponse(response: MachineLearningCompletionHttpResponse, result: CompletionResultSet) {
     result.addAllElements(response.completionVariants.map { it.asLookupElement() })
-  }
-
-  private fun processException(exception: Exception) {
-    var possiblyWrappedException = exception
-    while (possiblyWrappedException is ExecutionException) {
-      // Unwrapping
-      possiblyWrappedException = possiblyWrappedException.cause as Exception
-    }
-    LOG.warn("Exception has occurred during machine learning completion request-response processing",
-             possiblyWrappedException)
   }
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -74,14 +81,8 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     val inputMessage = constructRequest(parameters)
     val futureResponse = processRequest(inputMessage)
 
-    awaitWithCheckCanceled(futureResponse)
-
-    val response = try {
-      futureResponse.get(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-    } catch (e: Exception) {
-      processException(e)
-      return
-    }
+    safeAwaitWithCheckCanceled(futureResponse)
+    val response = futureResponse.get()
 
     processResponse(response, result)
 

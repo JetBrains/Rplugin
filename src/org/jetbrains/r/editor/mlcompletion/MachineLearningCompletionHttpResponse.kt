@@ -17,5 +17,6 @@ data class MachineLearningCompletionHttpResponse(val completionVariants: List<Co
 
   companion object {
     private val scoreFormat = DecimalFormat("#.##")
+    val emptyResponse = MachineLearningCompletionHttpResponse(emptyList())
   }
 }
