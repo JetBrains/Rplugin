@@ -10,8 +10,12 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.elementType
+import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.editor
+import org.jetbrains.r.actions.psiFile
+
 import java.awt.event.MouseEvent
 
 object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
@@ -24,35 +28,53 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
     }
   }
 
-  fun createRunChunkActionGroup(element: PsiElement): DefaultActionGroup {
-    return DefaultActionGroup(
-      ChunkAction(element, RUN_CHUNK_ACTION_ID),
-      ChunkAction(element, DEBUG_CHUNK_ACTION_ID),
-      ChunkAction(element, RUN_CHUNKS_ABOVE_ID),
-      ChunkAction(element, RUN_CHUNKS_BELOW_ID)
-    )
-  }
+  fun createRunChunkActionsList(): List<AnAction> = actionIds.map { getAction(it) }
+
+  private fun createRunChunkActionGroup(element: PsiElement): DefaultActionGroup =
+    DefaultActionGroup(actionIds.map { id -> ChunkActionByElement(getAction(id), element) })
+
+  private val actionIds = listOf(
+    RUN_CHUNK_ACTION_ID,
+    DEBUG_CHUNK_ACTION_ID,
+    RUN_CHUNKS_ABOVE_ID,
+    RUN_CHUNKS_BELOW_ID
+  )
+
+  private fun getAction(id: String) = ActionManager.getInstance().getAction(id)
 }
 
-internal class ChunkAction(private val element: PsiElement, private val action: AnAction) : DumbAwareAction() {
+
+internal abstract class ChunkActionBase(protected val action: AnAction): DumbAwareAction() {
   init {
     copyFrom(action)
   }
-
-  constructor(element: PsiElement, actionId: String) :
-    this(element, ActionManager.getInstance().getAction(actionId))
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = canRunChunk(e.editor)
   }
 
   override fun actionPerformed(e: AnActionEvent) {
+    val element = getElement(e) ?: return
     RActionUtil.performDelegatedAction(action, createActionEvent(e, element))
   }
-
 
   private fun createActionEvent(e: AnActionEvent, element: PsiElement): AnActionEvent =
     AnActionEvent.createFromInputEvent(e.inputEvent, "", null,
                                        SimpleDataContext.getSimpleContext(CODE_FENCE_DATA_KEY.name, element, e.dataContext))
 
+  protected abstract fun getElement(e: AnActionEvent): PsiElement?
+}
+
+
+internal class ChunkActionByElement(action: AnAction, private val element: PsiElement) : ChunkActionBase(action) {
+  override fun getElement(e: AnActionEvent) = element
+}
+
+
+internal class ChunkActionByOffset(action: AnAction, private val offset: Int) : ChunkActionBase(action) {
+
+  override fun getElement(e: AnActionEvent): PsiElement? =
+    e.psiFile?.viewProvider
+      ?.let { it.findElementAt(offset, it.baseLanguage) }
+      ?.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.FENCE_LANG } }
 }
