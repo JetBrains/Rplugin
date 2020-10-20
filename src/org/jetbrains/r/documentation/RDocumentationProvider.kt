@@ -302,7 +302,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     private const val PACKAGE_METHOD_SEPARATOR = "::"
     private const val BACKTICK = '`'
     private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
-    private val DOCUMENTATION_COMMENT_REGEX = "^# `?\\w+`?::`?.+`?$".toRegex()
+    private val DOCUMENTATION_COMMENT_REGEX = "^# `?.+`?::`?.+`?$".toRegex()
 
     private fun getMethodNameAndPackage(documentationComment: String): Pair<String, String?> {
       val text = documentationComment.substring(PACKAGE_METHOD_SEPARATOR.length)
