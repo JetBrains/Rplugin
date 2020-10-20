@@ -553,7 +553,8 @@ You can find the source code in the following repositories:
                                       implementationClass="org.jetbrains.r.psi.RScriptStructureViewFactory"/>
 
         <toolWindow id="R Jobs" anchor="bottom" canCloseContents="false" icon="/icons/toolWindow/RConsole.svg"
-                    factoryClass="org.jetbrains.r.console.jobs.RJobsToolWindowFactory" secondary="false"/>
+                    factoryClass="org.jetbrains.r.console.jobs.RJobsToolWindowFactory" secondary="false"
+                    order="after R Console"/>
 
         <toolWindow id="R Console" anchor="bottom" canCloseContents="true" icon="/icons/toolWindow/RConsole.svg"
                     factoryClass="org.jetbrains.r.console.RConsoleToolWindowFactory" secondary="false"/>
