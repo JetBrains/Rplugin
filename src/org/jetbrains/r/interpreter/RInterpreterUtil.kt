@@ -299,7 +299,7 @@ object RInterpreterUtil {
   }
 
   fun getRunHelperArgs(helper: String, args: List<String>): List<String> {
-    return listOf("--slave", "--vanilla", "-f", helper, "--args", *args.toTypedArray())
+    return listOf("--slave", "--no-save", "--no-restore", "--no-site-file", "--no-environ", "-f", helper, "--args", *args.toTypedArray())
   }
 
   private fun runRInterpreter(interpreterLocation: RInterpreterLocation,
