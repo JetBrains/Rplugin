@@ -15,10 +15,10 @@ import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.interpreter.getVersion
 import java.awt.BorderLayout
 
-class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>) : RInterpreterPanel() {
+class RAddNewInterpreterPanel(existingInterpreters: List<RInterpreterInfo>, localOnly: Boolean) : RInterpreterPanel() {
   override val panelName = PANEL_NAME
 
-  private val manageInterpreterPanel = RManageInterpreterPanel(PANEL_HINT, true) {
+  private val manageInterpreterPanel = RManageInterpreterPanel(PANEL_HINT, localOnly) {
     runListeners()
   }
   private val lastValidatedInterpreter = LastValidatedInterpreter()
