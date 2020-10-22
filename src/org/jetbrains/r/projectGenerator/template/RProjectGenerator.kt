@@ -31,6 +31,8 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
 
   open val requiredPackageList = false
 
+  open val onlyLocalInterpreters = false
+
   /**
    * Unique value
    */
@@ -58,11 +60,13 @@ abstract class RProjectGenerator : DirectoryProjectGeneratorBase<RProjectSetting
 
   override fun createStep(projectGenerator: DirectoryProjectGenerator<RProjectSettings>,
                           callback: AbstractNewProjectStep.AbstractCallback<RProjectSettings>): RProjectSettingsStep {
-    return RProjectSettingsStep(rProjectSettings, projectGenerator, this.callback)
+    return RProjectSettingsStep(rProjectSettings, projectGenerator, this.callback,
+                                onlyLocalInterpreters = onlyLocalInterpreters)
   }
 
   fun createModuleStep(moduleStepButtonUpdater: ((Boolean) -> Unit)?): RProjectSettingsStep {
-    return RProjectSettingsStep(rProjectSettings, this, this.callback, moduleStepButtonUpdater)
+    return RProjectSettingsStep(rProjectSettings, this, this.callback, moduleStepButtonUpdater,
+                                onlyLocalInterpreters = onlyLocalInterpreters)
   }
 
   fun getSettings() = rProjectSettings

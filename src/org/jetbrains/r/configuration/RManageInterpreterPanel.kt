@@ -11,6 +11,7 @@ import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.util.ui.JBUI
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
+import org.jetbrains.r.settings.RLocalInterpreterSettingsProvider
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -19,7 +20,7 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class RManageInterpreterPanel(text: String, private val addOnly: Boolean, private val onSelected: (() -> Unit)?) {
+class RManageInterpreterPanel(text: String, private val localOnly: Boolean, private val onSelected: (() -> Unit)?) {
   private val panel = JPanel(GridBagLayout())
 
   private val comboBox = ComboBox<Any>().apply {
@@ -48,10 +49,10 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
     fun createLabel() = JLabel(text)
 
     fun createDetailsButton(preferredHeight: Int) = FixedSizeButton().apply {
-      icon = if (addOnly) AllIcons.General.Add else AllIcons.General.GearPlain
+      icon = if (localOnly) AllIcons.General.Add else AllIcons.General.GearPlain
       preferredSize = Dimension(preferredHeight, preferredHeight)
       addActionListener {
-        if (!addOnly) {
+        if (!localOnly) {
           val allDialog = RInterpreterDetailsDialog(currentSelection, currentInterpreters) { interpreters, selection ->
             modifyInterpreters(interpreters, selection)
           }
@@ -114,7 +115,7 @@ class RManageInterpreterPanel(text: String, private val addOnly: Boolean, privat
   }
 
   private fun refreshComboBox() {
-    val providers = RInterpreterSettingsProvider.getProviders()
+    val providers = if (localOnly) listOf(RLocalInterpreterSettingsProvider()) else RInterpreterSettingsProvider.getProviders ()
     val interpreters =
       (
         listOf(null, RInterpreterListCellRenderer.SEPARATOR)

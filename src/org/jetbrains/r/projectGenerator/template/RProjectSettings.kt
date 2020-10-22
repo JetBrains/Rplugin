@@ -4,14 +4,11 @@
 
 package org.jetbrains.r.projectGenerator.template
 
-import org.jetbrains.r.interpreter.RLocalInterpreterLocation
+import org.jetbrains.r.interpreter.RInterpreterLocation
 
 class RProjectSettings {
   var useNewInterpreter: Boolean = true
-  var interpreterPath: String? = null
+  var interpreterLocation: RInterpreterLocation? = null
   var installedPackages: Set<String> = emptySet()
   var isInstalledPackagesSetUpToDate: Boolean = false
-
-  val interpreterLocation: RLocalInterpreterLocation?
-    get() = interpreterPath?.takeIf { it.isNotEmpty() }?.let { RLocalInterpreterLocation(it) }
 }

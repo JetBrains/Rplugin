@@ -23,7 +23,6 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
 import org.jetbrains.r.interpreter.RInterpreterUtil
-import org.jetbrains.r.interpreter.toLocalPathOrNull
 import org.jetbrains.r.projectGenerator.panel.interpreter.RAddNewInterpreterPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RChooseInterpreterGroupPanel
 import org.jetbrains.r.projectGenerator.panel.interpreter.RInterpreterPanel
@@ -38,7 +37,8 @@ import javax.swing.ScrollPaneConstants
 class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
                            projectGenerator: DirectoryProjectGenerator<RProjectSettings>,
                            callback: AbstractNewProjectStep.AbstractCallback<RProjectSettings>,
-                           private val moduleStepButtonUpdater: ((Boolean) -> Unit)? = null)
+                           private val moduleStepButtonUpdater: ((Boolean) -> Unit)? = null,
+                           private val onlyLocalInterpreters: Boolean = false)
   : ProjectSettingsStepBase<RProjectSettings>(projectGenerator, callback) {
 
   private lateinit var interpreterPanel: RChooseInterpreterGroupPanel
@@ -170,10 +170,10 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     val decoratorPanel = JPanel(VerticalFlowLayout())
 
     val existingInterpreters = getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
-      RInterpreterUtil.suggestAllInterpreters(enabledOnly = false, localOnly = true)
+      RInterpreterUtil.suggestAllInterpreters(enabledOnly = false, localOnly = onlyLocalInterpreters)
     }
 
-    val newInterpreterPanel = RAddNewInterpreterPanel(existingInterpreters)
+    val newInterpreterPanel = RAddNewInterpreterPanel(existingInterpreters, onlyLocalInterpreters)
 
     val decorator = HideableDecorator(decoratorPanel, getProjectInterpreterTitle(newInterpreterPanel), false)
 
@@ -187,7 +187,7 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
 
     interpreterPanel.addChangeListener(Runnable {
       val location = interpreterPanel.mySelectedPanel.interpreterLocation
-      rProjectSettings.interpreterPath = location?.toLocalPathOrNull()
+      rProjectSettings.interpreterLocation = location
     })
 
     interpreterPanel.addChangeListener(Runnable {

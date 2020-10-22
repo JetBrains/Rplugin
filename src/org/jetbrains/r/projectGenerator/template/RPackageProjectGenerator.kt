@@ -29,6 +29,7 @@ class RPackageProjectGenerator : RProjectGenerator() {
   }
 
   override val requiredPackageList = true
+  override val onlyLocalInterpreters = true
   private var settingsPanel: RPackageManagerGroupPanel? = null
 
   override fun validate(baseDirPath: String): ValidationResult {
