@@ -241,8 +241,8 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   /** Save the file as tsv (tab separated values) via intellij SaveFileDialog. */
   private fun saveAsCsv() {
     val descriptor = FileSaverDescriptor(
-      RBundle.message("dialog.title.dataframe.viewer.export.as.tsv"),
-      RBundle.message("dialog.title.dataframe.viewer.export.as.tsv.description"),
+      RBundle.message("dialog.title.dataframe.viewer.export.as"),
+      RBundle.message("dialog.title.dataframe.viewer.export.as.description"),
       "csv", "tsv"
     )
     val chooser: FileSaverDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, this)
