@@ -51,6 +51,7 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
     plot?.let { plot ->
       if (g is Graphics2D) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
         val provider = RCanvasPlotterProvider(parameters, g)
         RPlotUtil.replay(plot, provider, darkMode)
       }
