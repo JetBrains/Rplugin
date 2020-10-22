@@ -9,6 +9,7 @@ import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.rinterop.Font
 import org.jetbrains.r.rinterop.Stroke
 import java.awt.*
+import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Paths
@@ -227,6 +228,7 @@ object RPlotUtil {
       val graphics = image.graphics as Graphics2D
       graphics.font = JLabel().font
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+      graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
       val provider = RCanvasPlotterProvider(parameters, graphics)
       replay(plot, provider, darkMode)
     }
@@ -247,13 +249,13 @@ object RPlotUtil {
     private val inverter = ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground)
 
     private val plotter = provider.create(plot.fonts.map { scale(it) }, fitTheme(plot.colors), plot.strokes.map { scale(it) })
-    private val clippingAreas = Array(plot.viewports.size) { Rectangle() }
+    private val clippingAreas = Array(plot.viewports.size) { Rectangle2D.Float() }
     private val gapWidths = IntArray(plot.fonts.size) { 0 }
 
-    private var currentViewport = Rectangle()
+    private var currentViewport = Rectangle2D.Float()
 
     init {
-      clippingAreas[0] = Rectangle(0, 0, width, height)
+      clippingAreas[0] = Rectangle2D.Float(0.0f, 0.0f, width.toFloat(), height.toFloat())
       for (index in 1 until plot.viewports.size) {
         clippingAreas[index] = calculateViewport(plot.viewports[index])
       }
@@ -279,9 +281,9 @@ object RPlotUtil {
 
     private fun showMessage(text: String) {
       val displayArea = clippingAreas.first()
-      val x = displayArea.centerX.toInt()
-      val y = displayArea.centerY.toInt()
-      plotter.drawRectangle(0, 0, displayArea.width, displayArea.height, TRANSPARENT_INDEX, TRANSPARENT_INDEX, WHITE_COLOR_INDEX)
+      val x = displayArea.centerX.toFloat()
+      val y = displayArea.centerY.toFloat()
+      plotter.drawRectangle(0.0f, 0.0f, displayArea.width, displayArea.height, TRANSPARENT_INDEX, TRANSPARENT_INDEX, WHITE_COLOR_INDEX)
       plotter.drawText(text, x, y, 0.0f, 0.5f, DEFAULT_FONT_INDEX, BLACK_COLOR_INDEX)
     }
 
@@ -299,8 +301,8 @@ object RPlotUtil {
 
     private fun replayAxisText(figures: List<RFigure>) {
       var previousWidth = 0
-      var previousX = 0
-      var previousY = 0
+      var previousX = 0.0f
+      var previousY = 0.0f
       var isFirst = true
       for (figure in figures) {
         val currentText = figure as RFigure.Text
@@ -345,7 +347,7 @@ object RPlotUtil {
     private fun replay(circle: RFigure.Circle) {
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
-      val radius = fCalculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
+      val radius = calculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
       plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
     }
 
@@ -377,7 +379,9 @@ object RPlotUtil {
       val original = fitTheme(raster.image)
       val multiplier = if (RGraphicsUtils.isRetina) 2 else 1
       val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
-      val scaled = original.getScaledInstance((xTo - xFrom) * multiplier, (yTo - yFrom) * multiplier, mode)
+      val width = ((xTo - xFrom) * multiplier).toInt()
+      val height = ((yTo - yFrom) * multiplier).toInt()
+      val scaled = original.getScaledInstance(width, height, mode)
       plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
     }
 
@@ -395,23 +399,23 @@ object RPlotUtil {
       replay(text, x, y)
     }
 
-    private fun replay(text: RFigure.Text, x: Int, y: Int) {
+    private fun replay(text: RFigure.Text, x: Float, y: Float) {
       plotter.drawText(text.text, x, y, text.angle, text.anchor, text.fontIndex, text.colorIndex)
     }
 
-    private fun calculateXs(points: List<RAffinePoint>): IntArray {
-      return IntArray(points.size) { i ->
+    private fun calculateXs(points: List<RAffinePoint>): FloatArray {
+      return FloatArray(points.size) { i ->
         calculateX(points[i])
       }
     }
 
-    private fun calculateYs(points: List<RAffinePoint>): IntArray {
-      return IntArray(points.size) { i ->
+    private fun calculateYs(points: List<RAffinePoint>): FloatArray {
+      return FloatArray(points.size) { i ->
         calculateY(points[i])
       }
     }
 
-    private fun calculateViewport(viewport: RViewport): Rectangle {
+    private fun calculateViewport(viewport: RViewport): Rectangle2D.Float {
       currentViewport = clippingAreas[viewport.parentIndex]
       return when (viewport) {
         is RViewport.Fixed -> calculateViewport(viewport)
@@ -419,38 +423,34 @@ object RPlotUtil {
       }
     }
 
-    private fun calculateViewport(viewport: RViewport.Fixed): Rectangle {
+    private fun calculateViewport(viewport: RViewport.Fixed): Rectangle2D.Float {
       val delta = viewport.delta * resolution
       val w1 = currentViewport.width
       val h1 = currentViewport.height
-      val w2 = min(w1, ((h1 - delta) / viewport.ratio).toInt())
-      val h2 = min(h1, (viewport.ratio * w1 + delta).toInt())
-      val dx = (w1 - w2) / 2
-      val dy = (h1 - h2) / 2
-      return Rectangle(currentViewport.x + dx, currentViewport.y + dy, w2, h2)
+      val w2 = min(w1, (h1 - delta) / viewport.ratio)
+      val h2 = min(h1, viewport.ratio * w1 + delta)
+      val dx = (w1 - w2) / 2.0f
+      val dy = (h1 - h2) / 2.0f
+      return Rectangle2D.Float(currentViewport.x + dx, currentViewport.y + dy, w2, h2)
     }
 
-    private fun calculateRectangle(from: RAffinePoint, to: RAffinePoint): Rectangle {
+    private fun calculateRectangle(from: RAffinePoint, to: RAffinePoint): Rectangle2D.Float {
       val xFrom = calculateX(from)
       val yFrom = calculateY(from)
       val xTo = calculateX(to)
       val yTo = calculateY(to)
-      return Rectangle(xFrom, yFrom, xTo - xFrom, yTo - yFrom)
+      return Rectangle2D.Float(xFrom, yFrom, xTo - xFrom, yTo - yFrom)
     }
 
-    private fun calculateX(point: RAffinePoint): Int {
+    private fun calculateX(point: RAffinePoint): Float {
       return calculate(point.xScale, point.xOffset, currentViewport.width) + currentViewport.x
     }
 
-    private fun calculateY(point: RAffinePoint): Int {
+    private fun calculateY(point: RAffinePoint): Float {
       return calculate(point.yScale, point.yOffset, currentViewport.height) + currentViewport.y
     }
 
-    private fun calculate(scale: Float, offset: Float, side: Int): Int {
-      return (scale * side + offset * resolution).toInt()
-    }
-
-    private fun fCalculate(scale: Float, offset: Float, side: Int): Float {
+    private fun calculate(scale: Float, offset: Float, side: Float): Float {
       return scale * side + offset * resolution
     }
 
@@ -491,7 +491,7 @@ object RPlotUtil {
 
       private val MARGINS_TEXT = RBundle.message("plot.viewer.figure.margins.too.large")
 
-      private fun calculateDistance(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int): Int {
+      private fun calculateDistance(xFrom: Float, yFrom: Float, xTo: Float, yTo: Float): Float {
         val xDelta = abs(xFrom - xTo)
         val yDelta = abs(yFrom - yTo)
         return max(xDelta, yDelta)
