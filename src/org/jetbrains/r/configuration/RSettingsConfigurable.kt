@@ -25,6 +25,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   private val interpreterPanel = RManageInterpreterPanel(RBundle.message("project.settings.interpreter.label"), false, null)
   private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
   private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
+  private val disableRprofileCheckbox = JCheckBox(RBundle.message("project.settings.disable.rprofile.checkbox"))
   private val component: JComponent
   private val extensionConfigurables = RInterpreterSettingsProvider.getProviders().mapNotNull { it.createSettingsConfigurable(project) }
 
@@ -33,6 +34,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       row { component(interpreterPanel.component).constraints(growX) }
       row { component(loadWorkspaceCheckBox) }
       row { component(saveWorkspaceCheckBox) }
+      row { component(disableRprofileCheckbox) }
       extensionConfigurables
         .mapNotNull { it.createComponent() }
         .forEach { newComponent ->
@@ -45,6 +47,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     return interpreterPanel.isModified() ||
            loadWorkspaceCheckBox.isSelected != settings.loadWorkspace ||
            saveWorkspaceCheckBox.isSelected != settings.saveWorkspace ||
+           disableRprofileCheckbox.isSelected != settings.disableRprofile ||
            extensionConfigurables.any { it.isModified }
   }
 
@@ -63,6 +66,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     interpreterPanel.reset()
     loadWorkspaceCheckBox.isSelected = settings.loadWorkspace
     saveWorkspaceCheckBox.isSelected = settings.saveWorkspace
+    disableRprofileCheckbox.isSelected = settings.disableRprofile
   }
 
   override fun apply() {
@@ -79,6 +83,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       settings.saveWorkspace = saveWorkspaceCheckBox.isSelected
       onSaveWorkspaceChanged()
     }
+    settings.disableRprofile = disableRprofileCheckbox.isSelected
     reset()
   }
 

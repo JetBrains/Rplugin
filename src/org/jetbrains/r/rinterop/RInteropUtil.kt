@@ -25,6 +25,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.interpreter.*
+import org.jetbrains.r.settings.RSettings
 import org.jetbrains.r.util.RPathUtil
 import org.jvnet.winp.WinProcess
 import java.io.File
@@ -206,6 +207,10 @@ object RInteropUtil {
         .withEnvironment("R_SHARE_DIR", paths.share)
         .withEnvironment("R_INCLUDE_DIR", paths.include)
         .withEnvironment("R_DOC_DIR", paths.doc)
+
+      if (RSettings.getInstance(interpreter.project).disableRprofile) {
+        command = command.withParameters("--disable-rprofile")
+      }
 
       if (!interpreter.isLocal()) {
         command = command.withParameters("--is-remote")
