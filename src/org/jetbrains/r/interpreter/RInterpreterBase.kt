@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Version
 import org.jetbrains.r.util.tryRegisterDisposable
+import java.nio.file.Path
 
 abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
                                 override val project: Project) : RInterpreter {
@@ -33,7 +34,7 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
     return Version(major, minor, update)
   }
 
-  override fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit) {
+  override fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (Path) -> Unit) {
     fsNotifier.addListener(roots, parentDisposable, listener)
   }
 

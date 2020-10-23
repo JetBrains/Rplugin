@@ -22,6 +22,7 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 
 interface RInterpreter : RInterpreterInfo {
@@ -87,7 +88,7 @@ interface RInterpreter : RInterpreterInfo {
 
   fun translateLocalUrl(rInterop: RInterop, url: String, absolute: Boolean): Promise<String> = AsyncPromise<String>().also { it.setResult(url) }
 
-  fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit)
+  fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (Path) -> Unit)
 }
 
 data class LocalOrRemotePath(val path: String, val isRemote: Boolean)
