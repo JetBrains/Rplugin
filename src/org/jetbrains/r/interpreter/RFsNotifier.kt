@@ -11,22 +11,34 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.util.RPathUtil
 import org.jetbrains.r.util.tryRegisterDisposable
+import java.nio.file.Path
 
 class RFsNotifier(private val interpreter: RInterpreter): Disposable {
   private var processHandler: ProcessHandler? = null
-  private val listeners = mutableListOf<Pair<String, (String) -> Unit>>()
+  private val listeners = mutableListOf<Pair<Path, (Path) -> Unit>>()
   private val processLock = Any()
 
-  fun addListener(roots: List<String>, parentDisposable: Disposable, listener: (String) -> Unit) {
+  fun addListener(roots: List<String>, parentDisposable: Disposable, listener: (Path) -> Unit) {
     if (roots.isEmpty()) return
     synchronized(listeners) {
-      roots.forEach { listeners.add(it to listener) }
+      roots.forEach {
+        val path = RPathUtil.toPath(it)
+        if (path == null) {
+          LOG.error("FsNotifier can't convert '$it' to path")
+        } else {
+          listeners.add(path to listener)
+        }
+      }
     }
     updateProcess()
     parentDisposable.tryRegisterDisposable(Disposable {
       synchronized(listeners) {
-        roots.forEach { listeners.remove(it to listener) }
+        roots.forEach {
+          val path = RPathUtil.toPath(it) ?: return@forEach
+          listeners.remove(path to listener)
+        }
       }
       updateProcess()
     })
@@ -54,7 +66,7 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
           writer.write("ROOTS")
           writer.newLine()
           listenersCopy.forEach {
-            writer.write(it.first)
+            writer.write(it.first.toAbsolutePath().toString())
             writer.newLine()
           }
           writer.write("#")
@@ -65,10 +77,10 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
     }
   }
 
-  private fun fireListeners(path: String) = synchronized(listeners) {
-    val pathFixed = fixPath(path)
+  private fun fireListeners(stringPath: String) = synchronized(listeners) {
+    val path = RPathUtil.toPath(stringPath) ?: return
     listeners.forEach { (root, listener) ->
-      if (pathFixed.startsWith(fixPath(root))) {
+      if (path.startsWith(root)) {
         try {
           listener(path)
         } catch (t: Throwable) {
@@ -76,10 +88,6 @@ class RFsNotifier(private val interpreter: RInterpreter): Disposable {
         }
       }
     }
-  }
-
-  private fun fixPath(path: String): String {
-    return if (interpreter.hostOS == OperatingSystem.WINDOWS) path.replace('\\', '/') else path
   }
 
   private fun runProcess(): ProcessHandler {
