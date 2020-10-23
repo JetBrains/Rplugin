@@ -47,6 +47,12 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
       state.saveWorkspace = value
     }
 
+  var disableRprofile: Boolean
+    get() = state.disableRprofile
+    set(value) {
+      state.disableRprofile  = value
+    }
+
   fun addInterpreterLocationListener(listener: RInterpreterLocationListener, parentDisposable: Disposable? = null) {
     interpreterLocationListeners.add(listener)
     if (parentDisposable != null) {
@@ -75,6 +81,7 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
     var remoteBasePath by string()
     var loadWorkspace by property(false)
     var saveWorkspace by property(false)
+    var disableRprofile by property(false)
     var packageBuildSettingsState by property<RPackageBuildSettings.State>()
 
     fun setNoInterpreter() {
