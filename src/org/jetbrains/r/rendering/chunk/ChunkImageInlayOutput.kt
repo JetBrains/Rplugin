@@ -85,9 +85,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private fun findPlotFor(snapshot: RSnapshot): RPlot? {
     return RPlotUtil.readFrom(snapshot.file.parentFile, snapshot.number)?.let { plot ->
-      val hostOS = RConsoleManager.getInstance(project).currentConsoleOrNull?.interpreter?.hostOS
-      val defaultFontName = hostOS?.let { RPlotUtil.getDefaultFontName(it) }
-      RPlotUtil.convert(plot, snapshot.number, defaultFontName)
+      RPlotUtil.convert(plot, snapshot.number)
     }
   }
 

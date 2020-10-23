@@ -22,10 +22,6 @@ object RPlotUtil {
   private const val PROTOCOL_VERSION = 7
   private const val STROKE_WIDTH_SCALE = 1.25f
 
-  // Not to be translated
-  private const val DEFAULT_FONT_NAME_LINUX = "Liberation Sans"
-  private const val DEFAULT_FONT_NAME = "Arial"
-
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
   private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
   private val GROWING_TEXT_ERROR_TEXT = RBundle.message("plot.viewer.growing.text.error")
@@ -53,10 +49,6 @@ object RPlotUtil {
     return "recorded_v${PROTOCOL_VERSION}_${number}.plot"
   }
 
-  fun getDefaultFontName(hostOS: OperatingSystem): String {
-    return if (hostOS == OperatingSystem.LINUX) DEFAULT_FONT_NAME_LINUX else DEFAULT_FONT_NAME
-  }
-
   fun getErrorDescription(error: RPlotError): String {
     return when (error) {
       RPlotError.UNKNOWN -> UNKNOWN_PARSING_ERROR_TEXT
@@ -66,8 +58,8 @@ object RPlotUtil {
     }
   }
 
-  fun convert(plot: Plot, number: Int, defaultFontName: String?): RPlot {
-    val fonts = plot.fontList.map { convert(it, defaultFontName) }
+  fun convert(plot: Plot, number: Int): RPlot {
+    val fonts = plot.fontList.map { convert(it) }
     val colors = plot.colorList.map { convert(it) }
     val strokes = plot.strokeList.map { convert(it) }
     val viewports = plot.viewportList.map { convert(it) }
@@ -76,9 +68,9 @@ object RPlotUtil {
     return RPlot(number, fonts, colors, strokes, viewports, layers, error)
   }
 
-  private fun convert(font: Font, defaultFontName: String?): RFont {
+  private fun convert(font: Font): RFont {
     val style = RFontStyle.values()[font.style]
-    val name = font.name.takeIf { it.isNotBlank() } ?: defaultFontName
+    val name = font.name.takeIf { it.isNotBlank() }
     return RFont(name, font.size, style)
   }
 
