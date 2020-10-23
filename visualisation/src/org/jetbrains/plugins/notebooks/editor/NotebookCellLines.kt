@@ -142,7 +142,7 @@ class NotebookCellLines private constructor(private val document: Document,
       if (cellTypeAwareLexerProvider.shouldParseWholeFile()) {
         val startLine = 0
         val startOffset = 0
-        val endLine = document.lineCount - 1
+        val endLine = max(0, document.lineCount - 1)
         val markerCacheCutStart = 0
         val markerCacheCutEndExclusive = markerCache.size
         return DocumentUpdate(document, startLine, startOffset, endLine, markerCacheCutStart, markerCacheCutEndExclusive)
