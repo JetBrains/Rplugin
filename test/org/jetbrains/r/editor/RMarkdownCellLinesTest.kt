@@ -2,7 +2,7 @@ package org.jetbrains.r.editor
 
 import com.intellij.openapi.editor.impl.EditorImpl
 import org.jetbrains.plugins.notebooks.editor.CodeCellLinesChecker
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType.*
 import org.jetbrains.plugins.notebooks.editor.edt
 import org.junit.Test
 
@@ -17,10 +17,10 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.MARKDOWN, 0, 20)
+        marker(MARKDOWN, 0, 20)
       }
       intervals {
-        interval(NotebookCellLines.CellType.MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2)
       }
     }
   }
@@ -35,10 +35,10 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.CODE, 0, 20)
+        marker(CODE, 0, 20)
       }
       intervals {
-        interval(NotebookCellLines.CellType.CODE, 0..2)
+        interval(CODE, 0..2)
       }
     }
   }
@@ -56,14 +56,14 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.CODE, 0, 17)
-        marker(NotebookCellLines.CellType.CODE, 17, 16)
-        marker(NotebookCellLines.CellType.CODE, 33, 20)
+        marker(CODE, 0, 17)
+        marker(CODE, 17, 16)
+        marker(CODE, 33, 20)
       }
       intervals {
-        interval(NotebookCellLines.CellType.CODE, 0..1)
-        interval(NotebookCellLines.CellType.CODE, 2..3)
-        interval(NotebookCellLines.CellType.CODE, 4..5)
+        interval(CODE, 0..1)
+        interval(CODE, 2..3)
+        interval(CODE, 4..5)
       }
     }
   }
@@ -78,10 +78,10 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.MARKDOWN, 0, 30)
+        marker(MARKDOWN, 0, 30)
       }
       intervals {
-        interval(NotebookCellLines.CellType.MARKDOWN, 0..2)
+        interval(MARKDOWN, 0..2)
       }
     }
   }
@@ -99,12 +99,12 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.CODE, 0, 23)
-        marker(NotebookCellLines.CellType.CODE, 23, 22)
+        marker(CODE, 0, 23)
+        marker(CODE, 23, 22)
       }
       intervals {
-        interval(NotebookCellLines.CellType.CODE, 0..2)
-        interval(NotebookCellLines.CellType.CODE, 3..5)
+        interval(CODE, 0..2)
+        interval(CODE, 3..5)
       }
     }
   }
@@ -126,12 +126,12 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.MARKDOWN, 0, 74)
-        marker(NotebookCellLines.CellType.MARKDOWN, 74, 36)
+        marker(MARKDOWN, 0, 74)
+        marker(MARKDOWN, 74, 36)
       }
       intervals {
-        interval(NotebookCellLines.CellType.MARKDOWN, 0..5)
-        interval(NotebookCellLines.CellType.MARKDOWN, 6..9)
+        interval(MARKDOWN, 0..5)
+        interval(MARKDOWN, 6..9)
       }
     }
   }
@@ -145,12 +145,12 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(NotebookCellLines.CellType.CODE, 0, 10)
-        marker(NotebookCellLines.CellType.CODE, 10, 15)
+        marker(CODE, 0, 10)
+        marker(CODE, 10, 15)
       }
       intervals {
-        interval(NotebookCellLines.CellType.CODE, 0..0)
-        interval(NotebookCellLines.CellType.CODE, 1..1)
+        interval(CODE, 0..0)
+        interval(CODE, 1..1)
       }
     }
   }
