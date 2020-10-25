@@ -19,16 +19,14 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import icons.RIcons
+import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.concurrency.isPending
 import org.jetbrains.concurrency.isRejected
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.execution.ExecuteExpressionUtils
-import org.jetbrains.r.interpreter.RInterpreterInfo
-import org.jetbrains.r.interpreter.RInterpreterLocation
-import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.RInterpreterUtil
+import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettings
 import org.jetbrains.r.settings.RInterpreterSettingsProvider
 import org.jetbrains.r.settings.RSettings
@@ -189,4 +187,9 @@ class RInterpreterPopupFactory(private val project: Project) {
 }
 
 private val RInterpreterInfo.stringRepresentation: String
-  get() = "${interpreterName} (${version}) ${interpreterLocation}"
+  @Nls
+  get() {
+    return if (this.interpreterLocation is RLocalInterpreterLocation) RBundle.message(
+      "interpreter.status.bar.local.interpreter.representation", version)
+    else "${interpreterName} (${version})"
+  }
