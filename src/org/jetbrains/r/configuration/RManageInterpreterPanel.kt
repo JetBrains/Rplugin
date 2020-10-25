@@ -116,20 +116,20 @@ class RManageInterpreterPanel(text: String, private val localOnly: Boolean, priv
 
   private fun refreshComboBox() {
     val providers = if (localOnly) listOf(RLocalInterpreterSettingsProvider()) else RInterpreterSettingsProvider.getProviders ()
+    val separator = RInterpreterListCellRenderer.SEPARATOR
     val interpreters =
-      (
-        listOf(null, RInterpreterListCellRenderer.SEPARATOR)
-        + currentInterpreters
-        + (if (currentInterpreters.size != 0) listOf(RInterpreterListCellRenderer.SEPARATOR) else listOf<RInterpreterInfo>())
-        + providers
-      )
+      listOf(null) +
+      currentInterpreters.groupBy { it.interpreterLocation.javaClass }.values.flatMap { listOf(separator) + it } +
+      listOf(separator) +
+      providers
+
     comboBox.model = object : CollectionComboBoxModel<Any>(interpreters, currentSelection) {
       override fun setSelectedItem(item: Any?) {
         if (item is RInterpreterSettingsProvider){
           item.showAddInterpreterDialog(currentInterpreters) { interpreter ->
             addInterpreter(interpreter)
           }
-        } else if (item !== RInterpreterListCellRenderer.SEPARATOR) {
+        } else if (item !== separator) {
           super.setSelectedItem(item)
         }
       }
