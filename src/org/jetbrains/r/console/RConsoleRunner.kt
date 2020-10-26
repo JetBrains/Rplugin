@@ -136,6 +136,8 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           runAsync { promise.setResult(consoleView) }
         }
       }
+
+      consoleView.interpreter.prepareForExecution().onProcessed { rInterop.replExecute(".rs.invokeHook(\"rstudio.sessionInit\")") }
     }
     return promise
   }
