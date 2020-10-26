@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ExtraNamedArguments}
  */
-public  final class ExtraNamedArguments extends
+public final class ExtraNamedArguments extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ExtraNamedArguments)
     ExtraNamedArgumentsOrBuilder {
@@ -115,6 +115,7 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @return A list containing the argNames.
    */
   public com.google.protobuf.ProtocolStringList
       getArgNamesList() {
@@ -126,6 +127,7 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @return The count of argNames.
    */
   public int getArgNamesCount() {
     return argNames_.size();
@@ -136,6 +138,8 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @param index The index of the element to return.
+   * @return The argNames at the given index.
    */
   public java.lang.String getArgNames(int index) {
     return argNames_.get(index);
@@ -146,6 +150,8 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the argNames at the given index.
    */
   public com.google.protobuf.ByteString
       getArgNamesBytes(int index) {
@@ -156,6 +162,7 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.LazyStringList funArgNames_;
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @return A list containing the funArgNames.
    */
   public com.google.protobuf.ProtocolStringList
       getFunArgNamesList() {
@@ -163,18 +170,23 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @return The count of funArgNames.
    */
   public int getFunArgNamesCount() {
     return funArgNames_.size();
   }
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @param index The index of the element to return.
+   * @return The funArgNames at the given index.
    */
   public java.lang.String getFunArgNames(int index) {
     return funArgNames_.get(index);
   }
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the funArgNames at the given index.
    */
   public com.google.protobuf.ByteString
       getFunArgNamesBytes(int index) {
@@ -549,6 +561,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @return A list containing the argNames.
      */
     public com.google.protobuf.ProtocolStringList
         getArgNamesList() {
@@ -560,6 +573,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @return The count of argNames.
      */
     public int getArgNamesCount() {
       return argNames_.size();
@@ -570,6 +584,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param index The index of the element to return.
+     * @return The argNames at the given index.
      */
     public java.lang.String getArgNames(int index) {
       return argNames_.get(index);
@@ -580,6 +596,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the argNames at the given index.
      */
     public com.google.protobuf.ByteString
         getArgNamesBytes(int index) {
@@ -591,6 +609,9 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The argNames to set.
+     * @return This builder for chaining.
      */
     public Builder setArgNames(
         int index, java.lang.String value) {
@@ -608,6 +629,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param value The argNames to add.
+     * @return This builder for chaining.
      */
     public Builder addArgNames(
         java.lang.String value) {
@@ -625,6 +648,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param values The argNames to add.
+     * @return This builder for chaining.
      */
     public Builder addAllArgNames(
         java.lang.Iterable<java.lang.String> values) {
@@ -640,6 +665,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearArgNames() {
       argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -653,6 +679,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>repeated string argNames = 1;</code>
+     * @param value The bytes of the argNames to add.
+     * @return This builder for chaining.
      */
     public Builder addArgNamesBytes(
         com.google.protobuf.ByteString value) {
@@ -675,6 +703,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @return A list containing the funArgNames.
      */
     public com.google.protobuf.ProtocolStringList
         getFunArgNamesList() {
@@ -682,18 +711,23 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @return The count of funArgNames.
      */
     public int getFunArgNamesCount() {
       return funArgNames_.size();
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param index The index of the element to return.
+     * @return The funArgNames at the given index.
      */
     public java.lang.String getFunArgNames(int index) {
       return funArgNames_.get(index);
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the funArgNames at the given index.
      */
     public com.google.protobuf.ByteString
         getFunArgNamesBytes(int index) {
@@ -701,6 +735,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The funArgNames to set.
+     * @return This builder for chaining.
      */
     public Builder setFunArgNames(
         int index, java.lang.String value) {
@@ -714,6 +751,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param value The funArgNames to add.
+     * @return This builder for chaining.
      */
     public Builder addFunArgNames(
         java.lang.String value) {
@@ -727,6 +766,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param values The funArgNames to add.
+     * @return This builder for chaining.
      */
     public Builder addAllFunArgNames(
         java.lang.Iterable<java.lang.String> values) {
@@ -738,6 +779,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFunArgNames() {
       funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -747,6 +789,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string funArgNames = 2;</code>
+     * @param value The bytes of the funArgNames to add.
+     * @return This builder for chaining.
      */
     public Builder addFunArgNamesBytes(
         com.google.protobuf.ByteString value) {

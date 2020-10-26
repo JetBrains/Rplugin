@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Stroke}
  */
-public  final class Stroke extends
+public final class Stroke extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Stroke)
     StrokeOrBuilder {
@@ -109,7 +109,9 @@ private static final long serialVersionUID = 0L;
   private float width_;
   /**
    * <code>float width = 1;</code>
+   * @return The width.
    */
+  @java.lang.Override
   public float getWidth() {
     return width_;
   }
@@ -118,7 +120,9 @@ private static final long serialVersionUID = 0L;
   private int cap_;
   /**
    * <code>int32 cap = 2;</code>
+   * @return The cap.
    */
+  @java.lang.Override
   public int getCap() {
     return cap_;
   }
@@ -127,7 +131,9 @@ private static final long serialVersionUID = 0L;
   private int join_;
   /**
    * <code>int32 join = 3;</code>
+   * @return The join.
    */
+  @java.lang.Override
   public int getJoin() {
     return join_;
   }
@@ -136,7 +142,9 @@ private static final long serialVersionUID = 0L;
   private float miterLimit_;
   /**
    * <code>float miterLimit = 4;</code>
+   * @return The miterLimit.
    */
+  @java.lang.Override
   public float getMiterLimit() {
     return miterLimit_;
   }
@@ -145,7 +153,9 @@ private static final long serialVersionUID = 0L;
   private int pattern_;
   /**
    * <code>int32 pattern = 5;</code>
+   * @return The pattern.
    */
+  @java.lang.Override
   public int getPattern() {
     return pattern_;
   }
@@ -527,12 +537,16 @@ private static final long serialVersionUID = 0L;
     private float width_ ;
     /**
      * <code>float width = 1;</code>
+     * @return The width.
      */
+    @java.lang.Override
     public float getWidth() {
       return width_;
     }
     /**
      * <code>float width = 1;</code>
+     * @param value The width to set.
+     * @return This builder for chaining.
      */
     public Builder setWidth(float value) {
       
@@ -542,6 +556,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float width = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWidth() {
       
@@ -553,12 +568,16 @@ private static final long serialVersionUID = 0L;
     private int cap_ ;
     /**
      * <code>int32 cap = 2;</code>
+     * @return The cap.
      */
+    @java.lang.Override
     public int getCap() {
       return cap_;
     }
     /**
      * <code>int32 cap = 2;</code>
+     * @param value The cap to set.
+     * @return This builder for chaining.
      */
     public Builder setCap(int value) {
       
@@ -568,6 +587,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 cap = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCap() {
       
@@ -579,12 +599,16 @@ private static final long serialVersionUID = 0L;
     private int join_ ;
     /**
      * <code>int32 join = 3;</code>
+     * @return The join.
      */
+    @java.lang.Override
     public int getJoin() {
       return join_;
     }
     /**
      * <code>int32 join = 3;</code>
+     * @param value The join to set.
+     * @return This builder for chaining.
      */
     public Builder setJoin(int value) {
       
@@ -594,6 +618,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 join = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearJoin() {
       
@@ -605,12 +630,16 @@ private static final long serialVersionUID = 0L;
     private float miterLimit_ ;
     /**
      * <code>float miterLimit = 4;</code>
+     * @return The miterLimit.
      */
+    @java.lang.Override
     public float getMiterLimit() {
       return miterLimit_;
     }
     /**
      * <code>float miterLimit = 4;</code>
+     * @param value The miterLimit to set.
+     * @return This builder for chaining.
      */
     public Builder setMiterLimit(float value) {
       
@@ -620,6 +649,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float miterLimit = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMiterLimit() {
       
@@ -631,12 +661,16 @@ private static final long serialVersionUID = 0L;
     private int pattern_ ;
     /**
      * <code>int32 pattern = 5;</code>
+     * @return The pattern.
      */
+    @java.lang.Override
     public int getPattern() {
       return pattern_;
     }
     /**
      * <code>int32 pattern = 5;</code>
+     * @param value The pattern to set.
+     * @return This builder for chaining.
      */
     public Builder setPattern(int value) {
       
@@ -646,6 +680,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 pattern = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPattern() {
       

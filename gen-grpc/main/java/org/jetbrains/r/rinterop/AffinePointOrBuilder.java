@@ -9,21 +9,25 @@ public interface AffinePointOrBuilder extends
 
   /**
    * <code>float xScale = 1;</code>
+   * @return The xScale.
    */
   float getXScale();
 
   /**
    * <code>float xOffset = 2;</code>
+   * @return The xOffset.
    */
   float getXOffset();
 
   /**
    * <code>float yScale = 3;</code>
+   * @return The yScale.
    */
   float getYScale();
 
   /**
    * <code>float yOffset = 4;</code>
+   * @return The yOffset.
    */
   float getYOffset();
 }

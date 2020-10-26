@@ -9,16 +9,19 @@ public interface FixedViewportOrBuilder extends
 
   /**
    * <code>float ratio = 1;</code>
+   * @return The ratio.
    */
   float getRatio();
 
   /**
    * <code>float delta = 2;</code>
+   * @return The delta.
    */
   float getDelta();
 
   /**
    * <code>int32 parentIndex = 3;</code>
+   * @return The parentIndex.
    */
   int getParentIndex();
 }

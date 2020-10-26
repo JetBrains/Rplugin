@@ -33,11 +33,13 @@ public interface PolylineFigureOrBuilder extends
 
   /**
    * <code>int32 strokeIndex = 2;</code>
+   * @return The strokeIndex.
    */
   int getStrokeIndex();
 
   /**
    * <code>int32 colorIndex = 3;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 }

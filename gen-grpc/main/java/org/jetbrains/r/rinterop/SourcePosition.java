@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.SourcePosition}
  */
-public  final class SourcePosition extends
+public final class SourcePosition extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.SourcePosition)
     SourcePositionOrBuilder {
@@ -96,7 +96,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object fileId_;
   /**
    * <code>string fileId = 1;</code>
+   * @return The fileId.
    */
+  @java.lang.Override
   public java.lang.String getFileId() {
     java.lang.Object ref = fileId_;
     if (ref instanceof java.lang.String) {
@@ -111,7 +113,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string fileId = 1;</code>
+   * @return The bytes for fileId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFileIdBytes() {
     java.lang.Object ref = fileId_;
@@ -130,7 +134,9 @@ private static final long serialVersionUID = 0L;
   private int line_;
   /**
    * <code>int32 line = 2;</code>
+   * @return The line.
    */
+  @java.lang.Override
   public int getLine() {
     return line_;
   }
@@ -457,6 +463,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object fileId_ = "";
     /**
      * <code>string fileId = 1;</code>
+     * @return The fileId.
      */
     public java.lang.String getFileId() {
       java.lang.Object ref = fileId_;
@@ -472,6 +479,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fileId = 1;</code>
+     * @return The bytes for fileId.
      */
     public com.google.protobuf.ByteString
         getFileIdBytes() {
@@ -488,6 +496,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fileId = 1;</code>
+     * @param value The fileId to set.
+     * @return This builder for chaining.
      */
     public Builder setFileId(
         java.lang.String value) {
@@ -501,6 +511,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fileId = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFileId() {
       
@@ -510,6 +521,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fileId = 1;</code>
+     * @param value The bytes for fileId to set.
+     * @return This builder for chaining.
      */
     public Builder setFileIdBytes(
         com.google.protobuf.ByteString value) {
@@ -526,12 +539,16 @@ private static final long serialVersionUID = 0L;
     private int line_ ;
     /**
      * <code>int32 line = 2;</code>
+     * @return The line.
      */
+    @java.lang.Override
     public int getLine() {
       return line_;
     }
     /**
      * <code>int32 line = 2;</code>
+     * @param value The line to set.
+     * @return This builder for chaining.
      */
     public Builder setLine(int value) {
       
@@ -541,6 +558,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 line = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLine() {
       

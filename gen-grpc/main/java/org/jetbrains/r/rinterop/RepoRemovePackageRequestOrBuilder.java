@@ -9,20 +9,24 @@ public interface RepoRemovePackageRequestOrBuilder extends
 
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
   java.lang.String getPackageName();
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
   com.google.protobuf.ByteString
       getPackageNameBytes();
 
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The libraryPath.
    */
   java.lang.String getLibraryPath();
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The bytes for libraryPath.
    */
   com.google.protobuf.ByteString
       getLibraryPathBytes();

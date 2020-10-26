@@ -9,50 +9,60 @@ public interface InitOrBuilder extends
 
   /**
    * <code>string projectDir = 1;</code>
+   * @return The projectDir.
    */
   java.lang.String getProjectDir();
   /**
    * <code>string projectDir = 1;</code>
+   * @return The bytes for projectDir.
    */
   com.google.protobuf.ByteString
       getProjectDirBytes();
 
   /**
    * <code>string rScriptsPath = 2;</code>
+   * @return The rScriptsPath.
    */
   java.lang.String getRScriptsPath();
   /**
    * <code>string rScriptsPath = 2;</code>
+   * @return The bytes for rScriptsPath.
    */
   com.google.protobuf.ByteString
       getRScriptsPathBytes();
 
   /**
    * <code>string workspaceFile = 3;</code>
+   * @return The workspaceFile.
    */
   java.lang.String getWorkspaceFile();
   /**
    * <code>string workspaceFile = 3;</code>
+   * @return The bytes for workspaceFile.
    */
   com.google.protobuf.ByteString
       getWorkspaceFileBytes();
 
   /**
    * <code>bool loadWorkspace = 4;</code>
+   * @return The loadWorkspace.
    */
   boolean getLoadWorkspace();
 
   /**
    * <code>bool saveOnExit = 5;</code>
+   * @return The saveOnExit.
    */
   boolean getSaveOnExit();
 
   /**
    * <code>string httpUserAgent = 6;</code>
+   * @return The httpUserAgent.
    */
   java.lang.String getHttpUserAgent();
   /**
    * <code>string httpUserAgent = 6;</code>
+   * @return The bytes for httpUserAgent.
    */
   com.google.protobuf.ByteString
       getHttpUserAgentBytes();

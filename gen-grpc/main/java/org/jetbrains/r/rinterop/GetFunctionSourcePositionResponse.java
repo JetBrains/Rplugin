@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GetFunctionSourcePositionResponse}
  */
-public  final class GetFunctionSourcePositionResponse extends
+public final class GetFunctionSourcePositionResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GetFunctionSourcePositionResponse)
     GetFunctionSourcePositionResponseOrBuilder {
@@ -104,19 +104,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.SourcePosition position_;
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return Whether the position field is set.
    */
+  @java.lang.Override
   public boolean hasPosition() {
     return position_ != null;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return The position.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePosition getPosition() {
     return position_ == null ? org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance() : position_;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePositionOrBuilder getPositionOrBuilder() {
     return getPosition();
   }
@@ -125,7 +130,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object sourcePositionText_;
   /**
    * <code>string sourcePositionText = 2;</code>
+   * @return The sourcePositionText.
    */
+  @java.lang.Override
   public java.lang.String getSourcePositionText() {
     java.lang.Object ref = sourcePositionText_;
     if (ref instanceof java.lang.String) {
@@ -140,7 +147,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string sourcePositionText = 2;</code>
+   * @return The bytes for sourcePositionText.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSourcePositionTextBytes() {
     java.lang.Object ref = sourcePositionText_;
@@ -492,12 +501,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> positionBuilder_;
     /**
      * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * @return Whether the position field is set.
      */
     public boolean hasPosition() {
       return positionBuilder_ != null || position_ != null;
     }
     /**
      * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * @return The position.
      */
     public org.jetbrains.r.rinterop.SourcePosition getPosition() {
       if (positionBuilder_ == null) {
@@ -607,6 +618,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object sourcePositionText_ = "";
     /**
      * <code>string sourcePositionText = 2;</code>
+     * @return The sourcePositionText.
      */
     public java.lang.String getSourcePositionText() {
       java.lang.Object ref = sourcePositionText_;
@@ -622,6 +634,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 2;</code>
+     * @return The bytes for sourcePositionText.
      */
     public com.google.protobuf.ByteString
         getSourcePositionTextBytes() {
@@ -638,6 +651,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 2;</code>
+     * @param value The sourcePositionText to set.
+     * @return This builder for chaining.
      */
     public Builder setSourcePositionText(
         java.lang.String value) {
@@ -651,6 +666,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSourcePositionText() {
       
@@ -660,6 +676,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 2;</code>
+     * @param value The bytes for sourcePositionText to set.
+     * @return This builder for chaining.
      */
     public Builder setSourcePositionTextBytes(
         com.google.protobuf.ByteString value) {

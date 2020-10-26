@@ -9,30 +9,36 @@ public interface GraphicsInstallRequestOrBuilder extends
 
   /**
    * <code>string packagePath = 1;</code>
+   * @return The packagePath.
    */
   java.lang.String getPackagePath();
   /**
    * <code>string packagePath = 1;</code>
+   * @return The bytes for packagePath.
    */
   com.google.protobuf.ByteString
       getPackagePathBytes();
 
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The libraryPath.
    */
   java.lang.String getLibraryPath();
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The bytes for libraryPath.
    */
   com.google.protobuf.ByteString
       getLibraryPathBytes();
 
   /**
    * <code>string packageType = 3;</code>
+   * @return The packageType.
    */
   java.lang.String getPackageType();
   /**
    * <code>string packageType = 3;</code>
+   * @return The bytes for packageType.
    */
   com.google.protobuf.ByteString
       getPackageTypeBytes();

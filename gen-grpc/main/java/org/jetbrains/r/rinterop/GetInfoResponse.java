@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GetInfoResponse}
  */
-public  final class GetInfoResponse extends
+public final class GetInfoResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GetInfoResponse)
     GetInfoResponseOrBuilder {
@@ -96,7 +96,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object rVersion_;
   /**
    * <code>string rVersion = 1;</code>
+   * @return The rVersion.
    */
+  @java.lang.Override
   public java.lang.String getRVersion() {
     java.lang.Object ref = rVersion_;
     if (ref instanceof java.lang.String) {
@@ -111,7 +113,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string rVersion = 1;</code>
+   * @return The bytes for rVersion.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getRVersionBytes() {
     java.lang.Object ref = rVersion_;
@@ -130,7 +134,9 @@ private static final long serialVersionUID = 0L;
   private int pid_;
   /**
    * <code>int32 pid = 2;</code>
+   * @return The pid.
    */
+  @java.lang.Override
   public int getPid() {
     return pid_;
   }
@@ -457,6 +463,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object rVersion_ = "";
     /**
      * <code>string rVersion = 1;</code>
+     * @return The rVersion.
      */
     public java.lang.String getRVersion() {
       java.lang.Object ref = rVersion_;
@@ -472,6 +479,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rVersion = 1;</code>
+     * @return The bytes for rVersion.
      */
     public com.google.protobuf.ByteString
         getRVersionBytes() {
@@ -488,6 +496,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rVersion = 1;</code>
+     * @param value The rVersion to set.
+     * @return This builder for chaining.
      */
     public Builder setRVersion(
         java.lang.String value) {
@@ -501,6 +511,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rVersion = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRVersion() {
       
@@ -510,6 +521,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rVersion = 1;</code>
+     * @param value The bytes for rVersion to set.
+     * @return This builder for chaining.
      */
     public Builder setRVersionBytes(
         com.google.protobuf.ByteString value) {
@@ -526,12 +539,16 @@ private static final long serialVersionUID = 0L;
     private int pid_ ;
     /**
      * <code>int32 pid = 2;</code>
+     * @return The pid.
      */
+    @java.lang.Override
     public int getPid() {
       return pid_;
     }
     /**
      * <code>int32 pid = 2;</code>
+     * @param value The pid to set.
+     * @return This builder for chaining.
      */
     public Builder setPid(int value) {
       
@@ -541,6 +558,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 pid = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPid() {
       

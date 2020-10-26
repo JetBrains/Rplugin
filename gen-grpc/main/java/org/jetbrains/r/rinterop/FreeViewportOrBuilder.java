@@ -9,10 +9,12 @@ public interface FreeViewportOrBuilder extends
 
   /**
    * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * @return Whether the from field is set.
    */
   boolean hasFrom();
   /**
    * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * @return The from.
    */
   org.jetbrains.r.rinterop.AffinePoint getFrom();
   /**
@@ -22,10 +24,12 @@ public interface FreeViewportOrBuilder extends
 
   /**
    * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * @return Whether the to field is set.
    */
   boolean hasTo();
   /**
    * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * @return The to.
    */
   org.jetbrains.r.rinterop.AffinePoint getTo();
   /**
@@ -35,6 +39,7 @@ public interface FreeViewportOrBuilder extends
 
   /**
    * <code>int32 parentIndex = 3;</code>
+   * @return The parentIndex.
    */
   int getParentIndex();
 }

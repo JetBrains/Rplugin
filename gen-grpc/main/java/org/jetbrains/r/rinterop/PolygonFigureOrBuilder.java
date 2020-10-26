@@ -33,16 +33,19 @@ public interface PolygonFigureOrBuilder extends
 
   /**
    * <code>int32 strokeIndex = 2;</code>
+   * @return The strokeIndex.
    */
   int getStrokeIndex();
 
   /**
    * <code>int32 colorIndex = 3;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 
   /**
    * <code>int32 fillIndex = 4;</code>
+   * @return The fillIndex.
    */
   int getFillIndex();
 }

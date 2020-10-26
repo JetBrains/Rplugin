@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RInstalledPackageList}
  */
-public  final class RInstalledPackageList extends
+public final class RInstalledPackageList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RInstalledPackageList)
     RInstalledPackageListOrBuilder {
@@ -100,49 +100,59 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string packageName = 1;</code>
+     * @return The packageName.
      */
     java.lang.String getPackageName();
     /**
      * <code>string packageName = 1;</code>
+     * @return The bytes for packageName.
      */
     com.google.protobuf.ByteString
         getPackageNameBytes();
 
     /**
      * <code>string packageVersion = 2;</code>
+     * @return The packageVersion.
      */
     java.lang.String getPackageVersion();
     /**
      * <code>string packageVersion = 2;</code>
+     * @return The bytes for packageVersion.
      */
     com.google.protobuf.ByteString
         getPackageVersionBytes();
 
     /**
      * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+     * @return The enum numeric value on the wire for priority.
      */
     int getPriorityValue();
     /**
      * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+     * @return The priority.
      */
     org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority getPriority();
 
     /**
      * <code>string libraryPath = 4;</code>
+     * @return The libraryPath.
      */
     java.lang.String getLibraryPath();
     /**
      * <code>string libraryPath = 4;</code>
+     * @return The bytes for libraryPath.
      */
     com.google.protobuf.ByteString
         getLibraryPathBytes();
 
     /**
      * <code>string canonicalPackagePath = 5;</code>
+     * @return The canonicalPackagePath.
      */
     java.lang.String getCanonicalPackagePath();
     /**
      * <code>string canonicalPackagePath = 5;</code>
+     * @return The bytes for canonicalPackagePath.
      */
     com.google.protobuf.ByteString
         getCanonicalPackagePathBytes();
@@ -174,7 +184,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RInstalledPackageList.RInstalledPackage}
    */
-  public  static final class RInstalledPackage extends
+  public static final class RInstalledPackage extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RInstalledPackageList.RInstalledPackage)
       RInstalledPackageOrBuilder {
@@ -340,6 +350,8 @@ private static final long serialVersionUID = 0L;
       }
 
       /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -347,6 +359,10 @@ private static final long serialVersionUID = 0L;
         return forNumber(value);
       }
 
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
       public static RPackagePriority forNumber(int value) {
         switch (value) {
           case 0: return BASE;
@@ -370,6 +386,10 @@ private static final long serialVersionUID = 0L;
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
         return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -410,20 +430,24 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>string key = 1;</code>
+       * @return The key.
        */
       java.lang.String getKey();
       /**
        * <code>string key = 1;</code>
+       * @return The bytes for key.
        */
       com.google.protobuf.ByteString
           getKeyBytes();
 
       /**
        * <code>string value = 2;</code>
+       * @return The value.
        */
       java.lang.String getValue();
       /**
        * <code>string value = 2;</code>
+       * @return The bytes for value.
        */
       com.google.protobuf.ByteString
           getValueBytes();
@@ -431,7 +455,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Protobuf type {@code rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry}
      */
-    public  static final class MapEntry extends
+    public static final class MapEntry extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry)
         MapEntryOrBuilder {
@@ -523,7 +547,9 @@ private static final long serialVersionUID = 0L;
       private volatile java.lang.Object key_;
       /**
        * <code>string key = 1;</code>
+       * @return The key.
        */
+      @java.lang.Override
       public java.lang.String getKey() {
         java.lang.Object ref = key_;
         if (ref instanceof java.lang.String) {
@@ -538,7 +564,9 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string key = 1;</code>
+       * @return The bytes for key.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getKeyBytes() {
         java.lang.Object ref = key_;
@@ -557,7 +585,9 @@ private static final long serialVersionUID = 0L;
       private volatile java.lang.Object value_;
       /**
        * <code>string value = 2;</code>
+       * @return The value.
        */
+      @java.lang.Override
       public java.lang.String getValue() {
         java.lang.Object ref = value_;
         if (ref instanceof java.lang.String) {
@@ -572,7 +602,9 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string value = 2;</code>
+       * @return The bytes for value.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getValueBytes() {
         java.lang.Object ref = value_;
@@ -909,6 +941,7 @@ private static final long serialVersionUID = 0L;
         private java.lang.Object key_ = "";
         /**
          * <code>string key = 1;</code>
+         * @return The key.
          */
         public java.lang.String getKey() {
           java.lang.Object ref = key_;
@@ -924,6 +957,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string key = 1;</code>
+         * @return The bytes for key.
          */
         public com.google.protobuf.ByteString
             getKeyBytes() {
@@ -940,6 +974,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string key = 1;</code>
+         * @param value The key to set.
+         * @return This builder for chaining.
          */
         public Builder setKey(
             java.lang.String value) {
@@ -953,6 +989,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string key = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearKey() {
           
@@ -962,6 +999,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string key = 1;</code>
+         * @param value The bytes for key to set.
+         * @return This builder for chaining.
          */
         public Builder setKeyBytes(
             com.google.protobuf.ByteString value) {
@@ -978,6 +1017,7 @@ private static final long serialVersionUID = 0L;
         private java.lang.Object value_ = "";
         /**
          * <code>string value = 2;</code>
+         * @return The value.
          */
         public java.lang.String getValue() {
           java.lang.Object ref = value_;
@@ -993,6 +1033,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 2;</code>
+         * @return The bytes for value.
          */
         public com.google.protobuf.ByteString
             getValueBytes() {
@@ -1009,6 +1050,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 2;</code>
+         * @param value The value to set.
+         * @return This builder for chaining.
          */
         public Builder setValue(
             java.lang.String value) {
@@ -1022,6 +1065,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 2;</code>
+         * @return This builder for chaining.
          */
         public Builder clearValue() {
           
@@ -1031,6 +1075,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 2;</code>
+         * @param value The bytes for value to set.
+         * @return This builder for chaining.
          */
         public Builder setValueBytes(
             com.google.protobuf.ByteString value) {
@@ -1100,7 +1146,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object packageName_;
     /**
      * <code>string packageName = 1;</code>
+     * @return The packageName.
      */
+    @java.lang.Override
     public java.lang.String getPackageName() {
       java.lang.Object ref = packageName_;
       if (ref instanceof java.lang.String) {
@@ -1115,7 +1163,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return The bytes for packageName.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPackageNameBytes() {
       java.lang.Object ref = packageName_;
@@ -1134,7 +1184,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object packageVersion_;
     /**
      * <code>string packageVersion = 2;</code>
+     * @return The packageVersion.
      */
+    @java.lang.Override
     public java.lang.String getPackageVersion() {
       java.lang.Object ref = packageVersion_;
       if (ref instanceof java.lang.String) {
@@ -1149,7 +1201,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageVersion = 2;</code>
+     * @return The bytes for packageVersion.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPackageVersionBytes() {
       java.lang.Object ref = packageVersion_;
@@ -1168,14 +1222,16 @@ private static final long serialVersionUID = 0L;
     private int priority_;
     /**
      * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+     * @return The enum numeric value on the wire for priority.
      */
-    public int getPriorityValue() {
+    @java.lang.Override public int getPriorityValue() {
       return priority_;
     }
     /**
      * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+     * @return The priority.
      */
-    public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority getPriority() {
+    @java.lang.Override public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority getPriority() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority result = org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority.valueOf(priority_);
       return result == null ? org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority.UNRECOGNIZED : result;
@@ -1185,7 +1241,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object libraryPath_;
     /**
      * <code>string libraryPath = 4;</code>
+     * @return The libraryPath.
      */
+    @java.lang.Override
     public java.lang.String getLibraryPath() {
       java.lang.Object ref = libraryPath_;
       if (ref instanceof java.lang.String) {
@@ -1200,7 +1258,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 4;</code>
+     * @return The bytes for libraryPath.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getLibraryPathBytes() {
       java.lang.Object ref = libraryPath_;
@@ -1219,7 +1279,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object canonicalPackagePath_;
     /**
      * <code>string canonicalPackagePath = 5;</code>
+     * @return The canonicalPackagePath.
      */
+    @java.lang.Override
     public java.lang.String getCanonicalPackagePath() {
       java.lang.Object ref = canonicalPackagePath_;
       if (ref instanceof java.lang.String) {
@@ -1234,7 +1296,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string canonicalPackagePath = 5;</code>
+     * @return The bytes for canonicalPackagePath.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCanonicalPackagePathBytes() {
       java.lang.Object ref = canonicalPackagePath_;
@@ -1254,12 +1318,14 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
+    @java.lang.Override
     public java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry> getDescriptionList() {
       return description_;
     }
     /**
      * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder> 
         getDescriptionOrBuilderList() {
       return description_;
@@ -1267,18 +1333,21 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
+    @java.lang.Override
     public int getDescriptionCount() {
       return description_.size();
     }
     /**
      * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntry getDescription(int index) {
       return description_.get(index);
     }
     /**
      * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage.MapEntry description = 6;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.MapEntryOrBuilder getDescriptionOrBuilder(
         int index) {
       return description_.get(index);
@@ -1713,6 +1782,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object packageName_ = "";
       /**
        * <code>string packageName = 1;</code>
+       * @return The packageName.
        */
       public java.lang.String getPackageName() {
         java.lang.Object ref = packageName_;
@@ -1728,6 +1798,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageName = 1;</code>
+       * @return The bytes for packageName.
        */
       public com.google.protobuf.ByteString
           getPackageNameBytes() {
@@ -1744,6 +1815,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageName = 1;</code>
+       * @param value The packageName to set.
+       * @return This builder for chaining.
        */
       public Builder setPackageName(
           java.lang.String value) {
@@ -1757,6 +1830,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageName = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPackageName() {
         
@@ -1766,6 +1840,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageName = 1;</code>
+       * @param value The bytes for packageName to set.
+       * @return This builder for chaining.
        */
       public Builder setPackageNameBytes(
           com.google.protobuf.ByteString value) {
@@ -1782,6 +1858,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object packageVersion_ = "";
       /**
        * <code>string packageVersion = 2;</code>
+       * @return The packageVersion.
        */
       public java.lang.String getPackageVersion() {
         java.lang.Object ref = packageVersion_;
@@ -1797,6 +1874,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageVersion = 2;</code>
+       * @return The bytes for packageVersion.
        */
       public com.google.protobuf.ByteString
           getPackageVersionBytes() {
@@ -1813,6 +1891,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageVersion = 2;</code>
+       * @param value The packageVersion to set.
+       * @return This builder for chaining.
        */
       public Builder setPackageVersion(
           java.lang.String value) {
@@ -1826,6 +1906,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageVersion = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPackageVersion() {
         
@@ -1835,6 +1916,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string packageVersion = 2;</code>
+       * @param value The bytes for packageVersion to set.
+       * @return This builder for chaining.
        */
       public Builder setPackageVersionBytes(
           com.google.protobuf.ByteString value) {
@@ -1851,21 +1934,27 @@ private static final long serialVersionUID = 0L;
       private int priority_ = 0;
       /**
        * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+       * @return The enum numeric value on the wire for priority.
        */
-      public int getPriorityValue() {
+      @java.lang.Override public int getPriorityValue() {
         return priority_;
       }
       /**
        * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+       * @param value The enum numeric value on the wire for priority to set.
+       * @return This builder for chaining.
        */
       public Builder setPriorityValue(int value) {
+        
         priority_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+       * @return The priority.
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority getPriority() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority result = org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority.valueOf(priority_);
@@ -1873,6 +1962,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+       * @param value The priority to set.
+       * @return This builder for chaining.
        */
       public Builder setPriority(org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage.RPackagePriority value) {
         if (value == null) {
@@ -1885,6 +1976,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>.rplugininterop.RInstalledPackageList.RInstalledPackage.RPackagePriority priority = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPriority() {
         
@@ -1896,6 +1988,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object libraryPath_ = "";
       /**
        * <code>string libraryPath = 4;</code>
+       * @return The libraryPath.
        */
       public java.lang.String getLibraryPath() {
         java.lang.Object ref = libraryPath_;
@@ -1911,6 +2004,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string libraryPath = 4;</code>
+       * @return The bytes for libraryPath.
        */
       public com.google.protobuf.ByteString
           getLibraryPathBytes() {
@@ -1927,6 +2021,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string libraryPath = 4;</code>
+       * @param value The libraryPath to set.
+       * @return This builder for chaining.
        */
       public Builder setLibraryPath(
           java.lang.String value) {
@@ -1940,6 +2036,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string libraryPath = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLibraryPath() {
         
@@ -1949,6 +2046,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string libraryPath = 4;</code>
+       * @param value The bytes for libraryPath to set.
+       * @return This builder for chaining.
        */
       public Builder setLibraryPathBytes(
           com.google.protobuf.ByteString value) {
@@ -1965,6 +2064,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object canonicalPackagePath_ = "";
       /**
        * <code>string canonicalPackagePath = 5;</code>
+       * @return The canonicalPackagePath.
        */
       public java.lang.String getCanonicalPackagePath() {
         java.lang.Object ref = canonicalPackagePath_;
@@ -1980,6 +2080,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string canonicalPackagePath = 5;</code>
+       * @return The bytes for canonicalPackagePath.
        */
       public com.google.protobuf.ByteString
           getCanonicalPackagePathBytes() {
@@ -1996,6 +2097,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string canonicalPackagePath = 5;</code>
+       * @param value The canonicalPackagePath to set.
+       * @return This builder for chaining.
        */
       public Builder setCanonicalPackagePath(
           java.lang.String value) {
@@ -2009,6 +2112,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string canonicalPackagePath = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearCanonicalPackagePath() {
         
@@ -2018,6 +2122,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string canonicalPackagePath = 5;</code>
+       * @param value The bytes for canonicalPackagePath to set.
+       * @return This builder for chaining.
        */
       public Builder setCanonicalPackagePathBytes(
           com.google.protobuf.ByteString value) {
@@ -2328,12 +2434,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage packages = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage> getPackagesList() {
     return packages_;
   }
   /**
    * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage packages = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackageOrBuilder> 
       getPackagesOrBuilderList() {
     return packages_;
@@ -2341,18 +2449,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage packages = 1;</code>
    */
+  @java.lang.Override
   public int getPackagesCount() {
     return packages_.size();
   }
   /**
    * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage packages = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackage getPackages(int index) {
     return packages_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.RInstalledPackageList.RInstalledPackage packages = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RInstalledPackageList.RInstalledPackageOrBuilder getPackagesOrBuilder(
       int index) {
     return packages_.get(index);

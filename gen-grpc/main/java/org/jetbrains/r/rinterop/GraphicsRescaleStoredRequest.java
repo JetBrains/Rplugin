@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsRescaleStoredRequest}
  */
-public  final class GraphicsRescaleStoredRequest extends
+public final class GraphicsRescaleStoredRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsRescaleStoredRequest)
     GraphicsRescaleStoredRequestOrBuilder {
@@ -114,7 +114,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object groupId_;
   /**
    * <code>string groupId = 1;</code>
+   * @return The groupId.
    */
+  @java.lang.Override
   public java.lang.String getGroupId() {
     java.lang.Object ref = groupId_;
     if (ref instanceof java.lang.String) {
@@ -129,7 +131,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string groupId = 1;</code>
+   * @return The bytes for groupId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getGroupIdBytes() {
     java.lang.Object ref = groupId_;
@@ -148,7 +152,9 @@ private static final long serialVersionUID = 0L;
   private int snapshotNumber_;
   /**
    * <code>int32 snapshotNumber = 2;</code>
+   * @return The snapshotNumber.
    */
+  @java.lang.Override
   public int getSnapshotNumber() {
     return snapshotNumber_;
   }
@@ -157,7 +163,9 @@ private static final long serialVersionUID = 0L;
   private int snapshotVersion_;
   /**
    * <code>int32 snapshotVersion = 3;</code>
+   * @return The snapshotVersion.
    */
+  @java.lang.Override
   public int getSnapshotVersion() {
     return snapshotVersion_;
   }
@@ -166,19 +174,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.ScreenParameters newParameters_;
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+   * @return Whether the newParameters field is set.
    */
+  @java.lang.Override
   public boolean hasNewParameters() {
     return newParameters_ != null;
   }
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+   * @return The newParameters.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParameters getNewParameters() {
     return newParameters_ == null ? org.jetbrains.r.rinterop.ScreenParameters.getDefaultInstance() : newParameters_;
   }
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParametersOrBuilder getNewParametersOrBuilder() {
     return getNewParameters();
   }
@@ -552,6 +565,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object groupId_ = "";
     /**
      * <code>string groupId = 1;</code>
+     * @return The groupId.
      */
     public java.lang.String getGroupId() {
       java.lang.Object ref = groupId_;
@@ -567,6 +581,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @return The bytes for groupId.
      */
     public com.google.protobuf.ByteString
         getGroupIdBytes() {
@@ -583,6 +598,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @param value The groupId to set.
+     * @return This builder for chaining.
      */
     public Builder setGroupId(
         java.lang.String value) {
@@ -596,6 +613,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearGroupId() {
       
@@ -605,6 +623,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @param value The bytes for groupId to set.
+     * @return This builder for chaining.
      */
     public Builder setGroupIdBytes(
         com.google.protobuf.ByteString value) {
@@ -621,12 +641,16 @@ private static final long serialVersionUID = 0L;
     private int snapshotNumber_ ;
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @return The snapshotNumber.
      */
+    @java.lang.Override
     public int getSnapshotNumber() {
       return snapshotNumber_;
     }
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @param value The snapshotNumber to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotNumber(int value) {
       
@@ -636,6 +660,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSnapshotNumber() {
       
@@ -647,12 +672,16 @@ private static final long serialVersionUID = 0L;
     private int snapshotVersion_ ;
     /**
      * <code>int32 snapshotVersion = 3;</code>
+     * @return The snapshotVersion.
      */
+    @java.lang.Override
     public int getSnapshotVersion() {
       return snapshotVersion_;
     }
     /**
      * <code>int32 snapshotVersion = 3;</code>
+     * @param value The snapshotVersion to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotVersion(int value) {
       
@@ -662,6 +691,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 snapshotVersion = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSnapshotVersion() {
       
@@ -675,12 +705,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.ScreenParameters, org.jetbrains.r.rinterop.ScreenParameters.Builder, org.jetbrains.r.rinterop.ScreenParametersOrBuilder> newParametersBuilder_;
     /**
      * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+     * @return Whether the newParameters field is set.
      */
     public boolean hasNewParameters() {
       return newParametersBuilder_ != null || newParameters_ != null;
     }
     /**
      * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+     * @return The newParameters.
      */
     public org.jetbrains.r.rinterop.ScreenParameters getNewParameters() {
       if (newParametersBuilder_ == null) {

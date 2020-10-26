@@ -9,15 +9,18 @@ public interface CopyToPersistentRefResponseOrBuilder extends
 
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return The persistentIndex.
    */
   int getPersistentIndex();
 
   /**
    * <code>string error = 2;</code>
+   * @return The error.
    */
   java.lang.String getError();
   /**
    * <code>string error = 2;</code>
+   * @return The bytes for error.
    */
   com.google.protobuf.ByteString
       getErrorBytes();

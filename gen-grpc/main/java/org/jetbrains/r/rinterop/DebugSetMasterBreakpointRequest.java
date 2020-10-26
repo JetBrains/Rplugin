@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DebugSetMasterBreakpointRequest}
  */
-public  final class DebugSetMasterBreakpointRequest extends
+public final class DebugSetMasterBreakpointRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DebugSetMasterBreakpointRequest)
     DebugSetMasterBreakpointRequestOrBuilder {
@@ -112,7 +112,8 @@ private static final long serialVersionUID = 0L;
   private int masterCase_ = 0;
   private java.lang.Object master_;
   public enum MasterCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     NONE(2),
     MASTERID(3),
     MASTER_NOT_SET(0);
@@ -121,6 +122,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -151,7 +154,9 @@ private static final long serialVersionUID = 0L;
   private int breakpointId_;
   /**
    * <code>int32 breakpointId = 1;</code>
+   * @return The breakpointId.
    */
+  @java.lang.Override
   public int getBreakpointId() {
     return breakpointId_;
   }
@@ -159,13 +164,17 @@ private static final long serialVersionUID = 0L;
   public static final int NONE_FIELD_NUMBER = 2;
   /**
    * <code>.google.protobuf.Empty none = 2;</code>
+   * @return Whether the none field is set.
    */
+  @java.lang.Override
   public boolean hasNone() {
     return masterCase_ == 2;
   }
   /**
    * <code>.google.protobuf.Empty none = 2;</code>
+   * @return The none.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getNone() {
     if (masterCase_ == 2) {
        return (com.google.protobuf.Empty) master_;
@@ -175,6 +184,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty none = 2;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getNoneOrBuilder() {
     if (masterCase_ == 2) {
        return (com.google.protobuf.Empty) master_;
@@ -185,7 +195,9 @@ private static final long serialVersionUID = 0L;
   public static final int MASTERID_FIELD_NUMBER = 3;
   /**
    * <code>int32 masterId = 3;</code>
+   * @return The masterId.
    */
+  @java.lang.Override
   public int getMasterId() {
     if (masterCase_ == 3) {
       return (java.lang.Integer) master_;
@@ -197,7 +209,9 @@ private static final long serialVersionUID = 0L;
   private boolean leaveEnabled_;
   /**
    * <code>bool leaveEnabled = 4;</code>
+   * @return The leaveEnabled.
    */
+  @java.lang.Override
   public boolean getLeaveEnabled() {
     return leaveEnabled_;
   }
@@ -607,12 +621,16 @@ private static final long serialVersionUID = 0L;
     private int breakpointId_ ;
     /**
      * <code>int32 breakpointId = 1;</code>
+     * @return The breakpointId.
      */
+    @java.lang.Override
     public int getBreakpointId() {
       return breakpointId_;
     }
     /**
      * <code>int32 breakpointId = 1;</code>
+     * @param value The breakpointId to set.
+     * @return This builder for chaining.
      */
     public Builder setBreakpointId(int value) {
       
@@ -622,6 +640,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 breakpointId = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearBreakpointId() {
       
@@ -634,13 +653,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> noneBuilder_;
     /**
      * <code>.google.protobuf.Empty none = 2;</code>
+     * @return Whether the none field is set.
      */
+    @java.lang.Override
     public boolean hasNone() {
       return masterCase_ == 2;
     }
     /**
      * <code>.google.protobuf.Empty none = 2;</code>
+     * @return The none.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getNone() {
       if (noneBuilder_ == null) {
         if (masterCase_ == 2) {
@@ -734,6 +757,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty none = 2;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getNoneOrBuilder() {
       if ((masterCase_ == 2) && (noneBuilder_ != null)) {
         return noneBuilder_.getMessageOrBuilder();
@@ -768,6 +792,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 masterId = 3;</code>
+     * @return The masterId.
      */
     public int getMasterId() {
       if (masterCase_ == 3) {
@@ -777,6 +802,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 masterId = 3;</code>
+     * @param value The masterId to set.
+     * @return This builder for chaining.
      */
     public Builder setMasterId(int value) {
       masterCase_ = 3;
@@ -786,6 +813,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 masterId = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMasterId() {
       if (masterCase_ == 3) {
@@ -799,12 +827,16 @@ private static final long serialVersionUID = 0L;
     private boolean leaveEnabled_ ;
     /**
      * <code>bool leaveEnabled = 4;</code>
+     * @return The leaveEnabled.
      */
+    @java.lang.Override
     public boolean getLeaveEnabled() {
       return leaveEnabled_;
     }
     /**
      * <code>bool leaveEnabled = 4;</code>
+     * @param value The leaveEnabled to set.
+     * @return This builder for chaining.
      */
     public Builder setLeaveEnabled(boolean value) {
       
@@ -814,6 +846,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool leaveEnabled = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLeaveEnabled() {
       

@@ -18,7 +18,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.23.0)",
+    value = "by gRPC proto compiler (version 1.31.1)",
     comments = "Source: service.proto")
 public final class RPIServiceGrpc {
 
@@ -2852,7 +2852,14 @@ public final class RPIServiceGrpc {
    * Creates a new async stub that supports all call types for the service
    */
   public static RPIServiceStub newStub(io.grpc.Channel channel) {
-    return new RPIServiceStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<RPIServiceStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<RPIServiceStub>() {
+        @java.lang.Override
+        public RPIServiceStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new RPIServiceStub(channel, callOptions);
+        }
+      };
+    return RPIServiceStub.newStub(factory, channel);
   }
 
   /**
@@ -2860,7 +2867,14 @@ public final class RPIServiceGrpc {
    */
   public static RPIServiceBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new RPIServiceBlockingStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<RPIServiceBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<RPIServiceBlockingStub>() {
+        @java.lang.Override
+        public RPIServiceBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new RPIServiceBlockingStub(channel, callOptions);
+        }
+      };
+    return RPIServiceBlockingStub.newStub(factory, channel);
   }
 
   /**
@@ -2868,7 +2882,14 @@ public final class RPIServiceGrpc {
    */
   public static RPIServiceFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new RPIServiceFutureStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<RPIServiceFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<RPIServiceFutureStub>() {
+        @java.lang.Override
+        public RPIServiceFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new RPIServiceFutureStub(channel, callOptions);
+        }
+      };
+    return RPIServiceFutureStub.newStub(factory, channel);
   }
 
   /**
@@ -4184,19 +4205,15 @@ public final class RPIServiceGrpc {
 
   /**
    */
-  public static final class RPIServiceStub extends io.grpc.stub.AbstractStub<RPIServiceStub> {
-    private RPIServiceStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private RPIServiceStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class RPIServiceStub extends io.grpc.stub.AbstractAsyncStub<RPIServiceStub> {
+    private RPIServiceStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected RPIServiceStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected RPIServiceStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new RPIServiceStub(channel, callOptions);
     }
 
@@ -4958,19 +4975,15 @@ public final class RPIServiceGrpc {
 
   /**
    */
-  public static final class RPIServiceBlockingStub extends io.grpc.stub.AbstractStub<RPIServiceBlockingStub> {
-    private RPIServiceBlockingStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private RPIServiceBlockingStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class RPIServiceBlockingStub extends io.grpc.stub.AbstractBlockingStub<RPIServiceBlockingStub> {
+    private RPIServiceBlockingStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected RPIServiceBlockingStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected RPIServiceBlockingStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new RPIServiceBlockingStub(channel, callOptions);
     }
 
@@ -5656,19 +5669,15 @@ public final class RPIServiceGrpc {
 
   /**
    */
-  public static final class RPIServiceFutureStub extends io.grpc.stub.AbstractStub<RPIServiceFutureStub> {
-    private RPIServiceFutureStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private RPIServiceFutureStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class RPIServiceFutureStub extends io.grpc.stub.AbstractFutureStub<RPIServiceFutureStub> {
+    private RPIServiceFutureStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected RPIServiceFutureStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected RPIServiceFutureStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new RPIServiceFutureStub(channel, callOptions);
     }
 

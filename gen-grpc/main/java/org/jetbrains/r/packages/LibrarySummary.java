@@ -20,34 +20,41 @@ public final class LibrarySummary {
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+     * @return The enum numeric value on the wire for type.
      */
     int getTypeValue();
     /**
      * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+     * @return The type.
      */
     org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type getType();
 
     /**
      * <code>bool exported = 3;</code>
+     * @return The exported.
      */
     boolean getExported();
 
     /**
      * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     * @return Whether the functionRepresentation field is set.
      */
     boolean hasFunctionRepresentation();
     /**
      * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     * @return The functionRepresentation.
      */
     org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation();
     /**
@@ -57,10 +64,12 @@ public final class LibrarySummary {
 
     /**
      * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+     * @return Whether the s4ClassRepresentation field is set.
      */
     boolean hasS4ClassRepresentation();
     /**
      * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+     * @return The s4ClassRepresentation.
      */
     org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation();
     /**
@@ -73,7 +82,7 @@ public final class LibrarySummary {
   /**
    * Protobuf type {@code library_summary.RLibrarySymbol}
    */
-  public  static final class RLibrarySymbol extends
+  public static final class RLibrarySymbol extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol)
       RLibrarySymbolOrBuilder {
@@ -245,6 +254,8 @@ public final class LibrarySummary {
       }
 
       /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -252,6 +263,10 @@ public final class LibrarySummary {
         return forNumber(value);
       }
 
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
       public static Type forNumber(int value) {
         switch (value) {
           case 0: return OTHER;
@@ -276,6 +291,10 @@ public final class LibrarySummary {
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
         return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -316,20 +335,24 @@ public final class LibrarySummary {
 
       /**
        * <code>string parameters = 1;</code>
+       * @return The parameters.
        */
       java.lang.String getParameters();
       /**
        * <code>string parameters = 1;</code>
+       * @return The bytes for parameters.
        */
       com.google.protobuf.ByteString
           getParametersBytes();
 
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       * @return Whether the extraNamedArguments field is set.
        */
       boolean hasExtraNamedArguments();
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       * @return The extraNamedArguments.
        */
       org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments();
       /**
@@ -340,7 +363,7 @@ public final class LibrarySummary {
     /**
      * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation}
      */
-    public  static final class FunctionRepresentation extends
+    public static final class FunctionRepresentation extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation)
         FunctionRepresentationOrBuilder {
@@ -444,6 +467,7 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @return A list containing the argNames.
          */
         java.util.List<java.lang.String>
             getArgNamesList();
@@ -453,6 +477,7 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @return The count of argNames.
          */
         int getArgNamesCount();
         /**
@@ -461,6 +486,8 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @param index The index of the element to return.
+         * @return The argNames at the given index.
          */
         java.lang.String getArgNames(int index);
         /**
@@ -469,25 +496,33 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the argNames at the given index.
          */
         com.google.protobuf.ByteString
             getArgNamesBytes(int index);
 
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @return A list containing the funArgNames.
          */
         java.util.List<java.lang.String>
             getFunArgNamesList();
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @return The count of funArgNames.
          */
         int getFunArgNamesCount();
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @param index The index of the element to return.
+         * @return The funArgNames at the given index.
          */
         java.lang.String getFunArgNames(int index);
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the funArgNames at the given index.
          */
         com.google.protobuf.ByteString
             getFunArgNamesBytes(int index);
@@ -495,7 +530,7 @@ public final class LibrarySummary {
       /**
        * Protobuf type {@code library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments}
        */
-      public  static final class ExtraNamedArguments extends
+      public static final class ExtraNamedArguments extends
           com.google.protobuf.GeneratedMessageV3 implements
           // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments)
           ExtraNamedArgumentsOrBuilder {
@@ -604,6 +639,7 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @return A list containing the argNames.
          */
         public com.google.protobuf.ProtocolStringList
             getArgNamesList() {
@@ -615,6 +651,7 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @return The count of argNames.
          */
         public int getArgNamesCount() {
           return argNames_.size();
@@ -625,6 +662,8 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @param index The index of the element to return.
+         * @return The argNames at the given index.
          */
         public java.lang.String getArgNames(int index) {
           return argNames_.get(index);
@@ -635,6 +674,8 @@ public final class LibrarySummary {
          * </pre>
          *
          * <code>repeated string argNames = 1;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the argNames at the given index.
          */
         public com.google.protobuf.ByteString
             getArgNamesBytes(int index) {
@@ -645,6 +686,7 @@ public final class LibrarySummary {
         private com.google.protobuf.LazyStringList funArgNames_;
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @return A list containing the funArgNames.
          */
         public com.google.protobuf.ProtocolStringList
             getFunArgNamesList() {
@@ -652,18 +694,23 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @return The count of funArgNames.
          */
         public int getFunArgNamesCount() {
           return funArgNames_.size();
         }
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @param index The index of the element to return.
+         * @return The funArgNames at the given index.
          */
         public java.lang.String getFunArgNames(int index) {
           return funArgNames_.get(index);
         }
         /**
          * <code>repeated string funArgNames = 2;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the funArgNames at the given index.
          */
         public com.google.protobuf.ByteString
             getFunArgNamesBytes(int index) {
@@ -1038,6 +1085,7 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @return A list containing the argNames.
            */
           public com.google.protobuf.ProtocolStringList
               getArgNamesList() {
@@ -1049,6 +1097,7 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @return The count of argNames.
            */
           public int getArgNamesCount() {
             return argNames_.size();
@@ -1059,6 +1108,8 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param index The index of the element to return.
+           * @return The argNames at the given index.
            */
           public java.lang.String getArgNames(int index) {
             return argNames_.get(index);
@@ -1069,6 +1120,8 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param index The index of the value to return.
+           * @return The bytes of the argNames at the given index.
            */
           public com.google.protobuf.ByteString
               getArgNamesBytes(int index) {
@@ -1080,6 +1133,9 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param index The index to set the value at.
+           * @param value The argNames to set.
+           * @return This builder for chaining.
            */
           public Builder setArgNames(
               int index, java.lang.String value) {
@@ -1097,6 +1153,8 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param value The argNames to add.
+           * @return This builder for chaining.
            */
           public Builder addArgNames(
               java.lang.String value) {
@@ -1114,6 +1172,8 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param values The argNames to add.
+           * @return This builder for chaining.
            */
           public Builder addAllArgNames(
               java.lang.Iterable<java.lang.String> values) {
@@ -1129,6 +1189,7 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @return This builder for chaining.
            */
           public Builder clearArgNames() {
             argNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -1142,6 +1203,8 @@ public final class LibrarySummary {
            * </pre>
            *
            * <code>repeated string argNames = 1;</code>
+           * @param value The bytes of the argNames to add.
+           * @return This builder for chaining.
            */
           public Builder addArgNamesBytes(
               com.google.protobuf.ByteString value) {
@@ -1164,6 +1227,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @return A list containing the funArgNames.
            */
           public com.google.protobuf.ProtocolStringList
               getFunArgNamesList() {
@@ -1171,18 +1235,23 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @return The count of funArgNames.
            */
           public int getFunArgNamesCount() {
             return funArgNames_.size();
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param index The index of the element to return.
+           * @return The funArgNames at the given index.
            */
           public java.lang.String getFunArgNames(int index) {
             return funArgNames_.get(index);
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param index The index of the value to return.
+           * @return The bytes of the funArgNames at the given index.
            */
           public com.google.protobuf.ByteString
               getFunArgNamesBytes(int index) {
@@ -1190,6 +1259,9 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param index The index to set the value at.
+           * @param value The funArgNames to set.
+           * @return This builder for chaining.
            */
           public Builder setFunArgNames(
               int index, java.lang.String value) {
@@ -1203,6 +1275,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param value The funArgNames to add.
+           * @return This builder for chaining.
            */
           public Builder addFunArgNames(
               java.lang.String value) {
@@ -1216,6 +1290,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param values The funArgNames to add.
+           * @return This builder for chaining.
            */
           public Builder addAllFunArgNames(
               java.lang.Iterable<java.lang.String> values) {
@@ -1227,6 +1303,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @return This builder for chaining.
            */
           public Builder clearFunArgNames() {
             funArgNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -1236,6 +1313,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>repeated string funArgNames = 2;</code>
+           * @param value The bytes of the funArgNames to add.
+           * @return This builder for chaining.
            */
           public Builder addFunArgNamesBytes(
               com.google.protobuf.ByteString value) {
@@ -1305,7 +1384,9 @@ public final class LibrarySummary {
       private volatile java.lang.Object parameters_;
       /**
        * <code>string parameters = 1;</code>
+       * @return The parameters.
        */
+      @java.lang.Override
       public java.lang.String getParameters() {
         java.lang.Object ref = parameters_;
         if (ref instanceof java.lang.String) {
@@ -1320,7 +1401,9 @@ public final class LibrarySummary {
       }
       /**
        * <code>string parameters = 1;</code>
+       * @return The bytes for parameters.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getParametersBytes() {
         java.lang.Object ref = parameters_;
@@ -1339,19 +1422,24 @@ public final class LibrarySummary {
       private org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments_;
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       * @return Whether the extraNamedArguments field is set.
        */
+      @java.lang.Override
       public boolean hasExtraNamedArguments() {
         return extraNamedArguments_ != null;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+       * @return The extraNamedArguments.
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
         return extraNamedArguments_ == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.getDefaultInstance() : extraNamedArguments_;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder getExtraNamedArgumentsOrBuilder() {
         return getExtraNamedArguments();
       }
@@ -1691,6 +1779,7 @@ public final class LibrarySummary {
         private java.lang.Object parameters_ = "";
         /**
          * <code>string parameters = 1;</code>
+         * @return The parameters.
          */
         public java.lang.String getParameters() {
           java.lang.Object ref = parameters_;
@@ -1706,6 +1795,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>string parameters = 1;</code>
+         * @return The bytes for parameters.
          */
         public com.google.protobuf.ByteString
             getParametersBytes() {
@@ -1722,6 +1812,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>string parameters = 1;</code>
+         * @param value The parameters to set.
+         * @return This builder for chaining.
          */
         public Builder setParameters(
             java.lang.String value) {
@@ -1735,6 +1827,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>string parameters = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearParameters() {
           
@@ -1744,6 +1837,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>string parameters = 1;</code>
+         * @param value The bytes for parameters to set.
+         * @return This builder for chaining.
          */
         public Builder setParametersBytes(
             com.google.protobuf.ByteString value) {
@@ -1762,12 +1857,14 @@ public final class LibrarySummary {
             org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArgumentsOrBuilder> extraNamedArgumentsBuilder_;
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         * @return Whether the extraNamedArguments field is set.
          */
         public boolean hasExtraNamedArguments() {
           return extraNamedArgumentsBuilder_ != null || extraNamedArguments_ != null;
         }
         /**
          * <code>.library_summary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments extraNamedArguments = 2;</code>
+         * @return The extraNamedArguments.
          */
         public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments getExtraNamedArguments() {
           if (extraNamedArgumentsBuilder_ == null) {
@@ -1932,10 +2029,12 @@ public final class LibrarySummary {
 
       /**
        * <code>string packageName = 1;</code>
+       * @return The packageName.
        */
       java.lang.String getPackageName();
       /**
        * <code>string packageName = 1;</code>
+       * @return The bytes for packageName.
        */
       com.google.protobuf.ByteString
           getPackageNameBytes();
@@ -1966,32 +2065,39 @@ public final class LibrarySummary {
 
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @return A list containing the superClasses.
        */
       java.util.List<java.lang.String>
           getSuperClassesList();
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @return The count of superClasses.
        */
       int getSuperClassesCount();
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @param index The index of the element to return.
+       * @return The superClasses at the given index.
        */
       java.lang.String getSuperClasses(int index);
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the superClasses at the given index.
        */
       com.google.protobuf.ByteString
           getSuperClassesBytes(int index);
 
       /**
        * <code>bool isVirtual = 4;</code>
+       * @return The isVirtual.
        */
       boolean getIsVirtual();
     }
     /**
      * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation}
      */
-    public  static final class S4ClassRepresentation extends
+    public static final class S4ClassRepresentation extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.S4ClassRepresentation)
         S4ClassRepresentationOrBuilder {
@@ -2110,20 +2216,24 @@ public final class LibrarySummary {
 
         /**
          * <code>string name = 1;</code>
+         * @return The name.
          */
         java.lang.String getName();
         /**
          * <code>string name = 1;</code>
+         * @return The bytes for name.
          */
         com.google.protobuf.ByteString
             getNameBytes();
 
         /**
          * <code>string type = 2;</code>
+         * @return The type.
          */
         java.lang.String getType();
         /**
          * <code>string type = 2;</code>
+         * @return The bytes for type.
          */
         com.google.protobuf.ByteString
             getTypeBytes();
@@ -2131,7 +2241,7 @@ public final class LibrarySummary {
       /**
        * Protobuf type {@code library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot}
        */
-      public  static final class S4ClassSlot extends
+      public static final class S4ClassSlot extends
           com.google.protobuf.GeneratedMessageV3 implements
           // @@protoc_insertion_point(message_implements:library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot)
           S4ClassSlotOrBuilder {
@@ -2223,7 +2333,9 @@ public final class LibrarySummary {
         private volatile java.lang.Object name_;
         /**
          * <code>string name = 1;</code>
+         * @return The name.
          */
+        @java.lang.Override
         public java.lang.String getName() {
           java.lang.Object ref = name_;
           if (ref instanceof java.lang.String) {
@@ -2238,7 +2350,9 @@ public final class LibrarySummary {
         }
         /**
          * <code>string name = 1;</code>
+         * @return The bytes for name.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString
             getNameBytes() {
           java.lang.Object ref = name_;
@@ -2257,7 +2371,9 @@ public final class LibrarySummary {
         private volatile java.lang.Object type_;
         /**
          * <code>string type = 2;</code>
+         * @return The type.
          */
+        @java.lang.Override
         public java.lang.String getType() {
           java.lang.Object ref = type_;
           if (ref instanceof java.lang.String) {
@@ -2272,7 +2388,9 @@ public final class LibrarySummary {
         }
         /**
          * <code>string type = 2;</code>
+         * @return The bytes for type.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString
             getTypeBytes() {
           java.lang.Object ref = type_;
@@ -2609,6 +2727,7 @@ public final class LibrarySummary {
           private java.lang.Object name_ = "";
           /**
            * <code>string name = 1;</code>
+           * @return The name.
            */
           public java.lang.String getName() {
             java.lang.Object ref = name_;
@@ -2624,6 +2743,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>string name = 1;</code>
+           * @return The bytes for name.
            */
           public com.google.protobuf.ByteString
               getNameBytes() {
@@ -2640,6 +2760,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>string name = 1;</code>
+           * @param value The name to set.
+           * @return This builder for chaining.
            */
           public Builder setName(
               java.lang.String value) {
@@ -2653,6 +2775,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>string name = 1;</code>
+           * @return This builder for chaining.
            */
           public Builder clearName() {
             
@@ -2662,6 +2785,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>string name = 1;</code>
+           * @param value The bytes for name to set.
+           * @return This builder for chaining.
            */
           public Builder setNameBytes(
               com.google.protobuf.ByteString value) {
@@ -2678,6 +2803,7 @@ public final class LibrarySummary {
           private java.lang.Object type_ = "";
           /**
            * <code>string type = 2;</code>
+           * @return The type.
            */
           public java.lang.String getType() {
             java.lang.Object ref = type_;
@@ -2693,6 +2819,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>string type = 2;</code>
+           * @return The bytes for type.
            */
           public com.google.protobuf.ByteString
               getTypeBytes() {
@@ -2709,6 +2836,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>string type = 2;</code>
+           * @param value The type to set.
+           * @return This builder for chaining.
            */
           public Builder setType(
               java.lang.String value) {
@@ -2722,6 +2851,7 @@ public final class LibrarySummary {
           }
           /**
            * <code>string type = 2;</code>
+           * @return This builder for chaining.
            */
           public Builder clearType() {
             
@@ -2731,6 +2861,8 @@ public final class LibrarySummary {
           }
           /**
            * <code>string type = 2;</code>
+           * @param value The bytes for type to set.
+           * @return This builder for chaining.
            */
           public Builder setTypeBytes(
               com.google.protobuf.ByteString value) {
@@ -2800,7 +2932,9 @@ public final class LibrarySummary {
       private volatile java.lang.Object packageName_;
       /**
        * <code>string packageName = 1;</code>
+       * @return The packageName.
        */
+      @java.lang.Override
       public java.lang.String getPackageName() {
         java.lang.Object ref = packageName_;
         if (ref instanceof java.lang.String) {
@@ -2815,7 +2949,9 @@ public final class LibrarySummary {
       }
       /**
        * <code>string packageName = 1;</code>
+       * @return The bytes for packageName.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getPackageNameBytes() {
         java.lang.Object ref = packageName_;
@@ -2835,12 +2971,14 @@ public final class LibrarySummary {
       /**
        * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
        */
+      @java.lang.Override
       public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot> getSlotsList() {
         return slots_;
       }
       /**
        * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
        */
+      @java.lang.Override
       public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder> 
           getSlotsOrBuilderList() {
         return slots_;
@@ -2848,18 +2986,21 @@ public final class LibrarySummary {
       /**
        * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
        */
+      @java.lang.Override
       public int getSlotsCount() {
         return slots_.size();
       }
       /**
        * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot getSlots(int index) {
         return slots_.get(index);
       }
       /**
        * <code>repeated .library_summary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlot slots = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.S4ClassSlotOrBuilder getSlotsOrBuilder(
           int index) {
         return slots_.get(index);
@@ -2869,6 +3010,7 @@ public final class LibrarySummary {
       private com.google.protobuf.LazyStringList superClasses_;
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @return A list containing the superClasses.
        */
       public com.google.protobuf.ProtocolStringList
           getSuperClassesList() {
@@ -2876,18 +3018,23 @@ public final class LibrarySummary {
       }
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @return The count of superClasses.
        */
       public int getSuperClassesCount() {
         return superClasses_.size();
       }
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @param index The index of the element to return.
+       * @return The superClasses at the given index.
        */
       public java.lang.String getSuperClasses(int index) {
         return superClasses_.get(index);
       }
       /**
        * <code>repeated string superClasses = 3;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the superClasses at the given index.
        */
       public com.google.protobuf.ByteString
           getSuperClassesBytes(int index) {
@@ -2898,7 +3045,9 @@ public final class LibrarySummary {
       private boolean isVirtual_;
       /**
        * <code>bool isVirtual = 4;</code>
+       * @return The isVirtual.
        */
+      @java.lang.Override
       public boolean getIsVirtual() {
         return isVirtual_;
       }
@@ -3317,6 +3466,7 @@ public final class LibrarySummary {
         private java.lang.Object packageName_ = "";
         /**
          * <code>string packageName = 1;</code>
+         * @return The packageName.
          */
         public java.lang.String getPackageName() {
           java.lang.Object ref = packageName_;
@@ -3332,6 +3482,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>string packageName = 1;</code>
+         * @return The bytes for packageName.
          */
         public com.google.protobuf.ByteString
             getPackageNameBytes() {
@@ -3348,6 +3499,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>string packageName = 1;</code>
+         * @param value The packageName to set.
+         * @return This builder for chaining.
          */
         public Builder setPackageName(
             java.lang.String value) {
@@ -3361,6 +3514,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>string packageName = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearPackageName() {
           
@@ -3370,6 +3524,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>string packageName = 1;</code>
+         * @param value The bytes for packageName to set.
+         * @return This builder for chaining.
          */
         public Builder setPackageNameBytes(
             com.google.protobuf.ByteString value) {
@@ -3632,6 +3788,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @return A list containing the superClasses.
          */
         public com.google.protobuf.ProtocolStringList
             getSuperClassesList() {
@@ -3639,18 +3796,23 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @return The count of superClasses.
          */
         public int getSuperClassesCount() {
           return superClasses_.size();
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param index The index of the element to return.
+         * @return The superClasses at the given index.
          */
         public java.lang.String getSuperClasses(int index) {
           return superClasses_.get(index);
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param index The index of the value to return.
+         * @return The bytes of the superClasses at the given index.
          */
         public com.google.protobuf.ByteString
             getSuperClassesBytes(int index) {
@@ -3658,6 +3820,9 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param index The index to set the value at.
+         * @param value The superClasses to set.
+         * @return This builder for chaining.
          */
         public Builder setSuperClasses(
             int index, java.lang.String value) {
@@ -3671,6 +3836,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param value The superClasses to add.
+         * @return This builder for chaining.
          */
         public Builder addSuperClasses(
             java.lang.String value) {
@@ -3684,6 +3851,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param values The superClasses to add.
+         * @return This builder for chaining.
          */
         public Builder addAllSuperClasses(
             java.lang.Iterable<java.lang.String> values) {
@@ -3695,6 +3864,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @return This builder for chaining.
          */
         public Builder clearSuperClasses() {
           superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -3704,6 +3874,8 @@ public final class LibrarySummary {
         }
         /**
          * <code>repeated string superClasses = 3;</code>
+         * @param value The bytes of the superClasses to add.
+         * @return This builder for chaining.
          */
         public Builder addSuperClassesBytes(
             com.google.protobuf.ByteString value) {
@@ -3720,12 +3892,16 @@ public final class LibrarySummary {
         private boolean isVirtual_ ;
         /**
          * <code>bool isVirtual = 4;</code>
+         * @return The isVirtual.
          */
+        @java.lang.Override
         public boolean getIsVirtual() {
           return isVirtual_;
         }
         /**
          * <code>bool isVirtual = 4;</code>
+         * @param value The isVirtual to set.
+         * @return This builder for chaining.
          */
         public Builder setIsVirtual(boolean value) {
           
@@ -3735,6 +3911,7 @@ public final class LibrarySummary {
         }
         /**
          * <code>bool isVirtual = 4;</code>
+         * @return This builder for chaining.
          */
         public Builder clearIsVirtual() {
           
@@ -3798,7 +3975,8 @@ public final class LibrarySummary {
     private int representationCase_ = 0;
     private java.lang.Object representation_;
     public enum RepresentationCase
-        implements com.google.protobuf.Internal.EnumLite {
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       FUNCTIONREPRESENTATION(4),
       S4CLASSREPRESENTATION(5),
       REPRESENTATION_NOT_SET(0);
@@ -3807,6 +3985,8 @@ public final class LibrarySummary {
         this.value = value;
       }
       /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -3837,7 +4017,9 @@ public final class LibrarySummary {
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -3852,7 +4034,9 @@ public final class LibrarySummary {
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -3871,14 +4055,16 @@ public final class LibrarySummary {
     private int type_;
     /**
      * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+     * @return The enum numeric value on the wire for type.
      */
-    public int getTypeValue() {
+    @java.lang.Override public int getTypeValue() {
       return type_;
     }
     /**
      * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+     * @return The type.
      */
-    public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type getType() {
+    @java.lang.Override public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type getType() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type result = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type.valueOf(type_);
       return result == null ? org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type.UNRECOGNIZED : result;
@@ -3888,7 +4074,9 @@ public final class LibrarySummary {
     private boolean exported_;
     /**
      * <code>bool exported = 3;</code>
+     * @return The exported.
      */
+    @java.lang.Override
     public boolean getExported() {
       return exported_;
     }
@@ -3896,13 +4084,17 @@ public final class LibrarySummary {
     public static final int FUNCTIONREPRESENTATION_FIELD_NUMBER = 4;
     /**
      * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     * @return Whether the functionRepresentation field is set.
      */
+    @java.lang.Override
     public boolean hasFunctionRepresentation() {
       return representationCase_ == 4;
     }
     /**
      * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+     * @return The functionRepresentation.
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation() {
       if (representationCase_ == 4) {
          return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
@@ -3912,6 +4104,7 @@ public final class LibrarySummary {
     /**
      * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder getFunctionRepresentationOrBuilder() {
       if (representationCase_ == 4) {
          return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation) representation_;
@@ -3922,13 +4115,17 @@ public final class LibrarySummary {
     public static final int S4CLASSREPRESENTATION_FIELD_NUMBER = 5;
     /**
      * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+     * @return Whether the s4ClassRepresentation field is set.
      */
+    @java.lang.Override
     public boolean hasS4ClassRepresentation() {
       return representationCase_ == 5;
     }
     /**
      * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+     * @return The s4ClassRepresentation.
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation() {
       if (representationCase_ == 5) {
          return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
@@ -3938,6 +4135,7 @@ public final class LibrarySummary {
     /**
      * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder() {
       if (representationCase_ == 5) {
          return (org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation) representation_;
@@ -4368,6 +4566,7 @@ public final class LibrarySummary {
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -4383,6 +4582,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -4399,6 +4599,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -4412,6 +4614,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -4421,6 +4624,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -4437,21 +4642,27 @@ public final class LibrarySummary {
       private int type_ = 0;
       /**
        * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+       * @return The enum numeric value on the wire for type.
        */
-      public int getTypeValue() {
+      @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+       * @param value The enum numeric value on the wire for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
+        
         type_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+       * @return The type.
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type getType() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type result = org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type.valueOf(type_);
@@ -4459,6 +4670,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.Type value) {
         if (value == null) {
@@ -4471,6 +4684,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>.library_summary.RLibrarySymbol.Type type = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
         
@@ -4482,12 +4696,16 @@ public final class LibrarySummary {
       private boolean exported_ ;
       /**
        * <code>bool exported = 3;</code>
+       * @return The exported.
        */
+      @java.lang.Override
       public boolean getExported() {
         return exported_;
       }
       /**
        * <code>bool exported = 3;</code>
+       * @param value The exported to set.
+       * @return This builder for chaining.
        */
       public Builder setExported(boolean value) {
         
@@ -4497,6 +4715,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>bool exported = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearExported() {
         
@@ -4509,13 +4728,17 @@ public final class LibrarySummary {
           org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder> functionRepresentationBuilder_;
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+       * @return Whether the functionRepresentation field is set.
        */
+      @java.lang.Override
       public boolean hasFunctionRepresentation() {
         return representationCase_ == 4;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
+       * @return The functionRepresentation.
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentation getFunctionRepresentation() {
         if (functionRepresentationBuilder_ == null) {
           if (representationCase_ == 4) {
@@ -4609,6 +4832,7 @@ public final class LibrarySummary {
       /**
        * <code>.library_summary.RLibrarySymbol.FunctionRepresentation functionRepresentation = 4;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.FunctionRepresentationOrBuilder getFunctionRepresentationOrBuilder() {
         if ((representationCase_ == 4) && (functionRepresentationBuilder_ != null)) {
           return functionRepresentationBuilder_.getMessageOrBuilder();
@@ -4645,13 +4869,17 @@ public final class LibrarySummary {
           org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation.Builder, org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder> s4ClassRepresentationBuilder_;
       /**
        * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       * @return Whether the s4ClassRepresentation field is set.
        */
+      @java.lang.Override
       public boolean hasS4ClassRepresentation() {
         return representationCase_ == 5;
       }
       /**
        * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
+       * @return The s4ClassRepresentation.
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentation getS4ClassRepresentation() {
         if (s4ClassRepresentationBuilder_ == null) {
           if (representationCase_ == 5) {
@@ -4745,6 +4973,7 @@ public final class LibrarySummary {
       /**
        * <code>.library_summary.RLibrarySymbol.S4ClassRepresentation s4ClassRepresentation = 5;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.S4ClassRepresentationOrBuilder getS4ClassRepresentationOrBuilder() {
         if ((representationCase_ == 5) && (s4ClassRepresentationBuilder_ != null)) {
           return s4ClassRepresentationBuilder_.getMessageOrBuilder();
@@ -4835,20 +5064,24 @@ public final class LibrarySummary {
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+     * @return The enum numeric value on the wire for priority.
      */
     int getPriorityValue();
     /**
      * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+     * @return The priority.
      */
     org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority getPriority();
 
@@ -4879,7 +5112,7 @@ public final class LibrarySummary {
   /**
    * Protobuf type {@code library_summary.RLibraryPackage}
    */
-  public  static final class RLibraryPackage extends
+  public static final class RLibraryPackage extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:library_summary.RLibraryPackage)
       RLibraryPackageOrBuilder {
@@ -5040,6 +5273,8 @@ public final class LibrarySummary {
       }
 
       /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -5047,6 +5282,10 @@ public final class LibrarySummary {
         return forNumber(value);
       }
 
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
       public static Priority forNumber(int value) {
         switch (value) {
           case 0: return UNKNOWN;
@@ -5072,6 +5311,10 @@ public final class LibrarySummary {
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
         return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -5110,7 +5353,9 @@ public final class LibrarySummary {
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -5125,7 +5370,9 @@ public final class LibrarySummary {
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -5144,14 +5391,16 @@ public final class LibrarySummary {
     private int priority_;
     /**
      * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+     * @return The enum numeric value on the wire for priority.
      */
-    public int getPriorityValue() {
+    @java.lang.Override public int getPriorityValue() {
       return priority_;
     }
     /**
      * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+     * @return The priority.
      */
-    public org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority getPriority() {
+    @java.lang.Override public org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority getPriority() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority result = org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority.valueOf(priority_);
       return result == null ? org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority.UNRECOGNIZED : result;
@@ -5162,12 +5411,14 @@ public final class LibrarySummary {
     /**
      * <code>repeated .library_summary.RLibrarySymbol symbols = 3;</code>
      */
+    @java.lang.Override
     public java.util.List<org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol> getSymbolsList() {
       return symbols_;
     }
     /**
      * <code>repeated .library_summary.RLibrarySymbol symbols = 3;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.jetbrains.r.packages.LibrarySummary.RLibrarySymbolOrBuilder> 
         getSymbolsOrBuilderList() {
       return symbols_;
@@ -5175,18 +5426,21 @@ public final class LibrarySummary {
     /**
      * <code>repeated .library_summary.RLibrarySymbol symbols = 3;</code>
      */
+    @java.lang.Override
     public int getSymbolsCount() {
       return symbols_.size();
     }
     /**
      * <code>repeated .library_summary.RLibrarySymbol symbols = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol getSymbols(int index) {
       return symbols_.get(index);
     }
     /**
      * <code>repeated .library_summary.RLibrarySymbol symbols = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.packages.LibrarySummary.RLibrarySymbolOrBuilder getSymbolsOrBuilder(
         int index) {
       return symbols_.get(index);
@@ -5570,6 +5824,7 @@ public final class LibrarySummary {
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -5585,6 +5840,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -5601,6 +5857,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -5614,6 +5872,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -5623,6 +5882,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -5639,21 +5900,27 @@ public final class LibrarySummary {
       private int priority_ = 0;
       /**
        * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+       * @return The enum numeric value on the wire for priority.
        */
-      public int getPriorityValue() {
+      @java.lang.Override public int getPriorityValue() {
         return priority_;
       }
       /**
        * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+       * @param value The enum numeric value on the wire for priority to set.
+       * @return This builder for chaining.
        */
       public Builder setPriorityValue(int value) {
+        
         priority_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+       * @return The priority.
        */
+      @java.lang.Override
       public org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority getPriority() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority result = org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority.valueOf(priority_);
@@ -5661,6 +5928,8 @@ public final class LibrarySummary {
       }
       /**
        * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+       * @param value The priority to set.
+       * @return This builder for chaining.
        */
       public Builder setPriority(org.jetbrains.r.packages.LibrarySummary.RLibraryPackage.Priority value) {
         if (value == null) {
@@ -5673,6 +5942,7 @@ public final class LibrarySummary {
       }
       /**
        * <code>.library_summary.RLibraryPackage.Priority priority = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPriority() {
         

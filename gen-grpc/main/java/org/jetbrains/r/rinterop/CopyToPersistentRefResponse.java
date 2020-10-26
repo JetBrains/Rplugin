@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.CopyToPersistentRefResponse}
  */
-public  final class CopyToPersistentRefResponse extends
+public final class CopyToPersistentRefResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.CopyToPersistentRefResponse)
     CopyToPersistentRefResponseOrBuilder {
@@ -94,7 +94,8 @@ private static final long serialVersionUID = 0L;
   private int responseCase_ = 0;
   private java.lang.Object response_;
   public enum ResponseCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     PERSISTENTINDEX(1),
     ERROR(2),
     RESPONSE_NOT_SET(0);
@@ -103,6 +104,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -132,7 +135,9 @@ private static final long serialVersionUID = 0L;
   public static final int PERSISTENTINDEX_FIELD_NUMBER = 1;
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return The persistentIndex.
    */
+  @java.lang.Override
   public int getPersistentIndex() {
     if (responseCase_ == 1) {
       return (java.lang.Integer) response_;
@@ -143,6 +148,7 @@ private static final long serialVersionUID = 0L;
   public static final int ERROR_FIELD_NUMBER = 2;
   /**
    * <code>string error = 2;</code>
+   * @return The error.
    */
   public java.lang.String getError() {
     java.lang.Object ref = "";
@@ -163,6 +169,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string error = 2;</code>
+   * @return The bytes for error.
    */
   public com.google.protobuf.ByteString
       getErrorBytes() {
@@ -549,6 +556,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return The persistentIndex.
      */
     public int getPersistentIndex() {
       if (responseCase_ == 1) {
@@ -558,6 +566,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @param value The persistentIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setPersistentIndex(int value) {
       responseCase_ = 1;
@@ -567,6 +577,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPersistentIndex() {
       if (responseCase_ == 1) {
@@ -579,7 +590,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string error = 2;</code>
+     * @return The error.
      */
+    @java.lang.Override
     public java.lang.String getError() {
       java.lang.Object ref = "";
       if (responseCase_ == 2) {
@@ -599,7 +612,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @return The bytes for error.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getErrorBytes() {
       java.lang.Object ref = "";
@@ -620,6 +635,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @param value The error to set.
+     * @return This builder for chaining.
      */
     public Builder setError(
         java.lang.String value) {
@@ -633,6 +650,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearError() {
       if (responseCase_ == 2) {
@@ -644,6 +662,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @param value The bytes for error to set.
+     * @return This builder for chaining.
      */
     public Builder setErrorBytes(
         com.google.protobuf.ByteString value) {

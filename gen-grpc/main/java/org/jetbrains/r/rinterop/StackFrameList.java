@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.StackFrameList}
  */
-public  final class StackFrameList extends
+public final class StackFrameList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.StackFrameList)
     StackFrameListOrBuilder {
@@ -99,12 +99,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.StackFrame frames = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.StackFrame> getFramesList() {
     return frames_;
   }
   /**
    * <code>repeated .rplugininterop.StackFrame frames = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.StackFrameOrBuilder> 
       getFramesOrBuilderList() {
     return frames_;
@@ -112,18 +114,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.StackFrame frames = 1;</code>
    */
+  @java.lang.Override
   public int getFramesCount() {
     return frames_.size();
   }
   /**
    * <code>repeated .rplugininterop.StackFrame frames = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.StackFrame getFrames(int index) {
     return frames_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.StackFrame frames = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.StackFrameOrBuilder getFramesOrBuilder(
       int index) {
     return frames_.get(index);

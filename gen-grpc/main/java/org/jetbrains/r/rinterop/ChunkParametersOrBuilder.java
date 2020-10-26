@@ -9,20 +9,24 @@ public interface ChunkParametersOrBuilder extends
 
   /**
    * <code>string rmarkdownParameters = 1;</code>
+   * @return The rmarkdownParameters.
    */
   java.lang.String getRmarkdownParameters();
   /**
    * <code>string rmarkdownParameters = 1;</code>
+   * @return The bytes for rmarkdownParameters.
    */
   com.google.protobuf.ByteString
       getRmarkdownParametersBytes();
 
   /**
    * <code>string chunkText = 2;</code>
+   * @return The chunkText.
    */
   java.lang.String getChunkText();
   /**
    * <code>string chunkText = 2;</code>
+   * @return The bytes for chunkText.
    */
   com.google.protobuf.ByteString
       getChunkTextBytes();

@@ -9,10 +9,12 @@ public interface GetFunctionSourcePositionResponseOrBuilder extends
 
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return Whether the position field is set.
    */
   boolean hasPosition();
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return The position.
    */
   org.jetbrains.r.rinterop.SourcePosition getPosition();
   /**
@@ -22,10 +24,12 @@ public interface GetFunctionSourcePositionResponseOrBuilder extends
 
   /**
    * <code>string sourcePositionText = 2;</code>
+   * @return The sourcePositionText.
    */
   java.lang.String getSourcePositionText();
   /**
    * <code>string sourcePositionText = 2;</code>
+   * @return The bytes for sourcePositionText.
    */
   com.google.protobuf.ByteString
       getSourcePositionTextBytes();

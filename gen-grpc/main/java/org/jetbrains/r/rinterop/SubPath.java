@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.SubPath}
  */
-public  final class SubPath extends
+public final class SubPath extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.SubPath)
     SubPathOrBuilder {
@@ -99,12 +99,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.AffinePoint> getPointList() {
     return point_;
   }
   /**
    * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.AffinePointOrBuilder> 
       getPointOrBuilderList() {
     return point_;
@@ -112,18 +114,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
    */
+  @java.lang.Override
   public int getPointCount() {
     return point_.size();
   }
   /**
    * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePoint getPoint(int index) {
     return point_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePointOrBuilder getPointOrBuilder(
       int index) {
     return point_.get(index);

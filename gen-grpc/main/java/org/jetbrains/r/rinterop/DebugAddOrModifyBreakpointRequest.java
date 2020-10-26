@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DebugAddOrModifyBreakpointRequest}
  */
-public  final class DebugAddOrModifyBreakpointRequest extends
+public final class DebugAddOrModifyBreakpointRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DebugAddOrModifyBreakpointRequest)
     DebugAddOrModifyBreakpointRequestOrBuilder {
@@ -141,7 +141,9 @@ private static final long serialVersionUID = 0L;
   private int id_;
   /**
    * <code>int32 id = 1;</code>
+   * @return The id.
    */
+  @java.lang.Override
   public int getId() {
     return id_;
   }
@@ -150,19 +152,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.SourcePosition position_;
   /**
    * <code>.rplugininterop.SourcePosition position = 2;</code>
+   * @return Whether the position field is set.
    */
+  @java.lang.Override
   public boolean hasPosition() {
     return position_ != null;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 2;</code>
+   * @return The position.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePosition getPosition() {
     return position_ == null ? org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance() : position_;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePositionOrBuilder getPositionOrBuilder() {
     return getPosition();
   }
@@ -171,7 +178,9 @@ private static final long serialVersionUID = 0L;
   private boolean enabled_;
   /**
    * <code>bool enabled = 3;</code>
+   * @return The enabled.
    */
+  @java.lang.Override
   public boolean getEnabled() {
     return enabled_;
   }
@@ -180,7 +189,9 @@ private static final long serialVersionUID = 0L;
   private boolean suspend_;
   /**
    * <code>bool suspend = 4;</code>
+   * @return The suspend.
    */
+  @java.lang.Override
   public boolean getSuspend() {
     return suspend_;
   }
@@ -189,7 +200,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object evaluateAndLog_;
   /**
    * <code>string evaluateAndLog = 5;</code>
+   * @return The evaluateAndLog.
    */
+  @java.lang.Override
   public java.lang.String getEvaluateAndLog() {
     java.lang.Object ref = evaluateAndLog_;
     if (ref instanceof java.lang.String) {
@@ -204,7 +217,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string evaluateAndLog = 5;</code>
+   * @return The bytes for evaluateAndLog.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getEvaluateAndLogBytes() {
     java.lang.Object ref = evaluateAndLog_;
@@ -223,7 +238,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object condition_;
   /**
    * <code>string condition = 6;</code>
+   * @return The condition.
    */
+  @java.lang.Override
   public java.lang.String getCondition() {
     java.lang.Object ref = condition_;
     if (ref instanceof java.lang.String) {
@@ -238,7 +255,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string condition = 6;</code>
+   * @return The bytes for condition.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getConditionBytes() {
     java.lang.Object ref = condition_;
@@ -257,7 +276,9 @@ private static final long serialVersionUID = 0L;
   private boolean removeAfterHit_;
   /**
    * <code>bool removeAfterHit = 7;</code>
+   * @return The removeAfterHit.
    */
+  @java.lang.Override
   public boolean getRemoveAfterHit() {
     return removeAfterHit_;
   }
@@ -266,7 +287,9 @@ private static final long serialVersionUID = 0L;
   private boolean hitMessage_;
   /**
    * <code>bool hitMessage = 8;</code>
+   * @return The hitMessage.
    */
+  @java.lang.Override
   public boolean getHitMessage() {
     return hitMessage_;
   }
@@ -275,7 +298,9 @@ private static final long serialVersionUID = 0L;
   private boolean printStack_;
   /**
    * <code>bool printStack = 9;</code>
+   * @return The printStack.
    */
+  @java.lang.Override
   public boolean getPrintStack() {
     return printStack_;
   }
@@ -739,12 +764,16 @@ private static final long serialVersionUID = 0L;
     private int id_ ;
     /**
      * <code>int32 id = 1;</code>
+     * @return The id.
      */
+    @java.lang.Override
     public int getId() {
       return id_;
     }
     /**
      * <code>int32 id = 1;</code>
+     * @param value The id to set.
+     * @return This builder for chaining.
      */
     public Builder setId(int value) {
       
@@ -754,6 +783,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 id = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearId() {
       
@@ -767,12 +797,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> positionBuilder_;
     /**
      * <code>.rplugininterop.SourcePosition position = 2;</code>
+     * @return Whether the position field is set.
      */
     public boolean hasPosition() {
       return positionBuilder_ != null || position_ != null;
     }
     /**
      * <code>.rplugininterop.SourcePosition position = 2;</code>
+     * @return The position.
      */
     public org.jetbrains.r.rinterop.SourcePosition getPosition() {
       if (positionBuilder_ == null) {
@@ -882,12 +914,16 @@ private static final long serialVersionUID = 0L;
     private boolean enabled_ ;
     /**
      * <code>bool enabled = 3;</code>
+     * @return The enabled.
      */
+    @java.lang.Override
     public boolean getEnabled() {
       return enabled_;
     }
     /**
      * <code>bool enabled = 3;</code>
+     * @param value The enabled to set.
+     * @return This builder for chaining.
      */
     public Builder setEnabled(boolean value) {
       
@@ -897,6 +933,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool enabled = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEnabled() {
       
@@ -908,12 +945,16 @@ private static final long serialVersionUID = 0L;
     private boolean suspend_ ;
     /**
      * <code>bool suspend = 4;</code>
+     * @return The suspend.
      */
+    @java.lang.Override
     public boolean getSuspend() {
       return suspend_;
     }
     /**
      * <code>bool suspend = 4;</code>
+     * @param value The suspend to set.
+     * @return This builder for chaining.
      */
     public Builder setSuspend(boolean value) {
       
@@ -923,6 +964,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool suspend = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSuspend() {
       
@@ -934,6 +976,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object evaluateAndLog_ = "";
     /**
      * <code>string evaluateAndLog = 5;</code>
+     * @return The evaluateAndLog.
      */
     public java.lang.String getEvaluateAndLog() {
       java.lang.Object ref = evaluateAndLog_;
@@ -949,6 +992,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string evaluateAndLog = 5;</code>
+     * @return The bytes for evaluateAndLog.
      */
     public com.google.protobuf.ByteString
         getEvaluateAndLogBytes() {
@@ -965,6 +1009,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string evaluateAndLog = 5;</code>
+     * @param value The evaluateAndLog to set.
+     * @return This builder for chaining.
      */
     public Builder setEvaluateAndLog(
         java.lang.String value) {
@@ -978,6 +1024,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string evaluateAndLog = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEvaluateAndLog() {
       
@@ -987,6 +1034,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string evaluateAndLog = 5;</code>
+     * @param value The bytes for evaluateAndLog to set.
+     * @return This builder for chaining.
      */
     public Builder setEvaluateAndLogBytes(
         com.google.protobuf.ByteString value) {
@@ -1003,6 +1052,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object condition_ = "";
     /**
      * <code>string condition = 6;</code>
+     * @return The condition.
      */
     public java.lang.String getCondition() {
       java.lang.Object ref = condition_;
@@ -1018,6 +1068,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string condition = 6;</code>
+     * @return The bytes for condition.
      */
     public com.google.protobuf.ByteString
         getConditionBytes() {
@@ -1034,6 +1085,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string condition = 6;</code>
+     * @param value The condition to set.
+     * @return This builder for chaining.
      */
     public Builder setCondition(
         java.lang.String value) {
@@ -1047,6 +1100,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string condition = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCondition() {
       
@@ -1056,6 +1110,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string condition = 6;</code>
+     * @param value The bytes for condition to set.
+     * @return This builder for chaining.
      */
     public Builder setConditionBytes(
         com.google.protobuf.ByteString value) {
@@ -1072,12 +1128,16 @@ private static final long serialVersionUID = 0L;
     private boolean removeAfterHit_ ;
     /**
      * <code>bool removeAfterHit = 7;</code>
+     * @return The removeAfterHit.
      */
+    @java.lang.Override
     public boolean getRemoveAfterHit() {
       return removeAfterHit_;
     }
     /**
      * <code>bool removeAfterHit = 7;</code>
+     * @param value The removeAfterHit to set.
+     * @return This builder for chaining.
      */
     public Builder setRemoveAfterHit(boolean value) {
       
@@ -1087,6 +1147,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool removeAfterHit = 7;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRemoveAfterHit() {
       
@@ -1098,12 +1159,16 @@ private static final long serialVersionUID = 0L;
     private boolean hitMessage_ ;
     /**
      * <code>bool hitMessage = 8;</code>
+     * @return The hitMessage.
      */
+    @java.lang.Override
     public boolean getHitMessage() {
       return hitMessage_;
     }
     /**
      * <code>bool hitMessage = 8;</code>
+     * @param value The hitMessage to set.
+     * @return This builder for chaining.
      */
     public Builder setHitMessage(boolean value) {
       
@@ -1113,6 +1178,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool hitMessage = 8;</code>
+     * @return This builder for chaining.
      */
     public Builder clearHitMessage() {
       
@@ -1124,12 +1190,16 @@ private static final long serialVersionUID = 0L;
     private boolean printStack_ ;
     /**
      * <code>bool printStack = 9;</code>
+     * @return The printStack.
      */
+    @java.lang.Override
     public boolean getPrintStack() {
       return printStack_;
     }
     /**
      * <code>bool printStack = 9;</code>
+     * @param value The printStack to set.
+     * @return This builder for chaining.
      */
     public Builder setPrintStack(boolean value) {
       
@@ -1139,6 +1209,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool printStack = 9;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPrintStack() {
       

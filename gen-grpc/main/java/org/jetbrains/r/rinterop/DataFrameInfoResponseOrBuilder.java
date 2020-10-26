@@ -9,6 +9,7 @@ public interface DataFrameInfoResponseOrBuilder extends
 
   /**
    * <code>int32 nRows = 1;</code>
+   * @return The nRows.
    */
   int getNRows();
 
@@ -38,6 +39,7 @@ public interface DataFrameInfoResponseOrBuilder extends
 
   /**
    * <code>bool canRefresh = 3;</code>
+   * @return The canRefresh.
    */
   boolean getCanRefresh();
 }

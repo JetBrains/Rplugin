@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathResponse}
  */
-public  final class GraphicsGetSnapshotPathResponse extends
+public final class GraphicsGetSnapshotPathResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsGetSnapshotPathResponse)
     GraphicsGetSnapshotPathResponseOrBuilder {
@@ -105,7 +105,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object message_;
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
+  @java.lang.Override
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
@@ -120,7 +122,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageBytes() {
     java.lang.Object ref = message_;
@@ -139,7 +143,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object snapshotName_;
   /**
    * <code>string snapshotName = 2;</code>
+   * @return The snapshotName.
    */
+  @java.lang.Override
   public java.lang.String getSnapshotName() {
     java.lang.Object ref = snapshotName_;
     if (ref instanceof java.lang.String) {
@@ -154,7 +160,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string snapshotName = 2;</code>
+   * @return The bytes for snapshotName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSnapshotNameBytes() {
     java.lang.Object ref = snapshotName_;
@@ -173,7 +181,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object directory_;
   /**
    * <code>string directory = 3;</code>
+   * @return The directory.
    */
+  @java.lang.Override
   public java.lang.String getDirectory() {
     java.lang.Object ref = directory_;
     if (ref instanceof java.lang.String) {
@@ -188,7 +198,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string directory = 3;</code>
+   * @return The bytes for directory.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getDirectoryBytes() {
     java.lang.Object ref = directory_;
@@ -542,6 +554,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object message_ = "";
     /**
      * <code>string message = 1;</code>
+     * @return The message.
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -557,6 +570,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -573,6 +587,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -586,6 +602,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessage() {
       
@@ -595,6 +612,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -611,6 +630,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object snapshotName_ = "";
     /**
      * <code>string snapshotName = 2;</code>
+     * @return The snapshotName.
      */
     public java.lang.String getSnapshotName() {
       java.lang.Object ref = snapshotName_;
@@ -626,6 +646,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string snapshotName = 2;</code>
+     * @return The bytes for snapshotName.
      */
     public com.google.protobuf.ByteString
         getSnapshotNameBytes() {
@@ -642,6 +663,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string snapshotName = 2;</code>
+     * @param value The snapshotName to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotName(
         java.lang.String value) {
@@ -655,6 +678,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string snapshotName = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSnapshotName() {
       
@@ -664,6 +688,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string snapshotName = 2;</code>
+     * @param value The bytes for snapshotName to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotNameBytes(
         com.google.protobuf.ByteString value) {
@@ -680,6 +706,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object directory_ = "";
     /**
      * <code>string directory = 3;</code>
+     * @return The directory.
      */
     public java.lang.String getDirectory() {
       java.lang.Object ref = directory_;
@@ -695,6 +722,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string directory = 3;</code>
+     * @return The bytes for directory.
      */
     public com.google.protobuf.ByteString
         getDirectoryBytes() {
@@ -711,6 +739,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string directory = 3;</code>
+     * @param value The directory to set.
+     * @return This builder for chaining.
      */
     public Builder setDirectory(
         java.lang.String value) {
@@ -724,6 +754,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string directory = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearDirectory() {
       
@@ -733,6 +764,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string directory = 3;</code>
+     * @param value The bytes for directory to set.
+     * @return This builder for chaining.
      */
     public Builder setDirectoryBytes(
         com.google.protobuf.ByteString value) {

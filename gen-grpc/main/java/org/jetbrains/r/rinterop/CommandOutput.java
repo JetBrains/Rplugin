@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.CommandOutput}
  */
-public  final class CommandOutput extends
+public final class CommandOutput extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.CommandOutput)
     CommandOutputOrBuilder {
@@ -128,6 +128,8 @@ private static final long serialVersionUID = 0L;
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -135,6 +137,10 @@ private static final long serialVersionUID = 0L;
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static Type forNumber(int value) {
       switch (value) {
         case 0: return STDOUT;
@@ -157,6 +163,10 @@ private static final long serialVersionUID = 0L;
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -195,14 +205,16 @@ private static final long serialVersionUID = 0L;
   private int type_;
   /**
    * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+   * @return The enum numeric value on the wire for type.
    */
-  public int getTypeValue() {
+  @java.lang.Override public int getTypeValue() {
     return type_;
   }
   /**
    * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+   * @return The type.
    */
-  public org.jetbrains.r.rinterop.CommandOutput.Type getType() {
+  @java.lang.Override public org.jetbrains.r.rinterop.CommandOutput.Type getType() {
     @SuppressWarnings("deprecation")
     org.jetbrains.r.rinterop.CommandOutput.Type result = org.jetbrains.r.rinterop.CommandOutput.Type.valueOf(type_);
     return result == null ? org.jetbrains.r.rinterop.CommandOutput.Type.UNRECOGNIZED : result;
@@ -212,7 +224,9 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.ByteString text_;
   /**
    * <code>bytes text = 2;</code>
+   * @return The text.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getText() {
     return text_;
   }
@@ -538,21 +552,27 @@ private static final long serialVersionUID = 0L;
     private int type_ = 0;
     /**
      * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+     * @return The enum numeric value on the wire for type.
      */
-    public int getTypeValue() {
+    @java.lang.Override public int getTypeValue() {
       return type_;
     }
     /**
      * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+     * @param value The enum numeric value on the wire for type to set.
+     * @return This builder for chaining.
      */
     public Builder setTypeValue(int value) {
+      
       type_ = value;
       onChanged();
       return this;
     }
     /**
      * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+     * @return The type.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CommandOutput.Type getType() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.rinterop.CommandOutput.Type result = org.jetbrains.r.rinterop.CommandOutput.Type.valueOf(type_);
@@ -560,6 +580,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+     * @param value The type to set.
+     * @return This builder for chaining.
      */
     public Builder setType(org.jetbrains.r.rinterop.CommandOutput.Type value) {
       if (value == null) {
@@ -572,6 +594,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearType() {
       
@@ -583,12 +606,16 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.ByteString text_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>bytes text = 2;</code>
+     * @return The text.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getText() {
       return text_;
     }
     /**
      * <code>bytes text = 2;</code>
+     * @param value The text to set.
+     * @return This builder for chaining.
      */
     public Builder setText(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -601,6 +628,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bytes text = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearText() {
       

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsInstallRequest}
  */
-public  final class GraphicsInstallRequest extends
+public final class GraphicsInstallRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsInstallRequest)
     GraphicsInstallRequestOrBuilder {
@@ -105,7 +105,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packagePath_;
   /**
    * <code>string packagePath = 1;</code>
+   * @return The packagePath.
    */
+  @java.lang.Override
   public java.lang.String getPackagePath() {
     java.lang.Object ref = packagePath_;
     if (ref instanceof java.lang.String) {
@@ -120,7 +122,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packagePath = 1;</code>
+   * @return The bytes for packagePath.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackagePathBytes() {
     java.lang.Object ref = packagePath_;
@@ -139,7 +143,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object libraryPath_;
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The libraryPath.
    */
+  @java.lang.Override
   public java.lang.String getLibraryPath() {
     java.lang.Object ref = libraryPath_;
     if (ref instanceof java.lang.String) {
@@ -154,7 +160,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The bytes for libraryPath.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getLibraryPathBytes() {
     java.lang.Object ref = libraryPath_;
@@ -173,7 +181,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packageType_;
   /**
    * <code>string packageType = 3;</code>
+   * @return The packageType.
    */
+  @java.lang.Override
   public java.lang.String getPackageType() {
     java.lang.Object ref = packageType_;
     if (ref instanceof java.lang.String) {
@@ -188,7 +198,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageType = 3;</code>
+   * @return The bytes for packageType.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageTypeBytes() {
     java.lang.Object ref = packageType_;
@@ -542,6 +554,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packagePath_ = "";
     /**
      * <code>string packagePath = 1;</code>
+     * @return The packagePath.
      */
     public java.lang.String getPackagePath() {
       java.lang.Object ref = packagePath_;
@@ -557,6 +570,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packagePath = 1;</code>
+     * @return The bytes for packagePath.
      */
     public com.google.protobuf.ByteString
         getPackagePathBytes() {
@@ -573,6 +587,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packagePath = 1;</code>
+     * @param value The packagePath to set.
+     * @return This builder for chaining.
      */
     public Builder setPackagePath(
         java.lang.String value) {
@@ -586,6 +602,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packagePath = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackagePath() {
       
@@ -595,6 +612,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packagePath = 1;</code>
+     * @param value The bytes for packagePath to set.
+     * @return This builder for chaining.
      */
     public Builder setPackagePathBytes(
         com.google.protobuf.ByteString value) {
@@ -611,6 +630,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object libraryPath_ = "";
     /**
      * <code>string libraryPath = 2;</code>
+     * @return The libraryPath.
      */
     public java.lang.String getLibraryPath() {
       java.lang.Object ref = libraryPath_;
@@ -626,6 +646,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @return The bytes for libraryPath.
      */
     public com.google.protobuf.ByteString
         getLibraryPathBytes() {
@@ -642,6 +663,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @param value The libraryPath to set.
+     * @return This builder for chaining.
      */
     public Builder setLibraryPath(
         java.lang.String value) {
@@ -655,6 +678,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLibraryPath() {
       
@@ -664,6 +688,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @param value The bytes for libraryPath to set.
+     * @return This builder for chaining.
      */
     public Builder setLibraryPathBytes(
         com.google.protobuf.ByteString value) {
@@ -680,6 +706,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packageType_ = "";
     /**
      * <code>string packageType = 3;</code>
+     * @return The packageType.
      */
     public java.lang.String getPackageType() {
       java.lang.Object ref = packageType_;
@@ -695,6 +722,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageType = 3;</code>
+     * @return The bytes for packageType.
      */
     public com.google.protobuf.ByteString
         getPackageTypeBytes() {
@@ -711,6 +739,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageType = 3;</code>
+     * @param value The packageType to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageType(
         java.lang.String value) {
@@ -724,6 +754,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageType = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageType() {
       
@@ -733,6 +764,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageType = 3;</code>
+     * @param value The bytes for packageType to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageTypeBytes(
         com.google.protobuf.ByteString value) {

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ExtendedSourcePosition}
  */
-public  final class ExtendedSourcePosition extends
+public final class ExtendedSourcePosition extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ExtendedSourcePosition)
     ExtendedSourcePositionOrBuilder {
@@ -104,7 +104,9 @@ private static final long serialVersionUID = 0L;
   private int startLine_;
   /**
    * <code>int32 startLine = 1;</code>
+   * @return The startLine.
    */
+  @java.lang.Override
   public int getStartLine() {
     return startLine_;
   }
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   private int startOffset_;
   /**
    * <code>int32 startOffset = 2;</code>
+   * @return The startOffset.
    */
+  @java.lang.Override
   public int getStartOffset() {
     return startOffset_;
   }
@@ -122,7 +126,9 @@ private static final long serialVersionUID = 0L;
   private int endLine_;
   /**
    * <code>int32 endLine = 3;</code>
+   * @return The endLine.
    */
+  @java.lang.Override
   public int getEndLine() {
     return endLine_;
   }
@@ -131,7 +137,9 @@ private static final long serialVersionUID = 0L;
   private int endOffset_;
   /**
    * <code>int32 endOffset = 4;</code>
+   * @return The endOffset.
    */
+  @java.lang.Override
   public int getEndOffset() {
     return endOffset_;
   }
@@ -492,12 +500,16 @@ private static final long serialVersionUID = 0L;
     private int startLine_ ;
     /**
      * <code>int32 startLine = 1;</code>
+     * @return The startLine.
      */
+    @java.lang.Override
     public int getStartLine() {
       return startLine_;
     }
     /**
      * <code>int32 startLine = 1;</code>
+     * @param value The startLine to set.
+     * @return This builder for chaining.
      */
     public Builder setStartLine(int value) {
       
@@ -507,6 +519,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 startLine = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStartLine() {
       
@@ -518,12 +531,16 @@ private static final long serialVersionUID = 0L;
     private int startOffset_ ;
     /**
      * <code>int32 startOffset = 2;</code>
+     * @return The startOffset.
      */
+    @java.lang.Override
     public int getStartOffset() {
       return startOffset_;
     }
     /**
      * <code>int32 startOffset = 2;</code>
+     * @param value The startOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setStartOffset(int value) {
       
@@ -533,6 +550,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 startOffset = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStartOffset() {
       
@@ -544,12 +562,16 @@ private static final long serialVersionUID = 0L;
     private int endLine_ ;
     /**
      * <code>int32 endLine = 3;</code>
+     * @return The endLine.
      */
+    @java.lang.Override
     public int getEndLine() {
       return endLine_;
     }
     /**
      * <code>int32 endLine = 3;</code>
+     * @param value The endLine to set.
+     * @return This builder for chaining.
      */
     public Builder setEndLine(int value) {
       
@@ -559,6 +581,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 endLine = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEndLine() {
       
@@ -570,12 +593,16 @@ private static final long serialVersionUID = 0L;
     private int endOffset_ ;
     /**
      * <code>int32 endOffset = 4;</code>
+     * @return The endOffset.
      */
+    @java.lang.Override
     public int getEndOffset() {
       return endOffset_;
     }
     /**
      * <code>int32 endOffset = 4;</code>
+     * @param value The endOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setEndOffset(int value) {
       
@@ -585,6 +612,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 endOffset = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEndOffset() {
       

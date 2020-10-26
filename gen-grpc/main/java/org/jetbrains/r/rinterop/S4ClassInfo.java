@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.S4ClassInfo}
  */
-public  final class S4ClassInfo extends
+public final class S4ClassInfo extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.S4ClassInfo)
     S4ClassInfoOrBuilder {
@@ -132,20 +132,24 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
     java.lang.String getType();
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
     com.google.protobuf.ByteString
         getTypeBytes();
@@ -153,7 +157,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.S4ClassInfo.S4ClassSlot}
    */
-  public  static final class S4ClassSlot extends
+  public static final class S4ClassSlot extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.S4ClassInfo.S4ClassSlot)
       S4ClassSlotOrBuilder {
@@ -245,7 +249,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -260,7 +266,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -279,7 +287,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object type_;
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
+    @java.lang.Override
     public java.lang.String getType() {
       java.lang.Object ref = type_;
       if (ref instanceof java.lang.String) {
@@ -294,7 +304,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTypeBytes() {
       java.lang.Object ref = type_;
@@ -631,6 +643,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -646,6 +659,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -662,6 +676,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -675,6 +691,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -684,6 +701,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -700,6 +719,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object type_ = "";
       /**
        * <code>string type = 2;</code>
+       * @return The type.
        */
       public java.lang.String getType() {
         java.lang.Object ref = type_;
@@ -715,6 +735,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @return The bytes for type.
        */
       public com.google.protobuf.ByteString
           getTypeBytes() {
@@ -731,6 +752,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(
           java.lang.String value) {
@@ -744,6 +767,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
         
@@ -753,6 +777,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeBytes(
           com.google.protobuf.ByteString value) {
@@ -822,7 +848,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object className_;
   /**
    * <code>string className = 1;</code>
+   * @return The className.
    */
+  @java.lang.Override
   public java.lang.String getClassName() {
     java.lang.Object ref = className_;
     if (ref instanceof java.lang.String) {
@@ -837,7 +865,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string className = 1;</code>
+   * @return The bytes for className.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getClassNameBytes() {
     java.lang.Object ref = className_;
@@ -856,7 +886,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packageName_;
   /**
    * <code>string packageName = 2;</code>
+   * @return The packageName.
    */
+  @java.lang.Override
   public java.lang.String getPackageName() {
     java.lang.Object ref = packageName_;
     if (ref instanceof java.lang.String) {
@@ -871,7 +903,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageName = 2;</code>
+   * @return The bytes for packageName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageNameBytes() {
     java.lang.Object ref = packageName_;
@@ -891,12 +925,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.S4ClassInfo.S4ClassSlot slots = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.S4ClassInfo.S4ClassSlot> getSlotsList() {
     return slots_;
   }
   /**
    * <code>repeated .rplugininterop.S4ClassInfo.S4ClassSlot slots = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.S4ClassInfo.S4ClassSlotOrBuilder> 
       getSlotsOrBuilderList() {
     return slots_;
@@ -904,18 +940,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.S4ClassInfo.S4ClassSlot slots = 3;</code>
    */
+  @java.lang.Override
   public int getSlotsCount() {
     return slots_.size();
   }
   /**
    * <code>repeated .rplugininterop.S4ClassInfo.S4ClassSlot slots = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.S4ClassInfo.S4ClassSlot getSlots(int index) {
     return slots_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.S4ClassInfo.S4ClassSlot slots = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.S4ClassInfo.S4ClassSlotOrBuilder getSlotsOrBuilder(
       int index) {
     return slots_.get(index);
@@ -925,6 +964,7 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.LazyStringList superClasses_;
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @return A list containing the superClasses.
    */
   public com.google.protobuf.ProtocolStringList
       getSuperClassesList() {
@@ -932,18 +972,23 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @return The count of superClasses.
    */
   public int getSuperClassesCount() {
     return superClasses_.size();
   }
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @param index The index of the element to return.
+   * @return The superClasses at the given index.
    */
   public java.lang.String getSuperClasses(int index) {
     return superClasses_.get(index);
   }
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the superClasses at the given index.
    */
   public com.google.protobuf.ByteString
       getSuperClassesBytes(int index) {
@@ -954,7 +999,9 @@ private static final long serialVersionUID = 0L;
   private boolean isVirtual_;
   /**
    * <code>bool isVirtual = 5;</code>
+   * @return The isVirtual.
    */
+  @java.lang.Override
   public boolean getIsVirtual() {
     return isVirtual_;
   }
@@ -1390,6 +1437,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object className_ = "";
     /**
      * <code>string className = 1;</code>
+     * @return The className.
      */
     public java.lang.String getClassName() {
       java.lang.Object ref = className_;
@@ -1405,6 +1453,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string className = 1;</code>
+     * @return The bytes for className.
      */
     public com.google.protobuf.ByteString
         getClassNameBytes() {
@@ -1421,6 +1470,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string className = 1;</code>
+     * @param value The className to set.
+     * @return This builder for chaining.
      */
     public Builder setClassName(
         java.lang.String value) {
@@ -1434,6 +1485,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string className = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearClassName() {
       
@@ -1443,6 +1495,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string className = 1;</code>
+     * @param value The bytes for className to set.
+     * @return This builder for chaining.
      */
     public Builder setClassNameBytes(
         com.google.protobuf.ByteString value) {
@@ -1459,6 +1513,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packageName_ = "";
     /**
      * <code>string packageName = 2;</code>
+     * @return The packageName.
      */
     public java.lang.String getPackageName() {
       java.lang.Object ref = packageName_;
@@ -1474,6 +1529,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 2;</code>
+     * @return The bytes for packageName.
      */
     public com.google.protobuf.ByteString
         getPackageNameBytes() {
@@ -1490,6 +1546,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 2;</code>
+     * @param value The packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageName(
         java.lang.String value) {
@@ -1503,6 +1561,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageName() {
       
@@ -1512,6 +1571,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 2;</code>
+     * @param value The bytes for packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNameBytes(
         com.google.protobuf.ByteString value) {
@@ -1774,6 +1835,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @return A list containing the superClasses.
      */
     public com.google.protobuf.ProtocolStringList
         getSuperClassesList() {
@@ -1781,18 +1843,23 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @return The count of superClasses.
      */
     public int getSuperClassesCount() {
       return superClasses_.size();
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param index The index of the element to return.
+     * @return The superClasses at the given index.
      */
     public java.lang.String getSuperClasses(int index) {
       return superClasses_.get(index);
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the superClasses at the given index.
      */
     public com.google.protobuf.ByteString
         getSuperClassesBytes(int index) {
@@ -1800,6 +1867,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param index The index to set the value at.
+     * @param value The superClasses to set.
+     * @return This builder for chaining.
      */
     public Builder setSuperClasses(
         int index, java.lang.String value) {
@@ -1813,6 +1883,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param value The superClasses to add.
+     * @return This builder for chaining.
      */
     public Builder addSuperClasses(
         java.lang.String value) {
@@ -1826,6 +1898,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param values The superClasses to add.
+     * @return This builder for chaining.
      */
     public Builder addAllSuperClasses(
         java.lang.Iterable<java.lang.String> values) {
@@ -1837,6 +1911,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSuperClasses() {
       superClasses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -1846,6 +1921,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string superClasses = 4;</code>
+     * @param value The bytes of the superClasses to add.
+     * @return This builder for chaining.
      */
     public Builder addSuperClassesBytes(
         com.google.protobuf.ByteString value) {
@@ -1862,12 +1939,16 @@ private static final long serialVersionUID = 0L;
     private boolean isVirtual_ ;
     /**
      * <code>bool isVirtual = 5;</code>
+     * @return The isVirtual.
      */
+    @java.lang.Override
     public boolean getIsVirtual() {
       return isVirtual_;
     }
     /**
      * <code>bool isVirtual = 5;</code>
+     * @param value The isVirtual to set.
+     * @return This builder for chaining.
      */
     public Builder setIsVirtual(boolean value) {
       
@@ -1877,6 +1958,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool isVirtual = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIsVirtual() {
       

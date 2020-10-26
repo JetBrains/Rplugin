@@ -9,26 +9,31 @@ public interface StrokeOrBuilder extends
 
   /**
    * <code>float width = 1;</code>
+   * @return The width.
    */
   float getWidth();
 
   /**
    * <code>int32 cap = 2;</code>
+   * @return The cap.
    */
   int getCap();
 
   /**
    * <code>int32 join = 3;</code>
+   * @return The join.
    */
   int getJoin();
 
   /**
    * <code>float miterLimit = 4;</code>
+   * @return The miterLimit.
    */
   float getMiterLimit();
 
   /**
    * <code>int32 pattern = 5;</code>
+   * @return The pattern.
    */
   int getPattern();
 }

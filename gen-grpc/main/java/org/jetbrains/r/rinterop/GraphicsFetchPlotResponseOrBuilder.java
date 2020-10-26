@@ -9,20 +9,24 @@ public interface GraphicsFetchPlotResponseOrBuilder extends
 
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
   java.lang.String getMessage();
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
       getMessageBytes();
 
   /**
    * <code>.rplugininterop.Plot plot = 2;</code>
+   * @return Whether the plot field is set.
    */
   boolean hasPlot();
   /**
    * <code>.rplugininterop.Plot plot = 2;</code>
+   * @return The plot.
    */
   org.jetbrains.r.rinterop.Plot getPlot();
   /**

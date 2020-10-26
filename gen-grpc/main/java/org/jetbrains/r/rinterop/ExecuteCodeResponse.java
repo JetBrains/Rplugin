@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ExecuteCodeResponse}
  */
-public  final class ExecuteCodeResponse extends
+public final class ExecuteCodeResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ExecuteCodeResponse)
     ExecuteCodeResponseOrBuilder {
@@ -103,7 +103,8 @@ private static final long serialVersionUID = 0L;
   private int msgCase_ = 0;
   private java.lang.Object msg_;
   public enum MsgCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     OUTPUT(1),
     EXCEPTION(2),
     MSG_NOT_SET(0);
@@ -112,6 +113,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -141,13 +144,17 @@ private static final long serialVersionUID = 0L;
   public static final int OUTPUT_FIELD_NUMBER = 1;
   /**
    * <code>.rplugininterop.CommandOutput output = 1;</code>
+   * @return Whether the output field is set.
    */
+  @java.lang.Override
   public boolean hasOutput() {
     return msgCase_ == 1;
   }
   /**
    * <code>.rplugininterop.CommandOutput output = 1;</code>
+   * @return The output.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CommandOutput getOutput() {
     if (msgCase_ == 1) {
        return (org.jetbrains.r.rinterop.CommandOutput) msg_;
@@ -157,6 +164,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.CommandOutput output = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CommandOutputOrBuilder getOutputOrBuilder() {
     if (msgCase_ == 1) {
        return (org.jetbrains.r.rinterop.CommandOutput) msg_;
@@ -167,6 +175,7 @@ private static final long serialVersionUID = 0L;
   public static final int EXCEPTION_FIELD_NUMBER = 2;
   /**
    * <code>string exception = 2;</code>
+   * @return The exception.
    */
   public java.lang.String getException() {
     java.lang.Object ref = "";
@@ -187,6 +196,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string exception = 2;</code>
+   * @return The bytes for exception.
    */
   public com.google.protobuf.ByteString
       getExceptionBytes() {
@@ -577,13 +587,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.CommandOutput, org.jetbrains.r.rinterop.CommandOutput.Builder, org.jetbrains.r.rinterop.CommandOutputOrBuilder> outputBuilder_;
     /**
      * <code>.rplugininterop.CommandOutput output = 1;</code>
+     * @return Whether the output field is set.
      */
+    @java.lang.Override
     public boolean hasOutput() {
       return msgCase_ == 1;
     }
     /**
      * <code>.rplugininterop.CommandOutput output = 1;</code>
+     * @return The output.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CommandOutput getOutput() {
       if (outputBuilder_ == null) {
         if (msgCase_ == 1) {
@@ -677,6 +691,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.CommandOutput output = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CommandOutputOrBuilder getOutputOrBuilder() {
       if ((msgCase_ == 1) && (outputBuilder_ != null)) {
         return outputBuilder_.getMessageOrBuilder();
@@ -711,7 +726,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string exception = 2;</code>
+     * @return The exception.
      */
+    @java.lang.Override
     public java.lang.String getException() {
       java.lang.Object ref = "";
       if (msgCase_ == 2) {
@@ -731,7 +748,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string exception = 2;</code>
+     * @return The bytes for exception.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getExceptionBytes() {
       java.lang.Object ref = "";
@@ -752,6 +771,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string exception = 2;</code>
+     * @param value The exception to set.
+     * @return This builder for chaining.
      */
     public Builder setException(
         java.lang.String value) {
@@ -765,6 +786,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string exception = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearException() {
       if (msgCase_ == 2) {
@@ -776,6 +798,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string exception = 2;</code>
+     * @param value The bytes for exception to set.
+     * @return This builder for chaining.
      */
     public Builder setExceptionBytes(
         com.google.protobuf.ByteString value) {

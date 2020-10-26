@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.AffinePoint}
  */
-public  final class AffinePoint extends
+public final class AffinePoint extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.AffinePoint)
     AffinePointOrBuilder {
@@ -104,7 +104,9 @@ private static final long serialVersionUID = 0L;
   private float xScale_;
   /**
    * <code>float xScale = 1;</code>
+   * @return The xScale.
    */
+  @java.lang.Override
   public float getXScale() {
     return xScale_;
   }
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   private float xOffset_;
   /**
    * <code>float xOffset = 2;</code>
+   * @return The xOffset.
    */
+  @java.lang.Override
   public float getXOffset() {
     return xOffset_;
   }
@@ -122,7 +126,9 @@ private static final long serialVersionUID = 0L;
   private float yScale_;
   /**
    * <code>float yScale = 3;</code>
+   * @return The yScale.
    */
+  @java.lang.Override
   public float getYScale() {
     return yScale_;
   }
@@ -131,7 +137,9 @@ private static final long serialVersionUID = 0L;
   private float yOffset_;
   /**
    * <code>float yOffset = 4;</code>
+   * @return The yOffset.
    */
+  @java.lang.Override
   public float getYOffset() {
     return yOffset_;
   }
@@ -500,12 +508,16 @@ private static final long serialVersionUID = 0L;
     private float xScale_ ;
     /**
      * <code>float xScale = 1;</code>
+     * @return The xScale.
      */
+    @java.lang.Override
     public float getXScale() {
       return xScale_;
     }
     /**
      * <code>float xScale = 1;</code>
+     * @param value The xScale to set.
+     * @return This builder for chaining.
      */
     public Builder setXScale(float value) {
       
@@ -515,6 +527,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float xScale = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearXScale() {
       
@@ -526,12 +539,16 @@ private static final long serialVersionUID = 0L;
     private float xOffset_ ;
     /**
      * <code>float xOffset = 2;</code>
+     * @return The xOffset.
      */
+    @java.lang.Override
     public float getXOffset() {
       return xOffset_;
     }
     /**
      * <code>float xOffset = 2;</code>
+     * @param value The xOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setXOffset(float value) {
       
@@ -541,6 +558,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float xOffset = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearXOffset() {
       
@@ -552,12 +570,16 @@ private static final long serialVersionUID = 0L;
     private float yScale_ ;
     /**
      * <code>float yScale = 3;</code>
+     * @return The yScale.
      */
+    @java.lang.Override
     public float getYScale() {
       return yScale_;
     }
     /**
      * <code>float yScale = 3;</code>
+     * @param value The yScale to set.
+     * @return This builder for chaining.
      */
     public Builder setYScale(float value) {
       
@@ -567,6 +589,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float yScale = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearYScale() {
       
@@ -578,12 +601,16 @@ private static final long serialVersionUID = 0L;
     private float yOffset_ ;
     /**
      * <code>float yOffset = 4;</code>
+     * @return The yOffset.
      */
+    @java.lang.Override
     public float getYOffset() {
       return yOffset_;
     }
     /**
      * <code>float yOffset = 4;</code>
+     * @param value The yOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setYOffset(float value) {
       
@@ -593,6 +620,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float yOffset = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearYOffset() {
       

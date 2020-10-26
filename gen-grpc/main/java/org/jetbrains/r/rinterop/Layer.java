@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Layer}
  */
-public  final class Layer extends
+public final class Layer extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Layer)
     LayerOrBuilder {
@@ -113,7 +113,9 @@ private static final long serialVersionUID = 0L;
   private int viewportIndex_;
   /**
    * <code>int32 viewportIndex = 1;</code>
+   * @return The viewportIndex.
    */
+  @java.lang.Override
   public int getViewportIndex() {
     return viewportIndex_;
   }
@@ -122,7 +124,9 @@ private static final long serialVersionUID = 0L;
   private int clippingAreaIndex_;
   /**
    * <code>int32 clippingAreaIndex = 2;</code>
+   * @return The clippingAreaIndex.
    */
+  @java.lang.Override
   public int getClippingAreaIndex() {
     return clippingAreaIndex_;
   }
@@ -132,12 +136,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.Figure> getFigureList() {
     return figure_;
   }
   /**
    * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.FigureOrBuilder> 
       getFigureOrBuilderList() {
     return figure_;
@@ -145,18 +151,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
+  @java.lang.Override
   public int getFigureCount() {
     return figure_.size();
   }
   /**
    * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Figure getFigure(int index) {
     return figure_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.Figure figure = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FigureOrBuilder getFigureOrBuilder(
       int index) {
     return figure_.get(index);
@@ -166,7 +175,9 @@ private static final long serialVersionUID = 0L;
   private boolean isAxisText_;
   /**
    * <code>bool isAxisText = 4;</code>
+   * @return The isAxisText.
    */
+  @java.lang.Override
   public boolean getIsAxisText() {
     return isAxisText_;
   }
@@ -568,12 +579,16 @@ private static final long serialVersionUID = 0L;
     private int viewportIndex_ ;
     /**
      * <code>int32 viewportIndex = 1;</code>
+     * @return The viewportIndex.
      */
+    @java.lang.Override
     public int getViewportIndex() {
       return viewportIndex_;
     }
     /**
      * <code>int32 viewportIndex = 1;</code>
+     * @param value The viewportIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setViewportIndex(int value) {
       
@@ -583,6 +598,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 viewportIndex = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearViewportIndex() {
       
@@ -594,12 +610,16 @@ private static final long serialVersionUID = 0L;
     private int clippingAreaIndex_ ;
     /**
      * <code>int32 clippingAreaIndex = 2;</code>
+     * @return The clippingAreaIndex.
      */
+    @java.lang.Override
     public int getClippingAreaIndex() {
       return clippingAreaIndex_;
     }
     /**
      * <code>int32 clippingAreaIndex = 2;</code>
+     * @param value The clippingAreaIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setClippingAreaIndex(int value) {
       
@@ -609,6 +629,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 clippingAreaIndex = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearClippingAreaIndex() {
       
@@ -860,12 +881,16 @@ private static final long serialVersionUID = 0L;
     private boolean isAxisText_ ;
     /**
      * <code>bool isAxisText = 4;</code>
+     * @return The isAxisText.
      */
+    @java.lang.Override
     public boolean getIsAxisText() {
       return isAxisText_;
     }
     /**
      * <code>bool isAxisText = 4;</code>
+     * @param value The isAxisText to set.
+     * @return This builder for chaining.
      */
     public Builder setIsAxisText(boolean value) {
       
@@ -875,6 +900,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool isAxisText = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIsAxisText() {
       

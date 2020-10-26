@@ -9,10 +9,12 @@ public interface LoadEnvironmentRequestOrBuilder extends
 
   /**
    * <code>string file = 1;</code>
+   * @return The file.
    */
   java.lang.String getFile();
   /**
    * <code>string file = 1;</code>
+   * @return The bytes for file.
    */
   com.google.protobuf.ByteString
       getFileBytes();
@@ -23,6 +25,7 @@ public interface LoadEnvironmentRequestOrBuilder extends
    * </pre>
    *
    * <code>string variable = 2;</code>
+   * @return The variable.
    */
   java.lang.String getVariable();
   /**
@@ -31,6 +34,7 @@ public interface LoadEnvironmentRequestOrBuilder extends
    * </pre>
    *
    * <code>string variable = 2;</code>
+   * @return The bytes for variable.
    */
   com.google.protobuf.ByteString
       getVariableBytes();

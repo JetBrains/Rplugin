@@ -9,11 +9,13 @@ public interface RasterImageOrBuilder extends
 
   /**
    * <code>int32 width = 1;</code>
+   * @return The width.
    */
   int getWidth();
 
   /**
    * <code>int32 height = 2;</code>
+   * @return The height.
    */
   int getHeight();
 
@@ -23,6 +25,7 @@ public interface RasterImageOrBuilder extends
    * </pre>
    *
    * <code>bytes data = 3;</code>
+   * @return The data.
    */
   com.google.protobuf.ByteString getData();
 }

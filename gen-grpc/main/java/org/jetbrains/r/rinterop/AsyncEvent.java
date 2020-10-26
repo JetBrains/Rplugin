@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.AsyncEvent}
  */
-public  final class AsyncEvent extends
+public final class AsyncEvent extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent)
     AsyncEventOrBuilder {
@@ -293,10 +293,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string prompt = 1;</code>
+     * @return The prompt.
      */
     java.lang.String getPrompt();
     /**
      * <code>string prompt = 1;</code>
+     * @return The bytes for prompt.
      */
     com.google.protobuf.ByteString
         getPromptBytes();
@@ -304,7 +306,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.RequestReadLn}
    */
-  public  static final class RequestReadLn extends
+  public static final class RequestReadLn extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.RequestReadLn)
       RequestReadLnOrBuilder {
@@ -389,7 +391,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object prompt_;
     /**
      * <code>string prompt = 1;</code>
+     * @return The prompt.
      */
+    @java.lang.Override
     public java.lang.String getPrompt() {
       java.lang.Object ref = prompt_;
       if (ref instanceof java.lang.String) {
@@ -404,7 +408,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string prompt = 1;</code>
+     * @return The bytes for prompt.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPromptBytes() {
       java.lang.Object ref = prompt_;
@@ -724,6 +730,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object prompt_ = "";
       /**
        * <code>string prompt = 1;</code>
+       * @return The prompt.
        */
       public java.lang.String getPrompt() {
         java.lang.Object ref = prompt_;
@@ -739,6 +746,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string prompt = 1;</code>
+       * @return The bytes for prompt.
        */
       public com.google.protobuf.ByteString
           getPromptBytes() {
@@ -755,6 +763,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string prompt = 1;</code>
+       * @param value The prompt to set.
+       * @return This builder for chaining.
        */
       public Builder setPrompt(
           java.lang.String value) {
@@ -768,6 +778,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string prompt = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPrompt() {
         
@@ -777,6 +788,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string prompt = 1;</code>
+       * @param value The bytes for prompt to set.
+       * @return This builder for chaining.
        */
       public Builder setPromptBytes(
           com.google.protobuf.ByteString value) {
@@ -848,15 +861,18 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>bool changed = 1;</code>
+     * @return The changed.
      */
     boolean getChanged();
 
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return Whether the stack field is set.
      */
     boolean hasStack();
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return The stack.
      */
     org.jetbrains.r.rinterop.StackFrameList getStack();
     /**
@@ -867,7 +883,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.DebugPrompt}
    */
-  public  static final class DebugPrompt extends
+  public static final class DebugPrompt extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.DebugPrompt)
       DebugPromptOrBuilder {
@@ -963,7 +979,9 @@ private static final long serialVersionUID = 0L;
     private boolean changed_;
     /**
      * <code>bool changed = 1;</code>
+     * @return The changed.
      */
+    @java.lang.Override
     public boolean getChanged() {
       return changed_;
     }
@@ -972,19 +990,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.StackFrameList stack_;
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return Whether the stack field is set.
      */
+    @java.lang.Override
     public boolean hasStack() {
       return stack_ != null;
     }
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return The stack.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.StackFrameList getStack() {
       return stack_ == null ? org.jetbrains.r.rinterop.StackFrameList.getDefaultInstance() : stack_;
     }
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.StackFrameListOrBuilder getStackOrBuilder() {
       return getStack();
     }
@@ -1325,12 +1348,16 @@ private static final long serialVersionUID = 0L;
       private boolean changed_ ;
       /**
        * <code>bool changed = 1;</code>
+       * @return The changed.
        */
+      @java.lang.Override
       public boolean getChanged() {
         return changed_;
       }
       /**
        * <code>bool changed = 1;</code>
+       * @param value The changed to set.
+       * @return This builder for chaining.
        */
       public Builder setChanged(boolean value) {
         
@@ -1340,6 +1367,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool changed = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearChanged() {
         
@@ -1353,12 +1381,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.StackFrameList, org.jetbrains.r.rinterop.StackFrameList.Builder, org.jetbrains.r.rinterop.StackFrameListOrBuilder> stackBuilder_;
       /**
        * <code>.rplugininterop.StackFrameList stack = 2;</code>
+       * @return Whether the stack field is set.
        */
       public boolean hasStack() {
         return stackBuilder_ != null || stack_ != null;
       }
       /**
        * <code>.rplugininterop.StackFrameList stack = 2;</code>
+       * @return The stack.
        */
       public org.jetbrains.r.rinterop.StackFrameList getStack() {
         if (stackBuilder_ == null) {
@@ -1523,25 +1553,30 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
      */
     int getPersistentRefIndex();
 
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
     java.lang.String getTitle();
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
     com.google.protobuf.ByteString
         getTitleBytes();
 
     /**
      * <code>.rplugininterop.ValueInfo value = 3;</code>
+     * @return Whether the value field is set.
      */
     boolean hasValue();
     /**
      * <code>.rplugininterop.ValueInfo value = 3;</code>
+     * @return The value.
      */
     org.jetbrains.r.rinterop.ValueInfo getValue();
     /**
@@ -1552,7 +1587,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.ViewRequest}
    */
-  public  static final class ViewRequest extends
+  public static final class ViewRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.ViewRequest)
       ViewRequestOrBuilder {
@@ -1655,7 +1690,9 @@ private static final long serialVersionUID = 0L;
     private int persistentRefIndex_;
     /**
      * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
      */
+    @java.lang.Override
     public int getPersistentRefIndex() {
       return persistentRefIndex_;
     }
@@ -1664,7 +1701,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object title_;
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
+    @java.lang.Override
     public java.lang.String getTitle() {
       java.lang.Object ref = title_;
       if (ref instanceof java.lang.String) {
@@ -1679,7 +1718,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTitleBytes() {
       java.lang.Object ref = title_;
@@ -1698,19 +1739,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.ValueInfo value_;
     /**
      * <code>.rplugininterop.ValueInfo value = 3;</code>
+     * @return Whether the value field is set.
      */
+    @java.lang.Override
     public boolean hasValue() {
       return value_ != null;
     }
     /**
      * <code>.rplugininterop.ValueInfo value = 3;</code>
+     * @return The value.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ValueInfo getValue() {
       return value_ == null ? org.jetbrains.r.rinterop.ValueInfo.getDefaultInstance() : value_;
     }
     /**
      * <code>.rplugininterop.ValueInfo value = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ValueInfoOrBuilder getValueOrBuilder() {
       return getValue();
     }
@@ -2067,12 +2113,16 @@ private static final long serialVersionUID = 0L;
       private int persistentRefIndex_ ;
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @return The persistentRefIndex.
        */
+      @java.lang.Override
       public int getPersistentRefIndex() {
         return persistentRefIndex_;
       }
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @param value The persistentRefIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setPersistentRefIndex(int value) {
         
@@ -2082,6 +2132,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPersistentRefIndex() {
         
@@ -2093,6 +2144,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object title_ = "";
       /**
        * <code>string title = 2;</code>
+       * @return The title.
        */
       public java.lang.String getTitle() {
         java.lang.Object ref = title_;
@@ -2108,6 +2160,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return The bytes for title.
        */
       public com.google.protobuf.ByteString
           getTitleBytes() {
@@ -2124,6 +2177,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitle(
           java.lang.String value) {
@@ -2137,6 +2192,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTitle() {
         
@@ -2146,6 +2202,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The bytes for title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitleBytes(
           com.google.protobuf.ByteString value) {
@@ -2164,12 +2222,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.ValueInfo, org.jetbrains.r.rinterop.ValueInfo.Builder, org.jetbrains.r.rinterop.ValueInfoOrBuilder> valueBuilder_;
       /**
        * <code>.rplugininterop.ValueInfo value = 3;</code>
+       * @return Whether the value field is set.
        */
       public boolean hasValue() {
         return valueBuilder_ != null || value_ != null;
       }
       /**
        * <code>.rplugininterop.ValueInfo value = 3;</code>
+       * @return The value.
        */
       public org.jetbrains.r.rinterop.ValueInfo getValue() {
         if (valueBuilder_ == null) {
@@ -2334,15 +2394,18 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
      */
     int getPersistentRefIndex();
 
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
     java.lang.String getTitle();
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
     com.google.protobuf.ByteString
         getTitleBytes();
@@ -2350,7 +2413,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.ViewTableRequest}
    */
-  public  static final class ViewTableRequest extends
+  public static final class ViewTableRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.ViewTableRequest)
       ViewTableRequestOrBuilder {
@@ -2440,7 +2503,9 @@ private static final long serialVersionUID = 0L;
     private int persistentRefIndex_;
     /**
      * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
      */
+    @java.lang.Override
     public int getPersistentRefIndex() {
       return persistentRefIndex_;
     }
@@ -2449,7 +2514,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object title_;
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
+    @java.lang.Override
     public java.lang.String getTitle() {
       java.lang.Object ref = title_;
       if (ref instanceof java.lang.String) {
@@ -2464,7 +2531,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTitleBytes() {
       java.lang.Object ref = title_;
@@ -2801,12 +2870,16 @@ private static final long serialVersionUID = 0L;
       private int persistentRefIndex_ ;
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @return The persistentRefIndex.
        */
+      @java.lang.Override
       public int getPersistentRefIndex() {
         return persistentRefIndex_;
       }
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @param value The persistentRefIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setPersistentRefIndex(int value) {
         
@@ -2816,6 +2889,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 persistentRefIndex = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPersistentRefIndex() {
         
@@ -2827,6 +2901,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object title_ = "";
       /**
        * <code>string title = 2;</code>
+       * @return The title.
        */
       public java.lang.String getTitle() {
         java.lang.Object ref = title_;
@@ -2842,6 +2917,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return The bytes for title.
        */
       public com.google.protobuf.ByteString
           getTitleBytes() {
@@ -2858,6 +2934,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitle(
           java.lang.String value) {
@@ -2871,6 +2949,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTitle() {
         
@@ -2880,6 +2959,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The bytes for title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitleBytes(
           com.google.protobuf.ByteString value) {
@@ -2951,10 +3032,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+     * @return Whether the exception field is set.
      */
     boolean hasException();
     /**
      * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+     * @return The exception.
      */
     org.jetbrains.r.rinterop.ExceptionInfo getException();
     /**
@@ -2964,10 +3047,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return Whether the stack field is set.
      */
     boolean hasStack();
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return The stack.
      */
     org.jetbrains.r.rinterop.StackFrameList getStack();
     /**
@@ -2978,7 +3063,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.Exception}
    */
-  public  static final class Exception extends
+  public static final class Exception extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.Exception)
       ExceptionOrBuilder {
@@ -3082,19 +3167,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.ExceptionInfo exception_;
     /**
      * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+     * @return Whether the exception field is set.
      */
+    @java.lang.Override
     public boolean hasException() {
       return exception_ != null;
     }
     /**
      * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+     * @return The exception.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ExceptionInfo getException() {
       return exception_ == null ? org.jetbrains.r.rinterop.ExceptionInfo.getDefaultInstance() : exception_;
     }
     /**
      * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ExceptionInfoOrBuilder getExceptionOrBuilder() {
       return getException();
     }
@@ -3103,19 +3193,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.StackFrameList stack_;
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return Whether the stack field is set.
      */
+    @java.lang.Override
     public boolean hasStack() {
       return stack_ != null;
     }
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
+     * @return The stack.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.StackFrameList getStack() {
       return stack_ == null ? org.jetbrains.r.rinterop.StackFrameList.getDefaultInstance() : stack_;
     }
     /**
      * <code>.rplugininterop.StackFrameList stack = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.StackFrameListOrBuilder getStackOrBuilder() {
       return getStack();
     }
@@ -3470,12 +3565,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.ExceptionInfo, org.jetbrains.r.rinterop.ExceptionInfo.Builder, org.jetbrains.r.rinterop.ExceptionInfoOrBuilder> exceptionBuilder_;
       /**
        * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+       * @return Whether the exception field is set.
        */
       public boolean hasException() {
         return exceptionBuilder_ != null || exception_ != null;
       }
       /**
        * <code>.rplugininterop.ExceptionInfo exception = 1;</code>
+       * @return The exception.
        */
       public org.jetbrains.r.rinterop.ExceptionInfo getException() {
         if (exceptionBuilder_ == null) {
@@ -3587,12 +3684,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.StackFrameList, org.jetbrains.r.rinterop.StackFrameList.Builder, org.jetbrains.r.rinterop.StackFrameListOrBuilder> stackBuilder_;
       /**
        * <code>.rplugininterop.StackFrameList stack = 2;</code>
+       * @return Whether the stack field is set.
        */
       public boolean hasStack() {
         return stackBuilder_ != null || stack_ != null;
       }
       /**
        * <code>.rplugininterop.StackFrameList stack = 2;</code>
+       * @return The stack.
        */
       public org.jetbrains.r.rinterop.StackFrameList getStack() {
         if (stackBuilder_ == null) {
@@ -3757,20 +3856,24 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string filePath = 1;</code>
+     * @return The filePath.
      */
     java.lang.String getFilePath();
     /**
      * <code>string filePath = 1;</code>
+     * @return The bytes for filePath.
      */
     com.google.protobuf.ByteString
         getFilePathBytes();
 
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
     java.lang.String getTitle();
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
     com.google.protobuf.ByteString
         getTitleBytes();
@@ -3778,7 +3881,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.ShowFileRequest}
    */
-  public  static final class ShowFileRequest extends
+  public static final class ShowFileRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.ShowFileRequest)
       ShowFileRequestOrBuilder {
@@ -3870,7 +3973,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object filePath_;
     /**
      * <code>string filePath = 1;</code>
+     * @return The filePath.
      */
+    @java.lang.Override
     public java.lang.String getFilePath() {
       java.lang.Object ref = filePath_;
       if (ref instanceof java.lang.String) {
@@ -3885,7 +3990,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string filePath = 1;</code>
+     * @return The bytes for filePath.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getFilePathBytes() {
       java.lang.Object ref = filePath_;
@@ -3904,7 +4011,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object title_;
     /**
      * <code>string title = 2;</code>
+     * @return The title.
      */
+    @java.lang.Override
     public java.lang.String getTitle() {
       java.lang.Object ref = title_;
       if (ref instanceof java.lang.String) {
@@ -3919,7 +4028,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string title = 2;</code>
+     * @return The bytes for title.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTitleBytes() {
       java.lang.Object ref = title_;
@@ -4256,6 +4367,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object filePath_ = "";
       /**
        * <code>string filePath = 1;</code>
+       * @return The filePath.
        */
       public java.lang.String getFilePath() {
         java.lang.Object ref = filePath_;
@@ -4271,6 +4383,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string filePath = 1;</code>
+       * @return The bytes for filePath.
        */
       public com.google.protobuf.ByteString
           getFilePathBytes() {
@@ -4287,6 +4400,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string filePath = 1;</code>
+       * @param value The filePath to set.
+       * @return This builder for chaining.
        */
       public Builder setFilePath(
           java.lang.String value) {
@@ -4300,6 +4415,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string filePath = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFilePath() {
         
@@ -4309,6 +4425,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string filePath = 1;</code>
+       * @param value The bytes for filePath to set.
+       * @return This builder for chaining.
        */
       public Builder setFilePathBytes(
           com.google.protobuf.ByteString value) {
@@ -4325,6 +4443,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object title_ = "";
       /**
        * <code>string title = 2;</code>
+       * @return The title.
        */
       public java.lang.String getTitle() {
         java.lang.Object ref = title_;
@@ -4340,6 +4459,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return The bytes for title.
        */
       public com.google.protobuf.ByteString
           getTitleBytes() {
@@ -4356,6 +4476,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitle(
           java.lang.String value) {
@@ -4369,6 +4491,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTitle() {
         
@@ -4378,6 +4501,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string title = 2;</code>
+       * @param value The bytes for title to set.
+       * @return This builder for chaining.
        */
       public Builder setTitleBytes(
           com.google.protobuf.ByteString value) {
@@ -4449,15 +4574,18 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 functionID = 1;</code>
+     * @return The functionID.
      */
     int getFunctionID();
 
     /**
      * <code>.rplugininterop.RObject args = 2;</code>
+     * @return Whether the args field is set.
      */
     boolean hasArgs();
     /**
      * <code>.rplugininterop.RObject args = 2;</code>
+     * @return The args.
      */
     org.jetbrains.r.rinterop.RObject getArgs();
     /**
@@ -4468,7 +4596,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.AsyncEvent.RStudioApiRequest}
    */
-  public  static final class RStudioApiRequest extends
+  public static final class RStudioApiRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.RStudioApiRequest)
       RStudioApiRequestOrBuilder {
@@ -4564,7 +4692,9 @@ private static final long serialVersionUID = 0L;
     private int functionID_;
     /**
      * <code>int32 functionID = 1;</code>
+     * @return The functionID.
      */
+    @java.lang.Override
     public int getFunctionID() {
       return functionID_;
     }
@@ -4573,19 +4703,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RObject args_;
     /**
      * <code>.rplugininterop.RObject args = 2;</code>
+     * @return Whether the args field is set.
      */
+    @java.lang.Override
     public boolean hasArgs() {
       return args_ != null;
     }
     /**
      * <code>.rplugininterop.RObject args = 2;</code>
+     * @return The args.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject getArgs() {
       return args_ == null ? org.jetbrains.r.rinterop.RObject.getDefaultInstance() : args_;
     }
     /**
      * <code>.rplugininterop.RObject args = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObjectOrBuilder getArgsOrBuilder() {
       return getArgs();
     }
@@ -4925,12 +5060,16 @@ private static final long serialVersionUID = 0L;
       private int functionID_ ;
       /**
        * <code>int32 functionID = 1;</code>
+       * @return The functionID.
        */
+      @java.lang.Override
       public int getFunctionID() {
         return functionID_;
       }
       /**
        * <code>int32 functionID = 1;</code>
+       * @param value The functionID to set.
+       * @return This builder for chaining.
        */
       public Builder setFunctionID(int value) {
         
@@ -4940,6 +5079,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 functionID = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFunctionID() {
         
@@ -4953,12 +5093,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RObject, org.jetbrains.r.rinterop.RObject.Builder, org.jetbrains.r.rinterop.RObjectOrBuilder> argsBuilder_;
       /**
        * <code>.rplugininterop.RObject args = 2;</code>
+       * @return Whether the args field is set.
        */
       public boolean hasArgs() {
         return argsBuilder_ != null || args_ != null;
       }
       /**
        * <code>.rplugininterop.RObject args = 2;</code>
+       * @return The args.
        */
       public org.jetbrains.r.rinterop.RObject getArgs() {
         if (argsBuilder_ == null) {
@@ -5120,7 +5262,8 @@ private static final long serialVersionUID = 0L;
   private int eventCase_ = 0;
   private java.lang.Object event_;
   public enum EventCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     BUSY(1),
     TEXT(2),
     REQUESTREADLN(3),
@@ -5143,6 +5286,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -5186,13 +5331,17 @@ private static final long serialVersionUID = 0L;
   public static final int BUSY_FIELD_NUMBER = 1;
   /**
    * <code>.google.protobuf.Empty busy = 1;</code>
+   * @return Whether the busy field is set.
    */
+  @java.lang.Override
   public boolean hasBusy() {
     return eventCase_ == 1;
   }
   /**
    * <code>.google.protobuf.Empty busy = 1;</code>
+   * @return The busy.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getBusy() {
     if (eventCase_ == 1) {
        return (com.google.protobuf.Empty) event_;
@@ -5202,6 +5351,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty busy = 1;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getBusyOrBuilder() {
     if (eventCase_ == 1) {
        return (com.google.protobuf.Empty) event_;
@@ -5212,13 +5362,17 @@ private static final long serialVersionUID = 0L;
   public static final int TEXT_FIELD_NUMBER = 2;
   /**
    * <code>.rplugininterop.CommandOutput text = 2;</code>
+   * @return Whether the text field is set.
    */
+  @java.lang.Override
   public boolean hasText() {
     return eventCase_ == 2;
   }
   /**
    * <code>.rplugininterop.CommandOutput text = 2;</code>
+   * @return The text.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CommandOutput getText() {
     if (eventCase_ == 2) {
        return (org.jetbrains.r.rinterop.CommandOutput) event_;
@@ -5228,6 +5382,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.CommandOutput text = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CommandOutputOrBuilder getTextOrBuilder() {
     if (eventCase_ == 2) {
        return (org.jetbrains.r.rinterop.CommandOutput) event_;
@@ -5238,13 +5393,17 @@ private static final long serialVersionUID = 0L;
   public static final int REQUESTREADLN_FIELD_NUMBER = 3;
   /**
    * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+   * @return Whether the requestReadLn field is set.
    */
+  @java.lang.Override
   public boolean hasRequestReadLn() {
     return eventCase_ == 3;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+   * @return The requestReadLn.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn getRequestReadLn() {
     if (eventCase_ == 3) {
        return (org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn) event_;
@@ -5254,6 +5413,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.RequestReadLnOrBuilder getRequestReadLnOrBuilder() {
     if (eventCase_ == 3) {
        return (org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn) event_;
@@ -5264,13 +5424,17 @@ private static final long serialVersionUID = 0L;
   public static final int PROMPT_FIELD_NUMBER = 4;
   /**
    * <code>.google.protobuf.Empty prompt = 4;</code>
+   * @return Whether the prompt field is set.
    */
+  @java.lang.Override
   public boolean hasPrompt() {
     return eventCase_ == 4;
   }
   /**
    * <code>.google.protobuf.Empty prompt = 4;</code>
+   * @return The prompt.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getPrompt() {
     if (eventCase_ == 4) {
        return (com.google.protobuf.Empty) event_;
@@ -5280,6 +5444,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty prompt = 4;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getPromptOrBuilder() {
     if (eventCase_ == 4) {
        return (com.google.protobuf.Empty) event_;
@@ -5290,13 +5455,17 @@ private static final long serialVersionUID = 0L;
   public static final int DEBUGPROMPT_FIELD_NUMBER = 5;
   /**
    * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+   * @return Whether the debugPrompt field is set.
    */
+  @java.lang.Override
   public boolean hasDebugPrompt() {
     return eventCase_ == 5;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+   * @return The debugPrompt.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt getDebugPrompt() {
     if (eventCase_ == 5) {
        return (org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt) event_;
@@ -5306,6 +5475,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.DebugPromptOrBuilder getDebugPromptOrBuilder() {
     if (eventCase_ == 5) {
        return (org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt) event_;
@@ -5316,13 +5486,17 @@ private static final long serialVersionUID = 0L;
   public static final int TERMINATION_FIELD_NUMBER = 6;
   /**
    * <code>.google.protobuf.Empty termination = 6;</code>
+   * @return Whether the termination field is set.
    */
+  @java.lang.Override
   public boolean hasTermination() {
     return eventCase_ == 6;
   }
   /**
    * <code>.google.protobuf.Empty termination = 6;</code>
+   * @return The termination.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getTermination() {
     if (eventCase_ == 6) {
        return (com.google.protobuf.Empty) event_;
@@ -5332,6 +5506,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty termination = 6;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getTerminationOrBuilder() {
     if (eventCase_ == 6) {
        return (com.google.protobuf.Empty) event_;
@@ -5342,13 +5517,17 @@ private static final long serialVersionUID = 0L;
   public static final int EXCEPTION_FIELD_NUMBER = 7;
   /**
    * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+   * @return Whether the exception field is set.
    */
+  @java.lang.Override
   public boolean hasException() {
     return eventCase_ == 7;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+   * @return The exception.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.Exception getException() {
     if (eventCase_ == 7) {
        return (org.jetbrains.r.rinterop.AsyncEvent.Exception) event_;
@@ -5358,6 +5537,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ExceptionOrBuilder getExceptionOrBuilder() {
     if (eventCase_ == 7) {
        return (org.jetbrains.r.rinterop.AsyncEvent.Exception) event_;
@@ -5368,13 +5548,17 @@ private static final long serialVersionUID = 0L;
   public static final int VIEWREQUEST_FIELD_NUMBER = 8;
   /**
    * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+   * @return Whether the viewRequest field is set.
    */
+  @java.lang.Override
   public boolean hasViewRequest() {
     return eventCase_ == 8;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+   * @return The viewRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ViewRequest getViewRequest() {
     if (eventCase_ == 8) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ViewRequest) event_;
@@ -5384,6 +5568,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ViewRequestOrBuilder getViewRequestOrBuilder() {
     if (eventCase_ == 8) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ViewRequest) event_;
@@ -5394,13 +5579,17 @@ private static final long serialVersionUID = 0L;
   public static final int SHOWFILEREQUEST_FIELD_NUMBER = 9;
   /**
    * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+   * @return Whether the showFileRequest field is set.
    */
+  @java.lang.Override
   public boolean hasShowFileRequest() {
     return eventCase_ == 9;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+   * @return The showFileRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest getShowFileRequest() {
     if (eventCase_ == 9) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest) event_;
@@ -5410,6 +5599,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequestOrBuilder getShowFileRequestOrBuilder() {
     if (eventCase_ == 9) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest) event_;
@@ -5420,13 +5610,17 @@ private static final long serialVersionUID = 0L;
   public static final int SHOWHELPREQUEST_FIELD_NUMBER = 10;
   /**
    * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+   * @return Whether the showHelpRequest field is set.
    */
+  @java.lang.Override
   public boolean hasShowHelpRequest() {
     return eventCase_ == 10;
   }
   /**
    * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+   * @return The showHelpRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest() {
     if (eventCase_ == 10) {
        return (org.jetbrains.r.rinterop.HttpdResponse) event_;
@@ -5436,6 +5630,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.HttpdResponseOrBuilder getShowHelpRequestOrBuilder() {
     if (eventCase_ == 10) {
        return (org.jetbrains.r.rinterop.HttpdResponse) event_;
@@ -5446,13 +5641,17 @@ private static final long serialVersionUID = 0L;
   public static final int SUBPROCESSINPUT_FIELD_NUMBER = 11;
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+   * @return Whether the subprocessInput field is set.
    */
+  @java.lang.Override
   public boolean hasSubprocessInput() {
     return eventCase_ == 11;
   }
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+   * @return The subprocessInput.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getSubprocessInput() {
     if (eventCase_ == 11) {
        return (com.google.protobuf.Empty) event_;
@@ -5462,6 +5661,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getSubprocessInputOrBuilder() {
     if (eventCase_ == 11) {
        return (com.google.protobuf.Empty) event_;
@@ -5472,6 +5672,7 @@ private static final long serialVersionUID = 0L;
   public static final int BROWSEURLREQUEST_FIELD_NUMBER = 12;
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return The browseURLRequest.
    */
   public java.lang.String getBrowseURLRequest() {
     java.lang.Object ref = "";
@@ -5492,6 +5693,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return The bytes for browseURLRequest.
    */
   public com.google.protobuf.ByteString
       getBrowseURLRequestBytes() {
@@ -5515,13 +5717,17 @@ private static final long serialVersionUID = 0L;
   public static final int RSTUDIOAPIREQUEST_FIELD_NUMBER = 13;
   /**
    * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   * @return Whether the rStudioApiRequest field is set.
    */
+  @java.lang.Override
   public boolean hasRStudioApiRequest() {
     return eventCase_ == 13;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   * @return The rStudioApiRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest() {
     if (eventCase_ == 13) {
        return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
@@ -5531,6 +5737,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder() {
     if (eventCase_ == 13) {
        return (org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest) event_;
@@ -5541,7 +5748,9 @@ private static final long serialVersionUID = 0L;
   public static final int DEBUGREMOVEBREAKPOINTREQUEST_FIELD_NUMBER = 14;
   /**
    * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   * @return The debugRemoveBreakpointRequest.
    */
+  @java.lang.Override
   public int getDebugRemoveBreakpointRequest() {
     if (eventCase_ == 14) {
       return (java.lang.Integer) event_;
@@ -5552,13 +5761,17 @@ private static final long serialVersionUID = 0L;
   public static final int DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST_FIELD_NUMBER = 15;
   /**
    * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   * @return Whether the debugPrintSourcePositionToConsoleRequest field is set.
    */
+  @java.lang.Override
   public boolean hasDebugPrintSourcePositionToConsoleRequest() {
     return eventCase_ == 15;
   }
   /**
    * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   * @return The debugPrintSourcePositionToConsoleRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest() {
     if (eventCase_ == 15) {
        return (org.jetbrains.r.rinterop.SourcePosition) event_;
@@ -5568,6 +5781,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder() {
     if (eventCase_ == 15) {
        return (org.jetbrains.r.rinterop.SourcePosition) event_;
@@ -5578,13 +5792,17 @@ private static final long serialVersionUID = 0L;
   public static final int VIEWTABLEREQUEST_FIELD_NUMBER = 16;
   /**
    * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   * @return Whether the viewTableRequest field is set.
    */
+  @java.lang.Override
   public boolean hasViewTableRequest() {
     return eventCase_ == 16;
   }
   /**
    * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   * @return The viewTableRequest.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getViewTableRequest() {
     if (eventCase_ == 16) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
@@ -5594,6 +5812,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder getViewTableRequestOrBuilder() {
     if (eventCase_ == 16) {
        return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
@@ -6333,13 +6552,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> busyBuilder_;
     /**
      * <code>.google.protobuf.Empty busy = 1;</code>
+     * @return Whether the busy field is set.
      */
+    @java.lang.Override
     public boolean hasBusy() {
       return eventCase_ == 1;
     }
     /**
      * <code>.google.protobuf.Empty busy = 1;</code>
+     * @return The busy.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getBusy() {
       if (busyBuilder_ == null) {
         if (eventCase_ == 1) {
@@ -6433,6 +6656,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty busy = 1;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getBusyOrBuilder() {
       if ((eventCase_ == 1) && (busyBuilder_ != null)) {
         return busyBuilder_.getMessageOrBuilder();
@@ -6469,13 +6693,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.CommandOutput, org.jetbrains.r.rinterop.CommandOutput.Builder, org.jetbrains.r.rinterop.CommandOutputOrBuilder> textBuilder_;
     /**
      * <code>.rplugininterop.CommandOutput text = 2;</code>
+     * @return Whether the text field is set.
      */
+    @java.lang.Override
     public boolean hasText() {
       return eventCase_ == 2;
     }
     /**
      * <code>.rplugininterop.CommandOutput text = 2;</code>
+     * @return The text.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CommandOutput getText() {
       if (textBuilder_ == null) {
         if (eventCase_ == 2) {
@@ -6569,6 +6797,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.CommandOutput text = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CommandOutputOrBuilder getTextOrBuilder() {
       if ((eventCase_ == 2) && (textBuilder_ != null)) {
         return textBuilder_.getMessageOrBuilder();
@@ -6605,13 +6834,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn, org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn.Builder, org.jetbrains.r.rinterop.AsyncEvent.RequestReadLnOrBuilder> requestReadLnBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+     * @return Whether the requestReadLn field is set.
      */
+    @java.lang.Override
     public boolean hasRequestReadLn() {
       return eventCase_ == 3;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+     * @return The requestReadLn.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn getRequestReadLn() {
       if (requestReadLnBuilder_ == null) {
         if (eventCase_ == 3) {
@@ -6705,6 +6938,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.RequestReadLnOrBuilder getRequestReadLnOrBuilder() {
       if ((eventCase_ == 3) && (requestReadLnBuilder_ != null)) {
         return requestReadLnBuilder_.getMessageOrBuilder();
@@ -6741,13 +6975,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> promptBuilder_;
     /**
      * <code>.google.protobuf.Empty prompt = 4;</code>
+     * @return Whether the prompt field is set.
      */
+    @java.lang.Override
     public boolean hasPrompt() {
       return eventCase_ == 4;
     }
     /**
      * <code>.google.protobuf.Empty prompt = 4;</code>
+     * @return The prompt.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getPrompt() {
       if (promptBuilder_ == null) {
         if (eventCase_ == 4) {
@@ -6841,6 +7079,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty prompt = 4;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getPromptOrBuilder() {
       if ((eventCase_ == 4) && (promptBuilder_ != null)) {
         return promptBuilder_.getMessageOrBuilder();
@@ -6877,13 +7116,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt, org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt.Builder, org.jetbrains.r.rinterop.AsyncEvent.DebugPromptOrBuilder> debugPromptBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+     * @return Whether the debugPrompt field is set.
      */
+    @java.lang.Override
     public boolean hasDebugPrompt() {
       return eventCase_ == 5;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+     * @return The debugPrompt.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt getDebugPrompt() {
       if (debugPromptBuilder_ == null) {
         if (eventCase_ == 5) {
@@ -6977,6 +7220,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.DebugPromptOrBuilder getDebugPromptOrBuilder() {
       if ((eventCase_ == 5) && (debugPromptBuilder_ != null)) {
         return debugPromptBuilder_.getMessageOrBuilder();
@@ -7013,13 +7257,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> terminationBuilder_;
     /**
      * <code>.google.protobuf.Empty termination = 6;</code>
+     * @return Whether the termination field is set.
      */
+    @java.lang.Override
     public boolean hasTermination() {
       return eventCase_ == 6;
     }
     /**
      * <code>.google.protobuf.Empty termination = 6;</code>
+     * @return The termination.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getTermination() {
       if (terminationBuilder_ == null) {
         if (eventCase_ == 6) {
@@ -7113,6 +7361,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty termination = 6;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getTerminationOrBuilder() {
       if ((eventCase_ == 6) && (terminationBuilder_ != null)) {
         return terminationBuilder_.getMessageOrBuilder();
@@ -7149,13 +7398,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.Exception, org.jetbrains.r.rinterop.AsyncEvent.Exception.Builder, org.jetbrains.r.rinterop.AsyncEvent.ExceptionOrBuilder> exceptionBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+     * @return Whether the exception field is set.
      */
+    @java.lang.Override
     public boolean hasException() {
       return eventCase_ == 7;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+     * @return The exception.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.Exception getException() {
       if (exceptionBuilder_ == null) {
         if (eventCase_ == 7) {
@@ -7249,6 +7502,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ExceptionOrBuilder getExceptionOrBuilder() {
       if ((eventCase_ == 7) && (exceptionBuilder_ != null)) {
         return exceptionBuilder_.getMessageOrBuilder();
@@ -7285,13 +7539,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.ViewRequest, org.jetbrains.r.rinterop.AsyncEvent.ViewRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ViewRequestOrBuilder> viewRequestBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+     * @return Whether the viewRequest field is set.
      */
+    @java.lang.Override
     public boolean hasViewRequest() {
       return eventCase_ == 8;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+     * @return The viewRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ViewRequest getViewRequest() {
       if (viewRequestBuilder_ == null) {
         if (eventCase_ == 8) {
@@ -7385,6 +7643,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ViewRequestOrBuilder getViewRequestOrBuilder() {
       if ((eventCase_ == 8) && (viewRequestBuilder_ != null)) {
         return viewRequestBuilder_.getMessageOrBuilder();
@@ -7421,13 +7680,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest, org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequestOrBuilder> showFileRequestBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+     * @return Whether the showFileRequest field is set.
      */
+    @java.lang.Override
     public boolean hasShowFileRequest() {
       return eventCase_ == 9;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+     * @return The showFileRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest getShowFileRequest() {
       if (showFileRequestBuilder_ == null) {
         if (eventCase_ == 9) {
@@ -7521,6 +7784,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequestOrBuilder getShowFileRequestOrBuilder() {
       if ((eventCase_ == 9) && (showFileRequestBuilder_ != null)) {
         return showFileRequestBuilder_.getMessageOrBuilder();
@@ -7557,13 +7821,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.HttpdResponse, org.jetbrains.r.rinterop.HttpdResponse.Builder, org.jetbrains.r.rinterop.HttpdResponseOrBuilder> showHelpRequestBuilder_;
     /**
      * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+     * @return Whether the showHelpRequest field is set.
      */
+    @java.lang.Override
     public boolean hasShowHelpRequest() {
       return eventCase_ == 10;
     }
     /**
      * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+     * @return The showHelpRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest() {
       if (showHelpRequestBuilder_ == null) {
         if (eventCase_ == 10) {
@@ -7657,6 +7925,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.HttpdResponseOrBuilder getShowHelpRequestOrBuilder() {
       if ((eventCase_ == 10) && (showHelpRequestBuilder_ != null)) {
         return showHelpRequestBuilder_.getMessageOrBuilder();
@@ -7693,13 +7962,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> subprocessInputBuilder_;
     /**
      * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+     * @return Whether the subprocessInput field is set.
      */
+    @java.lang.Override
     public boolean hasSubprocessInput() {
       return eventCase_ == 11;
     }
     /**
      * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+     * @return The subprocessInput.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getSubprocessInput() {
       if (subprocessInputBuilder_ == null) {
         if (eventCase_ == 11) {
@@ -7793,6 +8066,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty subprocessInput = 11;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getSubprocessInputOrBuilder() {
       if ((eventCase_ == 11) && (subprocessInputBuilder_ != null)) {
         return subprocessInputBuilder_.getMessageOrBuilder();
@@ -7827,7 +8101,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @return The browseURLRequest.
      */
+    @java.lang.Override
     public java.lang.String getBrowseURLRequest() {
       java.lang.Object ref = "";
       if (eventCase_ == 12) {
@@ -7847,7 +8123,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @return The bytes for browseURLRequest.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getBrowseURLRequestBytes() {
       java.lang.Object ref = "";
@@ -7868,6 +8146,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @param value The browseURLRequest to set.
+     * @return This builder for chaining.
      */
     public Builder setBrowseURLRequest(
         java.lang.String value) {
@@ -7881,6 +8161,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @return This builder for chaining.
      */
     public Builder clearBrowseURLRequest() {
       if (eventCase_ == 12) {
@@ -7892,6 +8173,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string browseURLRequest = 12;</code>
+     * @param value The bytes for browseURLRequest to set.
+     * @return This builder for chaining.
      */
     public Builder setBrowseURLRequestBytes(
         com.google.protobuf.ByteString value) {
@@ -7909,13 +8192,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder> rStudioApiRequestBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     * @return Whether the rStudioApiRequest field is set.
      */
+    @java.lang.Override
     public boolean hasRStudioApiRequest() {
       return eventCase_ == 13;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+     * @return The rStudioApiRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest() {
       if (rStudioApiRequestBuilder_ == null) {
         if (eventCase_ == 13) {
@@ -8009,6 +8296,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequestOrBuilder getRStudioApiRequestOrBuilder() {
       if ((eventCase_ == 13) && (rStudioApiRequestBuilder_ != null)) {
         return rStudioApiRequestBuilder_.getMessageOrBuilder();
@@ -8043,6 +8331,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     * @return The debugRemoveBreakpointRequest.
      */
     public int getDebugRemoveBreakpointRequest() {
       if (eventCase_ == 14) {
@@ -8052,6 +8341,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     * @param value The debugRemoveBreakpointRequest to set.
+     * @return This builder for chaining.
      */
     public Builder setDebugRemoveBreakpointRequest(int value) {
       eventCase_ = 14;
@@ -8061,6 +8352,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+     * @return This builder for chaining.
      */
     public Builder clearDebugRemoveBreakpointRequest() {
       if (eventCase_ == 14) {
@@ -8075,13 +8367,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> debugPrintSourcePositionToConsoleRequestBuilder_;
     /**
      * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     * @return Whether the debugPrintSourcePositionToConsoleRequest field is set.
      */
+    @java.lang.Override
     public boolean hasDebugPrintSourcePositionToConsoleRequest() {
       return eventCase_ == 15;
     }
     /**
      * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+     * @return The debugPrintSourcePositionToConsoleRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest() {
       if (debugPrintSourcePositionToConsoleRequestBuilder_ == null) {
         if (eventCase_ == 15) {
@@ -8175,6 +8471,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder() {
       if ((eventCase_ == 15) && (debugPrintSourcePositionToConsoleRequestBuilder_ != null)) {
         return debugPrintSourcePositionToConsoleRequestBuilder_.getMessageOrBuilder();
@@ -8211,13 +8508,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder> viewTableRequestBuilder_;
     /**
      * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     * @return Whether the viewTableRequest field is set.
      */
+    @java.lang.Override
     public boolean hasViewTableRequest() {
       return eventCase_ == 16;
     }
     /**
      * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     * @return The viewTableRequest.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getViewTableRequest() {
       if (viewTableRequestBuilder_ == null) {
         if (eventCase_ == 16) {
@@ -8311,6 +8612,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder getViewTableRequestOrBuilder() {
       if ((eventCase_ == 16) && (viewTableRequestBuilder_ != null)) {
         return viewTableRequestBuilder_.getMessageOrBuilder();

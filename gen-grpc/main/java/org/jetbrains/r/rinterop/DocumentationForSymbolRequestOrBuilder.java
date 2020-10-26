@@ -9,20 +9,24 @@ public interface DocumentationForSymbolRequestOrBuilder extends
 
   /**
    * <code>string symbol = 1;</code>
+   * @return The symbol.
    */
   java.lang.String getSymbol();
   /**
    * <code>string symbol = 1;</code>
+   * @return The bytes for symbol.
    */
   com.google.protobuf.ByteString
       getSymbolBytes();
 
   /**
    * <code>string package = 2;</code>
+   * @return The package.
    */
   java.lang.String getPackage();
   /**
    * <code>string package = 2;</code>
+   * @return The bytes for package.
    */
   com.google.protobuf.ByteString
       getPackageBytes();

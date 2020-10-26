@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.LoadEnvironmentRequest}
  */
-public  final class LoadEnvironmentRequest extends
+public final class LoadEnvironmentRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.LoadEnvironmentRequest)
     LoadEnvironmentRequestOrBuilder {
@@ -98,7 +98,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object file_;
   /**
    * <code>string file = 1;</code>
+   * @return The file.
    */
+  @java.lang.Override
   public java.lang.String getFile() {
     java.lang.Object ref = file_;
     if (ref instanceof java.lang.String) {
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string file = 1;</code>
+   * @return The bytes for file.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFileBytes() {
     java.lang.Object ref = file_;
@@ -136,7 +140,9 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>string variable = 2;</code>
+   * @return The variable.
    */
+  @java.lang.Override
   public java.lang.String getVariable() {
     java.lang.Object ref = variable_;
     if (ref instanceof java.lang.String) {
@@ -155,7 +161,9 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>string variable = 2;</code>
+   * @return The bytes for variable.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getVariableBytes() {
     java.lang.Object ref = variable_;
@@ -492,6 +500,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object file_ = "";
     /**
      * <code>string file = 1;</code>
+     * @return The file.
      */
     public java.lang.String getFile() {
       java.lang.Object ref = file_;
@@ -507,6 +516,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string file = 1;</code>
+     * @return The bytes for file.
      */
     public com.google.protobuf.ByteString
         getFileBytes() {
@@ -523,6 +533,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string file = 1;</code>
+     * @param value The file to set.
+     * @return This builder for chaining.
      */
     public Builder setFile(
         java.lang.String value) {
@@ -536,6 +548,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string file = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFile() {
       
@@ -545,6 +558,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string file = 1;</code>
+     * @param value The bytes for file to set.
+     * @return This builder for chaining.
      */
     public Builder setFileBytes(
         com.google.protobuf.ByteString value) {
@@ -565,6 +580,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>string variable = 2;</code>
+     * @return The variable.
      */
     public java.lang.String getVariable() {
       java.lang.Object ref = variable_;
@@ -584,6 +600,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>string variable = 2;</code>
+     * @return The bytes for variable.
      */
     public com.google.protobuf.ByteString
         getVariableBytes() {
@@ -604,6 +621,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>string variable = 2;</code>
+     * @param value The variable to set.
+     * @return This builder for chaining.
      */
     public Builder setVariable(
         java.lang.String value) {
@@ -621,6 +640,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>string variable = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearVariable() {
       
@@ -634,6 +654,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>string variable = 2;</code>
+     * @param value The bytes for variable to set.
+     * @return This builder for chaining.
      */
     public Builder setVariableBytes(
         com.google.protobuf.ByteString value) {

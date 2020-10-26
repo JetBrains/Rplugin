@@ -9,30 +9,36 @@ public interface CommitDataImportRequestOrBuilder extends
 
   /**
    * <code>string name = 1;</code>
+   * @return The name.
    */
   java.lang.String getName();
   /**
    * <code>string name = 1;</code>
+   * @return The bytes for name.
    */
   com.google.protobuf.ByteString
       getNameBytes();
 
   /**
    * <code>string path = 2;</code>
+   * @return The path.
    */
   java.lang.String getPath();
   /**
    * <code>string path = 2;</code>
+   * @return The bytes for path.
    */
   com.google.protobuf.ByteString
       getPathBytes();
 
   /**
    * <code>string mode = 3;</code>
+   * @return The mode.
    */
   java.lang.String getMode();
   /**
    * <code>string mode = 3;</code>
+   * @return The bytes for mode.
    */
   com.google.protobuf.ByteString
       getModeBytes();

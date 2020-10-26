@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.CircleFigure}
  */
-public  final class CircleFigure extends
+public final class CircleFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.CircleFigure)
     CircleFigureOrBuilder {
@@ -122,19 +122,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.AffinePoint center_;
   /**
    * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * @return Whether the center field is set.
    */
+  @java.lang.Override
   public boolean hasCenter() {
     return center_ != null;
   }
   /**
    * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * @return The center.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePoint getCenter() {
     return center_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : center_;
   }
   /**
    * <code>.rplugininterop.AffinePoint center = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePointOrBuilder getCenterOrBuilder() {
     return getCenter();
   }
@@ -143,7 +148,9 @@ private static final long serialVersionUID = 0L;
   private float radiusScale_;
   /**
    * <code>float radiusScale = 2;</code>
+   * @return The radiusScale.
    */
+  @java.lang.Override
   public float getRadiusScale() {
     return radiusScale_;
   }
@@ -152,7 +159,9 @@ private static final long serialVersionUID = 0L;
   private float radiusOffset_;
   /**
    * <code>float radiusOffset = 3;</code>
+   * @return The radiusOffset.
    */
+  @java.lang.Override
   public float getRadiusOffset() {
     return radiusOffset_;
   }
@@ -161,7 +170,9 @@ private static final long serialVersionUID = 0L;
   private int strokeIndex_;
   /**
    * <code>int32 strokeIndex = 4;</code>
+   * @return The strokeIndex.
    */
+  @java.lang.Override
   public int getStrokeIndex() {
     return strokeIndex_;
   }
@@ -170,7 +181,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 5;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -179,7 +192,9 @@ private static final long serialVersionUID = 0L;
   private int fillIndex_;
   /**
    * <code>int32 fillIndex = 6;</code>
+   * @return The fillIndex.
    */
+  @java.lang.Override
   public int getFillIndex() {
     return fillIndex_;
   }
@@ -593,12 +608,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> centerBuilder_;
     /**
      * <code>.rplugininterop.AffinePoint center = 1;</code>
+     * @return Whether the center field is set.
      */
     public boolean hasCenter() {
       return centerBuilder_ != null || center_ != null;
     }
     /**
      * <code>.rplugininterop.AffinePoint center = 1;</code>
+     * @return The center.
      */
     public org.jetbrains.r.rinterop.AffinePoint getCenter() {
       if (centerBuilder_ == null) {
@@ -708,12 +725,16 @@ private static final long serialVersionUID = 0L;
     private float radiusScale_ ;
     /**
      * <code>float radiusScale = 2;</code>
+     * @return The radiusScale.
      */
+    @java.lang.Override
     public float getRadiusScale() {
       return radiusScale_;
     }
     /**
      * <code>float radiusScale = 2;</code>
+     * @param value The radiusScale to set.
+     * @return This builder for chaining.
      */
     public Builder setRadiusScale(float value) {
       
@@ -723,6 +744,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float radiusScale = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRadiusScale() {
       
@@ -734,12 +756,16 @@ private static final long serialVersionUID = 0L;
     private float radiusOffset_ ;
     /**
      * <code>float radiusOffset = 3;</code>
+     * @return The radiusOffset.
      */
+    @java.lang.Override
     public float getRadiusOffset() {
       return radiusOffset_;
     }
     /**
      * <code>float radiusOffset = 3;</code>
+     * @param value The radiusOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setRadiusOffset(float value) {
       
@@ -749,6 +775,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float radiusOffset = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRadiusOffset() {
       
@@ -760,12 +787,16 @@ private static final long serialVersionUID = 0L;
     private int strokeIndex_ ;
     /**
      * <code>int32 strokeIndex = 4;</code>
+     * @return The strokeIndex.
      */
+    @java.lang.Override
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
      * <code>int32 strokeIndex = 4;</code>
+     * @param value The strokeIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setStrokeIndex(int value) {
       
@@ -775,6 +806,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 strokeIndex = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStrokeIndex() {
       
@@ -786,12 +818,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 5;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 5;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -801,6 +837,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       
@@ -812,12 +849,16 @@ private static final long serialVersionUID = 0L;
     private int fillIndex_ ;
     /**
      * <code>int32 fillIndex = 6;</code>
+     * @return The fillIndex.
      */
+    @java.lang.Override
     public int getFillIndex() {
       return fillIndex_;
     }
     /**
      * <code>int32 fillIndex = 6;</code>
+     * @param value The fillIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setFillIndex(int value) {
       
@@ -827,6 +868,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 fillIndex = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFillIndex() {
       

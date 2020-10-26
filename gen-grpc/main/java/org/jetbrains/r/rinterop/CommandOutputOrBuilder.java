@@ -9,15 +9,18 @@ public interface CommandOutputOrBuilder extends
 
   /**
    * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+   * @return The enum numeric value on the wire for type.
    */
   int getTypeValue();
   /**
    * <code>.rplugininterop.CommandOutput.Type type = 1;</code>
+   * @return The type.
    */
   org.jetbrains.r.rinterop.CommandOutput.Type getType();
 
   /**
    * <code>bytes text = 2;</code>
+   * @return The text.
    */
   com.google.protobuf.ByteString getText();
 }

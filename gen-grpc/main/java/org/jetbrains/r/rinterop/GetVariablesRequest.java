@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GetVariablesRequest}
  */
-public  final class GetVariablesRequest extends
+public final class GetVariablesRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GetVariablesRequest)
     GetVariablesRequestOrBuilder {
@@ -122,19 +122,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef obj_;
   /**
    * <code>.rplugininterop.RRef obj = 1;</code>
+   * @return Whether the obj field is set.
    */
+  @java.lang.Override
   public boolean hasObj() {
     return obj_ != null;
   }
   /**
    * <code>.rplugininterop.RRef obj = 1;</code>
+   * @return The obj.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getObj() {
     return obj_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : obj_;
   }
   /**
    * <code>.rplugininterop.RRef obj = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getObjOrBuilder() {
     return getObj();
   }
@@ -143,7 +148,9 @@ private static final long serialVersionUID = 0L;
   private long start_;
   /**
    * <code>int64 start = 2;</code>
+   * @return The start.
    */
+  @java.lang.Override
   public long getStart() {
     return start_;
   }
@@ -152,7 +159,9 @@ private static final long serialVersionUID = 0L;
   private long end_;
   /**
    * <code>int64 end = 3;</code>
+   * @return The end.
    */
+  @java.lang.Override
   public long getEnd() {
     return end_;
   }
@@ -165,7 +174,9 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>bool noHidden = 4;</code>
+   * @return The noHidden.
    */
+  @java.lang.Override
   public boolean getNoHidden() {
     return noHidden_;
   }
@@ -174,7 +185,9 @@ private static final long serialVersionUID = 0L;
   private boolean noFunctions_;
   /**
    * <code>bool noFunctions = 5;</code>
+   * @return The noFunctions.
    */
+  @java.lang.Override
   public boolean getNoFunctions() {
     return noFunctions_;
   }
@@ -183,7 +196,9 @@ private static final long serialVersionUID = 0L;
   private boolean onlyFunctions_;
   /**
    * <code>bool onlyFunctions = 6;</code>
+   * @return The onlyFunctions.
    */
+  @java.lang.Override
   public boolean getOnlyFunctions() {
     return onlyFunctions_;
   }
@@ -598,12 +613,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> objBuilder_;
     /**
      * <code>.rplugininterop.RRef obj = 1;</code>
+     * @return Whether the obj field is set.
      */
     public boolean hasObj() {
       return objBuilder_ != null || obj_ != null;
     }
     /**
      * <code>.rplugininterop.RRef obj = 1;</code>
+     * @return The obj.
      */
     public org.jetbrains.r.rinterop.RRef getObj() {
       if (objBuilder_ == null) {
@@ -713,12 +730,16 @@ private static final long serialVersionUID = 0L;
     private long start_ ;
     /**
      * <code>int64 start = 2;</code>
+     * @return The start.
      */
+    @java.lang.Override
     public long getStart() {
       return start_;
     }
     /**
      * <code>int64 start = 2;</code>
+     * @param value The start to set.
+     * @return This builder for chaining.
      */
     public Builder setStart(long value) {
       
@@ -728,6 +749,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int64 start = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStart() {
       
@@ -739,12 +761,16 @@ private static final long serialVersionUID = 0L;
     private long end_ ;
     /**
      * <code>int64 end = 3;</code>
+     * @return The end.
      */
+    @java.lang.Override
     public long getEnd() {
       return end_;
     }
     /**
      * <code>int64 end = 3;</code>
+     * @param value The end to set.
+     * @return This builder for chaining.
      */
     public Builder setEnd(long value) {
       
@@ -754,6 +780,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int64 end = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEnd() {
       
@@ -769,7 +796,9 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bool noHidden = 4;</code>
+     * @return The noHidden.
      */
+    @java.lang.Override
     public boolean getNoHidden() {
       return noHidden_;
     }
@@ -779,6 +808,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bool noHidden = 4;</code>
+     * @param value The noHidden to set.
+     * @return This builder for chaining.
      */
     public Builder setNoHidden(boolean value) {
       
@@ -792,6 +823,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bool noHidden = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearNoHidden() {
       
@@ -803,12 +835,16 @@ private static final long serialVersionUID = 0L;
     private boolean noFunctions_ ;
     /**
      * <code>bool noFunctions = 5;</code>
+     * @return The noFunctions.
      */
+    @java.lang.Override
     public boolean getNoFunctions() {
       return noFunctions_;
     }
     /**
      * <code>bool noFunctions = 5;</code>
+     * @param value The noFunctions to set.
+     * @return This builder for chaining.
      */
     public Builder setNoFunctions(boolean value) {
       
@@ -818,6 +854,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool noFunctions = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearNoFunctions() {
       
@@ -829,12 +866,16 @@ private static final long serialVersionUID = 0L;
     private boolean onlyFunctions_ ;
     /**
      * <code>bool onlyFunctions = 6;</code>
+     * @return The onlyFunctions.
      */
+    @java.lang.Override
     public boolean getOnlyFunctions() {
       return onlyFunctions_;
     }
     /**
      * <code>bool onlyFunctions = 6;</code>
+     * @param value The onlyFunctions to set.
+     * @return This builder for chaining.
      */
     public Builder setOnlyFunctions(boolean value) {
       
@@ -844,6 +885,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool onlyFunctions = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearOnlyFunctions() {
       

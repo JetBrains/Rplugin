@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.SetValueRequest}
  */
-public  final class SetValueRequest extends
+public final class SetValueRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.SetValueRequest)
     SetValueRequestOrBuilder {
@@ -110,19 +110,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef ref_;
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
+  @java.lang.Override
   public boolean hasRef() {
     return ref_ != null;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getRef() {
     return ref_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : ref_;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getRefOrBuilder() {
     return getRef();
   }
@@ -131,19 +136,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef value_;
   /**
    * <code>.rplugininterop.RRef value = 2;</code>
+   * @return Whether the value field is set.
    */
+  @java.lang.Override
   public boolean hasValue() {
     return value_ != null;
   }
   /**
    * <code>.rplugininterop.RRef value = 2;</code>
+   * @return The value.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getValue() {
     return value_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : value_;
   }
   /**
    * <code>.rplugininterop.RRef value = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getValueOrBuilder() {
     return getValue();
   }
@@ -498,12 +508,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> refBuilder_;
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return Whether the ref field is set.
      */
     public boolean hasRef() {
       return refBuilder_ != null || ref_ != null;
     }
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return The ref.
      */
     public org.jetbrains.r.rinterop.RRef getRef() {
       if (refBuilder_ == null) {
@@ -615,12 +627,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> valueBuilder_;
     /**
      * <code>.rplugininterop.RRef value = 2;</code>
+     * @return Whether the value field is set.
      */
     public boolean hasValue() {
       return valueBuilder_ != null || value_ != null;
     }
     /**
      * <code>.rplugininterop.RRef value = 2;</code>
+     * @return The value.
      */
     public org.jetbrains.r.rinterop.RRef getValue() {
       if (valueBuilder_ == null) {

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.LineFigure}
  */
-public  final class LineFigure extends
+public final class LineFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.LineFigure)
     LineFigureOrBuilder {
@@ -120,19 +120,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.AffinePoint from_;
   /**
    * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * @return Whether the from field is set.
    */
+  @java.lang.Override
   public boolean hasFrom() {
     return from_ != null;
   }
   /**
    * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * @return The from.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePoint getFrom() {
     return from_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
   }
   /**
    * <code>.rplugininterop.AffinePoint from = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder() {
     return getFrom();
   }
@@ -141,19 +146,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.AffinePoint to_;
   /**
    * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * @return Whether the to field is set.
    */
+  @java.lang.Override
   public boolean hasTo() {
     return to_ != null;
   }
   /**
    * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * @return The to.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePoint getTo() {
     return to_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
   }
   /**
    * <code>.rplugininterop.AffinePoint to = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder() {
     return getTo();
   }
@@ -162,7 +172,9 @@ private static final long serialVersionUID = 0L;
   private int strokeIndex_;
   /**
    * <code>int32 strokeIndex = 3;</code>
+   * @return The strokeIndex.
    */
+  @java.lang.Override
   public int getStrokeIndex() {
     return strokeIndex_;
   }
@@ -171,7 +183,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 4;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -560,12 +574,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> fromBuilder_;
     /**
      * <code>.rplugininterop.AffinePoint from = 1;</code>
+     * @return Whether the from field is set.
      */
     public boolean hasFrom() {
       return fromBuilder_ != null || from_ != null;
     }
     /**
      * <code>.rplugininterop.AffinePoint from = 1;</code>
+     * @return The from.
      */
     public org.jetbrains.r.rinterop.AffinePoint getFrom() {
       if (fromBuilder_ == null) {
@@ -677,12 +693,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> toBuilder_;
     /**
      * <code>.rplugininterop.AffinePoint to = 2;</code>
+     * @return Whether the to field is set.
      */
     public boolean hasTo() {
       return toBuilder_ != null || to_ != null;
     }
     /**
      * <code>.rplugininterop.AffinePoint to = 2;</code>
+     * @return The to.
      */
     public org.jetbrains.r.rinterop.AffinePoint getTo() {
       if (toBuilder_ == null) {
@@ -792,12 +810,16 @@ private static final long serialVersionUID = 0L;
     private int strokeIndex_ ;
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return The strokeIndex.
      */
+    @java.lang.Override
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @param value The strokeIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setStrokeIndex(int value) {
       
@@ -807,6 +829,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStrokeIndex() {
       
@@ -818,12 +841,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -833,6 +860,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       

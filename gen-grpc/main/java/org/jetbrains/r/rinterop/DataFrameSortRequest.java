@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DataFrameSortRequest}
  */
-public  final class DataFrameSortRequest extends
+public final class DataFrameSortRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameSortRequest)
     DataFrameSortRequestOrBuilder {
@@ -113,18 +113,20 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 columnIndex = 1;</code>
+     * @return The columnIndex.
      */
     int getColumnIndex();
 
     /**
      * <code>bool descending = 2;</code>
+     * @return The descending.
      */
     boolean getDescending();
   }
   /**
    * Protobuf type {@code rplugininterop.DataFrameSortRequest.SortKey}
    */
-  public  static final class SortKey extends
+  public static final class SortKey extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameSortRequest.SortKey)
       SortKeyOrBuilder {
@@ -212,7 +214,9 @@ private static final long serialVersionUID = 0L;
     private int columnIndex_;
     /**
      * <code>int32 columnIndex = 1;</code>
+     * @return The columnIndex.
      */
+    @java.lang.Override
     public int getColumnIndex() {
       return columnIndex_;
     }
@@ -221,7 +225,9 @@ private static final long serialVersionUID = 0L;
     private boolean descending_;
     /**
      * <code>bool descending = 2;</code>
+     * @return The descending.
      */
+    @java.lang.Override
     public boolean getDescending() {
       return descending_;
     }
@@ -549,12 +555,16 @@ private static final long serialVersionUID = 0L;
       private int columnIndex_ ;
       /**
        * <code>int32 columnIndex = 1;</code>
+       * @return The columnIndex.
        */
+      @java.lang.Override
       public int getColumnIndex() {
         return columnIndex_;
       }
       /**
        * <code>int32 columnIndex = 1;</code>
+       * @param value The columnIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setColumnIndex(int value) {
         
@@ -564,6 +574,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 columnIndex = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearColumnIndex() {
         
@@ -575,12 +586,16 @@ private static final long serialVersionUID = 0L;
       private boolean descending_ ;
       /**
        * <code>bool descending = 2;</code>
+       * @return The descending.
        */
+      @java.lang.Override
       public boolean getDescending() {
         return descending_;
       }
       /**
        * <code>bool descending = 2;</code>
+       * @param value The descending to set.
+       * @return This builder for chaining.
        */
       public Builder setDescending(boolean value) {
         
@@ -590,6 +605,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool descending = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDescending() {
         
@@ -654,19 +670,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef ref_;
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
+  @java.lang.Override
   public boolean hasRef() {
     return ref_ != null;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getRef() {
     return ref_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : ref_;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getRefOrBuilder() {
     return getRef();
   }
@@ -676,12 +697,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameSortRequest.SortKey keys = 2;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.DataFrameSortRequest.SortKey> getKeysList() {
     return keys_;
   }
   /**
    * <code>repeated .rplugininterop.DataFrameSortRequest.SortKey keys = 2;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.DataFrameSortRequest.SortKeyOrBuilder> 
       getKeysOrBuilderList() {
     return keys_;
@@ -689,18 +712,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameSortRequest.SortKey keys = 2;</code>
    */
+  @java.lang.Override
   public int getKeysCount() {
     return keys_.size();
   }
   /**
    * <code>repeated .rplugininterop.DataFrameSortRequest.SortKey keys = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameSortRequest.SortKey getKeys(int index) {
     return keys_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.DataFrameSortRequest.SortKey keys = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameSortRequest.SortKeyOrBuilder getKeysOrBuilder(
       int index) {
     return keys_.get(index);
@@ -1083,12 +1109,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> refBuilder_;
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return Whether the ref field is set.
      */
     public boolean hasRef() {
       return refBuilder_ != null || ref_ != null;
     }
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return The ref.
      */
     public org.jetbrains.r.rinterop.RRef getRef() {
       if (refBuilder_ == null) {

@@ -9,30 +9,36 @@ public interface GraphicsRescaleStoredRequestOrBuilder extends
 
   /**
    * <code>string groupId = 1;</code>
+   * @return The groupId.
    */
   java.lang.String getGroupId();
   /**
    * <code>string groupId = 1;</code>
+   * @return The bytes for groupId.
    */
   com.google.protobuf.ByteString
       getGroupIdBytes();
 
   /**
    * <code>int32 snapshotNumber = 2;</code>
+   * @return The snapshotNumber.
    */
   int getSnapshotNumber();
 
   /**
    * <code>int32 snapshotVersion = 3;</code>
+   * @return The snapshotVersion.
    */
   int getSnapshotVersion();
 
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+   * @return Whether the newParameters field is set.
    */
   boolean hasNewParameters();
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 4;</code>
+   * @return The newParameters.
    */
   org.jetbrains.r.rinterop.ScreenParameters getNewParameters();
   /**

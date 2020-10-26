@@ -9,10 +9,12 @@ public interface SetValueRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
   boolean hasRef();
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
   org.jetbrains.r.rinterop.RRef getRef();
   /**
@@ -22,10 +24,12 @@ public interface SetValueRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef value = 2;</code>
+   * @return Whether the value field is set.
    */
   boolean hasValue();
   /**
    * <code>.rplugininterop.RRef value = 2;</code>
+   * @return The value.
    */
   org.jetbrains.r.rinterop.RRef getValue();
   /**

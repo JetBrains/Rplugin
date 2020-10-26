@@ -9,21 +9,25 @@ public interface FontOrBuilder extends
 
   /**
    * <code>string name = 1;</code>
+   * @return The name.
    */
   java.lang.String getName();
   /**
    * <code>string name = 1;</code>
+   * @return The bytes for name.
    */
   com.google.protobuf.ByteString
       getNameBytes();
 
   /**
    * <code>float size = 2;</code>
+   * @return The size.
    */
   float getSize();
 
   /**
    * <code>int32 style = 3;</code>
+   * @return The style.
    */
   int getStyle();
 }

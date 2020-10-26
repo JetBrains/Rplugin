@@ -9,20 +9,24 @@ public interface ConvertRoxygenToHTMLResponseOrBuilder extends
 
   /**
    * <code>string text = 1;</code>
+   * @return The text.
    */
   java.lang.String getText();
   /**
    * <code>string text = 1;</code>
+   * @return The bytes for text.
    */
   com.google.protobuf.ByteString
       getTextBytes();
 
   /**
    * <code>string error = 2;</code>
+   * @return The error.
    */
   java.lang.String getError();
   /**
    * <code>string error = 2;</code>
+   * @return The bytes for error.
    */
   com.google.protobuf.ByteString
       getErrorBytes();

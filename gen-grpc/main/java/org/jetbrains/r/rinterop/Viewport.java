@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Viewport}
  */
-public  final class Viewport extends
+public final class Viewport extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Viewport)
     ViewportOrBuilder {
@@ -111,7 +111,8 @@ private static final long serialVersionUID = 0L;
   private int kindCase_ = 0;
   private java.lang.Object kind_;
   public enum KindCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     FIXED(1),
     FREE(2),
     KIND_NOT_SET(0);
@@ -120,6 +121,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -149,13 +152,17 @@ private static final long serialVersionUID = 0L;
   public static final int FIXED_FIELD_NUMBER = 1;
   /**
    * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+   * @return Whether the fixed field is set.
    */
+  @java.lang.Override
   public boolean hasFixed() {
     return kindCase_ == 1;
   }
   /**
    * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+   * @return The fixed.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FixedViewport getFixed() {
     if (kindCase_ == 1) {
        return (org.jetbrains.r.rinterop.FixedViewport) kind_;
@@ -165,6 +172,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.FixedViewport fixed = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FixedViewportOrBuilder getFixedOrBuilder() {
     if (kindCase_ == 1) {
        return (org.jetbrains.r.rinterop.FixedViewport) kind_;
@@ -175,13 +183,17 @@ private static final long serialVersionUID = 0L;
   public static final int FREE_FIELD_NUMBER = 2;
   /**
    * <code>.rplugininterop.FreeViewport free = 2;</code>
+   * @return Whether the free field is set.
    */
+  @java.lang.Override
   public boolean hasFree() {
     return kindCase_ == 2;
   }
   /**
    * <code>.rplugininterop.FreeViewport free = 2;</code>
+   * @return The free.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FreeViewport getFree() {
     if (kindCase_ == 2) {
        return (org.jetbrains.r.rinterop.FreeViewport) kind_;
@@ -191,6 +203,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.FreeViewport free = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FreeViewportOrBuilder getFreeOrBuilder() {
     if (kindCase_ == 2) {
        return (org.jetbrains.r.rinterop.FreeViewport) kind_;
@@ -571,13 +584,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.FixedViewport, org.jetbrains.r.rinterop.FixedViewport.Builder, org.jetbrains.r.rinterop.FixedViewportOrBuilder> fixedBuilder_;
     /**
      * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+     * @return Whether the fixed field is set.
      */
+    @java.lang.Override
     public boolean hasFixed() {
       return kindCase_ == 1;
     }
     /**
      * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+     * @return The fixed.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.FixedViewport getFixed() {
       if (fixedBuilder_ == null) {
         if (kindCase_ == 1) {
@@ -671,6 +688,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.FixedViewport fixed = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.FixedViewportOrBuilder getFixedOrBuilder() {
       if ((kindCase_ == 1) && (fixedBuilder_ != null)) {
         return fixedBuilder_.getMessageOrBuilder();
@@ -707,13 +725,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.FreeViewport, org.jetbrains.r.rinterop.FreeViewport.Builder, org.jetbrains.r.rinterop.FreeViewportOrBuilder> freeBuilder_;
     /**
      * <code>.rplugininterop.FreeViewport free = 2;</code>
+     * @return Whether the free field is set.
      */
+    @java.lang.Override
     public boolean hasFree() {
       return kindCase_ == 2;
     }
     /**
      * <code>.rplugininterop.FreeViewport free = 2;</code>
+     * @return The free.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.FreeViewport getFree() {
       if (freeBuilder_ == null) {
         if (kindCase_ == 2) {
@@ -807,6 +829,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.FreeViewport free = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.FreeViewportOrBuilder getFreeOrBuilder() {
       if ((kindCase_ == 2) && (freeBuilder_ != null)) {
         return freeBuilder_.getMessageOrBuilder();

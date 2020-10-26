@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RasterImage}
  */
-public  final class RasterImage extends
+public final class RasterImage extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RasterImage)
     RasterImageOrBuilder {
@@ -100,7 +100,9 @@ private static final long serialVersionUID = 0L;
   private int width_;
   /**
    * <code>int32 width = 1;</code>
+   * @return The width.
    */
+  @java.lang.Override
   public int getWidth() {
     return width_;
   }
@@ -109,7 +111,9 @@ private static final long serialVersionUID = 0L;
   private int height_;
   /**
    * <code>int32 height = 2;</code>
+   * @return The height.
    */
+  @java.lang.Override
   public int getHeight() {
     return height_;
   }
@@ -122,7 +126,9 @@ private static final long serialVersionUID = 0L;
    * </pre>
    *
    * <code>bytes data = 3;</code>
+   * @return The data.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getData() {
     return data_;
   }
@@ -466,12 +472,16 @@ private static final long serialVersionUID = 0L;
     private int width_ ;
     /**
      * <code>int32 width = 1;</code>
+     * @return The width.
      */
+    @java.lang.Override
     public int getWidth() {
       return width_;
     }
     /**
      * <code>int32 width = 1;</code>
+     * @param value The width to set.
+     * @return This builder for chaining.
      */
     public Builder setWidth(int value) {
       
@@ -481,6 +491,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 width = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWidth() {
       
@@ -492,12 +503,16 @@ private static final long serialVersionUID = 0L;
     private int height_ ;
     /**
      * <code>int32 height = 2;</code>
+     * @return The height.
      */
+    @java.lang.Override
     public int getHeight() {
       return height_;
     }
     /**
      * <code>int32 height = 2;</code>
+     * @param value The height to set.
+     * @return This builder for chaining.
      */
     public Builder setHeight(int value) {
       
@@ -507,6 +522,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 height = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearHeight() {
       
@@ -522,7 +538,9 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bytes data = 3;</code>
+     * @return The data.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getData() {
       return data_;
     }
@@ -532,6 +550,8 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bytes data = 3;</code>
+     * @param value The data to set.
+     * @return This builder for chaining.
      */
     public Builder setData(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -548,6 +568,7 @@ private static final long serialVersionUID = 0L;
      * </pre>
      *
      * <code>bytes data = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearData() {
       

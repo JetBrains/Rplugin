@@ -9,10 +9,12 @@ public interface CircleFigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * @return Whether the center field is set.
    */
   boolean hasCenter();
   /**
    * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * @return The center.
    */
   org.jetbrains.r.rinterop.AffinePoint getCenter();
   /**
@@ -22,26 +24,31 @@ public interface CircleFigureOrBuilder extends
 
   /**
    * <code>float radiusScale = 2;</code>
+   * @return The radiusScale.
    */
   float getRadiusScale();
 
   /**
    * <code>float radiusOffset = 3;</code>
+   * @return The radiusOffset.
    */
   float getRadiusOffset();
 
   /**
    * <code>int32 strokeIndex = 4;</code>
+   * @return The strokeIndex.
    */
   int getStrokeIndex();
 
   /**
    * <code>int32 colorIndex = 5;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 
   /**
    * <code>int32 fillIndex = 6;</code>
+   * @return The fillIndex.
    */
   int getFillIndex();
 }

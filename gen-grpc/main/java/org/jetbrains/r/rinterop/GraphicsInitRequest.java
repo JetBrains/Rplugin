@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsInitRequest}
  */
-public  final class GraphicsInitRequest extends
+public final class GraphicsInitRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsInitRequest)
     GraphicsInitRequestOrBuilder {
@@ -102,19 +102,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.ScreenParameters screenParameters_;
   /**
    * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+   * @return Whether the screenParameters field is set.
    */
+  @java.lang.Override
   public boolean hasScreenParameters() {
     return screenParameters_ != null;
   }
   /**
    * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+   * @return The screenParameters.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParameters getScreenParameters() {
     return screenParameters_ == null ? org.jetbrains.r.rinterop.ScreenParameters.getDefaultInstance() : screenParameters_;
   }
   /**
    * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParametersOrBuilder getScreenParametersOrBuilder() {
     return getScreenParameters();
   }
@@ -123,7 +128,9 @@ private static final long serialVersionUID = 0L;
   private boolean inMemory_;
   /**
    * <code>bool inMemory = 2;</code>
+   * @return The inMemory.
    */
+  @java.lang.Override
   public boolean getInMemory() {
     return inMemory_;
   }
@@ -466,12 +473,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.ScreenParameters, org.jetbrains.r.rinterop.ScreenParameters.Builder, org.jetbrains.r.rinterop.ScreenParametersOrBuilder> screenParametersBuilder_;
     /**
      * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+     * @return Whether the screenParameters field is set.
      */
     public boolean hasScreenParameters() {
       return screenParametersBuilder_ != null || screenParameters_ != null;
     }
     /**
      * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+     * @return The screenParameters.
      */
     public org.jetbrains.r.rinterop.ScreenParameters getScreenParameters() {
       if (screenParametersBuilder_ == null) {
@@ -581,12 +590,16 @@ private static final long serialVersionUID = 0L;
     private boolean inMemory_ ;
     /**
      * <code>bool inMemory = 2;</code>
+     * @return The inMemory.
      */
+    @java.lang.Override
     public boolean getInMemory() {
       return inMemory_;
     }
     /**
      * <code>bool inMemory = 2;</code>
+     * @param value The inMemory to set.
+     * @return This builder for chaining.
      */
     public Builder setInMemory(boolean value) {
       
@@ -596,6 +609,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool inMemory = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearInMemory() {
       

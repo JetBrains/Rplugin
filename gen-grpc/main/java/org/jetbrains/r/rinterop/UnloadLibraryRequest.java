@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.UnloadLibraryRequest}
  */
-public  final class UnloadLibraryRequest extends
+public final class UnloadLibraryRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.UnloadLibraryRequest)
     UnloadLibraryRequestOrBuilder {
@@ -96,7 +96,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packageName_;
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
+  @java.lang.Override
   public java.lang.String getPackageName() {
     java.lang.Object ref = packageName_;
     if (ref instanceof java.lang.String) {
@@ -111,7 +113,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageNameBytes() {
     java.lang.Object ref = packageName_;
@@ -130,7 +134,9 @@ private static final long serialVersionUID = 0L;
   private boolean withDynamicLibrary_;
   /**
    * <code>bool withDynamicLibrary = 2;</code>
+   * @return The withDynamicLibrary.
    */
+  @java.lang.Override
   public boolean getWithDynamicLibrary() {
     return withDynamicLibrary_;
   }
@@ -458,6 +464,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packageName_ = "";
     /**
      * <code>string packageName = 1;</code>
+     * @return The packageName.
      */
     public java.lang.String getPackageName() {
       java.lang.Object ref = packageName_;
@@ -473,6 +480,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return The bytes for packageName.
      */
     public com.google.protobuf.ByteString
         getPackageNameBytes() {
@@ -489,6 +497,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageName(
         java.lang.String value) {
@@ -502,6 +512,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageName() {
       
@@ -511,6 +522,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The bytes for packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNameBytes(
         com.google.protobuf.ByteString value) {
@@ -527,12 +540,16 @@ private static final long serialVersionUID = 0L;
     private boolean withDynamicLibrary_ ;
     /**
      * <code>bool withDynamicLibrary = 2;</code>
+     * @return The withDynamicLibrary.
      */
+    @java.lang.Override
     public boolean getWithDynamicLibrary() {
       return withDynamicLibrary_;
     }
     /**
      * <code>bool withDynamicLibrary = 2;</code>
+     * @param value The withDynamicLibrary to set.
+     * @return This builder for chaining.
      */
     public Builder setWithDynamicLibrary(boolean value) {
       
@@ -542,6 +559,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool withDynamicLibrary = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWithDynamicLibrary() {
       

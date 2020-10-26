@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.HttpdResponse}
  */
-public  final class HttpdResponse extends
+public final class HttpdResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.HttpdResponse)
     HttpdResponseOrBuilder {
@@ -103,7 +103,9 @@ private static final long serialVersionUID = 0L;
   private boolean success_;
   /**
    * <code>bool success = 1;</code>
+   * @return The success.
    */
+  @java.lang.Override
   public boolean getSuccess() {
     return success_;
   }
@@ -112,7 +114,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object content_;
   /**
    * <code>string content = 2;</code>
+   * @return The content.
    */
+  @java.lang.Override
   public java.lang.String getContent() {
     java.lang.Object ref = content_;
     if (ref instanceof java.lang.String) {
@@ -127,7 +131,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string content = 2;</code>
+   * @return The bytes for content.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getContentBytes() {
     java.lang.Object ref = content_;
@@ -146,7 +152,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object url_;
   /**
    * <code>string url = 3;</code>
+   * @return The url.
    */
+  @java.lang.Override
   public java.lang.String getUrl() {
     java.lang.Object ref = url_;
     if (ref instanceof java.lang.String) {
@@ -161,7 +169,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string url = 3;</code>
+   * @return The bytes for url.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getUrlBytes() {
     java.lang.Object ref = url_;
@@ -516,12 +526,16 @@ private static final long serialVersionUID = 0L;
     private boolean success_ ;
     /**
      * <code>bool success = 1;</code>
+     * @return The success.
      */
+    @java.lang.Override
     public boolean getSuccess() {
       return success_;
     }
     /**
      * <code>bool success = 1;</code>
+     * @param value The success to set.
+     * @return This builder for chaining.
      */
     public Builder setSuccess(boolean value) {
       
@@ -531,6 +545,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool success = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSuccess() {
       
@@ -542,6 +557,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object content_ = "";
     /**
      * <code>string content = 2;</code>
+     * @return The content.
      */
     public java.lang.String getContent() {
       java.lang.Object ref = content_;
@@ -557,6 +573,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string content = 2;</code>
+     * @return The bytes for content.
      */
     public com.google.protobuf.ByteString
         getContentBytes() {
@@ -573,6 +590,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string content = 2;</code>
+     * @param value The content to set.
+     * @return This builder for chaining.
      */
     public Builder setContent(
         java.lang.String value) {
@@ -586,6 +605,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string content = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearContent() {
       
@@ -595,6 +615,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string content = 2;</code>
+     * @param value The bytes for content to set.
+     * @return This builder for chaining.
      */
     public Builder setContentBytes(
         com.google.protobuf.ByteString value) {
@@ -611,6 +633,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object url_ = "";
     /**
      * <code>string url = 3;</code>
+     * @return The url.
      */
     public java.lang.String getUrl() {
       java.lang.Object ref = url_;
@@ -626,6 +649,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string url = 3;</code>
+     * @return The bytes for url.
      */
     public com.google.protobuf.ByteString
         getUrlBytes() {
@@ -642,6 +666,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string url = 3;</code>
+     * @param value The url to set.
+     * @return This builder for chaining.
      */
     public Builder setUrl(
         java.lang.String value) {
@@ -655,6 +681,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string url = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearUrl() {
       
@@ -664,6 +691,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string url = 3;</code>
+     * @param value The bytes for url to set.
+     * @return This builder for chaining.
      */
     public Builder setUrlBytes(
         com.google.protobuf.ByteString value) {

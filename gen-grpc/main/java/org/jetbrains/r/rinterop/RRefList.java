@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RRefList}
  */
-public  final class RRefList extends
+public final class RRefList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RRefList)
     RRefListOrBuilder {
@@ -99,12 +99,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RRef refs = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.RRef> getRefsList() {
     return refs_;
   }
   /**
    * <code>repeated .rplugininterop.RRef refs = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.RRefOrBuilder> 
       getRefsOrBuilderList() {
     return refs_;
@@ -112,18 +114,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RRef refs = 1;</code>
    */
+  @java.lang.Override
   public int getRefsCount() {
     return refs_.size();
   }
   /**
    * <code>repeated .rplugininterop.RRef refs = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getRefs(int index) {
     return refs_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.RRef refs = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getRefsOrBuilder(
       int index) {
     return refs_.get(index);

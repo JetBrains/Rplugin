@@ -9,10 +9,12 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return Whether the image field is set.
    */
   boolean hasImage();
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return The image.
    */
   org.jetbrains.r.rinterop.RasterImage getImage();
   /**
@@ -22,10 +24,12 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.AffinePoint from = 2;</code>
+   * @return Whether the from field is set.
    */
   boolean hasFrom();
   /**
    * <code>.rplugininterop.AffinePoint from = 2;</code>
+   * @return The from.
    */
   org.jetbrains.r.rinterop.AffinePoint getFrom();
   /**
@@ -35,10 +39,12 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.AffinePoint to = 3;</code>
+   * @return Whether the to field is set.
    */
   boolean hasTo();
   /**
    * <code>.rplugininterop.AffinePoint to = 3;</code>
+   * @return The to.
    */
   org.jetbrains.r.rinterop.AffinePoint getTo();
   /**
@@ -48,11 +54,13 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>float angle = 4;</code>
+   * @return The angle.
    */
   float getAngle();
 
   /**
    * <code>bool interpolate = 5;</code>
+   * @return The interpolate.
    */
   boolean getInterpolate();
 }

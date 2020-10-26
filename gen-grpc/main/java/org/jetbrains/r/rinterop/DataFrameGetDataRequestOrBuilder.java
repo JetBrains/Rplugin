@@ -9,10 +9,12 @@ public interface DataFrameGetDataRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
   boolean hasRef();
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
   org.jetbrains.r.rinterop.RRef getRef();
   /**
@@ -22,11 +24,13 @@ public interface DataFrameGetDataRequestOrBuilder extends
 
   /**
    * <code>int32 start = 2;</code>
+   * @return The start.
    */
   int getStart();
 
   /**
    * <code>int32 end = 3;</code>
+   * @return The end.
    */
   int getEnd();
 }

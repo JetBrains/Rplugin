@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ExceptionInfo}
  */
-public  final class ExceptionInfo extends
+public final class ExceptionInfo extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ExceptionInfo)
     ExceptionInfoOrBuilder {
@@ -131,7 +131,8 @@ private static final long serialVersionUID = 0L;
   private int detailsCase_ = 0;
   private java.lang.Object details_;
   public enum DetailsCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     SIMPLEERROR(3),
     INTERRUPTED(4),
     PACKAGENOTFOUND(5),
@@ -141,6 +142,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -172,7 +175,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object message_;
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
+  @java.lang.Override
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
@@ -187,7 +192,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageBytes() {
     java.lang.Object ref = message_;
@@ -206,7 +213,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object call_;
   /**
    * <code>string call = 2;</code>
+   * @return The call.
    */
+  @java.lang.Override
   public java.lang.String getCall() {
     java.lang.Object ref = call_;
     if (ref instanceof java.lang.String) {
@@ -221,7 +230,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string call = 2;</code>
+   * @return The bytes for call.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getCallBytes() {
     java.lang.Object ref = call_;
@@ -239,13 +250,17 @@ private static final long serialVersionUID = 0L;
   public static final int SIMPLEERROR_FIELD_NUMBER = 3;
   /**
    * <code>.google.protobuf.Empty simpleError = 3;</code>
+   * @return Whether the simpleError field is set.
    */
+  @java.lang.Override
   public boolean hasSimpleError() {
     return detailsCase_ == 3;
   }
   /**
    * <code>.google.protobuf.Empty simpleError = 3;</code>
+   * @return The simpleError.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getSimpleError() {
     if (detailsCase_ == 3) {
        return (com.google.protobuf.Empty) details_;
@@ -255,6 +270,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty simpleError = 3;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getSimpleErrorOrBuilder() {
     if (detailsCase_ == 3) {
        return (com.google.protobuf.Empty) details_;
@@ -265,13 +281,17 @@ private static final long serialVersionUID = 0L;
   public static final int INTERRUPTED_FIELD_NUMBER = 4;
   /**
    * <code>.google.protobuf.Empty interrupted = 4;</code>
+   * @return Whether the interrupted field is set.
    */
+  @java.lang.Override
   public boolean hasInterrupted() {
     return detailsCase_ == 4;
   }
   /**
    * <code>.google.protobuf.Empty interrupted = 4;</code>
+   * @return The interrupted.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getInterrupted() {
     if (detailsCase_ == 4) {
        return (com.google.protobuf.Empty) details_;
@@ -281,6 +301,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty interrupted = 4;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getInterruptedOrBuilder() {
     if (detailsCase_ == 4) {
        return (com.google.protobuf.Empty) details_;
@@ -291,6 +312,7 @@ private static final long serialVersionUID = 0L;
   public static final int PACKAGENOTFOUND_FIELD_NUMBER = 5;
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return The packageNotFound.
    */
   public java.lang.String getPackageNotFound() {
     java.lang.Object ref = "";
@@ -311,6 +333,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return The bytes for packageNotFound.
    */
   public com.google.protobuf.ByteString
       getPackageNotFoundBytes() {
@@ -760,6 +783,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object message_ = "";
     /**
      * <code>string message = 1;</code>
+     * @return The message.
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -775,6 +799,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -791,6 +816,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -804,6 +831,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessage() {
       
@@ -813,6 +841,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -829,6 +859,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object call_ = "";
     /**
      * <code>string call = 2;</code>
+     * @return The call.
      */
     public java.lang.String getCall() {
       java.lang.Object ref = call_;
@@ -844,6 +875,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string call = 2;</code>
+     * @return The bytes for call.
      */
     public com.google.protobuf.ByteString
         getCallBytes() {
@@ -860,6 +892,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string call = 2;</code>
+     * @param value The call to set.
+     * @return This builder for chaining.
      */
     public Builder setCall(
         java.lang.String value) {
@@ -873,6 +907,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string call = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCall() {
       
@@ -882,6 +917,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string call = 2;</code>
+     * @param value The bytes for call to set.
+     * @return This builder for chaining.
      */
     public Builder setCallBytes(
         com.google.protobuf.ByteString value) {
@@ -899,13 +936,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> simpleErrorBuilder_;
     /**
      * <code>.google.protobuf.Empty simpleError = 3;</code>
+     * @return Whether the simpleError field is set.
      */
+    @java.lang.Override
     public boolean hasSimpleError() {
       return detailsCase_ == 3;
     }
     /**
      * <code>.google.protobuf.Empty simpleError = 3;</code>
+     * @return The simpleError.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getSimpleError() {
       if (simpleErrorBuilder_ == null) {
         if (detailsCase_ == 3) {
@@ -999,6 +1040,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty simpleError = 3;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getSimpleErrorOrBuilder() {
       if ((detailsCase_ == 3) && (simpleErrorBuilder_ != null)) {
         return simpleErrorBuilder_.getMessageOrBuilder();
@@ -1035,13 +1077,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> interruptedBuilder_;
     /**
      * <code>.google.protobuf.Empty interrupted = 4;</code>
+     * @return Whether the interrupted field is set.
      */
+    @java.lang.Override
     public boolean hasInterrupted() {
       return detailsCase_ == 4;
     }
     /**
      * <code>.google.protobuf.Empty interrupted = 4;</code>
+     * @return The interrupted.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getInterrupted() {
       if (interruptedBuilder_ == null) {
         if (detailsCase_ == 4) {
@@ -1135,6 +1181,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty interrupted = 4;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getInterruptedOrBuilder() {
       if ((detailsCase_ == 4) && (interruptedBuilder_ != null)) {
         return interruptedBuilder_.getMessageOrBuilder();
@@ -1169,7 +1216,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string packageNotFound = 5;</code>
+     * @return The packageNotFound.
      */
+    @java.lang.Override
     public java.lang.String getPackageNotFound() {
       java.lang.Object ref = "";
       if (detailsCase_ == 5) {
@@ -1189,7 +1238,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageNotFound = 5;</code>
+     * @return The bytes for packageNotFound.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPackageNotFoundBytes() {
       java.lang.Object ref = "";
@@ -1210,6 +1261,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageNotFound = 5;</code>
+     * @param value The packageNotFound to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNotFound(
         java.lang.String value) {
@@ -1223,6 +1276,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageNotFound = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageNotFound() {
       if (detailsCase_ == 5) {
@@ -1234,6 +1288,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageNotFound = 5;</code>
+     * @param value The bytes for packageNotFound to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNotFoundBytes(
         com.google.protobuf.ByteString value) {

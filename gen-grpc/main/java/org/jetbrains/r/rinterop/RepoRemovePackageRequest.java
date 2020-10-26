@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RepoRemovePackageRequest}
  */
-public  final class RepoRemovePackageRequest extends
+public final class RepoRemovePackageRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RepoRemovePackageRequest)
     RepoRemovePackageRequestOrBuilder {
@@ -98,7 +98,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packageName_;
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
+  @java.lang.Override
   public java.lang.String getPackageName() {
     java.lang.Object ref = packageName_;
     if (ref instanceof java.lang.String) {
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageNameBytes() {
     java.lang.Object ref = packageName_;
@@ -132,7 +136,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object libraryPath_;
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The libraryPath.
    */
+  @java.lang.Override
   public java.lang.String getLibraryPath() {
     java.lang.Object ref = libraryPath_;
     if (ref instanceof java.lang.String) {
@@ -147,7 +153,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string libraryPath = 2;</code>
+   * @return The bytes for libraryPath.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getLibraryPathBytes() {
     java.lang.Object ref = libraryPath_;
@@ -484,6 +492,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packageName_ = "";
     /**
      * <code>string packageName = 1;</code>
+     * @return The packageName.
      */
     public java.lang.String getPackageName() {
       java.lang.Object ref = packageName_;
@@ -499,6 +508,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return The bytes for packageName.
      */
     public com.google.protobuf.ByteString
         getPackageNameBytes() {
@@ -515,6 +525,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageName(
         java.lang.String value) {
@@ -528,6 +540,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageName() {
       
@@ -537,6 +550,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The bytes for packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNameBytes(
         com.google.protobuf.ByteString value) {
@@ -553,6 +568,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object libraryPath_ = "";
     /**
      * <code>string libraryPath = 2;</code>
+     * @return The libraryPath.
      */
     public java.lang.String getLibraryPath() {
       java.lang.Object ref = libraryPath_;
@@ -568,6 +584,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @return The bytes for libraryPath.
      */
     public com.google.protobuf.ByteString
         getLibraryPathBytes() {
@@ -584,6 +601,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @param value The libraryPath to set.
+     * @return This builder for chaining.
      */
     public Builder setLibraryPath(
         java.lang.String value) {
@@ -597,6 +616,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLibraryPath() {
       
@@ -606,6 +626,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string libraryPath = 2;</code>
+     * @param value The bytes for libraryPath to set.
+     * @return This builder for chaining.
      */
     public Builder setLibraryPathBytes(
         com.google.protobuf.ByteString value) {
