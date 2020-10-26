@@ -10,18 +10,17 @@ import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo.isWindows
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.ui.ColorUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.editor.completion.RLookupElement
+import org.jetbrains.r.highlighting.DOC_COMMENT
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
@@ -321,14 +320,9 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
         documentation.delete(horizontalLineIndex, documentation.length)
       }
 
-      val documentationBackgroundColor = ColorUtil.darker(getEditorBackgroundColor(), 1)
-      documentation.insert(0, "<div style=\"background:${getHexFromColor(documentationBackgroundColor)};padding:5px\"")
+      val documentationColor = getHexFromColor(DOC_COMMENT.defaultAttributes.foregroundColor)
+      documentation.insert(0, "<div style=\"color:${documentationColor};padding:5px\"")
       documentation.insert(documentation.length, "</div>")
-    }
-
-    private fun getEditorBackgroundColor(): Color {
-      val colorsScheme = EditorColorsManager.getInstance().globalScheme
-      return colorsScheme.defaultBackground
     }
 
     fun getHexFromColor(color: Color): String {
