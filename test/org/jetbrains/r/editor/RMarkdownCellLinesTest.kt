@@ -266,8 +266,39 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       }
     }
 
-    assertCodeCells("insert code cell start") {
-      fixture.type("```{r}")
+    assertCodeCells("insert ```") {
+      fixture.type("```")
+      // actually it types ```<caret>`,
+      // ``` is valid start of cell, but ```` is invalid and ignored
+      // so cell added and removed
+      markers {
+        marker(MARKDOWN, 0, 36)
+      }
+      intervals {
+        interval(MARKDOWN, 0..2)
+      }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..2)
+        }
+        after {
+          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 1..2)
+        }
+      }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..0)
+          interval(MARKDOWN, 1..2)
+        }
+        after {
+          interval(MARKDOWN, 0..2)
+        }
+      }
+    }
+
+    assertCodeCells("complete start of the cell to ```{r}") {
+      fixture.type("{r}")
       markers {
         marker(MARKDOWN, 0, 16)
         marker(MARKDOWN, 16, 23)
@@ -285,28 +316,9 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
           interval(MARKDOWN, 1..2)
         }
       }
-      // may be bug here
-      intervalListenerCall(0) {
-        before {
-          interval(MARKDOWN, 0..0)
-          interval(MARKDOWN, 1..2)
-        }
-        after {
-          interval(MARKDOWN, 0..2)
-        }
-      }
-      intervalListenerCall(0) {
-        before {
-          interval(MARKDOWN, 0..2)
-        }
-        after {
-          interval(MARKDOWN, 0..0)
-          interval(MARKDOWN, 1..2)
-        }
-      }
     }
 
-    assertCodeCells("complete code cell") {
+    assertCodeCells("add code cell end") {
       // one ` was already typed and placed after caret
       fixture.type("``")
       markers {
