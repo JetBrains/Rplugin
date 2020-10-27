@@ -323,6 +323,10 @@ class RCompletionContributor : CompletionContributor() {
         functionDeclaration.parameterNameList.forEach { consumeParameter(it, shownNames, result) }
       }
 
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeArgument(mainCall, result)
+      }
+
       val info = originalFile.runtimeInfo
       val mainFunctionName = when (val expression = mainCall.expression) {
         is RNamespaceAccessExpression -> expression.identifier?.name ?: return

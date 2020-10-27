@@ -744,6 +744,7 @@ You can find the source code in the following repositories:
   <extensions defaultExtensionNs="org.jetbrains.r">
     <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RShinySupportProvider"/>
     <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.RDataTableSupportProvider"/>
+    <librarySupportProvider implementation="org.jetbrains.r.codeInsight.libraries.Ggplot2SupportProvider"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDplyrTableContextManager"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RDataTableContextManager"/>
     <tableContextProvider implementation="org.jetbrains.r.codeInsight.table.RGgplotTableContextManager"/>

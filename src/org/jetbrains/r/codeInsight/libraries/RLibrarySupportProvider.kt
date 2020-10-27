@@ -15,15 +15,17 @@ interface RLibrarySupportProvider {
   /**
    * Implement this method to resolve element according to the custom logic of the library
    */
-  fun resolve(element: RPsiElement): ResolveResult?
+  fun resolve(element: RPsiElement): ResolveResult? { return null }
 
   /**
    * Implement this method to provide member access completion, i.e. completion of `member` in expression `var$member`
    */
-  fun completeMembers(receiver: RPsiElement, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet)
+  fun completeMembers(receiver: RPsiElement, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {}
 
   /**
    * Implement this method to provide library specific identifier completion
    */
-  fun completeIdentifier(element: PsiElement, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet)
+  fun completeIdentifier(element: PsiElement, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {}
+
+  fun completeArgument(context: PsiElement, completionConsumer: CompletionResultSet) {}
 }

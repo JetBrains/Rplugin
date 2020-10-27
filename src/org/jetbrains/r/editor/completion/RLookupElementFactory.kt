@@ -96,18 +96,6 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
                                            if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
   }
 
-  fun createNamedArgumentLookupElement(lookupString: String,
-                                       packageName: String? = null,
-                                       priority: Double = NAMED_ARGUMENT_PRIORITY): LookupElement {
-    val icon = AllIcons.Nodes.Parameter
-    val insertHandler = InsertHandler<LookupElement> { context, _ ->
-      val document = context.document
-      document.insertString(context.tailOffset, " = ")
-      context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
-    }
-    return createLookupElementWithPriority(RLookupElement(lookupString, true, icon, packageName = packageName, tailText = " = "),
-                                           insertHandler, priority)
-  }
 
   fun createNamespaceAccess(lookupString: String): LookupElement {
     val insertHandler = InsertHandler<LookupElement> { context, _ ->
@@ -199,6 +187,19 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
                                         priority: Double): LookupElement {
       val lookupElementWithInsertHandler = PrioritizedLookupElement.withInsertHandler(lookupElement, insertHandler)
       return PrioritizedLookupElement.withPriority(lookupElementWithInsertHandler, priority)
+    }
+
+    fun createNamedArgumentLookupElement(lookupString: String,
+                                         packageName: String? = null,
+                                         priority: Double = NAMED_ARGUMENT_PRIORITY): LookupElement {
+      val icon = AllIcons.Nodes.Parameter
+      val insertHandler = InsertHandler<LookupElement> { context, _ ->
+        val document = context.document
+        document.insertString(context.tailOffset, " = ")
+        context.editor.caretModel.moveCaretRelatively(3, 0, false, false, false)
+      }
+      return createLookupElementWithPriority(RLookupElement(lookupString, true, icon, packageName = packageName, tailText = " = "),
+                                             insertHandler, priority)
     }
 
     private val QUOTE_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
