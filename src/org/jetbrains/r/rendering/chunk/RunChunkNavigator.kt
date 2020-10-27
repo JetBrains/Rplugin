@@ -7,9 +7,12 @@ package org.jetbrains.r.rendering.chunk
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.actions.RActionUtil
@@ -49,10 +52,6 @@ internal abstract class ChunkActionBase(protected val action: AnAction): DumbAwa
     copyFrom(action)
   }
 
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = canRunChunk(e.editor)
-  }
-
   override fun actionPerformed(e: AnActionEvent) {
     val element = getElement(e) ?: return
     RActionUtil.performDelegatedAction(action, createActionEvent(e, element))
@@ -67,14 +66,24 @@ internal abstract class ChunkActionBase(protected val action: AnAction): DumbAwa
 
 
 internal class ChunkActionByElement(action: AnAction, private val element: PsiElement) : ChunkActionBase(action) {
+  override fun update(e: AnActionEvent) {
+    e.presentation.isEnabled = canRunChunk(e.editor)
+  }
+
   override fun getElement(e: AnActionEvent) = element
 }
 
 
-internal class ChunkActionByOffset(action: AnAction, private val offset: Int) : ChunkActionBase(action) {
+internal class ChunkActionByOffset(private val editor: Editor, action: AnAction, private val offset: Int) : ChunkActionBase(action) {
+  override fun update(e: AnActionEvent) {
+    e.presentation.isEnabled = canRunChunk(editor)
+  }
 
   override fun getElement(e: AnActionEvent): PsiElement? =
-    e.psiFile?.viewProvider
+    psiFile?.viewProvider
       ?.let { it.findElementAt(offset, it.baseLanguage) }
       ?.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.FENCE_LANG } }
+
+  private val psiFile: PsiFile?
+    get() = editor.project?.let { PsiDocumentManager.getInstance(it) }?.getPsiFile(editor.document)
 }

@@ -2,6 +2,7 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
@@ -117,7 +118,7 @@ private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pane
 
 private class RMarkdownCellToolbarPanel(editor: EditorImpl, offset: Int) : JPanel() {
   private val toolbar =
-    ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(offset), true)
+    ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, offset), true)
 
   init {
     isOpaque = false
@@ -127,8 +128,8 @@ private class RMarkdownCellToolbarPanel(editor: EditorImpl, offset: Int) : JPane
     toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
   }
 
-  private fun createToolbarActionGroup(offset: Int): ActionGroup {
-    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkActionByOffset(action, offset)}
+  private fun createToolbarActionGroup(editor: Editor, offset: Int): ActionGroup {
+    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkActionByOffset(editor, action, offset)}
     return DefaultActionGroup(wrapped)
   }
 }
