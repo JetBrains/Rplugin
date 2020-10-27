@@ -58,10 +58,11 @@ internal abstract class ChunkActionBase(protected val action: AnAction): DumbAwa
   }
 
   private fun createActionEvent(e: AnActionEvent, element: PsiElement): AnActionEvent =
-    AnActionEvent.createFromInputEvent(e.inputEvent, "", null,
-                                       SimpleDataContext.getSimpleContext(CODE_FENCE_DATA_KEY.name, element, e.dataContext))
+    AnActionEvent.createFromInputEvent(e.inputEvent, "", null, createContext(element, e.dataContext))
 
   protected abstract fun getElement(e: AnActionEvent): PsiElement?
+
+  protected abstract fun createContext(element: PsiElement, parentContext: DataContext): DataContext
 }
 
 
@@ -71,6 +72,9 @@ internal class ChunkActionByElement(action: AnAction, private val element: PsiEl
   }
 
   override fun getElement(e: AnActionEvent) = element
+
+  override fun createContext(element: PsiElement, parentContext: DataContext): DataContext =
+    SimpleDataContext.getSimpleContext(CODE_FENCE_DATA_KEY.name, element, parentContext)
 }
 
 
@@ -86,4 +90,10 @@ internal class ChunkActionByOffset(private val editor: Editor, action: AnAction,
 
   private val psiFile: PsiFile?
     get() = editor.project?.let { PsiDocumentManager.getInstance(it) }?.getPsiFile(editor.document)
+
+  override fun createContext(element: PsiElement, parentContext: DataContext): DataContext =
+    SimpleDataContext.getSimpleContext(mapOf(
+      CODE_FENCE_DATA_KEY.name to element,
+      CommonDataKeys.EDITOR.name to editor,
+    ), parentContext)
 }
