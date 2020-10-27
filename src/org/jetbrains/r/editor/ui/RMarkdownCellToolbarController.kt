@@ -90,7 +90,7 @@ internal class RMarkdownCellToolbarController private constructor(
     private const val isRelatedToPrecedingText: Boolean = true
 
     private fun offset(document: Document, codeLines: IntRange): Int =
-      Integer.min(document.getLineEndOffset(codeLines.first) + 1, document.textLength)
+      Integer.min(document.getLineEndOffset(codeLines.first), document.textLength)
   }
 }
 
