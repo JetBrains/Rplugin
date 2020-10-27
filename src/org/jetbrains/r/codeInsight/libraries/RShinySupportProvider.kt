@@ -112,14 +112,14 @@ class RShinySupportProvider : RLibrarySupportProvider {
   }
 
   private fun addCompletionForTag(tagName: String, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {
-    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("style"))
-    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("id"))
-    completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement("class"))
+    completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("style"))
+    completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("id"))
+    completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement("class"))
 
     val customAttributes = SHINY_TAGS_ATTRIBUTES[tagName]
     if (customAttributes != null) {
       for (customAttribute in customAttributes) {
-        completionConsumer.consume(lookupElementFactory.createNamedArgumentLookupElement(customAttribute))
+        completionConsumer.consume(RLookupElementFactory.createNamedArgumentLookupElement(customAttribute))
       }
     }
   }

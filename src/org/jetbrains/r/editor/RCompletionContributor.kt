@@ -308,7 +308,7 @@ class RCompletionContributor : CompletionContributor() {
 
     private fun consumeParameter(parameterName: String, shownNames: MutableSet<String>, result: CompletionResultSet) {
       if (shownNames.add(parameterName)) {
-        result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(parameterName))
+        result.consume(RLookupElementFactory.createNamedArgumentLookupElement(parameterName))
       }
     }
 
@@ -454,7 +454,7 @@ class RCompletionContributor : CompletionContributor() {
                                               runtimeInfo: RConsoleRuntimeInfo): Boolean {
           runtimeInfo.loadS4ClassInfoByClassName(className)?.let { info ->
             info.slots.forEach {
-              result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
+              result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
             return true
           }
@@ -466,7 +466,7 @@ class RCompletionContributor : CompletionContributor() {
                                              result: CompletionResultSet): Boolean {
           RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
             RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
-              result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
+              result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
             return true
           }
