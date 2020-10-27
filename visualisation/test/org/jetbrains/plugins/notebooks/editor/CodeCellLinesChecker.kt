@@ -14,7 +14,7 @@ class CodeCellLinesChecker(private val description: String,
 
   inner class MarkersSetter {
     init {
-      markers = markers ?: mutableListOf()
+      markers = mutableListOf()
     }
 
     fun marker(cellType: NotebookCellLines.CellType, offset: Int, length: Int) {
@@ -26,6 +26,7 @@ class CodeCellLinesChecker(private val description: String,
   fun markers(startOffset: Int = 0, startOrdinal: Int = 0, handler: MarkersSetter.() -> Unit) {
     markersStartOffset = startOffset
     markersStartOrdinal = startOrdinal
+    check(markers == null) { "markers{} section defined twice" }
     MarkersSetter().handler()
   }
 
@@ -37,10 +38,9 @@ class CodeCellLinesChecker(private val description: String,
 
   fun intervals(startLine: Int = 0, startOrdinal: Int = 0, handler: IntervalsSetter.() -> Unit) {
     intervalsStartLine = startLine
-    (intervals ?: mutableListOf()).let {
-      intervals = it
-      IntervalsSetter(it, startOrdinal).handler()
-    }
+    check(intervals == null) { "intervals{} section defined twice" }
+    intervals = mutableListOf()
+    IntervalsSetter(intervals!!, startOrdinal).handler()
   }
 
   class IntervalListenerCalls(
@@ -79,13 +79,14 @@ class CodeCellLinesChecker(private val description: String,
       handler()
     }
     catch (err: Throwable) {
-      try {
-        err.addSuppressed(Throwable("Document is: ${editorGetter().prettyText}"))
-      }
-      catch (ignored: Throwable) {
-        // Nothing.
-      }
-      throw err
+      val message =
+        try {
+          "$err: ${err.message}\nDocument is: ${editorGetter().prettyText}"
+        }
+        catch (ignored: Throwable) {
+          throw err
+        }
+      throw IllegalStateException(message, err)
     }
     finally {
       codeCellLines.intervalListeners.removeListener(intervalListener)
@@ -95,18 +96,19 @@ class CodeCellLinesChecker(private val description: String,
 
     for (attempt in 0..1) {
       val descr = """
-        $description${if (attempt > 0) " (repeat to check idempotence)" else ""}
-        Document before: $prettyDocumentTextBefore
-        Document after: $prettyDocumentTextAfter
-        """.trimIndent()
+        |||$description${if (attempt > 0) " (repeat to check idempotence)" else ""}
+        |||Document before: $prettyDocumentTextBefore
+        |||Document after: $prettyDocumentTextAfter
+        """.trimMargin("|||")
+
       markers.let { markers ->
         assertThat(codeCellLines.markersIterator(markersStartOffset).asSequence().toList())
-          .describedAs(descr)
+          .describedAs("Markers: $descr")
           .isEqualTo(markers)
       }
       intervals?.let { intervals ->
         assertThat(codeCellLines.intervalsIterator(intervalsStartLine).asSequence().toList())
-          .describedAs(descr)
+          .describedAs("Intervals: $descr")
           .isEqualTo(intervals)
       }
     }
@@ -124,10 +126,10 @@ class CodeCellLinesChecker(private val description: String,
 
     assertThat(actualIntervalListenerCalls.prettyListeners())
       .describedAs("""
-        $description (calls of IntervalListener)
-        Document before: $prettyDocumentTextBefore
-        Document after: $prettyDocumentTextAfter
-        """.trimIndent())
+        |||Calls of IntervalListener: $description
+        |||Document before: $prettyDocumentTextBefore
+        |||Document after: $prettyDocumentTextAfter
+        """.trimMargin("|||"))
       .isEqualTo(expectedIntervalListenerCalls.prettyListeners())
   }
 }

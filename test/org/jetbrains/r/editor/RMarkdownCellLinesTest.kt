@@ -176,6 +176,14 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
           interval(MARKDOWN, 0..0)
         }
       }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..0)
+        }
+        after {
+          interval(MARKDOWN, 0..1)
+        }
+      }
     }
 
     assertCodeCells("remove all text") {
@@ -219,6 +227,22 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
         }
         after {
           interval(MARKDOWN, 0..0)
+        }
+      }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..0)
+        }
+        after {
+          interval(MARKDOWN, 0..1)
+        }
+      }
+      intervalListenerCall(0) {
+        before {
+          interval(MARKDOWN, 0..1)
+        }
+        after {
+          interval(MARKDOWN, 0..2)
         }
       }
       intervalListenerCall(0) {

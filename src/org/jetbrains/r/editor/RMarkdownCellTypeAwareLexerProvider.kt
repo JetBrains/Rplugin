@@ -11,6 +11,8 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellTypeAwareLexerProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RMarkdownCellTypeAwareLexerProvider : NotebookCellTypeAwareLexerProvider {
+  override val longestTokenLength: Int = 0
+
   override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
 
   override fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
