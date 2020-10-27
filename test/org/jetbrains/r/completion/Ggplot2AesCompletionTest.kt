@@ -44,6 +44,16 @@ class Ggplot2AesCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testInStatContourFilled() {
+    checkCompletion(
+      """
+        stat_contour_filled(aes(fi<caret>))
+      """.trimIndent(),
+      listOf("fill"),
+      listOf()
+    )
+  }
+
   private fun checkCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissing: List<String>) {
     myFixture.configureByText("a.R", text)
     val result = myFixture.completeBasic()

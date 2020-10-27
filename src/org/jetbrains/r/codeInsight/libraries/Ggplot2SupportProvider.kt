@@ -65,7 +65,7 @@ class Ggplot2SupportProvider : RLibrarySupportProvider {
       "geom_smooth" to listOf("alpha", "colour", "fill", "group", "linetype", "size", "weight", "ymax", "ymin"), // https://ggplot2.tidyverse.org/reference/geom_smooth.html
       "geom_text" to listOf("label", "alpha", "angle", "colour", "family", "fontface", "group", "hjust", "lineheight", "size", "vjust"), // https://ggplot2.tidyverse.org/reference/geom_text.html
       "stat_contour" to listOf("z", "group", "order"), // https://ggplot2.tidyverse.org/reference/geom_contour.html
-      "stat_contour_filled()" to listOf("z", "fill", "group", "order"), // https://ggplot2.tidyverse.org/reference/geom_contour.html
+      "stat_contour_filled" to listOf("z", "fill", "group", "order"), // https://ggplot2.tidyverse.org/reference/geom_contour.html
       null to listOf("size", "stroke")
     )
   }
