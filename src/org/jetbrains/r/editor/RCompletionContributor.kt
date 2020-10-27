@@ -233,7 +233,8 @@ class RCompletionContributor : CompletionContributor() {
       }
 
       RPackageCompletionUtil.addPackageCompletion(position, result)
-      addNamedArgumentsCompletion(originalFile, parent, result)
+      addNamedArgumentsCompletion(position, result)
+      addArgumentValueCompletion(position, result)
       val prefix = position.name?.let { StringUtil.trimEnd(it, CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED) } ?: ""
       RPackageCompletionUtil.addCompletionFromIndices(project, RSearchScopeUtil.getScope(originalFile),
                                                       parameters.originalFile, prefix, shownNames, result, elementFactory)
@@ -309,11 +310,12 @@ class RCompletionContributor : CompletionContributor() {
 
     private fun consumeParameter(parameterName: String, shownNames: MutableSet<String>, result: CompletionResultSet) {
       if (shownNames.add(parameterName)) {
-        result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(parameterName))
+        result.consume(RLookupElementFactory.createNamedArgumentLookupElement(parameterName))
       }
     }
 
-    private fun addNamedArgumentsCompletion(originalFile: PsiFile, parent: PsiElement?, result: CompletionResultSet) {
+    private fun addNamedArgumentsCompletion(position: PsiElement, result: CompletionResultSet) {
+      val parent = position.parent
       if (parent !is RArgumentList && parent !is RNamedArgument) return
 
       val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
@@ -324,7 +326,11 @@ class RCompletionContributor : CompletionContributor() {
         functionDeclaration.parameterNameList.forEach { consumeParameter(it, shownNames, result) }
       }
 
-      val info = originalFile.runtimeInfo
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeArgumentName(mainCall, result)
+      }
+
+      val info = position.containingFile.originalFile.runtimeInfo
       val mainFunctionName = when (val expression = mainCall.expression) {
         is RNamespaceAccessExpression -> expression.identifier?.name ?: return
         is RIdentifierExpression -> expression.name
@@ -449,7 +455,7 @@ class RCompletionContributor : CompletionContributor() {
                                               runtimeInfo: RConsoleRuntimeInfo): Boolean {
           runtimeInfo.loadS4ClassInfoByClassName(className)?.let { info ->
             info.slots.forEach {
-              result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
+              result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
             return true
           }
@@ -461,7 +467,7 @@ class RCompletionContributor : CompletionContributor() {
                                              result: CompletionResultSet): Boolean {
           RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
             RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
-              result.consume(rCompletionElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
+              result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
             return true
           }
@@ -539,6 +545,7 @@ class RCompletionContributor : CompletionContributor() {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
       addTableLiterals(stringLiteral, parameters, result)
       addFilePathCompletion(parameters, stringLiteral, result)
+      addArgumentValueCompletion(stringLiteral, result)
     }
 
     private fun addTableLiterals(stringLiteral: RStringLiteralExpression,
@@ -668,6 +675,17 @@ class RCompletionContributor : CompletionContributor() {
       }
     }
 
+    private fun addArgumentValueCompletion(position: PsiElement, result: CompletionResultSet) {
+      val parent = position.parent
+      if (parent !is RArgumentList && parent !is RNamedArgument) return
+      if (parent is RNamedArgument && parent.assignedValue != position) return
+      val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
+
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeArgumentValue(position, mainCall, result)
+      }
+    }
+
     private val escape = StringUtil.escaper(true, "\"")::`fun`
     private val STRING_LITERAL_INSERT_HANDLER = InsertHandler<LookupElement> { insertHandlerContext, _ ->
       insertHandlerContext.file.findElementAt(insertHandlerContext.editor.caretModel.offset)?.let { element ->
@@ -680,7 +698,7 @@ class RCompletionContributor : CompletionContributor() {
 private interface RStaticRuntimeCompletionProvider<T : PsiElement> {
 
   /**
-     * @return true if the required lookup elements have already been found. False otherwise
+   * @return true if the required lookup elements have already been found. False otherwise
    */
   fun addCompletionFromRuntime(psiElement: T,
                                shownNames: MutableSet<String>,
