@@ -3,6 +3,9 @@ package org.jetbrains.plugins.notebooks.editor
 import com.intellij.lang.Language
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.diagnostic.Attachment
+import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -11,6 +14,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
+import com.intellij.util.containers.addIfNotNull
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -57,8 +61,10 @@ class NotebookCellLines private constructor(private val document: Document,
 
   interface IntervalListener : EventListener {
     /**
-     * Called when amount of intervals is changed, or types of some intervals are changed.
-     * It is NOT called if lines of some intervals are changed.
+     * Called when amount of intervals is changed, or types of some intervals are changed,
+     * or line counts of intervals is changed.
+     *
+     * Intervals that were just shifted are included neither [oldIntervals], nor in [newIntervals].
      *
      * Intervals in the lists are valid only until the document changes. Check their validity
      * when postponing handling of intervals.
@@ -107,171 +113,221 @@ class NotebookCellLines private constructor(private val document: Document,
   private fun initialize(it: AsyncPromise<NotebookCellLines>) {
     runReadAction {
       document.addDocumentListener(documentListener)
-      markerSequence(document.immutableCharSequence).toCollection(markerCache)
-      val interestingMarkerSequence: Sequence<Pair<CellType, Int>> = markerCache
-        .asSequence()
-        .map { it.type to document.getLineNumber(it.offset) }
-      updateIntervalCache(interestingMarkerSequence, document, 0, 0)
+
+      initializeEmptyLists()
     }
     it.setResult(this)
   }
 
-  private data class DocumentUpdate(
-    val document: Document,
-    val startLine: Int,
-    val startOffset: Int,
-    val endLine: Int,
-    val markerCacheCutStart: Int,
-    val markerCacheCutEndExclusive: Int
-  ) {
-    val endOffset = min(document.getLineEndOffset(endLine) + 1, document.textLength)
+  private fun initializeEmptyLists() {
+    wrapErrors(null) {
+      markerCache.addAll(markerSequence(document.immutableCharSequence, 0, 0))
+      intervalCache.addAll(adjustedMarkers(0, markerCache).asSequence().zipWithNext(::markersToInterval))
+    }
+    checkIntegrity(null)
+  }
+
+  private fun markersToInterval(a: Marker, b: Marker) =
+    Interval(a.ordinal, a.type, document.getLineNumber(a.offset)..document.getLineNumber(max(0, b.offset - 1)))
+
+  private fun shiftOffsetToMarkerStart(text: CharSequence, initialOffset: Int): Int {
+    val interestingTextAbsoluteOffset = max(0, initialOffset - cellTypeAwareLexerProvider.longestTokenLength + 1)
+    val interestingText = text.subSequence(
+      interestingTextAbsoluteOffset,
+      min(text.length, initialOffset + cellTypeAwareLexerProvider.longestTokenLength - 1)
+    )
+    return markerSequence(interestingText, 0, interestingTextAbsoluteOffset).firstOrNull()?.offset?.takeIf { it < initialOffset }
+           ?: initialOffset
   }
 
   private val documentListener = object : DocumentListener {
-    private var previousEndLine: Int = -1
-    private var previousEndOffset: Int = -1
+    private var shiftedStartOffsetBefore: Int = -1
 
     override fun beforeDocumentChange(event: DocumentEvent) {
-      val document = event.document
-      previousEndLine = document.getLineNumber(event.offset + event.oldLength)
-      previousEndOffset = document.getLineEndOffset(previousEndLine)
-    }
-
-    private fun getDocumentUpdate(event: DocumentEvent): DocumentUpdate {
-      val document = event.document
-      if (cellTypeAwareLexerProvider.shouldParseWholeFile()) {
-        val startLine = 0
-        val startOffset = 0
-        val endLine = max(0, document.lineCount - 1)
-        val markerCacheCutStart = 0
-        val markerCacheCutEndExclusive = markerCache.size
-        return DocumentUpdate(document, startLine, startOffset, endLine, markerCacheCutStart, markerCacheCutEndExclusive)
-      } else {
-        val startLine = document.getLineNumber(event.offset)
-        val startOffset = document.getLineStartOffset(startLine)
-        val endLine = document.getLineNumber(event.offset + event.newLength)
-        val markerCacheCutStart = getMarkerUpperBound(startOffset)
-        val markerCacheCutEndExclusive = getMarkerCacheCutEndExclusive(markerCacheCutStart)
-        return DocumentUpdate(document, startLine, startOffset, endLine, markerCacheCutStart, markerCacheCutEndExclusive)
+      if (!cellTypeAwareLexerProvider.shouldParseWholeFile()) {
+        shiftedStartOffsetBefore = shiftOffsetToMarkerStart(document.immutableCharSequence, event.offset)
       }
     }
 
     override fun documentChanged(event: DocumentEvent) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
-      val upd = getDocumentUpdate(event)
 
-      val oldMarkers = markerCache.subList(upd.markerCacheCutStart, upd.markerCacheCutEndExclusive).toList()
-      val newMarkers = markerSequence(document.immutableCharSequence.subSequence(upd.startOffset, upd.endOffset)).toList()
-
-      val oldIntervals =
-        intervalsIterator(upd.startLine).asSequence().takeWhile { it.lines.first <= previousEndLine }.toList()
-
-      val markersChanged = newMarkers != oldMarkers
-      val diff = event.newLength - event.oldLength
-      if (markersChanged || diff != 0) {
-        if (markersChanged) {
-          ++modificationStamp
-
-          val rest = markerCache.subList(upd.markerCacheCutEndExclusive, markerCache.size).toList()
-          markerCache.subList(upd.markerCacheCutStart, markerCache.size).clear()
-          for (marker in newMarkers) {
-            markerCache.add(marker.copy(offset = marker.offset + upd.startOffset, ordinal = markerCache.size))
-          }
-          for (marker in rest) {
-            markerCache.add(marker.copy(offset = marker.offset + diff, ordinal = markerCache.size))
-          }
-        }
-        else if (diff != 0 && upd.markerCacheCutStart < markerCache.size) {
-          val start =
-            upd.markerCacheCutStart + if (markerCache[upd.markerCacheCutStart].offset < event.offset) 1 else 0
-          for (index in start until markerCache.size) {
-            markerCache[index] = markerCache[index].let { it.copy(offset = it.offset + diff) }
-          }
-        }
-
-        if (markersChanged || event.newFragment.count { it == '\n' } != event.oldFragment.count { it == '\n' }) {
-          val intervalStartingOrdinal = max(0, upd.markerCacheCutStart - 1)
-          val interestingMarkerSequence: Sequence<Pair<CellType, Int>> = markerCache
-            .subList(intervalStartingOrdinal, markerCache.size)
-            .asSequence()
-            .map { it.type to document.getLineNumber(it.offset) }
-          updateIntervalCache(interestingMarkerSequence, document, upd.markerCacheCutStart, intervalStartingOrdinal)
-        }
-
-        notifyIntervalListenersIfNeeded(oldIntervals, upd.endLine)
+      if (cellTypeAwareLexerProvider.shouldParseWholeFile()) {
+        markerCache.clear()
+        val oldIntervals = intervalCache.toList()
+        intervalCache.clear()
+        initializeEmptyLists()
+        notifyChangedIntervals(oldIntervals, intervalCache.toList())
       }
+      else {
+        wrapErrors(event) {
+          val (firstIntervalOrdinal, markerSizeDiff, adjustedNewMarkers) = updateMarkers(
+            shiftedStartOffsetBefore = shiftedStartOffsetBefore,
+            startOffset = event.offset,
+            oldLength = event.oldLength,
+            newLength = event.newLength,
+          )
+          updateIntervals(
+            firstIntervalOrdinal = firstIntervalOrdinal,
+            markerSizeDiff = markerSizeDiff,
+            newMarkers = adjustedNewMarkers,
+          )
+        }
+      }
+
+      checkIntegrity(event)
     }
 
     override fun bulkUpdateFinished(document: Document) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
       markerCache.clear()
-      markerSequence(document.immutableCharSequence).toCollection(markerCache)
+      intervalCache.clear()
+      initializeEmptyLists()
     }
+  }
 
-    private fun notifyIntervalListenersIfNeeded(oldIntervals: List<Interval>, endLine: Int) {
-      val newIntervals =
-        (oldIntervals.firstOrNull()?.ordinal ?: 0)
-          .takeIf { it < intervalCache.size }
-          ?.let(intervalCache::listIterator)
-          ?.asSequence()
-          ?.takeWhile { it.lines.first <= endLine }
-          ?.toList()
-        ?: emptyList()
+  private fun updateMarkers(
+    shiftedStartOffsetBefore: Int,
+    startOffset: Int,
+    oldLength: Int,
+    newLength: Int,
+  ): Triple<Int, Int, List<Marker>> {
+    // The document change may cut half of a marker at the start. In such case, rewind a bit to rescan from the marker start.
+    val startDocumentOffset = min(
+      shiftedStartOffsetBefore,
+      shiftOffsetToMarkerStart(document.immutableCharSequence, startOffset)
+    )
 
-      // Sometimes (for instance, when deleting cells) there could appear non-changed, just shifted intervals at starts and ends of lists.
-      fun findTrim(oldSeq: Sequence<Interval>, newSeq: Sequence<Interval>) = oldSeq
-        .zip(newSeq)
-        .takeWhile { (old, new) ->
-          old.type == new.type
-          && old.lines.run { last - first } == new.lines.run { last - first }
+    val markerCacheCutStart = getMarkerUpperBound(startDocumentOffset)
+
+    // Also, the document change may cut half of a marker at the end. Detect that and widen the text slice if needed.
+    val endOffsetIncrement =
+      markerCache
+        .getOrNull(getMarkerUpperBound(startOffset + oldLength))
+        ?.takeIf {
+          // -1 because the document is changed until previousEndOffset excluding the end.
+          (startOffset + oldLength - it.offset - 1) in 0 until it.length
         }
-        .count()
+        ?.let { startOffset + oldLength - it.offset + it.length }
+      ?: 0
 
-      val trimRight = findTrim(
-        oldIntervals.asReversed().asSequence(),
-        newIntervals.asReversed().asSequence()
-      )
-      val trimLeft = findTrim(
-        oldIntervals.run { subList(0, size - trimRight) }.asSequence(),
-        newIntervals.run { subList(0, size - trimRight) }.asSequence()
-      )
+    val previousEndDocumentOffset = startOffset + oldLength + endOffsetIncrement
+    val endDocumentOffset = startOffset + newLength + endOffsetIncrement
 
-      if (trimRight != oldIntervals.size || trimRight != newIntervals.size) {
-        val trimmedOldIntervals = oldIntervals.run { subList(trimLeft, size - trimRight) }
-        val trimmedNewIntervals = newIntervals.run { subList(trimLeft, size - trimRight) }
-        if (trimmedOldIntervals.map { it.type } != trimmedNewIntervals.map { it.type }) {
-          intervalListeners.multicaster.segmentChanged(trimmedOldIntervals, trimmedNewIntervals)
-        }
-      }
-    }
-
-    private fun getMarkerCacheCutEndExclusive(markerCacheCutStart: Int): Int =
+    val markerCacheCutEndExclusive =
       markerCache
         .subList(markerCacheCutStart, markerCache.size)
         .withIndex()
-        .takeWhile { it.value.offset < previousEndOffset }
+        .takeWhile { it.value.offset < previousEndDocumentOffset }
         .lastOrNull()
         ?.let { markerCacheCutStart + it.index + 1 }
       ?: markerCacheCutStart
+
+    val adjustedOldMarkersSize =
+      (
+        // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
+        // A bogus interval at the start should be created in order to generate the interval above the first real marker.
+        // However, the bogus marker isn't needed if there's a marker right at the document start.
+        (if (markerCacheCutStart != 0 || markerCache.getOrNull(0)?.offset != 0) 1 else 0) +
+
+        markerCacheCutEndExclusive - markerCacheCutStart
+
+        // Intervals are constructed by combining two adjacent markers. A bogus interval at the end should be created in order to
+        // generate the interval below the last marker.
+        + 1
+      )
+
+    val newMarkers = markerSequence(
+      chars = document.immutableCharSequence.subSequence(startDocumentOffset, endDocumentOffset),
+      ordinalIncrement = markerCacheCutStart,
+      offsetIncrement = startDocumentOffset,
+    ).toList()
+
+    val diff = newLength - oldLength
+    if (newMarkers != markerCache.subList(markerCacheCutStart, markerCacheCutEndExclusive)) {
+      ++modificationStamp
+
+      markerCache.substitute(markerCacheCutStart, markerCacheCutEndExclusive, newMarkers)
+      for (idx in markerCacheCutStart + newMarkers.size until markerCache.size) {
+        markerCache[idx] = markerCache[idx].let { it.copy(offset = it.offset + diff, ordinal = idx) }
+      }
+    }
+    else if (diff != 0 && markerCacheCutStart < markerCache.size) {
+      // No markers changed, but some markers might have shifted. Shifting all markers after the document event offset
+      // (not after the adjusted offset).
+      val start = markerCacheCutStart + if (markerCache[markerCacheCutStart].offset < startOffset) 1 else 0
+      for (index in start until markerCache.size) {
+        markerCache[index] = markerCache[index].let { it.copy(offset = it.offset + diff) }
+      }
+    }
+
+    val adjustedNewMarkers = adjustedMarkers(markerCacheCutStart, newMarkers)
+    return Triple(
+      max(0, markerCacheCutStart - if (markerCacheCutStart == 0 && markerCache.getOrNull(0)?.offset != 0) 0 else 1),
+      adjustedNewMarkers.size - adjustedOldMarkersSize,
+      adjustedNewMarkers,
+    )
   }
 
-  private fun updateIntervalCache(interestingMarkerSequence: Sequence<Pair<CellType, Int>>,
-                                  document: Document,
-                                  markerCacheCutStart: Int,
-                                  intervalStartingOrdinal: Int) {
-    val startBoundary =
-      if (markerCache.isEmpty() || markerCacheCutStart == 0 && 0 < document.getLineNumber(markerCache[0].offset))
-        sequenceOf(CellType.RAW to 0)
-      else
-        emptySequence()
-    val endBoundary = sequenceOf(CellType.RAW to document.lineCount.coerceAtLeast(1))
-    intervalCache.subList(intervalStartingOrdinal, intervalCache.size).clear()
-    intervalCache.addAll(
-      (startBoundary + interestingMarkerSequence + endBoundary)
-        .withIndex()
-        .zipWithNext { (index, current), (_, next) ->
-          Interval(intervalStartingOrdinal + index, current.first, current.second until next.second)
-        })
+  private fun adjustedMarkers(startOrdinal: Int, sublist: List<Marker>): List<Marker> = mutableListOf<Marker>().also { result ->
+    // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
+    // A bogus interval at the start should be created in order to generate the interval above the first real marker.
+    // However, the bogus marker isn't needed if there's a marker right at the document start.
+    val ephemeralStart =
+      startOrdinal == 0 &&
+      markerCache.getOrNull(0)?.offset != 0 &&
+      sublist.firstOrNull().let { it?.ordinal != 0 || it.offset != 0 }
+    result.addIfNotNull(
+      when {
+        ephemeralStart -> Marker(0, CellType.RAW, 0, 0)
+        sublist.firstOrNull()?.ordinal == 0 -> null
+        else -> markerCache.getOrNull(startOrdinal - 1)
+      })
+
+    val ordinalShift = result.firstOrNull()?.ordinal?.let { it + 1 } ?: 0
+    for ((index, marker) in sublist.withIndex()) {
+      result.add(marker.copy(ordinal = index + ordinalShift))
+    }
+
+    val lastOrdinal = (result.lastOrNull()?.ordinal ?: startOrdinal) + (if (ephemeralStart) 0 else 1)
+    result.add(
+      markerCache.getOrNull(lastOrdinal)
+      // Intervals are constructed by combining two adjacent markers. A bogus interval at the end should be created in order to
+      // generate the interval below the last marker.
+      // +1 -- later it'll be decreased back while constructing the last interval.
+      ?: Marker(lastOrdinal, CellType.RAW, document.textLength + 1, 0)
+    )
+  }
+
+  private fun updateIntervals(
+    firstIntervalOrdinal: Int,
+    markerSizeDiff: Int,
+    newMarkers: List<Marker>,
+  ) {
+    val oldIntervals = intervalCache.subList(
+      firstIntervalOrdinal,
+      // Interval is an entity between two adjacent markers. Amount of intervals is always less than amount of *adjusted* markers by one.
+      firstIntervalOrdinal + newMarkers.size - markerSizeDiff - 1,
+    ).toList()
+    val newIntervals = newMarkers.zipWithNext(::markersToInterval)
+    if (oldIntervals != newIntervals) {
+      val lineDiff =
+        (newIntervals.takeIf { it.isNotEmpty() }?.run { last().lines.last - first().lines.first + 1 } ?: 0) -
+        (oldIntervals.takeIf { it.isNotEmpty() }?.run { last().lines.last - first().lines.first + 1 } ?: 0)
+
+      intervalCache.substitute(firstIntervalOrdinal, firstIntervalOrdinal + oldIntervals.size, newIntervals)
+      for (idx in firstIntervalOrdinal + newIntervals.size until intervalCache.size) {
+        intervalCache[idx] = intervalCache[idx].let {
+          it.copy(
+            ordinal = idx,
+            lines = (it.lines.first + lineDiff)..(it.lines.last + lineDiff),
+          )
+        }
+      }
+
+      // If one marker is just converted to another one, lists will be trimmed at left by one.
+      notifyChangedIntervals(oldIntervals, newIntervals)
+    }
   }
 
   private fun getMarkerUpperBound(offset: Int): Int {
@@ -287,7 +343,30 @@ class NotebookCellLines private constructor(private val document: Document,
            ?: markerCache.size
   }
 
-  private fun markerSequence(chars: CharSequence): Sequence<Marker> = sequence {
+  private fun notifyChangedIntervals(oldIntervals: List<Interval>, newIntervals: List<Interval>) {
+    val trimLeft = oldIntervals.asSequence()
+      .zip(newIntervals.asSequence())
+      .takeWhile { (o, n) -> o == n }
+      .count()
+
+    val trimRight = oldIntervals.reversed().asSequence()
+      .zip(newIntervals.reversed().asSequence())
+      .takeWhile { (o, n) ->
+        o.type == n.type &&
+        o.lines.last - o.lines.first == n.lines.last - n.lines.first
+      }
+      .count()
+      .coerceAtMost(min(oldIntervals.size, newIntervals.size) - trimLeft)
+
+    if (oldIntervals.size != newIntervals.size || trimLeft + trimRight != oldIntervals.size) {
+      intervalListeners.multicaster.segmentChanged(
+        oldIntervals.run { subList(trimLeft, size - trimRight) },
+        newIntervals.run { subList(trimLeft, size - trimRight) },
+      )
+    }
+  }
+
+  private fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<Marker> = sequence {
     val lexer = cellTypeAwareLexerProvider.createNotebookCellTypeAwareLexer()
     lexer.start(chars, 0, chars.length)
     var ordinal = 0
@@ -295,16 +374,95 @@ class NotebookCellLines private constructor(private val document: Document,
       val tokenType = lexer.tokenType ?: break
       val cellType = cellTypeAwareLexerProvider.getCellType(tokenType)
       if (cellType != null) {
-        yield(Marker(ordinal = ordinal++, type = cellType, offset = lexer.currentPosition.offset, length = lexer.tokenText.length))
+        yield(Marker(
+          ordinal = ordinal++ + ordinalIncrement,
+          type = cellType,
+          offset = lexer.currentPosition.offset + offsetIncrement,
+          length = lexer.tokenText.length,
+        ))
       }
       lexer.advance()
     }
   }
 
+  private fun checkIntegrity(event: DocumentEvent?) {  // TODO It's expensive. Should be deleted later, or covered by a flag.
+    val problems = mutableListOf<String>()
+    for ((idx, marker) in markerCache.withIndex()) {
+      if (marker.ordinal != idx)
+        problems += "$marker: expected ordinal $idx"
+
+      if (idx < markerCache.size - 1 && marker.offset + marker.length > markerCache[idx + 1].offset)
+        problems += "$marker overlaps with ${markerCache[idx + 1]}"
+
+      if (marker.offset < 0 || marker.offset + marker.length > document.textLength)
+        problems += "$marker is out of document contents"
+
+      if (marker.length <= 0)
+        problems += "$marker length is not positive"
+    }
+
+    for ((idx, interval) in intervalCache.withIndex()) {
+      if (interval.ordinal != idx)
+        problems += "$interval: expected ordinal $idx"
+
+      if (idx < intervalCache.size - 1 && interval.lines.last + 1 != intervalCache[idx + 1].lines.first)
+        problems += "No junction between $interval and ${intervalCache[idx + 1]}"
+
+      if (idx == 0 && interval.lines.first != 0)
+        problems += "The first $interval is expected to start with line 0"
+
+      if (idx == intervalCache.size - 1 && interval.lines.last + 1 != document.lineCount.coerceAtLeast(1))
+        problems += "The last $interval is expected to end with line ${document.lineCount}"
+    }
+
+    if (problems.isNotEmpty()) {
+      LOG.error(
+        "Integrity failure: ${problems[0]}",
+        Attachment("all_errors.txt", problems.joinToString("\n")),
+        *commonErrorAttachments(event),
+      )
+    }
+  }
+
+  private fun commonErrorAttachments(event: DocumentEvent?): Array<Attachment> = listOfNotNull(
+    Attachment("all_markers.txt", markerCache.withIndex().joinToString("\n") { (idx, marker) -> "$idx: $marker" })
+      .apply { isIncluded = true },
+    Attachment("all_intervals.txt", intervalCache.withIndex().joinToString("\n") { (idx, interval) -> "$idx: $interval" })
+      .apply { isIncluded = true },
+    Attachment("document.txt", document.text)
+      .apply { isIncluded = false },
+    event?.run {
+      Attachment("event_old_fragment.txt", oldFragment.toString())
+        .apply { isIncluded = false }
+    },
+    event?.run {
+      Attachment("event_new_fragment.txt", oldFragment.toString())
+        .apply { isIncluded = false }
+    },
+    event?.run {
+      Attachment("event.txt", """
+        Start offset: $offset
+        Old length: $oldLength
+        New length: $newLength
+        """.trimIndent())
+        .apply { isIncluded = true }
+    },
+  ).toTypedArray()
+
+  private inline fun <T> wrapErrors(event: DocumentEvent?, handler: () -> T): T =
+    try {
+      handler()
+    }
+    catch (err: Throwable) {
+      err.addSuppressed(RuntimeExceptionWithAttachments("", *commonErrorAttachments(event)))
+      throw err
+    }
+
   companion object {
+    private val LOG = logger<NotebookCellLines>()
     private val map = ContainerUtil.createConcurrentWeakMap<Document, Promise<NotebookCellLines>>()
 
-    /** It's uneasy to change a registry value inside tests. */
+    /** It's uneasy to change a registry value inside tests. */   // TODO Lies! See SshX11ForwardingTest.
     @TestOnly
     var overriddenBinarySearchThreshold: Int? = null
 
@@ -328,6 +486,29 @@ class NotebookCellLines private constructor(private val document: Document,
       val document = editor.document
       val psiFile = psiDocumentManager.getPsiFile(document) ?: error("document ${document} doesn't have PSI file")
       return get(document, psiFile.language)
+    }
+  }
+}
+
+private fun <T> MutableList<T>.substitute(start: Int, end: Int, pattern: List<T>) {
+  val sizeDiff = pattern.size + start - end
+  when {
+    sizeDiff == 0 -> {
+      for ((idx, value) in pattern.withIndex()) {
+        this[start + idx] = value
+      }
+    }
+    sizeDiff > 0 -> {
+      addAll(start, pattern.subList(0, sizeDiff))
+      for (idx in sizeDiff until pattern.size) {
+        this[start + idx] = pattern[idx]
+      }
+    }
+    else -> {
+      subList(start, start - sizeDiff).clear()
+      for ((idx, value) in pattern.withIndex()) {
+        this[start + idx] = value
+      }
     }
   }
 }

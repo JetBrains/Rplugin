@@ -7,6 +7,7 @@ import com.intellij.psi.tree.IElementType
 private const val ID: String = "org.jetbrains.plugins.notebooks.notebookCellTypeAwareLexerProvider"
 
 interface NotebookCellTypeAwareLexerProvider {
+  val longestTokenLength: Int
 
   fun createNotebookCellTypeAwareLexer(): Lexer
 
