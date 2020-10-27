@@ -32,7 +32,9 @@ class ImageInverter(foreground: Color, background: Color) {
   }
 
   fun invert(image: BufferedImage): BufferedImage {
-    return ImageUtil.createImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also { outputImage ->
+    val width = ImageUtil.getUserWidth(image)
+    val height = ImageUtil.getUserHeight(image)
+    return ImageUtil.createImage(width, height, BufferedImage.TYPE_INT_ARGB).also { outputImage ->
       invertInPlace(image, outputImage)
     }
   }
