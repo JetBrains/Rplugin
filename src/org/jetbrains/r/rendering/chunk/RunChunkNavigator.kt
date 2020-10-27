@@ -17,7 +17,6 @@ import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.editor
-import org.jetbrains.r.actions.psiFile
 
 import java.awt.event.MouseEvent
 
