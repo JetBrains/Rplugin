@@ -26,14 +26,14 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         print(my.local.variable + 20)
       }
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         my.local.variable
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           test.R (2 usages)
+       Found usages (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
             2print(my.local.variable)
             5print(my.local.variable + 20)
     """)
@@ -49,14 +49,14 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         print(my.local.function(4, 5))
       }
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         my.local.function
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           test.R (2 usages)
+       Found usages (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
             2print(my.local.function(2, 3))
             5print(my.local.function(4, 5))
      """)
@@ -67,14 +67,14 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       base.package <- packageDescription("base")      
       dplyr.package <- package<caret>Description("dplyr")      
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         packageDescription(pkg, lib.loc = NULL, fields = NULL, drop = TRUE, encoding = "")
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           test.R (2 usages)
+       Found usages (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
             1base.package <- packageDescription("base")      
             2dplyr.package <- packageDescription("dplyr")
      """)
@@ -90,14 +90,14 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       p <- x + 10
       func(x = p)
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         x
-       Found usages (2 usages)
-        Unclassified (2 usages)
-         light_idea_test_case (2 usages)
-           (2 usages)
-           test.R (2 usages)
+       Found usages (2)
+        Unclassified (2)
+         light_idea_test_case (2)
+           (2)
+           test.R (2)
             2x + y + z
             7func(x = p)
      """)
@@ -117,19 +117,19 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
         x + y + z
       }
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         x
-       Found usages (2 usages)
-        Unclassified (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           test.R (1 usage)
+       Found usages (2)
+        Unclassified (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
             10x + y + z
-        Usage in roxygen2 documentation (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           test.R (1 usage)
+        Usage in roxygen2 documentation (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
             5#' @param x, y X and y
      """)
   }
@@ -150,19 +150,19 @@ class RFindUsagesTest  : RProcessHandlerBaseTestCase() {
       
       ba<caret>r <- function(x) { x + 42 }
     """, """
-      Usage (2 usages)
+      <root> (2)
        Variable
         bar
-       Found usages (2 usages)
-        Unclassified (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           test.R (1 usage)
+       Found usages (2)
+        Unclassified (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
             10bar(x) + y + z
-        Usage in roxygen2 documentation (1 usage)
-         light_idea_test_case (1 usage)
-           (1 usage)
-           test.R (1 usage)
+        Usage in roxygen2 documentation (1)
+         light_idea_test_case (1)
+           (1)
+           test.R (1)
             5#' @see [bar]
      """)
   }
