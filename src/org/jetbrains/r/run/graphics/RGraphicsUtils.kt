@@ -7,9 +7,11 @@ package org.jetbrains.r.run.graphics
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.ui.JreHiDpiUtil
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.r.rinterop.RInterop
 import java.awt.Dimension
+import java.awt.GraphicsConfiguration
 import java.awt.Toolkit
 import java.io.File
 import java.nio.file.Files
@@ -43,7 +45,8 @@ object RGraphicsUtils {
   const val DEFAULT_RESOLUTION = 72
   val DEFAULT_PARAMETERS = ScreenParameters(DEFAULT_DIMENSION, DEFAULT_RESOLUTION)
 
-  internal val isRetina: Boolean = SystemInfo.isMac && UIUtil.isRetina() && !ApplicationManager.getApplication().isUnitTestMode
+  internal val isHiDpi = (JreHiDpiUtil.isJreHiDPI(null as GraphicsConfiguration?) || UIUtil.isRetina()) &&
+                         !ApplicationManager.getApplication().isUnitTestMode
 
   fun createParameters(parameters: ScreenParameters?): ScreenParameters {
     return createParameters(parameters?.dimension, parameters?.resolution)
@@ -104,14 +107,14 @@ object RGraphicsUtils {
     return Toolkit.getDefaultToolkit().screenSize
   }
 
-  private fun scaleForRetina(dimension: Dimension): Dimension =
-    if (isRetina) Dimension(dimension.width * 2, dimension.height * 2) else dimension
+  private fun scaleForHiDpi(dimension: Dimension): Dimension =
+    if (isHiDpi) Dimension(dimension.width * 2, dimension.height * 2) else dimension
 
-  fun scaleForRetina(parameters: ScreenParameters): ScreenParameters =
-    if (isRetina) ScreenParameters(scaleForRetina(parameters.dimension), parameters.resolution?.times(2)) else parameters
+  fun scaleForHiDpi(parameters: ScreenParameters): ScreenParameters =
+    if (isHiDpi) ScreenParameters(scaleForHiDpi(parameters.dimension), parameters.resolution?.times(2)) else parameters
 
-  internal fun downscaleForRetina(resolution: Int): Int =
-    if (isRetina) resolution / 2 else resolution
+  internal fun downscaleForHiDpi(resolution: Int): Int =
+    if (isHiDpi) resolution / 2 else resolution
 
   private fun Dimension.downscaleIf(condition: Boolean): Dimension {
     return if (condition) Dimension(width / 2, height / 2) else this
