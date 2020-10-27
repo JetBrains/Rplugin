@@ -566,7 +566,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
   }
 
   private fun buildScreenParametersMessage(parameters: RGraphicsUtils.ScreenParameters): ScreenParameters {
-    val scaled = RGraphicsUtils.scaleForRetina(parameters)
+    val scaled = RGraphicsUtils.scaleForHiDpi(parameters)
     return ScreenParameters.newBuilder()
       .setResolution(scaled.resolution ?: -1)
       .setHeight(scaled.height)

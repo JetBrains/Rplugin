@@ -4,7 +4,6 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.interpreter.OperatingSystem
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.rinterop.Font
 import org.jetbrains.r.rinterop.Stroke
@@ -369,7 +368,7 @@ object RPlotUtil {
       val xTo = calculateX(raster.to)
       val yTo = calculateY(raster.to)
       val original = fitTheme(raster.image)
-      val multiplier = if (RGraphicsUtils.isRetina) 2 else 1
+      val multiplier = if (RGraphicsUtils.isHiDpi) 2 else 1
       val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
       val width = ((xTo - xFrom) * multiplier).toInt()
       val height = ((yTo - yFrom) * multiplier).toInt()

@@ -84,7 +84,7 @@ data class RSnapshot(
     }
 
     private fun String.toResolutionOrNull(): Int? {
-      return toInt().takeIf { it > 0 }?.let { RGraphicsUtils.downscaleForRetina(it) }
+      return toInt().takeIf { it > 0 }?.let { RGraphicsUtils.downscaleForHiDpi(it) }
     }
   }
 }
