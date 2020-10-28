@@ -83,6 +83,17 @@ class RCanvasPlotter(
     }
   }
 
+  override fun drawPath(subPaths: List<Pair<FloatArray, FloatArray>>, winding: RWinding, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
+    val path = createPath(subPaths, winding)
+    withColor(fillIndex) {
+      graphics.fill(path)
+    }
+    withColor(colorIndex) {
+      selectStroke(strokeIndex)
+      graphics.draw(path)
+    }
+  }
+
   override fun drawPolygon(xs: FloatArray, ys: FloatArray, strokeIndex: Int, colorIndex: Int, fillIndex: Int) {
     val polygon = createPolyline(xs, ys, isClosed = true)
     withColor(fillIndex) {
@@ -99,18 +110,6 @@ class RCanvasPlotter(
     withColor(colorIndex) {
       selectStroke(strokeIndex)
       graphics.draw(polyline)
-    }
-  }
-
-  private fun createPolyline(xs: FloatArray, ys: FloatArray, isClosed: Boolean): Path2D.Float {
-    return Path2D.Float().also { path ->
-      path.moveTo(xs[0], ys[0])
-      for (i in 1 until xs.size) {
-        path.lineTo(xs[i], ys[i])
-      }
-      if (isClosed) {
-        path.closePath()
-      }
     }
   }
 
@@ -192,5 +191,35 @@ class RCanvasPlotter(
 
   private fun selectStroke(index: Int) {
     graphics.stroke = strokes[index]
+  }
+
+  companion object {
+    private fun createPolyline(xs: FloatArray, ys: FloatArray, isClosed: Boolean): Path2D.Float {
+      return Path2D.Float().also { path ->
+        addSubPath(path, xs, ys, isClosed)
+      }
+    }
+
+    private fun createPath(subPaths: List<Pair<FloatArray, FloatArray>>, winding: RWinding): Path2D.Float {
+      val rule = when (winding) {
+        RWinding.EVEN_ODD -> Path2D.WIND_EVEN_ODD
+        RWinding.NON_ZERO -> Path2D.WIND_NON_ZERO
+      }
+      return Path2D.Float(rule).also { path ->
+        for ((xs, ys) in subPaths) {
+          addSubPath(path, xs, ys, isClosed = true)
+        }
+      }
+    }
+
+    private fun addSubPath(path: Path2D.Float, xs: FloatArray, ys: FloatArray, isClosed: Boolean) {
+      path.moveTo(xs[0], ys[0])
+      for (i in 1 until xs.size) {
+        path.lineTo(xs[i], ys[i])
+      }
+      if (isClosed) {
+        path.closePath()
+      }
+    }
   }
 }

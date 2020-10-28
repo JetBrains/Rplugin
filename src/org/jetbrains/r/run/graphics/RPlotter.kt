@@ -14,6 +14,7 @@ interface RPlotter {
   fun getWidthOf(text: String, fontIndex: Int): Int
   fun drawCircle(x: Float, y: Float, radius: Float, strokeIndex: Int, colorIndex: Int, fillIndex: Int)
   fun drawLine(xFrom: Float, yFrom: Float, xTo: Float, yTo: Float, strokeIndex: Int, colorIndex: Int)
+  fun drawPath(subPaths: List<Pair<FloatArray, FloatArray>>, winding: RWinding, strokeIndex: Int, colorIndex: Int, fillIndex: Int)
   fun drawPolygon(xs: FloatArray, ys: FloatArray, strokeIndex: Int, colorIndex: Int, fillIndex: Int)
   fun drawPolyline(xs: FloatArray, ys: FloatArray, strokeIndex: Int, colorIndex: Int)
   fun drawRaster(image: Image, x: Float, y: Float, angle: Float)

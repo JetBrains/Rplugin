@@ -18,7 +18,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 7
+  private const val PROTOCOL_VERSION = 8
   private const val STROKE_WIDTH_SCALE = 1.25f
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
@@ -148,6 +148,7 @@ object RPlotUtil {
     return when (val case = figure.kindCase) {
       Figure.KindCase.CIRCLE -> convert(figure.circle)
       Figure.KindCase.LINE -> convert(figure.line)
+      Figure.KindCase.PATH -> convert(figure.path)
       Figure.KindCase.POLYGON -> convert(figure.polygon)
       Figure.KindCase.POLYLINE -> convert(figure.polyline)
       Figure.KindCase.RASTER -> convert(figure.raster)
@@ -164,6 +165,14 @@ object RPlotUtil {
 
   private fun convert(line: LineFigure): RFigure {
     return RFigure.Line(convert(line.from), convert(line.to), line.strokeIndex, line.colorIndex)
+  }
+
+  private fun convert(path: PathFigure): RFigure {
+    val subPaths = path.subPathList.map { subPath ->
+      subPath.pointList.map { convert(it) }
+    }
+    val winding = if (path.winding) RWinding.NON_ZERO else RWinding.EVEN_ODD
+    return RFigure.Path(subPaths, winding, path.strokeIndex, path.colorIndex, path.fillIndex)
   }
 
   private fun convert(polygon: PolygonFigure): RFigure {
@@ -327,6 +336,7 @@ object RPlotUtil {
       when (figure) {
         is RFigure.Circle -> replay(figure)
         is RFigure.Line -> replay(figure)
+        is RFigure.Path -> replay(figure)
         is RFigure.Polygon -> replay(figure)
         is RFigure.Polyline -> replay(figure)
         is RFigure.Raster -> replay(figure)
@@ -348,6 +358,15 @@ object RPlotUtil {
       val xTo = calculateX(line.to)
       val yTo = calculateY(line.to)
       plotter.drawLine(xFrom, yFrom, xTo, yTo, line.strokeIndex, line.colorIndex)
+    }
+
+    private fun replay(path: RFigure.Path) {
+      val subPaths = path.subPaths.map { points ->
+        val xs = calculateXs(points)
+        val ys = calculateYs(points)
+        Pair(xs, ys)
+      }
+      plotter.drawPath(subPaths, path.winding, path.strokeIndex, path.colorIndex, path.fillIndex)
     }
 
     private fun replay(polygon: RFigure.Polygon) {
