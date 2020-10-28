@@ -29,14 +29,14 @@ val SEMICOLON            = create("R_SEMICOLON", Colors.SEMICOLON, "Braces and O
 
 val LOCAL_VARIABLE       = create("R_LOCAL_VARIABLE", Colors.LOCAL_VARIABLE, "Variables//Local Variable")
 val FIELD                = create("R_FIELD", Colors.INSTANCE_FIELD, "Variables//Variable Access")
-val CLOSURE              = create("R_CLOSURE", Colors.CLASS_NAME, "Variables//Closure Variable")
+val CLOSURE              = create("R_CLOSURE", Colors.PARAMETER, "Variables//Closure Variable")
 
 val NAMESPACE            = create("R_NAMESPACE", Colors.CLASS_NAME, "Namespace")
 
 val PARAMETER            = create("R_PARAMETER", Colors.PARAMETER, "Parameter")
 val NAMED_ARGUMENT       = create("R_NAMED_ARGUMENT", Colors.IDENTIFIER, "Named Argument")
 
-val FUNCTION_CALL        = create("R_FUNCTION_CALL", Colors.STATIC_METHOD, "Functions//Function call")
+val FUNCTION_CALL        = create("R_FUNCTION_CALL", Colors.FUNCTION_CALL, "Functions//Function call")
 val FUNCTION_DECLARATION = create("R_FUNCTION_DECLARATION", Colors.FUNCTION_DECLARATION, "Functions//Function declaration")
 
 val BAD_CHARACTER        = create("R_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER, "Bad character")

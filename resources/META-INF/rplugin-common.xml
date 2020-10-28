@@ -363,8 +363,8 @@ You can find the source code in the following repositories:
     <extensions defaultExtensionNs="com.intellij">
         <additionalTextAttributes scheme="Default" file="colorSchemes/RMarkdownChunkDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/RMarkdownChunkDarcula.xml"/>
-        <additionalTextAttributes scheme="Default" file="colorSchemes/RNamedArgumentDefault.xml"/>
-        <additionalTextAttributes scheme="Darcula" file="colorSchemes/RNamedArgumentDarcula.xml"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/RLanguageDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/RLanguageDarcula.xml"/>
 
         <statistics.counterUsagesCollector groupId="r.interpreters" version="1"/>
         <statistics.counterUsagesCollector groupId="r.workflow" version="1"/>
