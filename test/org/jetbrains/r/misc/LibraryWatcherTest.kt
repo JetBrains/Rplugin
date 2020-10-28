@@ -28,12 +28,10 @@ class LibraryWatcherTest : RProcessHandlerBaseTestCase() {
     }
     RInterpreterTestUtil.installPackage(interpreter, interpreter.uploadFileToHost(File(packagePath), true))
     assertEquals(0, atomicInteger.get())
-    libraryWatcher.refresh()
     waitForAtomic(atomicInteger, 1)
     assertEquals(1, atomicInteger.get())
     RInterpreterTestUtil.removePackage(interpreter, packageName)
     assertEquals(1, atomicInteger.get())
-    libraryWatcher.refresh()
     waitForAtomic(atomicInteger, 2)
     assertEquals(2, atomicInteger.get())
   }

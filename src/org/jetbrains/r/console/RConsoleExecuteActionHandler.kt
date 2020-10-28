@@ -26,7 +26,6 @@ import com.intellij.xdebugger.XSourcePosition
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
-import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.documentation.RDocumentationProvider
@@ -124,7 +123,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onPrompt(isDebug: Boolean) {
       state = if (isDebug) State.DEBUG_PROMPT else State.PROMPT
-      runAsync { RLibraryWatcher.getInstance(consoleView.project).refresh() }
+      RLibraryWatcher.getInstance(consoleView.project).scheduleRefresh()
       pollExecuteLaterQueue()
       if (!isRunningCommand) fireCommandExecuted()
     }
