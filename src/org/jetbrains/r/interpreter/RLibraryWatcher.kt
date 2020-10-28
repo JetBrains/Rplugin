@@ -14,6 +14,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.util.tryRegisterDisposable
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -24,6 +25,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   private val changedRoots = AtomicReference<List<String>>(emptyList())
   private val currentRoots: MutableMap<String, MutableSet<RInterpreterState>> = mutableMapOf()
   private var currentDisposable: Disposable? = null
+  private val timer = LibraryWatcherTimer(1000)
 
   @Synchronized
   fun updateRootsToWatch(state: RInterpreterState) {
@@ -51,7 +53,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
         val newChangedRoots = currentsRoots.filter { path.startsWith(it) }
         changedRoots.getAndUpdate { it + newChangedRoots }
         changed.set(true)
-        runAsync { refresh() }
+        scheduleRefresh()
       }
     }
   }
@@ -66,7 +68,9 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     }
   }
 
-  fun refresh() {
+  fun scheduleRefresh() = timer.scheduleRefresh()
+
+  private fun refresh() {
     if (changed.compareAndSet(true, false)) {
       val roots = changedRoots.getAndSet(emptyList())
       if (roots.isEmpty()) return
@@ -95,6 +99,21 @@ class RLibraryWatcher(private val project: Project) : Disposable {
 
     /** Time slot for elements that rely on services updated in previous slots (UI panels, for instance) */
     LAST
+  }
+
+  private inner class LibraryWatcherTimer(private val delay: Long) {
+    private var timer = Timer()
+    private val refreshTask
+      get() = object : TimerTask() {
+        override fun run() = refresh()
+      }
+
+    @Synchronized
+    fun scheduleRefresh() {
+      timer.cancel()
+      timer = Timer()
+      timer.schedule(refreshTask, delay)
+    }
   }
 
   companion object {
