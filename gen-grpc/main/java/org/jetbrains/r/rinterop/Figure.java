@@ -77,8 +77,22 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 26: {
-            org.jetbrains.r.rinterop.PolygonFigure.Builder subBuilder = null;
+            org.jetbrains.r.rinterop.PathFigure.Builder subBuilder = null;
             if (kindCase_ == 3) {
+              subBuilder = ((org.jetbrains.r.rinterop.PathFigure) kind_).toBuilder();
+            }
+            kind_ =
+                input.readMessage(org.jetbrains.r.rinterop.PathFigure.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.PathFigure) kind_);
+              kind_ = subBuilder.buildPartial();
+            }
+            kindCase_ = 3;
+            break;
+          }
+          case 34: {
+            org.jetbrains.r.rinterop.PolygonFigure.Builder subBuilder = null;
+            if (kindCase_ == 4) {
               subBuilder = ((org.jetbrains.r.rinterop.PolygonFigure) kind_).toBuilder();
             }
             kind_ =
@@ -87,12 +101,12 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.PolygonFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 3;
+            kindCase_ = 4;
             break;
           }
-          case 34: {
+          case 42: {
             org.jetbrains.r.rinterop.PolylineFigure.Builder subBuilder = null;
-            if (kindCase_ == 4) {
+            if (kindCase_ == 5) {
               subBuilder = ((org.jetbrains.r.rinterop.PolylineFigure) kind_).toBuilder();
             }
             kind_ =
@@ -101,12 +115,12 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.PolylineFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 4;
+            kindCase_ = 5;
             break;
           }
-          case 42: {
+          case 50: {
             org.jetbrains.r.rinterop.RasterFigure.Builder subBuilder = null;
-            if (kindCase_ == 5) {
+            if (kindCase_ == 6) {
               subBuilder = ((org.jetbrains.r.rinterop.RasterFigure) kind_).toBuilder();
             }
             kind_ =
@@ -115,12 +129,12 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.RasterFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 5;
+            kindCase_ = 6;
             break;
           }
-          case 50: {
+          case 58: {
             org.jetbrains.r.rinterop.RectangleFigure.Builder subBuilder = null;
-            if (kindCase_ == 6) {
+            if (kindCase_ == 7) {
               subBuilder = ((org.jetbrains.r.rinterop.RectangleFigure) kind_).toBuilder();
             }
             kind_ =
@@ -129,12 +143,12 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.RectangleFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 6;
+            kindCase_ = 7;
             break;
           }
-          case 58: {
+          case 66: {
             org.jetbrains.r.rinterop.TextFigure.Builder subBuilder = null;
-            if (kindCase_ == 7) {
+            if (kindCase_ == 8) {
               subBuilder = ((org.jetbrains.r.rinterop.TextFigure) kind_).toBuilder();
             }
             kind_ =
@@ -143,7 +157,7 @@ private static final long serialVersionUID = 0L;
               subBuilder.mergeFrom((org.jetbrains.r.rinterop.TextFigure) kind_);
               kind_ = subBuilder.buildPartial();
             }
-            kindCase_ = 7;
+            kindCase_ = 8;
             break;
           }
           default: {
@@ -184,11 +198,12 @@ private static final long serialVersionUID = 0L;
       implements com.google.protobuf.Internal.EnumLite {
     CIRCLE(1),
     LINE(2),
-    POLYGON(3),
-    POLYLINE(4),
-    RASTER(5),
-    RECTANGLE(6),
-    TEXT(7),
+    PATH(3),
+    POLYGON(4),
+    POLYLINE(5),
+    RASTER(6),
+    RECTANGLE(7),
+    TEXT(8),
     KIND_NOT_SET(0);
     private final int value;
     private KindCase(int value) {
@@ -206,11 +221,12 @@ private static final long serialVersionUID = 0L;
       switch (value) {
         case 1: return CIRCLE;
         case 2: return LINE;
-        case 3: return POLYGON;
-        case 4: return POLYLINE;
-        case 5: return RASTER;
-        case 6: return RECTANGLE;
-        case 7: return TEXT;
+        case 3: return PATH;
+        case 4: return POLYGON;
+        case 5: return POLYLINE;
+        case 6: return RASTER;
+        case 7: return RECTANGLE;
+        case 8: return TEXT;
         case 0: return KIND_NOT_SET;
         default: return null;
       }
@@ -278,131 +294,157 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.LineFigure.getDefaultInstance();
   }
 
-  public static final int POLYGON_FIELD_NUMBER = 3;
+  public static final int PATH_FIELD_NUMBER = 3;
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PathFigure path = 3;</code>
    */
-  public boolean hasPolygon() {
+  public boolean hasPath() {
     return kindCase_ == 3;
   }
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PathFigure path = 3;</code>
    */
-  public org.jetbrains.r.rinterop.PolygonFigure getPolygon() {
+  public org.jetbrains.r.rinterop.PathFigure getPath() {
     if (kindCase_ == 3) {
-       return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
+       return (org.jetbrains.r.rinterop.PathFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PathFigure path = 3;</code>
    */
-  public org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder() {
+  public org.jetbrains.r.rinterop.PathFigureOrBuilder getPathOrBuilder() {
     if (kindCase_ == 3) {
-       return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
+       return (org.jetbrains.r.rinterop.PathFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
   }
 
-  public static final int POLYLINE_FIELD_NUMBER = 4;
+  public static final int POLYGON_FIELD_NUMBER = 4;
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
-  public boolean hasPolyline() {
+  public boolean hasPolygon() {
     return kindCase_ == 4;
   }
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
-  public org.jetbrains.r.rinterop.PolylineFigure getPolyline() {
+  public org.jetbrains.r.rinterop.PolygonFigure getPolygon() {
     if (kindCase_ == 4) {
-       return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
+       return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
-  public org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder() {
+  public org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder() {
     if (kindCase_ == 4) {
-       return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
+       return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
   }
 
-  public static final int RASTER_FIELD_NUMBER = 5;
+  public static final int POLYLINE_FIELD_NUMBER = 5;
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
-  public boolean hasRaster() {
+  public boolean hasPolyline() {
     return kindCase_ == 5;
   }
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
-  public org.jetbrains.r.rinterop.RasterFigure getRaster() {
+  public org.jetbrains.r.rinterop.PolylineFigure getPolyline() {
     if (kindCase_ == 5) {
-       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+       return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
-  public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
+  public org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder() {
     if (kindCase_ == 5) {
-       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+       return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
     }
-    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+    return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
   }
 
-  public static final int RECTANGLE_FIELD_NUMBER = 6;
+  public static final int RASTER_FIELD_NUMBER = 6;
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
    */
-  public boolean hasRectangle() {
+  public boolean hasRaster() {
     return kindCase_ == 6;
   }
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   */
+  public org.jetbrains.r.rinterop.RasterFigure getRaster() {
+    if (kindCase_ == 6) {
+       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+    }
+    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   */
+  public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
+    if (kindCase_ == 6) {
+       return (org.jetbrains.r.rinterop.RasterFigure) kind_;
+    }
+    return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
+  }
+
+  public static final int RECTANGLE_FIELD_NUMBER = 7;
+  /**
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+   */
+  public boolean hasRectangle() {
+    return kindCase_ == 7;
+  }
+  /**
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
   public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
-    if (kindCase_ == 6) {
+    if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
     }
     return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
   public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
-    if (kindCase_ == 6) {
+    if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
     }
     return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
   }
 
-  public static final int TEXT_FIELD_NUMBER = 7;
+  public static final int TEXT_FIELD_NUMBER = 8;
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   public boolean hasText() {
-    return kindCase_ == 7;
+    return kindCase_ == 8;
   }
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   public org.jetbrains.r.rinterop.TextFigure getText() {
-    if (kindCase_ == 7) {
+    if (kindCase_ == 8) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
     }
     return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
   }
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
-    if (kindCase_ == 7) {
+    if (kindCase_ == 8) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
     }
     return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
@@ -429,19 +471,22 @@ private static final long serialVersionUID = 0L;
       output.writeMessage(2, (org.jetbrains.r.rinterop.LineFigure) kind_);
     }
     if (kindCase_ == 3) {
-      output.writeMessage(3, (org.jetbrains.r.rinterop.PolygonFigure) kind_);
+      output.writeMessage(3, (org.jetbrains.r.rinterop.PathFigure) kind_);
     }
     if (kindCase_ == 4) {
-      output.writeMessage(4, (org.jetbrains.r.rinterop.PolylineFigure) kind_);
+      output.writeMessage(4, (org.jetbrains.r.rinterop.PolygonFigure) kind_);
     }
     if (kindCase_ == 5) {
-      output.writeMessage(5, (org.jetbrains.r.rinterop.RasterFigure) kind_);
+      output.writeMessage(5, (org.jetbrains.r.rinterop.PolylineFigure) kind_);
     }
     if (kindCase_ == 6) {
-      output.writeMessage(6, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+      output.writeMessage(6, (org.jetbrains.r.rinterop.RasterFigure) kind_);
     }
     if (kindCase_ == 7) {
-      output.writeMessage(7, (org.jetbrains.r.rinterop.TextFigure) kind_);
+      output.writeMessage(7, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+    }
+    if (kindCase_ == 8) {
+      output.writeMessage(8, (org.jetbrains.r.rinterop.TextFigure) kind_);
     }
     unknownFields.writeTo(output);
   }
@@ -462,23 +507,27 @@ private static final long serialVersionUID = 0L;
     }
     if (kindCase_ == 3) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, (org.jetbrains.r.rinterop.PolygonFigure) kind_);
+        .computeMessageSize(3, (org.jetbrains.r.rinterop.PathFigure) kind_);
     }
     if (kindCase_ == 4) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, (org.jetbrains.r.rinterop.PolylineFigure) kind_);
+        .computeMessageSize(4, (org.jetbrains.r.rinterop.PolygonFigure) kind_);
     }
     if (kindCase_ == 5) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, (org.jetbrains.r.rinterop.RasterFigure) kind_);
+        .computeMessageSize(5, (org.jetbrains.r.rinterop.PolylineFigure) kind_);
     }
     if (kindCase_ == 6) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(6, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+        .computeMessageSize(6, (org.jetbrains.r.rinterop.RasterFigure) kind_);
     }
     if (kindCase_ == 7) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(7, (org.jetbrains.r.rinterop.TextFigure) kind_);
+        .computeMessageSize(7, (org.jetbrains.r.rinterop.RectangleFigure) kind_);
+    }
+    if (kindCase_ == 8) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(8, (org.jetbrains.r.rinterop.TextFigure) kind_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -506,22 +555,26 @@ private static final long serialVersionUID = 0L;
             .equals(other.getLine())) return false;
         break;
       case 3:
+        if (!getPath()
+            .equals(other.getPath())) return false;
+        break;
+      case 4:
         if (!getPolygon()
             .equals(other.getPolygon())) return false;
         break;
-      case 4:
+      case 5:
         if (!getPolyline()
             .equals(other.getPolyline())) return false;
         break;
-      case 5:
+      case 6:
         if (!getRaster()
             .equals(other.getRaster())) return false;
         break;
-      case 6:
+      case 7:
         if (!getRectangle()
             .equals(other.getRectangle())) return false;
         break;
-      case 7:
+      case 8:
         if (!getText()
             .equals(other.getText())) return false;
         break;
@@ -549,22 +602,26 @@ private static final long serialVersionUID = 0L;
         hash = (53 * hash) + getLine().hashCode();
         break;
       case 3:
+        hash = (37 * hash) + PATH_FIELD_NUMBER;
+        hash = (53 * hash) + getPath().hashCode();
+        break;
+      case 4:
         hash = (37 * hash) + POLYGON_FIELD_NUMBER;
         hash = (53 * hash) + getPolygon().hashCode();
         break;
-      case 4:
+      case 5:
         hash = (37 * hash) + POLYLINE_FIELD_NUMBER;
         hash = (53 * hash) + getPolyline().hashCode();
         break;
-      case 5:
+      case 6:
         hash = (37 * hash) + RASTER_FIELD_NUMBER;
         hash = (53 * hash) + getRaster().hashCode();
         break;
-      case 6:
+      case 7:
         hash = (37 * hash) + RECTANGLE_FIELD_NUMBER;
         hash = (53 * hash) + getRectangle().hashCode();
         break;
-      case 7:
+      case 8:
         hash = (37 * hash) + TEXT_FIELD_NUMBER;
         hash = (53 * hash) + getText().hashCode();
         break;
@@ -747,34 +804,41 @@ private static final long serialVersionUID = 0L;
         }
       }
       if (kindCase_ == 3) {
+        if (pathBuilder_ == null) {
+          result.kind_ = kind_;
+        } else {
+          result.kind_ = pathBuilder_.build();
+        }
+      }
+      if (kindCase_ == 4) {
         if (polygonBuilder_ == null) {
           result.kind_ = kind_;
         } else {
           result.kind_ = polygonBuilder_.build();
         }
       }
-      if (kindCase_ == 4) {
+      if (kindCase_ == 5) {
         if (polylineBuilder_ == null) {
           result.kind_ = kind_;
         } else {
           result.kind_ = polylineBuilder_.build();
         }
       }
-      if (kindCase_ == 5) {
+      if (kindCase_ == 6) {
         if (rasterBuilder_ == null) {
           result.kind_ = kind_;
         } else {
           result.kind_ = rasterBuilder_.build();
         }
       }
-      if (kindCase_ == 6) {
+      if (kindCase_ == 7) {
         if (rectangleBuilder_ == null) {
           result.kind_ = kind_;
         } else {
           result.kind_ = rectangleBuilder_.build();
         }
       }
-      if (kindCase_ == 7) {
+      if (kindCase_ == 8) {
         if (textBuilder_ == null) {
           result.kind_ = kind_;
         } else {
@@ -837,6 +901,10 @@ private static final long serialVersionUID = 0L;
         }
         case LINE: {
           mergeLine(other.getLine());
+          break;
+        }
+        case PATH: {
+          mergePath(other.getPath());
           break;
         }
         case POLYGON: {
@@ -1180,31 +1248,167 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.PolygonFigure, org.jetbrains.r.rinterop.PolygonFigure.Builder, org.jetbrains.r.rinterop.PolygonFigureOrBuilder> polygonBuilder_;
+        org.jetbrains.r.rinterop.PathFigure, org.jetbrains.r.rinterop.PathFigure.Builder, org.jetbrains.r.rinterop.PathFigureOrBuilder> pathBuilder_;
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PathFigure path = 3;</code>
      */
-    public boolean hasPolygon() {
+    public boolean hasPath() {
       return kindCase_ == 3;
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public org.jetbrains.r.rinterop.PathFigure getPath() {
+      if (pathBuilder_ == null) {
+        if (kindCase_ == 3) {
+          return (org.jetbrains.r.rinterop.PathFigure) kind_;
+        }
+        return org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
+      } else {
+        if (kindCase_ == 3) {
+          return pathBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public Builder setPath(org.jetbrains.r.rinterop.PathFigure value) {
+      if (pathBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        kind_ = value;
+        onChanged();
+      } else {
+        pathBuilder_.setMessage(value);
+      }
+      kindCase_ = 3;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public Builder setPath(
+        org.jetbrains.r.rinterop.PathFigure.Builder builderForValue) {
+      if (pathBuilder_ == null) {
+        kind_ = builderForValue.build();
+        onChanged();
+      } else {
+        pathBuilder_.setMessage(builderForValue.build());
+      }
+      kindCase_ = 3;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public Builder mergePath(org.jetbrains.r.rinterop.PathFigure value) {
+      if (pathBuilder_ == null) {
+        if (kindCase_ == 3 &&
+            kind_ != org.jetbrains.r.rinterop.PathFigure.getDefaultInstance()) {
+          kind_ = org.jetbrains.r.rinterop.PathFigure.newBuilder((org.jetbrains.r.rinterop.PathFigure) kind_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          kind_ = value;
+        }
+        onChanged();
+      } else {
+        if (kindCase_ == 3) {
+          pathBuilder_.mergeFrom(value);
+        }
+        pathBuilder_.setMessage(value);
+      }
+      kindCase_ = 3;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public Builder clearPath() {
+      if (pathBuilder_ == null) {
+        if (kindCase_ == 3) {
+          kindCase_ = 0;
+          kind_ = null;
+          onChanged();
+        }
+      } else {
+        if (kindCase_ == 3) {
+          kindCase_ = 0;
+          kind_ = null;
+        }
+        pathBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public org.jetbrains.r.rinterop.PathFigure.Builder getPathBuilder() {
+      return getPathFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    public org.jetbrains.r.rinterop.PathFigureOrBuilder getPathOrBuilder() {
+      if ((kindCase_ == 3) && (pathBuilder_ != null)) {
+        return pathBuilder_.getMessageOrBuilder();
+      } else {
+        if (kindCase_ == 3) {
+          return (org.jetbrains.r.rinterop.PathFigure) kind_;
+        }
+        return org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.PathFigure path = 3;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.PathFigure, org.jetbrains.r.rinterop.PathFigure.Builder, org.jetbrains.r.rinterop.PathFigureOrBuilder> 
+        getPathFieldBuilder() {
+      if (pathBuilder_ == null) {
+        if (!(kindCase_ == 3)) {
+          kind_ = org.jetbrains.r.rinterop.PathFigure.getDefaultInstance();
+        }
+        pathBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.PathFigure, org.jetbrains.r.rinterop.PathFigure.Builder, org.jetbrains.r.rinterop.PathFigureOrBuilder>(
+                (org.jetbrains.r.rinterop.PathFigure) kind_,
+                getParentForChildren(),
+                isClean());
+        kind_ = null;
+      }
+      kindCase_ = 3;
+      onChanged();;
+      return pathBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.PolygonFigure, org.jetbrains.r.rinterop.PolygonFigure.Builder, org.jetbrains.r.rinterop.PolygonFigureOrBuilder> polygonBuilder_;
+    /**
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+     */
+    public boolean hasPolygon() {
+      return kindCase_ == 4;
+    }
+    /**
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public org.jetbrains.r.rinterop.PolygonFigure getPolygon() {
       if (polygonBuilder_ == null) {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
         }
         return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           return polygonBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public Builder setPolygon(org.jetbrains.r.rinterop.PolygonFigure value) {
       if (polygonBuilder_ == null) {
@@ -1216,11 +1420,11 @@ private static final long serialVersionUID = 0L;
       } else {
         polygonBuilder_.setMessage(value);
       }
-      kindCase_ = 3;
+      kindCase_ = 4;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public Builder setPolygon(
         org.jetbrains.r.rinterop.PolygonFigure.Builder builderForValue) {
@@ -1230,15 +1434,15 @@ private static final long serialVersionUID = 0L;
       } else {
         polygonBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 3;
+      kindCase_ = 4;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public Builder mergePolygon(org.jetbrains.r.rinterop.PolygonFigure value) {
       if (polygonBuilder_ == null) {
-        if (kindCase_ == 3 &&
+        if (kindCase_ == 4 &&
             kind_ != org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.PolygonFigure.newBuilder((org.jetbrains.r.rinterop.PolygonFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1247,26 +1451,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           polygonBuilder_.mergeFrom(value);
         }
         polygonBuilder_.setMessage(value);
       }
-      kindCase_ = 3;
+      kindCase_ = 4;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public Builder clearPolygon() {
       if (polygonBuilder_ == null) {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1275,32 +1479,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public org.jetbrains.r.rinterop.PolygonFigure.Builder getPolygonBuilder() {
       return getPolygonFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     public org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder() {
-      if ((kindCase_ == 3) && (polygonBuilder_ != null)) {
+      if ((kindCase_ == 4) && (polygonBuilder_ != null)) {
         return polygonBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 3) {
+        if (kindCase_ == 4) {
           return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
         }
         return org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+     * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.PolygonFigure, org.jetbrains.r.rinterop.PolygonFigure.Builder, org.jetbrains.r.rinterop.PolygonFigureOrBuilder> 
         getPolygonFieldBuilder() {
       if (polygonBuilder_ == null) {
-        if (!(kindCase_ == 3)) {
+        if (!(kindCase_ == 4)) {
           kind_ = org.jetbrains.r.rinterop.PolygonFigure.getDefaultInstance();
         }
         polygonBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1310,7 +1514,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 3;
+      kindCase_ = 4;
       onChanged();;
       return polygonBuilder_;
     }
@@ -1318,29 +1522,29 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.PolylineFigure, org.jetbrains.r.rinterop.PolylineFigure.Builder, org.jetbrains.r.rinterop.PolylineFigureOrBuilder> polylineBuilder_;
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public boolean hasPolyline() {
-      return kindCase_ == 4;
+      return kindCase_ == 5;
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public org.jetbrains.r.rinterop.PolylineFigure getPolyline() {
       if (polylineBuilder_ == null) {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
         }
         return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           return polylineBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public Builder setPolyline(org.jetbrains.r.rinterop.PolylineFigure value) {
       if (polylineBuilder_ == null) {
@@ -1352,11 +1556,11 @@ private static final long serialVersionUID = 0L;
       } else {
         polylineBuilder_.setMessage(value);
       }
-      kindCase_ = 4;
+      kindCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public Builder setPolyline(
         org.jetbrains.r.rinterop.PolylineFigure.Builder builderForValue) {
@@ -1366,15 +1570,15 @@ private static final long serialVersionUID = 0L;
       } else {
         polylineBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 4;
+      kindCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public Builder mergePolyline(org.jetbrains.r.rinterop.PolylineFigure value) {
       if (polylineBuilder_ == null) {
-        if (kindCase_ == 4 &&
+        if (kindCase_ == 5 &&
             kind_ != org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.PolylineFigure.newBuilder((org.jetbrains.r.rinterop.PolylineFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1383,26 +1587,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           polylineBuilder_.mergeFrom(value);
         }
         polylineBuilder_.setMessage(value);
       }
-      kindCase_ = 4;
+      kindCase_ = 5;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public Builder clearPolyline() {
       if (polylineBuilder_ == null) {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1411,32 +1615,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public org.jetbrains.r.rinterop.PolylineFigure.Builder getPolylineBuilder() {
       return getPolylineFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     public org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder() {
-      if ((kindCase_ == 4) && (polylineBuilder_ != null)) {
+      if ((kindCase_ == 5) && (polylineBuilder_ != null)) {
         return polylineBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 4) {
+        if (kindCase_ == 5) {
           return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
         }
         return org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+     * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.PolylineFigure, org.jetbrains.r.rinterop.PolylineFigure.Builder, org.jetbrains.r.rinterop.PolylineFigureOrBuilder> 
         getPolylineFieldBuilder() {
       if (polylineBuilder_ == null) {
-        if (!(kindCase_ == 4)) {
+        if (!(kindCase_ == 5)) {
           kind_ = org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance();
         }
         polylineBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1446,7 +1650,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 4;
+      kindCase_ = 5;
       onChanged();;
       return polylineBuilder_;
     }
@@ -1454,29 +1658,29 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder> rasterBuilder_;
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public boolean hasRaster() {
-      return kindCase_ == 5;
+      return kindCase_ == 6;
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public org.jetbrains.r.rinterop.RasterFigure getRaster() {
       if (rasterBuilder_ == null) {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return (org.jetbrains.r.rinterop.RasterFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return rasterBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public Builder setRaster(org.jetbrains.r.rinterop.RasterFigure value) {
       if (rasterBuilder_ == null) {
@@ -1488,11 +1692,11 @@ private static final long serialVersionUID = 0L;
       } else {
         rasterBuilder_.setMessage(value);
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public Builder setRaster(
         org.jetbrains.r.rinterop.RasterFigure.Builder builderForValue) {
@@ -1502,15 +1706,15 @@ private static final long serialVersionUID = 0L;
       } else {
         rasterBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public Builder mergeRaster(org.jetbrains.r.rinterop.RasterFigure value) {
       if (rasterBuilder_ == null) {
-        if (kindCase_ == 5 &&
+        if (kindCase_ == 6 &&
             kind_ != org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.RasterFigure.newBuilder((org.jetbrains.r.rinterop.RasterFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1519,26 +1723,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           rasterBuilder_.mergeFrom(value);
         }
         rasterBuilder_.setMessage(value);
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       return this;
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public Builder clearRaster() {
       if (rasterBuilder_ == null) {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1547,32 +1751,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public org.jetbrains.r.rinterop.RasterFigure.Builder getRasterBuilder() {
       return getRasterFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
-      if ((kindCase_ == 5) && (rasterBuilder_ != null)) {
+      if ((kindCase_ == 6) && (rasterBuilder_ != null)) {
         return rasterBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 5) {
+        if (kindCase_ == 6) {
           return (org.jetbrains.r.rinterop.RasterFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RasterFigure raster = 5;</code>
+     * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder> 
         getRasterFieldBuilder() {
       if (rasterBuilder_ == null) {
-        if (!(kindCase_ == 5)) {
+        if (!(kindCase_ == 6)) {
           kind_ = org.jetbrains.r.rinterop.RasterFigure.getDefaultInstance();
         }
         rasterBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1582,7 +1786,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 5;
+      kindCase_ = 6;
       onChanged();;
       return rasterBuilder_;
     }
@@ -1590,29 +1794,29 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> rectangleBuilder_;
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public boolean hasRectangle() {
-      return kindCase_ == 6;
+      return kindCase_ == 7;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return rectangleBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public Builder setRectangle(org.jetbrains.r.rinterop.RectangleFigure value) {
       if (rectangleBuilder_ == null) {
@@ -1624,11 +1828,11 @@ private static final long serialVersionUID = 0L;
       } else {
         rectangleBuilder_.setMessage(value);
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public Builder setRectangle(
         org.jetbrains.r.rinterop.RectangleFigure.Builder builderForValue) {
@@ -1638,15 +1842,15 @@ private static final long serialVersionUID = 0L;
       } else {
         rectangleBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public Builder mergeRectangle(org.jetbrains.r.rinterop.RectangleFigure value) {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 6 &&
+        if (kindCase_ == 7 &&
             kind_ != org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.RectangleFigure.newBuilder((org.jetbrains.r.rinterop.RectangleFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1655,26 +1859,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           rectangleBuilder_.mergeFrom(value);
         }
         rectangleBuilder_.setMessage(value);
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public Builder clearRectangle() {
       if (rectangleBuilder_ == null) {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1683,32 +1887,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigure.Builder getRectangleBuilder() {
       return getRectangleFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
-      if ((kindCase_ == 6) && (rectangleBuilder_ != null)) {
+      if ((kindCase_ == 7) && (rectangleBuilder_ != null)) {
         return rectangleBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 6) {
+        if (kindCase_ == 7) {
           return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
         }
         return org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+     * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> 
         getRectangleFieldBuilder() {
       if (rectangleBuilder_ == null) {
-        if (!(kindCase_ == 6)) {
+        if (!(kindCase_ == 7)) {
           kind_ = org.jetbrains.r.rinterop.RectangleFigure.getDefaultInstance();
         }
         rectangleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1718,7 +1922,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 6;
+      kindCase_ = 7;
       onChanged();;
       return rectangleBuilder_;
     }
@@ -1726,29 +1930,29 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.TextFigure, org.jetbrains.r.rinterop.TextFigure.Builder, org.jetbrains.r.rinterop.TextFigureOrBuilder> textBuilder_;
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public boolean hasText() {
-      return kindCase_ == 7;
+      return kindCase_ == 8;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public org.jetbrains.r.rinterop.TextFigure getText() {
       if (textBuilder_ == null) {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           return (org.jetbrains.r.rinterop.TextFigure) kind_;
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       } else {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           return textBuilder_.getMessage();
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public Builder setText(org.jetbrains.r.rinterop.TextFigure value) {
       if (textBuilder_ == null) {
@@ -1760,11 +1964,11 @@ private static final long serialVersionUID = 0L;
       } else {
         textBuilder_.setMessage(value);
       }
-      kindCase_ = 7;
+      kindCase_ = 8;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public Builder setText(
         org.jetbrains.r.rinterop.TextFigure.Builder builderForValue) {
@@ -1774,15 +1978,15 @@ private static final long serialVersionUID = 0L;
       } else {
         textBuilder_.setMessage(builderForValue.build());
       }
-      kindCase_ = 7;
+      kindCase_ = 8;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public Builder mergeText(org.jetbrains.r.rinterop.TextFigure value) {
       if (textBuilder_ == null) {
-        if (kindCase_ == 7 &&
+        if (kindCase_ == 8 &&
             kind_ != org.jetbrains.r.rinterop.TextFigure.getDefaultInstance()) {
           kind_ = org.jetbrains.r.rinterop.TextFigure.newBuilder((org.jetbrains.r.rinterop.TextFigure) kind_)
               .mergeFrom(value).buildPartial();
@@ -1791,26 +1995,26 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       } else {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           textBuilder_.mergeFrom(value);
         }
         textBuilder_.setMessage(value);
       }
-      kindCase_ = 7;
+      kindCase_ = 8;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public Builder clearText() {
       if (textBuilder_ == null) {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           kindCase_ = 0;
           kind_ = null;
           onChanged();
         }
       } else {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           kindCase_ = 0;
           kind_ = null;
         }
@@ -1819,32 +2023,32 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public org.jetbrains.r.rinterop.TextFigure.Builder getTextBuilder() {
       return getTextFieldBuilder().getBuilder();
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
-      if ((kindCase_ == 7) && (textBuilder_ != null)) {
+      if ((kindCase_ == 8) && (textBuilder_ != null)) {
         return textBuilder_.getMessageOrBuilder();
       } else {
-        if (kindCase_ == 7) {
+        if (kindCase_ == 8) {
           return (org.jetbrains.r.rinterop.TextFigure) kind_;
         }
         return org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
       }
     }
     /**
-     * <code>.rplugininterop.TextFigure text = 7;</code>
+     * <code>.rplugininterop.TextFigure text = 8;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         org.jetbrains.r.rinterop.TextFigure, org.jetbrains.r.rinterop.TextFigure.Builder, org.jetbrains.r.rinterop.TextFigureOrBuilder> 
         getTextFieldBuilder() {
       if (textBuilder_ == null) {
-        if (!(kindCase_ == 7)) {
+        if (!(kindCase_ == 8)) {
           kind_ = org.jetbrains.r.rinterop.TextFigure.getDefaultInstance();
         }
         textBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -1854,7 +2058,7 @@ private static final long serialVersionUID = 0L;
                 isClean());
         kind_ = null;
       }
-      kindCase_ = 7;
+      kindCase_ = 8;
       onChanged();;
       return textBuilder_;
     }

@@ -34,67 +34,80 @@ public interface FigureOrBuilder extends
   org.jetbrains.r.rinterop.LineFigureOrBuilder getLineOrBuilder();
 
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PathFigure path = 3;</code>
+   */
+  boolean hasPath();
+  /**
+   * <code>.rplugininterop.PathFigure path = 3;</code>
+   */
+  org.jetbrains.r.rinterop.PathFigure getPath();
+  /**
+   * <code>.rplugininterop.PathFigure path = 3;</code>
+   */
+  org.jetbrains.r.rinterop.PathFigureOrBuilder getPathOrBuilder();
+
+  /**
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
   boolean hasPolygon();
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
   org.jetbrains.r.rinterop.PolygonFigure getPolygon();
   /**
-   * <code>.rplugininterop.PolygonFigure polygon = 3;</code>
+   * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
   org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder();
 
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
   boolean hasPolyline();
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
   org.jetbrains.r.rinterop.PolylineFigure getPolyline();
   /**
-   * <code>.rplugininterop.PolylineFigure polyline = 4;</code>
+   * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
   org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder();
 
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
    */
   boolean hasRaster();
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
    */
   org.jetbrains.r.rinterop.RasterFigure getRaster();
   /**
-   * <code>.rplugininterop.RasterFigure raster = 5;</code>
+   * <code>.rplugininterop.RasterFigure raster = 6;</code>
    */
   org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder();
 
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
   boolean hasRectangle();
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
   org.jetbrains.r.rinterop.RectangleFigure getRectangle();
   /**
-   * <code>.rplugininterop.RectangleFigure rectangle = 6;</code>
+   * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
   org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder();
 
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   boolean hasText();
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   org.jetbrains.r.rinterop.TextFigure getText();
   /**
-   * <code>.rplugininterop.TextFigure text = 7;</code>
+   * <code>.rplugininterop.TextFigure text = 8;</code>
    */
   org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder();
 
