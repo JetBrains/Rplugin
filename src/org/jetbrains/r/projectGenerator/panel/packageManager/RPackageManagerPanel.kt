@@ -64,7 +64,8 @@ abstract class RPackageManagerPanel(private val rProjectSettings: RProjectSettin
       object : Task.Modal(project, initializingTitle, false) {
         override fun run(indicator: ProgressIndicator) {
           indicator.text = initializingIndicatorText
-          val result = ExecuteExpressionUtils.executeScript(rProjectSettings.interpreterLocation!!, relativeScriptPath, args)
+          val result = ExecuteExpressionUtils.executeScript(rProjectSettings.interpreterLocation!!, relativeScriptPath, args,
+                                                            project = project)
           if (result.exitCode != 0) {
             reportPackageInstallationFailure("${result.stdout.dropWhile { it != '\n' }.drop(1)}\n${result.stderr}")
           }

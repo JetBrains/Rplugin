@@ -96,7 +96,7 @@ data class LocalOrRemotePath(val path: String, val isRemote: Boolean)
 fun RInterpreter.isLocal(): Boolean = interpreterLocation is RLocalInterpreterLocation
 
 fun RInterpreter.runHelper(helper: File, args: List<String>, workingDirectory: String = basePath) =
-  RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args)
+  RInterpreterUtil.runHelper(interpreterLocation, helper, workingDirectory, args, project)
 
 fun RInterpreter.uploadFileToHost(file: File, preserveName: Boolean = false) = interpreterLocation.uploadFileToHost(file, preserveName)
 
@@ -104,12 +104,12 @@ fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory:
   interpreterLocation.runProcessOnHost(command, workingDirectory, isSilent)
 
 fun RInterpreter.runHelperProcess(script: String, args: List<String>, workingDirectory: String = basePath): BaseProcessHandler<*> {
-  val interpreterArgs= RInterpreterUtil.getRunHelperArgs(script, args)
+  val interpreterArgs = RInterpreterUtil.getRunHelperArgs(script, args, project)
   return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory)
 }
 
 fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
-  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor)
+  return RInterpreterUtil.runMultiOutputHelper(interpreterLocation, helper, workingDirectory, args, processor, project)
 }
 
 fun RInterpreter.uploadFileToHostIfNeeded(path: LocalOrRemotePath, preserveName: Boolean = false): String {
