@@ -8,6 +8,7 @@ import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
+import org.jetbrains.r.psi.RDplyrAnalyzer.processColumnsOfMutateFunction
 import org.jetbrains.r.psi.RDplyrAnalyzer.processColumnsOfSelectFunction
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processColumnsOfCountFunction
@@ -99,6 +100,24 @@ object RDplyrAnalyzer : TableManipulationAnalyzer<DplyrFunction>() {
 
     return true
   }
+
+  fun processColumnsOfMutateFunction(operandProcessorRunner: ProcessOperandColumnRunner?,
+                                     expression: RExpression,
+                                     callInfo: TableManipulationCallInfo<*>,
+                                     processor: Processor<TableColumnInfo>): Boolean {
+    if (!processOperandTableAndAllDotsColumns(operandProcessorRunner, expression, callInfo, processor)) {
+      return false
+    }
+
+    for (argument in callInfo.argumentInfo.expressionList) {
+      if (argument is RIdentifierExpression) {
+        if (!RDplyrAnalyzer.processTableFromVariable(argument, processor)) {
+          return false
+        }
+      }
+    }
+    return true
+  }
 }
 
 @Suppress("SpellCheckingInspection")
@@ -130,7 +149,7 @@ enum class DplyrFunction(
   GROUP_BY_ALL("group_by_all"),
   GROUP_BY_AT("group_by_at"),
   GROUP_BY_IF("group_by_if"),
-  MUTATE("mutate", tableArguments = listOf(".data"), tableColumnsProvider = ::processOperandTableAndAllDotsColumns),
+  MUTATE("mutate", tableArguments = listOf(".data"), tableColumnsProvider = ::processColumnsOfMutateFunction),
   MUTATE_ALL("mutate_all"),
   MUTATE_AT("mutate_at"),
   MUTATE_IF("mutate_if"),
