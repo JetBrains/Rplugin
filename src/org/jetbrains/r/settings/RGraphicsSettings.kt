@@ -15,7 +15,7 @@ import java.awt.Dimension
 @State(name = "RGraphicsSettings", storages = [Storage("rGraphicsSettings.xml")])
 class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>(RGraphicsSettingsState()) {
   companion object {
-    private const val CURRENT_VERSION = 1
+    private const val CURRENT_VERSION = 2
 
     fun getInstance(project: Project) = project.service<RGraphicsSettings>()
 
