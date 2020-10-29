@@ -35,12 +35,7 @@ object RVisualizeTableUtil {
   }
 
   fun createMaterialTableFromViewer(viewer: RDataFrameViewer): MaterialTable {
-    val columnModel = DefaultTableColumnModel()
-    for (i in 0 until viewer.nColumns) {
-      val tableColumn = TableColumn(i)
-      tableColumn.headerValue = viewer.getColumnName(i)
-      columnModel.addColumn(tableColumn)
-    }
+    val columnModel = createColumnModel(viewer)
     val model = RDataFrameTableModel(viewer)
     val materialTable = RMaterialTable(model, columnModel)
     materialTable.setMaxItemsForSizeCalculation(MAX_ITEMS_FOR_SIZE_CALCULATION)
@@ -51,5 +46,26 @@ object RVisualizeTableUtil {
     materialTable.rowSorter = RDataFrameRowSorter(model, materialTable)
     materialTable.rowHeight = max(DEFAULT_ROW_HEIGHT, materialTable.rowHeight)
     return materialTable
+  }
+
+  fun createColumnModel(viewer: RDataFrameViewer): DefaultTableColumnModel {
+    val columnModel = DefaultTableColumnModel()
+    for (i in 0 until viewer.nColumns) {
+      val tableColumn = TableColumn(i)
+      tableColumn.headerValue = viewer.getColumnName(i)
+      columnModel.addColumn(tableColumn)
+    }
+    return columnModel
+  }
+
+  fun refreshTables(project: Project) {
+    invokeLater {
+      FileEditorManager.getInstance(project).openFiles.filterIsInstance<RTableVirtualFile>().forEach {
+        val table = it.table
+        if (table.autoRefresh) {
+          table.refreshTable()
+        }
+      }
+    }
   }
 }

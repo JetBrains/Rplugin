@@ -191,5 +191,18 @@ public interface AsyncEventOrBuilder extends
    */
   org.jetbrains.r.rinterop.SourcePositionOrBuilder getDebugPrintSourcePositionToConsoleRequestOrBuilder();
 
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   */
+  boolean hasViewTableRequest();
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   */
+  org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getViewTableRequest();
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   */
+  org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder getViewTableRequestOrBuilder();
+
   public org.jetbrains.r.rinterop.AsyncEvent.EventCase getEventCase();
 }

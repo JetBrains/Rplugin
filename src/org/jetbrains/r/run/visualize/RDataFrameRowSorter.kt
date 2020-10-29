@@ -83,14 +83,14 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
     }
   }
 
-  private fun update() {
+  fun update() {
     currentUpdateTask?.let {
       if (!it.isDone) it.cancel(true)
     }
     val toWait = currentUpdateTask
     currentUpdateTask = ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-      toWait?.getWithCheckCanceled()
       try {
+        toWait?.getWithCheckCanceled()
         if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
         currentViewer = initialViewer
         rowFilter?.let {
@@ -110,11 +110,23 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
             .notify(initialViewer.project)
         }
       } catch (e: CancellationException) {
+      } catch (e: InterruptedException) {
       }
       model.viewer = currentViewer
       jTable.clearSelection()
       fireRowSorterChanged(null)
     }
+  }
+
+  fun restore() {
+    currentUpdateTask?.let {
+      if (!it.isDone) it.cancel(true)
+      currentUpdateTask = null
+    }
+    currentViewer = initialViewer
+    model.viewer = initialViewer
+    jTable.clearSelection()
+    fireRowSorterChanged(null)
   }
 
   override fun rowsInserted(p0: Int, p1: Int) {}

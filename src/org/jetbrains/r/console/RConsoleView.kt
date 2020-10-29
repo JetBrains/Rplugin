@@ -60,6 +60,7 @@ import org.jetbrains.r.psi.RRecursiveElementVisitor
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
+import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.event.KeyEvent
@@ -113,6 +114,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
       override fun onCommandExecuted() {
         workingDirectory = FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(rInterop.workingDir))
+        RVisualizeTableUtil.refreshTables(project)
       }
     })
   }

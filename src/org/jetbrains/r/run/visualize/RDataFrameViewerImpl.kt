@@ -5,12 +5,11 @@
 package org.jetbrains.r.run.visualize
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.impl.FileEditorManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.rejectedPromise
-import org.jetbrains.concurrency.resolvedPromise
+import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.packages.RequiredPackage
 import org.jetbrains.r.packages.RequiredPackageException
@@ -24,13 +23,14 @@ import kotlin.reflect.KClass
 class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   private val rInterop: RInterop = ref.rInterop
   override val nColumns: Int get() = columns.size
-  override val nRows: Int
+  override var nRows: Int = 0
   override val project get() = rInterop.project
-  private val columns: Array<ColumnInfo>
-  private val chunks: Array<Array<Array<Any?>>?>
-  private val promises: Array<Promise<Unit>?>
+  private lateinit var columns: Array<ColumnInfo>
+  private lateinit var chunks: Array<Array<Array<Any?>>?>
+  private lateinit var promises: Array<Promise<Unit>?>
   private var disposableParent: Disposable? = null
   private var virtualFile: RTableVirtualFile? = null
+  override var canRefresh: Boolean = false
 
   private data class ColumnInfo(val name: String, val type: KClass<*>, val sortable: Boolean = true,
                                 val isRowNames: Boolean = false,
@@ -40,23 +40,29 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
     Disposer.register(this, ref)
     val project = rInterop.project
     ensureDplyrInstalled(project)
-    val dataFrameInfo = rInterop.dataFrameGetInfo(ref)
+    initInfo(rInterop.dataFrameGetInfo(ref).getWithCheckCanceled())
+  }
+
+  private fun initInfo(dataFrameInfo: DataFrameInfoResponse) {
     nRows = dataFrameInfo.nRows
-    columns = dataFrameInfo.columnsList.map {
-      when (it.type) {
-        INTEGER -> ColumnInfo(it.name, Int::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.intValue }
-        DOUBLE -> ColumnInfo(it.name, Double::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.doubleValue }
-        BOOLEAN -> ColumnInfo(it.name, Boolean::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.booleanValue }
-        else -> ColumnInfo(it.name, String::class, it.sortable, it.isRowNames) { if (it.hasNa()) null else it.stringValue }
+    columns = dataFrameInfo.columnsList.map { col ->
+      when (col.type) {
+        INTEGER -> ColumnInfo(col.name, Int::class, col.sortable, col.isRowNames) { if (it.hasNa()) null else it.intValue }
+        DOUBLE -> ColumnInfo(col.name, Double::class, col.sortable, col.isRowNames) { if (it.hasNa()) null else it.doubleValue }
+        BOOLEAN -> ColumnInfo(col.name, Boolean::class, col.sortable, col.isRowNames) { if (it.hasNa()) null else it.booleanValue }
+        else -> ColumnInfo(col.name, String::class, col.sortable, col.isRowNames) { if (it.hasNa()) null else it.stringValue }
       }
     }.toTypedArray()
     chunks = Array((nRows + CHUNK_SIZE - 1) / CHUNK_SIZE) { null }
     promises = Array(chunks.size) { null }
+    canRefresh = dataFrameInfo.canRefresh
   }
 
   override fun getColumnName(index: Int) = columns[index].name
 
-  override fun getColumnType(index: Int) = columns[index].type
+  override fun getColumnType(index: Int): KClass<*> {
+    return columns[index].type
+  }
 
   override fun isColumnSortable(index: Int) = columns[index].sortable
 
@@ -65,7 +71,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   override fun getValueAt(row: Int, col: Int): Any? {
     ensureLoaded(row, col).blockingGet(Int.MAX_VALUE)
     val chunkIndex = row / CHUNK_SIZE
-    return chunks[chunkIndex]?.let { it[col][row % CHUNK_SIZE] }
+    return chunks.getOrNull(chunkIndex)?.getOrNull(col)?.getOrNull(row % CHUNK_SIZE)
   }
 
   override fun ensureLoaded(row: Int, col: Int, onLoadCallback: (() -> Unit)?): Promise<Unit> {
@@ -114,6 +120,23 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
       }
     } catch (e: RInteropTerminated) {
       throw RDataFrameException(RBundle.message("rinterop.terminated"))
+    }
+  }
+
+  override fun refresh(): Promise<Boolean> {
+    if (!canRefresh) return resolvedPromise(false)
+    return rInterop.dataFrameRefresh(ref).thenAsync {
+      if (!it) return@thenAsync resolvedPromise(false)
+      rInterop.dataFrameGetInfo(ref).thenAsync { info ->
+        AsyncPromise<Boolean>().also { promise ->
+          invokeLater {
+            promise.compute {
+              initInfo(info)
+              true
+            }
+          }
+        }
+      }
     }
   }
 

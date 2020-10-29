@@ -35,4 +35,9 @@ public interface DataFrameInfoResponseOrBuilder extends
    */
   org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnOrBuilder getColumnsOrBuilder(
       int index);
+
+  /**
+   * <code>bool canRefresh = 3;</code>
+   */
+  boolean getCanRefresh();
 }

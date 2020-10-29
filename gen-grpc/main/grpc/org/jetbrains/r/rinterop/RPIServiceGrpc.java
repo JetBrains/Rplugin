@@ -2166,35 +2166,35 @@ public final class RPIServiceGrpc {
     return getDataFrameFilterMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
-      com.google.protobuf.Empty> getDataFrameDisposeMethod;
+  private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      com.google.protobuf.BoolValue> getDataFrameRefreshMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "dataFrameDispose",
-      requestType = com.google.protobuf.Int32Value.class,
-      responseType = com.google.protobuf.Empty.class,
+      fullMethodName = SERVICE_NAME + '/' + "dataFrameRefresh",
+      requestType = org.jetbrains.r.rinterop.RRef.class,
+      responseType = com.google.protobuf.BoolValue.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.google.protobuf.Int32Value,
-      com.google.protobuf.Empty> getDataFrameDisposeMethod() {
-    io.grpc.MethodDescriptor<com.google.protobuf.Int32Value, com.google.protobuf.Empty> getDataFrameDisposeMethod;
-    if ((getDataFrameDisposeMethod = RPIServiceGrpc.getDataFrameDisposeMethod) == null) {
+  public static io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef,
+      com.google.protobuf.BoolValue> getDataFrameRefreshMethod() {
+    io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.RRef, com.google.protobuf.BoolValue> getDataFrameRefreshMethod;
+    if ((getDataFrameRefreshMethod = RPIServiceGrpc.getDataFrameRefreshMethod) == null) {
       synchronized (RPIServiceGrpc.class) {
-        if ((getDataFrameDisposeMethod = RPIServiceGrpc.getDataFrameDisposeMethod) == null) {
-          RPIServiceGrpc.getDataFrameDisposeMethod = getDataFrameDisposeMethod =
-              io.grpc.MethodDescriptor.<com.google.protobuf.Int32Value, com.google.protobuf.Empty>newBuilder()
+        if ((getDataFrameRefreshMethod = RPIServiceGrpc.getDataFrameRefreshMethod) == null) {
+          RPIServiceGrpc.getDataFrameRefreshMethod = getDataFrameRefreshMethod =
+              io.grpc.MethodDescriptor.<org.jetbrains.r.rinterop.RRef, com.google.protobuf.BoolValue>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "dataFrameDispose"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "dataFrameRefresh"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Int32Value.getDefaultInstance()))
+                  org.jetbrains.r.rinterop.RRef.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.google.protobuf.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("dataFrameDispose"))
+                  com.google.protobuf.BoolValue.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("dataFrameRefresh"))
               .build();
         }
       }
     }
-    return getDataFrameDisposeMethod;
+    return getDataFrameRefreshMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest,
@@ -3381,9 +3381,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void dataFrameDispose(com.google.protobuf.Int32Value request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-      asyncUnimplementedUnaryCall(getDataFrameDisposeMethod(), responseObserver);
+    public void dataFrameRefresh(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
+      asyncUnimplementedUnaryCall(getDataFrameRefreshMethod(), responseObserver);
     }
 
     /**
@@ -4025,12 +4025,12 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.Int32Value>(
                   this, METHODID_DATA_FRAME_FILTER)))
           .addMethod(
-            getDataFrameDisposeMethod(),
+            getDataFrameRefreshMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.google.protobuf.Int32Value,
-                com.google.protobuf.Empty>(
-                  this, METHODID_DATA_FRAME_DISPOSE)))
+                org.jetbrains.r.rinterop.RRef,
+                com.google.protobuf.BoolValue>(
+                  this, METHODID_DATA_FRAME_REFRESH)))
           .addMethod(
             getConvertRoxygenToHTMLMethod(),
             asyncUnaryCall(
@@ -4775,10 +4775,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public void dataFrameDispose(com.google.protobuf.Int32Value request,
-        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+    public void dataFrameRefresh(org.jetbrains.r.rinterop.RRef request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getDataFrameDisposeMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getDataFrameRefreshMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -5495,9 +5495,9 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.protobuf.Empty dataFrameDispose(com.google.protobuf.Int32Value request) {
+    public com.google.protobuf.BoolValue dataFrameRefresh(org.jetbrains.r.rinterop.RRef request) {
       return blockingUnaryCall(
-          getChannel(), getDataFrameDisposeMethod(), getCallOptions(), request);
+          getChannel(), getDataFrameRefreshMethod(), getCallOptions(), request);
     }
 
     /**
@@ -6115,10 +6115,10 @@ public final class RPIServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> dataFrameDispose(
-        com.google.protobuf.Int32Value request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.BoolValue> dataFrameRefresh(
+        org.jetbrains.r.rinterop.RRef request) {
       return futureUnaryCall(
-          getChannel().newCall(getDataFrameDisposeMethod(), getCallOptions()), request);
+          getChannel().newCall(getDataFrameRefreshMethod(), getCallOptions()), request);
     }
 
     /**
@@ -6365,7 +6365,7 @@ public final class RPIServiceGrpc {
   private static final int METHODID_DATA_FRAME_GET_DATA = 66;
   private static final int METHODID_DATA_FRAME_SORT = 67;
   private static final int METHODID_DATA_FRAME_FILTER = 68;
-  private static final int METHODID_DATA_FRAME_DISPOSE = 69;
+  private static final int METHODID_DATA_FRAME_REFRESH = 69;
   private static final int METHODID_CONVERT_ROXYGEN_TO_HTML = 70;
   private static final int METHODID_HTTPD_REQUEST = 71;
   private static final int METHODID_GET_DOCUMENTATION_FOR_PACKAGE = 72;
@@ -6681,9 +6681,9 @@ public final class RPIServiceGrpc {
           serviceImpl.dataFrameFilter((org.jetbrains.r.rinterop.DataFrameFilterRequest) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Int32Value>) responseObserver);
           break;
-        case METHODID_DATA_FRAME_DISPOSE:
-          serviceImpl.dataFrameDispose((com.google.protobuf.Int32Value) request,
-              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+        case METHODID_DATA_FRAME_REFRESH:
+          serviceImpl.dataFrameRefresh((org.jetbrains.r.rinterop.RRef) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue>) responseObserver);
           break;
         case METHODID_CONVERT_ROXYGEN_TO_HTML:
           serviceImpl.convertRoxygenToHTML((org.jetbrains.r.rinterop.ConvertRoxygenToHTMLRequest) request,
@@ -6899,7 +6899,7 @@ public final class RPIServiceGrpc {
               .addMethod(getDataFrameGetDataMethod())
               .addMethod(getDataFrameSortMethod())
               .addMethod(getDataFrameFilterMethod())
-              .addMethod(getDataFrameDisposeMethod())
+              .addMethod(getDataFrameRefreshMethod())
               .addMethod(getConvertRoxygenToHTMLMethod())
               .addMethod(getHttpdRequestMethod())
               .addMethod(getGetDocumentationForPackageMethod())

@@ -761,31 +761,30 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     execute(asyncStub::commitDataImport, request)
   }
 
+  private fun dataFrameIndexToViewer(index: Int): RDataFrameViewer {
+    if (index == -1) {
+      throw RDataFrameException("Invalid data frame")
+    }
+    return dataFrameViewerCache.getOrPut(index) {
+      val persistentRef = RPersistentRef(index, this)
+      Disposer.register(persistentRef, Disposable {
+        dataFrameViewerCache.remove(index)
+      })
+      RDataFrameViewerImpl(persistentRef)
+    }
+  }
+
   fun dataFrameGetViewer(ref: RReference): Promise<RDataFrameViewer> {
     try {
       RDataFrameViewerImpl.ensureDplyrInstalled(project)
     } catch (e: RequiredPackageException) {
        return rejectedPromise(e)
     }
-    return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable {
-      val index = it.value
-      if (index == -1) {
-        throw RDataFrameException("Invalid data frame")
-      }
-      dataFrameViewerCache.getOrPut(index) {
-        val persistentRef = RPersistentRef(index, this)
-        Disposer.register(persistentRef, Disposable {
-          dataFrameViewerCache.remove(index)
-          if (isAlive) executeAsync(asyncStub::dataFrameDispose, Int32Value.of(index))
-        })
-        val viewer = RDataFrameViewerImpl(persistentRef)
-        viewer
-      }
-    }
+    return executeAsync(asyncStub::dataFrameRegister, ref.proto).thenCancellable { dataFrameIndexToViewer(it.value) }
   }
 
-  fun dataFrameGetInfo(ref: RReference): DataFrameInfoResponse {
-    return executeWithCheckCancel(asyncStub::dataFrameGetInfo, ref.proto)
+  fun dataFrameGetInfo(ref: RReference): CancellablePromise<DataFrameInfoResponse> {
+    return executeAsync(asyncStub::dataFrameGetInfo, ref.proto)
   }
 
   fun dataFrameGetData(ref: RReference, start: Int, end: Int): CancellablePromise<DataFrameGetDataResponse> {
@@ -811,6 +810,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     return executeAsync(asyncStub::dataFrameFilter, request)
       .also { disposableParent?.tryRegisterDisposable(Disposable { it.cancel() }) }
       .let { RPersistentRef(it.getWithCheckCanceled().value, this, disposableParent) }
+  }
+
+  fun dataFrameRefresh(ref: RReference): CancellablePromise<Boolean> {
+    return executeAsync(asyncStub::dataFrameRefresh, ref.proto).thenCancellable { it.value }
   }
 
   fun findInheritorNamedArguments(function: RReference): List<String> {
@@ -1026,6 +1029,12 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         val ref = RPersistentRef(event.viewRequest.persistentRefIndex, this)
         fireListenersAsync({ it.onViewRequest(ref, event.viewRequest.title, ProtoUtil.rValueFromProto(event.viewRequest.value)) }) {
           Disposer.dispose(ref)
+          executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
+        }
+      }
+      AsyncEvent.EventCase.VIEWTABLEREQUEST -> {
+        val viewer = dataFrameIndexToViewer(event.viewTableRequest.persistentRefIndex)
+        fireListenersAsync({ it.onViewTableRequest(viewer, event.viewTableRequest.title) }) {
           executeAsync(asyncStub::clientRequestFinished, Empty.getDefaultInstance())
         }
       }
@@ -1309,6 +1318,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     fun onException(exception: RExceptionInfo) {}
     fun onTermination() {}
     fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> = resolvedPromise()
+    fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> = resolvedPromise()
     fun onShowHelpRequest(httpdResponse: HttpdResponse) {}
     fun onShowFileRequest(filePath: String, title: String): Promise<Unit> = resolvedPromise()
     fun onRStudioApiRequest(functionId: RStudioApiFunctionId, args: RObject): Promise<RObject>? = null
