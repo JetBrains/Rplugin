@@ -141,9 +141,9 @@ class RConsoleManager(private val project: Project) {
     /**
      * Success promise means that [currentConsoleOrNull] is not null
      */
-    fun runConsole(project: Project, requestFocus: Boolean = false): Promise<RConsoleView> {
+    fun runConsole(project: Project, requestFocus: Boolean = false, workingDir: String? = null): Promise<RConsoleView> {
       val promise = AsyncPromise<RConsoleView>()
-      doRunConsole(project, requestFocus).processed(promise)
+      doRunConsole(project, requestFocus, workingDir).processed(promise)
       return promise
     }
 
@@ -161,10 +161,10 @@ class RConsoleManager(private val project: Project) {
       }
     }
 
-    private fun doRunConsole(project: Project, requestFocus: Boolean): Promise<RConsoleView> {
+    private fun doRunConsole(project: Project, requestFocus: Boolean, workingDir: String?): Promise<RConsoleView> {
       val result = AsyncPromise<RConsoleView>()
       RInterpreterManager.getInterpreterAsync(project).onSuccess { interpreter ->
-        RConsoleRunner(interpreter).initAndRun().onSuccess { console ->
+        RConsoleRunner(interpreter, workingDir ?: interpreter.basePath).initAndRun().onSuccess { console ->
           result.setResult(console)
           invokeLater {
             val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(project)

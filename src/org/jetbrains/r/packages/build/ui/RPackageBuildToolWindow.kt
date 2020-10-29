@@ -147,7 +147,7 @@ class RPackageBuildToolWindow(private val project: Project) : SimpleToolWindowPa
   private fun runHelperAsync(helperName: String, args: List<String> = emptyList()): Promise<Unit> {
     return runProcessAsync { interpreterLocation ->
       val relativeHelperPath = Paths.get("packages", helperName).toString()
-      launchScript(interpreterLocation, relativeHelperPath, args, project.basePath)
+      launchScript(interpreterLocation, relativeHelperPath, args, project.basePath, project = project)
     }
   }
 

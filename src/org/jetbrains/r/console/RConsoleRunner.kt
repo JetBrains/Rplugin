@@ -36,11 +36,14 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
+import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreter
+import org.jetbrains.r.interpreter.runHelper
+import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -66,7 +69,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
   fun initAndRun(): Promise<RConsoleView> {
     val promise = AsyncPromise<RConsoleView>()
-    fixRProfileFile().onProcessed {
+    checkRProfile().onSuccess {
       interpreter.prepareForExecution().onProcessed {
         UIUtil.invokeLaterIfNeeded {
           val placeholder = RConsoleToolWindowFactory.addConsolePlaceholder(project, contentIndex)
@@ -82,6 +85,8 @@ class RConsoleRunner(private val interpreter: RInterpreter,
           }
         }
       }
+    }.onError {
+      promise.setError(it)
     }
     return promise
   }
@@ -284,10 +289,9 @@ class RConsoleRunner(private val interpreter: RInterpreter,
   }
 
   // R-509: Newline is required in the end of .Rprofile
-  private fun fixRProfileFile(): Promise<Unit> {
-    if (RSettings.getInstance(project).disableRprofile) return resolvedPromise()
+  private fun fixRProfile(): Promise<Unit> {
     return runAsync {
-      val file = interpreter.findFileByPathAtHost(RPathUtil.join(workingDir, ".Rprofile")) ?: return@runAsync
+      val file = interpreter.findFileByPathAtHost(RPathUtil.join(workingDir, ".Rprofile")) ?: return@runAsync resolvedPromise()
       val needFix = runReadAction {
         val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runReadAction false
         val text = document.text
@@ -297,6 +301,32 @@ class RConsoleRunner(private val interpreter: RInterpreter,
         WriteCommandAction.runWriteCommandAction(project) {
           val document = FileDocumentManager.getInstance().getDocument(file) ?: return@runWriteCommandAction
           document.insertString(document.textLength, "\n")
+        }
+        interpreter.prepareForExecution()
+      } else {
+        resolvedPromise()
+      }
+    }.thenAsync {
+      it
+    }
+  }
+
+  private fun checkRProfile(): Promise<Unit> {
+    if (RSettings.getInstance(project).disableRprofile) return resolvedPromise()
+    return fixRProfile().thenAsync {
+      runAsync<Unit> {
+        try {
+          interpreter.runHelper(RPluginUtil.findFileInRHelpers("R/empty.R"), emptyList(), workingDir)
+        } catch (e: RuntimeException) {
+          RNotificationUtil.notifyConsoleError(
+            project, RBundle.message("console.rprofile.error.message", e.message.orEmpty()),
+            object : AnAction(RBundle.message("console.rprofile.error.disable.and.restart")) {
+              override fun actionPerformed(e: AnActionEvent) {
+                RSettings.getInstance(project).disableRprofile = true
+                RConsoleManager.runConsole(project, true, workingDir)
+              }
+            })
+          throw e
         }
       }
     }

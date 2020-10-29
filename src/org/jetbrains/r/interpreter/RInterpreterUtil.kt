@@ -32,6 +32,7 @@ import org.jetbrains.r.lexer.SingleStringTokenLexer
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RCondaUtil
 import org.jetbrains.r.settings.RInterpreterSettings
+import org.jetbrains.r.settings.RSettings
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -85,17 +86,17 @@ object RInterpreterUtil {
     }
   }
 
-  fun getVersionByPath(path: String): Version? {
-    return getVersionByLocation(RLocalInterpreterLocation(path))
+  fun getVersionByPath(path: String, project: Project? = null): Version? {
+    return getVersionByLocation(RLocalInterpreterLocation(path), project)
   }
 
-  fun getVersionByLocation(interpreterLocation: RInterpreterLocation): Version? {
+  fun getVersionByLocation(interpreterLocation: RInterpreterLocation, project: Project? = null): Version? {
     val result = runRInterpreter(interpreterLocation, listOf("--version"), null)
     val version = parseVersion(result.stdoutLines.firstOrNull()) ?: parseVersion(result.stderrLines.firstOrNull())
     if (version != null) return version
 
     val script = RPluginUtil.findFileInRHelpers("R/GetVersion.R").takeIf { it.exists() } ?: return null
-    val output = runHelper(interpreterLocation, script, null, emptyList())
+    val output = runHelper(interpreterLocation, script, null, emptyList(), project = project)
     return parseVersion(output.lineSequence().firstOrNull())
   }
 
@@ -226,9 +227,10 @@ object RInterpreterUtil {
                 helper: File,
                 workingDirectory: String?,
                 args: List<String>,
+                project: Project? = null,
                 errorHandler: ((ProcessOutput) -> Unit)? = null): String {
     val scriptName = helper.name
-    val result = runHelperBase(interpreterLocation, helper, workingDirectory, args) { CapturingProcessAdapter(it) }
+    val result = runHelperBase(interpreterLocation, helper, workingDirectory, args, project) { CapturingProcessAdapter(it) }
     if (result.exitCode != 0) {
       if (errorHandler != null) {
         errorHandler(result)
@@ -259,19 +261,23 @@ object RInterpreterUtil {
                            helper: File,
                            workingDirectory: String?,
                            args: List<String>,
-                           processor: RMultiOutputProcessor) {
-    runHelperBase(interpreterLocation, helper, workingDirectory, args) { RMultiOutputProcessAdapter.createProcessAdapter(it, processor) }
+                           processor: RMultiOutputProcessor,
+                           project: Project? = null) {
+    runHelperBase(interpreterLocation, helper, workingDirectory, args, project) {
+      RMultiOutputProcessAdapter.createProcessAdapter(it, processor)
+    }
   }
 
   private fun runHelperBase(interpreterLocation: RInterpreterLocation,
                             helper: File,
                             workingDirectory: String?,
                             args: List<String>,
+                            project: Project? = null,
                             processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
     val scriptName = helper.name
     val time = System.currentTimeMillis()
     try {
-      return runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer) }
+      return runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer, project) }
                .onError { RInterpreterBase.LOG.error(it) }
                .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
     }
@@ -292,14 +298,18 @@ object RInterpreterUtil {
                                 helper: File,
                                 workingDirectory: String?,
                                 args: List<String>,
-                                processAdapterProducer: (ProcessOutput) -> ProcessAdapter): ProcessOutput {
+                                processAdapterProducer: (ProcessOutput) -> ProcessAdapter,
+                                project: Project? = null): ProcessOutput {
     val helperOnHost = interpreterLocation.uploadFileToHost(helper)
-    val interpreterArgs = getRunHelperArgs(helperOnHost, args)
+    val interpreterArgs = getRunHelperArgs(helperOnHost, args, project)
     return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
   }
 
-  fun getRunHelperArgs(helper: String, args: List<String>): List<String> {
-    return listOf("--slave", "--no-save", "--no-restore", "--no-site-file", "--no-environ", "-f", helper, "--args", *args.toTypedArray())
+  fun getRunHelperArgs(helper: String, args: List<String>, project: Project? = null): List<String> {
+    val list = mutableListOf("--slave", "--no-save", "--no-restore", "--no-site-file", "--no-environ")
+    if (project != null && RSettings.getInstance(project).disableRprofile) list.add("--no-init-file")
+    list.addAll(listOf("-f", helper, "--args", *args.toTypedArray()))
+    return list
   }
 
   private fun runRInterpreter(interpreterLocation: RInterpreterLocation,
