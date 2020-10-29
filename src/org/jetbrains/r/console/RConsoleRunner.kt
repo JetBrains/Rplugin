@@ -36,14 +36,12 @@ import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.actions.RPromotedAction
 import org.jetbrains.r.actions.ToggleSoftWrapAction
 import org.jetbrains.r.help.RWebHelpProvider
 import org.jetbrains.r.interpreter.RInterpreter
-import org.jetbrains.r.interpreter.runHelper
-import org.jetbrains.r.notifications.RNotificationUtil
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RInteropUtil
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -315,18 +313,8 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     if (RSettings.getInstance(project).disableRprofile) return resolvedPromise()
     return fixRProfile().thenAsync {
       runAsync<Unit> {
-        try {
-          interpreter.runHelper(RPluginUtil.findFileInRHelpers("R/empty.R"), emptyList(), workingDir)
-        } catch (e: RuntimeException) {
-          RNotificationUtil.notifyConsoleError(
-            project, RBundle.message("console.rprofile.error.message", e.message.orEmpty()),
-            object : AnAction(RBundle.message("console.rprofile.error.disable.and.restart")) {
-              override fun actionPerformed(e: AnActionEvent) {
-                RSettings.getInstance(project).disableRprofile = true
-                RConsoleManager.runConsole(project, true, workingDir)
-              }
-            })
-          throw e
+        if (!RInterpreterUtil.validateRProfile(project, interpreter.interpreterLocation, workingDir, true)) {
+          throw RuntimeException(".Rprofile may contain errors")
         }
       }
     }

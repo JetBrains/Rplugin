@@ -32,6 +32,7 @@ class RBasicRepoProvider(private val project: Project) : RepoProvider {
   private val defaultRepositoriesAsync: Promise<List<RDefaultRepository>>
     get() = defaultRepositoriesPromise ?: synchronized(this) {
       defaultRepositoriesPromise ?: loadDefaultRepositoriesAsync().also {
+        it.onError { defaultRepositoriesPromise = null }
         defaultRepositoriesPromise = it
       }
     }

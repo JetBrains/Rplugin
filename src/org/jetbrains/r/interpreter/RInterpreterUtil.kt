@@ -8,6 +8,8 @@ package org.jetbrains.r.interpreter
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbServiceImpl
@@ -28,6 +30,7 @@ import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.lexer.SingleStringTokenLexer
 import org.jetbrains.r.notifications.RNotificationUtil
 import org.jetbrains.r.rinterop.RCondaUtil
@@ -302,7 +305,11 @@ object RInterpreterUtil {
                                 project: Project? = null): ProcessOutput {
     val helperOnHost = interpreterLocation.uploadFileToHost(helper)
     val interpreterArgs = getRunHelperArgs(helperOnHost, args, project)
-    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
+    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer).also {
+      if (project != null && it.exitCode != 0) {
+        validateRProfile(project, interpreterLocation, workingDirectory)
+      }
+    }
   }
 
   fun getRunHelperArgs(helper: String, args: List<String>, project: Project? = null): List<String> {
@@ -367,6 +374,34 @@ object RInterpreterUtil {
                                      "Exception occurred: " + e.message)
     }
     return null
+  }
+
+  fun validateRProfile(project: Project, interpreterLocation: RInterpreterLocation, workingDir: String?,
+                               suggestRestartConsole: Boolean = false): Boolean {
+    if (RSettings.getInstance(project).disableRprofile) return true
+    val helperOnHost = interpreterLocation.uploadFileToHost(RPluginUtil.findFileInRHelpers("R/empty.R"))
+    val interpreterArgs = getRunHelperArgs(helperOnHost, listOf(), project)
+    val result = runRInterpreter(interpreterLocation, interpreterArgs, workingDir)
+    if (result.exitCode == 0) return true
+    if (suggestRestartConsole) {
+      RNotificationUtil.notifyConsoleError(
+        project, RBundle.message("interpreter.rprofile.error.message", result.stderr),
+        object : AnAction(RBundle.message("interpreter.rprofile.error.disable.and.restart")) {
+          override fun actionPerformed(e: AnActionEvent) {
+            RSettings.getInstance(project).disableRprofile = true
+            RConsoleManager.runConsole(project, true, workingDir)
+          }
+        })
+    } else {
+      RNotificationUtil.notifyConsoleError(
+        project, RBundle.message("interpreter.rprofile.error.message", result.stderr),
+        object : AnAction(RBundle.message("interpreter.rprofile.error.disable")) {
+          override fun actionPerformed(e: AnActionEvent) {
+            RSettings.getInstance(project).disableRprofile = true
+          }
+        })
+    }
+    return false
   }
 
   private data class CondaPath(val path: String, val environment: String)
