@@ -385,6 +385,23 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
     )
   }
 
+  fun testStaticCompletionInMutateWithSecondTable() {
+    checkStaticCompletion(
+      """
+        library(magrittr)
+        library(dplyr)
+
+        car_data <- tibble(cyl = rnorm(100), speed = rnorm(100, 90, 40))
+new_tbl <- tibble(column1 = rnorm(100), column2 = rnorm(100, 90, 40))
+
+car_data %>% select(cyl) %>% mutate(new_tbl) %>% select(col<caret>)
+      """.trimIndent(),
+
+      listOf("column1", "column2"),
+      listOf()
+    )
+  }
+
   private fun checkCompletion(text: String, expected: List<String>, initial: List<String>? = null, initialGroups: List<String>? = null) {
     if (initial != null) {
       rInterop.executeCode("table <- dplyr::tibble(${initial.joinToString(", ") { "$it = NA" }})", false)
