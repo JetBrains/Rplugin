@@ -76,7 +76,7 @@ class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistent
       fun onStandaloneChange(isStandalone: Boolean)
     }
 
-    private const val CURRENT_VERSION = 1
+    private const val CURRENT_VERSION = 2
 
     private val CHANGE_GLOBAL_RESOLUTION_TOPIC = Topic.create("R Markdown Global Resolution Topic", GlobalResolutionNotifier::class.java)
     private val CHANGE_STANDALONE_TOPIC = Topic.create("R Standalone GE Topic", StandaloneNotifier::class.java)
