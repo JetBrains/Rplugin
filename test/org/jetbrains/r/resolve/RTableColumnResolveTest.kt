@@ -166,6 +166,19 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testResolveIntoMutateWithSecondTable() {
+    doTest(
+      "column2 = rnorm(100, 90, 40)",
+
+      """
+        car_data <- dplyr::tibble(cyl = rnorm(100), speed = rnorm(100, 90, 40))
+        new_tbl <- dplyr::tibble(column1 = rnorm(100), column2 = rnorm(100, 90, 40))
+  
+        car_data %>% dplyr::mutate(new_tbl) %>% dplyr::filter(co<caret>lumn2)
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
