@@ -639,12 +639,25 @@ class RCompletionContributor : CompletionContributor() {
       }
     }
 
+    private fun getFileNamePrefix(filepath: String): String? {
+      if (filepath.endsWith("/") || filepath.endsWith("\\")) {
+        return ""
+      } else {
+        return RPathUtil.toPath(filepath)?.fileName?.toString()
+      }
+    }
+
     private fun addFilePathCompletion(parameters: CompletionParameters,
                                       stringLiteral: RStringLiteralExpression,
                                       _result: CompletionResultSet) {
       val reference = parameters.position.containingFile.findReferenceAt(parameters.offset) as? FileReference ?: return
-      val filepath = stringLiteral.name?.trim() ?: return
-      val filePrefix = RPathUtil.toPath(filepath)?.fileName?.toString()?.replace(CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED, "") ?: return
+      var filepath = stringLiteral.name?.trim() ?: return
+      val dummyIdentifierIndex = filepath.indexOf(CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED)
+      if (dummyIdentifierIndex > 0) {
+        filepath = filepath.substring(0, dummyIdentifierIndex).trim()
+      }
+      val filePrefix = getFileNamePrefix(filepath) ?: return
+
       val result = _result.withPrefixMatcher(filePrefix)
       val variants = reference.variants.map {
         when (it) {
