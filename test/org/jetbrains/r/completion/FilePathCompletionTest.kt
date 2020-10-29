@@ -27,10 +27,17 @@ class FilePathCompletionTest : RLightCodeInsightFixtureTestCase() {
   }
 
   fun testAbsolutePath() {
-    val dir = "$testDataPath/filePathCompletion/"
-    checkCompletion("\"$dir<caret>\"",
+    checkCompletion("\"$testDataPath/<caret>\"",
                     emptyList(),
                     listOf("absoluteFilePath.R"))
+  }
+
+  fun testInTheMiddleOfFileName() {
+    myFixture.addFileToProject("my_another_file.r", "")
+    myFixture.configureByText("currentFile.R", "\"my_<caret>file.R\"")
+    myFixture.completeBasic()
+    myFixture.finishLookup('\n')
+    myFixture.editor.document.text == "\"my_another_file.rfile.R\""
   }
 
   fun testInvalidPath() {
@@ -46,5 +53,9 @@ class FilePathCompletionTest : RLightCodeInsightFixtureTestCase() {
     TestCase.assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }.filter { it != "currentFile.R" }
     TestCase.assertEquals(expected, lookupStrings)
+  }
+
+  override fun getTestDataPath(): String {
+    return super.getTestDataPath() + "/filePathCompletion"
   }
 }
