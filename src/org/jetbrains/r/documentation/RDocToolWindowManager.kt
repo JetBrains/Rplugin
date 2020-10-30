@@ -5,8 +5,10 @@ import com.intellij.codeInsight.CodeInsightBundle
 import com.intellij.codeInsight.documentation.AbstractDocToolWindowManager
 import com.intellij.codeInsight.documentation.DocumentationComponent
 import com.intellij.codeInsight.documentation.DocumentationManager
+import com.intellij.lang.LanguageDocumentation
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -15,7 +17,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.content.Content
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import java.util.*
 import java.util.function.Supplier
+import kotlin.concurrent.timerTask
 
 class RDocToolWindowManager : AbstractDocToolWindowManager() {
 
@@ -32,6 +36,16 @@ class RDocToolWindowManager : AbstractDocToolWindowManager() {
   override fun prepareForShowDocumentation(toolWindow: ToolWindow, documentationManager: DocumentationManager) {
     val content = getDocumentationContent(toolWindow, documentationManager)
     toolWindow.contentManager.setSelectedContent(content)
+    val component = getDocumentationComponent(toolWindow, documentationManager)
+    val provider = LanguageDocumentation.INSTANCE.forLanguage(RLanguage.INSTANCE)
+    component.startWait()
+    Timer().schedule(timerTask {
+      runInEdt {
+        if (component.isEmpty) {
+          component.setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, provider)
+        }
+      }
+    }, 250)
   }
 
   override fun installToolWindowActions(toolWindow: ToolWindow, documentationManager: DocumentationManager) {

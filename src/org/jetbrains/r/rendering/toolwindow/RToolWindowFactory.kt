@@ -82,8 +82,8 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
 
     fun showDocumentation(psiElement: PsiElement) {
       val project = psiElement.project
-      DocumentationManager.getInstance(project).fetchDocInfo(psiElement, getDocumentationComponent(project))
       RNonStealingToolWindowInvoker(project, HELP).showWindow()
+      DocumentationManager.getInstance(project).fetchDocInfo(psiElement, getDocumentationComponent(project))
     }
 
     fun findContent(project: Project, displayName: String): Content =
