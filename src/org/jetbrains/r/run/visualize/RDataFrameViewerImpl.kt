@@ -36,6 +36,8 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
                                 val isRowNames: Boolean = false,
                                 val parseValue: (DataFrameGetDataResponse.Value) -> Any?)
 
+  private var currentProxyDisposable: Disposable? = null
+
   init {
     Disposer.register(this, ref)
     val project = rInterop.project
@@ -143,12 +145,16 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
   override fun registerDisposable(parent: Disposable, virtualFile: RTableVirtualFile?) {
     disposableParent = parent
     this.virtualFile = virtualFile
-    val proxyDisposable = Disposable {
-      if (virtualFile?.getUserData(FileEditorManagerImpl.CLOSING_TO_REOPEN) != java.lang.Boolean.TRUE) {
-        Disposer.dispose(this)
+    currentProxyDisposable = object : Disposable {
+      override fun dispose() {
+        if (this == currentProxyDisposable &&
+            virtualFile?.getUserData(FileEditorManagerImpl.CLOSING_TO_REOPEN) != java.lang.Boolean.TRUE) {
+          Disposer.dispose(this)
+        }
       }
+    }.also {
+      Disposer.register(parent, it)
     }
-    Disposer.register(parent, proxyDisposable)
   }
 
   companion object {
