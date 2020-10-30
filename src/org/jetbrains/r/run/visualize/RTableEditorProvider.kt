@@ -6,6 +6,7 @@ package org.jetbrains.r.run.visualize
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter
 import com.intellij.icons.AllIcons
+import com.intellij.ide.actions.SplitAction
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.ex.FakeFileType
@@ -33,6 +34,10 @@ private object TableFileType : FakeFileType() {
 }
 
 class RTableVirtualFile(val table: RDataFrameTablePage, name: String) : LightVirtualFile(name) {
+  init {
+    putUserData(SplitAction.FORBID_TAB_SPLIT, true)
+  }
+
   override fun getFileType(): FileType = TableFileType
 }
 
