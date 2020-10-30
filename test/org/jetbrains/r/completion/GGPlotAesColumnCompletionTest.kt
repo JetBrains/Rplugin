@@ -79,6 +79,17 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
                          expected = listOf("yyyy_aa", "yyyy_ab"))
   }
 
+  fun testInQplot() {
+    checkCompletionDplyr(
+      """
+        my_table <- tibble(custom_column_1 = norm(10), custom_column_2 = norm(10))
+        qplot(x = custom_colum<caret>, y = custom_column_2, data = my_table, geom = "point")
+      """.trimIndent(),
+      listOf("custom_column_1", "custom_column_2"),
+      listOf()
+    )
+  }
+
   private fun checkCompletionDataTable(text: String,
                                         expected: List<String> = emptyList(),
                                         initial: List<String>? = null,
