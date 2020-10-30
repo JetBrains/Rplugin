@@ -71,6 +71,17 @@
         </context>
     </template>
 
+    <template name="qp" value="qplot(x = $X_COLUMN$, y = $Y_COLUMN$, data = $TABLE$, geom = &quot;$GEOM$&quot;)" toReformat="false"
+              title="ggplot: qplot" toShortenFQNames="true">
+        <variable name="TABLE" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="X_COLUMN" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="Y_COLUMN" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="GEOM" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="R" value="true"/>
+        </context>
+    </template>
+
     <!-- misc-->
 
     <template name="sl"
