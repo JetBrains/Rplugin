@@ -25,6 +25,15 @@ class GgplotResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testResolveFromQplot() {
+    doTest("col1 = norm(10)",
+           """
+             my_table <- tibble(col1 = norm(10), column2 = norm(10))
+             qplot(x = col<caret>1, y = column2, data = my_table, geom = "point")
+           """.trimIndent()
+    )
+  }
+
   override fun setUp() {
     super.setUp()
     addLibraries()
