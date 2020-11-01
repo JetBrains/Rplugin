@@ -12,8 +12,9 @@ message RLibrarySymbol {
   enum Type {
     OTHER = 0;
     FUNCTION = 1;
-    DATASET = 2;
-    S4CLASS = 3;
+    PRIMITIVE = 2;
+    DATASET = 3;
+    S4CLASS = 4;
   }
   message FunctionRepresentation {
     message ExtraNamedArguments {

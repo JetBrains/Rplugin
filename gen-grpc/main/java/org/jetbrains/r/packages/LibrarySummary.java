@@ -208,13 +208,17 @@ public final class LibrarySummary {
        */
       FUNCTION(1),
       /**
-       * <code>DATASET = 2;</code>
+       * <code>PRIMITIVE = 2;</code>
        */
-      DATASET(2),
+      PRIMITIVE(2),
       /**
-       * <code>S4CLASS = 3;</code>
+       * <code>DATASET = 3;</code>
        */
-      S4CLASS(3),
+      DATASET(3),
+      /**
+       * <code>S4CLASS = 4;</code>
+       */
+      S4CLASS(4),
       UNRECOGNIZED(-1),
       ;
 
@@ -227,13 +231,17 @@ public final class LibrarySummary {
        */
       public static final int FUNCTION_VALUE = 1;
       /**
-       * <code>DATASET = 2;</code>
+       * <code>PRIMITIVE = 2;</code>
        */
-      public static final int DATASET_VALUE = 2;
+      public static final int PRIMITIVE_VALUE = 2;
       /**
-       * <code>S4CLASS = 3;</code>
+       * <code>DATASET = 3;</code>
        */
-      public static final int S4CLASS_VALUE = 3;
+      public static final int DATASET_VALUE = 3;
+      /**
+       * <code>S4CLASS = 4;</code>
+       */
+      public static final int S4CLASS_VALUE = 4;
 
 
       public final int getNumber() {
@@ -256,8 +264,9 @@ public final class LibrarySummary {
         switch (value) {
           case 0: return OTHER;
           case 1: return FUNCTION;
-          case 2: return DATASET;
-          case 3: return S4CLASS;
+          case 2: return PRIMITIVE;
+          case 3: return DATASET;
+          case 4: return S4CLASS;
           default: return null;
         }
       }
@@ -6013,7 +6022,7 @@ public final class LibrarySummary {
   static {
     java.lang.String[] descriptorData = {
       "\n\025library_summary.proto\022\017library_summary" +
-      "\"\216\006\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
+      "\"\235\006\n\016RLibrarySymbol\022\014\n\004name\030\001 \001(\t\0222\n\004typ" +
       "e\030\002 \001(\0162$.library_summary.RLibrarySymbol" +
       ".Type\022\020\n\010exported\030\003 \001(\010\022X\n\026functionRepre" +
       "sentation\030\004 \001(\01326.library_summary.RLibra" +
@@ -6030,15 +6039,16 @@ public final class LibrarySummary {
       "library_summary.RLibrarySymbol.S4ClassRe" +
       "presentation.S4ClassSlot\022\024\n\014superClasses" +
       "\030\003 \003(\t\022\021\n\tisVirtual\030\004 \001(\010\032)\n\013S4ClassSlot" +
-      "\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\"9\n\004Type\022\t\n\005" +
-      "OTHER\020\000\022\014\n\010FUNCTION\020\001\022\013\n\007DATASET\020\002\022\013\n\007S4" +
-      "CLASS\020\003B\020\n\016representation\"\330\001\n\017RLibraryPa" +
-      "ckage\022\014\n\004name\030\001 \001(\t\022;\n\010priority\030\002 \001(\0162)." +
-      "library_summary.RLibraryPackage.Priority" +
-      "\0220\n\007symbols\030\003 \003(\0132\037.library_summary.RLib" +
-      "rarySymbol\"H\n\010Priority\022\013\n\007UNKNOWN\020\000\022\006\n\002N" +
-      "A\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004BASE\020\003\022\014\n\010OPTION" +
-      "AL\020\004B\032\n\030org.jetbrains.r.packagesb\006proto3"
+      "\022\014\n\004name\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\"H\n\004Type\022\t\n\005" +
+      "OTHER\020\000\022\014\n\010FUNCTION\020\001\022\r\n\tPRIMITIVE\020\002\022\013\n\007" +
+      "DATASET\020\003\022\013\n\007S4CLASS\020\004B\020\n\016representation" +
+      "\"\330\001\n\017RLibraryPackage\022\014\n\004name\030\001 \001(\t\022;\n\010pr" +
+      "iority\030\002 \001(\0162).library_summary.RLibraryP" +
+      "ackage.Priority\0220\n\007symbols\030\003 \003(\0132\037.libra" +
+      "ry_summary.RLibrarySymbol\"H\n\010Priority\022\013\n" +
+      "\007UNKNOWN\020\000\022\006\n\002NA\020\001\022\017\n\013RECOMMENDED\020\002\022\010\n\004B" +
+      "ASE\020\003\022\014\n\010OPTIONAL\020\004B\032\n\030org.jetbrains.r.p" +
+      "ackagesb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

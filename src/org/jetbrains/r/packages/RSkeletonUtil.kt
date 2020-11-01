@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 
 object RSkeletonUtil {
-  private const val CUR_SKELETON_VERSION = 9
+  private const val CUR_SKELETON_VERSION = 10
   const val SKELETON_DIR_NAME = "r_skeletons"
   private const val MAX_THREAD_POOL_SIZE = 4
   private const val FAILED_SUFFIX = ".failed"
@@ -226,27 +226,32 @@ object RSkeletonUtil {
         throw IOException("Expected $it types in line $lineNum: $line")
       }
 
-      if (types.contains("function") && typesEndIndex < parts.size) {
-        //No "function" description for exported symbols like `something <- .Primitive("some_primitive")`
-        builder.type = RLibrarySymbol.Type.FUNCTION
-        val functionRepresentationBuilder = RLibrarySymbol.FunctionRepresentation.newBuilder()
+      if (types.contains("function")) {
+        if (typesEndIndex < parts.size) {
+          //No "function" description for exported symbols like `something <- .Primitive("some_primitive")`
+          builder.type = RLibrarySymbol.Type.FUNCTION
+          val functionRepresentationBuilder = RLibrarySymbol.FunctionRepresentation.newBuilder()
 
-        val signature = parts[typesEndIndex]
-        val prefix = "function ("
-        if (!signature.startsWith(prefix) || !signature.endsWith(") ")) {
-          throw IOException("Invalid function description at $lineNum: " + signature)
+          val signature = parts[typesEndIndex]
+          val prefix = "function ("
+          if (!signature.startsWith(prefix) || !signature.endsWith(") ")) {
+            throw IOException("Invalid function description at $lineNum: " + signature)
+          }
+
+          val parameters = signature.substring(prefix.length, signature.length - 2)
+          functionRepresentationBuilder.parameters = parameters
+
+          if (parts.size > typesEndIndex + 1) {
+            val extraNamedArgsBuilder = RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder()
+            extraNamedArgsBuilder.addAllArgNames(parts[typesEndIndex + 1].split(";"))
+            extraNamedArgsBuilder.addAllFunArgNames(parts[typesEndIndex + 2].split(";"))
+            functionRepresentationBuilder.setExtraNamedArguments(extraNamedArgsBuilder)
+          }
+          builder.setFunctionRepresentation(functionRepresentationBuilder)
         }
-
-        val parameters = signature.substring(prefix.length, signature.length - 2)
-        functionRepresentationBuilder.parameters = parameters
-
-        if (parts.size > typesEndIndex + 1) {
-          val extraNamedArgsBuilder = RLibrarySymbol.FunctionRepresentation.ExtraNamedArguments.newBuilder()
-          extraNamedArgsBuilder.addAllArgNames(parts[typesEndIndex + 1].split(";"))
-          extraNamedArgsBuilder.addAllFunArgNames(parts[typesEndIndex + 2].split(";"))
-          functionRepresentationBuilder.setExtraNamedArguments(extraNamedArgsBuilder)
+        else {
+          builder.type = RLibrarySymbol.Type.PRIMITIVE
         }
-        builder.setFunctionRepresentation(functionRepresentationBuilder)
       }
       else if (types.contains("classRepresentation") && parts.size > typesEndIndex) {
         builder.type = RLibrarySymbol.Type.S4CLASS
