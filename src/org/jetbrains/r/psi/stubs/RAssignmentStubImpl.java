@@ -52,6 +52,11 @@ public class RAssignmentStubImpl extends StubBase<RAssignmentStatement> implemen
 
 
     @Override
+    public boolean isPrimitive() {
+        return false;
+    }
+
+    @Override
     public boolean isTopLevelAssignment() {
         return isTopLevel;
     }

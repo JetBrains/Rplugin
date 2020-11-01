@@ -28,4 +28,6 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
   override fun getName(): String = myName
 
   override fun isFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.FUNCTION
+
+  override fun isPrimitive(): Boolean = type == RSkeletonSymbolType.PRIMITIVE
 }

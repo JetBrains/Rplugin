@@ -116,6 +116,11 @@ internal object RPsiImplUtil {
   }
 
   @JvmStatic
+  fun isPrimitive(assignment: RAssignmentStatementImpl): Boolean {
+    return false
+  }
+
+  @JvmStatic
   fun getFunctionParameters(assignment: RAssignmentStatementImpl): String {
     if (isFunctionDeclaration(assignment)) {
       (assignment.assignedValue as? RFunctionExpression)?.parameterList?.text?.let {

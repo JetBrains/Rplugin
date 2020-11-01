@@ -84,6 +84,11 @@ public class RAssignmentStatementImpl extends RAssignmentBase implements RAssign
   }
 
   @Override
+  public boolean isPrimitive() {
+    return RPsiImplUtil.isPrimitive(this);
+  }
+
+  @Override
   @NotNull
   public String getFunctionParameters() {
     return RPsiImplUtil.getFunctionParameters(this);
