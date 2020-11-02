@@ -107,8 +107,8 @@ internal class GraphPomTarget(private val rVar: RVar) : RPomTarget() {
   }
 }
 
-internal class RSkeletonParameterPomTarget(private val assignment: RSkeletonAssignmentStatement,
-                                           private val name: String) : RPomTarget() {
+internal class RSkeletonParameterPomTarget(val assignment: RSkeletonAssignmentStatement,
+                                           val name: String) : RPomTarget() {
 
   override fun navigateAsync(requestFocus: Boolean): Promise<Unit> {
     return RConsoleManager.getInstance(assignment.project).runAsync { console ->
