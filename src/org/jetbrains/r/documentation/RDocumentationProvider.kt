@@ -56,6 +56,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
   private val localFunctionRequiredPackage = listOf(RequiredPackage("roxygen2"))
 
+  override fun getQuickNavigateInfo(element: PsiElement?, originalElement: PsiElement?): String? {
+    return RQuickNavigateBuilder.getQuickNavigationInfo(element, originalElement)
+  }
+
   override fun getCustomDocumentationElement(editor: Editor, file: PsiFile, contextElement: PsiElement?): PsiElement? {
     if (contextElement == null || contextElement.language != RLanguage.INSTANCE) return null
 
