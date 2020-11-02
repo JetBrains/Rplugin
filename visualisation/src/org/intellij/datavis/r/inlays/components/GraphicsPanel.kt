@@ -152,6 +152,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       if (Disposer.isDisposed(disposableParent)) {
         return@invokeAndWaitIfNeeded
       }
+      currentFile = null
       openEditor(BinaryLightVirtualFile("image.png", content))
     }
   }
@@ -162,6 +163,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       if (Disposer.isDisposed(disposableParent)) {
         return@invokeAndWait
       }
+      currentFile = null
       openEditor(BinaryLightVirtualFile("image", Base64.getMimeDecoder().decode(data)))
     }
   }
@@ -172,27 +174,29 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       if (Disposer.isDisposed(disposableParent)) {
         return@invokeAndWaitIfNeeded
       }
+      currentFile = null
       openEditor(LightVirtualFile("image.svg", data))
     }
   }
 
   fun showMessage(message: String) {
-    closeEditor(message)
+    reset(message)
   }
 
   fun showLoadingMessage(message: String? = null) {
-    closeEditor("")
+    reset()
     rootPanel.contentComponent = loadingPanel
     loadingPanel.setLoadingText(message ?: LOADING_MESSAGE)
   }
 
   fun showMessageWithLink(message: String, linkText: String, linkAction: () -> Unit) {
-    closeEditor("")
+    reset()
     rootPanel.contentComponent = createInfoPanelWithLink(message, linkText, linkAction)
   }
 
-  fun reset() {
-    closeEditor(NO_GRAPHICS)
+  fun reset(message: String? = null) {
+    currentFile = null
+    closeEditor(message ?: NO_GRAPHICS)
   }
 
   private fun tryShowImage(imageFile: File): Boolean {
