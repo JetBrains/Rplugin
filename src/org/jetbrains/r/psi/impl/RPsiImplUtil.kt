@@ -116,7 +116,7 @@ internal object RPsiImplUtil {
   }
 
   @JvmStatic
-  fun isPrimitive(assignment: RAssignmentStatementImpl): Boolean {
+  fun isPrimitiveFunctionDeclaration(assignment: RAssignmentStatementImpl): Boolean {
     return false
   }
 

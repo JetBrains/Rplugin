@@ -11,7 +11,7 @@ import org.jetbrains.r.psi.api.RAssignmentStatement;
 public interface RAssignmentStub extends NamedStub<RAssignmentStatement> {
     boolean isFunctionDeclaration();
 
-    boolean isPrimitive();
+    boolean isPrimitiveFunctionDeclaration();
 
     boolean isRight();
 

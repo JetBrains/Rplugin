@@ -57,7 +57,7 @@ class RSkeletonAssignmentStatement(private val myStub: RSkeletonAssignmentStub) 
 
   override fun isFunctionDeclaration(): Boolean = myStub.isFunctionDeclaration
 
-  override fun isPrimitive(): Boolean = myStub.isPrimitive
+  override fun isPrimitiveFunctionDeclaration(): Boolean = myStub.isPrimitiveFunctionDeclaration
 
   override fun getFunctionParameters(): String = if (this.isFunctionDeclaration()) "(" + myStub.parameters + ")" else ""
 
