@@ -89,7 +89,7 @@ object RQuickNavigateBuilder {
     val name = element.name
     val fixedName by lazy { fixHtmlExtraSymbols(name) }
     when {
-      element.isPrimitive -> {
+      element.isPrimitiveFunctionDeclaration -> {
         append(RBundle.message("quick.navigate.info.primitive.text", fixedName))
       }
       RPsiUtil.isLibraryElement(element) -> {

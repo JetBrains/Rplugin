@@ -29,5 +29,5 @@ class RSkeletonAssignmentStub(parent: StubElement<*>,
 
   override fun isFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.FUNCTION
 
-  override fun isPrimitive(): Boolean = type == RSkeletonSymbolType.PRIMITIVE
+  override fun isPrimitiveFunctionDeclaration(): Boolean = type == RSkeletonSymbolType.PRIMITIVE
 }

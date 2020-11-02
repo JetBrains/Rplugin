@@ -34,7 +34,7 @@ public interface RAssignmentStatement extends RExpression, PsiNameIdentifierOwne
 
   boolean isFunctionDeclaration();
 
-  boolean isPrimitive();
+  boolean isPrimitiveFunctionDeclaration();
 
   @NotNull
   String getFunctionParameters();

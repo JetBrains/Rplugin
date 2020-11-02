@@ -122,7 +122,7 @@ expression ::=
 
 //operators
 fake assignment_statement ::= {
-  methods=[isLeft isRight isEqual getAssignedValue getAssignee getName setName getNameIdentifier isFunctionDeclaration isPrimitive getFunctionParameters getParameterNameList isClosureAssignment]
+  methods=[isLeft isRight isEqual getAssignedValue getAssignee getName setName getNameIdentifier isFunctionDeclaration isPrimitiveFunctionDeclaration getFunctionParameters getParameterNameList isClosureAssignment]
   extends="org.jetbrains.r.psi.impl.RAssignmentBase"
   stubClass="org.jetbrains.r.psi.stubs.RAssignmentStub"
   implements="org.jetbrains.r.psi.api.RExpression"

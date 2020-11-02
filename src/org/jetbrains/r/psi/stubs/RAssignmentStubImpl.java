@@ -52,7 +52,7 @@ public class RAssignmentStubImpl extends StubBase<RAssignmentStatement> implemen
 
 
     @Override
-    public boolean isPrimitive() {
+    public boolean isPrimitiveFunctionDeclaration() {
         return false;
     }
 
