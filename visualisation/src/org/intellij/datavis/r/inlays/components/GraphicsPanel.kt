@@ -15,10 +15,10 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.testFramework.LightVirtualFile
+import com.intellij.ui.JreHiDpiUtil
 import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
@@ -33,6 +33,7 @@ import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dimension
+import java.awt.GraphicsConfiguration
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -328,8 +329,8 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
 
   companion object {
     private val LOGGER = Logger.getInstance(GraphicsPanel::class.java)
-    private val isRetina = SystemInfo.isMac && UIUtil.isRetina()
-    private val scaleMultiplier = if (!isRetina) 1 else 2
+    private val isHiDpi = JreHiDpiUtil.isJreHiDPI(null as GraphicsConfiguration?) || UIUtil.isRetina()
+    private val scaleMultiplier = if (!isHiDpi) 1 else 2
     private const val imageInsets = ImageComponent.IMAGE_INSETS
     private const val NO_GRAPHICS = "No graphics available"
     private const val GRAPHICS_COULD_NOT_BE_LOADED = "Graphics couldn't be loaded"
