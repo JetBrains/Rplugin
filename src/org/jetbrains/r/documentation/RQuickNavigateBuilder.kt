@@ -20,6 +20,7 @@ import org.jetbrains.r.psi.RSkeletonParameterPomTarget
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RParameter
+import org.jetbrains.r.psi.api.RPsiElement
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.rinterop.RValueDataFrame
@@ -29,7 +30,7 @@ object RQuickNavigateBuilder {
   fun getQuickNavigationInfo(element: PsiElement?): String? = getQuickNavigationInfo(element, null)
 
   fun getQuickNavigationInfo(element: PsiElement?, originalElement: PsiElement?): String? {
-    if (element == null) return null
+    if (element == null || element !is RPsiElement) return null
     val project = element.project
     return CachedValuesManager.getManager(project).getCachedValue(element) {
       CachedValueProvider.Result.create(getQuickNavigationInfoInner(element), PsiModificationTracker.MODIFICATION_COUNT)
