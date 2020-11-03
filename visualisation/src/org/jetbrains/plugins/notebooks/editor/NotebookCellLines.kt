@@ -161,16 +161,13 @@ class NotebookCellLines private constructor(private val document: Document,
       }
       else {
         wrapErrors(event) {
-          val (firstIntervalOrdinal, markerSizeDiff, adjustedNewMarkers) = updateMarkers(
-            shiftedStartOffsetBefore = shiftedStartOffsetBefore,
-            startOffset = event.offset,
-            oldLength = event.oldLength,
-            newLength = event.newLength,
-          )
           updateIntervals(
-            firstIntervalOrdinal = firstIntervalOrdinal,
-            markerSizeDiff = markerSizeDiff,
-            newMarkers = adjustedNewMarkers,
+            updateMarkers(
+              shiftedStartOffsetBefore = shiftedStartOffsetBefore,
+              startOffset = event.offset,
+              oldLength = event.oldLength,
+              newLength = event.newLength,
+            )
           )
         }
       }
@@ -186,12 +183,24 @@ class NotebookCellLines private constructor(private val document: Document,
     }
   }
 
+  /**
+   * @param firstIntervalOrdinal The start index of [intervalCache] where intervals should change.
+   * @param markerSizeDiff Difference between new adjusted markers count and old adjusted markers.
+   * @param adjustedNewMarkers New markers that also can contain additional bogus markers, not existing in [markerCache] but required
+   *  for constricting intervals.
+   */
+  private class UpdateMarkersResult(
+    val firstIntervalOrdinal: Int,
+    val markerSizeDiff: Int,
+    val adjustedNewMarkers: List<Marker>,
+  )
+
   private fun updateMarkers(
     shiftedStartOffsetBefore: Int,
     startOffset: Int,
     oldLength: Int,
     newLength: Int,
-  ): Triple<Int, Int, List<Marker>> {
+  ): UpdateMarkersResult {
     // The document change may cut half of a marker at the start. In such case, rewind a bit to rescan from the marker start.
     val startDocumentOffset = min(
       shiftedStartOffsetBefore,
@@ -262,10 +271,10 @@ class NotebookCellLines private constructor(private val document: Document,
     }
 
     val adjustedNewMarkers = adjustedMarkers(markerCacheCutStart, newMarkers)
-    return Triple(
-      max(0, markerCacheCutStart - if (markerCacheCutStart == 0 && markerCache.getOrNull(0)?.offset != 0) 0 else 1),
-      adjustedNewMarkers.size - adjustedOldMarkersSize,
-      adjustedNewMarkers,
+    return UpdateMarkersResult(
+      firstIntervalOrdinal = max(0, markerCacheCutStart - if (markerCacheCutStart == 0 && markerCache.getOrNull(0)?.offset != 0) 0 else 1),
+      markerSizeDiff = adjustedNewMarkers.size - adjustedOldMarkersSize,
+      adjustedNewMarkers = adjustedNewMarkers,
     )
   }
 
@@ -299,11 +308,11 @@ class NotebookCellLines private constructor(private val document: Document,
     )
   }
 
-  private fun updateIntervals(
-    firstIntervalOrdinal: Int,
-    markerSizeDiff: Int,
-    newMarkers: List<Marker>,
-  ) {
+  private fun updateIntervals(updateMarkersResult: UpdateMarkersResult) {
+    val firstIntervalOrdinal = updateMarkersResult.firstIntervalOrdinal
+    val markerSizeDiff = updateMarkersResult.markerSizeDiff
+    val newMarkers = updateMarkersResult.adjustedNewMarkers
+
     val oldIntervals = intervalCache.subList(
       firstIntervalOrdinal,
       // Interval is an entity between two adjacent markers. Amount of intervals is always less than amount of *adjusted* markers by one.
