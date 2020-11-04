@@ -134,8 +134,8 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
-            languageVersion = "1.3"
-            apiVersion = "1.3"
+            languageVersion = "1.4"
+            apiVersion = "1.4"
             freeCompilerArgs = listOf("-Xjvm-default=enable")
         }
     }
@@ -207,7 +207,7 @@ project(":") {
             resources.srcDirs(*resourcesSrcDirs.toTypedArray())
         }
         test {
-            val testDirs = if (isPyCharm()) arrayOf("test", "test-python") else arrayOf("test")
+            val testDirs = if (isPyCharm()) arrayOf("test", "test-python", "visualisation/test") else arrayOf("test", "visualisation/test")
             java.srcDirs(*testDirs)
             resources.srcDirs( "testData")
         }
