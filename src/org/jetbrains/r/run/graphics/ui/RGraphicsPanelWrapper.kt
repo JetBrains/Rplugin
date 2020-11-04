@@ -17,12 +17,14 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.rendering.chunk.ChunkGraphicsManager
 import org.jetbrains.r.run.graphics.*
 import org.jetbrains.r.settings.RGraphicsSettings
+import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.swing.JComponent
+import javax.swing.JPanel
 
 class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private val queue = MergingUpdateQueue(RESIZE_TASK_NAME, RESIZE_TIME_SPAN, true, null, project)
@@ -37,13 +39,17 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     showLoadingMessage()
   }
 
+  private val plotViewer = RPlotViewer(project, parent)
+  private val rootPanel = JPanel(BorderLayout())
+
+  private val usesViewer: Boolean
+    get() = isStandalone && isAutoResizeEnabled
+
   @Volatile
   private var oldStandalone: Boolean = true
 
-  val preferredImageSize: Dimension?
-    get() = graphicsPanel.imageComponentSize.takeIf { it.isValid } ?: component.parent?.let { panelParent ->
-      GraphicsPanel.calculateImageSizeForRegion(panelParent.preferredSize)
-    }
+  val preferredImageSize: Dimension
+    get() = GraphicsPanel.calculateImageSizeForRegion(component.size)
 
   @Volatile
   var localResolution: Int? = null
@@ -62,7 +68,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     set(resolution) {
       if (field != resolution) {
         field = resolution
-        scheduleRescalingIfNecessary()
+        plotViewer.resolution = resolution
+        if (usesViewer) {
+          localResolution = resolution
+        } else {
+          scheduleRescalingIfNecessary()
+        }
       }
     }
 
@@ -71,6 +82,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     set(value) {
       if (field != value && canSwitchTo(value)) {
         field = value
+        updateContent()
         scheduleRescalingIfNecessary()
       }
     }
@@ -80,8 +92,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     set(value) {
       if (isAutoResizeEnabled != value) {
         graphicsPanel.isAdvancedMode = !value
+        updateContent()
         if (value) {
           scheduleRescalingIfNecessary()
+        } else if (isStandalone) {
+          graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+          rescale(preferredImageSize, targetResolution)
         }
       }
     }
@@ -107,12 +123,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     get() = snapshot != null || plot != null
 
   val image: BufferedImage?
-    get() = graphicsPanel.image
+    get() = if (usesViewer) plotViewer.image else graphicsPanel.image
 
   val maximumSize: Dimension?
     get() = graphicsPanel.maximumSize
 
-  val component = graphicsPanel.component
+  val component = rootPanel
 
   init {
     RGraphicsSettings.addDarkModeListener(project, parent) {
@@ -137,15 +153,18 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     }
     this.snapshot = snapshot
     this.plot = plot
-    if (plot == null) {
+    if (plot == null || plot.error != null) {
       isStandalone = false
     } else if (snapshot == null) {
       isStandalone = true
     }
     isAutoResizeEnabled = true
     localResolution = null
-    if (isStandalone && plot?.error != null) {
-      showPlotError(plot.error)
+    updateContent()
+    if (isStandalone) {
+      localResolution = targetResolution
+      plotViewer.resolution = targetResolution
+      plotViewer.plot = plot!!
     } else {
       graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
       rescaleIfNecessary()
@@ -155,13 +174,23 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   fun addImage(file: File) {
     snapshot = null
     plot = null
+    isStandalone = false
     isAutoResizeEnabled = false
+    updateContent()
     graphicsPanel.showImage(file)
+  }
+
+  private fun updateContent() {
+    val targetComponent = if (usesViewer) plotViewer else graphicsPanel.component
+    if (rootPanel.components.firstOrNull() !== targetComponent) {
+      rootPanel.removeAll()
+      rootPanel.add(targetComponent, BorderLayout.CENTER)
+    }
   }
 
   private fun canSwitchTo(newStandalone: Boolean): Boolean {
     if (newStandalone) {
-      return plot != null
+      return plot != null && plot?.error == null
     } else {
       return snapshot != null
     }
@@ -179,13 +208,10 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   }
 
   private fun scheduleRescalingIfNecessary() {
-    if (!hasGraphics) {
+    if (usesViewer || !hasGraphics) {
       return
     }
-    if (oldStandalone != isStandalone) {
-      graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
-      scheduleRescaling()
-    } else if (isAutoResizeEnabled || localResolution != targetResolution) {
+    if (isAutoResizeEnabled || localResolution != targetResolution || oldStandalone != isStandalone) {
       scheduleRescaling()
     }
   }
@@ -199,8 +225,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   }
 
   fun rescaleIfNecessary(preferredSize: Dimension? = null) {
+    if (usesViewer) {
+      return
+    }
     val oldSize = graphicsPanel.imageSize
-    val newSize = preferredSize ?: preferredImageSize?.takeIf { isAutoResizeEnabled } ?: oldSize
+    val newSize = preferredSize ?: preferredImageSize.takeIf { isAutoResizeEnabled } ?: oldSize
     if (newSize != null && newSize.isValid) {
       if (oldSize != newSize || localResolution != targetResolution || oldStandalone != isStandalone) {
         // Note: there might be lots of attempts to resize image on IDE startup
@@ -216,8 +245,8 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun rescaleIfStandalone() {
     // Note: check for `localResolution` prevents useless rescales on IDE startup
     // when the first rescale hasn't been completed yet
-    if (isStandalone && localResolution != null) {
-      val newSize = preferredImageSize?.takeIf { isAutoResizeEnabled } ?: graphicsPanel.imageSize
+    if (isStandalone && !isAutoResizeEnabled && localResolution != null) {
+      val newSize = graphicsPanel.imageSize
       if (newSize != null && newSize.isValid) {
         rescale(newSize, targetResolution)
       }
