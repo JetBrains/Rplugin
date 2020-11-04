@@ -24,7 +24,6 @@ import org.jetbrains.r.run.graphics.*
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.awt.image.BufferedImage
 import javax.swing.JComponent
 
 class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(true, true) {
@@ -212,16 +211,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun copyCurrentOutput() {
-    lastOutput?.let { output ->
-      val image = if (isStandalone) createImageFrom(output.plot) else graphicsPanel.image
+    lastOutput?.let {
+      val image = if (isStandalone) plotViewer.image else graphicsPanel.image
       if (image != null) {
         ClipboardUtils.copyImageToClipboard(image)
       }
     }
-  }
-
-  private fun createImageFrom(plot: RPlot): BufferedImage {
-    return RPlotUtil.createImage(plot, plotViewer.parameters, RGraphicsSettings.isDarkModeEnabled(project))
   }
 
   private fun zoomCurrentOutput() {
