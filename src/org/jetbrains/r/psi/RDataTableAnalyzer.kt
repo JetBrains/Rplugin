@@ -77,10 +77,14 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
                           @Suppress("UNUSED_PARAMETER") expression: RExpression,
                           callInfo: TableManipulationCallInfo<*>,
                           processor: Processor<TableColumnInfo>): Boolean {
+    if (operandProcessorRunner != null ) {
+      operandProcessorRunner(processor)
+    }
     val parameterJ = callInfo.argumentInfo.getArgumentPassedToParameter("j")
     if (parameterJ is RIdentifierExpression) {
       return processor.process(TableColumnInfo(parameterJ.name, definition = parameterJ))
-    } else if (parameterJ is RCallExpression) {
+    }
+    else if (parameterJ is RCallExpression) {
       val columns = getNamesOfVectorCall(parameterJ)
       for (column in columns) {
         val columnName = column.name
@@ -91,12 +95,20 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
         }
       }
     }
+    else if (parameterJ is RAssignmentStatement) {
+      val assignee = parameterJ.assignee ?: return true
+      if (assignee !is RIdentifierExpression) {
+        return true
+      }
+      return processor.process(TableColumnInfo(assignee.text, definition = parameterJ))
+    }
     return true
   }
 
   fun getNamesOfVectorCall(call: RCallExpression): List<RExpression> {
-    if (call.isFunctionFromLibrary("c", "base")) {
-      return call.argumentList.expressionList.filter { t -> t is RStringLiteralExpression }
+    if (call.isFunctionFromLibrarySoft("c", "base") || call.isFunctionFromLibrarySoft(".", "plyr")) {
+      val columnNames = call.argumentList.expressionList.map { if (it is RAssignmentStatement) it.assignee else it }.filterNotNull()
+      return columnNames.filterIsInstance<RStringLiteralExpression>()
     }
     return emptyList()
   }
