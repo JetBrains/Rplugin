@@ -179,6 +179,18 @@ class RTableColumnResolveTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+
+  fun testResolveInDataTableSubscription() {
+    doTest(
+      "my_column_d := 1 + 2",
+
+      """
+        dt <- dt[, my_column_d := 1 + 2, my_column_d]
+        dt[,.(x=sum(my_col<caret>umn_d),y=sum(my_column_b))]
+      """.trimIndent()
+    )
+  }
+
   private fun doTest(resolveTargetParentText: String, text: String, fileType: LanguageFileType? = RFileType) {
     fileType?.let { myFixture.configureByText(it, text) }
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))

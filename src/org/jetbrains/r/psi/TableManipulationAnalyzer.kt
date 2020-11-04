@@ -146,13 +146,15 @@ abstract class TableManipulationAnalyzer<T : TableManipulationFunction> {
    * Statically calculates columns of the variable
    * It could use runtime to get columns for expressions that are used in the definition of the variable
    */
-  internal fun processTableFromVariable(variable: RIdentifierExpression, processor: Processor<TableColumnInfo>): Boolean {
-    val previousAssignment = RResolveUtil.findPreviousAssignment(variable)
-    if (previousAssignment != null) {
-      val assignedValue = previousAssignment.assignedValue
-      if (assignedValue != null) {
-        return processStaticTableColumns(assignedValue, processor)
+  open fun processTableFromVariable(variable: RIdentifierExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val precedingModification = RResolveUtil.findPrecedingInstruction(variable) { element: PsiElement ->
+      if (element is RAssignmentStatement && element.name == variable.name) {
+        return@findPrecedingInstruction element.assignedValue
       }
+      return@findPrecedingInstruction null
+    }
+    if (precedingModification is RExpression) {
+      return processStaticTableColumns(precedingModification, processor)
     }
     return true
   }
