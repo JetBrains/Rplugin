@@ -41,6 +41,8 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
       }
     }
 
+  var overlayComponent: JComponent? = null
+
   val parameters: RGraphicsUtils.ScreenParameters
     get() = RGraphicsUtils.ScreenParameters(size, resolution)
 
@@ -66,7 +68,9 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
   override fun paintComponent(g: Graphics) {
     super.paintComponent(g)
     image?.let { image ->
-      g.drawImage(image, 0, 0, width, height, null)
+      withComponentPreserved(overlayComponent) {
+        g.drawImage(image, 0, 0, width, height, null)
+      }
     }
   }
 
@@ -79,6 +83,18 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
   private fun SoftReference<BufferedImage>.getIfSameSize(): BufferedImage? {
     return get()?.takeIf { image ->
       ImageUtil.getUserWidth(image) == width && ImageUtil.getUserHeight(image) == height
+    }
+  }
+
+  companion object {
+    private inline fun withComponentPreserved(component: JComponent?, task: () -> Unit) {
+      if (component != null && component.isVisible) {
+        component.isVisible = false
+        task()
+        component.isVisible = true
+      } else {
+        task()
+      }
     }
   }
 }

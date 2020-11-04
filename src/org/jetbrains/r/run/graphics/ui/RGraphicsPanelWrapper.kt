@@ -101,6 +101,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     get() = graphicsPanel.overlayComponent
     set(component) {
       graphicsPanel.overlayComponent = component
+      plotViewer.overlayComponent = component
     }
 
   val hasGraphics: Boolean
