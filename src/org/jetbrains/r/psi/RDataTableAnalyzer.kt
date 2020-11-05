@@ -4,8 +4,10 @@
 
 package org.jetbrains.r.psi
 
+import com.intellij.psi.PsiElement
 import com.intellij.util.CommonProcessors
 import com.intellij.util.Processor
+import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.psi.RDataTableAnalyzer.processSetnames
@@ -73,39 +75,68 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
     return result.all { processor.process(it) }
   }
 
-  fun processSubscription(@Suppress("UNUSED_PARAMETER") operandProcessorRunner: ProcessOperandColumnRunner?,
+  fun processSubscription(operandProcessorRunner: ProcessOperandColumnRunner?,
                           @Suppress("UNUSED_PARAMETER") expression: RExpression,
                           callInfo: TableManipulationCallInfo<*>,
                           processor: Processor<TableColumnInfo>): Boolean {
+    val collectProcessor = RTableColumnCollectProcessor()
     if (operandProcessorRunner != null ) {
-      operandProcessorRunner(processor)
+      operandProcessorRunner(collectProcessor)
     }
     val parameterJ = callInfo.argumentInfo.getArgumentPassedToParameter("j")
-    if (parameterJ is RIdentifierExpression) {
-      return processor.process(TableColumnInfo(parameterJ.name, definition = parameterJ))
+    val arguments = ArrayList<PsiElement>()
+
+    when (parameterJ) {
+      is RIdentifierExpression -> {
+        arguments.add(parameterJ)
+      }
+      is RCallExpression -> {
+        parameterJ.argumentList.expressionList.forEach{ arguments.add(it)}
+      }
+      is RAssignmentStatement -> {
+        arguments.add(parameterJ)
+      }
     }
-    else if (parameterJ is RCallExpression) {
-      val columns = getNamesOfVectorCall(parameterJ)
-      for (column in columns) {
-        val columnName = column.name
-        if (columnName != null) {
-          if (!processor.process(TableColumnInfo(columnName, definition = column))) {
+
+    val processedColumns = ArrayList<String>()
+    for (argument in arguments) {
+      if (argument is RIdentifierExpression) {
+        processedColumns.add(argument.text)
+        if (!processor.process(TableColumnInfo(argument.text, definition = argument))) {
+          return false
+        }
+      }
+      else if (argument is RStringLiteralExpression) {
+        val stringValue = argument.name
+        if (stringValue != null) {
+          processedColumns.add(stringValue)
+          if (!processor.process(TableColumnInfo(stringValue, definition = argument))) {
+            return false
+          }
+        }
+      }
+      else if (argument is RAssignmentStatement && argument.assignee is RIdentifierExpression) {
+        val columnName = argument.assignee!!.text
+        processedColumns.add(columnName)
+        if (argument.assignedValue !is RNullLiteral) {
+          if (!processor.process(TableColumnInfo(columnName, definition = argument))) {
             return false
           }
         }
       }
     }
-    else if (parameterJ is RAssignmentStatement) {
-      val assignee = parameterJ.assignee ?: return true
-      if (assignee !is RIdentifierExpression) {
-        return true
+
+    for (column in collectProcessor.results) {
+      if (column.name !in processedColumns) {
+        if (!processor.process(column)) {
+          return false
+        }
       }
-      return processor.process(TableColumnInfo(assignee.text, definition = parameterJ))
     }
     return true
   }
 
-  fun getNamesOfVectorCall(call: RCallExpression): List<RExpression> {
+  fun getArguments(call: RCallExpression): List<RExpression> {
     if (call.isFunctionFromLibrarySoft("c", "base") || call.isFunctionFromLibrarySoft(".", "plyr")) {
       val columnNames = call.argumentList.expressionList.map { if (it is RAssignmentStatement) it.assignee else it }.filterNotNull()
       return columnNames.filterIsInstance<RStringLiteralExpression>()

@@ -265,6 +265,18 @@ class DataTableCompletionTest : RColumnCompletionTest() {
     )
   }
 
+  fun testStaticColumnDeletedInSubscription() {
+    checkStaticCompletion(
+      """
+        dt <- data.table(my_column_a = c(1, 2, 3), my_column_c = c(1,2,10))
+        dt <- dt[, .(my_column_c := NULL, my_column_d := 3 + 4)]
+        dt[,.(x=sum(my_col<caret>))]
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_column_a", "my_column_d"),
+      expectedToBeMissed = listOf("my_column_c")
+    )
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,
