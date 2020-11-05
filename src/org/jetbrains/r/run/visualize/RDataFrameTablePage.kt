@@ -56,6 +56,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   private val scrollPane = JBScrollPane(table)
   private var paginator: RDataFrameTablePaginator? = null
   private var filterHeader: TableFilterHeader? = null
+  private var filtersHandler: RDataFrameFiltersHandler? = null
   private lateinit var filterTableButton: ActionButton
 
   val preferredHeight: Int
@@ -170,10 +171,16 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
   private fun addTableFilterHeader() {
     if (filterHeader != null) return
-    filterHeader = TableFilterHeader(RDataFrameFiltersHandler()).also {
+    filterHeader = TableFilterHeader(RDataFrameFiltersHandler().also { filtersHandler = it }).also {
       it.isAdaptiveChoices = false
       it.table = table
     }
+  }
+
+  private fun removeTableFilterHeader() {
+    filterHeader?.table = null
+    filterHeader = null
+    filtersHandler = null
   }
 
   private fun createActionsPanel() {
@@ -209,8 +216,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
         if (state) {
           addTableFilterHeader()
         } else {
-          filterHeader?.table = null
-          filterHeader = null
+          removeTableFilterHeader()
         }
       }
     }
@@ -350,20 +356,49 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
   }
 
   fun refreshTable() {
+    val oldColumns = List(viewer.nColumns) { viewer.getColumnName(it) }
     viewer.refresh().onSuccess { refreshed ->
       if (!refreshed) return@onSuccess
-      filterHeader?.table = null
-      filterHeader = null
-
-      table.columnModel = RVisualizeTableUtil.createColumnModel(viewer)
-      (table.model as RDataFrameTableModel).apply {
-        fireTableStructureChanged()
-        fireTableDataChanged()
-      }
       val rowSorter = table.rowSorter as RDataFrameRowSorter
-      rowSorter.restore()
-      rowSorter.setSortKeys(null)
-      paginator?.updateShownRange()
+      rowSorter.updatesSuspended = true
+      try {
+        val newColumns = List(viewer.nColumns) { viewer.getColumnName(it) }
+        val columnMapping = getColumnMapping(oldColumns, newColumns)
+        val newSortKeys = rowSorter.sortKeys.mapNotNull {
+          columnMapping[it.column]?.let { newColumn ->
+            RowSorter.SortKey(newColumn, it.sortOrder)
+          }
+        }
+        val newFilters = filterHeader?.let { header ->
+          val filters = MutableList(newColumns.size) { "" }
+          columnMapping.forEachIndexed { old, new ->
+            if (new != null) {
+              filters[new] = (header.getFilterEditor(old).content as? String).orEmpty()
+            }
+          }
+          filters
+        }
+
+        removeTableFilterHeader()
+
+        table.columnModel = RVisualizeTableUtil.createColumnModel(viewer)
+        (table.model as RDataFrameTableModel).apply {
+          fireTableStructureChanged()
+          fireTableDataChanged()
+        }
+        rowSorter.restore()
+
+        if (newFilters != null) {
+          addTableFilterHeader()
+          newFilters.forEachIndexed { index, it -> filterHeader?.getFilterEditor(index)?.content = it }
+          filtersHandler?.updateTableFilter()
+        }
+
+        rowSorter.setSortKeys(newSortKeys.takeIf { it.isNotEmpty() }?.toMutableList())
+        paginator?.updateShownRange()
+      } finally {
+        rowSorter.updatesSuspended = false
+      }
       rowSorter.update()
 
       repaint()
@@ -377,5 +412,23 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     private val FILTER_TOOLTIP_ESCAPED = RDataFrameTablePage::class.java.getResource("/visualizer/TableViewFilterTooltip.html")
                                            ?.readText()?.replace("&", "&&")
                                            ?.replace("_", "__") ?: "Filter"
+
+    private fun getColumnMapping(oldColumns: List<String>, newColumns: List<String>): List<Int?> {
+      val newColumnsMap = newColumns.mapIndexed { index, it -> it to index }.reversed().toMap()
+      val mapping = MutableList<Int?>(oldColumns.size) { null }
+      val used = MutableList(newColumns.size) { false }
+      oldColumns.forEachIndexed { index, it ->
+        newColumnsMap[it]?.let {
+          newIndex -> mapping[index] = newIndex
+          used[newIndex] = true
+        }
+      }
+      for (i in 0 until min(oldColumns.size, newColumns.size)) {
+        if (mapping[i] == null && !used[i]) {
+          mapping[i] = i
+        }
+      }
+      return mapping
+    }
   }
 }
