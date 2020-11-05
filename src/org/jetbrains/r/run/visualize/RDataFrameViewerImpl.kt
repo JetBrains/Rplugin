@@ -16,6 +16,7 @@ import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType.*
+import org.jetbrains.r.util.tryRegisterDisposable
 import javax.swing.RowSorter
 import kotlin.math.min
 import kotlin.reflect.KClass
@@ -92,7 +93,7 @@ class RDataFrameViewerImpl(private val ref: RPersistentRef) : RDataFrameViewer {
     val start = chunkIndex * CHUNK_SIZE
     val end = min((chunkIndex + 1) * CHUNK_SIZE, nRows)
     val promise: Promise<Unit> = rInterop.dataFrameGetData(ref, start, end)
-      .also { Disposer.register(this, Disposable { it.cancel() }) }
+      .also { tryRegisterDisposable(Disposable { it.cancel() }) }
       .then { response ->
         chunks[chunkIndex] = Array(nColumns) { col ->
           Array(end - start) { row ->

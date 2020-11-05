@@ -21,6 +21,7 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
   private var sortKeys: List<SortKey> = emptyList()
   private val initialViewer = model.viewer
   private var currentViewer = model.viewer
+  var updatesSuspended = false
   var shownRange: Pair<Int, Int>? = null
     set(newRange) {
       if (field == newRange) return
@@ -84,24 +85,30 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
   }
 
   fun update() {
+    if (updatesSuspended) return
     currentUpdateTask?.let {
       if (!it.isDone) it.cancel(true)
     }
     val toWait = currentUpdateTask
+    val currentFilter = rowFilter
+    val currentSortKeys = sortKeys
     currentUpdateTask = ApplicationManager.getApplication().executeOnPooledThread<Unit> {
       try {
         toWait?.getWithCheckCanceled()
         if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
         currentViewer = initialViewer
-        rowFilter?.let {
+        currentFilter?.let {
           currentViewer = currentViewer.filter(it)
         }
-        if (sortKeys.isNotEmpty()) {
-          val newViewer = currentViewer.sortBy(sortKeys)
+        if (currentSortKeys.isNotEmpty()) {
+          val newViewer = currentViewer.sortBy(currentSortKeys)
           if (currentViewer != initialViewer) Disposer.dispose(currentViewer)
           currentViewer = newViewer
         }
+        model.viewer = currentViewer
+        jTable.clearSelection()
         model.fireTableDataChanged()
+        fireRowSorterChanged(null)
       } catch (e: RDataFrameException) {
         if (!errorWasReported) {
           errorWasReported = true
@@ -112,9 +119,6 @@ class RDataFrameRowSorter(private var model: RDataFrameTableModel, private val j
       } catch (e: CancellationException) {
       } catch (e: InterruptedException) {
       }
-      model.viewer = currentViewer
-      jTable.clearSelection()
-      fireRowSorterChanged(null)
     }
   }
 
