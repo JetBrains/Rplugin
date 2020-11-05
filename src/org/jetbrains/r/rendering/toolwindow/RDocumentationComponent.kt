@@ -28,6 +28,7 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.text.Highlighter
 import javax.swing.text.JTextComponent
+import kotlin.math.abs
 import kotlin.math.max
 
 class RDocumentationComponent(project: Project) : DocumentationComponent(DocumentationManager.getInstance(project)) {
@@ -107,6 +108,7 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
         } else {
           searchTextField.textEditor.setBackground(LightColors.RED)
         }
+        searchModel.near()
       }
     })
     searchTextField.addKeyboardListener(object : KeyAdapter() {
@@ -202,6 +204,17 @@ class RDocumentationComponent(project: Project) : DocumentationComponent(Documen
     fun prev() {
       check(hasPrev) { "Doesn't have prev element" }
       currentSelection -= 1
+      updateHighlighting()
+      updateMatchLabel()
+      scroll()
+    }
+
+    fun near() {
+      val visibleRect = editorPane.visibleRect
+      val visibleRestCenter = Point(visibleRect.centerX.toInt(), visibleRect.centerY.toInt())
+      val currentOffset = editorPane.viewToModel2D(visibleRestCenter)
+      val nearestSelection = indices.minByOrNull { abs(it - currentOffset) } ?: return
+      currentSelection = indices.indexOf(nearestSelection)
       updateHighlighting()
       updateMatchLabel()
       scroll()
