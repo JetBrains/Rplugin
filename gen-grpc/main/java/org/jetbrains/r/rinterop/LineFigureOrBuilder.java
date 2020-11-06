@@ -8,30 +8,14 @@ public interface LineFigureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * <code>fixed64 from = 1;</code>
    */
-  boolean hasFrom();
-  /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getFrom();
-  /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder();
+  long getFrom();
 
   /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * <code>fixed64 to = 2;</code>
    */
-  boolean hasTo();
-  /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getTo();
-  /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder();
+  long getTo();
 
   /**
    * <code>int32 strokeIndex = 3;</code>

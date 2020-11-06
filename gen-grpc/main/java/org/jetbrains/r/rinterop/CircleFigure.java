@@ -48,40 +48,27 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (center_ != null) {
-              subBuilder = center_.toBuilder();
-            }
-            center_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(center_);
-              center_ = subBuilder.buildPartial();
-            }
+          case 9: {
 
+            center_ = input.readFixed64();
             break;
           }
           case 21: {
 
-            radiusScale_ = input.readFloat();
+            radius_ = input.readFixed32();
             break;
           }
-          case 29: {
-
-            radiusOffset_ = input.readFloat();
-            break;
-          }
-          case 32: {
+          case 24: {
 
             strokeIndex_ = input.readInt32();
             break;
           }
-          case 40: {
+          case 32: {
 
             colorIndex_ = input.readInt32();
             break;
           }
-          case 48: {
+          case 40: {
 
             fillIndex_ = input.readInt32();
             break;
@@ -119,66 +106,45 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CENTER_FIELD_NUMBER = 1;
-  private org.jetbrains.r.rinterop.AffinePoint center_;
+  private long center_;
   /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * <code>fixed64 center = 1;</code>
    */
-  public boolean hasCenter() {
-    return center_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePoint getCenter() {
-    return center_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : center_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getCenterOrBuilder() {
-    return getCenter();
+  public long getCenter() {
+    return center_;
   }
 
-  public static final int RADIUSSCALE_FIELD_NUMBER = 2;
-  private float radiusScale_;
+  public static final int RADIUS_FIELD_NUMBER = 2;
+  private int radius_;
   /**
-   * <code>float radiusScale = 2;</code>
+   * <code>fixed32 radius = 2;</code>
    */
-  public float getRadiusScale() {
-    return radiusScale_;
+  public int getRadius() {
+    return radius_;
   }
 
-  public static final int RADIUSOFFSET_FIELD_NUMBER = 3;
-  private float radiusOffset_;
-  /**
-   * <code>float radiusOffset = 3;</code>
-   */
-  public float getRadiusOffset() {
-    return radiusOffset_;
-  }
-
-  public static final int STROKEINDEX_FIELD_NUMBER = 4;
+  public static final int STROKEINDEX_FIELD_NUMBER = 3;
   private int strokeIndex_;
   /**
-   * <code>int32 strokeIndex = 4;</code>
+   * <code>int32 strokeIndex = 3;</code>
    */
   public int getStrokeIndex() {
     return strokeIndex_;
   }
 
-  public static final int COLORINDEX_FIELD_NUMBER = 5;
+  public static final int COLORINDEX_FIELD_NUMBER = 4;
   private int colorIndex_;
   /**
-   * <code>int32 colorIndex = 5;</code>
+   * <code>int32 colorIndex = 4;</code>
    */
   public int getColorIndex() {
     return colorIndex_;
   }
 
-  public static final int FILLINDEX_FIELD_NUMBER = 6;
+  public static final int FILLINDEX_FIELD_NUMBER = 5;
   private int fillIndex_;
   /**
-   * <code>int32 fillIndex = 6;</code>
+   * <code>int32 fillIndex = 5;</code>
    */
   public int getFillIndex() {
     return fillIndex_;
@@ -198,23 +164,20 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (center_ != null) {
-      output.writeMessage(1, getCenter());
+    if (center_ != 0L) {
+      output.writeFixed64(1, center_);
     }
-    if (radiusScale_ != 0F) {
-      output.writeFloat(2, radiusScale_);
-    }
-    if (radiusOffset_ != 0F) {
-      output.writeFloat(3, radiusOffset_);
+    if (radius_ != 0) {
+      output.writeFixed32(2, radius_);
     }
     if (strokeIndex_ != 0) {
-      output.writeInt32(4, strokeIndex_);
+      output.writeInt32(3, strokeIndex_);
     }
     if (colorIndex_ != 0) {
-      output.writeInt32(5, colorIndex_);
+      output.writeInt32(4, colorIndex_);
     }
     if (fillIndex_ != 0) {
-      output.writeInt32(6, fillIndex_);
+      output.writeInt32(5, fillIndex_);
     }
     unknownFields.writeTo(output);
   }
@@ -225,29 +188,25 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (center_ != null) {
+    if (center_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, getCenter());
+        .computeFixed64Size(1, center_);
     }
-    if (radiusScale_ != 0F) {
+    if (radius_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeFloatSize(2, radiusScale_);
-    }
-    if (radiusOffset_ != 0F) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeFloatSize(3, radiusOffset_);
+        .computeFixed32Size(2, radius_);
     }
     if (strokeIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, strokeIndex_);
+        .computeInt32Size(3, strokeIndex_);
     }
     if (colorIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(5, colorIndex_);
+        .computeInt32Size(4, colorIndex_);
     }
     if (fillIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(6, fillIndex_);
+        .computeInt32Size(5, fillIndex_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -264,17 +223,10 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.CircleFigure other = (org.jetbrains.r.rinterop.CircleFigure) obj;
 
-    if (hasCenter() != other.hasCenter()) return false;
-    if (hasCenter()) {
-      if (!getCenter()
-          .equals(other.getCenter())) return false;
-    }
-    if (java.lang.Float.floatToIntBits(getRadiusScale())
-        != java.lang.Float.floatToIntBits(
-            other.getRadiusScale())) return false;
-    if (java.lang.Float.floatToIntBits(getRadiusOffset())
-        != java.lang.Float.floatToIntBits(
-            other.getRadiusOffset())) return false;
+    if (getCenter()
+        != other.getCenter()) return false;
+    if (getRadius()
+        != other.getRadius()) return false;
     if (getStrokeIndex()
         != other.getStrokeIndex()) return false;
     if (getColorIndex()
@@ -292,16 +244,11 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (hasCenter()) {
-      hash = (37 * hash) + CENTER_FIELD_NUMBER;
-      hash = (53 * hash) + getCenter().hashCode();
-    }
-    hash = (37 * hash) + RADIUSSCALE_FIELD_NUMBER;
-    hash = (53 * hash) + java.lang.Float.floatToIntBits(
-        getRadiusScale());
-    hash = (37 * hash) + RADIUSOFFSET_FIELD_NUMBER;
-    hash = (53 * hash) + java.lang.Float.floatToIntBits(
-        getRadiusOffset());
+    hash = (37 * hash) + CENTER_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getCenter());
+    hash = (37 * hash) + RADIUS_FIELD_NUMBER;
+    hash = (53 * hash) + getRadius();
     hash = (37 * hash) + STROKEINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getStrokeIndex();
     hash = (37 * hash) + COLORINDEX_FIELD_NUMBER;
@@ -441,15 +388,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      if (centerBuilder_ == null) {
-        center_ = null;
-      } else {
-        center_ = null;
-        centerBuilder_ = null;
-      }
-      radiusScale_ = 0F;
+      center_ = 0L;
 
-      radiusOffset_ = 0F;
+      radius_ = 0;
 
       strokeIndex_ = 0;
 
@@ -483,13 +424,8 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.jetbrains.r.rinterop.CircleFigure buildPartial() {
       org.jetbrains.r.rinterop.CircleFigure result = new org.jetbrains.r.rinterop.CircleFigure(this);
-      if (centerBuilder_ == null) {
-        result.center_ = center_;
-      } else {
-        result.center_ = centerBuilder_.build();
-      }
-      result.radiusScale_ = radiusScale_;
-      result.radiusOffset_ = radiusOffset_;
+      result.center_ = center_;
+      result.radius_ = radius_;
       result.strokeIndex_ = strokeIndex_;
       result.colorIndex_ = colorIndex_;
       result.fillIndex_ = fillIndex_;
@@ -541,14 +477,11 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.CircleFigure other) {
       if (other == org.jetbrains.r.rinterop.CircleFigure.getDefaultInstance()) return this;
-      if (other.hasCenter()) {
-        mergeCenter(other.getCenter());
+      if (other.getCenter() != 0L) {
+        setCenter(other.getCenter());
       }
-      if (other.getRadiusScale() != 0F) {
-        setRadiusScale(other.getRadiusScale());
-      }
-      if (other.getRadiusOffset() != 0F) {
-        setRadiusOffset(other.getRadiusOffset());
+      if (other.getRadius() != 0) {
+        setRadius(other.getRadius());
       }
       if (other.getStrokeIndex() != 0) {
         setStrokeIndex(other.getStrokeIndex());
@@ -588,184 +521,67 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint center_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> centerBuilder_;
+    private long center_ ;
     /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
+     * <code>fixed64 center = 1;</code>
      */
-    public boolean hasCenter() {
-      return centerBuilder_ != null || center_ != null;
+    public long getCenter() {
+      return center_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
+     * <code>fixed64 center = 1;</code>
      */
-    public org.jetbrains.r.rinterop.AffinePoint getCenter() {
-      if (centerBuilder_ == null) {
-        return center_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : center_;
-      } else {
-        return centerBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    public Builder setCenter(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (centerBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        center_ = value;
-        onChanged();
-      } else {
-        centerBuilder_.setMessage(value);
-      }
-
+    public Builder setCenter(long value) {
+      
+      center_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    public Builder setCenter(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (centerBuilder_ == null) {
-        center_ = builderForValue.build();
-        onChanged();
-      } else {
-        centerBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    public Builder mergeCenter(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (centerBuilder_ == null) {
-        if (center_ != null) {
-          center_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(center_).mergeFrom(value).buildPartial();
-        } else {
-          center_ = value;
-        }
-        onChanged();
-      } else {
-        centerBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
+     * <code>fixed64 center = 1;</code>
      */
     public Builder clearCenter() {
-      if (centerBuilder_ == null) {
-        center_ = null;
-        onChanged();
-      } else {
-        center_ = null;
-        centerBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getCenterBuilder() {
       
-      onChanged();
-      return getCenterFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getCenterOrBuilder() {
-      if (centerBuilder_ != null) {
-        return centerBuilder_.getMessageOrBuilder();
-      } else {
-        return center_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : center_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint center = 1;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getCenterFieldBuilder() {
-      if (centerBuilder_ == null) {
-        centerBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getCenter(),
-                getParentForChildren(),
-                isClean());
-        center_ = null;
-      }
-      return centerBuilder_;
-    }
-
-    private float radiusScale_ ;
-    /**
-     * <code>float radiusScale = 2;</code>
-     */
-    public float getRadiusScale() {
-      return radiusScale_;
-    }
-    /**
-     * <code>float radiusScale = 2;</code>
-     */
-    public Builder setRadiusScale(float value) {
-      
-      radiusScale_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>float radiusScale = 2;</code>
-     */
-    public Builder clearRadiusScale() {
-      
-      radiusScale_ = 0F;
+      center_ = 0L;
       onChanged();
       return this;
     }
 
-    private float radiusOffset_ ;
+    private int radius_ ;
     /**
-     * <code>float radiusOffset = 3;</code>
+     * <code>fixed32 radius = 2;</code>
      */
-    public float getRadiusOffset() {
-      return radiusOffset_;
+    public int getRadius() {
+      return radius_;
     }
     /**
-     * <code>float radiusOffset = 3;</code>
+     * <code>fixed32 radius = 2;</code>
      */
-    public Builder setRadiusOffset(float value) {
+    public Builder setRadius(int value) {
       
-      radiusOffset_ = value;
+      radius_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>float radiusOffset = 3;</code>
+     * <code>fixed32 radius = 2;</code>
      */
-    public Builder clearRadiusOffset() {
+    public Builder clearRadius() {
       
-      radiusOffset_ = 0F;
+      radius_ = 0;
       onChanged();
       return this;
     }
 
     private int strokeIndex_ ;
     /**
-     * <code>int32 strokeIndex = 4;</code>
+     * <code>int32 strokeIndex = 3;</code>
      */
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
-     * <code>int32 strokeIndex = 4;</code>
+     * <code>int32 strokeIndex = 3;</code>
      */
     public Builder setStrokeIndex(int value) {
       
@@ -774,7 +590,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 strokeIndex = 4;</code>
+     * <code>int32 strokeIndex = 3;</code>
      */
     public Builder clearStrokeIndex() {
       
@@ -785,13 +601,13 @@ private static final long serialVersionUID = 0L;
 
     private int colorIndex_ ;
     /**
-     * <code>int32 colorIndex = 5;</code>
+     * <code>int32 colorIndex = 4;</code>
      */
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
-     * <code>int32 colorIndex = 5;</code>
+     * <code>int32 colorIndex = 4;</code>
      */
     public Builder setColorIndex(int value) {
       
@@ -800,7 +616,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 colorIndex = 5;</code>
+     * <code>int32 colorIndex = 4;</code>
      */
     public Builder clearColorIndex() {
       
@@ -811,13 +627,13 @@ private static final long serialVersionUID = 0L;
 
     private int fillIndex_ ;
     /**
-     * <code>int32 fillIndex = 6;</code>
+     * <code>int32 fillIndex = 5;</code>
      */
     public int getFillIndex() {
       return fillIndex_;
     }
     /**
-     * <code>int32 fillIndex = 6;</code>
+     * <code>int32 fillIndex = 5;</code>
      */
     public Builder setFillIndex(int value) {
       
@@ -826,7 +642,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 fillIndex = 6;</code>
+     * <code>int32 fillIndex = 5;</code>
      */
     public Builder clearFillIndex() {
       

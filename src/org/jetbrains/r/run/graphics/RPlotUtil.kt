@@ -18,7 +18,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 8
+  private const val PROTOCOL_VERSION = 9
   private const val STROKE_WIDTH_SCALE = 1.25f
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
@@ -136,7 +136,7 @@ object RPlotUtil {
   }
 
   private fun convert(viewport: FreeViewport): RViewport {
-    return RViewport.Free(convert(viewport.from), convert(viewport.to), viewport.parentIndex)
+    return RViewport.Free(viewport.from, viewport.to, viewport.parentIndex)
   }
 
   private fun convert(layer: Layer): RLayer {
@@ -159,46 +159,47 @@ object RPlotUtil {
   }
 
   private fun convert(circle: CircleFigure): RFigure {
-    return RFigure.Circle(convert(circle.center), circle.radiusScale, circle.radiusOffset, circle.strokeIndex,
-                          circle.colorIndex, circle.fillIndex)
+    return RFigure.Circle(circle.center, circle.radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
   }
 
   private fun convert(line: LineFigure): RFigure {
-    return RFigure.Line(convert(line.from), convert(line.to), line.strokeIndex, line.colorIndex)
+    return RFigure.Line(line.from, line.to, line.strokeIndex, line.colorIndex)
   }
 
   private fun convert(path: PathFigure): RFigure {
     val subPaths = path.subPathList.map { subPath ->
-      subPath.pointList.map { convert(it) }
+      LongArray(subPath.pointCount) { i ->
+        subPath.getPoint(i)
+      }
     }
     val winding = if (path.winding) RWinding.NON_ZERO else RWinding.EVEN_ODD
     return RFigure.Path(subPaths, winding, path.strokeIndex, path.colorIndex, path.fillIndex)
   }
 
   private fun convert(polygon: PolygonFigure): RFigure {
-    val points = polygon.pointList.map { convert(it) }
+    val points = LongArray(polygon.pointCount) { i ->
+      polygon.getPoint(i)
+    }
     return RFigure.Polygon(points, polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
   }
 
   private fun convert(polyline: PolylineFigure): RFigure {
-    val points = polyline.pointList.map { convert(it) }
+    val points = LongArray(polyline.pointCount) { i ->
+      polyline.getPoint(i)
+    }
     return RFigure.Polyline(points, polyline.strokeIndex, polyline.colorIndex)
   }
 
   private fun convert(raster: RasterFigure): RFigure {
-    return RFigure.Raster(convert(raster.image), convert(raster.from), convert(raster.to), raster.angle, raster.interpolate)
+    return RFigure.Raster(convert(raster.image), raster.from, raster.to, raster.angle, raster.interpolate)
   }
 
   private fun convert(rectangle: RectangleFigure): RFigure {
-    return RFigure.Rectangle(convert(rectangle.from), convert(rectangle.to), rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
+    return RFigure.Rectangle(rectangle.from, rectangle.to, rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
   }
 
   private fun convert(text: TextFigure): RFigure {
-    return RFigure.Text(text.text, convert(text.position), text.angle, text.anchor, text.fontIndex, text.colorIndex)
-  }
-
-  private fun convert(point: AffinePoint): RAffinePoint {
-    return RAffinePoint(point.xScale, point.xOffset, point.yScale, point.yOffset)
+    return RFigure.Text(text.text, text.position, text.angle, text.anchor, text.fontIndex, text.colorIndex)
   }
 
   private fun convert(image: RasterImage): BufferedImage {
@@ -348,7 +349,7 @@ object RPlotUtil {
     private fun replay(circle: RFigure.Circle) {
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
-      val radius = calculate(circle.radiusScale, circle.radiusOffset, currentViewport.height)
+      val radius = calculate(circle.radius, currentViewport.height)
       plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
     }
 
@@ -413,13 +414,13 @@ object RPlotUtil {
       plotter.drawText(text.text, x, y, text.angle, text.anchor, text.fontIndex, text.colorIndex)
     }
 
-    private fun calculateXs(points: List<RAffinePoint>): FloatArray {
+    private fun calculateXs(points: LongArray): FloatArray {
       return FloatArray(points.size) { i ->
         calculateX(points[i])
       }
     }
 
-    private fun calculateYs(points: List<RAffinePoint>): FloatArray {
+    private fun calculateYs(points: LongArray): FloatArray {
       return FloatArray(points.size) { i ->
         calculateY(points[i])
       }
@@ -444,7 +445,7 @@ object RPlotUtil {
       return Rectangle2D.Float(currentViewport.x + dx, currentViewport.y + dy, w2, h2)
     }
 
-    private fun calculateRectangle(from: RAffinePoint, to: RAffinePoint): Rectangle2D.Float {
+    private fun calculateRectangle(from: Long, to: Long): Rectangle2D.Float {
       val xFrom = calculateX(from)
       val yFrom = calculateY(from)
       val xTo = calculateX(to)
@@ -452,12 +453,19 @@ object RPlotUtil {
       return Rectangle2D.Float(xFrom, yFrom, xTo - xFrom, yTo - yFrom)
     }
 
-    private fun calculateX(point: RAffinePoint): Float {
-      return calculate(point.xScale, point.xOffset, currentViewport.width) + currentViewport.x
+    private fun calculateX(point: Long): Float {
+      return calculate((point ushr 32).toInt(), currentViewport.width) + currentViewport.x
     }
 
-    private fun calculateY(point: RAffinePoint): Float {
-      return calculate(point.yScale, point.yOffset, currentViewport.height) + currentViewport.y
+    private fun calculateY(point: Long): Float {
+      return calculate(point.toInt(), currentViewport.height) + currentViewport.y
+    }
+
+    private fun calculate(coordinate: Int, side: Float): Float {
+      // Note: left shift is used for sign extension as the most significant bit is reserved
+      val scale = ((coordinate shl 1) shr 17).toShort() / 8192.0f
+      val offset = coordinate.toShort() / 1024.0f
+      return calculate(scale, offset, side)
     }
 
     private fun calculate(scale: Float, offset: Float, side: Float): Float {

@@ -8,40 +8,27 @@ public interface CircleFigureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
+   * <code>fixed64 center = 1;</code>
    */
-  boolean hasCenter();
-  /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getCenter();
-  /**
-   * <code>.rplugininterop.AffinePoint center = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getCenterOrBuilder();
+  long getCenter();
 
   /**
-   * <code>float radiusScale = 2;</code>
+   * <code>fixed32 radius = 2;</code>
    */
-  float getRadiusScale();
+  int getRadius();
 
   /**
-   * <code>float radiusOffset = 3;</code>
-   */
-  float getRadiusOffset();
-
-  /**
-   * <code>int32 strokeIndex = 4;</code>
+   * <code>int32 strokeIndex = 3;</code>
    */
   int getStrokeIndex();
 
   /**
-   * <code>int32 colorIndex = 5;</code>
+   * <code>int32 colorIndex = 4;</code>
    */
   int getColorIndex();
 
   /**
-   * <code>int32 fillIndex = 6;</code>
+   * <code>int32 fillIndex = 5;</code>
    */
   int getFillIndex();
 }

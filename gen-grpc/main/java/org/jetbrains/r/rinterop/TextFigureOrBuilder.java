@@ -18,17 +18,9 @@ public interface TextFigureOrBuilder extends
       getTextBytes();
 
   /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
+   * <code>fixed64 position = 2;</code>
    */
-  boolean hasPosition();
-  /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getPosition();
-  /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getPositionOrBuilder();
+  long getPosition();
 
   /**
    * <code>float angle = 3;</code>

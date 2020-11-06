@@ -61,30 +61,14 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 18: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (from_ != null) {
-              subBuilder = from_.toBuilder();
-            }
-            from_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(from_);
-              from_ = subBuilder.buildPartial();
-            }
+          case 17: {
 
+            from_ = input.readFixed64();
             break;
           }
-          case 26: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (to_ != null) {
-              subBuilder = to_.toBuilder();
-            }
-            to_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(to_);
-              to_ = subBuilder.buildPartial();
-            }
+          case 25: {
 
+            to_ = input.readFixed64();
             break;
           }
           case 37: {
@@ -151,45 +135,21 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FROM_FIELD_NUMBER = 2;
-  private org.jetbrains.r.rinterop.AffinePoint from_;
+  private long from_;
   /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
+   * <code>fixed64 from = 2;</code>
    */
-  public boolean hasFrom() {
-    return from_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePoint getFrom() {
-    return from_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder() {
-    return getFrom();
+  public long getFrom() {
+    return from_;
   }
 
   public static final int TO_FIELD_NUMBER = 3;
-  private org.jetbrains.r.rinterop.AffinePoint to_;
+  private long to_;
   /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
+   * <code>fixed64 to = 3;</code>
    */
-  public boolean hasTo() {
-    return to_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePoint getTo() {
-    return to_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder() {
-    return getTo();
+  public long getTo() {
+    return to_;
   }
 
   public static final int ANGLE_FIELD_NUMBER = 4;
@@ -227,11 +187,11 @@ private static final long serialVersionUID = 0L;
     if (image_ != null) {
       output.writeMessage(1, getImage());
     }
-    if (from_ != null) {
-      output.writeMessage(2, getFrom());
+    if (from_ != 0L) {
+      output.writeFixed64(2, from_);
     }
-    if (to_ != null) {
-      output.writeMessage(3, getTo());
+    if (to_ != 0L) {
+      output.writeFixed64(3, to_);
     }
     if (angle_ != 0F) {
       output.writeFloat(4, angle_);
@@ -252,13 +212,13 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, getImage());
     }
-    if (from_ != null) {
+    if (from_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getFrom());
+        .computeFixed64Size(2, from_);
     }
-    if (to_ != null) {
+    if (to_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, getTo());
+        .computeFixed64Size(3, to_);
     }
     if (angle_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
@@ -288,16 +248,10 @@ private static final long serialVersionUID = 0L;
       if (!getImage()
           .equals(other.getImage())) return false;
     }
-    if (hasFrom() != other.hasFrom()) return false;
-    if (hasFrom()) {
-      if (!getFrom()
-          .equals(other.getFrom())) return false;
-    }
-    if (hasTo() != other.hasTo()) return false;
-    if (hasTo()) {
-      if (!getTo()
-          .equals(other.getTo())) return false;
-    }
+    if (getFrom()
+        != other.getFrom()) return false;
+    if (getTo()
+        != other.getTo()) return false;
     if (java.lang.Float.floatToIntBits(getAngle())
         != java.lang.Float.floatToIntBits(
             other.getAngle())) return false;
@@ -318,14 +272,12 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + IMAGE_FIELD_NUMBER;
       hash = (53 * hash) + getImage().hashCode();
     }
-    if (hasFrom()) {
-      hash = (37 * hash) + FROM_FIELD_NUMBER;
-      hash = (53 * hash) + getFrom().hashCode();
-    }
-    if (hasTo()) {
-      hash = (37 * hash) + TO_FIELD_NUMBER;
-      hash = (53 * hash) + getTo().hashCode();
-    }
+    hash = (37 * hash) + FROM_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getFrom());
+    hash = (37 * hash) + TO_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTo());
     hash = (37 * hash) + ANGLE_FIELD_NUMBER;
     hash = (53 * hash) + java.lang.Float.floatToIntBits(
         getAngle());
@@ -471,18 +423,10 @@ private static final long serialVersionUID = 0L;
         image_ = null;
         imageBuilder_ = null;
       }
-      if (fromBuilder_ == null) {
-        from_ = null;
-      } else {
-        from_ = null;
-        fromBuilder_ = null;
-      }
-      if (toBuilder_ == null) {
-        to_ = null;
-      } else {
-        to_ = null;
-        toBuilder_ = null;
-      }
+      from_ = 0L;
+
+      to_ = 0L;
+
       angle_ = 0F;
 
       interpolate_ = false;
@@ -518,16 +462,8 @@ private static final long serialVersionUID = 0L;
       } else {
         result.image_ = imageBuilder_.build();
       }
-      if (fromBuilder_ == null) {
-        result.from_ = from_;
-      } else {
-        result.from_ = fromBuilder_.build();
-      }
-      if (toBuilder_ == null) {
-        result.to_ = to_;
-      } else {
-        result.to_ = toBuilder_.build();
-      }
+      result.from_ = from_;
+      result.to_ = to_;
       result.angle_ = angle_;
       result.interpolate_ = interpolate_;
       onBuilt();
@@ -581,11 +517,11 @@ private static final long serialVersionUID = 0L;
       if (other.hasImage()) {
         mergeImage(other.getImage());
       }
-      if (other.hasFrom()) {
-        mergeFrom(other.getFrom());
+      if (other.getFrom() != 0L) {
+        setFrom(other.getFrom());
       }
-      if (other.hasTo()) {
-        mergeTo(other.getTo());
+      if (other.getTo() != 0L) {
+        setTo(other.getTo());
       }
       if (other.getAngle() != 0F) {
         setAngle(other.getAngle());
@@ -739,238 +675,56 @@ private static final long serialVersionUID = 0L;
       return imageBuilder_;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint from_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> fromBuilder_;
+    private long from_ ;
     /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
+     * <code>fixed64 from = 2;</code>
      */
-    public boolean hasFrom() {
-      return fromBuilder_ != null || from_ != null;
+    public long getFrom() {
+      return from_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
+     * <code>fixed64 from = 2;</code>
      */
-    public org.jetbrains.r.rinterop.AffinePoint getFrom() {
-      if (fromBuilder_ == null) {
-        return from_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-      } else {
-        return fromBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    public Builder setFrom(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (fromBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        from_ = value;
-        onChanged();
-      } else {
-        fromBuilder_.setMessage(value);
-      }
-
+    public Builder setFrom(long value) {
+      
+      from_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    public Builder setFrom(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (fromBuilder_ == null) {
-        from_ = builderForValue.build();
-        onChanged();
-      } else {
-        fromBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    public Builder mergeFrom(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (fromBuilder_ == null) {
-        if (from_ != null) {
-          from_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(from_).mergeFrom(value).buildPartial();
-        } else {
-          from_ = value;
-        }
-        onChanged();
-      } else {
-        fromBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
+     * <code>fixed64 from = 2;</code>
      */
     public Builder clearFrom() {
-      if (fromBuilder_ == null) {
-        from_ = null;
-        onChanged();
-      } else {
-        from_ = null;
-        fromBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getFromBuilder() {
       
+      from_ = 0L;
       onChanged();
-      return getFromFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder() {
-      if (fromBuilder_ != null) {
-        return fromBuilder_.getMessageOrBuilder();
-      } else {
-        return from_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 2;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getFromFieldBuilder() {
-      if (fromBuilder_ == null) {
-        fromBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getFrom(),
-                getParentForChildren(),
-                isClean());
-        from_ = null;
-      }
-      return fromBuilder_;
+      return this;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint to_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> toBuilder_;
+    private long to_ ;
     /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
+     * <code>fixed64 to = 3;</code>
      */
-    public boolean hasTo() {
-      return toBuilder_ != null || to_ != null;
+    public long getTo() {
+      return to_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
+     * <code>fixed64 to = 3;</code>
      */
-    public org.jetbrains.r.rinterop.AffinePoint getTo() {
-      if (toBuilder_ == null) {
-        return to_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-      } else {
-        return toBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    public Builder setTo(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (toBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        to_ = value;
-        onChanged();
-      } else {
-        toBuilder_.setMessage(value);
-      }
-
+    public Builder setTo(long value) {
+      
+      to_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    public Builder setTo(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (toBuilder_ == null) {
-        to_ = builderForValue.build();
-        onChanged();
-      } else {
-        toBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    public Builder mergeTo(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (toBuilder_ == null) {
-        if (to_ != null) {
-          to_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(to_).mergeFrom(value).buildPartial();
-        } else {
-          to_ = value;
-        }
-        onChanged();
-      } else {
-        toBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
+     * <code>fixed64 to = 3;</code>
      */
     public Builder clearTo() {
-      if (toBuilder_ == null) {
-        to_ = null;
-        onChanged();
-      } else {
-        to_ = null;
-        toBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getToBuilder() {
       
+      to_ = 0L;
       onChanged();
-      return getToFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder() {
-      if (toBuilder_ != null) {
-        return toBuilder_.getMessageOrBuilder();
-      } else {
-        return to_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 3;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getToFieldBuilder() {
-      if (toBuilder_ == null) {
-        toBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getTo(),
-                getParentForChildren(),
-                isClean());
-        to_ = null;
-      }
-      return toBuilder_;
+      return this;
     }
 
     private float angle_ ;

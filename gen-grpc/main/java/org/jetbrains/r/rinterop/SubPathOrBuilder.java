@@ -8,26 +8,15 @@ public interface SubPathOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
    */
-  java.util.List<org.jetbrains.r.rinterop.AffinePoint> 
-      getPointList();
+  java.util.List<java.lang.Long> getPointList();
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getPoint(int index);
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
    */
   int getPointCount();
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
    */
-  java.util.List<? extends org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-      getPointOrBuilderList();
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getPointOrBuilder(
-      int index);
+  long getPoint(int index);
 }

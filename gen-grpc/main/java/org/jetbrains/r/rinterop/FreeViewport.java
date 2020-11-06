@@ -48,30 +48,14 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (from_ != null) {
-              subBuilder = from_.toBuilder();
-            }
-            from_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(from_);
-              from_ = subBuilder.buildPartial();
-            }
+          case 9: {
 
+            from_ = input.readFixed64();
             break;
           }
-          case 18: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (to_ != null) {
-              subBuilder = to_.toBuilder();
-            }
-            to_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(to_);
-              to_ = subBuilder.buildPartial();
-            }
+          case 17: {
 
+            to_ = input.readFixed64();
             break;
           }
           case 24: {
@@ -112,45 +96,21 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FROM_FIELD_NUMBER = 1;
-  private org.jetbrains.r.rinterop.AffinePoint from_;
+  private long from_;
   /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
+   * <code>fixed64 from = 1;</code>
    */
-  public boolean hasFrom() {
-    return from_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePoint getFrom() {
-    return from_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint from = 1;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder() {
-    return getFrom();
+  public long getFrom() {
+    return from_;
   }
 
   public static final int TO_FIELD_NUMBER = 2;
-  private org.jetbrains.r.rinterop.AffinePoint to_;
+  private long to_;
   /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
+   * <code>fixed64 to = 2;</code>
    */
-  public boolean hasTo() {
-    return to_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePoint getTo() {
-    return to_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint to = 2;</code>
-   */
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder() {
-    return getTo();
+  public long getTo() {
+    return to_;
   }
 
   public static final int PARENTINDEX_FIELD_NUMBER = 3;
@@ -176,11 +136,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (from_ != null) {
-      output.writeMessage(1, getFrom());
+    if (from_ != 0L) {
+      output.writeFixed64(1, from_);
     }
-    if (to_ != null) {
-      output.writeMessage(2, getTo());
+    if (to_ != 0L) {
+      output.writeFixed64(2, to_);
     }
     if (parentIndex_ != 0) {
       output.writeInt32(3, parentIndex_);
@@ -194,13 +154,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (from_ != null) {
+    if (from_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, getFrom());
+        .computeFixed64Size(1, from_);
     }
-    if (to_ != null) {
+    if (to_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getTo());
+        .computeFixed64Size(2, to_);
     }
     if (parentIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -221,16 +181,10 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.FreeViewport other = (org.jetbrains.r.rinterop.FreeViewport) obj;
 
-    if (hasFrom() != other.hasFrom()) return false;
-    if (hasFrom()) {
-      if (!getFrom()
-          .equals(other.getFrom())) return false;
-    }
-    if (hasTo() != other.hasTo()) return false;
-    if (hasTo()) {
-      if (!getTo()
-          .equals(other.getTo())) return false;
-    }
+    if (getFrom()
+        != other.getFrom()) return false;
+    if (getTo()
+        != other.getTo()) return false;
     if (getParentIndex()
         != other.getParentIndex()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
@@ -244,14 +198,12 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (hasFrom()) {
-      hash = (37 * hash) + FROM_FIELD_NUMBER;
-      hash = (53 * hash) + getFrom().hashCode();
-    }
-    if (hasTo()) {
-      hash = (37 * hash) + TO_FIELD_NUMBER;
-      hash = (53 * hash) + getTo().hashCode();
-    }
+    hash = (37 * hash) + FROM_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getFrom());
+    hash = (37 * hash) + TO_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTo());
     hash = (37 * hash) + PARENTINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getParentIndex();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -387,18 +339,10 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      if (fromBuilder_ == null) {
-        from_ = null;
-      } else {
-        from_ = null;
-        fromBuilder_ = null;
-      }
-      if (toBuilder_ == null) {
-        to_ = null;
-      } else {
-        to_ = null;
-        toBuilder_ = null;
-      }
+      from_ = 0L;
+
+      to_ = 0L;
+
       parentIndex_ = 0;
 
       return this;
@@ -427,16 +371,8 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.jetbrains.r.rinterop.FreeViewport buildPartial() {
       org.jetbrains.r.rinterop.FreeViewport result = new org.jetbrains.r.rinterop.FreeViewport(this);
-      if (fromBuilder_ == null) {
-        result.from_ = from_;
-      } else {
-        result.from_ = fromBuilder_.build();
-      }
-      if (toBuilder_ == null) {
-        result.to_ = to_;
-      } else {
-        result.to_ = toBuilder_.build();
-      }
+      result.from_ = from_;
+      result.to_ = to_;
       result.parentIndex_ = parentIndex_;
       onBuilt();
       return result;
@@ -486,11 +422,11 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.FreeViewport other) {
       if (other == org.jetbrains.r.rinterop.FreeViewport.getDefaultInstance()) return this;
-      if (other.hasFrom()) {
-        mergeFrom(other.getFrom());
+      if (other.getFrom() != 0L) {
+        setFrom(other.getFrom());
       }
-      if (other.hasTo()) {
-        mergeTo(other.getTo());
+      if (other.getTo() != 0L) {
+        setTo(other.getTo());
       }
       if (other.getParentIndex() != 0) {
         setParentIndex(other.getParentIndex());
@@ -524,238 +460,56 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint from_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> fromBuilder_;
+    private long from_ ;
     /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
+     * <code>fixed64 from = 1;</code>
      */
-    public boolean hasFrom() {
-      return fromBuilder_ != null || from_ != null;
+    public long getFrom() {
+      return from_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
+     * <code>fixed64 from = 1;</code>
      */
-    public org.jetbrains.r.rinterop.AffinePoint getFrom() {
-      if (fromBuilder_ == null) {
-        return from_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-      } else {
-        return fromBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    public Builder setFrom(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (fromBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        from_ = value;
-        onChanged();
-      } else {
-        fromBuilder_.setMessage(value);
-      }
-
+    public Builder setFrom(long value) {
+      
+      from_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    public Builder setFrom(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (fromBuilder_ == null) {
-        from_ = builderForValue.build();
-        onChanged();
-      } else {
-        fromBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    public Builder mergeFrom(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (fromBuilder_ == null) {
-        if (from_ != null) {
-          from_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(from_).mergeFrom(value).buildPartial();
-        } else {
-          from_ = value;
-        }
-        onChanged();
-      } else {
-        fromBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
+     * <code>fixed64 from = 1;</code>
      */
     public Builder clearFrom() {
-      if (fromBuilder_ == null) {
-        from_ = null;
-        onChanged();
-      } else {
-        from_ = null;
-        fromBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getFromBuilder() {
       
+      from_ = 0L;
       onChanged();
-      return getFromFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder() {
-      if (fromBuilder_ != null) {
-        return fromBuilder_.getMessageOrBuilder();
-      } else {
-        return from_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : from_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint from = 1;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getFromFieldBuilder() {
-      if (fromBuilder_ == null) {
-        fromBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getFrom(),
-                getParentForChildren(),
-                isClean());
-        from_ = null;
-      }
-      return fromBuilder_;
+      return this;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint to_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> toBuilder_;
+    private long to_ ;
     /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
+     * <code>fixed64 to = 2;</code>
      */
-    public boolean hasTo() {
-      return toBuilder_ != null || to_ != null;
+    public long getTo() {
+      return to_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
+     * <code>fixed64 to = 2;</code>
      */
-    public org.jetbrains.r.rinterop.AffinePoint getTo() {
-      if (toBuilder_ == null) {
-        return to_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-      } else {
-        return toBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    public Builder setTo(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (toBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        to_ = value;
-        onChanged();
-      } else {
-        toBuilder_.setMessage(value);
-      }
-
+    public Builder setTo(long value) {
+      
+      to_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    public Builder setTo(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (toBuilder_ == null) {
-        to_ = builderForValue.build();
-        onChanged();
-      } else {
-        toBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    public Builder mergeTo(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (toBuilder_ == null) {
-        if (to_ != null) {
-          to_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(to_).mergeFrom(value).buildPartial();
-        } else {
-          to_ = value;
-        }
-        onChanged();
-      } else {
-        toBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
+     * <code>fixed64 to = 2;</code>
      */
     public Builder clearTo() {
-      if (toBuilder_ == null) {
-        to_ = null;
-        onChanged();
-      } else {
-        to_ = null;
-        toBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getToBuilder() {
       
+      to_ = 0L;
       onChanged();
-      return getToFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder() {
-      if (toBuilder_ != null) {
-        return toBuilder_.getMessageOrBuilder();
-      } else {
-        return to_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : to_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint to = 2;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getToFieldBuilder() {
-      if (toBuilder_ == null) {
-        toBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getTo(),
-                getParentForChildren(),
-                isClean());
-        to_ = null;
-      }
-      return toBuilder_;
+      return this;
     }
 
     private int parentIndex_ ;
