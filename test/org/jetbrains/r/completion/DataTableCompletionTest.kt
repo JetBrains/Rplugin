@@ -254,6 +254,17 @@ class DataTableCompletionTest : RColumnCompletionTest() {
     )
   }
 
+  fun testStaticStringColumnsDefinedInSubscription() {
+    checkStaticCompletion(
+      """
+        dt <- dt[, .("my_column_c", my_column_d := 3 + 4)]
+        dt[,.(x=sum(my_col<caret>))]
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_column_c"),
+      expectedToBeMissed = emptyList()
+    )
+  }
+
   fun testStaticColumnsDefinedInSubscription() {
     checkStaticCompletion(
       """
@@ -274,6 +285,30 @@ class DataTableCompletionTest : RColumnCompletionTest() {
       """.trimIndent(),
       expectedToBePresent = listOf("my_column_a", "my_column_d"),
       expectedToBeMissed = listOf("my_column_c")
+    )
+  }
+
+  fun testNoCompletionForVariableDefinedInDotSubscription() {
+    checkStaticCompletion(
+      """
+        dt <- data.table(my_column_a = c(1, 2, 3), my_column_c = c(1,2,10))
+        dt <- dt[, .(my_column_c := 1 + 4, my_column_d := 3 + 4)]
+        dt[,.(x=sum(my_col<caret>))]
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_column_a", "my_column_c", "my_column_d"),
+      expectedToBeMissed = listOf()
+    )
+  }
+
+  fun testNoCompletionForVariableDefinedInCInSubscription() {
+    checkStaticCompletion(
+      """
+        dt <- data.table(my_column_a = c(1, 2, 3), my_column_c = c(1,2,10))
+        dt <- dt[, c(my_column_c := 1 + 2, my_column_d := 3 + 4)]
+        dt[,.(x=sum(my_col<caret>))]
+      """.trimIndent(),
+      expectedToBePresent = listOf("my_column_a", "my_column_c", "my_column_d"),
+      expectedToBeMissed = listOf()
     )
   }
 
