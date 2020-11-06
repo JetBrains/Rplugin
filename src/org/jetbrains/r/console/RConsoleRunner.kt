@@ -313,9 +313,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     if (RSettings.getInstance(project).disableRprofile) return resolvedPromise()
     return fixRProfile().thenAsync {
       runAsync<Unit> {
-        if (!RInterpreterUtil.validateRProfile(project, interpreter.interpreterLocation, workingDir, true)) {
-          throw RuntimeException(".Rprofile may contain errors")
-        }
+        RInterpreterUtil.validateRProfile(project, interpreter.interpreterLocation, workingDir, true)
       }
     }
   }

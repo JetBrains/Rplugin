@@ -280,9 +280,13 @@ object RInterpreterUtil {
     val scriptName = helper.name
     val time = System.currentTimeMillis()
     try {
-      return runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer, project) }
-               .onError { RInterpreterBase.LOG.error(it) }
-               .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
+      val result = runAsync { runHelperWithArgs(interpreterLocation, helper, workingDirectory, args, processAdapterProducer, project) }
+                     .onError { RInterpreterBase.LOG.error(it) }
+                     .blockingGet(DEFAULT_TIMEOUT) ?: throw RuntimeException("Timeout for helper '$scriptName'")
+      if (project != null && result.exitCode != 0) {
+        validateRProfile(project, interpreterLocation, workingDirectory)
+      }
+      return result
     }
     finally {
       RInterpreterBase.LOG.warn("Running ${scriptName} took ${System.currentTimeMillis() - time}ms")
@@ -305,11 +309,7 @@ object RInterpreterUtil {
                                 project: Project? = null): ProcessOutput {
     val helperOnHost = interpreterLocation.uploadFileToHost(helper)
     val interpreterArgs = getRunHelperArgs(helperOnHost, args, project)
-    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer).also {
-      if (project != null && it.exitCode != 0) {
-        validateRProfile(project, interpreterLocation, workingDirectory)
-      }
-    }
+    return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
   }
 
   fun getRunHelperArgs(helper: String, args: List<String>, project: Project? = null): List<String> {
@@ -377,19 +377,21 @@ object RInterpreterUtil {
   }
 
   fun validateRProfile(project: Project, interpreterLocation: RInterpreterLocation, workingDir: String?,
-                               suggestRestartConsole: Boolean = false): Boolean {
-    if (RSettings.getInstance(project).disableRprofile) return true
+                               suggestRestartConsole: Boolean = false) {
+    if (RSettings.getInstance(project).disableRprofile) return
     val helperOnHost = interpreterLocation.uploadFileToHost(RPluginUtil.findFileInRHelpers("R/empty.R"))
     val interpreterArgs = getRunHelperArgs(helperOnHost, listOf(), project)
     val result = runRInterpreter(interpreterLocation, interpreterArgs, workingDir)
-    if (result.exitCode == 0) return true
+    if (result.exitCode == 0) return
     if (suggestRestartConsole) {
       RNotificationUtil.notifyConsoleError(
         project, RBundle.message("interpreter.rprofile.error.message", result.stderr),
         object : AnAction(RBundle.message("interpreter.rprofile.error.disable.and.restart")) {
           override fun actionPerformed(e: AnActionEvent) {
             RSettings.getInstance(project).disableRprofile = true
-            RConsoleManager.runConsole(project, true, workingDir)
+            RConsoleManager.runConsole(project, true, workingDir).onError {
+              RNotificationUtil.notifyConsoleError(project, it.message)
+            }
           }
         })
     } else {
@@ -401,7 +403,7 @@ object RInterpreterUtil {
           }
         })
     }
-    return false
+    throw RProfileErrorException(result.stderr)
   }
 
   private data class CondaPath(val path: String, val environment: String)
@@ -461,3 +463,5 @@ object RInterpreterUtil {
     }
   }
 }
+
+class RProfileErrorException(stderr: String) : Exception(".Rprofile may contain errors: $stderr")

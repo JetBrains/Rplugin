@@ -19,6 +19,7 @@ import com.intellij.util.ui.UIUtil.findComponentOfType
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
@@ -36,9 +37,7 @@ class RConsoleManager(private val project: Project) {
     private set
 
   val currentConsoleAsync: Promise<RConsoleView>
-    get() = AsyncPromise<RConsoleView>().apply {
-      currentConsole?.let { setResult(it) } ?: runConsole().processed(this)
-    }
+    get() = currentConsole?.let { resolvedPromise(it) } ?: runConsole()
 
   private fun run(lambda: (RConsoleView) -> Unit): Promise<Unit> {
     return currentConsoleAsync.onError {
@@ -68,6 +67,7 @@ class RConsoleManager(private val project: Project) {
       synchronized(this) {
         consolePromise = null
       }
+    }.onError {
     }
   }
 
@@ -177,6 +177,8 @@ class RConsoleManager(private val project: Project) {
             toolWindow?.component?.validate()
           }
           RPackageProjectManager.getInstance(project).loadOrSuggestToInstallMissedPackages()
+        }.onError {
+          result.setError(it)
         }
       }.onError {
         result.setError("Cannot run console until path to viable R interpreter is specified")

@@ -71,7 +71,7 @@ object RSessionUtils {
     getConsoleView(rInterop)?.print("\nRestarting R session...\n\n", ConsoleViewContentType.NORMAL_OUTPUT)
     RInterpreterManager.restartInterpreter(rInterop.project, Runnable {
       if (command.isNotBlank()) {
-        RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.then {
+        RConsoleManager.getInstance(rInterop.project).currentConsoleAsync.onSuccess {
           it.executeActionHandler.executeLater {
             it.executeText(command)
           }
