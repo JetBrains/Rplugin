@@ -1,15 +1,11 @@
 // This is a generated file. Not intended for manual editing.
 package org.jetbrains.r.psi.impl;
 
-import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static org.jetbrains.r.parsing.RElementTypes.*;
 import org.jetbrains.r.psi.api.*;
-import org.jetbrains.r.classes.RS4ClassInfo;
+import org.jetbrains.r.classes.s4.RS4ClassInfo;
 import org.jetbrains.r.psi.stubs.RCallExpressionStub;
 import com.intellij.psi.stubs.IStubElementType;
 

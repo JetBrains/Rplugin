@@ -18,9 +18,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.RS4ClassInfo
-import org.jetbrains.r.classes.RS4ClassInfoUtil
-import org.jetbrains.r.classes.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
 import org.jetbrains.r.codeInsight.table.RTableContextManager
