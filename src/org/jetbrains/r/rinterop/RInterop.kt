@@ -34,8 +34,8 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.classes.RS4ClassInfo
-import org.jetbrains.r.classes.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.debugger.RDebuggerUtil
 import org.jetbrains.r.debugger.RSourcePosition
 import org.jetbrains.r.debugger.RStackFrame

@@ -8,8 +8,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
-import org.jetbrains.r.classes.RS4ClassInfo
-import org.jetbrains.r.classes.RS4ClassSlot
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.packages.LibrarySummary
 import org.jetbrains.r.packages.LibrarySummary.RLibrarySymbol.RepresentationCase
