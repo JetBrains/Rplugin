@@ -84,12 +84,12 @@ object RPsiUtil {
     return if (call is RCallExpression && call.expression == expression) call else null
   }
 
-  fun getAssignmentByAssignee(assignee: RExpression) : RAssignmentStatement? {
+  fun getAssignmentByAssignee(assignee: RPsiElement) : RAssignmentStatement? {
     val assignment = assignee.parent
     return if (assignment is RAssignmentStatement && assignment.assignee == assignee) assignment else null
   }
 
-  fun getNamedArgumentByNameIdentifier(assignee: RExpression) : RNamedArgument? {
+  fun getNamedArgumentByNameIdentifier(assignee: RPsiElement) : RNamedArgument? {
     val assignment = assignee.parent
     return if (assignment is RNamedArgument && assignment.nameIdentifier == assignee) assignment else null
   }
