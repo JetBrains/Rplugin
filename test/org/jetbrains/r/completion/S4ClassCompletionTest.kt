@@ -340,6 +340,21 @@ class S4ClassCompletionTest : RProcessHandlerBaseTestCase() {
     doTest("new('OldDevice', ime<caret>)", "imei" to "character", strict = false, withRuntimeInfo = true, inConsole = true)
   }
 
+  // Trying to test case when class names like "<-" place somewhere at the end of the completion list
+  fun testLanguageClassNamePriority() {
+    val result = doTestBase("setClass('MyClass', slots = c(slotName = '<caret>'))")
+    val strangeClasses = listOf("{", "(", "<-")
+    for (langClass in strangeClasses) {
+      val numberInOrder = result.indexOfFirst { it.lookupString == langClass }
+      assertTrue("""
+        Language class "$langClass" not in the end of completion list
+        Completion list size: ${result.size}
+        Expected that it will be after ${result.size - 15} elements
+        Number in order: $numberInOrder
+      """.trimIndent(), numberInOrder > result.size - 15)
+    }
+  }
+
   fun testApplyCompletionField() {
     doApplyCompletionTest("""
       obj <- new('classRepresentation')

@@ -554,7 +554,12 @@ class RCompletionContributor : CompletionContributor() {
 
       val packageName = classInfo.packageName
       val isLoaded = loadedPackages?.contains(packageName) ?: true
-      val priority = if (isLoaded || packageName.isEmpty()) LOADED_S4_CLASS_NAME else NOT_LOADED_S4_CLASS_NAME
+      val priority =
+        when {
+          classInfo.packageName == "methods" && "language" in classInfo.superClasses -> LANGUAGE_S4_CLASS_NAME
+          isLoaded || packageName.isEmpty() -> LOADED_S4_CLASS_NAME
+          else -> NOT_LOADED_S4_CLASS_NAME
+        }
       if (classNameExpression is RStringLiteralExpression) {
         addElement(RLookupElementFactory.createLookupElementWithPriority(
           RLookupElement(escape(className), true, AllIcons.Nodes.Field, packageName = packageName),
