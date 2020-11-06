@@ -15,6 +15,7 @@ import org.jetbrains.r.psi.RDataTableAnalyzer.processSubscription
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processAllDotsColumns
 import org.jetbrains.r.psi.TableManipulationAnalyzer.Companion.processOperandColumns
 import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.references.RResolveUtil
 import org.jetbrains.r.refactoring.RNamesValidator
 
 object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
@@ -73,6 +74,25 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
     }
 
     return result.all { processor.process(it) }
+  }
+
+  override fun processTableFromVariable(variable: RIdentifierExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val precedingModification = RResolveUtil.findPrecedingInstruction(variable) { element: PsiElement ->
+      if (element is RAssignmentStatement && element.name == variable.name) {
+        return@findPrecedingInstruction element.assignedValue
+      }
+      if (element is RSubscriptionExpression) {
+        val nameElement = element.firstChild
+        if (nameElement is RIdentifierExpression && nameElement.name == variable.name) {
+          return@findPrecedingInstruction element
+        }
+      }
+      return@findPrecedingInstruction null
+    }
+    if (precedingModification is RExpression) {
+      return processStaticTableColumns(precedingModification, processor)
+    }
+    return true
   }
 
   fun processSubscription(operandProcessorRunner: ProcessOperandColumnRunner?,
