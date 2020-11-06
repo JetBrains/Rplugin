@@ -2,8 +2,6 @@ package org.jetbrains.r.run.graphics
 
 import java.awt.Color
 
-data class RAffinePoint(val xScale: Float, val xOffset: Float, val yScale: Float, val yOffset: Float)
-
 enum class RFontStyle {
   PLAIN,
   BOLD,

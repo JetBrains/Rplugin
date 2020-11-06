@@ -16,7 +16,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private SubPath() {
-    point_ = java.util.Collections.emptyList();
+    point_ = emptyLongList();
   }
 
   @java.lang.Override
@@ -50,13 +50,25 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
+          case 9: {
             if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              point_ = new java.util.ArrayList<org.jetbrains.r.rinterop.AffinePoint>();
+              point_ = newLongList();
               mutable_bitField0_ |= 0x00000001;
             }
-            point_.add(
-                input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry));
+            point_.addLong(input.readFixed64());
+            break;
+          }
+          case 10: {
+            int length = input.readRawVarint32();
+            int limit = input.pushLimit(length);
+            if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+              point_ = newLongList();
+              mutable_bitField0_ |= 0x00000001;
+            }
+            while (input.getBytesUntilLimit() > 0) {
+              point_.addLong(input.readFixed64());
+            }
+            input.popLimit(limit);
             break;
           }
           default: {
@@ -75,7 +87,7 @@ private static final long serialVersionUID = 0L;
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000001) != 0)) {
-        point_ = java.util.Collections.unmodifiableList(point_);
+        point_.makeImmutable(); // C
       }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
@@ -95,44 +107,32 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int POINT_FIELD_NUMBER = 1;
-  private java.util.List<org.jetbrains.r.rinterop.AffinePoint> point_;
+  private com.google.protobuf.Internal.LongList point_;
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @return A list containing the point.
    */
   @java.lang.Override
-  public java.util.List<org.jetbrains.r.rinterop.AffinePoint> getPointList() {
+  public java.util.List<java.lang.Long>
+      getPointList() {
     return point_;
   }
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @return The count of point.
    */
-  @java.lang.Override
-  public java.util.List<? extends org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-      getPointOrBuilderList() {
-    return point_;
-  }
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  @java.lang.Override
   public int getPointCount() {
     return point_.size();
   }
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @param index The index of the element to return.
+   * @return The point at the given index.
    */
-  @java.lang.Override
-  public org.jetbrains.r.rinterop.AffinePoint getPoint(int index) {
-    return point_.get(index);
+  public long getPoint(int index) {
+    return point_.getLong(index);
   }
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  @java.lang.Override
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getPointOrBuilder(
-      int index) {
-    return point_.get(index);
-  }
+  private int pointMemoizedSerializedSize = -1;
 
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
@@ -148,8 +148,13 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
+    getSerializedSize();
+    if (getPointList().size() > 0) {
+      output.writeUInt32NoTag(10);
+      output.writeUInt32NoTag(pointMemoizedSerializedSize);
+    }
     for (int i = 0; i < point_.size(); i++) {
-      output.writeMessage(1, point_.get(i));
+      output.writeFixed64NoTag(point_.getLong(i));
     }
     unknownFields.writeTo(output);
   }
@@ -160,9 +165,16 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    for (int i = 0; i < point_.size(); i++) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, point_.get(i));
+    {
+      int dataSize = 0;
+      dataSize = 8 * getPointList().size();
+      size += dataSize;
+      if (!getPointList().isEmpty()) {
+        size += 1;
+        size += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(dataSize);
+      }
+      pointMemoizedSerializedSize = dataSize;
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -324,18 +336,13 @@ private static final long serialVersionUID = 0L;
     private void maybeForceBuilderInitialization() {
       if (com.google.protobuf.GeneratedMessageV3
               .alwaysUseFieldBuilders) {
-        getPointFieldBuilder();
       }
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      if (pointBuilder_ == null) {
-        point_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
-      } else {
-        pointBuilder_.clear();
-      }
+      point_ = emptyLongList();
+      bitField0_ = (bitField0_ & ~0x00000001);
       return this;
     }
 
@@ -363,15 +370,11 @@ private static final long serialVersionUID = 0L;
     public org.jetbrains.r.rinterop.SubPath buildPartial() {
       org.jetbrains.r.rinterop.SubPath result = new org.jetbrains.r.rinterop.SubPath(this);
       int from_bitField0_ = bitField0_;
-      if (pointBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
-          point_ = java.util.Collections.unmodifiableList(point_);
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.point_ = point_;
-      } else {
-        result.point_ = pointBuilder_.build();
+      if (((bitField0_ & 0x00000001) != 0)) {
+        point_.makeImmutable();
+        bitField0_ = (bitField0_ & ~0x00000001);
       }
+      result.point_ = point_;
       onBuilt();
       return result;
     }
@@ -420,31 +423,15 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.SubPath other) {
       if (other == org.jetbrains.r.rinterop.SubPath.getDefaultInstance()) return this;
-      if (pointBuilder_ == null) {
-        if (!other.point_.isEmpty()) {
-          if (point_.isEmpty()) {
-            point_ = other.point_;
-            bitField0_ = (bitField0_ & ~0x00000001);
-          } else {
-            ensurePointIsMutable();
-            point_.addAll(other.point_);
-          }
-          onChanged();
+      if (!other.point_.isEmpty()) {
+        if (point_.isEmpty()) {
+          point_ = other.point_;
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          ensurePointIsMutable();
+          point_.addAll(other.point_);
         }
-      } else {
-        if (!other.point_.isEmpty()) {
-          if (pointBuilder_.isEmpty()) {
-            pointBuilder_.dispose();
-            pointBuilder_ = null;
-            point_ = other.point_;
-            bitField0_ = (bitField0_ & ~0x00000001);
-            pointBuilder_ = 
-              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                 getPointFieldBuilder() : null;
-          } else {
-            pointBuilder_.addAllMessages(other.point_);
-          }
-        }
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -476,244 +463,83 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private java.util.List<org.jetbrains.r.rinterop.AffinePoint> point_ =
-      java.util.Collections.emptyList();
+    private com.google.protobuf.Internal.LongList point_ = emptyLongList();
     private void ensurePointIsMutable() {
       if (!((bitField0_ & 0x00000001) != 0)) {
-        point_ = new java.util.ArrayList<org.jetbrains.r.rinterop.AffinePoint>(point_);
+        point_ = mutableCopy(point_);
         bitField0_ |= 0x00000001;
        }
     }
-
-    private com.google.protobuf.RepeatedFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> pointBuilder_;
-
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @return A list containing the point.
      */
-    public java.util.List<org.jetbrains.r.rinterop.AffinePoint> getPointList() {
-      if (pointBuilder_ == null) {
-        return java.util.Collections.unmodifiableList(point_);
-      } else {
-        return pointBuilder_.getMessageList();
-      }
+    public java.util.List<java.lang.Long>
+        getPointList() {
+      return ((bitField0_ & 0x00000001) != 0) ?
+               java.util.Collections.unmodifiableList(point_) : point_;
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @return The count of point.
      */
     public int getPointCount() {
-      if (pointBuilder_ == null) {
-        return point_.size();
-      } else {
-        return pointBuilder_.getCount();
-      }
+      return point_.size();
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @param index The index of the element to return.
+     * @return The point at the given index.
      */
-    public org.jetbrains.r.rinterop.AffinePoint getPoint(int index) {
-      if (pointBuilder_ == null) {
-        return point_.get(index);
-      } else {
-        return pointBuilder_.getMessage(index);
-      }
+    public long getPoint(int index) {
+      return point_.getLong(index);
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The point to set.
+     * @return This builder for chaining.
      */
     public Builder setPoint(
-        int index, org.jetbrains.r.rinterop.AffinePoint value) {
-      if (pointBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensurePointIsMutable();
-        point_.set(index, value);
-        onChanged();
-      } else {
-        pointBuilder_.setMessage(index, value);
-      }
+        int index, long value) {
+      ensurePointIsMutable();
+      point_.setLong(index, value);
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @param value The point to add.
+     * @return This builder for chaining.
      */
-    public Builder setPoint(
-        int index, org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (pointBuilder_ == null) {
-        ensurePointIsMutable();
-        point_.set(index, builderForValue.build());
-        onChanged();
-      } else {
-        pointBuilder_.setMessage(index, builderForValue.build());
-      }
+    public Builder addPoint(long value) {
+      ensurePointIsMutable();
+      point_.addLong(value);
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public Builder addPoint(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (pointBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensurePointIsMutable();
-        point_.add(value);
-        onChanged();
-      } else {
-        pointBuilder_.addMessage(value);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public Builder addPoint(
-        int index, org.jetbrains.r.rinterop.AffinePoint value) {
-      if (pointBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensurePointIsMutable();
-        point_.add(index, value);
-        onChanged();
-      } else {
-        pointBuilder_.addMessage(index, value);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public Builder addPoint(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (pointBuilder_ == null) {
-        ensurePointIsMutable();
-        point_.add(builderForValue.build());
-        onChanged();
-      } else {
-        pointBuilder_.addMessage(builderForValue.build());
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public Builder addPoint(
-        int index, org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (pointBuilder_ == null) {
-        ensurePointIsMutable();
-        point_.add(index, builderForValue.build());
-        onChanged();
-      } else {
-        pointBuilder_.addMessage(index, builderForValue.build());
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @param values The point to add.
+     * @return This builder for chaining.
      */
     public Builder addAllPoint(
-        java.lang.Iterable<? extends org.jetbrains.r.rinterop.AffinePoint> values) {
-      if (pointBuilder_ == null) {
-        ensurePointIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, point_);
-        onChanged();
-      } else {
-        pointBuilder_.addAllMessages(values);
-      }
+        java.lang.Iterable<? extends java.lang.Long> values) {
+      ensurePointIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, point_);
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+     * <code>repeated fixed64 point = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPoint() {
-      if (pointBuilder_ == null) {
-        point_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
-        onChanged();
-      } else {
-        pointBuilder_.clear();
-      }
+      point_ = emptyLongList();
+      bitField0_ = (bitField0_ & ~0x00000001);
+      onChanged();
       return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public Builder removePoint(int index) {
-      if (pointBuilder_ == null) {
-        ensurePointIsMutable();
-        point_.remove(index);
-        onChanged();
-      } else {
-        pointBuilder_.remove(index);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getPointBuilder(
-        int index) {
-      return getPointFieldBuilder().getBuilder(index);
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getPointOrBuilder(
-        int index) {
-      if (pointBuilder_ == null) {
-        return point_.get(index);  } else {
-        return pointBuilder_.getMessageOrBuilder(index);
-      }
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public java.util.List<? extends org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-         getPointOrBuilderList() {
-      if (pointBuilder_ != null) {
-        return pointBuilder_.getMessageOrBuilderList();
-      } else {
-        return java.util.Collections.unmodifiableList(point_);
-      }
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder addPointBuilder() {
-      return getPointFieldBuilder().addBuilder(
-          org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance());
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder addPointBuilder(
-        int index) {
-      return getPointFieldBuilder().addBuilder(
-          index, org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance());
-    }
-    /**
-     * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-     */
-    public java.util.List<org.jetbrains.r.rinterop.AffinePoint.Builder> 
-         getPointBuilderList() {
-      return getPointFieldBuilder().getBuilderList();
-    }
-    private com.google.protobuf.RepeatedFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getPointFieldBuilder() {
-      if (pointBuilder_ == null) {
-        pointBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                point_,
-                ((bitField0_ & 0x00000001) != 0),
-                getParentForChildren(),
-                isClean());
-        point_ = null;
-      }
-      return pointBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

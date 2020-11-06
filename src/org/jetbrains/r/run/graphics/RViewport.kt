@@ -8,5 +8,5 @@ sealed class RViewport {
 
   data class Fixed(val ratio: Float, val delta: Float, override val parentIndex: Int) : RViewport()
 
-  data class Free(val from: RAffinePoint, val to: RAffinePoint, override val parentIndex: Int) : RViewport()
+  data class Free(val from: Long, val to: Long, override val parentIndex: Int) : RViewport()
 }

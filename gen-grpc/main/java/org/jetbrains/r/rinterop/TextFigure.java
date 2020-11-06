@@ -55,17 +55,9 @@ private static final long serialVersionUID = 0L;
             text_ = s;
             break;
           }
-          case 18: {
-            org.jetbrains.r.rinterop.AffinePoint.Builder subBuilder = null;
-            if (position_ != null) {
-              subBuilder = position_.toBuilder();
-            }
-            position_ = input.readMessage(org.jetbrains.r.rinterop.AffinePoint.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(position_);
-              position_ = subBuilder.buildPartial();
-            }
+          case 17: {
 
+            position_ = input.readFixed64();
             break;
           }
           case 29: {
@@ -159,29 +151,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int POSITION_FIELD_NUMBER = 2;
-  private org.jetbrains.r.rinterop.AffinePoint position_;
+  private long position_;
   /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
-   * @return Whether the position field is set.
-   */
-  @java.lang.Override
-  public boolean hasPosition() {
-    return position_ != null;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
+   * <code>fixed64 position = 2;</code>
    * @return The position.
    */
   @java.lang.Override
-  public org.jetbrains.r.rinterop.AffinePoint getPosition() {
-    return position_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : position_;
-  }
-  /**
-   * <code>.rplugininterop.AffinePoint position = 2;</code>
-   */
-  @java.lang.Override
-  public org.jetbrains.r.rinterop.AffinePointOrBuilder getPositionOrBuilder() {
-    return getPosition();
+  public long getPosition() {
+    return position_;
   }
 
   public static final int ANGLE_FIELD_NUMBER = 3;
@@ -245,8 +222,8 @@ private static final long serialVersionUID = 0L;
     if (!getTextBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, text_);
     }
-    if (position_ != null) {
-      output.writeMessage(2, getPosition());
+    if (position_ != 0L) {
+      output.writeFixed64(2, position_);
     }
     if (angle_ != 0F) {
       output.writeFloat(3, angle_);
@@ -272,9 +249,9 @@ private static final long serialVersionUID = 0L;
     if (!getTextBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, text_);
     }
-    if (position_ != null) {
+    if (position_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getPosition());
+        .computeFixed64Size(2, position_);
     }
     if (angle_ != 0F) {
       size += com.google.protobuf.CodedOutputStream
@@ -309,11 +286,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getText()
         .equals(other.getText())) return false;
-    if (hasPosition() != other.hasPosition()) return false;
-    if (hasPosition()) {
-      if (!getPosition()
-          .equals(other.getPosition())) return false;
-    }
+    if (getPosition()
+        != other.getPosition()) return false;
     if (java.lang.Float.floatToIntBits(getAngle())
         != java.lang.Float.floatToIntBits(
             other.getAngle())) return false;
@@ -337,10 +311,9 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + TEXT_FIELD_NUMBER;
     hash = (53 * hash) + getText().hashCode();
-    if (hasPosition()) {
-      hash = (37 * hash) + POSITION_FIELD_NUMBER;
-      hash = (53 * hash) + getPosition().hashCode();
-    }
+    hash = (37 * hash) + POSITION_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getPosition());
     hash = (37 * hash) + ANGLE_FIELD_NUMBER;
     hash = (53 * hash) + java.lang.Float.floatToIntBits(
         getAngle());
@@ -486,12 +459,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       text_ = "";
 
-      if (positionBuilder_ == null) {
-        position_ = null;
-      } else {
-        position_ = null;
-        positionBuilder_ = null;
-      }
+      position_ = 0L;
+
       angle_ = 0F;
 
       anchor_ = 0F;
@@ -527,11 +496,7 @@ private static final long serialVersionUID = 0L;
     public org.jetbrains.r.rinterop.TextFigure buildPartial() {
       org.jetbrains.r.rinterop.TextFigure result = new org.jetbrains.r.rinterop.TextFigure(this);
       result.text_ = text_;
-      if (positionBuilder_ == null) {
-        result.position_ = position_;
-      } else {
-        result.position_ = positionBuilder_.build();
-      }
+      result.position_ = position_;
       result.angle_ = angle_;
       result.anchor_ = anchor_;
       result.fontIndex_ = fontIndex_;
@@ -588,8 +553,8 @@ private static final long serialVersionUID = 0L;
         text_ = other.text_;
         onChanged();
       }
-      if (other.hasPosition()) {
-        mergePosition(other.getPosition());
+      if (other.getPosition() != 0L) {
+        setPosition(other.getPosition());
       }
       if (other.getAngle() != 0F) {
         setAngle(other.getAngle());
@@ -708,123 +673,35 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private org.jetbrains.r.rinterop.AffinePoint position_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> positionBuilder_;
+    private long position_ ;
     /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     * @return Whether the position field is set.
-     */
-    public boolean hasPosition() {
-      return positionBuilder_ != null || position_ != null;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
+     * <code>fixed64 position = 2;</code>
      * @return The position.
      */
-    public org.jetbrains.r.rinterop.AffinePoint getPosition() {
-      if (positionBuilder_ == null) {
-        return position_ == null ? org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : position_;
-      } else {
-        return positionBuilder_.getMessage();
-      }
+    @java.lang.Override
+    public long getPosition() {
+      return position_;
     }
     /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
+     * <code>fixed64 position = 2;</code>
+     * @param value The position to set.
+     * @return This builder for chaining.
      */
-    public Builder setPosition(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (positionBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        position_ = value;
-        onChanged();
-      } else {
-        positionBuilder_.setMessage(value);
-      }
-
+    public Builder setPosition(long value) {
+      
+      position_ = value;
+      onChanged();
       return this;
     }
     /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     */
-    public Builder setPosition(
-        org.jetbrains.r.rinterop.AffinePoint.Builder builderForValue) {
-      if (positionBuilder_ == null) {
-        position_ = builderForValue.build();
-        onChanged();
-      } else {
-        positionBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     */
-    public Builder mergePosition(org.jetbrains.r.rinterop.AffinePoint value) {
-      if (positionBuilder_ == null) {
-        if (position_ != null) {
-          position_ =
-            org.jetbrains.r.rinterop.AffinePoint.newBuilder(position_).mergeFrom(value).buildPartial();
-        } else {
-          position_ = value;
-        }
-        onChanged();
-      } else {
-        positionBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
+     * <code>fixed64 position = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPosition() {
-      if (positionBuilder_ == null) {
-        position_ = null;
-        onChanged();
-      } else {
-        position_ = null;
-        positionBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePoint.Builder getPositionBuilder() {
       
+      position_ = 0L;
       onChanged();
-      return getPositionFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     */
-    public org.jetbrains.r.rinterop.AffinePointOrBuilder getPositionOrBuilder() {
-      if (positionBuilder_ != null) {
-        return positionBuilder_.getMessageOrBuilder();
-      } else {
-        return position_ == null ?
-            org.jetbrains.r.rinterop.AffinePoint.getDefaultInstance() : position_;
-      }
-    }
-    /**
-     * <code>.rplugininterop.AffinePoint position = 2;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-        getPositionFieldBuilder() {
-      if (positionBuilder_ == null) {
-        positionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            org.jetbrains.r.rinterop.AffinePoint, org.jetbrains.r.rinterop.AffinePoint.Builder, org.jetbrains.r.rinterop.AffinePointOrBuilder>(
-                getPosition(),
-                getParentForChildren(),
-                isClean());
-        position_ = null;
-      }
-      return positionBuilder_;
+      return this;
     }
 
     private float angle_ ;

@@ -8,28 +8,21 @@ public interface PolylineFigureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @return A list containing the point.
    */
-  java.util.List<org.jetbrains.r.rinterop.AffinePoint> 
-      getPointList();
+  java.util.List<java.lang.Long> getPointList();
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePoint getPoint(int index);
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @return The count of point.
    */
   int getPointCount();
   /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
+   * <code>repeated fixed64 point = 1;</code>
+   * @param index The index of the element to return.
+   * @return The point at the given index.
    */
-  java.util.List<? extends org.jetbrains.r.rinterop.AffinePointOrBuilder> 
-      getPointOrBuilderList();
-  /**
-   * <code>repeated .rplugininterop.AffinePoint point = 1;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getPointOrBuilder(
-      int index);
+  long getPoint(int index);
 
   /**
    * <code>int32 strokeIndex = 2;</code>

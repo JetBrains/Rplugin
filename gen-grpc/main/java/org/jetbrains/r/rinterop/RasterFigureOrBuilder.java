@@ -23,34 +23,16 @@ public interface RasterFigureOrBuilder extends
   org.jetbrains.r.rinterop.RasterImageOrBuilder getImageOrBuilder();
 
   /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
-   * @return Whether the from field is set.
-   */
-  boolean hasFrom();
-  /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
+   * <code>fixed64 from = 2;</code>
    * @return The from.
    */
-  org.jetbrains.r.rinterop.AffinePoint getFrom();
-  /**
-   * <code>.rplugininterop.AffinePoint from = 2;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getFromOrBuilder();
+  long getFrom();
 
   /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
-   * @return Whether the to field is set.
-   */
-  boolean hasTo();
-  /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
+   * <code>fixed64 to = 3;</code>
    * @return The to.
    */
-  org.jetbrains.r.rinterop.AffinePoint getTo();
-  /**
-   * <code>.rplugininterop.AffinePoint to = 3;</code>
-   */
-  org.jetbrains.r.rinterop.AffinePointOrBuilder getToOrBuilder();
+  long getTo();
 
   /**
    * <code>float angle = 4;</code>
