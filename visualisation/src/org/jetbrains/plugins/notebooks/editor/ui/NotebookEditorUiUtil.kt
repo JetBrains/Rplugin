@@ -35,6 +35,7 @@ fun EditorEx.addComponentInlay(
   component: JComponent,
   isRelatedToPrecedingText: Boolean,
   showAbove: Boolean,
+  showWhenFolded: Boolean = true,
   priority: Int,
   offset: Int,
 ): Inlay<*> {
@@ -46,6 +47,7 @@ fun EditorEx.addComponentInlay(
       null,
       isRelatedToPrecedingText,
       showAbove,
+      showWhenFolded,
       priority,
       offset,
     )
