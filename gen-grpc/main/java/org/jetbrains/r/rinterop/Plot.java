@@ -113,6 +113,16 @@ private static final long serialVersionUID = 0L;
           }
           case 48: {
 
+            previewComplexity_ = input.readInt32();
+            break;
+          }
+          case 56: {
+
+            totalComplexity_ = input.readInt32();
+            break;
+          }
+          case 64: {
+
             error_ = input.readInt32();
             break;
           }
@@ -351,10 +361,32 @@ private static final long serialVersionUID = 0L;
     return layer_.get(index);
   }
 
-  public static final int ERROR_FIELD_NUMBER = 6;
+  public static final int PREVIEWCOMPLEXITY_FIELD_NUMBER = 6;
+  private int previewComplexity_;
+  /**
+   * <code>int32 previewComplexity = 6;</code>
+   * @return The previewComplexity.
+   */
+  @java.lang.Override
+  public int getPreviewComplexity() {
+    return previewComplexity_;
+  }
+
+  public static final int TOTALCOMPLEXITY_FIELD_NUMBER = 7;
+  private int totalComplexity_;
+  /**
+   * <code>int32 totalComplexity = 7;</code>
+   * @return The totalComplexity.
+   */
+  @java.lang.Override
+  public int getTotalComplexity() {
+    return totalComplexity_;
+  }
+
+  public static final int ERROR_FIELD_NUMBER = 8;
   private int error_;
   /**
-   * <code>int32 error = 6;</code>
+   * <code>int32 error = 8;</code>
    * @return The error.
    */
   @java.lang.Override
@@ -396,8 +428,14 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < layer_.size(); i++) {
       output.writeMessage(5, layer_.get(i));
     }
+    if (previewComplexity_ != 0) {
+      output.writeInt32(6, previewComplexity_);
+    }
+    if (totalComplexity_ != 0) {
+      output.writeInt32(7, totalComplexity_);
+    }
     if (error_ != 0) {
-      output.writeInt32(6, error_);
+      output.writeInt32(8, error_);
     }
     unknownFields.writeTo(output);
   }
@@ -438,9 +476,17 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(5, layer_.get(i));
     }
+    if (previewComplexity_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(6, previewComplexity_);
+    }
+    if (totalComplexity_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(7, totalComplexity_);
+    }
     if (error_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(6, error_);
+        .computeInt32Size(8, error_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -467,6 +513,10 @@ private static final long serialVersionUID = 0L;
         .equals(other.getViewportList())) return false;
     if (!getLayerList()
         .equals(other.getLayerList())) return false;
+    if (getPreviewComplexity()
+        != other.getPreviewComplexity()) return false;
+    if (getTotalComplexity()
+        != other.getTotalComplexity()) return false;
     if (getError()
         != other.getError()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
@@ -500,6 +550,10 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + LAYER_FIELD_NUMBER;
       hash = (53 * hash) + getLayerList().hashCode();
     }
+    hash = (37 * hash) + PREVIEWCOMPLEXITY_FIELD_NUMBER;
+    hash = (53 * hash) + getPreviewComplexity();
+    hash = (37 * hash) + TOTALCOMPLEXITY_FIELD_NUMBER;
+    hash = (53 * hash) + getTotalComplexity();
     hash = (37 * hash) + ERROR_FIELD_NUMBER;
     hash = (53 * hash) + getError();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -665,6 +719,10 @@ private static final long serialVersionUID = 0L;
       } else {
         layerBuilder_.clear();
       }
+      previewComplexity_ = 0;
+
+      totalComplexity_ = 0;
+
       error_ = 0;
 
       return this;
@@ -735,6 +793,8 @@ private static final long serialVersionUID = 0L;
       } else {
         result.layer_ = layerBuilder_.build();
       }
+      result.previewComplexity_ = previewComplexity_;
+      result.totalComplexity_ = totalComplexity_;
       result.error_ = error_;
       onBuilt();
       return result;
@@ -897,6 +957,12 @@ private static final long serialVersionUID = 0L;
             layerBuilder_.addAllMessages(other.layer_);
           }
         }
+      }
+      if (other.getPreviewComplexity() != 0) {
+        setPreviewComplexity(other.getPreviewComplexity());
+      }
+      if (other.getTotalComplexity() != 0) {
+        setTotalComplexity(other.getTotalComplexity());
       }
       if (other.getError() != 0) {
         setError(other.getError());
@@ -1970,9 +2036,71 @@ private static final long serialVersionUID = 0L;
       return layerBuilder_;
     }
 
+    private int previewComplexity_ ;
+    /**
+     * <code>int32 previewComplexity = 6;</code>
+     * @return The previewComplexity.
+     */
+    @java.lang.Override
+    public int getPreviewComplexity() {
+      return previewComplexity_;
+    }
+    /**
+     * <code>int32 previewComplexity = 6;</code>
+     * @param value The previewComplexity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPreviewComplexity(int value) {
+      
+      previewComplexity_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 previewComplexity = 6;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPreviewComplexity() {
+      
+      previewComplexity_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int totalComplexity_ ;
+    /**
+     * <code>int32 totalComplexity = 7;</code>
+     * @return The totalComplexity.
+     */
+    @java.lang.Override
+    public int getTotalComplexity() {
+      return totalComplexity_;
+    }
+    /**
+     * <code>int32 totalComplexity = 7;</code>
+     * @param value The totalComplexity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTotalComplexity(int value) {
+      
+      totalComplexity_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 totalComplexity = 7;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTotalComplexity() {
+      
+      totalComplexity_ = 0;
+      onChanged();
+      return this;
+    }
+
     private int error_ ;
     /**
-     * <code>int32 error = 6;</code>
+     * <code>int32 error = 8;</code>
      * @return The error.
      */
     @java.lang.Override
@@ -1980,7 +2108,7 @@ private static final long serialVersionUID = 0L;
       return error_;
     }
     /**
-     * <code>int32 error = 6;</code>
+     * <code>int32 error = 8;</code>
      * @param value The error to set.
      * @return This builder for chaining.
      */
@@ -1991,7 +2119,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 error = 6;</code>
+     * <code>int32 error = 8;</code>
      * @return This builder for chaining.
      */
     public Builder clearError() {

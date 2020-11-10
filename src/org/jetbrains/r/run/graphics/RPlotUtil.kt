@@ -18,8 +18,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 9
-  private const val STROKE_WIDTH_SCALE = 1.25f
+  private const val PROTOCOL_VERSION = 10
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
   private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
@@ -64,7 +63,7 @@ object RPlotUtil {
     val viewports = plot.viewportList.map { convert(it) }
     val layers = plot.layerList.map { convert(it) }
     val error = convertError(plot.error)
-    return RPlot(number, fonts, colors, strokes, viewports, layers, error)
+    return RPlot(number, fonts, colors, strokes, viewports, layers, plot.previewComplexity, plot.totalComplexity, error)
   }
 
   private fun convert(font: Font): RFont {
@@ -224,23 +223,23 @@ object RPlotUtil {
     return if (error > 0) RPlotError.values()[error - 1] else null
   }
 
-  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean): BufferedImage {
+  fun createImage(plot: RPlot, parameters: RGraphicsUtils.ScreenParameters, darkMode: Boolean, isPreview: Boolean): BufferedImage {
     return ImageUtil.createImage(parameters.width, parameters.height, BufferedImage.TYPE_INT_ARGB).also { image ->
       val graphics = image.graphics as Graphics2D
       graphics.font = JLabel().font
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
       graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
       val provider = RCanvasPlotterProvider(parameters, graphics)
-      replay(plot, provider, darkMode)
+      replay(plot, provider, darkMode, isPreview)
     }
   }
 
-  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean) {
-    val helper = ReplayHelper(plot, provider, darkMode)
+  fun replay(plot: RPlot, provider: RPlotterProvider, darkMode: Boolean, isPreview: Boolean) {
+    val helper = ReplayHelper(plot, provider, darkMode, isPreview)
     helper.replay()
   }
 
-  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider, private val darkMode: Boolean) {
+  private class ReplayHelper(val plot: RPlot, provider: RPlotterProvider, private val darkMode: Boolean, private val isPreview: Boolean) {
     private val width = provider.parameters.width
     private val height = provider.parameters.height
     private val resolution = provider.parameters.resolution ?: RGraphicsUtils.DEFAULT_RESOLUTION
@@ -350,7 +349,8 @@ object RPlotUtil {
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
       val radius = calculate(circle.radius, currentViewport.height)
-      plotter.drawCircle(x, y, radius, circle.strokeIndex, circle.colorIndex, circle.fillIndex)
+      val colorIndex = filterColorIndex(circle.strokeIndex, circle.colorIndex, circle.fillIndex)
+      plotter.drawCircle(x, y, radius, circle.strokeIndex, colorIndex, circle.fillIndex)
     }
 
     private fun replay(line: RFigure.Line) {
@@ -367,13 +367,15 @@ object RPlotUtil {
         val ys = calculateYs(points)
         Pair(xs, ys)
       }
-      plotter.drawPath(subPaths, path.winding, path.strokeIndex, path.colorIndex, path.fillIndex)
+      val colorIndex = filterColorIndex(path.strokeIndex, path.colorIndex, path.fillIndex)
+      plotter.drawPath(subPaths, path.winding, path.strokeIndex, colorIndex, path.fillIndex)
     }
 
     private fun replay(polygon: RFigure.Polygon) {
       val xs = calculateXs(polygon.points)
       val ys = calculateYs(polygon.points)
-      plotter.drawPolygon(xs, ys, polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+      val colorIndex = filterColorIndex(polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+      plotter.drawPolygon(xs, ys, polygon.strokeIndex, colorIndex, polygon.fillIndex)
     }
 
     private fun replay(polyline: RFigure.Polyline) {
@@ -401,7 +403,8 @@ object RPlotUtil {
       val yFrom = calculateY(rectangle.from)
       val xTo = calculateX(rectangle.to)
       val yTo = calculateY(rectangle.to)
-      plotter.drawRectangle(xFrom, yFrom, xTo - xFrom, yTo - yFrom, rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
+      val colorIndex = filterColorIndex(rectangle.strokeIndex, rectangle.colorIndex, rectangle.fillIndex)
+      plotter.drawRectangle(xFrom, yFrom, xTo - xFrom, yTo - yFrom, rectangle.strokeIndex, colorIndex, rectangle.fillIndex)
     }
 
     private fun replay(text: RFigure.Text) {
@@ -412,6 +415,11 @@ object RPlotUtil {
 
     private fun replay(text: RFigure.Text, x: Float, y: Float) {
       plotter.drawText(text.text, x, y, text.angle, text.anchor, text.fontIndex, text.colorIndex)
+    }
+
+    private fun filterColorIndex(strokeIndex: Int, colorIndex: Int, fillIndex: Int): Int {
+      val skipStroke = isPreview && strokeIndex >= 0 && fillIndex >= 0 && plot.strokes[strokeIndex].width < STROKE_WIDTH_THRESHOLD
+      return if (skipStroke) -1 else colorIndex
     }
 
     private fun calculateXs(points: LongArray): FloatArray {
@@ -504,6 +512,9 @@ object RPlotUtil {
       private const val BLACK_COLOR_INDEX = 0
       private const val WHITE_COLOR_INDEX = 1
       private const val TRANSPARENT_INDEX = -1
+
+      private const val STROKE_WIDTH_THRESHOLD = 1.0f / 72.0f  // 1 px (in inches)
+      private const val STROKE_WIDTH_SCALE = 1.25f
 
       private const val GAP_TEXT = "m"  // Not to be translated
 

@@ -12,11 +12,17 @@ import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import java.util.*
 import javax.swing.JComponent
 
 class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
+  private val timer = Timer()
+  private var timerTask: TimerTask? = null
+
+  @Volatile
   private var cachedImage = SoftReference<BufferedImage>(null)
 
+  @Volatile
   private var darkMode = RGraphicsSettings.isDarkModeEnabled(project)
     set(value) {
       if (field != value) {
@@ -25,6 +31,7 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
       }
     }
 
+  @Volatile
   var plot: RPlot? = null
     set(value) {
       if (field !== value) {
@@ -33,6 +40,7 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
       }
     }
 
+  @Volatile
   var resolution: Int? = null
     set(value) {
       if (field != value) {
@@ -75,9 +83,44 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
   }
 
   private fun getOrCreateImage(plot: RPlot): BufferedImage {
-    return cachedImage.getIfSameSize() ?: RPlotUtil.createImage(plot, parameters, darkMode).also { image ->
+    return cachedImage.getIfSameSize() ?: createImage(plot).also { image ->
       cachedImage = SoftReference(image)
     }
+  }
+
+  private fun createImage(plot: RPlot): BufferedImage {
+    val isPreview = plot.totalComplexity > TOTAL_COMPLEXITY_THRESHOLD && plot.complexityRatio < COMPLEXITY_RATIO_THRESHOLD
+    if (isPreview) {
+      scheduleRender(plot)
+    }
+    return RPlotUtil.createImage(plot, parameters, darkMode, isPreview)
+  }
+
+  private fun scheduleRender(plot: RPlot) {
+    scheduleTask {
+      // Note: the rendering is started with a delay.
+      // It's necessary to check whether the viewer still shows the same plot
+      if (this.plot === plot) {
+        val darkMode = this.darkMode
+        val parameters = this.parameters
+        val image = RPlotUtil.createImage(plot, parameters, darkMode, isPreview = false)
+        // Note: it might take more than 500 ms to render some plots so this check must be performed again
+        if (this.plot === plot && this.darkMode == darkMode && this.parameters == parameters) {
+          cachedImage = SoftReference(image)
+          repaint()
+        }
+      }
+    }
+  }
+
+  private fun scheduleTask(task: () -> Unit) {
+    timerTask?.cancel()
+    timerTask = object : TimerTask() {
+      override fun run() {
+        task()
+      }
+    }
+    timer.schedule(timerTask, TIMER_DELAY)
   }
 
   private fun SoftReference<BufferedImage>.getIfSameSize(): BufferedImage? {
@@ -87,6 +130,13 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
   }
 
   companion object {
+    private const val COMPLEXITY_RATIO_THRESHOLD = 0.75
+    private const val TOTAL_COMPLEXITY_THRESHOLD = 1000
+    private const val TIMER_DELAY = 500L
+
+    private val RPlot.complexityRatio: Double
+      get() = previewComplexity.toDouble() / totalComplexity.toDouble()
+
     private inline fun withComponentPreserved(component: JComponent?, task: () -> Unit) {
       if (component != null && component.isVisible) {
         component.isVisible = false
