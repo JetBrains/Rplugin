@@ -273,7 +273,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
   private fun rescale(plot: RPlot, newSize: Dimension, newResolution: Int?) {
     runAsync {
       val parameters = RGraphicsUtils.ScreenParameters(newSize, newResolution)
-      val image = RPlotUtil.createImage(plot, parameters, manager.isDarkModeEnabled)
+      val image = RPlotUtil.createImage(plot, parameters, manager.isDarkModeEnabled, isPreview = false)
       localResolution = newResolution
       oldStandalone = isStandalone
       graphicsPanel.showBufferedImage(image)
