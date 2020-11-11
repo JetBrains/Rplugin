@@ -16,8 +16,6 @@ object RSkeletonFileType : FileType {
 
   override fun getIcon(): Icon? = null
 
-  override fun getCharset(file: VirtualFile, content: ByteArray): String? = null
-
   override fun getName(): String = EXTENSION
 
   override fun getDescription(): String = RBundle.message("r.skeleton.file.description.binary.skeleton.format.for.r.package")
