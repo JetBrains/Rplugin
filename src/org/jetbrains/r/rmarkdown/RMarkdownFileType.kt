@@ -5,21 +5,21 @@
 package org.jetbrains.r.rmarkdown
 
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.fileTypes.FileType.CharsetHintSupplied.CharsetHint.*
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.openapi.vfs.VirtualFile
 import icons.RIcons
 import org.jetbrains.annotations.NonNls
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import javax.swing.Icon
 
-object RMarkdownFileType : LanguageFileType(RMarkdownLanguage), FileType.WithForcedCharset {
+object RMarkdownFileType : LanguageFileType(RMarkdownLanguage), FileType.CharsetHintSupplied {
   override fun getName() = "RMarkdown"
   @NonNls
   override fun getDescription() = "R Markdown"
   override fun getDefaultExtension() = "Rmd"
   override fun getIcon(): Icon = RIcons.RMarkdown
   override fun getCharset(file: VirtualFile, content: ByteArray): String = CharsetToolkit.UTF8
-  override fun getForcedCharset(): Charset = StandardCharsets.UTF_8
+  override fun getCharsetHint(): FileType.CharsetHintSupplied.CharsetHint = ForcedCharset(StandardCharsets.UTF_8)
 }
