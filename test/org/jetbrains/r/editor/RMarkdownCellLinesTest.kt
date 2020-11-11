@@ -410,6 +410,73 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     }
   }
 
+  @Test
+  fun `test edit code cell`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      ```{r}<caret>
+      ```
+      last line
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(CODE, 0, 11)
+        marker(MARKDOWN, 11, 9)
+      }
+      intervals {
+        interval(CODE, 0..1)
+        interval(MARKDOWN, 2..2)
+      }
+    }
+
+    val attemptsCount = 3
+    for(attempt in 1..attemptsCount) {
+      assertCodeCells("add new code line: attempt ${attempt} of ${attemptsCount}") {
+        fixture.type("\n")
+
+        markers {
+          marker(CODE, 0, 12)
+          marker(MARKDOWN, 12, 9)
+        }
+        intervals {
+          interval(CODE, 0..2)
+          interval(MARKDOWN, 3..3)
+        }
+
+        intervalListenerCall(0) {
+          before {
+            interval(CODE, 0..1)
+          }
+          after {
+            interval(CODE, 0..2)
+          }
+        }
+      }
+
+      assertCodeCells("remove code line: attempt ${attempt} of ${attemptsCount}") {
+        fixture.type("\b")
+
+        markers {
+          marker(CODE, 0, 11)
+          marker(MARKDOWN, 11, 9)
+        }
+        intervals {
+          interval(CODE, 0..1)
+          interval(MARKDOWN, 2..2)
+        }
+
+        intervalListenerCall(0) {
+          before {
+            interval(CODE, 0..2)
+          }
+          after {
+            interval(CODE, 0..1)
+          }
+        }
+      }
+    }
+  }
+
   private fun assertCodeCells(description: String = "", handler: CodeCellLinesChecker.() -> Unit) {
     CodeCellLinesChecker(description) { fixture.editor as EditorImpl }.invoke(handler)
   }
