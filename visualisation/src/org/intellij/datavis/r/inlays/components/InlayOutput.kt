@@ -6,6 +6,7 @@ package org.intellij.datavis.r.inlays.components
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
@@ -37,9 +38,11 @@ import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.concurrency.Promise
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ActionEvent
+import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.io.File
 import javax.swing.AbstractAction
@@ -227,36 +230,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
     Disposer.register(parent, console)
     toolbarPane.dataComponent = console.component
 
-    (console.editor as EditorEx).apply {
-      isRendererMode = true
-      backgroundColor = UiCustomizer.instance.getTextOutputBackground(editor)
-      setFontSize(editor.colorsScheme.editorFontSize)
-      scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
-      MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
-    }
-
-    console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
-
-    @NonNls
-    val actionNameSelect = VisualizationBundle.message("action.name.output.select.all")
-    val actionSelect = object : AbstractAction(actionNameSelect) {
-      override fun actionPerformed(e: ActionEvent) {
-        (console.editor as EditorImpl).selectionModel.setSelection(0, console.text.length)
-      }
-    }
-    console.editor.contentComponent.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK),
-                                                 actionNameSelect)
-    console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
-
-    console.editor.settings.isUseSoftWraps = true
-
-    ApplicationManager.getApplication().messageBus.connect(console)
-      .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
-        (console.editor as EditorEx).apply {
-          setFontSize(editor.colorsScheme.editorFontSize)
-          component.repaint()
-        }
-      })
+    initOutputTextConsole(editor, parent, console, scrollPaneTopBorderHeight, UiCustomizer.instance.getTextOutputBackground(editor))
   }
 
   override fun clear() {
@@ -281,17 +255,7 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
           (console.editor as? EditorImpl)?.apply {
             updateSize(this)
 
-            softWrapModel.setSoftWrapPainter(object : SoftWrapPainter {
-              override fun paint(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
-
-              override fun getDrawingHorizontalOffset(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
-
-              override fun getMinDrawingWidth(drawingType: SoftWrapDrawingType) = 0
-
-              override fun canUse() = true
-
-              override fun reinit() {}
-            })
+            softWrapModel.setSoftWrapPainter(EmptySoftWrapPainter)
             softWrapModel.addSoftWrapChangeListener(
               object : SoftWrapChangeListener {
                 override fun recalculationEnds() = updateSize(this@apply)
@@ -338,6 +302,57 @@ class InlayOutputText(parent: Disposable, editor: Editor, clearAction: () -> Uni
       }
     }
   }
+}
+
+object EmptySoftWrapPainter : SoftWrapPainter {
+  override fun paint(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
+
+  override fun getDrawingHorizontalOffset(g: Graphics, drawingType: SoftWrapDrawingType, x: Int, y: Int, lineHeight: Int) = 0
+
+  override fun getMinDrawingWidth(drawingType: SoftWrapDrawingType) = 0
+
+  override fun canUse() = true
+
+  override fun reinit() {}
+}
+
+fun initOutputTextConsole(
+  editor: Editor,
+  parent: Disposable,
+  console: ConsoleViewImpl,
+  scrollPaneTopBorderHeight: Int,
+  editorBackgroundColor: Color,
+) {
+  (console.editor as EditorEx).apply {
+    isRendererMode = true
+    backgroundColor = editorBackgroundColor
+    setFontSize(editor.colorsScheme.editorFontSize)
+    scrollPane.border = IdeBorderFactory.createEmptyBorder(JBUI.insets(scrollPaneTopBorderHeight, 0, 0, 0))
+    MouseWheelUtils.wrapMouseWheelListeners(scrollPane, parent)
+  }
+
+  console.editor.contentComponent.putClientProperty("AuxEditorComponent", true)
+
+  @NonNls
+  val actionNameSelect = VisualizationBundle.message("action.name.output.select.all")
+  val actionSelect = object : AbstractAction(actionNameSelect) {
+    override fun actionPerformed(e: ActionEvent) {
+      (console.editor as EditorImpl).selectionModel.setSelection(0, console.text.length)
+    }
+  }
+  console.editor.contentComponent.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK),
+                                               actionNameSelect)
+  console.editor.contentComponent.actionMap.put(actionNameSelect, actionSelect)
+
+  console.editor.settings.isUseSoftWraps = true
+
+  ApplicationManager.getApplication().messageBus.connect(console)
+    .subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+      (console.editor as EditorEx).apply {
+        setFontSize(editor.colorsScheme.editorFontSize)
+        component.repaint()
+      }
+    })
 }
 
 class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
