@@ -156,14 +156,6 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
     return true
   }
 
-  fun getArguments(call: RCallExpression): List<RExpression> {
-    if (call.isFunctionFromLibrarySoft("c", "base") || call.isFunctionFromLibrarySoft(".", "plyr")) {
-      val columnNames = call.argumentList.expressionList.map { if (it is RAssignmentStatement) it.assignee else it }.filterNotNull()
-      return columnNames.filterIsInstance<RStringLiteralExpression>()
-    }
-    return emptyList()
-  }
-
   private fun getColumnsFromArgument(argument: RExpression?): Collection<RStringLiteralExpression> {
     if (argument == null) {
       return emptySet()

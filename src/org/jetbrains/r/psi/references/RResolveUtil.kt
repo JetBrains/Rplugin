@@ -9,9 +9,9 @@ import java.util.*
 
 object RResolveUtil {
   /**
-   * Statically finds the preceding (in term of control flow) accepted by the filter
+   * Statically finds the preceding (in term of control flow) accepted by the accessor
    */
-  fun findPrecedingInstruction(variable: RIdentifierExpression, filter: (element: PsiElement) -> PsiElement?): PsiElement? {
+  fun findPrecedingInstruction(variable: RIdentifierExpression, accessor: (element: PsiElement) -> PsiElement?): PsiElement? {
     var currentElement: PsiElement = variable
     var rControlFlowHolder = PsiTreeUtil.getParentOfType(currentElement, RControlFlowHolder::class.java)
     while (rControlFlowHolder != null) {
@@ -23,7 +23,7 @@ object RResolveUtil {
           val currentInstruction = queue.remove()
           val instructionElement = currentInstruction.element
           if (instructionElement != null) {
-            val tableModificator = filter(instructionElement)
+            val tableModificator = accessor(instructionElement)
             if (tableModificator != null) {
               return tableModificator
             }
