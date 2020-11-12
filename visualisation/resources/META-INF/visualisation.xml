@@ -67,4 +67,26 @@
     <uiCustomizer implementation="org.intellij.datavis.r.ui.DefaultUiCustomizer"/>
   </extensions>
 
+  <!-- New output inlays -->
+  <extensionPoints>
+    <extensionPoint
+      qualifiedName="org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputComponentFactory"
+      interface="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory"
+      dynamic="true"/>
+    <extensionPoint
+      qualifiedName="org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputDataKeyExtractor"
+      interface="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputDataKeyExtractor"
+      dynamic="true"/>
+  </extensionPoints>
+  <extensions defaultExtensionNs="com.intellij">
+    <registryKey
+      defaultValue="text"
+      description="Which cell output types should be represented in a new way"
+      key="ds.editor.new.output.inlays.types"
+      restartRequired="true"/>
+  </extensions>
+  <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
+    <notebookCellInlayController
+      implementation="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputInlayController$Factory"/>
+  </extensions>
 </idea-plugin>
