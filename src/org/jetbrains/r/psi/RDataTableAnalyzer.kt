@@ -111,7 +111,7 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
         arguments.add(parameterJ)
       }
       is RCallExpression -> {
-        parameterJ.argumentList.expressionList.forEach{ arguments.add(it)}
+        parameterJ.argumentList.expressionList.forEach{ arguments.add(it) }
       }
       is RAssignmentStatement -> {
         arguments.add(parameterJ)
