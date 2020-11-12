@@ -90,12 +90,12 @@ class RCompletionContributor : CompletionContributor() {
 
   private fun addS4ClassContextCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.IDENTIFIER_OR_STRING_FILTER), S4ClassContextCompletionProvider())
+      .and(RElementFilters.S4_CONTEXT_FILTER), S4ClassContextCompletionProvider())
   }
 
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.STRING_FILTER), StringLiteralCompletionProvider())
+      .and(RElementFilters.STRING_EXCEPT_S4_CONTEXT_FILTER), StringLiteralCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
