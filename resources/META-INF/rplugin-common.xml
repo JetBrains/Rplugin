@@ -736,6 +736,10 @@ You can find the source code in the following repositories:
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
 
       <iconProvider implementation="org.jetbrains.r.icons.RProjectIconProvider" order="first"/>
+
+      <!-- Run configuration -->
+      <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
+      <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
