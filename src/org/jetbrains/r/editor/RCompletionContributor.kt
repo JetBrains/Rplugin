@@ -21,6 +21,7 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
 import org.jetbrains.r.classes.s4.RS4ClassSlot
+import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
 import org.jetbrains.r.codeInsight.table.RTableContextManager
@@ -439,19 +440,13 @@ class RCompletionContributor : CompletionContributor() {
       addS4SlotNameCompletion(expression, file, result)
     }
 
-    private fun addS4SlotNameCompletion(expression: RExpression, file: PsiFile, result: CompletionResultSet) {
-      val parentCall = PsiTreeUtil.getParentOfType(expression, RCallExpression::class.java) ?: return
-      if (!parentCall.isFunctionFromLibrary("new", "methods")) return
-      val className = RS4ClassInfoUtil.getAssociatedClassName(parentCall) ?: return
-      if (PsiTreeUtil.isAncestor(RParameterInfoUtil.getArgumentByName(parentCall, "Class"), expression, false)) return
+    private fun addS4SlotNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression, RS4NewObjectContext::class.java) ?: return
+      if (s4Context !is RS4NewObjectSlotNameContext) return
 
-      val currentArgument =
-        if (expression.parent is RNamedArgument) RPsiUtil.getNamedArgumentByNameIdentifier(expression) ?: return
-        else expression
-      val arguments = parentCall.argumentList.expressionList
-      if (!arguments.contains(currentArgument)) return
-
-      addStaticRuntimeCompletionDependsOfFile(parentCall, file, result, object : RStaticRuntimeCompletionProvider<RCallExpression> {
+      val newCall = s4Context.functionCall
+      val className = RS4ClassInfoUtil.getAssociatedClassName(newCall, s4Context.argumentInfo) ?: return
+      addStaticRuntimeCompletionDependsOfFile(newCall, file, result, object : RStaticRuntimeCompletionProvider<RCallExpression> {
         override fun addCompletionFromRuntime(psiElement: RCallExpression,
                                               shownNames: MutableSet<String>,
                                               result: CompletionResultSet,
@@ -479,49 +474,20 @@ class RCompletionContributor : CompletionContributor() {
       })
     }
 
-    private fun addS4ClassNameCompletion(classNameExpression: RExpression,
-                                         file: PsiFile,
-                                         result: CompletionResultSet) {
-      val parentCall = PsiTreeUtil.getParentOfType(classNameExpression, RCallExpression::class.java) ?: return
-      val parentArgumentInfo = RParameterInfoUtil.getArgumentInfo(parentCall) ?: return
+    private fun addS4ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
+      val s4Context = RS4ContextProvider.getS4Context(classNameExpression,
+                                                      RS4NewObjectContext::class.java,
+                                                      RS4SetClassContext::class.java) ?: return
       var omitVirtual = false
       var nameToOmit: String? = null
-      when {
-        // new("<caret>")
-        parentCall.isFunctionFromLibrary("new", "methods") -> {
-          if (parentArgumentInfo.getArgumentPassedToParameter("Class") != classNameExpression) return
+      when (s4Context) {
+        is RS4NewObjectClassNameContext -> {
           omitVirtual = true
         }
-        // setClass("MyClass", "<caret>")
-        // setClass("MyClass", , , "<caret>")
-        parentCall.isFunctionFromLibrary("setClass", "methods") -> {
-          if (parentArgumentInfo.getArgumentPassedToParameter("contains") != classNameExpression &&
-              parentArgumentInfo.getArgumentPassedToParameter("representation") != classNameExpression) return
-          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(parentCall, parentArgumentInfo)
+        is RS4SetClassRepresentationContext, is RS4SetClassContainsContext, is RS4SetClassDependencyClassNameContext -> {
+          nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(s4Context.functionCall, s4Context.argumentInfo)
         }
-        else -> {
-          val superParentCall = PsiTreeUtil.getParentOfType(parentCall, RCallExpression::class.java) ?: return
-          if (!superParentCall.isFunctionFromLibrary("setClass", "methods")) return
-          val superParentArgumentInfo = RParameterInfoUtil.getArgumentInfo(superParentCall) ?: return
-
-          // setClass("MyClass", contains = "<caret>")
-          // setClass("MyClass", contains = c("<caret>"))
-          // setClass("MyClass", contains = c(smt = "<caret>")
-          // setClass("MyClass", representation = representation(smt = "<caret>")
-          // setClass("MyClass", representation = representation("<caret>")
-          if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("contains"), classNameExpression, false) ||
-              PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("representation"), classNameExpression, false)) {
-            val parent = classNameExpression.parent
-            if (parent is RNamedArgument && parent.nameIdentifier == classNameExpression) return
-            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
-          }
-          // setClass("MyClass", slots = c(name = "<caret>"))
-          else if (PsiTreeUtil.isAncestor(superParentArgumentInfo.getArgumentPassedToParameter("slots"), classNameExpression, false)) {
-            val parent = classNameExpression.parent
-            if (parent !is RNamedArgument || parent.assignedValue != classNameExpression) return
-            nameToOmit = RS4ClassInfoUtil.getAssociatedClassName(superParentCall, superParentArgumentInfo)
-          } else return
-        }
+        else -> return
       }
 
       val project = classNameExpression.project
