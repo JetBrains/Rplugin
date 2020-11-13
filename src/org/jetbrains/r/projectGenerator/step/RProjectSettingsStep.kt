@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.openapi.wm.impl.welcomeScreen.FlatWelcomeFrame
 import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.ui.HideableDecorator
@@ -175,12 +176,12 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
 
     val newInterpreterPanel = RAddNewInterpreterPanel(existingInterpreters, onlyLocalInterpreters)
 
-    val decorator = HideableDecorator(decoratorPanel, getProjectInterpreterTitle(newInterpreterPanel), false)
+    val decorator = HideableDecorator(decoratorPanel, getProjectInterpreterTitle(newInterpreterPanel).toString(), false)
 
     interpreterPanel = RChooseInterpreterGroupPanel(RBundle.message("project.settings.choose.interpreter"), icon,
                                                     listOf(newInterpreterPanel), newInterpreterPanel)
     interpreterPanel.addChangeListener(Runnable {
-      decorator.title = getProjectInterpreterTitle(interpreterPanel.mySelectedPanel)
+      decorator.title = getProjectInterpreterTitle(interpreterPanel.mySelectedPanel).toString()
       val useNewInterpreter = interpreterPanel.mySelectedPanel is RAddNewInterpreterPanel
       rProjectSettings.useNewInterpreter = useNewInterpreter
     })
@@ -208,8 +209,8 @@ class RProjectSettingsStep(private val rProjectSettings: RProjectSettings,
     return decoratorPanel
   }
 
-  private fun getProjectInterpreterTitle(panel: RInterpreterPanel): String {
-    return RBundle.message("project.settings.interpreter", panel.panelName)
+  private fun getProjectInterpreterTitle(panel: RInterpreterPanel): TextWithMnemonic {
+    return TextWithMnemonic.parse(RBundle.message("project.settings.interpreter", "[name]")).replaceFirst("[name]", panel.panelName)
   }
 
   companion object {
