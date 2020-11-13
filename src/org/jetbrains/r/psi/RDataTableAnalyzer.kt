@@ -111,7 +111,9 @@ object RDataTableAnalyzer : TableManipulationAnalyzer<DataTableFunction>() {
         arguments.add(parameterJ)
       }
       is RCallExpression -> {
-        parameterJ.argumentList.expressionList.forEach{ arguments.add(it) }
+        if (parameterJ.isFunctionFromLibrarySoft("c", "base") || parameterJ.isFunctionFromLibrarySoft(".", "plyr")) {
+          parameterJ.argumentList.expressionList.forEach{ arguments.add(it) }
+        }
       }
     }
 

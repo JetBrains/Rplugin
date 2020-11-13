@@ -324,6 +324,18 @@ class DataTableCompletionTest : RColumnCompletionTest() {
     )
   }
 
+  fun testWhiteListOnCallInsideSubscription() {
+    checkStaticCompletion(
+      """
+        df <- data.table(playerId = 1:2)
+        df[, names(table_name), with = FALSE]
+        df[, <caret> ]
+      """.trimIndent(),
+      expectedToBePresent = listOf(),
+      expectedToBeMissed = listOf("table_name")
+    )
+  }
+
   private fun checkCompletion(text: String,
                               expected: List<String> = emptyList(),
                               initial: List<String>? = null,
