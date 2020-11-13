@@ -278,7 +278,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   }
 
   override fun generateRenderedDoc(comment: PsiDocCommentBase): String? {
-    val containingFile = comment.containingFile as RFile
+    val containingFile = comment.containingFile
+    if (containingFile !is RFile) {
+      return null
+    }
     val rInterop = containingFile.runtimeInfo?.rInterop
     if (rInterop != null) {
       val methodNameAndPackage = getMethodNameAndPackage(comment.text)
