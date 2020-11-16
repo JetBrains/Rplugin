@@ -2,14 +2,18 @@ package org.jetbrains.r.rinterop.rstudioapi
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 import javax.swing.JPasswordField
@@ -131,31 +135,54 @@ object DialogUtils {
       else -> null
     }
     val existing = if (selectFolder) true else args.list.getRObjects(4).rBoolean.getBooleans(0)
-    val fileChooser = rInterop.interpreter.createFileChooserForHost(path, selectFolder)
-    val panel = panel {
-      if (!selectFolder) noteRow(filter!!)
-      row { fileChooser().focused() }
-    }
     val promise = AsyncPromise<RObject>()
-
-    runInEdt {
-      val dialog = dialog(caption, panel, okActionEnabled = selectFolder)
-      val validate: () -> Unit = {
-        dialog.isOKActionEnabled = (extension == null || fileChooser.text.endsWith(".$extension"))
+    if (rInterop.interpreter.isLocal() && existing) {
+      runInEdt {
+        val descriptor = if (!selectFolder) {
+          extension?.let {
+            FileChooserDescriptorFactory.createSingleFileDescriptor(extension).withTitle(caption)
+          } ?: FileChooserDescriptorFactory.createSingleFileDescriptor().withTitle(caption)
+        }
+        else {
+          FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle(caption)
+        }
+        descriptor.isForcedToUseIdeaFileChooser = true
+        val fileChooserDialog = FileChooserFactory.getInstance().createFileChooser(descriptor, rInterop.project, null)
+        val toSelect = LocalFileSystem.getInstance().refreshAndFindFileByPath(path)
+        val files = fileChooserDialog.choose(rInterop.project, toSelect!!)
+        if (files.isEmpty()) {
+          promise.setResult(getRNull())
+        }
+        else {
+          promise.setResult(files.first().path.toRString())
+        }
       }
-      fileChooser.isEditable = !existing
-      if (!selectFolder) {
-        fileChooser.textField.document.addDocumentListener(object : DocumentListener {
-          override fun changedUpdate(e: DocumentEvent?) = validate()
-          override fun insertUpdate(e: DocumentEvent?) = validate()
-          override fun removeUpdate(e: DocumentEvent?) = validate()
-        })
+    }
+    else {
+      val fileChooser = rInterop.interpreter.createFileChooserForHost(path, selectFolder)
+      val panel = panel {
+        if (!selectFolder) noteRow(filter!!)
+        row { fileChooser().focused() }
       }
-      val result = if (dialog.showAndGet()) {
-        fileChooser.text.toRString()
+      runInEdt {
+        val dialog = dialog(caption, panel, okActionEnabled = extension == null)
+        val validate: () -> Unit = {
+          dialog.isOKActionEnabled = (extension == null || fileChooser.text.endsWith(".$extension"))
+        }
+        fileChooser.isEditable = !existing
+        if (!selectFolder) {
+          fileChooser.textField.document.addDocumentListener(object : DocumentListener {
+            override fun changedUpdate(e: DocumentEvent?) = validate()
+            override fun insertUpdate(e: DocumentEvent?) = validate()
+            override fun removeUpdate(e: DocumentEvent?) = validate()
+          })
+        }
+        val result = if (dialog.showAndGet()) {
+          fileChooser.text.toRString()
+        }
+        else getRNull()
+        promise.setResult(result)
       }
-      else getRNull()
-      promise.setResult(result)
     }
     return promise
   }
