@@ -52,11 +52,11 @@ private static final long serialVersionUID = 0L;
             break;
           case 10: {
             if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              subPath_ = new java.util.ArrayList<org.jetbrains.r.rinterop.SubPath>();
+              subPath_ = new java.util.ArrayList<org.jetbrains.r.rinterop.Polyline>();
               mutable_bitField0_ |= 0x00000001;
             }
             subPath_.add(
-                input.readMessage(org.jetbrains.r.rinterop.SubPath.parser(), extensionRegistry));
+                input.readMessage(org.jetbrains.r.rinterop.Polyline.parser(), extensionRegistry));
             break;
           }
           case 16: {
@@ -115,41 +115,41 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SUBPATH_FIELD_NUMBER = 1;
-  private java.util.List<org.jetbrains.r.rinterop.SubPath> subPath_;
+  private java.util.List<org.jetbrains.r.rinterop.Polyline> subPath_;
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   @java.lang.Override
-  public java.util.List<org.jetbrains.r.rinterop.SubPath> getSubPathList() {
+  public java.util.List<org.jetbrains.r.rinterop.Polyline> getSubPathList() {
     return subPath_;
   }
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends org.jetbrains.r.rinterop.SubPathOrBuilder> 
+  public java.util.List<? extends org.jetbrains.r.rinterop.PolylineOrBuilder> 
       getSubPathOrBuilderList() {
     return subPath_;
   }
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   @java.lang.Override
   public int getSubPathCount() {
     return subPath_.size();
   }
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   @java.lang.Override
-  public org.jetbrains.r.rinterop.SubPath getSubPath(int index) {
+  public org.jetbrains.r.rinterop.Polyline getSubPath(int index) {
     return subPath_.get(index);
   }
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   @java.lang.Override
-  public org.jetbrains.r.rinterop.SubPathOrBuilder getSubPathOrBuilder(
+  public org.jetbrains.r.rinterop.PolylineOrBuilder getSubPathOrBuilder(
       int index) {
     return subPath_.get(index);
   }
@@ -609,22 +609,22 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private java.util.List<org.jetbrains.r.rinterop.SubPath> subPath_ =
+    private java.util.List<org.jetbrains.r.rinterop.Polyline> subPath_ =
       java.util.Collections.emptyList();
     private void ensureSubPathIsMutable() {
       if (!((bitField0_ & 0x00000001) != 0)) {
-        subPath_ = new java.util.ArrayList<org.jetbrains.r.rinterop.SubPath>(subPath_);
+        subPath_ = new java.util.ArrayList<org.jetbrains.r.rinterop.Polyline>(subPath_);
         bitField0_ |= 0x00000001;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        org.jetbrains.r.rinterop.SubPath, org.jetbrains.r.rinterop.SubPath.Builder, org.jetbrains.r.rinterop.SubPathOrBuilder> subPathBuilder_;
+        org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder> subPathBuilder_;
 
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public java.util.List<org.jetbrains.r.rinterop.SubPath> getSubPathList() {
+    public java.util.List<org.jetbrains.r.rinterop.Polyline> getSubPathList() {
       if (subPathBuilder_ == null) {
         return java.util.Collections.unmodifiableList(subPath_);
       } else {
@@ -632,7 +632,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public int getSubPathCount() {
       if (subPathBuilder_ == null) {
@@ -642,9 +642,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public org.jetbrains.r.rinterop.SubPath getSubPath(int index) {
+    public org.jetbrains.r.rinterop.Polyline getSubPath(int index) {
       if (subPathBuilder_ == null) {
         return subPath_.get(index);
       } else {
@@ -652,10 +652,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder setSubPath(
-        int index, org.jetbrains.r.rinterop.SubPath value) {
+        int index, org.jetbrains.r.rinterop.Polyline value) {
       if (subPathBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -669,10 +669,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder setSubPath(
-        int index, org.jetbrains.r.rinterop.SubPath.Builder builderForValue) {
+        int index, org.jetbrains.r.rinterop.Polyline.Builder builderForValue) {
       if (subPathBuilder_ == null) {
         ensureSubPathIsMutable();
         subPath_.set(index, builderForValue.build());
@@ -683,9 +683,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public Builder addSubPath(org.jetbrains.r.rinterop.SubPath value) {
+    public Builder addSubPath(org.jetbrains.r.rinterop.Polyline value) {
       if (subPathBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -699,10 +699,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder addSubPath(
-        int index, org.jetbrains.r.rinterop.SubPath value) {
+        int index, org.jetbrains.r.rinterop.Polyline value) {
       if (subPathBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -716,10 +716,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder addSubPath(
-        org.jetbrains.r.rinterop.SubPath.Builder builderForValue) {
+        org.jetbrains.r.rinterop.Polyline.Builder builderForValue) {
       if (subPathBuilder_ == null) {
         ensureSubPathIsMutable();
         subPath_.add(builderForValue.build());
@@ -730,10 +730,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder addSubPath(
-        int index, org.jetbrains.r.rinterop.SubPath.Builder builderForValue) {
+        int index, org.jetbrains.r.rinterop.Polyline.Builder builderForValue) {
       if (subPathBuilder_ == null) {
         ensureSubPathIsMutable();
         subPath_.add(index, builderForValue.build());
@@ -744,10 +744,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder addAllSubPath(
-        java.lang.Iterable<? extends org.jetbrains.r.rinterop.SubPath> values) {
+        java.lang.Iterable<? extends org.jetbrains.r.rinterop.Polyline> values) {
       if (subPathBuilder_ == null) {
         ensureSubPathIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -759,7 +759,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder clearSubPath() {
       if (subPathBuilder_ == null) {
@@ -772,7 +772,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
     public Builder removeSubPath(int index) {
       if (subPathBuilder_ == null) {
@@ -785,16 +785,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public org.jetbrains.r.rinterop.SubPath.Builder getSubPathBuilder(
+    public org.jetbrains.r.rinterop.Polyline.Builder getSubPathBuilder(
         int index) {
       return getSubPathFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public org.jetbrains.r.rinterop.SubPathOrBuilder getSubPathOrBuilder(
+    public org.jetbrains.r.rinterop.PolylineOrBuilder getSubPathOrBuilder(
         int index) {
       if (subPathBuilder_ == null) {
         return subPath_.get(index);  } else {
@@ -802,9 +802,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public java.util.List<? extends org.jetbrains.r.rinterop.SubPathOrBuilder> 
+    public java.util.List<? extends org.jetbrains.r.rinterop.PolylineOrBuilder> 
          getSubPathOrBuilderList() {
       if (subPathBuilder_ != null) {
         return subPathBuilder_.getMessageOrBuilderList();
@@ -813,33 +813,33 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public org.jetbrains.r.rinterop.SubPath.Builder addSubPathBuilder() {
+    public org.jetbrains.r.rinterop.Polyline.Builder addSubPathBuilder() {
       return getSubPathFieldBuilder().addBuilder(
-          org.jetbrains.r.rinterop.SubPath.getDefaultInstance());
+          org.jetbrains.r.rinterop.Polyline.getDefaultInstance());
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public org.jetbrains.r.rinterop.SubPath.Builder addSubPathBuilder(
+    public org.jetbrains.r.rinterop.Polyline.Builder addSubPathBuilder(
         int index) {
       return getSubPathFieldBuilder().addBuilder(
-          index, org.jetbrains.r.rinterop.SubPath.getDefaultInstance());
+          index, org.jetbrains.r.rinterop.Polyline.getDefaultInstance());
     }
     /**
-     * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+     * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
      */
-    public java.util.List<org.jetbrains.r.rinterop.SubPath.Builder> 
+    public java.util.List<org.jetbrains.r.rinterop.Polyline.Builder> 
          getSubPathBuilderList() {
       return getSubPathFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        org.jetbrains.r.rinterop.SubPath, org.jetbrains.r.rinterop.SubPath.Builder, org.jetbrains.r.rinterop.SubPathOrBuilder> 
+        org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder> 
         getSubPathFieldBuilder() {
       if (subPathBuilder_ == null) {
         subPathBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            org.jetbrains.r.rinterop.SubPath, org.jetbrains.r.rinterop.SubPath.Builder, org.jetbrains.r.rinterop.SubPathOrBuilder>(
+            org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder>(
                 subPath_,
                 ((bitField0_ & 0x00000001) != 0),
                 getParentForChildren(),
