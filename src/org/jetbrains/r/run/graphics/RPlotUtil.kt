@@ -18,7 +18,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object RPlotUtil {
-  private const val PROTOCOL_VERSION = 10
+  private const val PROTOCOL_VERSION = 11
 
   private val UNKNOWN_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.unknown.parsing.error")
   private val GENERIC_PARSING_ERROR_TEXT = RBundle.message("plot.viewer.figure.parsing.failure")
@@ -166,27 +166,17 @@ object RPlotUtil {
   }
 
   private fun convert(path: PathFigure): RFigure {
-    val subPaths = path.subPathList.map { subPath ->
-      LongArray(subPath.pointCount) { i ->
-        subPath.getPoint(i)
-      }
-    }
+    val subPaths = path.subPathList.map { convert(it) }
     val winding = if (path.winding) RWinding.NON_ZERO else RWinding.EVEN_ODD
     return RFigure.Path(subPaths, winding, path.strokeIndex, path.colorIndex, path.fillIndex)
   }
 
   private fun convert(polygon: PolygonFigure): RFigure {
-    val points = LongArray(polygon.pointCount) { i ->
-      polygon.getPoint(i)
-    }
-    return RFigure.Polygon(points, polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
+    return RFigure.Polygon(convert(polygon.polyline), polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
   }
 
   private fun convert(polyline: PolylineFigure): RFigure {
-    val points = LongArray(polyline.pointCount) { i ->
-      polyline.getPoint(i)
-    }
-    return RFigure.Polyline(points, polyline.strokeIndex, polyline.colorIndex)
+    return RFigure.Polyline(convert(polyline.polyline), polyline.strokeIndex, polyline.colorIndex)
   }
 
   private fun convert(raster: RasterFigure): RFigure {
@@ -217,6 +207,13 @@ object RPlotUtil {
         }
       }
     }
+  }
+
+  private fun convert(polyline: Polyline): RPolyline {
+    val points = LongArray(polyline.pointCount) { i ->
+      polyline.getPoint(i)
+    }
+    return RPolyline(points, polyline.previewCount)
   }
 
   private fun convertError(error: Int): RPlotError? {
@@ -372,15 +369,15 @@ object RPlotUtil {
     }
 
     private fun replay(polygon: RFigure.Polygon) {
-      val xs = calculateXs(polygon.points)
-      val ys = calculateYs(polygon.points)
+      val xs = calculateXs(polygon.polyline)
+      val ys = calculateYs(polygon.polyline)
       val colorIndex = filterColorIndex(polygon.strokeIndex, polygon.colorIndex, polygon.fillIndex)
       plotter.drawPolygon(xs, ys, polygon.strokeIndex, colorIndex, polygon.fillIndex)
     }
 
     private fun replay(polyline: RFigure.Polyline) {
-      val xs = calculateXs(polyline.points)
-      val ys = calculateYs(polyline.points)
+      val xs = calculateXs(polyline.polyline)
+      val ys = calculateYs(polyline.polyline)
       plotter.drawPolyline(xs, ys, polyline.strokeIndex, polyline.colorIndex)
     }
 
@@ -422,15 +419,30 @@ object RPlotUtil {
       return if (skipStroke) -1 else colorIndex
     }
 
-    private fun calculateXs(points: LongArray): FloatArray {
-      return FloatArray(points.size) { i ->
-        calculateX(points[i])
-      }
+    private fun calculateXs(polyline: RPolyline): FloatArray {
+      return calculateArray(polyline, this::calculateX)
     }
 
-    private fun calculateYs(points: LongArray): FloatArray {
-      return FloatArray(points.size) { i ->
-        calculateY(points[i])
+    private fun calculateYs(polyline: RPolyline): FloatArray {
+      return calculateArray(polyline, this::calculateY)
+    }
+
+    private inline fun calculateArray(polyline: RPolyline, mapper: (Long) -> Float): FloatArray {
+      val points = polyline.points
+      return if (isPreview) {
+        FloatArray(polyline.previewCount).also { coordinates ->
+          var index = 0
+          for (point in points) {
+            if (point and BIT_63 == 0L) {
+              coordinates[index] = mapper(point)
+              index++
+            }
+          }
+        }
+      } else {
+        FloatArray(points.size) { i ->
+          mapper(points[i])
+        }
       }
     }
 
@@ -512,6 +524,7 @@ object RPlotUtil {
       private const val BLACK_COLOR_INDEX = 0
       private const val WHITE_COLOR_INDEX = 1
       private const val TRANSPARENT_INDEX = -1
+      private const val BIT_63 = 1L shl 63
 
       private const val STROKE_WIDTH_THRESHOLD = 1.0f / 72.0f  // 1 px (in inches)
       private const val STROKE_WIDTH_SCALE = 1.25f

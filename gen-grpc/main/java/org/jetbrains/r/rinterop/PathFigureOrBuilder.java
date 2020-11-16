@@ -8,27 +8,27 @@ public interface PathFigureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
-  java.util.List<org.jetbrains.r.rinterop.SubPath> 
+  java.util.List<org.jetbrains.r.rinterop.Polyline> 
       getSubPathList();
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
-  org.jetbrains.r.rinterop.SubPath getSubPath(int index);
+  org.jetbrains.r.rinterop.Polyline getSubPath(int index);
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
   int getSubPathCount();
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
-  java.util.List<? extends org.jetbrains.r.rinterop.SubPathOrBuilder> 
+  java.util.List<? extends org.jetbrains.r.rinterop.PolylineOrBuilder> 
       getSubPathOrBuilderList();
   /**
-   * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
+   * <code>repeated .rplugininterop.Polyline subPath = 1;</code>
    */
-  org.jetbrains.r.rinterop.SubPathOrBuilder getSubPathOrBuilder(
+  org.jetbrains.r.rinterop.PolylineOrBuilder getSubPathOrBuilder(
       int index);
 
   /**

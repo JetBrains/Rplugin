@@ -4,18 +4,18 @@
 package org.jetbrains.r.rinterop;
 
 /**
- * Protobuf type {@code rplugininterop.SubPath}
+ * Protobuf type {@code rplugininterop.Polyline}
  */
-public final class SubPath extends
+public final class Polyline extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:rplugininterop.SubPath)
-    SubPathOrBuilder {
+    // @@protoc_insertion_point(message_implements:rplugininterop.Polyline)
+    PolylineOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use SubPath.newBuilder() to construct.
-  private SubPath(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use Polyline.newBuilder() to construct.
+  private Polyline(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private SubPath() {
+  private Polyline() {
     point_ = emptyLongList();
   }
 
@@ -23,7 +23,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
-    return new SubPath();
+    return new Polyline();
   }
 
   @java.lang.Override
@@ -31,7 +31,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private SubPath(
+  private Polyline(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -71,6 +71,11 @@ private static final long serialVersionUID = 0L;
             input.popLimit(limit);
             break;
           }
+          case 16: {
+
+            previewCount_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -95,15 +100,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_SubPath_descriptor;
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_Polyline_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_SubPath_fieldAccessorTable
+    return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_Polyline_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            org.jetbrains.r.rinterop.SubPath.class, org.jetbrains.r.rinterop.SubPath.Builder.class);
+            org.jetbrains.r.rinterop.Polyline.class, org.jetbrains.r.rinterop.Polyline.Builder.class);
   }
 
   public static final int POINT_FIELD_NUMBER = 1;
@@ -134,6 +139,17 @@ private static final long serialVersionUID = 0L;
   }
   private int pointMemoizedSerializedSize = -1;
 
+  public static final int PREVIEWCOUNT_FIELD_NUMBER = 2;
+  private int previewCount_;
+  /**
+   * <code>int32 previewCount = 2;</code>
+   * @return The previewCount.
+   */
+  @java.lang.Override
+  public int getPreviewCount() {
+    return previewCount_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -156,6 +172,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < point_.size(); i++) {
       output.writeFixed64NoTag(point_.getLong(i));
     }
+    if (previewCount_ != 0) {
+      output.writeInt32(2, previewCount_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -176,6 +195,10 @@ private static final long serialVersionUID = 0L;
       }
       pointMemoizedSerializedSize = dataSize;
     }
+    if (previewCount_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, previewCount_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -186,13 +209,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof org.jetbrains.r.rinterop.SubPath)) {
+    if (!(obj instanceof org.jetbrains.r.rinterop.Polyline)) {
       return super.equals(obj);
     }
-    org.jetbrains.r.rinterop.SubPath other = (org.jetbrains.r.rinterop.SubPath) obj;
+    org.jetbrains.r.rinterop.Polyline other = (org.jetbrains.r.rinterop.Polyline) obj;
 
     if (!getPointList()
         .equals(other.getPointList())) return false;
+    if (getPreviewCount()
+        != other.getPreviewCount()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -208,74 +233,76 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + POINT_FIELD_NUMBER;
       hash = (53 * hash) + getPointList().hashCode();
     }
+    hash = (37 * hash) + PREVIEWCOUNT_FIELD_NUMBER;
+    hash = (53 * hash) + getPreviewCount();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(byte[] data)
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseDelimitedFrom(java.io.InputStream input)
+  public static org.jetbrains.r.rinterop.Polyline parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseDelimitedFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static org.jetbrains.r.rinterop.SubPath parseFrom(
+  public static org.jetbrains.r.rinterop.Polyline parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -288,7 +315,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(org.jetbrains.r.rinterop.SubPath prototype) {
+  public static Builder newBuilder(org.jetbrains.r.rinterop.Polyline prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -304,26 +331,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code rplugininterop.SubPath}
+   * Protobuf type {@code rplugininterop.Polyline}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:rplugininterop.SubPath)
-      org.jetbrains.r.rinterop.SubPathOrBuilder {
+      // @@protoc_insertion_point(builder_implements:rplugininterop.Polyline)
+      org.jetbrains.r.rinterop.PolylineOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_SubPath_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_Polyline_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_SubPath_fieldAccessorTable
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_Polyline_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.jetbrains.r.rinterop.SubPath.class, org.jetbrains.r.rinterop.SubPath.Builder.class);
+              org.jetbrains.r.rinterop.Polyline.class, org.jetbrains.r.rinterop.Polyline.Builder.class);
     }
 
-    // Construct using org.jetbrains.r.rinterop.SubPath.newBuilder()
+    // Construct using org.jetbrains.r.rinterop.Polyline.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -343,23 +370,25 @@ private static final long serialVersionUID = 0L;
       super.clear();
       point_ = emptyLongList();
       bitField0_ = (bitField0_ & ~0x00000001);
+      previewCount_ = 0;
+
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_SubPath_descriptor;
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_Polyline_descriptor;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.SubPath getDefaultInstanceForType() {
-      return org.jetbrains.r.rinterop.SubPath.getDefaultInstance();
+    public org.jetbrains.r.rinterop.Polyline getDefaultInstanceForType() {
+      return org.jetbrains.r.rinterop.Polyline.getDefaultInstance();
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.SubPath build() {
-      org.jetbrains.r.rinterop.SubPath result = buildPartial();
+    public org.jetbrains.r.rinterop.Polyline build() {
+      org.jetbrains.r.rinterop.Polyline result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -367,14 +396,15 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public org.jetbrains.r.rinterop.SubPath buildPartial() {
-      org.jetbrains.r.rinterop.SubPath result = new org.jetbrains.r.rinterop.SubPath(this);
+    public org.jetbrains.r.rinterop.Polyline buildPartial() {
+      org.jetbrains.r.rinterop.Polyline result = new org.jetbrains.r.rinterop.Polyline(this);
       int from_bitField0_ = bitField0_;
       if (((bitField0_ & 0x00000001) != 0)) {
         point_.makeImmutable();
         bitField0_ = (bitField0_ & ~0x00000001);
       }
       result.point_ = point_;
+      result.previewCount_ = previewCount_;
       onBuilt();
       return result;
     }
@@ -413,16 +443,16 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof org.jetbrains.r.rinterop.SubPath) {
-        return mergeFrom((org.jetbrains.r.rinterop.SubPath)other);
+      if (other instanceof org.jetbrains.r.rinterop.Polyline) {
+        return mergeFrom((org.jetbrains.r.rinterop.Polyline)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(org.jetbrains.r.rinterop.SubPath other) {
-      if (other == org.jetbrains.r.rinterop.SubPath.getDefaultInstance()) return this;
+    public Builder mergeFrom(org.jetbrains.r.rinterop.Polyline other) {
+      if (other == org.jetbrains.r.rinterop.Polyline.getDefaultInstance()) return this;
       if (!other.point_.isEmpty()) {
         if (point_.isEmpty()) {
           point_ = other.point_;
@@ -432,6 +462,9 @@ private static final long serialVersionUID = 0L;
           point_.addAll(other.point_);
         }
         onChanged();
+      }
+      if (other.getPreviewCount() != 0) {
+        setPreviewCount(other.getPreviewCount());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -448,11 +481,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.jetbrains.r.rinterop.SubPath parsedMessage = null;
+      org.jetbrains.r.rinterop.Polyline parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.jetbrains.r.rinterop.SubPath) e.getUnfinishedMessage();
+        parsedMessage = (org.jetbrains.r.rinterop.Polyline) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -541,6 +574,37 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
+
+    private int previewCount_ ;
+    /**
+     * <code>int32 previewCount = 2;</code>
+     * @return The previewCount.
+     */
+    @java.lang.Override
+    public int getPreviewCount() {
+      return previewCount_;
+    }
+    /**
+     * <code>int32 previewCount = 2;</code>
+     * @param value The previewCount to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPreviewCount(int value) {
+      
+      previewCount_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 previewCount = 2;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPreviewCount() {
+      
+      previewCount_ = 0;
+      onChanged();
+      return this;
+    }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -554,41 +618,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:rplugininterop.SubPath)
+    // @@protoc_insertion_point(builder_scope:rplugininterop.Polyline)
   }
 
-  // @@protoc_insertion_point(class_scope:rplugininterop.SubPath)
-  private static final org.jetbrains.r.rinterop.SubPath DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:rplugininterop.Polyline)
+  private static final org.jetbrains.r.rinterop.Polyline DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.SubPath();
+    DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.Polyline();
   }
 
-  public static org.jetbrains.r.rinterop.SubPath getDefaultInstance() {
+  public static org.jetbrains.r.rinterop.Polyline getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<SubPath>
-      PARSER = new com.google.protobuf.AbstractParser<SubPath>() {
+  private static final com.google.protobuf.Parser<Polyline>
+      PARSER = new com.google.protobuf.AbstractParser<Polyline>() {
     @java.lang.Override
-    public SubPath parsePartialFrom(
+    public Polyline parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new SubPath(input, extensionRegistry);
+      return new Polyline(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<SubPath> parser() {
+  public static com.google.protobuf.Parser<Polyline> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<SubPath> getParserForType() {
+  public com.google.protobuf.Parser<Polyline> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public org.jetbrains.r.rinterop.SubPath getDefaultInstanceForType() {
+  public org.jetbrains.r.rinterop.Polyline getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

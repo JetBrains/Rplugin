@@ -16,7 +16,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private PolylineFigure() {
-    point_ = emptyLongList();
   }
 
   @java.lang.Override
@@ -39,7 +38,6 @@ private static final long serialVersionUID = 0L;
     if (extensionRegistry == null) {
       throw new java.lang.NullPointerException();
     }
-    int mutable_bitField0_ = 0;
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
         com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
@@ -50,25 +48,17 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 9: {
-            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              point_ = newLongList();
-              mutable_bitField0_ |= 0x00000001;
-            }
-            point_.addLong(input.readFixed64());
-            break;
-          }
           case 10: {
-            int length = input.readRawVarint32();
-            int limit = input.pushLimit(length);
-            if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
-              point_ = newLongList();
-              mutable_bitField0_ |= 0x00000001;
+            org.jetbrains.r.rinterop.Polyline.Builder subBuilder = null;
+            if (polyline_ != null) {
+              subBuilder = polyline_.toBuilder();
             }
-            while (input.getBytesUntilLimit() > 0) {
-              point_.addLong(input.readFixed64());
+            polyline_ = input.readMessage(org.jetbrains.r.rinterop.Polyline.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(polyline_);
+              polyline_ = subBuilder.buildPartial();
             }
-            input.popLimit(limit);
+
             break;
           }
           case 16: {
@@ -96,9 +86,6 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000001) != 0)) {
-        point_.makeImmutable(); // C
-      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -116,33 +103,31 @@ private static final long serialVersionUID = 0L;
             org.jetbrains.r.rinterop.PolylineFigure.class, org.jetbrains.r.rinterop.PolylineFigure.Builder.class);
   }
 
-  public static final int POINT_FIELD_NUMBER = 1;
-  private com.google.protobuf.Internal.LongList point_;
+  public static final int POLYLINE_FIELD_NUMBER = 1;
+  private org.jetbrains.r.rinterop.Polyline polyline_;
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @return A list containing the point.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
+   * @return Whether the polyline field is set.
    */
   @java.lang.Override
-  public java.util.List<java.lang.Long>
-      getPointList() {
-    return point_;
+  public boolean hasPolyline() {
+    return polyline_ != null;
   }
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @return The count of point.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
+   * @return The polyline.
    */
-  public int getPointCount() {
-    return point_.size();
+  @java.lang.Override
+  public org.jetbrains.r.rinterop.Polyline getPolyline() {
+    return polyline_ == null ? org.jetbrains.r.rinterop.Polyline.getDefaultInstance() : polyline_;
   }
   /**
-   * <code>repeated fixed64 point = 1;</code>
-   * @param index The index of the element to return.
-   * @return The point at the given index.
+   * <code>.rplugininterop.Polyline polyline = 1;</code>
    */
-  public long getPoint(int index) {
-    return point_.getLong(index);
+  @java.lang.Override
+  public org.jetbrains.r.rinterop.PolylineOrBuilder getPolylineOrBuilder() {
+    return getPolyline();
   }
-  private int pointMemoizedSerializedSize = -1;
 
   public static final int STROKEINDEX_FIELD_NUMBER = 2;
   private int strokeIndex_;
@@ -180,13 +165,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    getSerializedSize();
-    if (getPointList().size() > 0) {
-      output.writeUInt32NoTag(10);
-      output.writeUInt32NoTag(pointMemoizedSerializedSize);
-    }
-    for (int i = 0; i < point_.size(); i++) {
-      output.writeFixed64NoTag(point_.getLong(i));
+    if (polyline_ != null) {
+      output.writeMessage(1, getPolyline());
     }
     if (strokeIndex_ != 0) {
       output.writeInt32(2, strokeIndex_);
@@ -203,16 +183,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    {
-      int dataSize = 0;
-      dataSize = 8 * getPointList().size();
-      size += dataSize;
-      if (!getPointList().isEmpty()) {
-        size += 1;
-        size += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(dataSize);
-      }
-      pointMemoizedSerializedSize = dataSize;
+    if (polyline_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(1, getPolyline());
     }
     if (strokeIndex_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -237,8 +210,11 @@ private static final long serialVersionUID = 0L;
     }
     org.jetbrains.r.rinterop.PolylineFigure other = (org.jetbrains.r.rinterop.PolylineFigure) obj;
 
-    if (!getPointList()
-        .equals(other.getPointList())) return false;
+    if (hasPolyline() != other.hasPolyline()) return false;
+    if (hasPolyline()) {
+      if (!getPolyline()
+          .equals(other.getPolyline())) return false;
+    }
     if (getStrokeIndex()
         != other.getStrokeIndex()) return false;
     if (getColorIndex()
@@ -254,9 +230,9 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (getPointCount() > 0) {
-      hash = (37 * hash) + POINT_FIELD_NUMBER;
-      hash = (53 * hash) + getPointList().hashCode();
+    if (hasPolyline()) {
+      hash = (37 * hash) + POLYLINE_FIELD_NUMBER;
+      hash = (53 * hash) + getPolyline().hashCode();
     }
     hash = (37 * hash) + STROKEINDEX_FIELD_NUMBER;
     hash = (53 * hash) + getStrokeIndex();
@@ -395,8 +371,12 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      point_ = emptyLongList();
-      bitField0_ = (bitField0_ & ~0x00000001);
+      if (polylineBuilder_ == null) {
+        polyline_ = null;
+      } else {
+        polyline_ = null;
+        polylineBuilder_ = null;
+      }
       strokeIndex_ = 0;
 
       colorIndex_ = 0;
@@ -427,12 +407,11 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.jetbrains.r.rinterop.PolylineFigure buildPartial() {
       org.jetbrains.r.rinterop.PolylineFigure result = new org.jetbrains.r.rinterop.PolylineFigure(this);
-      int from_bitField0_ = bitField0_;
-      if (((bitField0_ & 0x00000001) != 0)) {
-        point_.makeImmutable();
-        bitField0_ = (bitField0_ & ~0x00000001);
+      if (polylineBuilder_ == null) {
+        result.polyline_ = polyline_;
+      } else {
+        result.polyline_ = polylineBuilder_.build();
       }
-      result.point_ = point_;
       result.strokeIndex_ = strokeIndex_;
       result.colorIndex_ = colorIndex_;
       onBuilt();
@@ -483,15 +462,8 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(org.jetbrains.r.rinterop.PolylineFigure other) {
       if (other == org.jetbrains.r.rinterop.PolylineFigure.getDefaultInstance()) return this;
-      if (!other.point_.isEmpty()) {
-        if (point_.isEmpty()) {
-          point_ = other.point_;
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          ensurePointIsMutable();
-          point_.addAll(other.point_);
-        }
-        onChanged();
+      if (other.hasPolyline()) {
+        mergePolyline(other.getPolyline());
       }
       if (other.getStrokeIndex() != 0) {
         setStrokeIndex(other.getStrokeIndex());
@@ -527,85 +499,124 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
-    private int bitField0_;
 
-    private com.google.protobuf.Internal.LongList point_ = emptyLongList();
-    private void ensurePointIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
-        point_ = mutableCopy(point_);
-        bitField0_ |= 0x00000001;
-       }
+    private org.jetbrains.r.rinterop.Polyline polyline_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder> polylineBuilder_;
+    /**
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
+     * @return Whether the polyline field is set.
+     */
+    public boolean hasPolyline() {
+      return polylineBuilder_ != null || polyline_ != null;
     }
     /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @return A list containing the point.
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
+     * @return The polyline.
      */
-    public java.util.List<java.lang.Long>
-        getPointList() {
-      return ((bitField0_ & 0x00000001) != 0) ?
-               java.util.Collections.unmodifiableList(point_) : point_;
+    public org.jetbrains.r.rinterop.Polyline getPolyline() {
+      if (polylineBuilder_ == null) {
+        return polyline_ == null ? org.jetbrains.r.rinterop.Polyline.getDefaultInstance() : polyline_;
+      } else {
+        return polylineBuilder_.getMessage();
+      }
     }
     /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @return The count of point.
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
      */
-    public int getPointCount() {
-      return point_.size();
-    }
-    /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @param index The index of the element to return.
-     * @return The point at the given index.
-     */
-    public long getPoint(int index) {
-      return point_.getLong(index);
-    }
-    /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @param index The index to set the value at.
-     * @param value The point to set.
-     * @return This builder for chaining.
-     */
-    public Builder setPoint(
-        int index, long value) {
-      ensurePointIsMutable();
-      point_.setLong(index, value);
-      onChanged();
+    public Builder setPolyline(org.jetbrains.r.rinterop.Polyline value) {
+      if (polylineBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        polyline_ = value;
+        onChanged();
+      } else {
+        polylineBuilder_.setMessage(value);
+      }
+
       return this;
     }
     /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @param value The point to add.
-     * @return This builder for chaining.
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
      */
-    public Builder addPoint(long value) {
-      ensurePointIsMutable();
-      point_.addLong(value);
-      onChanged();
+    public Builder setPolyline(
+        org.jetbrains.r.rinterop.Polyline.Builder builderForValue) {
+      if (polylineBuilder_ == null) {
+        polyline_ = builderForValue.build();
+        onChanged();
+      } else {
+        polylineBuilder_.setMessage(builderForValue.build());
+      }
+
       return this;
     }
     /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @param values The point to add.
-     * @return This builder for chaining.
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
      */
-    public Builder addAllPoint(
-        java.lang.Iterable<? extends java.lang.Long> values) {
-      ensurePointIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, point_);
-      onChanged();
+    public Builder mergePolyline(org.jetbrains.r.rinterop.Polyline value) {
+      if (polylineBuilder_ == null) {
+        if (polyline_ != null) {
+          polyline_ =
+            org.jetbrains.r.rinterop.Polyline.newBuilder(polyline_).mergeFrom(value).buildPartial();
+        } else {
+          polyline_ = value;
+        }
+        onChanged();
+      } else {
+        polylineBuilder_.mergeFrom(value);
+      }
+
       return this;
     }
     /**
-     * <code>repeated fixed64 point = 1;</code>
-     * @return This builder for chaining.
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
      */
-    public Builder clearPoint() {
-      point_ = emptyLongList();
-      bitField0_ = (bitField0_ & ~0x00000001);
-      onChanged();
+    public Builder clearPolyline() {
+      if (polylineBuilder_ == null) {
+        polyline_ = null;
+        onChanged();
+      } else {
+        polyline_ = null;
+        polylineBuilder_ = null;
+      }
+
       return this;
+    }
+    /**
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
+     */
+    public org.jetbrains.r.rinterop.Polyline.Builder getPolylineBuilder() {
+      
+      onChanged();
+      return getPolylineFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
+     */
+    public org.jetbrains.r.rinterop.PolylineOrBuilder getPolylineOrBuilder() {
+      if (polylineBuilder_ != null) {
+        return polylineBuilder_.getMessageOrBuilder();
+      } else {
+        return polyline_ == null ?
+            org.jetbrains.r.rinterop.Polyline.getDefaultInstance() : polyline_;
+      }
+    }
+    /**
+     * <code>.rplugininterop.Polyline polyline = 1;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder> 
+        getPolylineFieldBuilder() {
+      if (polylineBuilder_ == null) {
+        polylineBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.Polyline, org.jetbrains.r.rinterop.Polyline.Builder, org.jetbrains.r.rinterop.PolylineOrBuilder>(
+                getPolyline(),
+                getParentForChildren(),
+                isClean());
+        polyline_ = null;
+      }
+      return polylineBuilder_;
     }
 
     private int strokeIndex_ ;
