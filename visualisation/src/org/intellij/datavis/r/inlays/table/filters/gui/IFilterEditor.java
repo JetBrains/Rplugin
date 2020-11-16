@@ -176,7 +176,7 @@ public interface IFilterEditor {
     /** Returns the associated {@link ChoiceRenderer}. */
     ChoiceRenderer getRenderer();
 
-    /** Returns the current editor's look. */
+    ///** Returns the current editor's look. */
     //Look getLook();
 
 }

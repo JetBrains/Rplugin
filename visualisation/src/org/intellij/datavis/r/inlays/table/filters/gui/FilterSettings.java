@@ -119,7 +119,7 @@ public class FilterSettings {
         }
     }
 
-    /** Creates a CustomChoiceDecorator as defined by default. */
+    ///** Creates a CustomChoiceDecorator as defined by default. */
     //public static CustomChoiceDecorator newCustomChoiceDecorator() {
     //    try {
     //        return customChoiceDecoratorClass.newInstance();
