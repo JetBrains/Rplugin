@@ -9,10 +9,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.CircleFigure circle = 1;</code>
+   * @return Whether the circle field is set.
    */
   boolean hasCircle();
   /**
    * <code>.rplugininterop.CircleFigure circle = 1;</code>
+   * @return The circle.
    */
   org.jetbrains.r.rinterop.CircleFigure getCircle();
   /**
@@ -22,10 +24,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.LineFigure line = 2;</code>
+   * @return Whether the line field is set.
    */
   boolean hasLine();
   /**
    * <code>.rplugininterop.LineFigure line = 2;</code>
+   * @return The line.
    */
   org.jetbrains.r.rinterop.LineFigure getLine();
   /**
@@ -35,10 +39,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.PathFigure path = 3;</code>
+   * @return Whether the path field is set.
    */
   boolean hasPath();
   /**
    * <code>.rplugininterop.PathFigure path = 3;</code>
+   * @return The path.
    */
   org.jetbrains.r.rinterop.PathFigure getPath();
   /**
@@ -48,10 +54,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+   * @return Whether the polygon field is set.
    */
   boolean hasPolygon();
   /**
    * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+   * @return The polygon.
    */
   org.jetbrains.r.rinterop.PolygonFigure getPolygon();
   /**
@@ -61,10 +69,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+   * @return Whether the polyline field is set.
    */
   boolean hasPolyline();
   /**
    * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+   * @return The polyline.
    */
   org.jetbrains.r.rinterop.PolylineFigure getPolyline();
   /**
@@ -74,10 +84,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   * @return Whether the raster field is set.
    */
   boolean hasRaster();
   /**
    * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   * @return The raster.
    */
   org.jetbrains.r.rinterop.RasterFigure getRaster();
   /**
@@ -87,10 +99,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+   * @return Whether the rectangle field is set.
    */
   boolean hasRectangle();
   /**
    * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+   * @return The rectangle.
    */
   org.jetbrains.r.rinterop.RectangleFigure getRectangle();
   /**
@@ -100,10 +114,12 @@ public interface FigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.TextFigure text = 8;</code>
+   * @return Whether the text field is set.
    */
   boolean hasText();
   /**
    * <code>.rplugininterop.TextFigure text = 8;</code>
+   * @return The text.
    */
   org.jetbrains.r.rinterop.TextFigure getText();
   /**

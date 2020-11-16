@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Font}
  */
-public  final class Font extends
+public final class Font extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Font)
     FontOrBuilder {
@@ -101,7 +101,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object name_;
   /**
    * <code>string name = 1;</code>
+   * @return The name.
    */
+  @java.lang.Override
   public java.lang.String getName() {
     java.lang.Object ref = name_;
     if (ref instanceof java.lang.String) {
@@ -116,7 +118,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string name = 1;</code>
+   * @return The bytes for name.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getNameBytes() {
     java.lang.Object ref = name_;
@@ -135,7 +139,9 @@ private static final long serialVersionUID = 0L;
   private float size_;
   /**
    * <code>float size = 2;</code>
+   * @return The size.
    */
+  @java.lang.Override
   public float getSize() {
     return size_;
   }
@@ -144,7 +150,9 @@ private static final long serialVersionUID = 0L;
   private int style_;
   /**
    * <code>int32 style = 3;</code>
+   * @return The style.
    */
+  @java.lang.Override
   public int getStyle() {
     return style_;
   }
@@ -490,6 +498,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object name_ = "";
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -505,6 +514,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -521,6 +531,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @param value The name to set.
+     * @return This builder for chaining.
      */
     public Builder setName(
         java.lang.String value) {
@@ -534,6 +546,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearName() {
       
@@ -543,6 +556,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @param value The bytes for name to set.
+     * @return This builder for chaining.
      */
     public Builder setNameBytes(
         com.google.protobuf.ByteString value) {
@@ -559,12 +574,16 @@ private static final long serialVersionUID = 0L;
     private float size_ ;
     /**
      * <code>float size = 2;</code>
+     * @return The size.
      */
+    @java.lang.Override
     public float getSize() {
       return size_;
     }
     /**
      * <code>float size = 2;</code>
+     * @param value The size to set.
+     * @return This builder for chaining.
      */
     public Builder setSize(float value) {
       
@@ -574,6 +593,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float size = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSize() {
       
@@ -585,12 +605,16 @@ private static final long serialVersionUID = 0L;
     private int style_ ;
     /**
      * <code>int32 style = 3;</code>
+     * @return The style.
      */
+    @java.lang.Override
     public int getStyle() {
       return style_;
     }
     /**
      * <code>int32 style = 3;</code>
+     * @param value The style to set.
+     * @return This builder for chaining.
      */
     public Builder setStyle(int value) {
       
@@ -600,6 +624,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 style = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStyle() {
       

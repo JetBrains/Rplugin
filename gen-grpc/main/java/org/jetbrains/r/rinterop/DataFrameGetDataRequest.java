@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DataFrameGetDataRequest}
  */
-public  final class DataFrameGetDataRequest extends
+public final class DataFrameGetDataRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameGetDataRequest)
     DataFrameGetDataRequestOrBuilder {
@@ -107,19 +107,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef ref_;
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
+  @java.lang.Override
   public boolean hasRef() {
     return ref_ != null;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getRef() {
     return ref_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : ref_;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getRefOrBuilder() {
     return getRef();
   }
@@ -128,7 +133,9 @@ private static final long serialVersionUID = 0L;
   private int start_;
   /**
    * <code>int32 start = 2;</code>
+   * @return The start.
    */
+  @java.lang.Override
   public int getStart() {
     return start_;
   }
@@ -137,7 +144,9 @@ private static final long serialVersionUID = 0L;
   private int end_;
   /**
    * <code>int32 end = 3;</code>
+   * @return The end.
    */
+  @java.lang.Override
   public int getEnd() {
     return end_;
   }
@@ -496,12 +505,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> refBuilder_;
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return Whether the ref field is set.
      */
     public boolean hasRef() {
       return refBuilder_ != null || ref_ != null;
     }
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return The ref.
      */
     public org.jetbrains.r.rinterop.RRef getRef() {
       if (refBuilder_ == null) {
@@ -611,12 +622,16 @@ private static final long serialVersionUID = 0L;
     private int start_ ;
     /**
      * <code>int32 start = 2;</code>
+     * @return The start.
      */
+    @java.lang.Override
     public int getStart() {
       return start_;
     }
     /**
      * <code>int32 start = 2;</code>
+     * @param value The start to set.
+     * @return This builder for chaining.
      */
     public Builder setStart(int value) {
       
@@ -626,6 +641,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 start = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStart() {
       
@@ -637,12 +653,16 @@ private static final long serialVersionUID = 0L;
     private int end_ ;
     /**
      * <code>int32 end = 3;</code>
+     * @return The end.
      */
+    @java.lang.Override
     public int getEnd() {
       return end_;
     }
     /**
      * <code>int32 end = 3;</code>
+     * @param value The end to set.
+     * @return This builder for chaining.
      */
     public Builder setEnd(int value) {
       
@@ -652,6 +672,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 end = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEnd() {
       

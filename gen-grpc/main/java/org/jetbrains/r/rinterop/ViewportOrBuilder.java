@@ -9,10 +9,12 @@ public interface ViewportOrBuilder extends
 
   /**
    * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+   * @return Whether the fixed field is set.
    */
   boolean hasFixed();
   /**
    * <code>.rplugininterop.FixedViewport fixed = 1;</code>
+   * @return The fixed.
    */
   org.jetbrains.r.rinterop.FixedViewport getFixed();
   /**
@@ -22,10 +24,12 @@ public interface ViewportOrBuilder extends
 
   /**
    * <code>.rplugininterop.FreeViewport free = 2;</code>
+   * @return Whether the free field is set.
    */
   boolean hasFree();
   /**
    * <code>.rplugininterop.FreeViewport free = 2;</code>
+   * @return The free.
    */
   org.jetbrains.r.rinterop.FreeViewport getFree();
   /**

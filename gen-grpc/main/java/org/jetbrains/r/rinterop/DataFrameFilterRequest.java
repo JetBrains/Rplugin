@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DataFrameFilterRequest}
  */
-public  final class DataFrameFilterRequest extends
+public final class DataFrameFilterRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameFilterRequest)
     DataFrameFilterRequestOrBuilder {
@@ -112,10 +112,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.google.protobuf.Empty true = 1;</code>
+     * @return Whether the true field is set.
      */
     boolean hasTrue();
     /**
      * <code>.google.protobuf.Empty true = 1;</code>
+     * @return The true.
      */
     com.google.protobuf.Empty getTrue();
     /**
@@ -125,10 +127,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+     * @return Whether the composed field is set.
      */
     boolean hasComposed();
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+     * @return The composed.
      */
     org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter getComposed();
     /**
@@ -138,10 +142,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+     * @return Whether the operator field is set.
      */
     boolean hasOperator();
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+     * @return The operator.
      */
     org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator getOperator();
     /**
@@ -151,10 +157,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+     * @return Whether the naFilter field is set.
      */
     boolean hasNaFilter();
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+     * @return The naFilter.
      */
     org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter getNaFilter();
     /**
@@ -167,7 +175,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.DataFrameFilterRequest.Filter}
    */
-  public  static final class Filter extends
+  public static final class Filter extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameFilterRequest.Filter)
       FilterOrBuilder {
@@ -303,10 +311,12 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+       * @return The enum numeric value on the wire for type.
        */
       int getTypeValue();
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+       * @return The type.
        */
       org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type getType();
 
@@ -337,7 +347,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Protobuf type {@code rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter}
      */
-    public  static final class ComposedFilter extends
+    public static final class ComposedFilter extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter)
         ComposedFilterOrBuilder {
@@ -475,6 +485,8 @@ private static final long serialVersionUID = 0L;
         }
 
         /**
+         * @param value The numeric wire value of the corresponding enum entry.
+         * @return The enum associated with the given numeric wire value.
          * @deprecated Use {@link #forNumber(int)} instead.
          */
         @java.lang.Deprecated
@@ -482,6 +494,10 @@ private static final long serialVersionUID = 0L;
           return forNumber(value);
         }
 
+        /**
+         * @param value The numeric wire value of the corresponding enum entry.
+         * @return The enum associated with the given numeric wire value.
+         */
         public static Type forNumber(int value) {
           switch (value) {
             case 0: return AND;
@@ -505,6 +521,10 @@ private static final long serialVersionUID = 0L;
 
         public final com.google.protobuf.Descriptors.EnumValueDescriptor
             getValueDescriptor() {
+          if (this == UNRECOGNIZED) {
+            throw new java.lang.IllegalStateException(
+                "Can't get the descriptor of an unrecognized enum value.");
+          }
           return getDescriptor().getValues().get(ordinal());
         }
         public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -543,14 +563,16 @@ private static final long serialVersionUID = 0L;
       private int type_;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+       * @return The enum numeric value on the wire for type.
        */
-      public int getTypeValue() {
+      @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+       * @return The type.
        */
-      public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type getType() {
+      @java.lang.Override public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type getType() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type result = org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type.valueOf(type_);
         return result == null ? org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type.UNRECOGNIZED : result;
@@ -561,12 +583,14 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>repeated .rplugininterop.DataFrameFilterRequest.Filter filters = 2;</code>
        */
+      @java.lang.Override
       public java.util.List<org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter> getFiltersList() {
         return filters_;
       }
       /**
        * <code>repeated .rplugininterop.DataFrameFilterRequest.Filter filters = 2;</code>
        */
+      @java.lang.Override
       public java.util.List<? extends org.jetbrains.r.rinterop.DataFrameFilterRequest.FilterOrBuilder> 
           getFiltersOrBuilderList() {
         return filters_;
@@ -574,18 +598,21 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>repeated .rplugininterop.DataFrameFilterRequest.Filter filters = 2;</code>
        */
+      @java.lang.Override
       public int getFiltersCount() {
         return filters_.size();
       }
       /**
        * <code>repeated .rplugininterop.DataFrameFilterRequest.Filter filters = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter getFilters(int index) {
         return filters_.get(index);
       }
       /**
        * <code>repeated .rplugininterop.DataFrameFilterRequest.Filter filters = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.FilterOrBuilder getFiltersOrBuilder(
           int index) {
         return filters_.get(index);
@@ -952,21 +979,27 @@ private static final long serialVersionUID = 0L;
         private int type_ = 0;
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+         * @return The enum numeric value on the wire for type.
          */
-        public int getTypeValue() {
+        @java.lang.Override public int getTypeValue() {
           return type_;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+         * @param value The enum numeric value on the wire for type to set.
+         * @return This builder for chaining.
          */
         public Builder setTypeValue(int value) {
+          
           type_ = value;
           onChanged();
           return this;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+         * @return The type.
          */
+        @java.lang.Override
         public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type getType() {
           @SuppressWarnings("deprecation")
           org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type result = org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type.valueOf(type_);
@@ -974,6 +1007,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+         * @param value The type to set.
+         * @return This builder for chaining.
          */
         public Builder setType(org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Type value) {
           if (value == null) {
@@ -986,6 +1021,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter.Type type = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearType() {
           
@@ -1292,24 +1328,29 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>int32 column = 1;</code>
+       * @return The column.
        */
       int getColumn();
 
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+       * @return The enum numeric value on the wire for type.
        */
       int getTypeValue();
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+       * @return The type.
        */
       org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type getType();
 
       /**
        * <code>string value = 3;</code>
+       * @return The value.
        */
       java.lang.String getValue();
       /**
        * <code>string value = 3;</code>
+       * @return The bytes for value.
        */
       com.google.protobuf.ByteString
           getValueBytes();
@@ -1317,7 +1358,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Protobuf type {@code rplugininterop.DataFrameFilterRequest.Filter.Operator}
      */
-    public  static final class Operator extends
+    public static final class Operator extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameFilterRequest.Filter.Operator)
         OperatorOrBuilder {
@@ -1485,6 +1526,8 @@ private static final long serialVersionUID = 0L;
         }
 
         /**
+         * @param value The numeric wire value of the corresponding enum entry.
+         * @return The enum associated with the given numeric wire value.
          * @deprecated Use {@link #forNumber(int)} instead.
          */
         @java.lang.Deprecated
@@ -1492,6 +1535,10 @@ private static final long serialVersionUID = 0L;
           return forNumber(value);
         }
 
+        /**
+         * @param value The numeric wire value of the corresponding enum entry.
+         * @return The enum associated with the given numeric wire value.
+         */
         public static Type forNumber(int value) {
           switch (value) {
             case 0: return EQ;
@@ -1519,6 +1566,10 @@ private static final long serialVersionUID = 0L;
 
         public final com.google.protobuf.Descriptors.EnumValueDescriptor
             getValueDescriptor() {
+          if (this == UNRECOGNIZED) {
+            throw new java.lang.IllegalStateException(
+                "Can't get the descriptor of an unrecognized enum value.");
+          }
           return getDescriptor().getValues().get(ordinal());
         }
         public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -1557,7 +1608,9 @@ private static final long serialVersionUID = 0L;
       private int column_;
       /**
        * <code>int32 column = 1;</code>
+       * @return The column.
        */
+      @java.lang.Override
       public int getColumn() {
         return column_;
       }
@@ -1566,14 +1619,16 @@ private static final long serialVersionUID = 0L;
       private int type_;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+       * @return The enum numeric value on the wire for type.
        */
-      public int getTypeValue() {
+      @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+       * @return The type.
        */
-      public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type getType() {
+      @java.lang.Override public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type getType() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type result = org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type.valueOf(type_);
         return result == null ? org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type.UNRECOGNIZED : result;
@@ -1583,7 +1638,9 @@ private static final long serialVersionUID = 0L;
       private volatile java.lang.Object value_;
       /**
        * <code>string value = 3;</code>
+       * @return The value.
        */
+      @java.lang.Override
       public java.lang.String getValue() {
         java.lang.Object ref = value_;
         if (ref instanceof java.lang.String) {
@@ -1598,7 +1655,9 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string value = 3;</code>
+       * @return The bytes for value.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getValueBytes() {
         java.lang.Object ref = value_;
@@ -1951,12 +2010,16 @@ private static final long serialVersionUID = 0L;
         private int column_ ;
         /**
          * <code>int32 column = 1;</code>
+         * @return The column.
          */
+        @java.lang.Override
         public int getColumn() {
           return column_;
         }
         /**
          * <code>int32 column = 1;</code>
+         * @param value The column to set.
+         * @return This builder for chaining.
          */
         public Builder setColumn(int value) {
           
@@ -1966,6 +2029,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>int32 column = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearColumn() {
           
@@ -1977,21 +2041,27 @@ private static final long serialVersionUID = 0L;
         private int type_ = 0;
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+         * @return The enum numeric value on the wire for type.
          */
-        public int getTypeValue() {
+        @java.lang.Override public int getTypeValue() {
           return type_;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+         * @param value The enum numeric value on the wire for type to set.
+         * @return This builder for chaining.
          */
         public Builder setTypeValue(int value) {
+          
           type_ = value;
           onChanged();
           return this;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+         * @return The type.
          */
+        @java.lang.Override
         public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type getType() {
           @SuppressWarnings("deprecation")
           org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type result = org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type.valueOf(type_);
@@ -1999,6 +2069,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+         * @param value The type to set.
+         * @return This builder for chaining.
          */
         public Builder setType(org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Type value) {
           if (value == null) {
@@ -2011,6 +2083,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator.Type type = 2;</code>
+         * @return This builder for chaining.
          */
         public Builder clearType() {
           
@@ -2022,6 +2095,7 @@ private static final long serialVersionUID = 0L;
         private java.lang.Object value_ = "";
         /**
          * <code>string value = 3;</code>
+         * @return The value.
          */
         public java.lang.String getValue() {
           java.lang.Object ref = value_;
@@ -2037,6 +2111,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 3;</code>
+         * @return The bytes for value.
          */
         public com.google.protobuf.ByteString
             getValueBytes() {
@@ -2053,6 +2128,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 3;</code>
+         * @param value The value to set.
+         * @return This builder for chaining.
          */
         public Builder setValue(
             java.lang.String value) {
@@ -2066,6 +2143,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 3;</code>
+         * @return This builder for chaining.
          */
         public Builder clearValue() {
           
@@ -2075,6 +2153,8 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>string value = 3;</code>
+         * @param value The bytes for value to set.
+         * @return This builder for chaining.
          */
         public Builder setValueBytes(
             com.google.protobuf.ByteString value) {
@@ -2146,18 +2226,20 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>int32 column = 1;</code>
+       * @return The column.
        */
       int getColumn();
 
       /**
        * <code>bool isNa = 2;</code>
+       * @return The isNa.
        */
       boolean getIsNa();
     }
     /**
      * Protobuf type {@code rplugininterop.DataFrameFilterRequest.Filter.NaFilter}
      */
-    public  static final class NaFilter extends
+    public static final class NaFilter extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameFilterRequest.Filter.NaFilter)
         NaFilterOrBuilder {
@@ -2245,7 +2327,9 @@ private static final long serialVersionUID = 0L;
       private int column_;
       /**
        * <code>int32 column = 1;</code>
+       * @return The column.
        */
+      @java.lang.Override
       public int getColumn() {
         return column_;
       }
@@ -2254,7 +2338,9 @@ private static final long serialVersionUID = 0L;
       private boolean isNa_;
       /**
        * <code>bool isNa = 2;</code>
+       * @return The isNa.
        */
+      @java.lang.Override
       public boolean getIsNa() {
         return isNa_;
       }
@@ -2582,12 +2668,16 @@ private static final long serialVersionUID = 0L;
         private int column_ ;
         /**
          * <code>int32 column = 1;</code>
+         * @return The column.
          */
+        @java.lang.Override
         public int getColumn() {
           return column_;
         }
         /**
          * <code>int32 column = 1;</code>
+         * @param value The column to set.
+         * @return This builder for chaining.
          */
         public Builder setColumn(int value) {
           
@@ -2597,6 +2687,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>int32 column = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearColumn() {
           
@@ -2608,12 +2699,16 @@ private static final long serialVersionUID = 0L;
         private boolean isNa_ ;
         /**
          * <code>bool isNa = 2;</code>
+         * @return The isNa.
          */
+        @java.lang.Override
         public boolean getIsNa() {
           return isNa_;
         }
         /**
          * <code>bool isNa = 2;</code>
+         * @param value The isNa to set.
+         * @return This builder for chaining.
          */
         public Builder setIsNa(boolean value) {
           
@@ -2623,6 +2718,7 @@ private static final long serialVersionUID = 0L;
         }
         /**
          * <code>bool isNa = 2;</code>
+         * @return This builder for chaining.
          */
         public Builder clearIsNa() {
           
@@ -2686,7 +2782,8 @@ private static final long serialVersionUID = 0L;
     private int filterCase_ = 0;
     private java.lang.Object filter_;
     public enum FilterCase
-        implements com.google.protobuf.Internal.EnumLite {
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       TRUE(1),
       COMPOSED(2),
       OPERATOR(3),
@@ -2697,6 +2794,8 @@ private static final long serialVersionUID = 0L;
         this.value = value;
       }
       /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -2728,13 +2827,17 @@ private static final long serialVersionUID = 0L;
     public static final int TRUE_FIELD_NUMBER = 1;
     /**
      * <code>.google.protobuf.Empty true = 1;</code>
+     * @return Whether the true field is set.
      */
+    @java.lang.Override
     public boolean hasTrue() {
       return filterCase_ == 1;
     }
     /**
      * <code>.google.protobuf.Empty true = 1;</code>
+     * @return The true.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getTrue() {
       if (filterCase_ == 1) {
          return (com.google.protobuf.Empty) filter_;
@@ -2744,6 +2847,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty true = 1;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getTrueOrBuilder() {
       if (filterCase_ == 1) {
          return (com.google.protobuf.Empty) filter_;
@@ -2754,13 +2858,17 @@ private static final long serialVersionUID = 0L;
     public static final int COMPOSED_FIELD_NUMBER = 2;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+     * @return Whether the composed field is set.
      */
+    @java.lang.Override
     public boolean hasComposed() {
       return filterCase_ == 2;
     }
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+     * @return The composed.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter getComposed() {
       if (filterCase_ == 2) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter) filter_;
@@ -2770,6 +2878,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilterOrBuilder getComposedOrBuilder() {
       if (filterCase_ == 2) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter) filter_;
@@ -2780,13 +2889,17 @@ private static final long serialVersionUID = 0L;
     public static final int OPERATOR_FIELD_NUMBER = 3;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+     * @return Whether the operator field is set.
      */
+    @java.lang.Override
     public boolean hasOperator() {
       return filterCase_ == 3;
     }
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+     * @return The operator.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator getOperator() {
       if (filterCase_ == 3) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator) filter_;
@@ -2796,6 +2909,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.OperatorOrBuilder getOperatorOrBuilder() {
       if (filterCase_ == 3) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator) filter_;
@@ -2806,13 +2920,17 @@ private static final long serialVersionUID = 0L;
     public static final int NAFILTER_FIELD_NUMBER = 4;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+     * @return Whether the naFilter field is set.
      */
+    @java.lang.Override
     public boolean hasNaFilter() {
       return filterCase_ == 4;
     }
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+     * @return The naFilter.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter getNaFilter() {
       if (filterCase_ == 4) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter) filter_;
@@ -2822,6 +2940,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilterOrBuilder getNaFilterOrBuilder() {
       if (filterCase_ == 4) {
          return (org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter) filter_;
@@ -3254,13 +3373,17 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> trueBuilder_;
       /**
        * <code>.google.protobuf.Empty true = 1;</code>
+       * @return Whether the true field is set.
        */
+      @java.lang.Override
       public boolean hasTrue() {
         return filterCase_ == 1;
       }
       /**
        * <code>.google.protobuf.Empty true = 1;</code>
+       * @return The true.
        */
+      @java.lang.Override
       public com.google.protobuf.Empty getTrue() {
         if (trueBuilder_ == null) {
           if (filterCase_ == 1) {
@@ -3354,6 +3477,7 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>.google.protobuf.Empty true = 1;</code>
        */
+      @java.lang.Override
       public com.google.protobuf.EmptyOrBuilder getTrueOrBuilder() {
         if ((filterCase_ == 1) && (trueBuilder_ != null)) {
           return trueBuilder_.getMessageOrBuilder();
@@ -3390,13 +3514,17 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter.Builder, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilterOrBuilder> composedBuilder_;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+       * @return Whether the composed field is set.
        */
+      @java.lang.Override
       public boolean hasComposed() {
         return filterCase_ == 2;
       }
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
+       * @return The composed.
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilter getComposed() {
         if (composedBuilder_ == null) {
           if (filterCase_ == 2) {
@@ -3490,6 +3618,7 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.ComposedFilter composed = 2;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.ComposedFilterOrBuilder getComposedOrBuilder() {
         if ((filterCase_ == 2) && (composedBuilder_ != null)) {
           return composedBuilder_.getMessageOrBuilder();
@@ -3526,13 +3655,17 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator.Builder, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.OperatorOrBuilder> operatorBuilder_;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+       * @return Whether the operator field is set.
        */
+      @java.lang.Override
       public boolean hasOperator() {
         return filterCase_ == 3;
       }
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
+       * @return The operator.
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Operator getOperator() {
         if (operatorBuilder_ == null) {
           if (filterCase_ == 3) {
@@ -3626,6 +3759,7 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.Operator operator = 3;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.OperatorOrBuilder getOperatorOrBuilder() {
         if ((filterCase_ == 3) && (operatorBuilder_ != null)) {
           return operatorBuilder_.getMessageOrBuilder();
@@ -3662,13 +3796,17 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter.Builder, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilterOrBuilder> naFilterBuilder_;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+       * @return Whether the naFilter field is set.
        */
+      @java.lang.Override
       public boolean hasNaFilter() {
         return filterCase_ == 4;
       }
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
+       * @return The naFilter.
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilter getNaFilter() {
         if (naFilterBuilder_ == null) {
           if (filterCase_ == 4) {
@@ -3762,6 +3900,7 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>.rplugininterop.DataFrameFilterRequest.Filter.NaFilter naFilter = 4;</code>
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.NaFilterOrBuilder getNaFilterOrBuilder() {
         if ((filterCase_ == 4) && (naFilterBuilder_ != null)) {
           return naFilterBuilder_.getMessageOrBuilder();
@@ -3850,19 +3989,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RRef ref_;
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
+  @java.lang.Override
   public boolean hasRef() {
     return ref_ != null;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getRef() {
     return ref_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : ref_;
   }
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getRefOrBuilder() {
     return getRef();
   }
@@ -3871,19 +4015,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter filter_;
   /**
    * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+   * @return Whether the filter field is set.
    */
+  @java.lang.Override
   public boolean hasFilter() {
     return filter_ != null;
   }
   /**
    * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+   * @return The filter.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter getFilter() {
     return filter_ == null ? org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.getDefaultInstance() : filter_;
   }
   /**
    * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameFilterRequest.FilterOrBuilder getFilterOrBuilder() {
     return getFilter();
   }
@@ -4238,12 +4387,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> refBuilder_;
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return Whether the ref field is set.
      */
     public boolean hasRef() {
       return refBuilder_ != null || ref_ != null;
     }
     /**
      * <code>.rplugininterop.RRef ref = 1;</code>
+     * @return The ref.
      */
     public org.jetbrains.r.rinterop.RRef getRef() {
       if (refBuilder_ == null) {
@@ -4355,12 +4506,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter, org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter.Builder, org.jetbrains.r.rinterop.DataFrameFilterRequest.FilterOrBuilder> filterBuilder_;
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+     * @return Whether the filter field is set.
      */
     public boolean hasFilter() {
       return filterBuilder_ != null || filter_ != null;
     }
     /**
      * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+     * @return The filter.
      */
     public org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter getFilter() {
       if (filterBuilder_ == null) {

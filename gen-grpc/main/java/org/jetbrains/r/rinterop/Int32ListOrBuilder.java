@@ -9,24 +9,30 @@ public interface Int32ListOrBuilder extends
 
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
   java.lang.String getMessage();
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
       getMessageBytes();
 
   /**
    * <code>repeated int32 value = 2;</code>
+   * @return A list containing the value.
    */
   java.util.List<java.lang.Integer> getValueList();
   /**
    * <code>repeated int32 value = 2;</code>
+   * @return The count of value.
    */
   int getValueCount();
   /**
    * <code>repeated int32 value = 2;</code>
+   * @param index The index of the element to return.
+   * @return The value at the given index.
    */
   int getValue(int index);
 }

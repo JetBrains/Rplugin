@@ -9,20 +9,24 @@ public interface S4ClassInfoOrBuilder extends
 
   /**
    * <code>string className = 1;</code>
+   * @return The className.
    */
   java.lang.String getClassName();
   /**
    * <code>string className = 1;</code>
+   * @return The bytes for className.
    */
   com.google.protobuf.ByteString
       getClassNameBytes();
 
   /**
    * <code>string packageName = 2;</code>
+   * @return The packageName.
    */
   java.lang.String getPackageName();
   /**
    * <code>string packageName = 2;</code>
+   * @return The bytes for packageName.
    */
   com.google.protobuf.ByteString
       getPackageNameBytes();
@@ -53,25 +57,32 @@ public interface S4ClassInfoOrBuilder extends
 
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @return A list containing the superClasses.
    */
   java.util.List<java.lang.String>
       getSuperClassesList();
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @return The count of superClasses.
    */
   int getSuperClassesCount();
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @param index The index of the element to return.
+   * @return The superClasses at the given index.
    */
   java.lang.String getSuperClasses(int index);
   /**
    * <code>repeated string superClasses = 4;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the superClasses at the given index.
    */
   com.google.protobuf.ByteString
       getSuperClassesBytes(int index);
 
   /**
    * <code>bool isVirtual = 5;</code>
+   * @return The isVirtual.
    */
   boolean getIsVirtual();
 }

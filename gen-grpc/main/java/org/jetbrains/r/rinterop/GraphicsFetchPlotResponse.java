@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsFetchPlotResponse}
  */
-public  final class GraphicsFetchPlotResponse extends
+public final class GraphicsFetchPlotResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsFetchPlotResponse)
     GraphicsFetchPlotResponseOrBuilder {
@@ -104,7 +104,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object message_;
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
+  @java.lang.Override
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
@@ -119,7 +121,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageBytes() {
     java.lang.Object ref = message_;
@@ -138,19 +142,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.Plot plot_;
   /**
    * <code>.rplugininterop.Plot plot = 2;</code>
+   * @return Whether the plot field is set.
    */
+  @java.lang.Override
   public boolean hasPlot() {
     return plot_ != null;
   }
   /**
    * <code>.rplugininterop.Plot plot = 2;</code>
+   * @return The plot.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Plot getPlot() {
     return plot_ == null ? org.jetbrains.r.rinterop.Plot.getDefaultInstance() : plot_;
   }
   /**
    * <code>.rplugininterop.Plot plot = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PlotOrBuilder getPlotOrBuilder() {
     return getPlot();
   }
@@ -490,6 +499,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object message_ = "";
     /**
      * <code>string message = 1;</code>
+     * @return The message.
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -505,6 +515,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -521,6 +532,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -534,6 +547,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessage() {
       
@@ -543,6 +557,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -561,12 +577,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.Plot, org.jetbrains.r.rinterop.Plot.Builder, org.jetbrains.r.rinterop.PlotOrBuilder> plotBuilder_;
     /**
      * <code>.rplugininterop.Plot plot = 2;</code>
+     * @return Whether the plot field is set.
      */
     public boolean hasPlot() {
       return plotBuilder_ != null || plot_ != null;
     }
     /**
      * <code>.rplugininterop.Plot plot = 2;</code>
+     * @return The plot.
      */
     public org.jetbrains.r.rinterop.Plot getPlot() {
       if (plotBuilder_ == null) {

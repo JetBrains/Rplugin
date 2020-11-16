@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.TextFigure}
  */
-public  final class TextFigure extends
+public final class TextFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.TextFigure)
     TextFigureOrBuilder {
@@ -116,7 +116,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object text_;
   /**
    * <code>string text = 1;</code>
+   * @return The text.
    */
+  @java.lang.Override
   public java.lang.String getText() {
     java.lang.Object ref = text_;
     if (ref instanceof java.lang.String) {
@@ -131,7 +133,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string text = 1;</code>
+   * @return The bytes for text.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getTextBytes() {
     java.lang.Object ref = text_;
@@ -150,7 +154,9 @@ private static final long serialVersionUID = 0L;
   private long position_;
   /**
    * <code>fixed64 position = 2;</code>
+   * @return The position.
    */
+  @java.lang.Override
   public long getPosition() {
     return position_;
   }
@@ -159,7 +165,9 @@ private static final long serialVersionUID = 0L;
   private float angle_;
   /**
    * <code>float angle = 3;</code>
+   * @return The angle.
    */
+  @java.lang.Override
   public float getAngle() {
     return angle_;
   }
@@ -168,7 +176,9 @@ private static final long serialVersionUID = 0L;
   private float anchor_;
   /**
    * <code>float anchor = 4;</code>
+   * @return The anchor.
    */
+  @java.lang.Override
   public float getAnchor() {
     return anchor_;
   }
@@ -177,7 +187,9 @@ private static final long serialVersionUID = 0L;
   private int fontIndex_;
   /**
    * <code>int32 fontIndex = 5;</code>
+   * @return The fontIndex.
    */
+  @java.lang.Override
   public int getFontIndex() {
     return fontIndex_;
   }
@@ -186,7 +198,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 6;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -586,6 +600,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object text_ = "";
     /**
      * <code>string text = 1;</code>
+     * @return The text.
      */
     public java.lang.String getText() {
       java.lang.Object ref = text_;
@@ -601,6 +616,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @return The bytes for text.
      */
     public com.google.protobuf.ByteString
         getTextBytes() {
@@ -617,6 +633,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @param value The text to set.
+     * @return This builder for chaining.
      */
     public Builder setText(
         java.lang.String value) {
@@ -630,6 +648,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearText() {
       
@@ -639,6 +658,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @param value The bytes for text to set.
+     * @return This builder for chaining.
      */
     public Builder setTextBytes(
         com.google.protobuf.ByteString value) {
@@ -655,12 +676,16 @@ private static final long serialVersionUID = 0L;
     private long position_ ;
     /**
      * <code>fixed64 position = 2;</code>
+     * @return The position.
      */
+    @java.lang.Override
     public long getPosition() {
       return position_;
     }
     /**
      * <code>fixed64 position = 2;</code>
+     * @param value The position to set.
+     * @return This builder for chaining.
      */
     public Builder setPosition(long value) {
       
@@ -670,6 +695,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 position = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPosition() {
       
@@ -681,12 +707,16 @@ private static final long serialVersionUID = 0L;
     private float angle_ ;
     /**
      * <code>float angle = 3;</code>
+     * @return The angle.
      */
+    @java.lang.Override
     public float getAngle() {
       return angle_;
     }
     /**
      * <code>float angle = 3;</code>
+     * @param value The angle to set.
+     * @return This builder for chaining.
      */
     public Builder setAngle(float value) {
       
@@ -696,6 +726,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float angle = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearAngle() {
       
@@ -707,12 +738,16 @@ private static final long serialVersionUID = 0L;
     private float anchor_ ;
     /**
      * <code>float anchor = 4;</code>
+     * @return The anchor.
      */
+    @java.lang.Override
     public float getAnchor() {
       return anchor_;
     }
     /**
      * <code>float anchor = 4;</code>
+     * @param value The anchor to set.
+     * @return This builder for chaining.
      */
     public Builder setAnchor(float value) {
       
@@ -722,6 +757,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float anchor = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearAnchor() {
       
@@ -733,12 +769,16 @@ private static final long serialVersionUID = 0L;
     private int fontIndex_ ;
     /**
      * <code>int32 fontIndex = 5;</code>
+     * @return The fontIndex.
      */
+    @java.lang.Override
     public int getFontIndex() {
       return fontIndex_;
     }
     /**
      * <code>int32 fontIndex = 5;</code>
+     * @param value The fontIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setFontIndex(int value) {
       
@@ -748,6 +788,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 fontIndex = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFontIndex() {
       
@@ -759,12 +800,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 6;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 6;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -774,6 +819,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       

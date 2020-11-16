@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.PathFigure}
  */
-public  final class PathFigure extends
+public final class PathFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.PathFigure)
     PathFigureOrBuilder {
@@ -119,12 +119,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.SubPath> getSubPathList() {
     return subPath_;
   }
   /**
    * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.SubPathOrBuilder> 
       getSubPathOrBuilderList() {
     return subPath_;
@@ -132,18 +134,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
    */
+  @java.lang.Override
   public int getSubPathCount() {
     return subPath_.size();
   }
   /**
    * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SubPath getSubPath(int index) {
     return subPath_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.SubPath subPath = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SubPathOrBuilder getSubPathOrBuilder(
       int index) {
     return subPath_.get(index);
@@ -153,7 +158,9 @@ private static final long serialVersionUID = 0L;
   private boolean winding_;
   /**
    * <code>bool winding = 2;</code>
+   * @return The winding.
    */
+  @java.lang.Override
   public boolean getWinding() {
     return winding_;
   }
@@ -162,7 +169,9 @@ private static final long serialVersionUID = 0L;
   private int strokeIndex_;
   /**
    * <code>int32 strokeIndex = 3;</code>
+   * @return The strokeIndex.
    */
+  @java.lang.Override
   public int getStrokeIndex() {
     return strokeIndex_;
   }
@@ -171,7 +180,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 4;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -180,7 +191,9 @@ private static final long serialVersionUID = 0L;
   private int fillIndex_;
   /**
    * <code>int32 fillIndex = 5;</code>
+   * @return The fillIndex.
    */
+  @java.lang.Override
   public int getFillIndex() {
     return fillIndex_;
   }
@@ -839,12 +852,16 @@ private static final long serialVersionUID = 0L;
     private boolean winding_ ;
     /**
      * <code>bool winding = 2;</code>
+     * @return The winding.
      */
+    @java.lang.Override
     public boolean getWinding() {
       return winding_;
     }
     /**
      * <code>bool winding = 2;</code>
+     * @param value The winding to set.
+     * @return This builder for chaining.
      */
     public Builder setWinding(boolean value) {
       
@@ -854,6 +871,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool winding = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWinding() {
       
@@ -865,12 +883,16 @@ private static final long serialVersionUID = 0L;
     private int strokeIndex_ ;
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return The strokeIndex.
      */
+    @java.lang.Override
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @param value The strokeIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setStrokeIndex(int value) {
       
@@ -880,6 +902,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStrokeIndex() {
       
@@ -891,12 +914,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -906,6 +933,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       
@@ -917,12 +945,16 @@ private static final long serialVersionUID = 0L;
     private int fillIndex_ ;
     /**
      * <code>int32 fillIndex = 5;</code>
+     * @return The fillIndex.
      */
+    @java.lang.Override
     public int getFillIndex() {
       return fillIndex_;
     }
     /**
      * <code>int32 fillIndex = 5;</code>
+     * @param value The fillIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setFillIndex(int value) {
       
@@ -932,6 +964,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 fillIndex = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFillIndex() {
       

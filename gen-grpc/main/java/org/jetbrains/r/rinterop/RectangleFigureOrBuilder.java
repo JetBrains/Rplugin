@@ -9,26 +9,31 @@ public interface RectangleFigureOrBuilder extends
 
   /**
    * <code>fixed64 from = 1;</code>
+   * @return The from.
    */
   long getFrom();
 
   /**
    * <code>fixed64 to = 2;</code>
+   * @return The to.
    */
   long getTo();
 
   /**
    * <code>int32 strokeIndex = 3;</code>
+   * @return The strokeIndex.
    */
   int getStrokeIndex();
 
   /**
    * <code>int32 colorIndex = 4;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 
   /**
    * <code>int32 fillIndex = 5;</code>
+   * @return The fillIndex.
    */
   int getFillIndex();
 }

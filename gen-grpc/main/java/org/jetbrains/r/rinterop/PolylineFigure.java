@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.PolylineFigure}
  */
-public  final class PolylineFigure extends
+public final class PolylineFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.PolylineFigure)
     PolylineFigureOrBuilder {
@@ -120,19 +120,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.LongList point_;
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return A list containing the point.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Long>
       getPointList() {
     return point_;
   }
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return The count of point.
    */
   public int getPointCount() {
     return point_.size();
   }
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @param index The index of the element to return.
+   * @return The point at the given index.
    */
   public long getPoint(int index) {
     return point_.getLong(index);
@@ -143,7 +148,9 @@ private static final long serialVersionUID = 0L;
   private int strokeIndex_;
   /**
    * <code>int32 strokeIndex = 2;</code>
+   * @return The strokeIndex.
    */
+  @java.lang.Override
   public int getStrokeIndex() {
     return strokeIndex_;
   }
@@ -152,7 +159,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 3;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -529,6 +538,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return A list containing the point.
      */
     public java.util.List<java.lang.Long>
         getPointList() {
@@ -537,18 +547,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return The count of point.
      */
     public int getPointCount() {
       return point_.size();
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param index The index of the element to return.
+     * @return The point at the given index.
      */
     public long getPoint(int index) {
       return point_.getLong(index);
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The point to set.
+     * @return This builder for chaining.
      */
     public Builder setPoint(
         int index, long value) {
@@ -559,6 +575,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param value The point to add.
+     * @return This builder for chaining.
      */
     public Builder addPoint(long value) {
       ensurePointIsMutable();
@@ -568,6 +586,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param values The point to add.
+     * @return This builder for chaining.
      */
     public Builder addAllPoint(
         java.lang.Iterable<? extends java.lang.Long> values) {
@@ -579,6 +599,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPoint() {
       point_ = emptyLongList();
@@ -590,12 +611,16 @@ private static final long serialVersionUID = 0L;
     private int strokeIndex_ ;
     /**
      * <code>int32 strokeIndex = 2;</code>
+     * @return The strokeIndex.
      */
+    @java.lang.Override
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
      * <code>int32 strokeIndex = 2;</code>
+     * @param value The strokeIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setStrokeIndex(int value) {
       
@@ -605,6 +630,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 strokeIndex = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStrokeIndex() {
       
@@ -616,12 +642,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 3;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 3;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -631,6 +661,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       

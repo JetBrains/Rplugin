@@ -9,16 +9,19 @@ public interface SourcePositionOrBuilder extends
 
   /**
    * <code>string fileId = 1;</code>
+   * @return The fileId.
    */
   java.lang.String getFileId();
   /**
    * <code>string fileId = 1;</code>
+   * @return The bytes for fileId.
    */
   com.google.protobuf.ByteString
       getFileIdBytes();
 
   /**
    * <code>int32 line = 2;</code>
+   * @return The line.
    */
   int getLine();
 }

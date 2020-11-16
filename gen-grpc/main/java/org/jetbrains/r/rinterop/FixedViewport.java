@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.FixedViewport}
  */
-public  final class FixedViewport extends
+public final class FixedViewport extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.FixedViewport)
     FixedViewportOrBuilder {
@@ -99,7 +99,9 @@ private static final long serialVersionUID = 0L;
   private float ratio_;
   /**
    * <code>float ratio = 1;</code>
+   * @return The ratio.
    */
+  @java.lang.Override
   public float getRatio() {
     return ratio_;
   }
@@ -108,7 +110,9 @@ private static final long serialVersionUID = 0L;
   private float delta_;
   /**
    * <code>float delta = 2;</code>
+   * @return The delta.
    */
+  @java.lang.Override
   public float getDelta() {
     return delta_;
   }
@@ -117,7 +121,9 @@ private static final long serialVersionUID = 0L;
   private int parentIndex_;
   /**
    * <code>int32 parentIndex = 3;</code>
+   * @return The parentIndex.
    */
+  @java.lang.Override
   public int getParentIndex() {
     return parentIndex_;
   }
@@ -465,12 +471,16 @@ private static final long serialVersionUID = 0L;
     private float ratio_ ;
     /**
      * <code>float ratio = 1;</code>
+     * @return The ratio.
      */
+    @java.lang.Override
     public float getRatio() {
       return ratio_;
     }
     /**
      * <code>float ratio = 1;</code>
+     * @param value The ratio to set.
+     * @return This builder for chaining.
      */
     public Builder setRatio(float value) {
       
@@ -480,6 +490,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float ratio = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRatio() {
       
@@ -491,12 +502,16 @@ private static final long serialVersionUID = 0L;
     private float delta_ ;
     /**
      * <code>float delta = 2;</code>
+     * @return The delta.
      */
+    @java.lang.Override
     public float getDelta() {
       return delta_;
     }
     /**
      * <code>float delta = 2;</code>
+     * @param value The delta to set.
+     * @return This builder for chaining.
      */
     public Builder setDelta(float value) {
       
@@ -506,6 +521,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float delta = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearDelta() {
       
@@ -517,12 +533,16 @@ private static final long serialVersionUID = 0L;
     private int parentIndex_ ;
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @return The parentIndex.
      */
+    @java.lang.Override
     public int getParentIndex() {
       return parentIndex_;
     }
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @param value The parentIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setParentIndex(int value) {
       
@@ -532,6 +552,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearParentIndex() {
       

@@ -9,10 +9,12 @@ public interface GraphicsInitRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+   * @return Whether the screenParameters field is set.
    */
   boolean hasScreenParameters();
   /**
    * <code>.rplugininterop.ScreenParameters screenParameters = 1;</code>
+   * @return The screenParameters.
    */
   org.jetbrains.r.rinterop.ScreenParameters getScreenParameters();
   /**
@@ -22,6 +24,7 @@ public interface GraphicsInitRequestOrBuilder extends
 
   /**
    * <code>bool inMemory = 2;</code>
+   * @return The inMemory.
    */
   boolean getInMemory();
 }

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ChunkParameters}
  */
-public  final class ChunkParameters extends
+public final class ChunkParameters extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ChunkParameters)
     ChunkParametersOrBuilder {
@@ -98,7 +98,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object rmarkdownParameters_;
   /**
    * <code>string rmarkdownParameters = 1;</code>
+   * @return The rmarkdownParameters.
    */
+  @java.lang.Override
   public java.lang.String getRmarkdownParameters() {
     java.lang.Object ref = rmarkdownParameters_;
     if (ref instanceof java.lang.String) {
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string rmarkdownParameters = 1;</code>
+   * @return The bytes for rmarkdownParameters.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getRmarkdownParametersBytes() {
     java.lang.Object ref = rmarkdownParameters_;
@@ -132,7 +136,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object chunkText_;
   /**
    * <code>string chunkText = 2;</code>
+   * @return The chunkText.
    */
+  @java.lang.Override
   public java.lang.String getChunkText() {
     java.lang.Object ref = chunkText_;
     if (ref instanceof java.lang.String) {
@@ -147,7 +153,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string chunkText = 2;</code>
+   * @return The bytes for chunkText.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getChunkTextBytes() {
     java.lang.Object ref = chunkText_;
@@ -484,6 +492,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object rmarkdownParameters_ = "";
     /**
      * <code>string rmarkdownParameters = 1;</code>
+     * @return The rmarkdownParameters.
      */
     public java.lang.String getRmarkdownParameters() {
       java.lang.Object ref = rmarkdownParameters_;
@@ -499,6 +508,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rmarkdownParameters = 1;</code>
+     * @return The bytes for rmarkdownParameters.
      */
     public com.google.protobuf.ByteString
         getRmarkdownParametersBytes() {
@@ -515,6 +525,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rmarkdownParameters = 1;</code>
+     * @param value The rmarkdownParameters to set.
+     * @return This builder for chaining.
      */
     public Builder setRmarkdownParameters(
         java.lang.String value) {
@@ -528,6 +540,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rmarkdownParameters = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRmarkdownParameters() {
       
@@ -537,6 +550,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rmarkdownParameters = 1;</code>
+     * @param value The bytes for rmarkdownParameters to set.
+     * @return This builder for chaining.
      */
     public Builder setRmarkdownParametersBytes(
         com.google.protobuf.ByteString value) {
@@ -553,6 +568,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object chunkText_ = "";
     /**
      * <code>string chunkText = 2;</code>
+     * @return The chunkText.
      */
     public java.lang.String getChunkText() {
       java.lang.Object ref = chunkText_;
@@ -568,6 +584,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string chunkText = 2;</code>
+     * @return The bytes for chunkText.
      */
     public com.google.protobuf.ByteString
         getChunkTextBytes() {
@@ -584,6 +601,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string chunkText = 2;</code>
+     * @param value The chunkText to set.
+     * @return This builder for chaining.
      */
     public Builder setChunkText(
         java.lang.String value) {
@@ -597,6 +616,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string chunkText = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearChunkText() {
       
@@ -606,6 +626,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string chunkText = 2;</code>
+     * @param value The bytes for chunkText to set.
+     * @return This builder for chaining.
      */
     public Builder setChunkTextBytes(
         com.google.protobuf.ByteString value) {

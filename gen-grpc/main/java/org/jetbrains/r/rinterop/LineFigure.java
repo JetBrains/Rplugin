@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.LineFigure}
  */
-public  final class LineFigure extends
+public final class LineFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.LineFigure)
     LineFigureOrBuilder {
@@ -104,7 +104,9 @@ private static final long serialVersionUID = 0L;
   private long from_;
   /**
    * <code>fixed64 from = 1;</code>
+   * @return The from.
    */
+  @java.lang.Override
   public long getFrom() {
     return from_;
   }
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   private long to_;
   /**
    * <code>fixed64 to = 2;</code>
+   * @return The to.
    */
+  @java.lang.Override
   public long getTo() {
     return to_;
   }
@@ -122,7 +126,9 @@ private static final long serialVersionUID = 0L;
   private int strokeIndex_;
   /**
    * <code>int32 strokeIndex = 3;</code>
+   * @return The strokeIndex.
    */
+  @java.lang.Override
   public int getStrokeIndex() {
     return strokeIndex_;
   }
@@ -131,7 +137,9 @@ private static final long serialVersionUID = 0L;
   private int colorIndex_;
   /**
    * <code>int32 colorIndex = 4;</code>
+   * @return The colorIndex.
    */
+  @java.lang.Override
   public int getColorIndex() {
     return colorIndex_;
   }
@@ -494,12 +502,16 @@ private static final long serialVersionUID = 0L;
     private long from_ ;
     /**
      * <code>fixed64 from = 1;</code>
+     * @return The from.
      */
+    @java.lang.Override
     public long getFrom() {
       return from_;
     }
     /**
      * <code>fixed64 from = 1;</code>
+     * @param value The from to set.
+     * @return This builder for chaining.
      */
     public Builder setFrom(long value) {
       
@@ -509,6 +521,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 from = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFrom() {
       
@@ -520,12 +533,16 @@ private static final long serialVersionUID = 0L;
     private long to_ ;
     /**
      * <code>fixed64 to = 2;</code>
+     * @return The to.
      */
+    @java.lang.Override
     public long getTo() {
       return to_;
     }
     /**
      * <code>fixed64 to = 2;</code>
+     * @param value The to to set.
+     * @return This builder for chaining.
      */
     public Builder setTo(long value) {
       
@@ -535,6 +552,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 to = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTo() {
       
@@ -546,12 +564,16 @@ private static final long serialVersionUID = 0L;
     private int strokeIndex_ ;
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return The strokeIndex.
      */
+    @java.lang.Override
     public int getStrokeIndex() {
       return strokeIndex_;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @param value The strokeIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setStrokeIndex(int value) {
       
@@ -561,6 +583,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 strokeIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStrokeIndex() {
       
@@ -572,12 +595,16 @@ private static final long serialVersionUID = 0L;
     private int colorIndex_ ;
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return The colorIndex.
      */
+    @java.lang.Override
     public int getColorIndex() {
       return colorIndex_;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @param value The colorIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setColorIndex(int value) {
       
@@ -587,6 +614,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 colorIndex = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColorIndex() {
       

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.PreviewDataImportRequest}
  */
-public  final class PreviewDataImportRequest extends
+public final class PreviewDataImportRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.PreviewDataImportRequest)
     PreviewDataImportRequestOrBuilder {
@@ -129,7 +129,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object path_;
   /**
    * <code>string path = 1;</code>
+   * @return The path.
    */
+  @java.lang.Override
   public java.lang.String getPath() {
     java.lang.Object ref = path_;
     if (ref instanceof java.lang.String) {
@@ -144,7 +146,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string path = 1;</code>
+   * @return The bytes for path.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPathBytes() {
     java.lang.Object ref = path_;
@@ -163,7 +167,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object mode_;
   /**
    * <code>string mode = 2;</code>
+   * @return The mode.
    */
+  @java.lang.Override
   public java.lang.String getMode() {
     java.lang.Object ref = mode_;
     if (ref instanceof java.lang.String) {
@@ -178,7 +184,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string mode = 2;</code>
+   * @return The bytes for mode.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getModeBytes() {
     java.lang.Object ref = mode_;
@@ -197,7 +205,9 @@ private static final long serialVersionUID = 0L;
   private int rowCount_;
   /**
    * <code>int32 rowCount = 3;</code>
+   * @return The rowCount.
    */
+  @java.lang.Override
   public int getRowCount() {
     return rowCount_;
   }
@@ -232,6 +242,7 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; options = 4;</code>
    */
 
+  @java.lang.Override
   public boolean containsOptions(
       java.lang.String key) {
     if (key == null) { throw new java.lang.NullPointerException(); }
@@ -240,6 +251,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Use {@link #getOptionsMap()} instead.
    */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.String, java.lang.String> getOptions() {
     return getOptionsMap();
@@ -247,6 +259,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; options = 4;</code>
    */
+  @java.lang.Override
 
   public java.util.Map<java.lang.String, java.lang.String> getOptionsMap() {
     return internalGetOptions().getMap();
@@ -254,6 +267,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; options = 4;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getOptionsOrDefault(
       java.lang.String key,
@@ -266,6 +280,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; options = 4;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getOptionsOrThrow(
       java.lang.String key) {
@@ -668,6 +683,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object path_ = "";
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
@@ -683,6 +699,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
     public com.google.protobuf.ByteString
         getPathBytes() {
@@ -699,6 +716,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string path = 1;</code>
+     * @param value The path to set.
+     * @return This builder for chaining.
      */
     public Builder setPath(
         java.lang.String value) {
@@ -712,6 +731,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string path = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPath() {
       
@@ -721,6 +741,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string path = 1;</code>
+     * @param value The bytes for path to set.
+     * @return This builder for chaining.
      */
     public Builder setPathBytes(
         com.google.protobuf.ByteString value) {
@@ -737,6 +759,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object mode_ = "";
     /**
      * <code>string mode = 2;</code>
+     * @return The mode.
      */
     public java.lang.String getMode() {
       java.lang.Object ref = mode_;
@@ -752,6 +775,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string mode = 2;</code>
+     * @return The bytes for mode.
      */
     public com.google.protobuf.ByteString
         getModeBytes() {
@@ -768,6 +792,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string mode = 2;</code>
+     * @param value The mode to set.
+     * @return This builder for chaining.
      */
     public Builder setMode(
         java.lang.String value) {
@@ -781,6 +807,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string mode = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMode() {
       
@@ -790,6 +817,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string mode = 2;</code>
+     * @param value The bytes for mode to set.
+     * @return This builder for chaining.
      */
     public Builder setModeBytes(
         com.google.protobuf.ByteString value) {
@@ -806,12 +835,16 @@ private static final long serialVersionUID = 0L;
     private int rowCount_ ;
     /**
      * <code>int32 rowCount = 3;</code>
+     * @return The rowCount.
      */
+    @java.lang.Override
     public int getRowCount() {
       return rowCount_;
     }
     /**
      * <code>int32 rowCount = 3;</code>
+     * @param value The rowCount to set.
+     * @return This builder for chaining.
      */
     public Builder setRowCount(int value) {
       
@@ -821,6 +854,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 rowCount = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRowCount() {
       
@@ -859,6 +893,7 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; options = 4;</code>
      */
 
+    @java.lang.Override
     public boolean containsOptions(
         java.lang.String key) {
       if (key == null) { throw new java.lang.NullPointerException(); }
@@ -867,6 +902,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Use {@link #getOptionsMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getOptions() {
       return getOptionsMap();
@@ -874,6 +910,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; options = 4;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.String> getOptionsMap() {
       return internalGetOptions().getMap();
@@ -881,6 +918,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; options = 4;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getOptionsOrDefault(
         java.lang.String key,
@@ -893,6 +931,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; options = 4;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getOptionsOrThrow(
         java.lang.String key) {

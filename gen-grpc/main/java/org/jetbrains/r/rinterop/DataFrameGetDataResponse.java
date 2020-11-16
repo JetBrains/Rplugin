@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DataFrameGetDataResponse}
  */
-public  final class DataFrameGetDataResponse extends
+public final class DataFrameGetDataResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameGetDataResponse)
     DataFrameGetDataResponseOrBuilder {
@@ -100,10 +100,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.google.protobuf.Empty na = 1;</code>
+     * @return Whether the na field is set.
      */
     boolean hasNa();
     /**
      * <code>.google.protobuf.Empty na = 1;</code>
+     * @return The na.
      */
     com.google.protobuf.Empty getNa();
     /**
@@ -113,25 +115,30 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 intValue = 2;</code>
+     * @return The intValue.
      */
     int getIntValue();
 
     /**
      * <code>double doubleValue = 3;</code>
+     * @return The doubleValue.
      */
     double getDoubleValue();
 
     /**
      * <code>bool booleanValue = 4;</code>
+     * @return The booleanValue.
      */
     boolean getBooleanValue();
 
     /**
      * <code>string stringValue = 5;</code>
+     * @return The stringValue.
      */
     java.lang.String getStringValue();
     /**
      * <code>string stringValue = 5;</code>
+     * @return The bytes for stringValue.
      */
     com.google.protobuf.ByteString
         getStringValueBytes();
@@ -141,7 +148,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.DataFrameGetDataResponse.Value}
    */
-  public  static final class Value extends
+  public static final class Value extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameGetDataResponse.Value)
       ValueOrBuilder {
@@ -253,7 +260,8 @@ private static final long serialVersionUID = 0L;
     private int valueCase_ = 0;
     private java.lang.Object value_;
     public enum ValueCase
-        implements com.google.protobuf.Internal.EnumLite {
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       NA(1),
       INTVALUE(2),
       DOUBLEVALUE(3),
@@ -265,6 +273,8 @@ private static final long serialVersionUID = 0L;
         this.value = value;
       }
       /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -297,13 +307,17 @@ private static final long serialVersionUID = 0L;
     public static final int NA_FIELD_NUMBER = 1;
     /**
      * <code>.google.protobuf.Empty na = 1;</code>
+     * @return Whether the na field is set.
      */
+    @java.lang.Override
     public boolean hasNa() {
       return valueCase_ == 1;
     }
     /**
      * <code>.google.protobuf.Empty na = 1;</code>
+     * @return The na.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getNa() {
       if (valueCase_ == 1) {
          return (com.google.protobuf.Empty) value_;
@@ -313,6 +327,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty na = 1;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getNaOrBuilder() {
       if (valueCase_ == 1) {
          return (com.google.protobuf.Empty) value_;
@@ -323,7 +338,9 @@ private static final long serialVersionUID = 0L;
     public static final int INTVALUE_FIELD_NUMBER = 2;
     /**
      * <code>int32 intValue = 2;</code>
+     * @return The intValue.
      */
+    @java.lang.Override
     public int getIntValue() {
       if (valueCase_ == 2) {
         return (java.lang.Integer) value_;
@@ -334,7 +351,9 @@ private static final long serialVersionUID = 0L;
     public static final int DOUBLEVALUE_FIELD_NUMBER = 3;
     /**
      * <code>double doubleValue = 3;</code>
+     * @return The doubleValue.
      */
+    @java.lang.Override
     public double getDoubleValue() {
       if (valueCase_ == 3) {
         return (java.lang.Double) value_;
@@ -345,7 +364,9 @@ private static final long serialVersionUID = 0L;
     public static final int BOOLEANVALUE_FIELD_NUMBER = 4;
     /**
      * <code>bool booleanValue = 4;</code>
+     * @return The booleanValue.
      */
+    @java.lang.Override
     public boolean getBooleanValue() {
       if (valueCase_ == 4) {
         return (java.lang.Boolean) value_;
@@ -356,6 +377,7 @@ private static final long serialVersionUID = 0L;
     public static final int STRINGVALUE_FIELD_NUMBER = 5;
     /**
      * <code>string stringValue = 5;</code>
+     * @return The stringValue.
      */
     public java.lang.String getStringValue() {
       java.lang.Object ref = "";
@@ -376,6 +398,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string stringValue = 5;</code>
+     * @return The bytes for stringValue.
      */
     public com.google.protobuf.ByteString
         getStringValueBytes() {
@@ -841,13 +864,17 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> naBuilder_;
       /**
        * <code>.google.protobuf.Empty na = 1;</code>
+       * @return Whether the na field is set.
        */
+      @java.lang.Override
       public boolean hasNa() {
         return valueCase_ == 1;
       }
       /**
        * <code>.google.protobuf.Empty na = 1;</code>
+       * @return The na.
        */
+      @java.lang.Override
       public com.google.protobuf.Empty getNa() {
         if (naBuilder_ == null) {
           if (valueCase_ == 1) {
@@ -941,6 +968,7 @@ private static final long serialVersionUID = 0L;
       /**
        * <code>.google.protobuf.Empty na = 1;</code>
        */
+      @java.lang.Override
       public com.google.protobuf.EmptyOrBuilder getNaOrBuilder() {
         if ((valueCase_ == 1) && (naBuilder_ != null)) {
           return naBuilder_.getMessageOrBuilder();
@@ -975,6 +1003,7 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>int32 intValue = 2;</code>
+       * @return The intValue.
        */
       public int getIntValue() {
         if (valueCase_ == 2) {
@@ -984,6 +1013,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 intValue = 2;</code>
+       * @param value The intValue to set.
+       * @return This builder for chaining.
        */
       public Builder setIntValue(int value) {
         valueCase_ = 2;
@@ -993,6 +1024,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 intValue = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIntValue() {
         if (valueCase_ == 2) {
@@ -1005,6 +1037,7 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>double doubleValue = 3;</code>
+       * @return The doubleValue.
        */
       public double getDoubleValue() {
         if (valueCase_ == 3) {
@@ -1014,6 +1047,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>double doubleValue = 3;</code>
+       * @param value The doubleValue to set.
+       * @return This builder for chaining.
        */
       public Builder setDoubleValue(double value) {
         valueCase_ = 3;
@@ -1023,6 +1058,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>double doubleValue = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoubleValue() {
         if (valueCase_ == 3) {
@@ -1035,6 +1071,7 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>bool booleanValue = 4;</code>
+       * @return The booleanValue.
        */
       public boolean getBooleanValue() {
         if (valueCase_ == 4) {
@@ -1044,6 +1081,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool booleanValue = 4;</code>
+       * @param value The booleanValue to set.
+       * @return This builder for chaining.
        */
       public Builder setBooleanValue(boolean value) {
         valueCase_ = 4;
@@ -1053,6 +1092,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool booleanValue = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBooleanValue() {
         if (valueCase_ == 4) {
@@ -1065,7 +1105,9 @@ private static final long serialVersionUID = 0L;
 
       /**
        * <code>string stringValue = 5;</code>
+       * @return The stringValue.
        */
+      @java.lang.Override
       public java.lang.String getStringValue() {
         java.lang.Object ref = "";
         if (valueCase_ == 5) {
@@ -1085,7 +1127,9 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string stringValue = 5;</code>
+       * @return The bytes for stringValue.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getStringValueBytes() {
         java.lang.Object ref = "";
@@ -1106,6 +1150,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string stringValue = 5;</code>
+       * @param value The stringValue to set.
+       * @return This builder for chaining.
        */
       public Builder setStringValue(
           java.lang.String value) {
@@ -1119,6 +1165,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string stringValue = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStringValue() {
         if (valueCase_ == 5) {
@@ -1130,6 +1177,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string stringValue = 5;</code>
+       * @param value The bytes for stringValue to set.
+       * @return This builder for chaining.
        */
       public Builder setStringValueBytes(
           com.google.protobuf.ByteString value) {
@@ -1226,7 +1275,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.DataFrameGetDataResponse.Column}
    */
-  public  static final class Column extends
+  public static final class Column extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameGetDataResponse.Column)
       ColumnOrBuilder {
@@ -1319,12 +1368,14 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.DataFrameGetDataResponse.Value values = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.jetbrains.r.rinterop.DataFrameGetDataResponse.Value> getValuesList() {
       return values_;
     }
     /**
      * <code>repeated .rplugininterop.DataFrameGetDataResponse.Value values = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.jetbrains.r.rinterop.DataFrameGetDataResponse.ValueOrBuilder> 
         getValuesOrBuilderList() {
       return values_;
@@ -1332,18 +1383,21 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.DataFrameGetDataResponse.Value values = 1;</code>
      */
+    @java.lang.Override
     public int getValuesCount() {
       return values_.size();
     }
     /**
      * <code>repeated .rplugininterop.DataFrameGetDataResponse.Value values = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameGetDataResponse.Value getValues(int index) {
       return values_.get(index);
     }
     /**
      * <code>repeated .rplugininterop.DataFrameGetDataResponse.Value values = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.DataFrameGetDataResponse.ValueOrBuilder getValuesOrBuilder(
         int index) {
       return values_.get(index);
@@ -1988,12 +2042,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameGetDataResponse.Column columns = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.DataFrameGetDataResponse.Column> getColumnsList() {
     return columns_;
   }
   /**
    * <code>repeated .rplugininterop.DataFrameGetDataResponse.Column columns = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.DataFrameGetDataResponse.ColumnOrBuilder> 
       getColumnsOrBuilderList() {
     return columns_;
@@ -2001,18 +2057,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameGetDataResponse.Column columns = 1;</code>
    */
+  @java.lang.Override
   public int getColumnsCount() {
     return columns_.size();
   }
   /**
    * <code>repeated .rplugininterop.DataFrameGetDataResponse.Column columns = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameGetDataResponse.Column getColumns(int index) {
     return columns_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.DataFrameGetDataResponse.Column columns = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameGetDataResponse.ColumnOrBuilder getColumnsOrBuilder(
       int index) {
     return columns_.get(index);

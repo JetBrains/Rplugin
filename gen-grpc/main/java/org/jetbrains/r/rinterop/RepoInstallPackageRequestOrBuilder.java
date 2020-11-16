@@ -9,20 +9,24 @@ public interface RepoInstallPackageRequestOrBuilder extends
 
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
   java.lang.String getPackageName();
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
   com.google.protobuf.ByteString
       getPackageNameBytes();
 
   /**
    * <code>string fallbackMethod = 2;</code>
+   * @return The fallbackMethod.
    */
   java.lang.String getFallbackMethod();
   /**
    * <code>string fallbackMethod = 2;</code>
+   * @return The bytes for fallbackMethod.
    */
   com.google.protobuf.ByteString
       getFallbackMethodBytes();

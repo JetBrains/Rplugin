@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.StringList}
  */
-public  final class StringList extends
+public final class StringList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.StringList)
     StringListOrBuilder {
@@ -98,6 +98,7 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.LazyStringList list_;
   /**
    * <code>repeated string list = 1;</code>
+   * @return A list containing the list.
    */
   public com.google.protobuf.ProtocolStringList
       getListList() {
@@ -105,18 +106,23 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>repeated string list = 1;</code>
+   * @return The count of list.
    */
   public int getListCount() {
     return list_.size();
   }
   /**
    * <code>repeated string list = 1;</code>
+   * @param index The index of the element to return.
+   * @return The list at the given index.
    */
   public java.lang.String getList(int index) {
     return list_.get(index);
   }
   /**
    * <code>repeated string list = 1;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the list at the given index.
    */
   public com.google.protobuf.ByteString
       getListBytes(int index) {
@@ -453,6 +459,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @return A list containing the list.
      */
     public com.google.protobuf.ProtocolStringList
         getListList() {
@@ -460,18 +467,23 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @return The count of list.
      */
     public int getListCount() {
       return list_.size();
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param index The index of the element to return.
+     * @return The list at the given index.
      */
     public java.lang.String getList(int index) {
       return list_.get(index);
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the list at the given index.
      */
     public com.google.protobuf.ByteString
         getListBytes(int index) {
@@ -479,6 +491,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The list to set.
+     * @return This builder for chaining.
      */
     public Builder setList(
         int index, java.lang.String value) {
@@ -492,6 +507,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param value The list to add.
+     * @return This builder for chaining.
      */
     public Builder addList(
         java.lang.String value) {
@@ -505,6 +522,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param values The list to add.
+     * @return This builder for chaining.
      */
     public Builder addAllList(
         java.lang.Iterable<java.lang.String> values) {
@@ -516,6 +535,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearList() {
       list_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -525,6 +545,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string list = 1;</code>
+     * @param value The bytes of the list to add.
+     * @return This builder for chaining.
      */
     public Builder addListBytes(
         com.google.protobuf.ByteString value) {

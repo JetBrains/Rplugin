@@ -33,10 +33,12 @@ public interface TableColumnsInfoOrBuilder extends
 
   /**
    * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+   * @return The enum numeric value on the wire for tableType.
    */
   int getTableTypeValue();
   /**
    * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+   * @return The tableType.
    */
   org.jetbrains.r.rinterop.TableColumnsInfo.TableType getTableType();
 }

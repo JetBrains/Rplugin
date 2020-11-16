@@ -9,15 +9,18 @@ public interface GraphicsRescaleRequestOrBuilder extends
 
   /**
    * <code>int32 snapshotNumber = 1;</code>
+   * @return The snapshotNumber.
    */
   int getSnapshotNumber();
 
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+   * @return Whether the newParameters field is set.
    */
   boolean hasNewParameters();
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+   * @return The newParameters.
    */
   org.jetbrains.r.rinterop.ScreenParameters getNewParameters();
   /**

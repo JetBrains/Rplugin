@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RasterFigure}
  */
-public  final class RasterFigure extends
+public final class RasterFigure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RasterFigure)
     RasterFigureOrBuilder {
@@ -117,19 +117,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.RasterImage image_;
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return Whether the image field is set.
    */
+  @java.lang.Override
   public boolean hasImage() {
     return image_ != null;
   }
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return The image.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RasterImage getImage() {
     return image_ == null ? org.jetbrains.r.rinterop.RasterImage.getDefaultInstance() : image_;
   }
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RasterImageOrBuilder getImageOrBuilder() {
     return getImage();
   }
@@ -138,7 +143,9 @@ private static final long serialVersionUID = 0L;
   private long from_;
   /**
    * <code>fixed64 from = 2;</code>
+   * @return The from.
    */
+  @java.lang.Override
   public long getFrom() {
     return from_;
   }
@@ -147,7 +154,9 @@ private static final long serialVersionUID = 0L;
   private long to_;
   /**
    * <code>fixed64 to = 3;</code>
+   * @return The to.
    */
+  @java.lang.Override
   public long getTo() {
     return to_;
   }
@@ -156,7 +165,9 @@ private static final long serialVersionUID = 0L;
   private float angle_;
   /**
    * <code>float angle = 4;</code>
+   * @return The angle.
    */
+  @java.lang.Override
   public float getAngle() {
     return angle_;
   }
@@ -165,7 +176,9 @@ private static final long serialVersionUID = 0L;
   private boolean interpolate_;
   /**
    * <code>bool interpolate = 5;</code>
+   * @return The interpolate.
    */
+  @java.lang.Override
   public boolean getInterpolate() {
     return interpolate_;
   }
@@ -563,12 +576,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RasterImage, org.jetbrains.r.rinterop.RasterImage.Builder, org.jetbrains.r.rinterop.RasterImageOrBuilder> imageBuilder_;
     /**
      * <code>.rplugininterop.RasterImage image = 1;</code>
+     * @return Whether the image field is set.
      */
     public boolean hasImage() {
       return imageBuilder_ != null || image_ != null;
     }
     /**
      * <code>.rplugininterop.RasterImage image = 1;</code>
+     * @return The image.
      */
     public org.jetbrains.r.rinterop.RasterImage getImage() {
       if (imageBuilder_ == null) {
@@ -678,12 +693,16 @@ private static final long serialVersionUID = 0L;
     private long from_ ;
     /**
      * <code>fixed64 from = 2;</code>
+     * @return The from.
      */
+    @java.lang.Override
     public long getFrom() {
       return from_;
     }
     /**
      * <code>fixed64 from = 2;</code>
+     * @param value The from to set.
+     * @return This builder for chaining.
      */
     public Builder setFrom(long value) {
       
@@ -693,6 +712,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 from = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFrom() {
       
@@ -704,12 +724,16 @@ private static final long serialVersionUID = 0L;
     private long to_ ;
     /**
      * <code>fixed64 to = 3;</code>
+     * @return The to.
      */
+    @java.lang.Override
     public long getTo() {
       return to_;
     }
     /**
      * <code>fixed64 to = 3;</code>
+     * @param value The to to set.
+     * @return This builder for chaining.
      */
     public Builder setTo(long value) {
       
@@ -719,6 +743,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 to = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTo() {
       
@@ -730,12 +755,16 @@ private static final long serialVersionUID = 0L;
     private float angle_ ;
     /**
      * <code>float angle = 4;</code>
+     * @return The angle.
      */
+    @java.lang.Override
     public float getAngle() {
       return angle_;
     }
     /**
      * <code>float angle = 4;</code>
+     * @param value The angle to set.
+     * @return This builder for chaining.
      */
     public Builder setAngle(float value) {
       
@@ -745,6 +774,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>float angle = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearAngle() {
       
@@ -756,12 +786,16 @@ private static final long serialVersionUID = 0L;
     private boolean interpolate_ ;
     /**
      * <code>bool interpolate = 5;</code>
+     * @return The interpolate.
      */
+    @java.lang.Override
     public boolean getInterpolate() {
       return interpolate_;
     }
     /**
      * <code>bool interpolate = 5;</code>
+     * @param value The interpolate to set.
+     * @return This builder for chaining.
      */
     public Builder setInterpolate(boolean value) {
       
@@ -771,6 +805,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool interpolate = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearInterpolate() {
       

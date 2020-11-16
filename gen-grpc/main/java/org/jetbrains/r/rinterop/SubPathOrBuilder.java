@@ -9,14 +9,18 @@ public interface SubPathOrBuilder extends
 
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return A list containing the point.
    */
   java.util.List<java.lang.Long> getPointList();
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return The count of point.
    */
   int getPointCount();
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @param index The index of the element to return.
+   * @return The point at the given index.
    */
   long getPoint(int index);
 }

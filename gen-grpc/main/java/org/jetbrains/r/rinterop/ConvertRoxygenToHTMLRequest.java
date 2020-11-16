@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ConvertRoxygenToHTMLRequest}
  */
-public  final class ConvertRoxygenToHTMLRequest extends
+public final class ConvertRoxygenToHTMLRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ConvertRoxygenToHTMLRequest)
     ConvertRoxygenToHTMLRequestOrBuilder {
@@ -98,7 +98,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object functionName_;
   /**
    * <code>string functionName = 1;</code>
+   * @return The functionName.
    */
+  @java.lang.Override
   public java.lang.String getFunctionName() {
     java.lang.Object ref = functionName_;
     if (ref instanceof java.lang.String) {
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string functionName = 1;</code>
+   * @return The bytes for functionName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFunctionNameBytes() {
     java.lang.Object ref = functionName_;
@@ -132,7 +136,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object functionText_;
   /**
    * <code>string functionText = 2;</code>
+   * @return The functionText.
    */
+  @java.lang.Override
   public java.lang.String getFunctionText() {
     java.lang.Object ref = functionText_;
     if (ref instanceof java.lang.String) {
@@ -147,7 +153,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string functionText = 2;</code>
+   * @return The bytes for functionText.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFunctionTextBytes() {
     java.lang.Object ref = functionText_;
@@ -484,6 +492,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object functionName_ = "";
     /**
      * <code>string functionName = 1;</code>
+     * @return The functionName.
      */
     public java.lang.String getFunctionName() {
       java.lang.Object ref = functionName_;
@@ -499,6 +508,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 1;</code>
+     * @return The bytes for functionName.
      */
     public com.google.protobuf.ByteString
         getFunctionNameBytes() {
@@ -515,6 +525,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 1;</code>
+     * @param value The functionName to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionName(
         java.lang.String value) {
@@ -528,6 +540,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFunctionName() {
       
@@ -537,6 +550,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 1;</code>
+     * @param value The bytes for functionName to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionNameBytes(
         com.google.protobuf.ByteString value) {
@@ -553,6 +568,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object functionText_ = "";
     /**
      * <code>string functionText = 2;</code>
+     * @return The functionText.
      */
     public java.lang.String getFunctionText() {
       java.lang.Object ref = functionText_;
@@ -568,6 +584,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionText = 2;</code>
+     * @return The bytes for functionText.
      */
     public com.google.protobuf.ByteString
         getFunctionTextBytes() {
@@ -584,6 +601,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionText = 2;</code>
+     * @param value The functionText to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionText(
         java.lang.String value) {
@@ -597,6 +616,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionText = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFunctionText() {
       
@@ -606,6 +626,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionText = 2;</code>
+     * @param value The bytes for functionText to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionTextBytes(
         com.google.protobuf.ByteString value) {

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.SubPath}
  */
-public  final class SubPath extends
+public final class SubPath extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.SubPath)
     SubPathOrBuilder {
@@ -110,19 +110,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.LongList point_;
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return A list containing the point.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Long>
       getPointList() {
     return point_;
   }
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @return The count of point.
    */
   public int getPointCount() {
     return point_.size();
   }
   /**
    * <code>repeated fixed64 point = 1;</code>
+   * @param index The index of the element to return.
+   * @return The point at the given index.
    */
   public long getPoint(int index) {
     return point_.getLong(index);
@@ -467,6 +472,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return A list containing the point.
      */
     public java.util.List<java.lang.Long>
         getPointList() {
@@ -475,18 +481,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return The count of point.
      */
     public int getPointCount() {
       return point_.size();
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param index The index of the element to return.
+     * @return The point at the given index.
      */
     public long getPoint(int index) {
       return point_.getLong(index);
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The point to set.
+     * @return This builder for chaining.
      */
     public Builder setPoint(
         int index, long value) {
@@ -497,6 +509,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param value The point to add.
+     * @return This builder for chaining.
      */
     public Builder addPoint(long value) {
       ensurePointIsMutable();
@@ -506,6 +520,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @param values The point to add.
+     * @return This builder for chaining.
      */
     public Builder addAllPoint(
         java.lang.Iterable<? extends java.lang.Long> values) {
@@ -517,6 +533,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated fixed64 point = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPoint() {
       point_ = emptyLongList();

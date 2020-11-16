@@ -9,16 +9,19 @@ public interface GraphicsGetSnapshotPathRequestOrBuilder extends
 
   /**
    * <code>string groupId = 1;</code>
+   * @return The groupId.
    */
   java.lang.String getGroupId();
   /**
    * <code>string groupId = 1;</code>
+   * @return The bytes for groupId.
    */
   com.google.protobuf.ByteString
       getGroupIdBytes();
 
   /**
    * <code>int32 snapshotNumber = 2;</code>
+   * @return The snapshotNumber.
    */
   int getSnapshotNumber();
 }

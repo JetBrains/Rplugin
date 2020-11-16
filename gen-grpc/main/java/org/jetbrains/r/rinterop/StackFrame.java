@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.StackFrame}
  */
-public  final class StackFrame extends
+public final class StackFrame extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.StackFrame)
     StackFrameOrBuilder {
@@ -129,19 +129,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.SourcePosition position_;
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return Whether the position field is set.
    */
+  @java.lang.Override
   public boolean hasPosition() {
     return position_ != null;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return The position.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePosition getPosition() {
     return position_ == null ? org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance() : position_;
   }
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.SourcePositionOrBuilder getPositionOrBuilder() {
     return getPosition();
   }
@@ -150,7 +155,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object functionName_;
   /**
    * <code>string functionName = 2;</code>
+   * @return The functionName.
    */
+  @java.lang.Override
   public java.lang.String getFunctionName() {
     java.lang.Object ref = functionName_;
     if (ref instanceof java.lang.String) {
@@ -165,7 +172,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string functionName = 2;</code>
+   * @return The bytes for functionName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFunctionNameBytes() {
     java.lang.Object ref = functionName_;
@@ -184,7 +193,9 @@ private static final long serialVersionUID = 0L;
   private long equalityObject_;
   /**
    * <code>int64 equalityObject = 3;</code>
+   * @return The equalityObject.
    */
+  @java.lang.Override
   public long getEqualityObject() {
     return equalityObject_;
   }
@@ -193,19 +204,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.ExtendedSourcePosition extendedSourcePosition_;
   /**
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   * @return Whether the extendedSourcePosition field is set.
    */
+  @java.lang.Override
   public boolean hasExtendedSourcePosition() {
     return extendedSourcePosition_ != null;
   }
   /**
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   * @return The extendedSourcePosition.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition() {
     return extendedSourcePosition_ == null ? org.jetbrains.r.rinterop.ExtendedSourcePosition.getDefaultInstance() : extendedSourcePosition_;
   }
   /**
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder getExtendedSourcePositionOrBuilder() {
     return getExtendedSourcePosition();
   }
@@ -214,7 +230,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object sourcePositionText_;
   /**
    * <code>string sourcePositionText = 5;</code>
+   * @return The sourcePositionText.
    */
+  @java.lang.Override
   public java.lang.String getSourcePositionText() {
     java.lang.Object ref = sourcePositionText_;
     if (ref instanceof java.lang.String) {
@@ -229,7 +247,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string sourcePositionText = 5;</code>
+   * @return The bytes for sourcePositionText.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSourcePositionTextBytes() {
     java.lang.Object ref = sourcePositionText_;
@@ -646,12 +666,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.SourcePosition, org.jetbrains.r.rinterop.SourcePosition.Builder, org.jetbrains.r.rinterop.SourcePositionOrBuilder> positionBuilder_;
     /**
      * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * @return Whether the position field is set.
      */
     public boolean hasPosition() {
       return positionBuilder_ != null || position_ != null;
     }
     /**
      * <code>.rplugininterop.SourcePosition position = 1;</code>
+     * @return The position.
      */
     public org.jetbrains.r.rinterop.SourcePosition getPosition() {
       if (positionBuilder_ == null) {
@@ -761,6 +783,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object functionName_ = "";
     /**
      * <code>string functionName = 2;</code>
+     * @return The functionName.
      */
     public java.lang.String getFunctionName() {
       java.lang.Object ref = functionName_;
@@ -776,6 +799,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 2;</code>
+     * @return The bytes for functionName.
      */
     public com.google.protobuf.ByteString
         getFunctionNameBytes() {
@@ -792,6 +816,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 2;</code>
+     * @param value The functionName to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionName(
         java.lang.String value) {
@@ -805,6 +831,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFunctionName() {
       
@@ -814,6 +841,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string functionName = 2;</code>
+     * @param value The bytes for functionName to set.
+     * @return This builder for chaining.
      */
     public Builder setFunctionNameBytes(
         com.google.protobuf.ByteString value) {
@@ -830,12 +859,16 @@ private static final long serialVersionUID = 0L;
     private long equalityObject_ ;
     /**
      * <code>int64 equalityObject = 3;</code>
+     * @return The equalityObject.
      */
+    @java.lang.Override
     public long getEqualityObject() {
       return equalityObject_;
     }
     /**
      * <code>int64 equalityObject = 3;</code>
+     * @param value The equalityObject to set.
+     * @return This builder for chaining.
      */
     public Builder setEqualityObject(long value) {
       
@@ -845,6 +878,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int64 equalityObject = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEqualityObject() {
       
@@ -858,12 +892,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.ExtendedSourcePosition, org.jetbrains.r.rinterop.ExtendedSourcePosition.Builder, org.jetbrains.r.rinterop.ExtendedSourcePositionOrBuilder> extendedSourcePositionBuilder_;
     /**
      * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     * @return Whether the extendedSourcePosition field is set.
      */
     public boolean hasExtendedSourcePosition() {
       return extendedSourcePositionBuilder_ != null || extendedSourcePosition_ != null;
     }
     /**
      * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+     * @return The extendedSourcePosition.
      */
     public org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition() {
       if (extendedSourcePositionBuilder_ == null) {
@@ -973,6 +1009,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object sourcePositionText_ = "";
     /**
      * <code>string sourcePositionText = 5;</code>
+     * @return The sourcePositionText.
      */
     public java.lang.String getSourcePositionText() {
       java.lang.Object ref = sourcePositionText_;
@@ -988,6 +1025,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 5;</code>
+     * @return The bytes for sourcePositionText.
      */
     public com.google.protobuf.ByteString
         getSourcePositionTextBytes() {
@@ -1004,6 +1042,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 5;</code>
+     * @param value The sourcePositionText to set.
+     * @return This builder for chaining.
      */
     public Builder setSourcePositionText(
         java.lang.String value) {
@@ -1017,6 +1057,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSourcePositionText() {
       
@@ -1026,6 +1067,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourcePositionText = 5;</code>
+     * @param value The bytes for sourcePositionText to set.
+     * @return This builder for chaining.
      */
     public Builder setSourcePositionTextBytes(
         com.google.protobuf.ByteString value) {

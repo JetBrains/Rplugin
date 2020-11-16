@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DataFrameInfoResponse}
  */
-public  final class DataFrameInfoResponse extends
+public final class DataFrameInfoResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameInfoResponse)
     DataFrameInfoResponseOrBuilder {
@@ -150,6 +150,8 @@ private static final long serialVersionUID = 0L;
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -157,6 +159,10 @@ private static final long serialVersionUID = 0L;
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static ColumnType forNumber(int value) {
       switch (value) {
         case 0: return INTEGER;
@@ -181,6 +187,10 @@ private static final long serialVersionUID = 0L;
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -221,37 +231,43 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+     * @return The enum numeric value on the wire for type.
      */
     int getTypeValue();
     /**
      * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+     * @return The type.
      */
     org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType getType();
 
     /**
      * <code>bool sortable = 3;</code>
+     * @return The sortable.
      */
     boolean getSortable();
 
     /**
      * <code>bool isRowNames = 4;</code>
+     * @return The isRowNames.
      */
     boolean getIsRowNames();
   }
   /**
    * Protobuf type {@code rplugininterop.DataFrameInfoResponse.Column}
    */
-  public  static final class Column extends
+  public static final class Column extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.DataFrameInfoResponse.Column)
       ColumnOrBuilder {
@@ -353,7 +369,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -368,7 +386,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -387,14 +407,16 @@ private static final long serialVersionUID = 0L;
     private int type_;
     /**
      * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+     * @return The enum numeric value on the wire for type.
      */
-    public int getTypeValue() {
+    @java.lang.Override public int getTypeValue() {
       return type_;
     }
     /**
      * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+     * @return The type.
      */
-    public org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType getType() {
+    @java.lang.Override public org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType getType() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType result = org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType.valueOf(type_);
       return result == null ? org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType.UNRECOGNIZED : result;
@@ -404,7 +426,9 @@ private static final long serialVersionUID = 0L;
     private boolean sortable_;
     /**
      * <code>bool sortable = 3;</code>
+     * @return The sortable.
      */
+    @java.lang.Override
     public boolean getSortable() {
       return sortable_;
     }
@@ -413,7 +437,9 @@ private static final long serialVersionUID = 0L;
     private boolean isRowNames_;
     /**
      * <code>bool isRowNames = 4;</code>
+     * @return The isRowNames.
      */
+    @java.lang.Override
     public boolean getIsRowNames() {
       return isRowNames_;
     }
@@ -775,6 +801,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -790,6 +817,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -806,6 +834,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -819,6 +849,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -828,6 +859,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -844,21 +877,27 @@ private static final long serialVersionUID = 0L;
       private int type_ = 0;
       /**
        * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+       * @return The enum numeric value on the wire for type.
        */
-      public int getTypeValue() {
+      @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
        * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+       * @param value The enum numeric value on the wire for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
+        
         type_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+       * @return The type.
        */
+      @java.lang.Override
       public org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType getType() {
         @SuppressWarnings("deprecation")
         org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType result = org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType.valueOf(type_);
@@ -866,6 +905,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnType value) {
         if (value == null) {
@@ -878,6 +919,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>.rplugininterop.DataFrameInfoResponse.ColumnType type = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
         
@@ -889,12 +931,16 @@ private static final long serialVersionUID = 0L;
       private boolean sortable_ ;
       /**
        * <code>bool sortable = 3;</code>
+       * @return The sortable.
        */
+      @java.lang.Override
       public boolean getSortable() {
         return sortable_;
       }
       /**
        * <code>bool sortable = 3;</code>
+       * @param value The sortable to set.
+       * @return This builder for chaining.
        */
       public Builder setSortable(boolean value) {
         
@@ -904,6 +950,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool sortable = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSortable() {
         
@@ -915,12 +962,16 @@ private static final long serialVersionUID = 0L;
       private boolean isRowNames_ ;
       /**
        * <code>bool isRowNames = 4;</code>
+       * @return The isRowNames.
        */
+      @java.lang.Override
       public boolean getIsRowNames() {
         return isRowNames_;
       }
       /**
        * <code>bool isRowNames = 4;</code>
+       * @param value The isRowNames to set.
+       * @return This builder for chaining.
        */
       public Builder setIsRowNames(boolean value) {
         
@@ -930,6 +981,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool isRowNames = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIsRowNames() {
         
@@ -994,7 +1046,9 @@ private static final long serialVersionUID = 0L;
   private int nRows_;
   /**
    * <code>int32 nRows = 1;</code>
+   * @return The nRows.
    */
+  @java.lang.Override
   public int getNRows() {
     return nRows_;
   }
@@ -1004,12 +1058,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameInfoResponse.Column columns = 2;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.DataFrameInfoResponse.Column> getColumnsList() {
     return columns_;
   }
   /**
    * <code>repeated .rplugininterop.DataFrameInfoResponse.Column columns = 2;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnOrBuilder> 
       getColumnsOrBuilderList() {
     return columns_;
@@ -1017,18 +1073,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.DataFrameInfoResponse.Column columns = 2;</code>
    */
+  @java.lang.Override
   public int getColumnsCount() {
     return columns_.size();
   }
   /**
    * <code>repeated .rplugininterop.DataFrameInfoResponse.Column columns = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameInfoResponse.Column getColumns(int index) {
     return columns_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.DataFrameInfoResponse.Column columns = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.DataFrameInfoResponse.ColumnOrBuilder getColumnsOrBuilder(
       int index) {
     return columns_.get(index);
@@ -1396,12 +1455,16 @@ private static final long serialVersionUID = 0L;
     private int nRows_ ;
     /**
      * <code>int32 nRows = 1;</code>
+     * @return The nRows.
      */
+    @java.lang.Override
     public int getNRows() {
       return nRows_;
     }
     /**
      * <code>int32 nRows = 1;</code>
+     * @param value The nRows to set.
+     * @return This builder for chaining.
      */
     public Builder setNRows(int value) {
       
@@ -1411,6 +1474,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 nRows = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearNRows() {
       

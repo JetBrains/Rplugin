@@ -9,10 +9,12 @@ public interface StackFrameOrBuilder extends
 
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return Whether the position field is set.
    */
   boolean hasPosition();
   /**
    * <code>.rplugininterop.SourcePosition position = 1;</code>
+   * @return The position.
    */
   org.jetbrains.r.rinterop.SourcePosition getPosition();
   /**
@@ -22,25 +24,30 @@ public interface StackFrameOrBuilder extends
 
   /**
    * <code>string functionName = 2;</code>
+   * @return The functionName.
    */
   java.lang.String getFunctionName();
   /**
    * <code>string functionName = 2;</code>
+   * @return The bytes for functionName.
    */
   com.google.protobuf.ByteString
       getFunctionNameBytes();
 
   /**
    * <code>int64 equalityObject = 3;</code>
+   * @return The equalityObject.
    */
   long getEqualityObject();
 
   /**
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   * @return Whether the extendedSourcePosition field is set.
    */
   boolean hasExtendedSourcePosition();
   /**
    * <code>.rplugininterop.ExtendedSourcePosition extendedSourcePosition = 4;</code>
+   * @return The extendedSourcePosition.
    */
   org.jetbrains.r.rinterop.ExtendedSourcePosition getExtendedSourcePosition();
   /**
@@ -50,10 +57,12 @@ public interface StackFrameOrBuilder extends
 
   /**
    * <code>string sourcePositionText = 5;</code>
+   * @return The sourcePositionText.
    */
   java.lang.String getSourcePositionText();
   /**
    * <code>string sourcePositionText = 5;</code>
+   * @return The bytes for sourcePositionText.
    */
   com.google.protobuf.ByteString
       getSourcePositionTextBytes();

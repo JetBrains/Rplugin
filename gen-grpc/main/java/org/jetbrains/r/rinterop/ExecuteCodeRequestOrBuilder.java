@@ -9,65 +9,78 @@ public interface ExecuteCodeRequestOrBuilder extends
 
   /**
    * <code>string code = 1;</code>
+   * @return The code.
    */
   java.lang.String getCode();
   /**
    * <code>string code = 1;</code>
+   * @return The bytes for code.
    */
   com.google.protobuf.ByteString
       getCodeBytes();
 
   /**
    * <code>string sourceFileId = 2;</code>
+   * @return The sourceFileId.
    */
   java.lang.String getSourceFileId();
   /**
    * <code>string sourceFileId = 2;</code>
+   * @return The bytes for sourceFileId.
    */
   com.google.protobuf.ByteString
       getSourceFileIdBytes();
 
   /**
    * <code>int32 sourceFileLineOffset = 3;</code>
+   * @return The sourceFileLineOffset.
    */
   int getSourceFileLineOffset();
 
   /**
    * <code>int32 sourceFileFirstLineOffset = 4;</code>
+   * @return The sourceFileFirstLineOffset.
    */
   int getSourceFileFirstLineOffset();
 
   /**
    * <code>bool withEcho = 5;</code>
+   * @return The withEcho.
    */
   boolean getWithEcho();
 
   /**
    * <code>bool streamOutput = 6;</code>
+   * @return The streamOutput.
    */
   boolean getStreamOutput();
 
   /**
    * <code>bool isRepl = 7;</code>
+   * @return The isRepl.
    */
   boolean getIsRepl();
 
   /**
    * <code>bool isDebug = 8;</code>
+   * @return The isDebug.
    */
   boolean getIsDebug();
 
   /**
    * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+   * @return The enum numeric value on the wire for firstDebugCommand.
    */
   int getFirstDebugCommandValue();
   /**
    * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+   * @return The firstDebugCommand.
    */
   org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand();
 
   /**
    * <code>bool setLastValue = 10;</code>
+   * @return The setLastValue.
    */
   boolean getSetLastValue();
 }

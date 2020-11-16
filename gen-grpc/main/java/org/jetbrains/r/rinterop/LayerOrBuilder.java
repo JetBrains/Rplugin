@@ -9,11 +9,13 @@ public interface LayerOrBuilder extends
 
   /**
    * <code>int32 viewportIndex = 1;</code>
+   * @return The viewportIndex.
    */
   int getViewportIndex();
 
   /**
    * <code>int32 clippingAreaIndex = 2;</code>
+   * @return The clippingAreaIndex.
    */
   int getClippingAreaIndex();
 
@@ -43,6 +45,7 @@ public interface LayerOrBuilder extends
 
   /**
    * <code>bool isAxisText = 4;</code>
+   * @return The isAxisText.
    */
   boolean getIsAxisText();
 }

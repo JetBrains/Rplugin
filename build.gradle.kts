@@ -15,13 +15,16 @@ import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.nio.charset.StandardCharsets
 
+val grpcVersion = "1.31.1"
+val protobufVersion = "3.13.0"
+
 val isTeamCity = System.getenv("RPLUGIN_CI") == "TeamCity"
 
 val channel = prop("publishChannel")
 
 val excludedJars = listOf(
-    "java-api.jar",
-    "java-impl.jar"
+  "java-api.jar",
+  "java-impl.jar"
 )
 
 buildscript {
@@ -37,21 +40,21 @@ buildscript {
 
 dependencies {
     testCompile("org.mockito:mockito-all:1.10.19")
-    compile("com.google.protobuf:protobuf-java:3.9.1")
-    compile("io.grpc:grpc-stub:1.23.0")
-    compile("io.grpc:grpc-protobuf:1.23.0")
-    runtimeOnly("io.grpc:grpc-netty-shaded:1.23.0")
+    compile("com.google.protobuf:protobuf-java:$protobufVersion")
+    compile("io.grpc:grpc-stub:$grpcVersion")
+    compile("io.grpc:grpc-protobuf:$grpcVersion")
+    runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
     protobuf(files("protos/", "grammars/"))
 }
 
 protobuf {
     generatedFilesBaseDir = "$projectDir/gen-grpc"
     protoc {
-        artifact = "com.google.protobuf:protoc:3.9.1"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.23.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
     }
     generateProtoTasks {

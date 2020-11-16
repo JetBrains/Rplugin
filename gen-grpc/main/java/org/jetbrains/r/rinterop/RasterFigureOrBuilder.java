@@ -9,10 +9,12 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return Whether the image field is set.
    */
   boolean hasImage();
   /**
    * <code>.rplugininterop.RasterImage image = 1;</code>
+   * @return The image.
    */
   org.jetbrains.r.rinterop.RasterImage getImage();
   /**
@@ -22,21 +24,25 @@ public interface RasterFigureOrBuilder extends
 
   /**
    * <code>fixed64 from = 2;</code>
+   * @return The from.
    */
   long getFrom();
 
   /**
    * <code>fixed64 to = 3;</code>
+   * @return The to.
    */
   long getTo();
 
   /**
    * <code>float angle = 4;</code>
+   * @return The angle.
    */
   float getAngle();
 
   /**
    * <code>bool interpolate = 5;</code>
+   * @return The interpolate.
    */
   boolean getInterpolate();
 }

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ScreenParameters}
  */
-public  final class ScreenParameters extends
+public final class ScreenParameters extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ScreenParameters)
     ScreenParametersOrBuilder {
@@ -99,7 +99,9 @@ private static final long serialVersionUID = 0L;
   private int width_;
   /**
    * <code>int32 width = 1;</code>
+   * @return The width.
    */
+  @java.lang.Override
   public int getWidth() {
     return width_;
   }
@@ -108,7 +110,9 @@ private static final long serialVersionUID = 0L;
   private int height_;
   /**
    * <code>int32 height = 2;</code>
+   * @return The height.
    */
+  @java.lang.Override
   public int getHeight() {
     return height_;
   }
@@ -117,7 +121,9 @@ private static final long serialVersionUID = 0L;
   private int resolution_;
   /**
    * <code>int32 resolution = 3;</code>
+   * @return The resolution.
    */
+  @java.lang.Override
   public int getResolution() {
     return resolution_;
   }
@@ -461,12 +467,16 @@ private static final long serialVersionUID = 0L;
     private int width_ ;
     /**
      * <code>int32 width = 1;</code>
+     * @return The width.
      */
+    @java.lang.Override
     public int getWidth() {
       return width_;
     }
     /**
      * <code>int32 width = 1;</code>
+     * @param value The width to set.
+     * @return This builder for chaining.
      */
     public Builder setWidth(int value) {
       
@@ -476,6 +486,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 width = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWidth() {
       
@@ -487,12 +498,16 @@ private static final long serialVersionUID = 0L;
     private int height_ ;
     /**
      * <code>int32 height = 2;</code>
+     * @return The height.
      */
+    @java.lang.Override
     public int getHeight() {
       return height_;
     }
     /**
      * <code>int32 height = 2;</code>
+     * @param value The height to set.
+     * @return This builder for chaining.
      */
     public Builder setHeight(int value) {
       
@@ -502,6 +517,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 height = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearHeight() {
       
@@ -513,12 +529,16 @@ private static final long serialVersionUID = 0L;
     private int resolution_ ;
     /**
      * <code>int32 resolution = 3;</code>
+     * @return The resolution.
      */
+    @java.lang.Override
     public int getResolution() {
       return resolution_;
     }
     /**
      * <code>int32 resolution = 3;</code>
+     * @param value The resolution to set.
+     * @return This builder for chaining.
      */
     public Builder setResolution(int value) {
       
@@ -528,6 +548,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 resolution = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearResolution() {
       

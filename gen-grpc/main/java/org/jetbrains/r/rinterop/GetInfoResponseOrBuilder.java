@@ -9,16 +9,19 @@ public interface GetInfoResponseOrBuilder extends
 
   /**
    * <code>string rVersion = 1;</code>
+   * @return The rVersion.
    */
   java.lang.String getRVersion();
   /**
    * <code>string rVersion = 1;</code>
+   * @return The bytes for rVersion.
    */
   com.google.protobuf.ByteString
       getRVersionBytes();
 
   /**
    * <code>int32 pid = 2;</code>
+   * @return The pid.
    */
   int getPid();
 }

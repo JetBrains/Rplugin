@@ -9,16 +9,19 @@ public interface ScreenParametersOrBuilder extends
 
   /**
    * <code>int32 width = 1;</code>
+   * @return The width.
    */
   int getWidth();
 
   /**
    * <code>int32 height = 2;</code>
+   * @return The height.
    */
   int getHeight();
 
   /**
    * <code>int32 resolution = 3;</code>
+   * @return The resolution.
    */
   int getResolution();
 }

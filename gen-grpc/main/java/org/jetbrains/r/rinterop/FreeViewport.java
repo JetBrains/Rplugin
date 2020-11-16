@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.FreeViewport}
  */
-public  final class FreeViewport extends
+public final class FreeViewport extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.FreeViewport)
     FreeViewportOrBuilder {
@@ -99,7 +99,9 @@ private static final long serialVersionUID = 0L;
   private long from_;
   /**
    * <code>fixed64 from = 1;</code>
+   * @return The from.
    */
+  @java.lang.Override
   public long getFrom() {
     return from_;
   }
@@ -108,7 +110,9 @@ private static final long serialVersionUID = 0L;
   private long to_;
   /**
    * <code>fixed64 to = 2;</code>
+   * @return The to.
    */
+  @java.lang.Override
   public long getTo() {
     return to_;
   }
@@ -117,7 +121,9 @@ private static final long serialVersionUID = 0L;
   private int parentIndex_;
   /**
    * <code>int32 parentIndex = 3;</code>
+   * @return The parentIndex.
    */
+  @java.lang.Override
   public int getParentIndex() {
     return parentIndex_;
   }
@@ -463,12 +469,16 @@ private static final long serialVersionUID = 0L;
     private long from_ ;
     /**
      * <code>fixed64 from = 1;</code>
+     * @return The from.
      */
+    @java.lang.Override
     public long getFrom() {
       return from_;
     }
     /**
      * <code>fixed64 from = 1;</code>
+     * @param value The from to set.
+     * @return This builder for chaining.
      */
     public Builder setFrom(long value) {
       
@@ -478,6 +488,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 from = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFrom() {
       
@@ -489,12 +500,16 @@ private static final long serialVersionUID = 0L;
     private long to_ ;
     /**
      * <code>fixed64 to = 2;</code>
+     * @return The to.
      */
+    @java.lang.Override
     public long getTo() {
       return to_;
     }
     /**
      * <code>fixed64 to = 2;</code>
+     * @param value The to to set.
+     * @return This builder for chaining.
      */
     public Builder setTo(long value) {
       
@@ -504,6 +519,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>fixed64 to = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTo() {
       
@@ -515,12 +531,16 @@ private static final long serialVersionUID = 0L;
     private int parentIndex_ ;
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @return The parentIndex.
      */
+    @java.lang.Override
     public int getParentIndex() {
       return parentIndex_;
     }
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @param value The parentIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setParentIndex(int value) {
       
@@ -530,6 +550,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 parentIndex = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearParentIndex() {
       

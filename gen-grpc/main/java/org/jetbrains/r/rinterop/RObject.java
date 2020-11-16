@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RObject}
  */
-public  final class RObject extends
+public final class RObject extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RObject)
     RObjectOrBuilder {
@@ -190,19 +190,25 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>repeated string strings = 1;</code>
+     * @return A list containing the strings.
      */
     java.util.List<java.lang.String>
         getStringsList();
     /**
      * <code>repeated string strings = 1;</code>
+     * @return The count of strings.
      */
     int getStringsCount();
     /**
      * <code>repeated string strings = 1;</code>
+     * @param index The index of the element to return.
+     * @return The strings at the given index.
      */
     java.lang.String getStrings(int index);
     /**
      * <code>repeated string strings = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the strings at the given index.
      */
     com.google.protobuf.ByteString
         getStringsBytes(int index);
@@ -210,7 +216,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RObject.RString}
    */
-  public  static final class RString extends
+  public static final class RString extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RString)
       RStringOrBuilder {
@@ -302,6 +308,7 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.LazyStringList strings_;
     /**
      * <code>repeated string strings = 1;</code>
+     * @return A list containing the strings.
      */
     public com.google.protobuf.ProtocolStringList
         getStringsList() {
@@ -309,18 +316,23 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string strings = 1;</code>
+     * @return The count of strings.
      */
     public int getStringsCount() {
       return strings_.size();
     }
     /**
      * <code>repeated string strings = 1;</code>
+     * @param index The index of the element to return.
+     * @return The strings at the given index.
      */
     public java.lang.String getStrings(int index) {
       return strings_.get(index);
     }
     /**
      * <code>repeated string strings = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the strings at the given index.
      */
     public com.google.protobuf.ByteString
         getStringsBytes(int index) {
@@ -657,6 +669,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @return A list containing the strings.
        */
       public com.google.protobuf.ProtocolStringList
           getStringsList() {
@@ -664,18 +677,23 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @return The count of strings.
        */
       public int getStringsCount() {
         return strings_.size();
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param index The index of the element to return.
+       * @return The strings at the given index.
        */
       public java.lang.String getStrings(int index) {
         return strings_.get(index);
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the strings at the given index.
        */
       public com.google.protobuf.ByteString
           getStringsBytes(int index) {
@@ -683,6 +701,9 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The strings to set.
+       * @return This builder for chaining.
        */
       public Builder setStrings(
           int index, java.lang.String value) {
@@ -696,6 +717,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param value The strings to add.
+       * @return This builder for chaining.
        */
       public Builder addStrings(
           java.lang.String value) {
@@ -709,6 +732,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param values The strings to add.
+       * @return This builder for chaining.
        */
       public Builder addAllStrings(
           java.lang.Iterable<java.lang.String> values) {
@@ -720,6 +745,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStrings() {
         strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -729,6 +755,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated string strings = 1;</code>
+       * @param value The bytes of the strings to add.
+       * @return This builder for chaining.
        */
       public Builder addStringsBytes(
           com.google.protobuf.ByteString value) {
@@ -800,21 +828,25 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @return A list containing the ints.
      */
     java.util.List<java.lang.Long> getIntsList();
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @return The count of ints.
      */
     int getIntsCount();
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @param index The index of the element to return.
+     * @return The ints at the given index.
      */
     long getInts(int index);
   }
   /**
    * Protobuf type {@code rplugininterop.RObject.RInt}
    */
-  public  static final class RInt extends
+  public static final class RInt extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RInt)
       RIntOrBuilder {
@@ -918,19 +950,24 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.Internal.LongList ints_;
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @return A list containing the ints.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getIntsList() {
       return ints_;
     }
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @return The count of ints.
      */
     public int getIntsCount() {
       return ints_.size();
     }
     /**
      * <code>repeated int64 ints = 1;</code>
+     * @param index The index of the element to return.
+     * @return The ints at the given index.
      */
     public long getInts(int index) {
       return ints_.getLong(index);
@@ -1278,6 +1315,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @return A list containing the ints.
        */
       public java.util.List<java.lang.Long>
           getIntsList() {
@@ -1286,18 +1324,24 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @return The count of ints.
        */
       public int getIntsCount() {
         return ints_.size();
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @param index The index of the element to return.
+       * @return The ints at the given index.
        */
       public long getInts(int index) {
         return ints_.getLong(index);
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The ints to set.
+       * @return This builder for chaining.
        */
       public Builder setInts(
           int index, long value) {
@@ -1308,6 +1352,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @param value The ints to add.
+       * @return This builder for chaining.
        */
       public Builder addInts(long value) {
         ensureIntsIsMutable();
@@ -1317,6 +1363,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @param values The ints to add.
+       * @return This builder for chaining.
        */
       public Builder addAllInts(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -1328,6 +1376,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated int64 ints = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInts() {
         ints_ = emptyLongList();
@@ -1394,21 +1443,25 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>repeated double doubles = 1;</code>
+     * @return A list containing the doubles.
      */
     java.util.List<java.lang.Double> getDoublesList();
     /**
      * <code>repeated double doubles = 1;</code>
+     * @return The count of doubles.
      */
     int getDoublesCount();
     /**
      * <code>repeated double doubles = 1;</code>
+     * @param index The index of the element to return.
+     * @return The doubles at the given index.
      */
     double getDoubles(int index);
   }
   /**
    * Protobuf type {@code rplugininterop.RObject.RDouble}
    */
-  public  static final class RDouble extends
+  public static final class RDouble extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RDouble)
       RDoubleOrBuilder {
@@ -1512,19 +1565,24 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.Internal.DoubleList doubles_;
     /**
      * <code>repeated double doubles = 1;</code>
+     * @return A list containing the doubles.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Double>
         getDoublesList() {
       return doubles_;
     }
     /**
      * <code>repeated double doubles = 1;</code>
+     * @return The count of doubles.
      */
     public int getDoublesCount() {
       return doubles_.size();
     }
     /**
      * <code>repeated double doubles = 1;</code>
+     * @param index The index of the element to return.
+     * @return The doubles at the given index.
      */
     public double getDoubles(int index) {
       return doubles_.getDouble(index);
@@ -1869,6 +1927,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @return A list containing the doubles.
        */
       public java.util.List<java.lang.Double>
           getDoublesList() {
@@ -1877,18 +1936,24 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @return The count of doubles.
        */
       public int getDoublesCount() {
         return doubles_.size();
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @param index The index of the element to return.
+       * @return The doubles at the given index.
        */
       public double getDoubles(int index) {
         return doubles_.getDouble(index);
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The doubles to set.
+       * @return This builder for chaining.
        */
       public Builder setDoubles(
           int index, double value) {
@@ -1899,6 +1964,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @param value The doubles to add.
+       * @return This builder for chaining.
        */
       public Builder addDoubles(double value) {
         ensureDoublesIsMutable();
@@ -1908,6 +1975,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @param values The doubles to add.
+       * @return This builder for chaining.
        */
       public Builder addAllDoubles(
           java.lang.Iterable<? extends java.lang.Double> values) {
@@ -1919,6 +1988,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated double doubles = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoubles() {
         doubles_ = emptyDoubleList();
@@ -2010,7 +2080,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RObject.List}
    */
-  public  static final class List extends
+  public static final class List extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.List)
       ListOrBuilder {
@@ -2103,12 +2173,14 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RObject rObjects = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.jetbrains.r.rinterop.RObject> getRObjectsList() {
       return rObjects_;
     }
     /**
      * <code>repeated .rplugininterop.RObject rObjects = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.jetbrains.r.rinterop.RObjectOrBuilder> 
         getRObjectsOrBuilderList() {
       return rObjects_;
@@ -2116,18 +2188,21 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RObject rObjects = 1;</code>
      */
+    @java.lang.Override
     public int getRObjectsCount() {
       return rObjects_.size();
     }
     /**
      * <code>repeated .rplugininterop.RObject rObjects = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject getRObjects(int index) {
       return rObjects_.get(index);
     }
     /**
      * <code>repeated .rplugininterop.RObject rObjects = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObjectOrBuilder getRObjectsOrBuilder(
         int index) {
       return rObjects_.get(index);
@@ -2774,7 +2849,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RObject.RNull}
    */
-  public  static final class RNull extends
+  public static final class RNull extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RNull)
       RNullOrBuilder {
@@ -3191,21 +3266,25 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @return A list containing the booleans.
      */
     java.util.List<java.lang.Boolean> getBooleansList();
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @return The count of booleans.
      */
     int getBooleansCount();
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @param index The index of the element to return.
+     * @return The booleans at the given index.
      */
     boolean getBooleans(int index);
   }
   /**
    * Protobuf type {@code rplugininterop.RObject.RBoolean}
    */
-  public  static final class RBoolean extends
+  public static final class RBoolean extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.RBoolean)
       RBooleanOrBuilder {
@@ -3309,19 +3388,24 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.Internal.BooleanList booleans_;
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @return A list containing the booleans.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Boolean>
         getBooleansList() {
       return booleans_;
     }
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @return The count of booleans.
      */
     public int getBooleansCount() {
       return booleans_.size();
     }
     /**
      * <code>repeated bool booleans = 1;</code>
+     * @param index The index of the element to return.
+     * @return The booleans at the given index.
      */
     public boolean getBooleans(int index) {
       return booleans_.getBoolean(index);
@@ -3666,6 +3750,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @return A list containing the booleans.
        */
       public java.util.List<java.lang.Boolean>
           getBooleansList() {
@@ -3674,18 +3759,24 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @return The count of booleans.
        */
       public int getBooleansCount() {
         return booleans_.size();
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @param index The index of the element to return.
+       * @return The booleans at the given index.
        */
       public boolean getBooleans(int index) {
         return booleans_.getBoolean(index);
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The booleans to set.
+       * @return This builder for chaining.
        */
       public Builder setBooleans(
           int index, boolean value) {
@@ -3696,6 +3787,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @param value The booleans to add.
+       * @return This builder for chaining.
        */
       public Builder addBooleans(boolean value) {
         ensureBooleansIsMutable();
@@ -3705,6 +3798,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @param values The booleans to add.
+       * @return This builder for chaining.
        */
       public Builder addAllBooleans(
           java.lang.Iterable<? extends java.lang.Boolean> values) {
@@ -3716,6 +3811,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>repeated bool booleans = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBooleans() {
         booleans_ = emptyBooleanList();
@@ -3782,20 +3878,24 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string key = 1;</code>
+     * @return The key.
      */
     java.lang.String getKey();
     /**
      * <code>string key = 1;</code>
+     * @return The bytes for key.
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
      * <code>.rplugininterop.RObject value = 2;</code>
+     * @return Whether the value field is set.
      */
     boolean hasValue();
     /**
      * <code>.rplugininterop.RObject value = 2;</code>
+     * @return The value.
      */
     org.jetbrains.r.rinterop.RObject getValue();
     /**
@@ -3806,7 +3906,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RObject.KeyValue}
    */
-  public  static final class KeyValue extends
+  public static final class KeyValue extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.KeyValue)
       KeyValueOrBuilder {
@@ -3904,7 +4004,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object key_;
     /**
      * <code>string key = 1;</code>
+     * @return The key.
      */
+    @java.lang.Override
     public java.lang.String getKey() {
       java.lang.Object ref = key_;
       if (ref instanceof java.lang.String) {
@@ -3919,7 +4021,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string key = 1;</code>
+     * @return The bytes for key.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getKeyBytes() {
       java.lang.Object ref = key_;
@@ -3938,19 +4042,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RObject value_;
     /**
      * <code>.rplugininterop.RObject value = 2;</code>
+     * @return Whether the value field is set.
      */
+    @java.lang.Override
     public boolean hasValue() {
       return value_ != null;
     }
     /**
      * <code>.rplugininterop.RObject value = 2;</code>
+     * @return The value.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject getValue() {
       return value_ == null ? org.jetbrains.r.rinterop.RObject.getDefaultInstance() : value_;
     }
     /**
      * <code>.rplugininterop.RObject value = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObjectOrBuilder getValueOrBuilder() {
       return getValue();
     }
@@ -4290,6 +4399,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object key_ = "";
       /**
        * <code>string key = 1;</code>
+       * @return The key.
        */
       public java.lang.String getKey() {
         java.lang.Object ref = key_;
@@ -4305,6 +4415,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string key = 1;</code>
+       * @return The bytes for key.
        */
       public com.google.protobuf.ByteString
           getKeyBytes() {
@@ -4321,6 +4432,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string key = 1;</code>
+       * @param value The key to set.
+       * @return This builder for chaining.
        */
       public Builder setKey(
           java.lang.String value) {
@@ -4334,6 +4447,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string key = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearKey() {
         
@@ -4343,6 +4457,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string key = 1;</code>
+       * @param value The bytes for key to set.
+       * @return This builder for chaining.
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
@@ -4361,12 +4477,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RObject, org.jetbrains.r.rinterop.RObject.Builder, org.jetbrains.r.rinterop.RObjectOrBuilder> valueBuilder_;
       /**
        * <code>.rplugininterop.RObject value = 2;</code>
+       * @return Whether the value field is set.
        */
       public boolean hasValue() {
         return valueBuilder_ != null || value_ != null;
       }
       /**
        * <code>.rplugininterop.RObject value = 2;</code>
+       * @return The value.
        */
       public org.jetbrains.r.rinterop.RObject getValue() {
         if (valueBuilder_ == null) {
@@ -4556,7 +4674,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RObject.NamedList}
    */
-  public  static final class NamedList extends
+  public static final class NamedList extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RObject.NamedList)
       NamedListOrBuilder {
@@ -4649,12 +4767,14 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RObject.KeyValue rObjects = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.jetbrains.r.rinterop.RObject.KeyValue> getRObjectsList() {
       return rObjects_;
     }
     /**
      * <code>repeated .rplugininterop.RObject.KeyValue rObjects = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.jetbrains.r.rinterop.RObject.KeyValueOrBuilder> 
         getRObjectsOrBuilderList() {
       return rObjects_;
@@ -4662,18 +4782,21 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .rplugininterop.RObject.KeyValue rObjects = 1;</code>
      */
+    @java.lang.Override
     public int getRObjectsCount() {
       return rObjects_.size();
     }
     /**
      * <code>repeated .rplugininterop.RObject.KeyValue rObjects = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.KeyValue getRObjects(int index) {
       return rObjects_.get(index);
     }
     /**
      * <code>repeated .rplugininterop.RObject.KeyValue rObjects = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.KeyValueOrBuilder getRObjectsOrBuilder(
         int index) {
       return rObjects_.get(index);
@@ -5316,7 +5439,8 @@ private static final long serialVersionUID = 0L;
   private int objectCase_ = 0;
   private java.lang.Object object_;
   public enum ObjectCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     RSTRING(1),
     RINT(2),
     RDOUBLE(3),
@@ -5331,6 +5455,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -5366,13 +5492,17 @@ private static final long serialVersionUID = 0L;
   public static final int RSTRING_FIELD_NUMBER = 1;
   /**
    * <code>.rplugininterop.RObject.RString rString = 1;</code>
+   * @return Whether the rString field is set.
    */
+  @java.lang.Override
   public boolean hasRString() {
     return objectCase_ == 1;
   }
   /**
    * <code>.rplugininterop.RObject.RString rString = 1;</code>
+   * @return The rString.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RString getRString() {
     if (objectCase_ == 1) {
        return (org.jetbrains.r.rinterop.RObject.RString) object_;
@@ -5382,6 +5512,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.RString rString = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RStringOrBuilder getRStringOrBuilder() {
     if (objectCase_ == 1) {
        return (org.jetbrains.r.rinterop.RObject.RString) object_;
@@ -5392,13 +5523,17 @@ private static final long serialVersionUID = 0L;
   public static final int RINT_FIELD_NUMBER = 2;
   /**
    * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+   * @return Whether the rInt field is set.
    */
+  @java.lang.Override
   public boolean hasRInt() {
     return objectCase_ == 2;
   }
   /**
    * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+   * @return The rInt.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RInt getRInt() {
     if (objectCase_ == 2) {
        return (org.jetbrains.r.rinterop.RObject.RInt) object_;
@@ -5408,6 +5543,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RIntOrBuilder getRIntOrBuilder() {
     if (objectCase_ == 2) {
        return (org.jetbrains.r.rinterop.RObject.RInt) object_;
@@ -5418,13 +5554,17 @@ private static final long serialVersionUID = 0L;
   public static final int RDOUBLE_FIELD_NUMBER = 3;
   /**
    * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+   * @return Whether the rDouble field is set.
    */
+  @java.lang.Override
   public boolean hasRDouble() {
     return objectCase_ == 3;
   }
   /**
    * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+   * @return The rDouble.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RDouble getRDouble() {
     if (objectCase_ == 3) {
        return (org.jetbrains.r.rinterop.RObject.RDouble) object_;
@@ -5434,6 +5574,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RDoubleOrBuilder getRDoubleOrBuilder() {
     if (objectCase_ == 3) {
        return (org.jetbrains.r.rinterop.RObject.RDouble) object_;
@@ -5444,13 +5585,17 @@ private static final long serialVersionUID = 0L;
   public static final int LIST_FIELD_NUMBER = 4;
   /**
    * <code>.rplugininterop.RObject.List list = 4;</code>
+   * @return Whether the list field is set.
    */
+  @java.lang.Override
   public boolean hasList() {
     return objectCase_ == 4;
   }
   /**
    * <code>.rplugininterop.RObject.List list = 4;</code>
+   * @return The list.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.List getList() {
     if (objectCase_ == 4) {
        return (org.jetbrains.r.rinterop.RObject.List) object_;
@@ -5460,6 +5605,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.List list = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.ListOrBuilder getListOrBuilder() {
     if (objectCase_ == 4) {
        return (org.jetbrains.r.rinterop.RObject.List) object_;
@@ -5470,13 +5616,17 @@ private static final long serialVersionUID = 0L;
   public static final int RNULL_FIELD_NUMBER = 5;
   /**
    * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+   * @return Whether the rNull field is set.
    */
+  @java.lang.Override
   public boolean hasRNull() {
     return objectCase_ == 5;
   }
   /**
    * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+   * @return The rNull.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RNull getRNull() {
     if (objectCase_ == 5) {
        return (org.jetbrains.r.rinterop.RObject.RNull) object_;
@@ -5486,6 +5636,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRNullOrBuilder() {
     if (objectCase_ == 5) {
        return (org.jetbrains.r.rinterop.RObject.RNull) object_;
@@ -5496,13 +5647,17 @@ private static final long serialVersionUID = 0L;
   public static final int RBOOLEAN_FIELD_NUMBER = 6;
   /**
    * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+   * @return Whether the rBoolean field is set.
    */
+  @java.lang.Override
   public boolean hasRBoolean() {
     return objectCase_ == 6;
   }
   /**
    * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+   * @return The rBoolean.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean() {
     if (objectCase_ == 6) {
        return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
@@ -5512,6 +5667,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRBooleanOrBuilder() {
     if (objectCase_ == 6) {
        return (org.jetbrains.r.rinterop.RObject.RBoolean) object_;
@@ -5522,13 +5678,17 @@ private static final long serialVersionUID = 0L;
   public static final int NAMEDLIST_FIELD_NUMBER = 7;
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   * @return Whether the namedList field is set.
    */
+  @java.lang.Override
   public boolean hasNamedList() {
     return objectCase_ == 7;
   }
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   * @return The namedList.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.NamedList getNamedList() {
     if (objectCase_ == 7) {
        return (org.jetbrains.r.rinterop.RObject.NamedList) object_;
@@ -5538,6 +5698,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RObject.NamedListOrBuilder getNamedListOrBuilder() {
     if (objectCase_ == 7) {
        return (org.jetbrains.r.rinterop.RObject.NamedList) object_;
@@ -5548,6 +5709,7 @@ private static final long serialVersionUID = 0L;
   public static final int ERROR_FIELD_NUMBER = 8;
   /**
    * <code>string error = 8;</code>
+   * @return The error.
    */
   public java.lang.String getError() {
     java.lang.Object ref = "";
@@ -5568,6 +5730,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string error = 8;</code>
+   * @return The bytes for error.
    */
   public com.google.protobuf.ByteString
       getErrorBytes() {
@@ -6114,13 +6277,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.RString, org.jetbrains.r.rinterop.RObject.RString.Builder, org.jetbrains.r.rinterop.RObject.RStringOrBuilder> rStringBuilder_;
     /**
      * <code>.rplugininterop.RObject.RString rString = 1;</code>
+     * @return Whether the rString field is set.
      */
+    @java.lang.Override
     public boolean hasRString() {
       return objectCase_ == 1;
     }
     /**
      * <code>.rplugininterop.RObject.RString rString = 1;</code>
+     * @return The rString.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RString getRString() {
       if (rStringBuilder_ == null) {
         if (objectCase_ == 1) {
@@ -6214,6 +6381,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.RString rString = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RStringOrBuilder getRStringOrBuilder() {
       if ((objectCase_ == 1) && (rStringBuilder_ != null)) {
         return rStringBuilder_.getMessageOrBuilder();
@@ -6250,13 +6418,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.RInt, org.jetbrains.r.rinterop.RObject.RInt.Builder, org.jetbrains.r.rinterop.RObject.RIntOrBuilder> rIntBuilder_;
     /**
      * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+     * @return Whether the rInt field is set.
      */
+    @java.lang.Override
     public boolean hasRInt() {
       return objectCase_ == 2;
     }
     /**
      * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+     * @return The rInt.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RInt getRInt() {
       if (rIntBuilder_ == null) {
         if (objectCase_ == 2) {
@@ -6350,6 +6522,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RIntOrBuilder getRIntOrBuilder() {
       if ((objectCase_ == 2) && (rIntBuilder_ != null)) {
         return rIntBuilder_.getMessageOrBuilder();
@@ -6386,13 +6559,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.RDouble, org.jetbrains.r.rinterop.RObject.RDouble.Builder, org.jetbrains.r.rinterop.RObject.RDoubleOrBuilder> rDoubleBuilder_;
     /**
      * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+     * @return Whether the rDouble field is set.
      */
+    @java.lang.Override
     public boolean hasRDouble() {
       return objectCase_ == 3;
     }
     /**
      * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+     * @return The rDouble.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RDouble getRDouble() {
       if (rDoubleBuilder_ == null) {
         if (objectCase_ == 3) {
@@ -6486,6 +6663,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RDoubleOrBuilder getRDoubleOrBuilder() {
       if ((objectCase_ == 3) && (rDoubleBuilder_ != null)) {
         return rDoubleBuilder_.getMessageOrBuilder();
@@ -6522,13 +6700,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.List, org.jetbrains.r.rinterop.RObject.List.Builder, org.jetbrains.r.rinterop.RObject.ListOrBuilder> listBuilder_;
     /**
      * <code>.rplugininterop.RObject.List list = 4;</code>
+     * @return Whether the list field is set.
      */
+    @java.lang.Override
     public boolean hasList() {
       return objectCase_ == 4;
     }
     /**
      * <code>.rplugininterop.RObject.List list = 4;</code>
+     * @return The list.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.List getList() {
       if (listBuilder_ == null) {
         if (objectCase_ == 4) {
@@ -6622,6 +6804,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.List list = 4;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.ListOrBuilder getListOrBuilder() {
       if ((objectCase_ == 4) && (listBuilder_ != null)) {
         return listBuilder_.getMessageOrBuilder();
@@ -6658,13 +6841,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.RNull, org.jetbrains.r.rinterop.RObject.RNull.Builder, org.jetbrains.r.rinterop.RObject.RNullOrBuilder> rNullBuilder_;
     /**
      * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+     * @return Whether the rNull field is set.
      */
+    @java.lang.Override
     public boolean hasRNull() {
       return objectCase_ == 5;
     }
     /**
      * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+     * @return The rNull.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RNull getRNull() {
       if (rNullBuilder_ == null) {
         if (objectCase_ == 5) {
@@ -6758,6 +6945,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RNullOrBuilder getRNullOrBuilder() {
       if ((objectCase_ == 5) && (rNullBuilder_ != null)) {
         return rNullBuilder_.getMessageOrBuilder();
@@ -6794,13 +6982,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.RBoolean, org.jetbrains.r.rinterop.RObject.RBoolean.Builder, org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder> rBooleanBuilder_;
     /**
      * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+     * @return Whether the rBoolean field is set.
      */
+    @java.lang.Override
     public boolean hasRBoolean() {
       return objectCase_ == 6;
     }
     /**
      * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+     * @return The rBoolean.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean() {
       if (rBooleanBuilder_ == null) {
         if (objectCase_ == 6) {
@@ -6894,6 +7086,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.RBooleanOrBuilder getRBooleanOrBuilder() {
       if ((objectCase_ == 6) && (rBooleanBuilder_ != null)) {
         return rBooleanBuilder_.getMessageOrBuilder();
@@ -6930,13 +7123,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RObject.NamedList, org.jetbrains.r.rinterop.RObject.NamedList.Builder, org.jetbrains.r.rinterop.RObject.NamedListOrBuilder> namedListBuilder_;
     /**
      * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+     * @return Whether the namedList field is set.
      */
+    @java.lang.Override
     public boolean hasNamedList() {
       return objectCase_ == 7;
     }
     /**
      * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+     * @return The namedList.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.NamedList getNamedList() {
       if (namedListBuilder_ == null) {
         if (objectCase_ == 7) {
@@ -7030,6 +7227,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RObject.NamedListOrBuilder getNamedListOrBuilder() {
       if ((objectCase_ == 7) && (namedListBuilder_ != null)) {
         return namedListBuilder_.getMessageOrBuilder();
@@ -7064,7 +7262,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string error = 8;</code>
+     * @return The error.
      */
+    @java.lang.Override
     public java.lang.String getError() {
       java.lang.Object ref = "";
       if (objectCase_ == 8) {
@@ -7084,7 +7284,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 8;</code>
+     * @return The bytes for error.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getErrorBytes() {
       java.lang.Object ref = "";
@@ -7105,6 +7307,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 8;</code>
+     * @param value The error to set.
+     * @return This builder for chaining.
      */
     public Builder setError(
         java.lang.String value) {
@@ -7118,6 +7322,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 8;</code>
+     * @return This builder for chaining.
      */
     public Builder clearError() {
       if (objectCase_ == 8) {
@@ -7129,6 +7334,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 8;</code>
+     * @param value The bytes for error to set.
+     * @return This builder for chaining.
      */
     public Builder setErrorBytes(
         com.google.protobuf.ByteString value) {

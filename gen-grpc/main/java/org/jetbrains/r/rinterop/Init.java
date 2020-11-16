@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Init}
  */
-public  final class Init extends
+public final class Init extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Init)
     InitOrBuilder {
@@ -122,7 +122,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object projectDir_;
   /**
    * <code>string projectDir = 1;</code>
+   * @return The projectDir.
    */
+  @java.lang.Override
   public java.lang.String getProjectDir() {
     java.lang.Object ref = projectDir_;
     if (ref instanceof java.lang.String) {
@@ -137,7 +139,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string projectDir = 1;</code>
+   * @return The bytes for projectDir.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getProjectDirBytes() {
     java.lang.Object ref = projectDir_;
@@ -156,7 +160,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object rScriptsPath_;
   /**
    * <code>string rScriptsPath = 2;</code>
+   * @return The rScriptsPath.
    */
+  @java.lang.Override
   public java.lang.String getRScriptsPath() {
     java.lang.Object ref = rScriptsPath_;
     if (ref instanceof java.lang.String) {
@@ -171,7 +177,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string rScriptsPath = 2;</code>
+   * @return The bytes for rScriptsPath.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getRScriptsPathBytes() {
     java.lang.Object ref = rScriptsPath_;
@@ -190,7 +198,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object workspaceFile_;
   /**
    * <code>string workspaceFile = 3;</code>
+   * @return The workspaceFile.
    */
+  @java.lang.Override
   public java.lang.String getWorkspaceFile() {
     java.lang.Object ref = workspaceFile_;
     if (ref instanceof java.lang.String) {
@@ -205,7 +215,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string workspaceFile = 3;</code>
+   * @return The bytes for workspaceFile.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getWorkspaceFileBytes() {
     java.lang.Object ref = workspaceFile_;
@@ -224,7 +236,9 @@ private static final long serialVersionUID = 0L;
   private boolean loadWorkspace_;
   /**
    * <code>bool loadWorkspace = 4;</code>
+   * @return The loadWorkspace.
    */
+  @java.lang.Override
   public boolean getLoadWorkspace() {
     return loadWorkspace_;
   }
@@ -233,7 +247,9 @@ private static final long serialVersionUID = 0L;
   private boolean saveOnExit_;
   /**
    * <code>bool saveOnExit = 5;</code>
+   * @return The saveOnExit.
    */
+  @java.lang.Override
   public boolean getSaveOnExit() {
     return saveOnExit_;
   }
@@ -242,7 +258,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object httpUserAgent_;
   /**
    * <code>string httpUserAgent = 6;</code>
+   * @return The httpUserAgent.
    */
+  @java.lang.Override
   public java.lang.String getHttpUserAgent() {
     java.lang.Object ref = httpUserAgent_;
     if (ref instanceof java.lang.String) {
@@ -257,7 +275,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string httpUserAgent = 6;</code>
+   * @return The bytes for httpUserAgent.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getHttpUserAgentBytes() {
     java.lang.Object ref = httpUserAgent_;
@@ -664,6 +684,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object projectDir_ = "";
     /**
      * <code>string projectDir = 1;</code>
+     * @return The projectDir.
      */
     public java.lang.String getProjectDir() {
       java.lang.Object ref = projectDir_;
@@ -679,6 +700,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string projectDir = 1;</code>
+     * @return The bytes for projectDir.
      */
     public com.google.protobuf.ByteString
         getProjectDirBytes() {
@@ -695,6 +717,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string projectDir = 1;</code>
+     * @param value The projectDir to set.
+     * @return This builder for chaining.
      */
     public Builder setProjectDir(
         java.lang.String value) {
@@ -708,6 +732,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string projectDir = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearProjectDir() {
       
@@ -717,6 +742,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string projectDir = 1;</code>
+     * @param value The bytes for projectDir to set.
+     * @return This builder for chaining.
      */
     public Builder setProjectDirBytes(
         com.google.protobuf.ByteString value) {
@@ -733,6 +760,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object rScriptsPath_ = "";
     /**
      * <code>string rScriptsPath = 2;</code>
+     * @return The rScriptsPath.
      */
     public java.lang.String getRScriptsPath() {
       java.lang.Object ref = rScriptsPath_;
@@ -748,6 +776,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rScriptsPath = 2;</code>
+     * @return The bytes for rScriptsPath.
      */
     public com.google.protobuf.ByteString
         getRScriptsPathBytes() {
@@ -764,6 +793,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rScriptsPath = 2;</code>
+     * @param value The rScriptsPath to set.
+     * @return This builder for chaining.
      */
     public Builder setRScriptsPath(
         java.lang.String value) {
@@ -777,6 +808,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rScriptsPath = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearRScriptsPath() {
       
@@ -786,6 +818,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string rScriptsPath = 2;</code>
+     * @param value The bytes for rScriptsPath to set.
+     * @return This builder for chaining.
      */
     public Builder setRScriptsPathBytes(
         com.google.protobuf.ByteString value) {
@@ -802,6 +836,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object workspaceFile_ = "";
     /**
      * <code>string workspaceFile = 3;</code>
+     * @return The workspaceFile.
      */
     public java.lang.String getWorkspaceFile() {
       java.lang.Object ref = workspaceFile_;
@@ -817,6 +852,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string workspaceFile = 3;</code>
+     * @return The bytes for workspaceFile.
      */
     public com.google.protobuf.ByteString
         getWorkspaceFileBytes() {
@@ -833,6 +869,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string workspaceFile = 3;</code>
+     * @param value The workspaceFile to set.
+     * @return This builder for chaining.
      */
     public Builder setWorkspaceFile(
         java.lang.String value) {
@@ -846,6 +884,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string workspaceFile = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWorkspaceFile() {
       
@@ -855,6 +894,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string workspaceFile = 3;</code>
+     * @param value The bytes for workspaceFile to set.
+     * @return This builder for chaining.
      */
     public Builder setWorkspaceFileBytes(
         com.google.protobuf.ByteString value) {
@@ -871,12 +912,16 @@ private static final long serialVersionUID = 0L;
     private boolean loadWorkspace_ ;
     /**
      * <code>bool loadWorkspace = 4;</code>
+     * @return The loadWorkspace.
      */
+    @java.lang.Override
     public boolean getLoadWorkspace() {
       return loadWorkspace_;
     }
     /**
      * <code>bool loadWorkspace = 4;</code>
+     * @param value The loadWorkspace to set.
+     * @return This builder for chaining.
      */
     public Builder setLoadWorkspace(boolean value) {
       
@@ -886,6 +931,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool loadWorkspace = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLoadWorkspace() {
       
@@ -897,12 +943,16 @@ private static final long serialVersionUID = 0L;
     private boolean saveOnExit_ ;
     /**
      * <code>bool saveOnExit = 5;</code>
+     * @return The saveOnExit.
      */
+    @java.lang.Override
     public boolean getSaveOnExit() {
       return saveOnExit_;
     }
     /**
      * <code>bool saveOnExit = 5;</code>
+     * @param value The saveOnExit to set.
+     * @return This builder for chaining.
      */
     public Builder setSaveOnExit(boolean value) {
       
@@ -912,6 +962,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool saveOnExit = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSaveOnExit() {
       
@@ -923,6 +974,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object httpUserAgent_ = "";
     /**
      * <code>string httpUserAgent = 6;</code>
+     * @return The httpUserAgent.
      */
     public java.lang.String getHttpUserAgent() {
       java.lang.Object ref = httpUserAgent_;
@@ -938,6 +990,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string httpUserAgent = 6;</code>
+     * @return The bytes for httpUserAgent.
      */
     public com.google.protobuf.ByteString
         getHttpUserAgentBytes() {
@@ -954,6 +1007,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string httpUserAgent = 6;</code>
+     * @param value The httpUserAgent to set.
+     * @return This builder for chaining.
      */
     public Builder setHttpUserAgent(
         java.lang.String value) {
@@ -967,6 +1022,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string httpUserAgent = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearHttpUserAgent() {
       
@@ -976,6 +1032,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string httpUserAgent = 6;</code>
+     * @param value The bytes for httpUserAgent to set.
+     * @return This builder for chaining.
      */
     public Builder setHttpUserAgentBytes(
         com.google.protobuf.ByteString value) {

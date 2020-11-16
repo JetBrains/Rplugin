@@ -9,15 +9,18 @@ public interface DebugSetMasterBreakpointRequestOrBuilder extends
 
   /**
    * <code>int32 breakpointId = 1;</code>
+   * @return The breakpointId.
    */
   int getBreakpointId();
 
   /**
    * <code>.google.protobuf.Empty none = 2;</code>
+   * @return Whether the none field is set.
    */
   boolean hasNone();
   /**
    * <code>.google.protobuf.Empty none = 2;</code>
+   * @return The none.
    */
   com.google.protobuf.Empty getNone();
   /**
@@ -27,11 +30,13 @@ public interface DebugSetMasterBreakpointRequestOrBuilder extends
 
   /**
    * <code>int32 masterId = 3;</code>
+   * @return The masterId.
    */
   int getMasterId();
 
   /**
    * <code>bool leaveEnabled = 4;</code>
+   * @return The leaveEnabled.
    */
   boolean getLeaveEnabled();
 

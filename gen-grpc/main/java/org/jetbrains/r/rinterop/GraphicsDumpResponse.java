@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsDumpResponse}
  */
-public  final class GraphicsDumpResponse extends
+public final class GraphicsDumpResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsDumpResponse)
     GraphicsDumpResponseOrBuilder {
@@ -117,7 +117,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object message_;
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
+  @java.lang.Override
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
@@ -132,7 +134,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageBytes() {
     java.lang.Object ref = message_;
@@ -177,6 +181,7 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
    */
 
+  @java.lang.Override
   public boolean containsNumber2Parameters(
       int key) {
     
@@ -185,6 +190,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Use {@link #getNumber2ParametersMap()} instead.
    */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.Integer, org.jetbrains.r.rinterop.ScreenParameters> getNumber2Parameters() {
     return getNumber2ParametersMap();
@@ -192,6 +198,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
    */
+  @java.lang.Override
 
   public java.util.Map<java.lang.Integer, org.jetbrains.r.rinterop.ScreenParameters> getNumber2ParametersMap() {
     return internalGetNumber2Parameters().getMap();
@@ -199,6 +206,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
    */
+  @java.lang.Override
 
   public org.jetbrains.r.rinterop.ScreenParameters getNumber2ParametersOrDefault(
       int key,
@@ -211,6 +219,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
    */
+  @java.lang.Override
 
   public org.jetbrains.r.rinterop.ScreenParameters getNumber2ParametersOrThrow(
       int key) {
@@ -579,6 +588,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object message_ = "";
     /**
      * <code>string message = 1;</code>
+     * @return The message.
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -594,6 +604,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -610,6 +621,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -623,6 +636,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessage() {
       
@@ -632,6 +646,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -675,6 +691,7 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
      */
 
+    @java.lang.Override
     public boolean containsNumber2Parameters(
         int key) {
       
@@ -683,6 +700,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Use {@link #getNumber2ParametersMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.Integer, org.jetbrains.r.rinterop.ScreenParameters> getNumber2Parameters() {
       return getNumber2ParametersMap();
@@ -690,6 +708,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.Integer, org.jetbrains.r.rinterop.ScreenParameters> getNumber2ParametersMap() {
       return internalGetNumber2Parameters().getMap();
@@ -697,6 +716,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
      */
+    @java.lang.Override
 
     public org.jetbrains.r.rinterop.ScreenParameters getNumber2ParametersOrDefault(
         int key,
@@ -709,6 +729,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;int32, .rplugininterop.ScreenParameters&gt; number2Parameters = 2;</code>
      */
+    @java.lang.Override
 
     public org.jetbrains.r.rinterop.ScreenParameters getNumber2ParametersOrThrow(
         int key) {

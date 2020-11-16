@@ -9,10 +9,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.RString rString = 1;</code>
+   * @return Whether the rString field is set.
    */
   boolean hasRString();
   /**
    * <code>.rplugininterop.RObject.RString rString = 1;</code>
+   * @return The rString.
    */
   org.jetbrains.r.rinterop.RObject.RString getRString();
   /**
@@ -22,10 +24,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+   * @return Whether the rInt field is set.
    */
   boolean hasRInt();
   /**
    * <code>.rplugininterop.RObject.RInt rInt = 2;</code>
+   * @return The rInt.
    */
   org.jetbrains.r.rinterop.RObject.RInt getRInt();
   /**
@@ -35,10 +39,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+   * @return Whether the rDouble field is set.
    */
   boolean hasRDouble();
   /**
    * <code>.rplugininterop.RObject.RDouble rDouble = 3;</code>
+   * @return The rDouble.
    */
   org.jetbrains.r.rinterop.RObject.RDouble getRDouble();
   /**
@@ -48,10 +54,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.List list = 4;</code>
+   * @return Whether the list field is set.
    */
   boolean hasList();
   /**
    * <code>.rplugininterop.RObject.List list = 4;</code>
+   * @return The list.
    */
   org.jetbrains.r.rinterop.RObject.List getList();
   /**
@@ -61,10 +69,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+   * @return Whether the rNull field is set.
    */
   boolean hasRNull();
   /**
    * <code>.rplugininterop.RObject.RNull rNull = 5;</code>
+   * @return The rNull.
    */
   org.jetbrains.r.rinterop.RObject.RNull getRNull();
   /**
@@ -74,10 +84,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+   * @return Whether the rBoolean field is set.
    */
   boolean hasRBoolean();
   /**
    * <code>.rplugininterop.RObject.RBoolean rBoolean = 6;</code>
+   * @return The rBoolean.
    */
   org.jetbrains.r.rinterop.RObject.RBoolean getRBoolean();
   /**
@@ -87,10 +99,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   * @return Whether the namedList field is set.
    */
   boolean hasNamedList();
   /**
    * <code>.rplugininterop.RObject.NamedList namedList = 7;</code>
+   * @return The namedList.
    */
   org.jetbrains.r.rinterop.RObject.NamedList getNamedList();
   /**
@@ -100,10 +114,12 @@ public interface RObjectOrBuilder extends
 
   /**
    * <code>string error = 8;</code>
+   * @return The error.
    */
   java.lang.String getError();
   /**
    * <code>string error = 8;</code>
+   * @return The bytes for error.
    */
   com.google.protobuf.ByteString
       getErrorBytes();

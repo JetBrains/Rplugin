@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.TableColumnsInfo}
  */
-public  final class TableColumnsInfo extends
+public final class TableColumnsInfo extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.TableColumnsInfo)
     TableColumnsInfoOrBuilder {
@@ -152,6 +152,8 @@ private static final long serialVersionUID = 0L;
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -159,6 +161,10 @@ private static final long serialVersionUID = 0L;
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static TableType forNumber(int value) {
       switch (value) {
         case 0: return UNKNOWN;
@@ -183,6 +189,10 @@ private static final long serialVersionUID = 0L;
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -223,20 +233,24 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
     java.lang.String getType();
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
     com.google.protobuf.ByteString
         getTypeBytes();
@@ -244,7 +258,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.TableColumnsInfo.Column}
    */
-  public  static final class Column extends
+  public static final class Column extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.TableColumnsInfo.Column)
       ColumnOrBuilder {
@@ -336,7 +350,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -351,7 +367,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -370,7 +388,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object type_;
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
+    @java.lang.Override
     public java.lang.String getType() {
       java.lang.Object ref = type_;
       if (ref instanceof java.lang.String) {
@@ -385,7 +405,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTypeBytes() {
       java.lang.Object ref = type_;
@@ -722,6 +744,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -737,6 +760,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -753,6 +777,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -766,6 +792,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -775,6 +802,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -791,6 +820,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object type_ = "";
       /**
        * <code>string type = 2;</code>
+       * @return The type.
        */
       public java.lang.String getType() {
         java.lang.Object ref = type_;
@@ -806,6 +836,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @return The bytes for type.
        */
       public com.google.protobuf.ByteString
           getTypeBytes() {
@@ -822,6 +853,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(
           java.lang.String value) {
@@ -835,6 +868,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
         
@@ -844,6 +878,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeBytes(
           com.google.protobuf.ByteString value) {
@@ -914,12 +950,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.TableColumnsInfo.Column columns = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.TableColumnsInfo.Column> getColumnsList() {
     return columns_;
   }
   /**
    * <code>repeated .rplugininterop.TableColumnsInfo.Column columns = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.TableColumnsInfo.ColumnOrBuilder> 
       getColumnsOrBuilderList() {
     return columns_;
@@ -927,18 +965,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.TableColumnsInfo.Column columns = 1;</code>
    */
+  @java.lang.Override
   public int getColumnsCount() {
     return columns_.size();
   }
   /**
    * <code>repeated .rplugininterop.TableColumnsInfo.Column columns = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.TableColumnsInfo.Column getColumns(int index) {
     return columns_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.TableColumnsInfo.Column columns = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.TableColumnsInfo.ColumnOrBuilder getColumnsOrBuilder(
       int index) {
     return columns_.get(index);
@@ -948,14 +989,16 @@ private static final long serialVersionUID = 0L;
   private int tableType_;
   /**
    * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+   * @return The enum numeric value on the wire for tableType.
    */
-  public int getTableTypeValue() {
+  @java.lang.Override public int getTableTypeValue() {
     return tableType_;
   }
   /**
    * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+   * @return The tableType.
    */
-  public org.jetbrains.r.rinterop.TableColumnsInfo.TableType getTableType() {
+  @java.lang.Override public org.jetbrains.r.rinterop.TableColumnsInfo.TableType getTableType() {
     @SuppressWarnings("deprecation")
     org.jetbrains.r.rinterop.TableColumnsInfo.TableType result = org.jetbrains.r.rinterop.TableColumnsInfo.TableType.valueOf(tableType_);
     return result == null ? org.jetbrains.r.rinterop.TableColumnsInfo.TableType.UNRECOGNIZED : result;
@@ -1562,21 +1605,27 @@ private static final long serialVersionUID = 0L;
     private int tableType_ = 0;
     /**
      * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+     * @return The enum numeric value on the wire for tableType.
      */
-    public int getTableTypeValue() {
+    @java.lang.Override public int getTableTypeValue() {
       return tableType_;
     }
     /**
      * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+     * @param value The enum numeric value on the wire for tableType to set.
+     * @return This builder for chaining.
      */
     public Builder setTableTypeValue(int value) {
+      
       tableType_ = value;
       onChanged();
       return this;
     }
     /**
      * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+     * @return The tableType.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.TableColumnsInfo.TableType getTableType() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.rinterop.TableColumnsInfo.TableType result = org.jetbrains.r.rinterop.TableColumnsInfo.TableType.valueOf(tableType_);
@@ -1584,6 +1633,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+     * @param value The tableType to set.
+     * @return This builder for chaining.
      */
     public Builder setTableType(org.jetbrains.r.rinterop.TableColumnsInfo.TableType value) {
       if (value == null) {
@@ -1596,6 +1647,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.TableColumnsInfo.TableType tableType = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTableType() {
       

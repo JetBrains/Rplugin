@@ -9,26 +9,31 @@ public interface CircleFigureOrBuilder extends
 
   /**
    * <code>fixed64 center = 1;</code>
+   * @return The center.
    */
   long getCenter();
 
   /**
    * <code>fixed32 radius = 2;</code>
+   * @return The radius.
    */
   int getRadius();
 
   /**
    * <code>int32 strokeIndex = 3;</code>
+   * @return The strokeIndex.
    */
   int getStrokeIndex();
 
   /**
    * <code>int32 colorIndex = 4;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 
   /**
    * <code>int32 fillIndex = 5;</code>
+   * @return The fillIndex.
    */
   int getFillIndex();
 }

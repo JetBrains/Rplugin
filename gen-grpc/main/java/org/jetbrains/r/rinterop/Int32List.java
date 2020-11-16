@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Int32List}
  */
-public  final class Int32List extends
+public final class Int32List extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Int32List)
     Int32ListOrBuilder {
@@ -117,7 +117,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object message_;
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
+  @java.lang.Override
   public java.lang.String getMessage() {
     java.lang.Object ref = message_;
     if (ref instanceof java.lang.String) {
@@ -132,7 +134,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageBytes() {
     java.lang.Object ref = message_;
@@ -151,19 +155,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.IntList value_;
   /**
    * <code>repeated int32 value = 2;</code>
+   * @return A list containing the value.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Integer>
       getValueList() {
     return value_;
   }
   /**
    * <code>repeated int32 value = 2;</code>
+   * @return The count of value.
    */
   public int getValueCount() {
     return value_.size();
   }
   /**
    * <code>repeated int32 value = 2;</code>
+   * @param index The index of the element to return.
+   * @return The value at the given index.
    */
   public int getValue(int index) {
     return value_.getInt(index);
@@ -522,6 +531,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object message_ = "";
     /**
      * <code>string message = 1;</code>
+     * @return The message.
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -537,6 +547,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -553,6 +564,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessage(
         java.lang.String value) {
@@ -566,6 +579,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessage() {
       
@@ -575,6 +589,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message = 1;</code>
+     * @param value The bytes for message to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageBytes(
         com.google.protobuf.ByteString value) {
@@ -597,6 +613,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @return A list containing the value.
      */
     public java.util.List<java.lang.Integer>
         getValueList() {
@@ -605,18 +622,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @return The count of value.
      */
     public int getValueCount() {
       return value_.size();
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @param index The index of the element to return.
+     * @return The value at the given index.
      */
     public int getValue(int index) {
       return value_.getInt(index);
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The value to set.
+     * @return This builder for chaining.
      */
     public Builder setValue(
         int index, int value) {
@@ -627,6 +650,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @param value The value to add.
+     * @return This builder for chaining.
      */
     public Builder addValue(int value) {
       ensureValueIsMutable();
@@ -636,6 +661,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @param values The value to add.
+     * @return This builder for chaining.
      */
     public Builder addAllValue(
         java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -647,6 +674,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 value = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearValue() {
       value_ = emptyIntList();

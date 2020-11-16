@@ -9,30 +9,36 @@ public interface GraphicsGetSnapshotPathResponseOrBuilder extends
 
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
   java.lang.String getMessage();
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
       getMessageBytes();
 
   /**
    * <code>string snapshotName = 2;</code>
+   * @return The snapshotName.
    */
   java.lang.String getSnapshotName();
   /**
    * <code>string snapshotName = 2;</code>
+   * @return The bytes for snapshotName.
    */
   com.google.protobuf.ByteString
       getSnapshotNameBytes();
 
   /**
    * <code>string directory = 3;</code>
+   * @return The directory.
    */
   java.lang.String getDirectory();
   /**
    * <code>string directory = 3;</code>
+   * @return The bytes for directory.
    */
   com.google.protobuf.ByteString
       getDirectoryBytes();

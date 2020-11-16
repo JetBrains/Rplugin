@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ConvertRoxygenToHTMLResponse}
  */
-public  final class ConvertRoxygenToHTMLResponse extends
+public final class ConvertRoxygenToHTMLResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ConvertRoxygenToHTMLResponse)
     ConvertRoxygenToHTMLResponseOrBuilder {
@@ -95,7 +95,8 @@ private static final long serialVersionUID = 0L;
   private int resultCase_ = 0;
   private java.lang.Object result_;
   public enum ResultCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     TEXT(1),
     ERROR(2),
     RESULT_NOT_SET(0);
@@ -104,6 +105,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -133,6 +136,7 @@ private static final long serialVersionUID = 0L;
   public static final int TEXT_FIELD_NUMBER = 1;
   /**
    * <code>string text = 1;</code>
+   * @return The text.
    */
   public java.lang.String getText() {
     java.lang.Object ref = "";
@@ -153,6 +157,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string text = 1;</code>
+   * @return The bytes for text.
    */
   public com.google.protobuf.ByteString
       getTextBytes() {
@@ -176,6 +181,7 @@ private static final long serialVersionUID = 0L;
   public static final int ERROR_FIELD_NUMBER = 2;
   /**
    * <code>string error = 2;</code>
+   * @return The error.
    */
   public java.lang.String getError() {
     java.lang.Object ref = "";
@@ -196,6 +202,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string error = 2;</code>
+   * @return The bytes for error.
    */
   public com.google.protobuf.ByteString
       getErrorBytes() {
@@ -581,7 +588,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string text = 1;</code>
+     * @return The text.
      */
+    @java.lang.Override
     public java.lang.String getText() {
       java.lang.Object ref = "";
       if (resultCase_ == 1) {
@@ -601,7 +610,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @return The bytes for text.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTextBytes() {
       java.lang.Object ref = "";
@@ -622,6 +633,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @param value The text to set.
+     * @return This builder for chaining.
      */
     public Builder setText(
         java.lang.String value) {
@@ -635,6 +648,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearText() {
       if (resultCase_ == 1) {
@@ -646,6 +660,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string text = 1;</code>
+     * @param value The bytes for text to set.
+     * @return This builder for chaining.
      */
     public Builder setTextBytes(
         com.google.protobuf.ByteString value) {
@@ -661,7 +677,9 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string error = 2;</code>
+     * @return The error.
      */
+    @java.lang.Override
     public java.lang.String getError() {
       java.lang.Object ref = "";
       if (resultCase_ == 2) {
@@ -681,7 +699,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @return The bytes for error.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getErrorBytes() {
       java.lang.Object ref = "";
@@ -702,6 +722,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @param value The error to set.
+     * @return This builder for chaining.
      */
     public Builder setError(
         java.lang.String value) {
@@ -715,6 +737,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearError() {
       if (resultCase_ == 2) {
@@ -726,6 +749,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string error = 2;</code>
+     * @param value The bytes for error to set.
+     * @return This builder for chaining.
      */
     public Builder setErrorBytes(
         com.google.protobuf.ByteString value) {

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RLibraryPathList}
  */
-public  final class RLibraryPathList extends
+public final class RLibraryPathList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RLibraryPathList)
     RLibraryPathListOrBuilder {
@@ -100,23 +100,26 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
     java.lang.String getPath();
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
     com.google.protobuf.ByteString
         getPathBytes();
 
     /**
      * <code>bool isWritable = 2;</code>
+     * @return The isWritable.
      */
     boolean getIsWritable();
   }
   /**
    * Protobuf type {@code rplugininterop.RLibraryPathList.RLibraryPath}
    */
-  public  static final class RLibraryPath extends
+  public static final class RLibraryPath extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RLibraryPathList.RLibraryPath)
       RLibraryPathOrBuilder {
@@ -206,7 +209,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object path_;
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
@@ -221,7 +226,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPathBytes() {
       java.lang.Object ref = path_;
@@ -240,7 +247,9 @@ private static final long serialVersionUID = 0L;
     private boolean isWritable_;
     /**
      * <code>bool isWritable = 2;</code>
+     * @return The isWritable.
      */
+    @java.lang.Override
     public boolean getIsWritable() {
       return isWritable_;
     }
@@ -568,6 +577,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object path_ = "";
       /**
        * <code>string path = 1;</code>
+       * @return The path.
        */
       public java.lang.String getPath() {
         java.lang.Object ref = path_;
@@ -583,6 +593,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string path = 1;</code>
+       * @return The bytes for path.
        */
       public com.google.protobuf.ByteString
           getPathBytes() {
@@ -599,6 +610,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The path to set.
+       * @return This builder for chaining.
        */
       public Builder setPath(
           java.lang.String value) {
@@ -612,6 +625,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string path = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPath() {
         
@@ -621,6 +635,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The bytes for path to set.
+       * @return This builder for chaining.
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
@@ -637,12 +653,16 @@ private static final long serialVersionUID = 0L;
       private boolean isWritable_ ;
       /**
        * <code>bool isWritable = 2;</code>
+       * @return The isWritable.
        */
+      @java.lang.Override
       public boolean getIsWritable() {
         return isWritable_;
       }
       /**
        * <code>bool isWritable = 2;</code>
+       * @param value The isWritable to set.
+       * @return This builder for chaining.
        */
       public Builder setIsWritable(boolean value) {
         
@@ -652,6 +672,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool isWritable = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIsWritable() {
         
@@ -717,12 +738,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RLibraryPathList.RLibraryPath libPaths = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.RLibraryPathList.RLibraryPath> getLibPathsList() {
     return libPaths_;
   }
   /**
    * <code>repeated .rplugininterop.RLibraryPathList.RLibraryPath libPaths = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.RLibraryPathList.RLibraryPathOrBuilder> 
       getLibPathsOrBuilderList() {
     return libPaths_;
@@ -730,18 +753,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.RLibraryPathList.RLibraryPath libPaths = 1;</code>
    */
+  @java.lang.Override
   public int getLibPathsCount() {
     return libPaths_.size();
   }
   /**
    * <code>repeated .rplugininterop.RLibraryPathList.RLibraryPath libPaths = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RLibraryPathList.RLibraryPath getLibPaths(int index) {
     return libPaths_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.RLibraryPathList.RLibraryPath libPaths = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RLibraryPathList.RLibraryPathOrBuilder getLibPathsOrBuilder(
       int index) {
     return libPaths_.get(index);

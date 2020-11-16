@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Int64List}
  */
-public  final class Int64List extends
+public final class Int64List extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Int64List)
     Int64ListOrBuilder {
@@ -110,19 +110,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.LongList list_;
   /**
    * <code>repeated int64 list = 1;</code>
+   * @return A list containing the list.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Long>
       getListList() {
     return list_;
   }
   /**
    * <code>repeated int64 list = 1;</code>
+   * @return The count of list.
    */
   public int getListCount() {
     return list_.size();
   }
   /**
    * <code>repeated int64 list = 1;</code>
+   * @param index The index of the element to return.
+   * @return The list at the given index.
    */
   public long getList(int index) {
     return list_.getLong(index);
@@ -470,6 +475,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @return A list containing the list.
      */
     public java.util.List<java.lang.Long>
         getListList() {
@@ -478,18 +484,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @return The count of list.
      */
     public int getListCount() {
       return list_.size();
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @param index The index of the element to return.
+     * @return The list at the given index.
      */
     public long getList(int index) {
       return list_.getLong(index);
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The list to set.
+     * @return This builder for chaining.
      */
     public Builder setList(
         int index, long value) {
@@ -500,6 +512,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @param value The list to add.
+     * @return This builder for chaining.
      */
     public Builder addList(long value) {
       ensureListIsMutable();
@@ -509,6 +523,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @param values The list to add.
+     * @return This builder for chaining.
      */
     public Builder addAllList(
         java.lang.Iterable<? extends java.lang.Long> values) {
@@ -520,6 +536,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int64 list = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearList() {
       list_ = emptyLongList();

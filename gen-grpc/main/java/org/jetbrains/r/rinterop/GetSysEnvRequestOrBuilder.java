@@ -9,29 +9,37 @@ public interface GetSysEnvRequestOrBuilder extends
 
   /**
    * <code>string envName = 1;</code>
+   * @return The envName.
    */
   java.lang.String getEnvName();
   /**
    * <code>string envName = 1;</code>
+   * @return The bytes for envName.
    */
   com.google.protobuf.ByteString
       getEnvNameBytes();
 
   /**
    * <code>repeated string flags = 2;</code>
+   * @return A list containing the flags.
    */
   java.util.List<java.lang.String>
       getFlagsList();
   /**
    * <code>repeated string flags = 2;</code>
+   * @return The count of flags.
    */
   int getFlagsCount();
   /**
    * <code>repeated string flags = 2;</code>
+   * @param index The index of the element to return.
+   * @return The flags at the given index.
    */
   java.lang.String getFlags(int index);
   /**
    * <code>repeated string flags = 2;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the flags at the given index.
    */
   com.google.protobuf.ByteString
       getFlagsBytes(int index);

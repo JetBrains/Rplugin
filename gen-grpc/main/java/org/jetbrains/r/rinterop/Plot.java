@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Plot}
  */
-public  final class Plot extends
+public final class Plot extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Plot)
     PlotOrBuilder {
@@ -168,12 +168,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Font font = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.Font> getFontList() {
     return font_;
   }
   /**
    * <code>repeated .rplugininterop.Font font = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.FontOrBuilder> 
       getFontOrBuilderList() {
     return font_;
@@ -181,18 +183,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Font font = 1;</code>
    */
+  @java.lang.Override
   public int getFontCount() {
     return font_.size();
   }
   /**
    * <code>repeated .rplugininterop.Font font = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Font getFont(int index) {
     return font_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.Font font = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.FontOrBuilder getFontOrBuilder(
       int index) {
     return font_.get(index);
@@ -202,19 +207,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.IntList color_;
   /**
    * <code>repeated int32 color = 2;</code>
+   * @return A list containing the color.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Integer>
       getColorList() {
     return color_;
   }
   /**
    * <code>repeated int32 color = 2;</code>
+   * @return The count of color.
    */
   public int getColorCount() {
     return color_.size();
   }
   /**
    * <code>repeated int32 color = 2;</code>
+   * @param index The index of the element to return.
+   * @return The color at the given index.
    */
   public int getColor(int index) {
     return color_.getInt(index);
@@ -226,12 +236,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Stroke stroke = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.Stroke> getStrokeList() {
     return stroke_;
   }
   /**
    * <code>repeated .rplugininterop.Stroke stroke = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.StrokeOrBuilder> 
       getStrokeOrBuilderList() {
     return stroke_;
@@ -239,18 +251,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Stroke stroke = 3;</code>
    */
+  @java.lang.Override
   public int getStrokeCount() {
     return stroke_.size();
   }
   /**
    * <code>repeated .rplugininterop.Stroke stroke = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Stroke getStroke(int index) {
     return stroke_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.Stroke stroke = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.StrokeOrBuilder getStrokeOrBuilder(
       int index) {
     return stroke_.get(index);
@@ -261,12 +276,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Viewport viewport = 4;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.Viewport> getViewportList() {
     return viewport_;
   }
   /**
    * <code>repeated .rplugininterop.Viewport viewport = 4;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.ViewportOrBuilder> 
       getViewportOrBuilderList() {
     return viewport_;
@@ -274,18 +291,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Viewport viewport = 4;</code>
    */
+  @java.lang.Override
   public int getViewportCount() {
     return viewport_.size();
   }
   /**
    * <code>repeated .rplugininterop.Viewport viewport = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Viewport getViewport(int index) {
     return viewport_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.Viewport viewport = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ViewportOrBuilder getViewportOrBuilder(
       int index) {
     return viewport_.get(index);
@@ -296,12 +316,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Layer layer = 5;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.Layer> getLayerList() {
     return layer_;
   }
   /**
    * <code>repeated .rplugininterop.Layer layer = 5;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.LayerOrBuilder> 
       getLayerOrBuilderList() {
     return layer_;
@@ -309,18 +331,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.Layer layer = 5;</code>
    */
+  @java.lang.Override
   public int getLayerCount() {
     return layer_.size();
   }
   /**
    * <code>repeated .rplugininterop.Layer layer = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.Layer getLayer(int index) {
     return layer_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.Layer layer = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.LayerOrBuilder getLayerOrBuilder(
       int index) {
     return layer_.get(index);
@@ -330,7 +355,9 @@ private static final long serialVersionUID = 0L;
   private int error_;
   /**
    * <code>int32 error = 6;</code>
+   * @return The error.
    */
+  @java.lang.Override
   public int getError() {
     return error_;
   }
@@ -1153,6 +1180,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @return A list containing the color.
      */
     public java.util.List<java.lang.Integer>
         getColorList() {
@@ -1161,18 +1189,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @return The count of color.
      */
     public int getColorCount() {
       return color_.size();
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @param index The index of the element to return.
+     * @return The color at the given index.
      */
     public int getColor(int index) {
       return color_.getInt(index);
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The color to set.
+     * @return This builder for chaining.
      */
     public Builder setColor(
         int index, int value) {
@@ -1183,6 +1217,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @param value The color to add.
+     * @return This builder for chaining.
      */
     public Builder addColor(int value) {
       ensureColorIsMutable();
@@ -1192,6 +1228,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @param values The color to add.
+     * @return This builder for chaining.
      */
     public Builder addAllColor(
         java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -1203,6 +1241,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 color = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearColor() {
       color_ = emptyIntList();
@@ -1934,12 +1973,16 @@ private static final long serialVersionUID = 0L;
     private int error_ ;
     /**
      * <code>int32 error = 6;</code>
+     * @return The error.
      */
+    @java.lang.Override
     public int getError() {
       return error_;
     }
     /**
      * <code>int32 error = 6;</code>
+     * @param value The error to set.
+     * @return This builder for chaining.
      */
     public Builder setError(int value) {
       
@@ -1949,6 +1992,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 error = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearError() {
       

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsGetSnapshotPathRequest}
  */
-public  final class GraphicsGetSnapshotPathRequest extends
+public final class GraphicsGetSnapshotPathRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsGetSnapshotPathRequest)
     GraphicsGetSnapshotPathRequestOrBuilder {
@@ -96,7 +96,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object groupId_;
   /**
    * <code>string groupId = 1;</code>
+   * @return The groupId.
    */
+  @java.lang.Override
   public java.lang.String getGroupId() {
     java.lang.Object ref = groupId_;
     if (ref instanceof java.lang.String) {
@@ -111,7 +113,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string groupId = 1;</code>
+   * @return The bytes for groupId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getGroupIdBytes() {
     java.lang.Object ref = groupId_;
@@ -130,7 +134,9 @@ private static final long serialVersionUID = 0L;
   private int snapshotNumber_;
   /**
    * <code>int32 snapshotNumber = 2;</code>
+   * @return The snapshotNumber.
    */
+  @java.lang.Override
   public int getSnapshotNumber() {
     return snapshotNumber_;
   }
@@ -457,6 +463,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object groupId_ = "";
     /**
      * <code>string groupId = 1;</code>
+     * @return The groupId.
      */
     public java.lang.String getGroupId() {
       java.lang.Object ref = groupId_;
@@ -472,6 +479,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @return The bytes for groupId.
      */
     public com.google.protobuf.ByteString
         getGroupIdBytes() {
@@ -488,6 +496,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @param value The groupId to set.
+     * @return This builder for chaining.
      */
     public Builder setGroupId(
         java.lang.String value) {
@@ -501,6 +511,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearGroupId() {
       
@@ -510,6 +521,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string groupId = 1;</code>
+     * @param value The bytes for groupId to set.
+     * @return This builder for chaining.
      */
     public Builder setGroupIdBytes(
         com.google.protobuf.ByteString value) {
@@ -526,12 +539,16 @@ private static final long serialVersionUID = 0L;
     private int snapshotNumber_ ;
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @return The snapshotNumber.
      */
+    @java.lang.Override
     public int getSnapshotNumber() {
       return snapshotNumber_;
     }
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @param value The snapshotNumber to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotNumber(int value) {
       
@@ -541,6 +558,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 snapshotNumber = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSnapshotNumber() {
       

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GraphicsRescaleRequest}
  */
-public  final class GraphicsRescaleRequest extends
+public final class GraphicsRescaleRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GraphicsRescaleRequest)
     GraphicsRescaleRequestOrBuilder {
@@ -102,7 +102,9 @@ private static final long serialVersionUID = 0L;
   private int snapshotNumber_;
   /**
    * <code>int32 snapshotNumber = 1;</code>
+   * @return The snapshotNumber.
    */
+  @java.lang.Override
   public int getSnapshotNumber() {
     return snapshotNumber_;
   }
@@ -111,19 +113,24 @@ private static final long serialVersionUID = 0L;
   private org.jetbrains.r.rinterop.ScreenParameters newParameters_;
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+   * @return Whether the newParameters field is set.
    */
+  @java.lang.Override
   public boolean hasNewParameters() {
     return newParameters_ != null;
   }
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+   * @return The newParameters.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParameters getNewParameters() {
     return newParameters_ == null ? org.jetbrains.r.rinterop.ScreenParameters.getDefaultInstance() : newParameters_;
   }
   /**
    * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ScreenParametersOrBuilder getNewParametersOrBuilder() {
     return getNewParameters();
   }
@@ -463,12 +470,16 @@ private static final long serialVersionUID = 0L;
     private int snapshotNumber_ ;
     /**
      * <code>int32 snapshotNumber = 1;</code>
+     * @return The snapshotNumber.
      */
+    @java.lang.Override
     public int getSnapshotNumber() {
       return snapshotNumber_;
     }
     /**
      * <code>int32 snapshotNumber = 1;</code>
+     * @param value The snapshotNumber to set.
+     * @return This builder for chaining.
      */
     public Builder setSnapshotNumber(int value) {
       
@@ -478,6 +489,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 snapshotNumber = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSnapshotNumber() {
       
@@ -491,12 +503,14 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.ScreenParameters, org.jetbrains.r.rinterop.ScreenParameters.Builder, org.jetbrains.r.rinterop.ScreenParametersOrBuilder> newParametersBuilder_;
     /**
      * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+     * @return Whether the newParameters field is set.
      */
     public boolean hasNewParameters() {
       return newParametersBuilder_ != null || newParameters_ != null;
     }
     /**
      * <code>.rplugininterop.ScreenParameters newParameters = 2;</code>
+     * @return The newParameters.
      */
     public org.jetbrains.r.rinterop.ScreenParameters getNewParameters() {
       if (newParametersBuilder_ == null) {

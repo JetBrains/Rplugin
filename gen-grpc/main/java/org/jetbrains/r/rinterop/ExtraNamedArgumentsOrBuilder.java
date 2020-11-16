@@ -13,6 +13,7 @@ public interface ExtraNamedArgumentsOrBuilder extends
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @return A list containing the argNames.
    */
   java.util.List<java.lang.String>
       getArgNamesList();
@@ -22,6 +23,7 @@ public interface ExtraNamedArgumentsOrBuilder extends
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @return The count of argNames.
    */
   int getArgNamesCount();
   /**
@@ -30,6 +32,8 @@ public interface ExtraNamedArgumentsOrBuilder extends
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @param index The index of the element to return.
+   * @return The argNames at the given index.
    */
   java.lang.String getArgNames(int index);
   /**
@@ -38,25 +42,33 @@ public interface ExtraNamedArgumentsOrBuilder extends
    * </pre>
    *
    * <code>repeated string argNames = 1;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the argNames at the given index.
    */
   com.google.protobuf.ByteString
       getArgNamesBytes(int index);
 
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @return A list containing the funArgNames.
    */
   java.util.List<java.lang.String>
       getFunArgNamesList();
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @return The count of funArgNames.
    */
   int getFunArgNamesCount();
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @param index The index of the element to return.
+   * @return The funArgNames at the given index.
    */
   java.lang.String getFunArgNames(int index);
   /**
    * <code>repeated string funArgNames = 2;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the funArgNames at the given index.
    */
   com.google.protobuf.ByteString
       getFunArgNamesBytes(int index);

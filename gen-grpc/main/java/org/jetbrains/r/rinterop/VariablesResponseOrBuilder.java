@@ -9,11 +9,13 @@ public interface VariablesResponseOrBuilder extends
 
   /**
    * <code>bool isEnv = 1;</code>
+   * @return The isEnv.
    */
   boolean getIsEnv();
 
   /**
    * <code>int64 totalCount = 2;</code>
+   * @return The totalCount.
    */
   long getTotalCount();
 

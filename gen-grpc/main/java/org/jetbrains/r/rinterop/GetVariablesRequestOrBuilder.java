@@ -9,10 +9,12 @@ public interface GetVariablesRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef obj = 1;</code>
+   * @return Whether the obj field is set.
    */
   boolean hasObj();
   /**
    * <code>.rplugininterop.RRef obj = 1;</code>
+   * @return The obj.
    */
   org.jetbrains.r.rinterop.RRef getObj();
   /**
@@ -22,11 +24,13 @@ public interface GetVariablesRequestOrBuilder extends
 
   /**
    * <code>int64 start = 2;</code>
+   * @return The start.
    */
   long getStart();
 
   /**
    * <code>int64 end = 3;</code>
+   * @return The end.
    */
   long getEnd();
 
@@ -36,16 +40,19 @@ public interface GetVariablesRequestOrBuilder extends
    * </pre>
    *
    * <code>bool noHidden = 4;</code>
+   * @return The noHidden.
    */
   boolean getNoHidden();
 
   /**
    * <code>bool noFunctions = 5;</code>
+   * @return The noFunctions.
    */
   boolean getNoFunctions();
 
   /**
    * <code>bool onlyFunctions = 6;</code>
+   * @return The onlyFunctions.
    */
   boolean getOnlyFunctions();
 }

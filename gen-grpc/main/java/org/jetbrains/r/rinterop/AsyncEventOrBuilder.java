@@ -9,10 +9,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty busy = 1;</code>
+   * @return Whether the busy field is set.
    */
   boolean hasBusy();
   /**
    * <code>.google.protobuf.Empty busy = 1;</code>
+   * @return The busy.
    */
   com.google.protobuf.Empty getBusy();
   /**
@@ -22,10 +24,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.CommandOutput text = 2;</code>
+   * @return Whether the text field is set.
    */
   boolean hasText();
   /**
    * <code>.rplugininterop.CommandOutput text = 2;</code>
+   * @return The text.
    */
   org.jetbrains.r.rinterop.CommandOutput getText();
   /**
@@ -35,10 +39,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+   * @return Whether the requestReadLn field is set.
    */
   boolean hasRequestReadLn();
   /**
    * <code>.rplugininterop.AsyncEvent.RequestReadLn requestReadLn = 3;</code>
+   * @return The requestReadLn.
    */
   org.jetbrains.r.rinterop.AsyncEvent.RequestReadLn getRequestReadLn();
   /**
@@ -48,10 +54,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty prompt = 4;</code>
+   * @return Whether the prompt field is set.
    */
   boolean hasPrompt();
   /**
    * <code>.google.protobuf.Empty prompt = 4;</code>
+   * @return The prompt.
    */
   com.google.protobuf.Empty getPrompt();
   /**
@@ -61,10 +69,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+   * @return Whether the debugPrompt field is set.
    */
   boolean hasDebugPrompt();
   /**
    * <code>.rplugininterop.AsyncEvent.DebugPrompt debugPrompt = 5;</code>
+   * @return The debugPrompt.
    */
   org.jetbrains.r.rinterop.AsyncEvent.DebugPrompt getDebugPrompt();
   /**
@@ -74,10 +84,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty termination = 6;</code>
+   * @return Whether the termination field is set.
    */
   boolean hasTermination();
   /**
    * <code>.google.protobuf.Empty termination = 6;</code>
+   * @return The termination.
    */
   com.google.protobuf.Empty getTermination();
   /**
@@ -87,10 +99,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+   * @return Whether the exception field is set.
    */
   boolean hasException();
   /**
    * <code>.rplugininterop.AsyncEvent.Exception exception = 7;</code>
+   * @return The exception.
    */
   org.jetbrains.r.rinterop.AsyncEvent.Exception getException();
   /**
@@ -100,10 +114,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+   * @return Whether the viewRequest field is set.
    */
   boolean hasViewRequest();
   /**
    * <code>.rplugininterop.AsyncEvent.ViewRequest viewRequest = 8;</code>
+   * @return The viewRequest.
    */
   org.jetbrains.r.rinterop.AsyncEvent.ViewRequest getViewRequest();
   /**
@@ -113,10 +129,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+   * @return Whether the showFileRequest field is set.
    */
   boolean hasShowFileRequest();
   /**
    * <code>.rplugininterop.AsyncEvent.ShowFileRequest showFileRequest = 9;</code>
+   * @return The showFileRequest.
    */
   org.jetbrains.r.rinterop.AsyncEvent.ShowFileRequest getShowFileRequest();
   /**
@@ -126,10 +144,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+   * @return Whether the showHelpRequest field is set.
    */
   boolean hasShowHelpRequest();
   /**
    * <code>.rplugininterop.HttpdResponse showHelpRequest = 10;</code>
+   * @return The showHelpRequest.
    */
   org.jetbrains.r.rinterop.HttpdResponse getShowHelpRequest();
   /**
@@ -139,10 +159,12 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+   * @return Whether the subprocessInput field is set.
    */
   boolean hasSubprocessInput();
   /**
    * <code>.google.protobuf.Empty subprocessInput = 11;</code>
+   * @return The subprocessInput.
    */
   com.google.protobuf.Empty getSubprocessInput();
   /**
@@ -152,20 +174,24 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return The browseURLRequest.
    */
   java.lang.String getBrowseURLRequest();
   /**
    * <code>string browseURLRequest = 12;</code>
+   * @return The bytes for browseURLRequest.
    */
   com.google.protobuf.ByteString
       getBrowseURLRequestBytes();
 
   /**
    * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   * @return Whether the rStudioApiRequest field is set.
    */
   boolean hasRStudioApiRequest();
   /**
    * <code>.rplugininterop.AsyncEvent.RStudioApiRequest rStudioApiRequest = 13;</code>
+   * @return The rStudioApiRequest.
    */
   org.jetbrains.r.rinterop.AsyncEvent.RStudioApiRequest getRStudioApiRequest();
   /**
@@ -175,15 +201,18 @@ public interface AsyncEventOrBuilder extends
 
   /**
    * <code>int32 debugRemoveBreakpointRequest = 14;</code>
+   * @return The debugRemoveBreakpointRequest.
    */
   int getDebugRemoveBreakpointRequest();
 
   /**
    * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   * @return Whether the debugPrintSourcePositionToConsoleRequest field is set.
    */
   boolean hasDebugPrintSourcePositionToConsoleRequest();
   /**
    * <code>.rplugininterop.SourcePosition debugPrintSourcePositionToConsoleRequest = 15;</code>
+   * @return The debugPrintSourcePositionToConsoleRequest.
    */
   org.jetbrains.r.rinterop.SourcePosition getDebugPrintSourcePositionToConsoleRequest();
   /**

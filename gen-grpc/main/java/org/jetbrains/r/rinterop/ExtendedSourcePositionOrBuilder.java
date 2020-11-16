@@ -9,21 +9,25 @@ public interface ExtendedSourcePositionOrBuilder extends
 
   /**
    * <code>int32 startLine = 1;</code>
+   * @return The startLine.
    */
   int getStartLine();
 
   /**
    * <code>int32 startOffset = 2;</code>
+   * @return The startOffset.
    */
   int getStartOffset();
 
   /**
    * <code>int32 endLine = 3;</code>
+   * @return The endLine.
    */
   int getEndLine();
 
   /**
    * <code>int32 endOffset = 4;</code>
+   * @return The endOffset.
    */
   int getEndOffset();
 }

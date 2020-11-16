@@ -9,6 +9,7 @@ public interface DataFrameInfoResponseOrBuilder extends
 
   /**
    * <code>int32 nRows = 1;</code>
+   * @return The nRows.
    */
   int getNRows();
 

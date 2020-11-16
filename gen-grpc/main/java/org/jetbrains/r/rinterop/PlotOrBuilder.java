@@ -33,14 +33,18 @@ public interface PlotOrBuilder extends
 
   /**
    * <code>repeated int32 color = 2;</code>
+   * @return A list containing the color.
    */
   java.util.List<java.lang.Integer> getColorList();
   /**
    * <code>repeated int32 color = 2;</code>
+   * @return The count of color.
    */
   int getColorCount();
   /**
    * <code>repeated int32 color = 2;</code>
+   * @param index The index of the element to return.
+   * @return The color at the given index.
    */
   int getColor(int index);
 
@@ -118,6 +122,7 @@ public interface PlotOrBuilder extends
 
   /**
    * <code>int32 error = 6;</code>
+   * @return The error.
    */
   int getError();
 }

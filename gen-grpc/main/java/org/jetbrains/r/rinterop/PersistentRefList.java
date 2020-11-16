@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.PersistentRefList}
  */
-public  final class PersistentRefList extends
+public final class PersistentRefList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.PersistentRefList)
     PersistentRefListOrBuilder {
@@ -110,19 +110,24 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.Internal.IntList indices_;
   /**
    * <code>repeated int32 indices = 1;</code>
+   * @return A list containing the indices.
    */
+  @java.lang.Override
   public java.util.List<java.lang.Integer>
       getIndicesList() {
     return indices_;
   }
   /**
    * <code>repeated int32 indices = 1;</code>
+   * @return The count of indices.
    */
   public int getIndicesCount() {
     return indices_.size();
   }
   /**
    * <code>repeated int32 indices = 1;</code>
+   * @param index The index of the element to return.
+   * @return The indices at the given index.
    */
   public int getIndices(int index) {
     return indices_.getInt(index);
@@ -470,6 +475,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @return A list containing the indices.
      */
     public java.util.List<java.lang.Integer>
         getIndicesList() {
@@ -478,18 +484,24 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @return The count of indices.
      */
     public int getIndicesCount() {
       return indices_.size();
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @param index The index of the element to return.
+     * @return The indices at the given index.
      */
     public int getIndices(int index) {
       return indices_.getInt(index);
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @param index The index to set the value at.
+     * @param value The indices to set.
+     * @return This builder for chaining.
      */
     public Builder setIndices(
         int index, int value) {
@@ -500,6 +512,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @param value The indices to add.
+     * @return This builder for chaining.
      */
     public Builder addIndices(int value) {
       ensureIndicesIsMutable();
@@ -509,6 +523,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @param values The indices to add.
+     * @return This builder for chaining.
      */
     public Builder addAllIndices(
         java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -520,6 +536,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated int32 indices = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIndices() {
       indices_ = emptyIntList();

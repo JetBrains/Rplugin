@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RepoInstallPackageRequest}
  */
-public  final class RepoInstallPackageRequest extends
+public final class RepoInstallPackageRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RepoInstallPackageRequest)
     RepoInstallPackageRequestOrBuilder {
@@ -124,7 +124,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object packageName_;
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
+  @java.lang.Override
   public java.lang.String getPackageName() {
     java.lang.Object ref = packageName_;
     if (ref instanceof java.lang.String) {
@@ -139,7 +141,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageNameBytes() {
     java.lang.Object ref = packageName_;
@@ -158,7 +162,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object fallbackMethod_;
   /**
    * <code>string fallbackMethod = 2;</code>
+   * @return The fallbackMethod.
    */
+  @java.lang.Override
   public java.lang.String getFallbackMethod() {
     java.lang.Object ref = fallbackMethod_;
     if (ref instanceof java.lang.String) {
@@ -173,7 +179,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string fallbackMethod = 2;</code>
+   * @return The bytes for fallbackMethod.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getFallbackMethodBytes() {
     java.lang.Object ref = fallbackMethod_;
@@ -218,6 +226,7 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; arguments = 3;</code>
    */
 
+  @java.lang.Override
   public boolean containsArguments(
       java.lang.String key) {
     if (key == null) { throw new java.lang.NullPointerException(); }
@@ -226,6 +235,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Use {@link #getArgumentsMap()} instead.
    */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.String, java.lang.String> getArguments() {
     return getArgumentsMap();
@@ -233,6 +243,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; arguments = 3;</code>
    */
+  @java.lang.Override
 
   public java.util.Map<java.lang.String, java.lang.String> getArgumentsMap() {
     return internalGetArguments().getMap();
@@ -240,6 +251,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; arguments = 3;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getArgumentsOrDefault(
       java.lang.String key,
@@ -252,6 +264,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; arguments = 3;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getArgumentsOrThrow(
       java.lang.String key) {
@@ -637,6 +650,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object packageName_ = "";
     /**
      * <code>string packageName = 1;</code>
+     * @return The packageName.
      */
     public java.lang.String getPackageName() {
       java.lang.Object ref = packageName_;
@@ -652,6 +666,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return The bytes for packageName.
      */
     public com.google.protobuf.ByteString
         getPackageNameBytes() {
@@ -668,6 +683,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageName(
         java.lang.String value) {
@@ -681,6 +698,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackageName() {
       
@@ -690,6 +708,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string packageName = 1;</code>
+     * @param value The bytes for packageName to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageNameBytes(
         com.google.protobuf.ByteString value) {
@@ -706,6 +726,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object fallbackMethod_ = "";
     /**
      * <code>string fallbackMethod = 2;</code>
+     * @return The fallbackMethod.
      */
     public java.lang.String getFallbackMethod() {
       java.lang.Object ref = fallbackMethod_;
@@ -721,6 +742,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fallbackMethod = 2;</code>
+     * @return The bytes for fallbackMethod.
      */
     public com.google.protobuf.ByteString
         getFallbackMethodBytes() {
@@ -737,6 +759,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fallbackMethod = 2;</code>
+     * @param value The fallbackMethod to set.
+     * @return This builder for chaining.
      */
     public Builder setFallbackMethod(
         java.lang.String value) {
@@ -750,6 +774,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fallbackMethod = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFallbackMethod() {
       
@@ -759,6 +784,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string fallbackMethod = 2;</code>
+     * @param value The bytes for fallbackMethod to set.
+     * @return This builder for chaining.
      */
     public Builder setFallbackMethodBytes(
         com.google.protobuf.ByteString value) {
@@ -802,6 +829,7 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; arguments = 3;</code>
      */
 
+    @java.lang.Override
     public boolean containsArguments(
         java.lang.String key) {
       if (key == null) { throw new java.lang.NullPointerException(); }
@@ -810,6 +838,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Use {@link #getArgumentsMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getArguments() {
       return getArgumentsMap();
@@ -817,6 +846,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; arguments = 3;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.String> getArgumentsMap() {
       return internalGetArguments().getMap();
@@ -824,6 +854,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; arguments = 3;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getArgumentsOrDefault(
         java.lang.String key,
@@ -836,6 +867,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; arguments = 3;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getArgumentsOrThrow(
         java.lang.String key) {

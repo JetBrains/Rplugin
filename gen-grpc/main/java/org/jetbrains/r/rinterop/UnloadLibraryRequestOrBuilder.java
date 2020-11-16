@@ -9,16 +9,19 @@ public interface UnloadLibraryRequestOrBuilder extends
 
   /**
    * <code>string packageName = 1;</code>
+   * @return The packageName.
    */
   java.lang.String getPackageName();
   /**
    * <code>string packageName = 1;</code>
+   * @return The bytes for packageName.
    */
   com.google.protobuf.ByteString
       getPackageNameBytes();
 
   /**
    * <code>bool withDynamicLibrary = 2;</code>
+   * @return The withDynamicLibrary.
    */
   boolean getWithDynamicLibrary();
 }

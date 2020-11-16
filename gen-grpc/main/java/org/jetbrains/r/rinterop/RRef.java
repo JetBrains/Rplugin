@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.RRef}
  */
-public  final class RRef extends
+public final class RRef extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.RRef)
     RRefOrBuilder {
@@ -199,10 +199,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
     boolean hasEnv();
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
     org.jetbrains.r.rinterop.RRef getEnv();
     /**
@@ -212,10 +214,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 2;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 2;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -223,7 +227,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RRef.Member}
    */
-  public  static final class Member extends
+  public static final class Member extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RRef.Member)
       MemberOrBuilder {
@@ -321,19 +325,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RRef env_;
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
+    @java.lang.Override
     public boolean hasEnv() {
       return env_ != null;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef getEnv() {
       return env_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : env_;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRefOrBuilder getEnvOrBuilder() {
       return getEnv();
     }
@@ -342,7 +351,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 2;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -357,7 +368,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 2;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -709,12 +722,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> envBuilder_;
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return Whether the env field is set.
        */
       public boolean hasEnv() {
         return envBuilder_ != null || env_ != null;
       }
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return The env.
        */
       public org.jetbrains.r.rinterop.RRef getEnv() {
         if (envBuilder_ == null) {
@@ -824,6 +839,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 2;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -839,6 +855,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 2;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -855,6 +872,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 2;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -868,6 +887,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -877,6 +897,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 2;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -948,10 +970,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
     boolean hasEnv();
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
     org.jetbrains.r.rinterop.RRef getEnv();
     /**
@@ -961,13 +985,14 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 index = 2;</code>
+     * @return The index.
      */
     int getIndex();
   }
   /**
    * Protobuf type {@code rplugininterop.RRef.ParentEnv}
    */
-  public  static final class ParentEnv extends
+  public static final class ParentEnv extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RRef.ParentEnv)
       ParentEnvOrBuilder {
@@ -1063,19 +1088,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RRef env_;
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
+    @java.lang.Override
     public boolean hasEnv() {
       return env_ != null;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef getEnv() {
       return env_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : env_;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRefOrBuilder getEnvOrBuilder() {
       return getEnv();
     }
@@ -1084,7 +1114,9 @@ private static final long serialVersionUID = 0L;
     private int index_;
     /**
      * <code>int32 index = 2;</code>
+     * @return The index.
      */
+    @java.lang.Override
     public int getIndex() {
       return index_;
     }
@@ -1426,12 +1458,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> envBuilder_;
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return Whether the env field is set.
        */
       public boolean hasEnv() {
         return envBuilder_ != null || env_ != null;
       }
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return The env.
        */
       public org.jetbrains.r.rinterop.RRef getEnv() {
         if (envBuilder_ == null) {
@@ -1541,12 +1575,16 @@ private static final long serialVersionUID = 0L;
       private int index_ ;
       /**
        * <code>int32 index = 2;</code>
+       * @return The index.
        */
+      @java.lang.Override
       public int getIndex() {
         return index_;
       }
       /**
        * <code>int32 index = 2;</code>
+       * @param value The index to set.
+       * @return This builder for chaining.
        */
       public Builder setIndex(int value) {
         
@@ -1556,6 +1594,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int32 index = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIndex() {
         
@@ -1622,10 +1661,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
     boolean hasEnv();
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
     org.jetbrains.r.rinterop.RRef getEnv();
     /**
@@ -1635,10 +1676,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string code = 2;</code>
+     * @return The code.
      */
     java.lang.String getCode();
     /**
      * <code>string code = 2;</code>
+     * @return The bytes for code.
      */
     com.google.protobuf.ByteString
         getCodeBytes();
@@ -1646,7 +1689,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.RRef.Expression}
    */
-  public  static final class Expression extends
+  public static final class Expression extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RRef.Expression)
       ExpressionOrBuilder {
@@ -1744,19 +1787,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RRef env_;
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return Whether the env field is set.
      */
+    @java.lang.Override
     public boolean hasEnv() {
       return env_ != null;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
+     * @return The env.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef getEnv() {
       return env_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : env_;
     }
     /**
      * <code>.rplugininterop.RRef env = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRefOrBuilder getEnvOrBuilder() {
       return getEnv();
     }
@@ -1765,7 +1813,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object code_;
     /**
      * <code>string code = 2;</code>
+     * @return The code.
      */
+    @java.lang.Override
     public java.lang.String getCode() {
       java.lang.Object ref = code_;
       if (ref instanceof java.lang.String) {
@@ -1780,7 +1830,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string code = 2;</code>
+     * @return The bytes for code.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCodeBytes() {
       java.lang.Object ref = code_;
@@ -2132,12 +2184,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> envBuilder_;
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return Whether the env field is set.
        */
       public boolean hasEnv() {
         return envBuilder_ != null || env_ != null;
       }
       /**
        * <code>.rplugininterop.RRef env = 1;</code>
+       * @return The env.
        */
       public org.jetbrains.r.rinterop.RRef getEnv() {
         if (envBuilder_ == null) {
@@ -2247,6 +2301,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object code_ = "";
       /**
        * <code>string code = 2;</code>
+       * @return The code.
        */
       public java.lang.String getCode() {
         java.lang.Object ref = code_;
@@ -2262,6 +2317,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string code = 2;</code>
+       * @return The bytes for code.
        */
       public com.google.protobuf.ByteString
           getCodeBytes() {
@@ -2278,6 +2334,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string code = 2;</code>
+       * @param value The code to set.
+       * @return This builder for chaining.
        */
       public Builder setCode(
           java.lang.String value) {
@@ -2291,6 +2349,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string code = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearCode() {
         
@@ -2300,6 +2359,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string code = 2;</code>
+       * @param value The bytes for code to set.
+       * @return This builder for chaining.
        */
       public Builder setCodeBytes(
           com.google.protobuf.ByteString value) {
@@ -2371,10 +2432,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>.rplugininterop.RRef list = 1;</code>
+     * @return Whether the list field is set.
      */
     boolean hasList();
     /**
      * <code>.rplugininterop.RRef list = 1;</code>
+     * @return The list.
      */
     org.jetbrains.r.rinterop.RRef getList();
     /**
@@ -2384,13 +2447,14 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int64 index = 2;</code>
+     * @return The index.
      */
     long getIndex();
   }
   /**
    * Protobuf type {@code rplugininterop.RRef.ListElement}
    */
-  public  static final class ListElement extends
+  public static final class ListElement extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.RRef.ListElement)
       ListElementOrBuilder {
@@ -2486,19 +2550,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.RRef list_;
     /**
      * <code>.rplugininterop.RRef list = 1;</code>
+     * @return Whether the list field is set.
      */
+    @java.lang.Override
     public boolean hasList() {
       return list_ != null;
     }
     /**
      * <code>.rplugininterop.RRef list = 1;</code>
+     * @return The list.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef getList() {
       return list_ == null ? org.jetbrains.r.rinterop.RRef.getDefaultInstance() : list_;
     }
     /**
      * <code>.rplugininterop.RRef list = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRefOrBuilder getListOrBuilder() {
       return getList();
     }
@@ -2507,7 +2576,9 @@ private static final long serialVersionUID = 0L;
     private long index_;
     /**
      * <code>int64 index = 2;</code>
+     * @return The index.
      */
+    @java.lang.Override
     public long getIndex() {
       return index_;
     }
@@ -2850,12 +2921,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> listBuilder_;
       /**
        * <code>.rplugininterop.RRef list = 1;</code>
+       * @return Whether the list field is set.
        */
       public boolean hasList() {
         return listBuilder_ != null || list_ != null;
       }
       /**
        * <code>.rplugininterop.RRef list = 1;</code>
+       * @return The list.
        */
       public org.jetbrains.r.rinterop.RRef getList() {
         if (listBuilder_ == null) {
@@ -2965,12 +3038,16 @@ private static final long serialVersionUID = 0L;
       private long index_ ;
       /**
        * <code>int64 index = 2;</code>
+       * @return The index.
        */
+      @java.lang.Override
       public long getIndex() {
         return index_;
       }
       /**
        * <code>int64 index = 2;</code>
+       * @param value The index to set.
+       * @return This builder for chaining.
        */
       public Builder setIndex(long value) {
         
@@ -2980,6 +3057,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>int64 index = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIndex() {
         
@@ -3043,7 +3121,8 @@ private static final long serialVersionUID = 0L;
   private int refCase_ = 0;
   private java.lang.Object ref_;
   public enum RefCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     PERSISTENTINDEX(1),
     GLOBALENV(2),
     CURRENTENV(3),
@@ -3060,6 +3139,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -3097,7 +3178,9 @@ private static final long serialVersionUID = 0L;
   public static final int PERSISTENTINDEX_FIELD_NUMBER = 1;
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return The persistentIndex.
    */
+  @java.lang.Override
   public int getPersistentIndex() {
     if (refCase_ == 1) {
       return (java.lang.Integer) ref_;
@@ -3108,13 +3191,17 @@ private static final long serialVersionUID = 0L;
   public static final int GLOBALENV_FIELD_NUMBER = 2;
   /**
    * <code>.google.protobuf.Empty globalEnv = 2;</code>
+   * @return Whether the globalEnv field is set.
    */
+  @java.lang.Override
   public boolean hasGlobalEnv() {
     return refCase_ == 2;
   }
   /**
    * <code>.google.protobuf.Empty globalEnv = 2;</code>
+   * @return The globalEnv.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getGlobalEnv() {
     if (refCase_ == 2) {
        return (com.google.protobuf.Empty) ref_;
@@ -3124,6 +3211,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty globalEnv = 2;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getGlobalEnvOrBuilder() {
     if (refCase_ == 2) {
        return (com.google.protobuf.Empty) ref_;
@@ -3134,13 +3222,17 @@ private static final long serialVersionUID = 0L;
   public static final int CURRENTENV_FIELD_NUMBER = 3;
   /**
    * <code>.google.protobuf.Empty currentEnv = 3;</code>
+   * @return Whether the currentEnv field is set.
    */
+  @java.lang.Override
   public boolean hasCurrentEnv() {
     return refCase_ == 3;
   }
   /**
    * <code>.google.protobuf.Empty currentEnv = 3;</code>
+   * @return The currentEnv.
    */
+  @java.lang.Override
   public com.google.protobuf.Empty getCurrentEnv() {
     if (refCase_ == 3) {
        return (com.google.protobuf.Empty) ref_;
@@ -3150,6 +3242,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.google.protobuf.Empty currentEnv = 3;</code>
    */
+  @java.lang.Override
   public com.google.protobuf.EmptyOrBuilder getCurrentEnvOrBuilder() {
     if (refCase_ == 3) {
        return (com.google.protobuf.Empty) ref_;
@@ -3160,7 +3253,9 @@ private static final long serialVersionUID = 0L;
   public static final int SYSFRAMEINDEX_FIELD_NUMBER = 4;
   /**
    * <code>int32 sysFrameIndex = 4;</code>
+   * @return The sysFrameIndex.
    */
+  @java.lang.Override
   public int getSysFrameIndex() {
     if (refCase_ == 4) {
       return (java.lang.Integer) ref_;
@@ -3171,13 +3266,17 @@ private static final long serialVersionUID = 0L;
   public static final int MEMBER_FIELD_NUMBER = 5;
   /**
    * <code>.rplugininterop.RRef.Member member = 5;</code>
+   * @return Whether the member field is set.
    */
+  @java.lang.Override
   public boolean hasMember() {
     return refCase_ == 5;
   }
   /**
    * <code>.rplugininterop.RRef.Member member = 5;</code>
+   * @return The member.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.Member getMember() {
     if (refCase_ == 5) {
        return (org.jetbrains.r.rinterop.RRef.Member) ref_;
@@ -3187,6 +3286,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RRef.Member member = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.MemberOrBuilder getMemberOrBuilder() {
     if (refCase_ == 5) {
        return (org.jetbrains.r.rinterop.RRef.Member) ref_;
@@ -3197,13 +3297,17 @@ private static final long serialVersionUID = 0L;
   public static final int PARENTENV_FIELD_NUMBER = 6;
   /**
    * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+   * @return Whether the parentEnv field is set.
    */
+  @java.lang.Override
   public boolean hasParentEnv() {
     return refCase_ == 6;
   }
   /**
    * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+   * @return The parentEnv.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.ParentEnv getParentEnv() {
     if (refCase_ == 6) {
        return (org.jetbrains.r.rinterop.RRef.ParentEnv) ref_;
@@ -3213,6 +3317,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.ParentEnvOrBuilder getParentEnvOrBuilder() {
     if (refCase_ == 6) {
        return (org.jetbrains.r.rinterop.RRef.ParentEnv) ref_;
@@ -3223,13 +3328,17 @@ private static final long serialVersionUID = 0L;
   public static final int EXPRESSION_FIELD_NUMBER = 7;
   /**
    * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+   * @return Whether the expression field is set.
    */
+  @java.lang.Override
   public boolean hasExpression() {
     return refCase_ == 7;
   }
   /**
    * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+   * @return The expression.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.Expression getExpression() {
     if (refCase_ == 7) {
        return (org.jetbrains.r.rinterop.RRef.Expression) ref_;
@@ -3239,6 +3348,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RRef.Expression expression = 7;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.ExpressionOrBuilder getExpressionOrBuilder() {
     if (refCase_ == 7) {
        return (org.jetbrains.r.rinterop.RRef.Expression) ref_;
@@ -3249,13 +3359,17 @@ private static final long serialVersionUID = 0L;
   public static final int LISTELEMENT_FIELD_NUMBER = 8;
   /**
    * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+   * @return Whether the listElement field is set.
    */
+  @java.lang.Override
   public boolean hasListElement() {
     return refCase_ == 8;
   }
   /**
    * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+   * @return The listElement.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.ListElement getListElement() {
     if (refCase_ == 8) {
        return (org.jetbrains.r.rinterop.RRef.ListElement) ref_;
@@ -3265,6 +3379,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef.ListElementOrBuilder getListElementOrBuilder() {
     if (refCase_ == 8) {
        return (org.jetbrains.r.rinterop.RRef.ListElement) ref_;
@@ -3275,7 +3390,9 @@ private static final long serialVersionUID = 0L;
   public static final int ERRORSTACKSYSFRAMEINDEX_FIELD_NUMBER = 9;
   /**
    * <code>int32 errorStackSysFrameIndex = 9;</code>
+   * @return The errorStackSysFrameIndex.
    */
+  @java.lang.Override
   public int getErrorStackSysFrameIndex() {
     if (refCase_ == 9) {
       return (java.lang.Integer) ref_;
@@ -3286,13 +3403,17 @@ private static final long serialVersionUID = 0L;
   public static final int ATTRIBUTES_FIELD_NUMBER = 10;
   /**
    * <code>.rplugininterop.RRef attributes = 10;</code>
+   * @return Whether the attributes field is set.
    */
+  @java.lang.Override
   public boolean hasAttributes() {
     return refCase_ == 10;
   }
   /**
    * <code>.rplugininterop.RRef attributes = 10;</code>
+   * @return The attributes.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRef getAttributes() {
     if (refCase_ == 10) {
        return (org.jetbrains.r.rinterop.RRef) ref_;
@@ -3302,6 +3423,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RRef attributes = 10;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RRefOrBuilder getAttributesOrBuilder() {
     if (refCase_ == 10) {
        return (org.jetbrains.r.rinterop.RRef) ref_;
@@ -3882,6 +4004,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return The persistentIndex.
      */
     public int getPersistentIndex() {
       if (refCase_ == 1) {
@@ -3891,6 +4014,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @param value The persistentIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setPersistentIndex(int value) {
       refCase_ = 1;
@@ -3900,6 +4025,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 persistentIndex = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPersistentIndex() {
       if (refCase_ == 1) {
@@ -3914,13 +4040,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> globalEnvBuilder_;
     /**
      * <code>.google.protobuf.Empty globalEnv = 2;</code>
+     * @return Whether the globalEnv field is set.
      */
+    @java.lang.Override
     public boolean hasGlobalEnv() {
       return refCase_ == 2;
     }
     /**
      * <code>.google.protobuf.Empty globalEnv = 2;</code>
+     * @return The globalEnv.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getGlobalEnv() {
       if (globalEnvBuilder_ == null) {
         if (refCase_ == 2) {
@@ -4014,6 +4144,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty globalEnv = 2;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getGlobalEnvOrBuilder() {
       if ((refCase_ == 2) && (globalEnvBuilder_ != null)) {
         return globalEnvBuilder_.getMessageOrBuilder();
@@ -4050,13 +4181,17 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> currentEnvBuilder_;
     /**
      * <code>.google.protobuf.Empty currentEnv = 3;</code>
+     * @return Whether the currentEnv field is set.
      */
+    @java.lang.Override
     public boolean hasCurrentEnv() {
       return refCase_ == 3;
     }
     /**
      * <code>.google.protobuf.Empty currentEnv = 3;</code>
+     * @return The currentEnv.
      */
+    @java.lang.Override
     public com.google.protobuf.Empty getCurrentEnv() {
       if (currentEnvBuilder_ == null) {
         if (refCase_ == 3) {
@@ -4150,6 +4285,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.google.protobuf.Empty currentEnv = 3;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.EmptyOrBuilder getCurrentEnvOrBuilder() {
       if ((refCase_ == 3) && (currentEnvBuilder_ != null)) {
         return currentEnvBuilder_.getMessageOrBuilder();
@@ -4184,6 +4320,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 sysFrameIndex = 4;</code>
+     * @return The sysFrameIndex.
      */
     public int getSysFrameIndex() {
       if (refCase_ == 4) {
@@ -4193,6 +4330,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 sysFrameIndex = 4;</code>
+     * @param value The sysFrameIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setSysFrameIndex(int value) {
       refCase_ = 4;
@@ -4202,6 +4341,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 sysFrameIndex = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSysFrameIndex() {
       if (refCase_ == 4) {
@@ -4216,13 +4356,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef.Member, org.jetbrains.r.rinterop.RRef.Member.Builder, org.jetbrains.r.rinterop.RRef.MemberOrBuilder> memberBuilder_;
     /**
      * <code>.rplugininterop.RRef.Member member = 5;</code>
+     * @return Whether the member field is set.
      */
+    @java.lang.Override
     public boolean hasMember() {
       return refCase_ == 5;
     }
     /**
      * <code>.rplugininterop.RRef.Member member = 5;</code>
+     * @return The member.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.Member getMember() {
       if (memberBuilder_ == null) {
         if (refCase_ == 5) {
@@ -4316,6 +4460,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RRef.Member member = 5;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.MemberOrBuilder getMemberOrBuilder() {
       if ((refCase_ == 5) && (memberBuilder_ != null)) {
         return memberBuilder_.getMessageOrBuilder();
@@ -4352,13 +4497,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef.ParentEnv, org.jetbrains.r.rinterop.RRef.ParentEnv.Builder, org.jetbrains.r.rinterop.RRef.ParentEnvOrBuilder> parentEnvBuilder_;
     /**
      * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+     * @return Whether the parentEnv field is set.
      */
+    @java.lang.Override
     public boolean hasParentEnv() {
       return refCase_ == 6;
     }
     /**
      * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+     * @return The parentEnv.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.ParentEnv getParentEnv() {
       if (parentEnvBuilder_ == null) {
         if (refCase_ == 6) {
@@ -4452,6 +4601,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.ParentEnvOrBuilder getParentEnvOrBuilder() {
       if ((refCase_ == 6) && (parentEnvBuilder_ != null)) {
         return parentEnvBuilder_.getMessageOrBuilder();
@@ -4488,13 +4638,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef.Expression, org.jetbrains.r.rinterop.RRef.Expression.Builder, org.jetbrains.r.rinterop.RRef.ExpressionOrBuilder> expressionBuilder_;
     /**
      * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+     * @return Whether the expression field is set.
      */
+    @java.lang.Override
     public boolean hasExpression() {
       return refCase_ == 7;
     }
     /**
      * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+     * @return The expression.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.Expression getExpression() {
       if (expressionBuilder_ == null) {
         if (refCase_ == 7) {
@@ -4588,6 +4742,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RRef.Expression expression = 7;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.ExpressionOrBuilder getExpressionOrBuilder() {
       if ((refCase_ == 7) && (expressionBuilder_ != null)) {
         return expressionBuilder_.getMessageOrBuilder();
@@ -4624,13 +4779,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef.ListElement, org.jetbrains.r.rinterop.RRef.ListElement.Builder, org.jetbrains.r.rinterop.RRef.ListElementOrBuilder> listElementBuilder_;
     /**
      * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+     * @return Whether the listElement field is set.
      */
+    @java.lang.Override
     public boolean hasListElement() {
       return refCase_ == 8;
     }
     /**
      * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+     * @return The listElement.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.ListElement getListElement() {
       if (listElementBuilder_ == null) {
         if (refCase_ == 8) {
@@ -4724,6 +4883,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef.ListElementOrBuilder getListElementOrBuilder() {
       if ((refCase_ == 8) && (listElementBuilder_ != null)) {
         return listElementBuilder_.getMessageOrBuilder();
@@ -4758,6 +4918,7 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>int32 errorStackSysFrameIndex = 9;</code>
+     * @return The errorStackSysFrameIndex.
      */
     public int getErrorStackSysFrameIndex() {
       if (refCase_ == 9) {
@@ -4767,6 +4928,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 errorStackSysFrameIndex = 9;</code>
+     * @param value The errorStackSysFrameIndex to set.
+     * @return This builder for chaining.
      */
     public Builder setErrorStackSysFrameIndex(int value) {
       refCase_ = 9;
@@ -4776,6 +4939,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 errorStackSysFrameIndex = 9;</code>
+     * @return This builder for chaining.
      */
     public Builder clearErrorStackSysFrameIndex() {
       if (refCase_ == 9) {
@@ -4790,13 +4954,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RRef, org.jetbrains.r.rinterop.RRef.Builder, org.jetbrains.r.rinterop.RRefOrBuilder> attributesBuilder_;
     /**
      * <code>.rplugininterop.RRef attributes = 10;</code>
+     * @return Whether the attributes field is set.
      */
+    @java.lang.Override
     public boolean hasAttributes() {
       return refCase_ == 10;
     }
     /**
      * <code>.rplugininterop.RRef attributes = 10;</code>
+     * @return The attributes.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRef getAttributes() {
       if (attributesBuilder_ == null) {
         if (refCase_ == 10) {
@@ -4890,6 +5058,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RRef attributes = 10;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RRefOrBuilder getAttributesOrBuilder() {
       if ((refCase_ == 10) && (attributesBuilder_ != null)) {
         return attributesBuilder_.getMessageOrBuilder();

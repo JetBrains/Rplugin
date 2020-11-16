@@ -9,25 +9,30 @@ public interface HttpdResponseOrBuilder extends
 
   /**
    * <code>bool success = 1;</code>
+   * @return The success.
    */
   boolean getSuccess();
 
   /**
    * <code>string content = 2;</code>
+   * @return The content.
    */
   java.lang.String getContent();
   /**
    * <code>string content = 2;</code>
+   * @return The bytes for content.
    */
   com.google.protobuf.ByteString
       getContentBytes();
 
   /**
    * <code>string url = 3;</code>
+   * @return The url.
    */
   java.lang.String getUrl();
   /**
    * <code>string url = 3;</code>
+   * @return The bytes for url.
    */
   com.google.protobuf.ByteString
       getUrlBytes();

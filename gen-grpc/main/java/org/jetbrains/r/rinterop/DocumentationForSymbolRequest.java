@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.DocumentationForSymbolRequest}
  */
-public  final class DocumentationForSymbolRequest extends
+public final class DocumentationForSymbolRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.DocumentationForSymbolRequest)
     DocumentationForSymbolRequestOrBuilder {
@@ -98,7 +98,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object symbol_;
   /**
    * <code>string symbol = 1;</code>
+   * @return The symbol.
    */
+  @java.lang.Override
   public java.lang.String getSymbol() {
     java.lang.Object ref = symbol_;
     if (ref instanceof java.lang.String) {
@@ -113,7 +115,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string symbol = 1;</code>
+   * @return The bytes for symbol.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSymbolBytes() {
     java.lang.Object ref = symbol_;
@@ -132,7 +136,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object package_;
   /**
    * <code>string package = 2;</code>
+   * @return The package.
    */
+  @java.lang.Override
   public java.lang.String getPackage() {
     java.lang.Object ref = package_;
     if (ref instanceof java.lang.String) {
@@ -147,7 +153,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string package = 2;</code>
+   * @return The bytes for package.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPackageBytes() {
     java.lang.Object ref = package_;
@@ -484,6 +492,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object symbol_ = "";
     /**
      * <code>string symbol = 1;</code>
+     * @return The symbol.
      */
     public java.lang.String getSymbol() {
       java.lang.Object ref = symbol_;
@@ -499,6 +508,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string symbol = 1;</code>
+     * @return The bytes for symbol.
      */
     public com.google.protobuf.ByteString
         getSymbolBytes() {
@@ -515,6 +525,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string symbol = 1;</code>
+     * @param value The symbol to set.
+     * @return This builder for chaining.
      */
     public Builder setSymbol(
         java.lang.String value) {
@@ -528,6 +540,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string symbol = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSymbol() {
       
@@ -537,6 +550,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string symbol = 1;</code>
+     * @param value The bytes for symbol to set.
+     * @return This builder for chaining.
      */
     public Builder setSymbolBytes(
         com.google.protobuf.ByteString value) {
@@ -553,6 +568,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object package_ = "";
     /**
      * <code>string package = 2;</code>
+     * @return The package.
      */
     public java.lang.String getPackage() {
       java.lang.Object ref = package_;
@@ -568,6 +584,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string package = 2;</code>
+     * @return The bytes for package.
      */
     public com.google.protobuf.ByteString
         getPackageBytes() {
@@ -584,6 +601,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string package = 2;</code>
+     * @param value The package to set.
+     * @return This builder for chaining.
      */
     public Builder setPackage(
         java.lang.String value) {
@@ -597,6 +616,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string package = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPackage() {
       
@@ -606,6 +626,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string package = 2;</code>
+     * @param value The bytes for package to set.
+     * @return This builder for chaining.
      */
     public Builder setPackageBytes(
         com.google.protobuf.ByteString value) {

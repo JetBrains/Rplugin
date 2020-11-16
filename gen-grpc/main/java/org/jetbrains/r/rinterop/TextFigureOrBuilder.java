@@ -9,36 +9,43 @@ public interface TextFigureOrBuilder extends
 
   /**
    * <code>string text = 1;</code>
+   * @return The text.
    */
   java.lang.String getText();
   /**
    * <code>string text = 1;</code>
+   * @return The bytes for text.
    */
   com.google.protobuf.ByteString
       getTextBytes();
 
   /**
    * <code>fixed64 position = 2;</code>
+   * @return The position.
    */
   long getPosition();
 
   /**
    * <code>float angle = 3;</code>
+   * @return The angle.
    */
   float getAngle();
 
   /**
    * <code>float anchor = 4;</code>
+   * @return The anchor.
    */
   float getAnchor();
 
   /**
    * <code>int32 fontIndex = 5;</code>
+   * @return The fontIndex.
    */
   int getFontIndex();
 
   /**
    * <code>int32 colorIndex = 6;</code>
+   * @return The colorIndex.
    */
   int getColorIndex();
 }

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ParentEnvsResponse}
  */
-public  final class ParentEnvsResponse extends
+public final class ParentEnvsResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ParentEnvsResponse)
     ParentEnvsResponseOrBuilder {
@@ -100,10 +100,12 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -111,7 +113,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.ParentEnvsResponse.EnvInfo}
    */
-  public  static final class EnvInfo extends
+  public static final class EnvInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.ParentEnvsResponse.EnvInfo)
       EnvInfoOrBuilder {
@@ -196,7 +198,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -211,7 +215,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -531,6 +537,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -546,6 +553,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -562,6 +570,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -575,6 +585,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -584,6 +595,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -654,12 +667,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.ParentEnvsResponse.EnvInfo envs = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.ParentEnvsResponse.EnvInfo> getEnvsList() {
     return envs_;
   }
   /**
    * <code>repeated .rplugininterop.ParentEnvsResponse.EnvInfo envs = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.ParentEnvsResponse.EnvInfoOrBuilder> 
       getEnvsOrBuilderList() {
     return envs_;
@@ -667,18 +682,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.ParentEnvsResponse.EnvInfo envs = 1;</code>
    */
+  @java.lang.Override
   public int getEnvsCount() {
     return envs_.size();
   }
   /**
    * <code>repeated .rplugininterop.ParentEnvsResponse.EnvInfo envs = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ParentEnvsResponse.EnvInfo getEnvs(int index) {
     return envs_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.ParentEnvsResponse.EnvInfo envs = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ParentEnvsResponse.EnvInfoOrBuilder getEnvsOrBuilder(
       int index) {
     return envs_.get(index);

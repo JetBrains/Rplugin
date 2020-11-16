@@ -9,10 +9,12 @@ public interface ExecuteCodeResponseOrBuilder extends
 
   /**
    * <code>.rplugininterop.CommandOutput output = 1;</code>
+   * @return Whether the output field is set.
    */
   boolean hasOutput();
   /**
    * <code>.rplugininterop.CommandOutput output = 1;</code>
+   * @return The output.
    */
   org.jetbrains.r.rinterop.CommandOutput getOutput();
   /**
@@ -22,10 +24,12 @@ public interface ExecuteCodeResponseOrBuilder extends
 
   /**
    * <code>string exception = 2;</code>
+   * @return The exception.
    */
   java.lang.String getException();
   /**
    * <code>string exception = 2;</code>
+   * @return The bytes for exception.
    */
   com.google.protobuf.ByteString
       getExceptionBytes();

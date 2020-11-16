@@ -9,15 +9,18 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>int32 persistentIndex = 1;</code>
+   * @return The persistentIndex.
    */
   int getPersistentIndex();
 
   /**
    * <code>.google.protobuf.Empty globalEnv = 2;</code>
+   * @return Whether the globalEnv field is set.
    */
   boolean hasGlobalEnv();
   /**
    * <code>.google.protobuf.Empty globalEnv = 2;</code>
+   * @return The globalEnv.
    */
   com.google.protobuf.Empty getGlobalEnv();
   /**
@@ -27,10 +30,12 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty currentEnv = 3;</code>
+   * @return Whether the currentEnv field is set.
    */
   boolean hasCurrentEnv();
   /**
    * <code>.google.protobuf.Empty currentEnv = 3;</code>
+   * @return The currentEnv.
    */
   com.google.protobuf.Empty getCurrentEnv();
   /**
@@ -40,15 +45,18 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>int32 sysFrameIndex = 4;</code>
+   * @return The sysFrameIndex.
    */
   int getSysFrameIndex();
 
   /**
    * <code>.rplugininterop.RRef.Member member = 5;</code>
+   * @return Whether the member field is set.
    */
   boolean hasMember();
   /**
    * <code>.rplugininterop.RRef.Member member = 5;</code>
+   * @return The member.
    */
   org.jetbrains.r.rinterop.RRef.Member getMember();
   /**
@@ -58,10 +66,12 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+   * @return Whether the parentEnv field is set.
    */
   boolean hasParentEnv();
   /**
    * <code>.rplugininterop.RRef.ParentEnv parentEnv = 6;</code>
+   * @return The parentEnv.
    */
   org.jetbrains.r.rinterop.RRef.ParentEnv getParentEnv();
   /**
@@ -71,10 +81,12 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+   * @return Whether the expression field is set.
    */
   boolean hasExpression();
   /**
    * <code>.rplugininterop.RRef.Expression expression = 7;</code>
+   * @return The expression.
    */
   org.jetbrains.r.rinterop.RRef.Expression getExpression();
   /**
@@ -84,10 +96,12 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+   * @return Whether the listElement field is set.
    */
   boolean hasListElement();
   /**
    * <code>.rplugininterop.RRef.ListElement listElement = 8;</code>
+   * @return The listElement.
    */
   org.jetbrains.r.rinterop.RRef.ListElement getListElement();
   /**
@@ -97,15 +111,18 @@ public interface RRefOrBuilder extends
 
   /**
    * <code>int32 errorStackSysFrameIndex = 9;</code>
+   * @return The errorStackSysFrameIndex.
    */
   int getErrorStackSysFrameIndex();
 
   /**
    * <code>.rplugininterop.RRef attributes = 10;</code>
+   * @return Whether the attributes field is set.
    */
   boolean hasAttributes();
   /**
    * <code>.rplugininterop.RRef attributes = 10;</code>
+   * @return The attributes.
    */
   org.jetbrains.r.rinterop.RRef getAttributes();
   /**

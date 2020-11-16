@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.VariablesResponse}
  */
-public  final class VariablesResponse extends
+public final class VariablesResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.VariablesResponse)
     VariablesResponseOrBuilder {
@@ -110,20 +110,24 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>.rplugininterop.ValueInfo value = 2;</code>
+     * @return Whether the value field is set.
      */
     boolean hasValue();
     /**
      * <code>.rplugininterop.ValueInfo value = 2;</code>
+     * @return The value.
      */
     org.jetbrains.r.rinterop.ValueInfo getValue();
     /**
@@ -134,7 +138,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Protobuf type {@code rplugininterop.VariablesResponse.Variable}
    */
-  public  static final class Variable extends
+  public static final class Variable extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.VariablesResponse.Variable)
       VariableOrBuilder {
@@ -232,7 +236,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -247,7 +253,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -266,19 +274,24 @@ private static final long serialVersionUID = 0L;
     private org.jetbrains.r.rinterop.ValueInfo value_;
     /**
      * <code>.rplugininterop.ValueInfo value = 2;</code>
+     * @return Whether the value field is set.
      */
+    @java.lang.Override
     public boolean hasValue() {
       return value_ != null;
     }
     /**
      * <code>.rplugininterop.ValueInfo value = 2;</code>
+     * @return The value.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ValueInfo getValue() {
       return value_ == null ? org.jetbrains.r.rinterop.ValueInfo.getDefaultInstance() : value_;
     }
     /**
      * <code>.rplugininterop.ValueInfo value = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ValueInfoOrBuilder getValueOrBuilder() {
       return getValue();
     }
@@ -618,6 +631,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -633,6 +647,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -649,6 +664,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -662,6 +679,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -671,6 +689,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -689,12 +709,14 @@ private static final long serialVersionUID = 0L;
           org.jetbrains.r.rinterop.ValueInfo, org.jetbrains.r.rinterop.ValueInfo.Builder, org.jetbrains.r.rinterop.ValueInfoOrBuilder> valueBuilder_;
       /**
        * <code>.rplugininterop.ValueInfo value = 2;</code>
+       * @return Whether the value field is set.
        */
       public boolean hasValue() {
         return valueBuilder_ != null || value_ != null;
       }
       /**
        * <code>.rplugininterop.ValueInfo value = 2;</code>
+       * @return The value.
        */
       public org.jetbrains.r.rinterop.ValueInfo getValue() {
         if (valueBuilder_ == null) {
@@ -857,7 +879,9 @@ private static final long serialVersionUID = 0L;
   private boolean isEnv_;
   /**
    * <code>bool isEnv = 1;</code>
+   * @return The isEnv.
    */
+  @java.lang.Override
   public boolean getIsEnv() {
     return isEnv_;
   }
@@ -866,7 +890,9 @@ private static final long serialVersionUID = 0L;
   private long totalCount_;
   /**
    * <code>int64 totalCount = 2;</code>
+   * @return The totalCount.
    */
+  @java.lang.Override
   public long getTotalCount() {
     return totalCount_;
   }
@@ -876,12 +902,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.VariablesResponse.Variable vars = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.VariablesResponse.Variable> getVarsList() {
     return vars_;
   }
   /**
    * <code>repeated .rplugininterop.VariablesResponse.Variable vars = 3;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.VariablesResponse.VariableOrBuilder> 
       getVarsOrBuilderList() {
     return vars_;
@@ -889,18 +917,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.VariablesResponse.Variable vars = 3;</code>
    */
+  @java.lang.Override
   public int getVarsCount() {
     return vars_.size();
   }
   /**
    * <code>repeated .rplugininterop.VariablesResponse.Variable vars = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.VariablesResponse.Variable getVars(int index) {
     return vars_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.VariablesResponse.Variable vars = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.VariablesResponse.VariableOrBuilder getVarsOrBuilder(
       int index) {
     return vars_.get(index);
@@ -1287,12 +1318,16 @@ private static final long serialVersionUID = 0L;
     private boolean isEnv_ ;
     /**
      * <code>bool isEnv = 1;</code>
+     * @return The isEnv.
      */
+    @java.lang.Override
     public boolean getIsEnv() {
       return isEnv_;
     }
     /**
      * <code>bool isEnv = 1;</code>
+     * @param value The isEnv to set.
+     * @return This builder for chaining.
      */
     public Builder setIsEnv(boolean value) {
       
@@ -1302,6 +1337,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool isEnv = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIsEnv() {
       
@@ -1313,12 +1349,16 @@ private static final long serialVersionUID = 0L;
     private long totalCount_ ;
     /**
      * <code>int64 totalCount = 2;</code>
+     * @return The totalCount.
      */
+    @java.lang.Override
     public long getTotalCount() {
       return totalCount_;
     }
     /**
      * <code>int64 totalCount = 2;</code>
+     * @param value The totalCount to set.
+     * @return This builder for chaining.
      */
     public Builder setTotalCount(long value) {
       
@@ -1328,6 +1368,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int64 totalCount = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTotalCount() {
       

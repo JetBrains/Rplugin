@@ -9,30 +9,36 @@ public interface ExceptionInfoOrBuilder extends
 
   /**
    * <code>string message = 1;</code>
+   * @return The message.
    */
   java.lang.String getMessage();
   /**
    * <code>string message = 1;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
       getMessageBytes();
 
   /**
    * <code>string call = 2;</code>
+   * @return The call.
    */
   java.lang.String getCall();
   /**
    * <code>string call = 2;</code>
+   * @return The bytes for call.
    */
   com.google.protobuf.ByteString
       getCallBytes();
 
   /**
    * <code>.google.protobuf.Empty simpleError = 3;</code>
+   * @return Whether the simpleError field is set.
    */
   boolean hasSimpleError();
   /**
    * <code>.google.protobuf.Empty simpleError = 3;</code>
+   * @return The simpleError.
    */
   com.google.protobuf.Empty getSimpleError();
   /**
@@ -42,10 +48,12 @@ public interface ExceptionInfoOrBuilder extends
 
   /**
    * <code>.google.protobuf.Empty interrupted = 4;</code>
+   * @return Whether the interrupted field is set.
    */
   boolean hasInterrupted();
   /**
    * <code>.google.protobuf.Empty interrupted = 4;</code>
+   * @return The interrupted.
    */
   com.google.protobuf.Empty getInterrupted();
   /**
@@ -55,10 +63,12 @@ public interface ExceptionInfoOrBuilder extends
 
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return The packageNotFound.
    */
   java.lang.String getPackageNotFound();
   /**
    * <code>string packageNotFound = 5;</code>
+   * @return The bytes for packageNotFound.
    */
   com.google.protobuf.ByteString
       getPackageNotFoundBytes();

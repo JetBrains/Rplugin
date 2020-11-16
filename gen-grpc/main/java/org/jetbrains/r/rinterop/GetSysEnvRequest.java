@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.GetSysEnvRequest}
  */
-public  final class GetSysEnvRequest extends
+public final class GetSysEnvRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.GetSysEnvRequest)
     GetSysEnvRequestOrBuilder {
@@ -105,7 +105,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object envName_;
   /**
    * <code>string envName = 1;</code>
+   * @return The envName.
    */
+  @java.lang.Override
   public java.lang.String getEnvName() {
     java.lang.Object ref = envName_;
     if (ref instanceof java.lang.String) {
@@ -120,7 +122,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string envName = 1;</code>
+   * @return The bytes for envName.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getEnvNameBytes() {
     java.lang.Object ref = envName_;
@@ -139,6 +143,7 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.LazyStringList flags_;
   /**
    * <code>repeated string flags = 2;</code>
+   * @return A list containing the flags.
    */
   public com.google.protobuf.ProtocolStringList
       getFlagsList() {
@@ -146,18 +151,23 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>repeated string flags = 2;</code>
+   * @return The count of flags.
    */
   public int getFlagsCount() {
     return flags_.size();
   }
   /**
    * <code>repeated string flags = 2;</code>
+   * @param index The index of the element to return.
+   * @return The flags at the given index.
    */
   public java.lang.String getFlags(int index) {
     return flags_.get(index);
   }
   /**
    * <code>repeated string flags = 2;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the flags at the given index.
    */
   public com.google.protobuf.ByteString
       getFlagsBytes(int index) {
@@ -505,6 +515,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object envName_ = "";
     /**
      * <code>string envName = 1;</code>
+     * @return The envName.
      */
     public java.lang.String getEnvName() {
       java.lang.Object ref = envName_;
@@ -520,6 +531,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string envName = 1;</code>
+     * @return The bytes for envName.
      */
     public com.google.protobuf.ByteString
         getEnvNameBytes() {
@@ -536,6 +548,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string envName = 1;</code>
+     * @param value The envName to set.
+     * @return This builder for chaining.
      */
     public Builder setEnvName(
         java.lang.String value) {
@@ -549,6 +563,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string envName = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEnvName() {
       
@@ -558,6 +573,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string envName = 1;</code>
+     * @param value The bytes for envName to set.
+     * @return This builder for chaining.
      */
     public Builder setEnvNameBytes(
         com.google.protobuf.ByteString value) {
@@ -580,6 +597,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @return A list containing the flags.
      */
     public com.google.protobuf.ProtocolStringList
         getFlagsList() {
@@ -587,18 +605,23 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @return The count of flags.
      */
     public int getFlagsCount() {
       return flags_.size();
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param index The index of the element to return.
+     * @return The flags at the given index.
      */
     public java.lang.String getFlags(int index) {
       return flags_.get(index);
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the flags at the given index.
      */
     public com.google.protobuf.ByteString
         getFlagsBytes(int index) {
@@ -606,6 +629,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The flags to set.
+     * @return This builder for chaining.
      */
     public Builder setFlags(
         int index, java.lang.String value) {
@@ -619,6 +645,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param value The flags to add.
+     * @return This builder for chaining.
      */
     public Builder addFlags(
         java.lang.String value) {
@@ -632,6 +660,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param values The flags to add.
+     * @return This builder for chaining.
      */
     public Builder addAllFlags(
         java.lang.Iterable<java.lang.String> values) {
@@ -643,6 +673,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFlags() {
       flags_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -652,6 +683,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>repeated string flags = 2;</code>
+     * @param value The bytes of the flags to add.
+     * @return This builder for chaining.
      */
     public Builder addFlagsBytes(
         com.google.protobuf.ByteString value) {

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.Figure}
  */
-public  final class Figure extends
+public final class Figure extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.Figure)
     FigureOrBuilder {
@@ -195,7 +195,8 @@ private static final long serialVersionUID = 0L;
   private int kindCase_ = 0;
   private java.lang.Object kind_;
   public enum KindCase
-      implements com.google.protobuf.Internal.EnumLite {
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     CIRCLE(1),
     LINE(2),
     PATH(3),
@@ -210,6 +211,8 @@ private static final long serialVersionUID = 0L;
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -245,13 +248,17 @@ private static final long serialVersionUID = 0L;
   public static final int CIRCLE_FIELD_NUMBER = 1;
   /**
    * <code>.rplugininterop.CircleFigure circle = 1;</code>
+   * @return Whether the circle field is set.
    */
+  @java.lang.Override
   public boolean hasCircle() {
     return kindCase_ == 1;
   }
   /**
    * <code>.rplugininterop.CircleFigure circle = 1;</code>
+   * @return The circle.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CircleFigure getCircle() {
     if (kindCase_ == 1) {
        return (org.jetbrains.r.rinterop.CircleFigure) kind_;
@@ -261,6 +268,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.CircleFigure circle = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.CircleFigureOrBuilder getCircleOrBuilder() {
     if (kindCase_ == 1) {
        return (org.jetbrains.r.rinterop.CircleFigure) kind_;
@@ -271,13 +279,17 @@ private static final long serialVersionUID = 0L;
   public static final int LINE_FIELD_NUMBER = 2;
   /**
    * <code>.rplugininterop.LineFigure line = 2;</code>
+   * @return Whether the line field is set.
    */
+  @java.lang.Override
   public boolean hasLine() {
     return kindCase_ == 2;
   }
   /**
    * <code>.rplugininterop.LineFigure line = 2;</code>
+   * @return The line.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.LineFigure getLine() {
     if (kindCase_ == 2) {
        return (org.jetbrains.r.rinterop.LineFigure) kind_;
@@ -287,6 +299,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.LineFigure line = 2;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.LineFigureOrBuilder getLineOrBuilder() {
     if (kindCase_ == 2) {
        return (org.jetbrains.r.rinterop.LineFigure) kind_;
@@ -297,13 +310,17 @@ private static final long serialVersionUID = 0L;
   public static final int PATH_FIELD_NUMBER = 3;
   /**
    * <code>.rplugininterop.PathFigure path = 3;</code>
+   * @return Whether the path field is set.
    */
+  @java.lang.Override
   public boolean hasPath() {
     return kindCase_ == 3;
   }
   /**
    * <code>.rplugininterop.PathFigure path = 3;</code>
+   * @return The path.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PathFigure getPath() {
     if (kindCase_ == 3) {
        return (org.jetbrains.r.rinterop.PathFigure) kind_;
@@ -313,6 +330,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.PathFigure path = 3;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PathFigureOrBuilder getPathOrBuilder() {
     if (kindCase_ == 3) {
        return (org.jetbrains.r.rinterop.PathFigure) kind_;
@@ -323,13 +341,17 @@ private static final long serialVersionUID = 0L;
   public static final int POLYGON_FIELD_NUMBER = 4;
   /**
    * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+   * @return Whether the polygon field is set.
    */
+  @java.lang.Override
   public boolean hasPolygon() {
     return kindCase_ == 4;
   }
   /**
    * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+   * @return The polygon.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PolygonFigure getPolygon() {
     if (kindCase_ == 4) {
        return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
@@ -339,6 +361,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder() {
     if (kindCase_ == 4) {
        return (org.jetbrains.r.rinterop.PolygonFigure) kind_;
@@ -349,13 +372,17 @@ private static final long serialVersionUID = 0L;
   public static final int POLYLINE_FIELD_NUMBER = 5;
   /**
    * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+   * @return Whether the polyline field is set.
    */
+  @java.lang.Override
   public boolean hasPolyline() {
     return kindCase_ == 5;
   }
   /**
    * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+   * @return The polyline.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PolylineFigure getPolyline() {
     if (kindCase_ == 5) {
        return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
@@ -365,6 +392,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder() {
     if (kindCase_ == 5) {
        return (org.jetbrains.r.rinterop.PolylineFigure) kind_;
@@ -375,13 +403,17 @@ private static final long serialVersionUID = 0L;
   public static final int RASTER_FIELD_NUMBER = 6;
   /**
    * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   * @return Whether the raster field is set.
    */
+  @java.lang.Override
   public boolean hasRaster() {
     return kindCase_ == 6;
   }
   /**
    * <code>.rplugininterop.RasterFigure raster = 6;</code>
+   * @return The raster.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RasterFigure getRaster() {
     if (kindCase_ == 6) {
        return (org.jetbrains.r.rinterop.RasterFigure) kind_;
@@ -391,6 +423,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RasterFigure raster = 6;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
     if (kindCase_ == 6) {
        return (org.jetbrains.r.rinterop.RasterFigure) kind_;
@@ -401,13 +434,17 @@ private static final long serialVersionUID = 0L;
   public static final int RECTANGLE_FIELD_NUMBER = 7;
   /**
    * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+   * @return Whether the rectangle field is set.
    */
+  @java.lang.Override
   public boolean hasRectangle() {
     return kindCase_ == 7;
   }
   /**
    * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+   * @return The rectangle.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
     if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
@@ -417,6 +454,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
     if (kindCase_ == 7) {
        return (org.jetbrains.r.rinterop.RectangleFigure) kind_;
@@ -427,13 +465,17 @@ private static final long serialVersionUID = 0L;
   public static final int TEXT_FIELD_NUMBER = 8;
   /**
    * <code>.rplugininterop.TextFigure text = 8;</code>
+   * @return Whether the text field is set.
    */
+  @java.lang.Override
   public boolean hasText() {
     return kindCase_ == 8;
   }
   /**
    * <code>.rplugininterop.TextFigure text = 8;</code>
+   * @return The text.
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.TextFigure getText() {
     if (kindCase_ == 8) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
@@ -443,6 +485,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>.rplugininterop.TextFigure text = 8;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
     if (kindCase_ == 8) {
        return (org.jetbrains.r.rinterop.TextFigure) kind_;
@@ -979,13 +1022,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.CircleFigure, org.jetbrains.r.rinterop.CircleFigure.Builder, org.jetbrains.r.rinterop.CircleFigureOrBuilder> circleBuilder_;
     /**
      * <code>.rplugininterop.CircleFigure circle = 1;</code>
+     * @return Whether the circle field is set.
      */
+    @java.lang.Override
     public boolean hasCircle() {
       return kindCase_ == 1;
     }
     /**
      * <code>.rplugininterop.CircleFigure circle = 1;</code>
+     * @return The circle.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CircleFigure getCircle() {
       if (circleBuilder_ == null) {
         if (kindCase_ == 1) {
@@ -1079,6 +1126,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.CircleFigure circle = 1;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.CircleFigureOrBuilder getCircleOrBuilder() {
       if ((kindCase_ == 1) && (circleBuilder_ != null)) {
         return circleBuilder_.getMessageOrBuilder();
@@ -1115,13 +1163,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.LineFigure, org.jetbrains.r.rinterop.LineFigure.Builder, org.jetbrains.r.rinterop.LineFigureOrBuilder> lineBuilder_;
     /**
      * <code>.rplugininterop.LineFigure line = 2;</code>
+     * @return Whether the line field is set.
      */
+    @java.lang.Override
     public boolean hasLine() {
       return kindCase_ == 2;
     }
     /**
      * <code>.rplugininterop.LineFigure line = 2;</code>
+     * @return The line.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.LineFigure getLine() {
       if (lineBuilder_ == null) {
         if (kindCase_ == 2) {
@@ -1215,6 +1267,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.LineFigure line = 2;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.LineFigureOrBuilder getLineOrBuilder() {
       if ((kindCase_ == 2) && (lineBuilder_ != null)) {
         return lineBuilder_.getMessageOrBuilder();
@@ -1251,13 +1304,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.PathFigure, org.jetbrains.r.rinterop.PathFigure.Builder, org.jetbrains.r.rinterop.PathFigureOrBuilder> pathBuilder_;
     /**
      * <code>.rplugininterop.PathFigure path = 3;</code>
+     * @return Whether the path field is set.
      */
+    @java.lang.Override
     public boolean hasPath() {
       return kindCase_ == 3;
     }
     /**
      * <code>.rplugininterop.PathFigure path = 3;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PathFigure getPath() {
       if (pathBuilder_ == null) {
         if (kindCase_ == 3) {
@@ -1351,6 +1408,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.PathFigure path = 3;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PathFigureOrBuilder getPathOrBuilder() {
       if ((kindCase_ == 3) && (pathBuilder_ != null)) {
         return pathBuilder_.getMessageOrBuilder();
@@ -1387,13 +1445,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.PolygonFigure, org.jetbrains.r.rinterop.PolygonFigure.Builder, org.jetbrains.r.rinterop.PolygonFigureOrBuilder> polygonBuilder_;
     /**
      * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+     * @return Whether the polygon field is set.
      */
+    @java.lang.Override
     public boolean hasPolygon() {
       return kindCase_ == 4;
     }
     /**
      * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
+     * @return The polygon.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PolygonFigure getPolygon() {
       if (polygonBuilder_ == null) {
         if (kindCase_ == 4) {
@@ -1487,6 +1549,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.PolygonFigure polygon = 4;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PolygonFigureOrBuilder getPolygonOrBuilder() {
       if ((kindCase_ == 4) && (polygonBuilder_ != null)) {
         return polygonBuilder_.getMessageOrBuilder();
@@ -1523,13 +1586,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.PolylineFigure, org.jetbrains.r.rinterop.PolylineFigure.Builder, org.jetbrains.r.rinterop.PolylineFigureOrBuilder> polylineBuilder_;
     /**
      * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+     * @return Whether the polyline field is set.
      */
+    @java.lang.Override
     public boolean hasPolyline() {
       return kindCase_ == 5;
     }
     /**
      * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
+     * @return The polyline.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PolylineFigure getPolyline() {
       if (polylineBuilder_ == null) {
         if (kindCase_ == 5) {
@@ -1623,6 +1690,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.PolylineFigure polyline = 5;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.PolylineFigureOrBuilder getPolylineOrBuilder() {
       if ((kindCase_ == 5) && (polylineBuilder_ != null)) {
         return polylineBuilder_.getMessageOrBuilder();
@@ -1659,13 +1727,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RasterFigure, org.jetbrains.r.rinterop.RasterFigure.Builder, org.jetbrains.r.rinterop.RasterFigureOrBuilder> rasterBuilder_;
     /**
      * <code>.rplugininterop.RasterFigure raster = 6;</code>
+     * @return Whether the raster field is set.
      */
+    @java.lang.Override
     public boolean hasRaster() {
       return kindCase_ == 6;
     }
     /**
      * <code>.rplugininterop.RasterFigure raster = 6;</code>
+     * @return The raster.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RasterFigure getRaster() {
       if (rasterBuilder_ == null) {
         if (kindCase_ == 6) {
@@ -1759,6 +1831,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RasterFigure raster = 6;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RasterFigureOrBuilder getRasterOrBuilder() {
       if ((kindCase_ == 6) && (rasterBuilder_ != null)) {
         return rasterBuilder_.getMessageOrBuilder();
@@ -1795,13 +1868,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.RectangleFigure, org.jetbrains.r.rinterop.RectangleFigure.Builder, org.jetbrains.r.rinterop.RectangleFigureOrBuilder> rectangleBuilder_;
     /**
      * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+     * @return Whether the rectangle field is set.
      */
+    @java.lang.Override
     public boolean hasRectangle() {
       return kindCase_ == 7;
     }
     /**
      * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
+     * @return The rectangle.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RectangleFigure getRectangle() {
       if (rectangleBuilder_ == null) {
         if (kindCase_ == 7) {
@@ -1895,6 +1972,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.RectangleFigure rectangle = 7;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.RectangleFigureOrBuilder getRectangleOrBuilder() {
       if ((kindCase_ == 7) && (rectangleBuilder_ != null)) {
         return rectangleBuilder_.getMessageOrBuilder();
@@ -1931,13 +2009,17 @@ private static final long serialVersionUID = 0L;
         org.jetbrains.r.rinterop.TextFigure, org.jetbrains.r.rinterop.TextFigure.Builder, org.jetbrains.r.rinterop.TextFigureOrBuilder> textBuilder_;
     /**
      * <code>.rplugininterop.TextFigure text = 8;</code>
+     * @return Whether the text field is set.
      */
+    @java.lang.Override
     public boolean hasText() {
       return kindCase_ == 8;
     }
     /**
      * <code>.rplugininterop.TextFigure text = 8;</code>
+     * @return The text.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.TextFigure getText() {
       if (textBuilder_ == null) {
         if (kindCase_ == 8) {
@@ -2031,6 +2113,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>.rplugininterop.TextFigure text = 8;</code>
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.TextFigureOrBuilder getTextOrBuilder() {
       if ((kindCase_ == 8) && (textBuilder_ != null)) {
         return textBuilder_.getMessageOrBuilder();

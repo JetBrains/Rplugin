@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ShortS4ClassInfoList}
  */
-public  final class ShortS4ClassInfoList extends
+public final class ShortS4ClassInfoList extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ShortS4ClassInfoList)
     ShortS4ClassInfoListOrBuilder {
@@ -100,33 +100,38 @@ private static final long serialVersionUID = 0L;
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>string package = 2;</code>
+     * @return The package.
      */
     java.lang.String getPackage();
     /**
      * <code>string package = 2;</code>
+     * @return The bytes for package.
      */
     com.google.protobuf.ByteString
         getPackageBytes();
 
     /**
      * <code>bool isVirtual = 3;</code>
+     * @return The isVirtual.
      */
     boolean getIsVirtual();
   }
   /**
    * Protobuf type {@code rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo}
    */
-  public  static final class ShortS4ClassInfo extends
+  public static final class ShortS4ClassInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo)
       ShortS4ClassInfoOrBuilder {
@@ -223,7 +228,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -238,7 +245,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -257,7 +266,9 @@ private static final long serialVersionUID = 0L;
     private volatile java.lang.Object package_;
     /**
      * <code>string package = 2;</code>
+     * @return The package.
      */
+    @java.lang.Override
     public java.lang.String getPackage() {
       java.lang.Object ref = package_;
       if (ref instanceof java.lang.String) {
@@ -272,7 +283,9 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string package = 2;</code>
+     * @return The bytes for package.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPackageBytes() {
       java.lang.Object ref = package_;
@@ -291,7 +304,9 @@ private static final long serialVersionUID = 0L;
     private boolean isVirtual_;
     /**
      * <code>bool isVirtual = 3;</code>
+     * @return The isVirtual.
      */
+    @java.lang.Override
     public boolean getIsVirtual() {
       return isVirtual_;
     }
@@ -636,6 +651,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -651,6 +667,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -667,6 +684,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -680,6 +699,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -689,6 +709,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -705,6 +727,7 @@ private static final long serialVersionUID = 0L;
       private java.lang.Object package_ = "";
       /**
        * <code>string package = 2;</code>
+       * @return The package.
        */
       public java.lang.String getPackage() {
         java.lang.Object ref = package_;
@@ -720,6 +743,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string package = 2;</code>
+       * @return The bytes for package.
        */
       public com.google.protobuf.ByteString
           getPackageBytes() {
@@ -736,6 +760,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string package = 2;</code>
+       * @param value The package to set.
+       * @return This builder for chaining.
        */
       public Builder setPackage(
           java.lang.String value) {
@@ -749,6 +775,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string package = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPackage() {
         
@@ -758,6 +785,8 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>string package = 2;</code>
+       * @param value The bytes for package to set.
+       * @return This builder for chaining.
        */
       public Builder setPackageBytes(
           com.google.protobuf.ByteString value) {
@@ -774,12 +803,16 @@ private static final long serialVersionUID = 0L;
       private boolean isVirtual_ ;
       /**
        * <code>bool isVirtual = 3;</code>
+       * @return The isVirtual.
        */
+      @java.lang.Override
       public boolean getIsVirtual() {
         return isVirtual_;
       }
       /**
        * <code>bool isVirtual = 3;</code>
+       * @param value The isVirtual to set.
+       * @return This builder for chaining.
        */
       public Builder setIsVirtual(boolean value) {
         
@@ -789,6 +822,7 @@ private static final long serialVersionUID = 0L;
       }
       /**
        * <code>bool isVirtual = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIsVirtual() {
         
@@ -854,12 +888,14 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo shortS4ClassInfos = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<org.jetbrains.r.rinterop.ShortS4ClassInfoList.ShortS4ClassInfo> getShortS4ClassInfosList() {
     return shortS4ClassInfos_;
   }
   /**
    * <code>repeated .rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo shortS4ClassInfos = 1;</code>
    */
+  @java.lang.Override
   public java.util.List<? extends org.jetbrains.r.rinterop.ShortS4ClassInfoList.ShortS4ClassInfoOrBuilder> 
       getShortS4ClassInfosOrBuilderList() {
     return shortS4ClassInfos_;
@@ -867,18 +903,21 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>repeated .rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo shortS4ClassInfos = 1;</code>
    */
+  @java.lang.Override
   public int getShortS4ClassInfosCount() {
     return shortS4ClassInfos_.size();
   }
   /**
    * <code>repeated .rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo shortS4ClassInfos = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ShortS4ClassInfoList.ShortS4ClassInfo getShortS4ClassInfos(int index) {
     return shortS4ClassInfos_.get(index);
   }
   /**
    * <code>repeated .rplugininterop.ShortS4ClassInfoList.ShortS4ClassInfo shortS4ClassInfos = 1;</code>
    */
+  @java.lang.Override
   public org.jetbrains.r.rinterop.ShortS4ClassInfoList.ShortS4ClassInfoOrBuilder getShortS4ClassInfosOrBuilder(
       int index) {
     return shortS4ClassInfos_.get(index);

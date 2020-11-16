@@ -9,20 +9,24 @@ public interface ConvertRoxygenToHTMLRequestOrBuilder extends
 
   /**
    * <code>string functionName = 1;</code>
+   * @return The functionName.
    */
   java.lang.String getFunctionName();
   /**
    * <code>string functionName = 1;</code>
+   * @return The bytes for functionName.
    */
   com.google.protobuf.ByteString
       getFunctionNameBytes();
 
   /**
    * <code>string functionText = 2;</code>
+   * @return The functionText.
    */
   java.lang.String getFunctionText();
   /**
    * <code>string functionText = 2;</code>
+   * @return The bytes for functionText.
    */
   com.google.protobuf.ByteString
       getFunctionTextBytes();

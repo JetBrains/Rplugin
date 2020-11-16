@@ -9,10 +9,12 @@ public interface DataFrameFilterRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return Whether the ref field is set.
    */
   boolean hasRef();
   /**
    * <code>.rplugininterop.RRef ref = 1;</code>
+   * @return The ref.
    */
   org.jetbrains.r.rinterop.RRef getRef();
   /**
@@ -22,10 +24,12 @@ public interface DataFrameFilterRequestOrBuilder extends
 
   /**
    * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+   * @return Whether the filter field is set.
    */
   boolean hasFilter();
   /**
    * <code>.rplugininterop.DataFrameFilterRequest.Filter filter = 2;</code>
+   * @return The filter.
    */
   org.jetbrains.r.rinterop.DataFrameFilterRequest.Filter getFilter();
   /**

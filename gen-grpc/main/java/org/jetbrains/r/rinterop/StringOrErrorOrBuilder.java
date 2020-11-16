@@ -9,20 +9,24 @@ public interface StringOrErrorOrBuilder extends
 
   /**
    * <code>string value = 1;</code>
+   * @return The value.
    */
   java.lang.String getValue();
   /**
    * <code>string value = 1;</code>
+   * @return The bytes for value.
    */
   com.google.protobuf.ByteString
       getValueBytes();
 
   /**
    * <code>string error = 2;</code>
+   * @return The error.
    */
   java.lang.String getError();
   /**
    * <code>string error = 2;</code>
+   * @return The bytes for error.
    */
   com.google.protobuf.ByteString
       getErrorBytes();

@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop;
 /**
  * Protobuf type {@code rplugininterop.ExecuteCodeRequest}
  */
-public  final class ExecuteCodeRequest extends
+public final class ExecuteCodeRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:rplugininterop.ExecuteCodeRequest)
     ExecuteCodeRequestOrBuilder {
@@ -179,6 +179,8 @@ private static final long serialVersionUID = 0L;
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -186,6 +188,10 @@ private static final long serialVersionUID = 0L;
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static DebugCommand forNumber(int value) {
       switch (value) {
         case 0: return CONTINUE;
@@ -209,6 +215,10 @@ private static final long serialVersionUID = 0L;
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -247,7 +257,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object code_;
   /**
    * <code>string code = 1;</code>
+   * @return The code.
    */
+  @java.lang.Override
   public java.lang.String getCode() {
     java.lang.Object ref = code_;
     if (ref instanceof java.lang.String) {
@@ -262,7 +274,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string code = 1;</code>
+   * @return The bytes for code.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getCodeBytes() {
     java.lang.Object ref = code_;
@@ -281,7 +295,9 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object sourceFileId_;
   /**
    * <code>string sourceFileId = 2;</code>
+   * @return The sourceFileId.
    */
+  @java.lang.Override
   public java.lang.String getSourceFileId() {
     java.lang.Object ref = sourceFileId_;
     if (ref instanceof java.lang.String) {
@@ -296,7 +312,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string sourceFileId = 2;</code>
+   * @return The bytes for sourceFileId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSourceFileIdBytes() {
     java.lang.Object ref = sourceFileId_;
@@ -315,7 +333,9 @@ private static final long serialVersionUID = 0L;
   private int sourceFileLineOffset_;
   /**
    * <code>int32 sourceFileLineOffset = 3;</code>
+   * @return The sourceFileLineOffset.
    */
+  @java.lang.Override
   public int getSourceFileLineOffset() {
     return sourceFileLineOffset_;
   }
@@ -324,7 +344,9 @@ private static final long serialVersionUID = 0L;
   private int sourceFileFirstLineOffset_;
   /**
    * <code>int32 sourceFileFirstLineOffset = 4;</code>
+   * @return The sourceFileFirstLineOffset.
    */
+  @java.lang.Override
   public int getSourceFileFirstLineOffset() {
     return sourceFileFirstLineOffset_;
   }
@@ -333,7 +355,9 @@ private static final long serialVersionUID = 0L;
   private boolean withEcho_;
   /**
    * <code>bool withEcho = 5;</code>
+   * @return The withEcho.
    */
+  @java.lang.Override
   public boolean getWithEcho() {
     return withEcho_;
   }
@@ -342,7 +366,9 @@ private static final long serialVersionUID = 0L;
   private boolean streamOutput_;
   /**
    * <code>bool streamOutput = 6;</code>
+   * @return The streamOutput.
    */
+  @java.lang.Override
   public boolean getStreamOutput() {
     return streamOutput_;
   }
@@ -351,7 +377,9 @@ private static final long serialVersionUID = 0L;
   private boolean isRepl_;
   /**
    * <code>bool isRepl = 7;</code>
+   * @return The isRepl.
    */
+  @java.lang.Override
   public boolean getIsRepl() {
     return isRepl_;
   }
@@ -360,7 +388,9 @@ private static final long serialVersionUID = 0L;
   private boolean isDebug_;
   /**
    * <code>bool isDebug = 8;</code>
+   * @return The isDebug.
    */
+  @java.lang.Override
   public boolean getIsDebug() {
     return isDebug_;
   }
@@ -369,14 +399,16 @@ private static final long serialVersionUID = 0L;
   private int firstDebugCommand_;
   /**
    * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+   * @return The enum numeric value on the wire for firstDebugCommand.
    */
-  public int getFirstDebugCommandValue() {
+  @java.lang.Override public int getFirstDebugCommandValue() {
     return firstDebugCommand_;
   }
   /**
    * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+   * @return The firstDebugCommand.
    */
-  public org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand() {
+  @java.lang.Override public org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand() {
     @SuppressWarnings("deprecation")
     org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand result = org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.valueOf(firstDebugCommand_);
     return result == null ? org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.UNRECOGNIZED : result;
@@ -386,7 +418,9 @@ private static final long serialVersionUID = 0L;
   private boolean setLastValue_;
   /**
    * <code>bool setLastValue = 10;</code>
+   * @return The setLastValue.
    */
+  @java.lang.Override
   public boolean getSetLastValue() {
     return setLastValue_;
   }
@@ -853,6 +887,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object code_ = "";
     /**
      * <code>string code = 1;</code>
+     * @return The code.
      */
     public java.lang.String getCode() {
       java.lang.Object ref = code_;
@@ -868,6 +903,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string code = 1;</code>
+     * @return The bytes for code.
      */
     public com.google.protobuf.ByteString
         getCodeBytes() {
@@ -884,6 +920,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string code = 1;</code>
+     * @param value The code to set.
+     * @return This builder for chaining.
      */
     public Builder setCode(
         java.lang.String value) {
@@ -897,6 +935,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string code = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCode() {
       
@@ -906,6 +945,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string code = 1;</code>
+     * @param value The bytes for code to set.
+     * @return This builder for chaining.
      */
     public Builder setCodeBytes(
         com.google.protobuf.ByteString value) {
@@ -922,6 +963,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object sourceFileId_ = "";
     /**
      * <code>string sourceFileId = 2;</code>
+     * @return The sourceFileId.
      */
     public java.lang.String getSourceFileId() {
       java.lang.Object ref = sourceFileId_;
@@ -937,6 +979,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourceFileId = 2;</code>
+     * @return The bytes for sourceFileId.
      */
     public com.google.protobuf.ByteString
         getSourceFileIdBytes() {
@@ -953,6 +996,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourceFileId = 2;</code>
+     * @param value The sourceFileId to set.
+     * @return This builder for chaining.
      */
     public Builder setSourceFileId(
         java.lang.String value) {
@@ -966,6 +1011,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourceFileId = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSourceFileId() {
       
@@ -975,6 +1021,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string sourceFileId = 2;</code>
+     * @param value The bytes for sourceFileId to set.
+     * @return This builder for chaining.
      */
     public Builder setSourceFileIdBytes(
         com.google.protobuf.ByteString value) {
@@ -991,12 +1039,16 @@ private static final long serialVersionUID = 0L;
     private int sourceFileLineOffset_ ;
     /**
      * <code>int32 sourceFileLineOffset = 3;</code>
+     * @return The sourceFileLineOffset.
      */
+    @java.lang.Override
     public int getSourceFileLineOffset() {
       return sourceFileLineOffset_;
     }
     /**
      * <code>int32 sourceFileLineOffset = 3;</code>
+     * @param value The sourceFileLineOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setSourceFileLineOffset(int value) {
       
@@ -1006,6 +1058,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 sourceFileLineOffset = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSourceFileLineOffset() {
       
@@ -1017,12 +1070,16 @@ private static final long serialVersionUID = 0L;
     private int sourceFileFirstLineOffset_ ;
     /**
      * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     * @return The sourceFileFirstLineOffset.
      */
+    @java.lang.Override
     public int getSourceFileFirstLineOffset() {
       return sourceFileFirstLineOffset_;
     }
     /**
      * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     * @param value The sourceFileFirstLineOffset to set.
+     * @return This builder for chaining.
      */
     public Builder setSourceFileFirstLineOffset(int value) {
       
@@ -1032,6 +1089,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 sourceFileFirstLineOffset = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSourceFileFirstLineOffset() {
       
@@ -1043,12 +1101,16 @@ private static final long serialVersionUID = 0L;
     private boolean withEcho_ ;
     /**
      * <code>bool withEcho = 5;</code>
+     * @return The withEcho.
      */
+    @java.lang.Override
     public boolean getWithEcho() {
       return withEcho_;
     }
     /**
      * <code>bool withEcho = 5;</code>
+     * @param value The withEcho to set.
+     * @return This builder for chaining.
      */
     public Builder setWithEcho(boolean value) {
       
@@ -1058,6 +1120,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool withEcho = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearWithEcho() {
       
@@ -1069,12 +1132,16 @@ private static final long serialVersionUID = 0L;
     private boolean streamOutput_ ;
     /**
      * <code>bool streamOutput = 6;</code>
+     * @return The streamOutput.
      */
+    @java.lang.Override
     public boolean getStreamOutput() {
       return streamOutput_;
     }
     /**
      * <code>bool streamOutput = 6;</code>
+     * @param value The streamOutput to set.
+     * @return This builder for chaining.
      */
     public Builder setStreamOutput(boolean value) {
       
@@ -1084,6 +1151,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool streamOutput = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStreamOutput() {
       
@@ -1095,12 +1163,16 @@ private static final long serialVersionUID = 0L;
     private boolean isRepl_ ;
     /**
      * <code>bool isRepl = 7;</code>
+     * @return The isRepl.
      */
+    @java.lang.Override
     public boolean getIsRepl() {
       return isRepl_;
     }
     /**
      * <code>bool isRepl = 7;</code>
+     * @param value The isRepl to set.
+     * @return This builder for chaining.
      */
     public Builder setIsRepl(boolean value) {
       
@@ -1110,6 +1182,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool isRepl = 7;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIsRepl() {
       
@@ -1121,12 +1194,16 @@ private static final long serialVersionUID = 0L;
     private boolean isDebug_ ;
     /**
      * <code>bool isDebug = 8;</code>
+     * @return The isDebug.
      */
+    @java.lang.Override
     public boolean getIsDebug() {
       return isDebug_;
     }
     /**
      * <code>bool isDebug = 8;</code>
+     * @param value The isDebug to set.
+     * @return This builder for chaining.
      */
     public Builder setIsDebug(boolean value) {
       
@@ -1136,6 +1213,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool isDebug = 8;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIsDebug() {
       
@@ -1147,21 +1225,27 @@ private static final long serialVersionUID = 0L;
     private int firstDebugCommand_ = 0;
     /**
      * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+     * @return The enum numeric value on the wire for firstDebugCommand.
      */
-    public int getFirstDebugCommandValue() {
+    @java.lang.Override public int getFirstDebugCommandValue() {
       return firstDebugCommand_;
     }
     /**
      * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+     * @param value The enum numeric value on the wire for firstDebugCommand to set.
+     * @return This builder for chaining.
      */
     public Builder setFirstDebugCommandValue(int value) {
+      
       firstDebugCommand_ = value;
       onChanged();
       return this;
     }
     /**
      * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+     * @return The firstDebugCommand.
      */
+    @java.lang.Override
     public org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand getFirstDebugCommand() {
       @SuppressWarnings("deprecation")
       org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand result = org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand.valueOf(firstDebugCommand_);
@@ -1169,6 +1253,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+     * @param value The firstDebugCommand to set.
+     * @return This builder for chaining.
      */
     public Builder setFirstDebugCommand(org.jetbrains.r.rinterop.ExecuteCodeRequest.DebugCommand value) {
       if (value == null) {
@@ -1181,6 +1267,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>.rplugininterop.ExecuteCodeRequest.DebugCommand firstDebugCommand = 9;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFirstDebugCommand() {
       
@@ -1192,12 +1279,16 @@ private static final long serialVersionUID = 0L;
     private boolean setLastValue_ ;
     /**
      * <code>bool setLastValue = 10;</code>
+     * @return The setLastValue.
      */
+    @java.lang.Override
     public boolean getSetLastValue() {
       return setLastValue_;
     }
     /**
      * <code>bool setLastValue = 10;</code>
+     * @param value The setLastValue to set.
+     * @return This builder for chaining.
      */
     public Builder setSetLastValue(boolean value) {
       
@@ -1207,6 +1298,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bool setLastValue = 10;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSetLastValue() {
       
