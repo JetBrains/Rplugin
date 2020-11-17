@@ -1,9 +1,11 @@
 package org.jetbrains.r.rinterop.rstudioapi
 
+import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileChooserFactory
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -13,12 +15,17 @@ import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.isLocal
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RObject
 import javax.swing.JPasswordField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import com.intellij.credentialStore.generateServiceName
+import com.intellij.ide.passwordSafe.PasswordSafe
+import com.intellij.credentialStore.Credentials
+
 
 object DialogUtils {
   fun askForPassword(args: RObject): Promise<RObject> {
@@ -32,14 +39,7 @@ object DialogUtils {
     runInEdt {
       val dialog = dialog("", panel)
       dialog.isOKActionEnabled = false
-      val validate: () -> Unit = {
-        dialog.isOKActionEnabled = passwordField.password.isNotEmpty()
-      }
-      passwordField.document.addDocumentListener(object : DocumentListener {
-        override fun changedUpdate(e: DocumentEvent?) = validate()
-        override fun insertUpdate(e: DocumentEvent?) = validate()
-        override fun removeUpdate(e: DocumentEvent?) = validate()
-      })
+      addValidateFieldNotEmpty(dialog, passwordField)
       val result = if (dialog.showAndGet()) {
         passwordField.password.joinToString("").toRString()
       }
@@ -82,37 +82,43 @@ object DialogUtils {
 
   fun askForSecret(args: RObject): Promise<RObject> {
     val (name, message, title) = args.rString.stringsList
+
+    val credentialAttributes = createCredentialAttributes(name)
+
     val secretField = JPasswordField()
-    val checkBox = JBCheckBox("Remember with keyring")
-    val url = "https://support.rstudio.com/hc/en-us/articles/360000969634"
+    PasswordSafe.instance.getPassword(credentialAttributes)?.let {
+      secretField.text = it
+    }
+
+    val keyringCheckbox = JBCheckBox(RBundle.message("rstudioapi.remember.with.keyring.checkbox"))
+    keyringCheckbox.isSelected = true
     val panel = panel {
       noteRow(title)
       row { secretField().focused() }
-      row { checkBox() }
-      noteRow("""<a href="$url">Using Keyring</a>""")
-    }.withPreferredWidth(350)
+      row { keyringCheckbox() }
+      noteRow(RBundle.message("rstudioapi.remember.with.keyring.note"))
+    }
     val promise = AsyncPromise<RObject>()
     runInEdt {
       val dialog = dialog(message, panel)
-      dialog.isOKActionEnabled = false
-      val validate: () -> Unit = {
-        dialog.isOKActionEnabled = secretField.password.isNotEmpty()
-      }
-      secretField.document.addDocumentListener(object : DocumentListener {
-        override fun changedUpdate(e: DocumentEvent?) = validate()
-        override fun insertUpdate(e: DocumentEvent?) = validate()
-        override fun removeUpdate(e: DocumentEvent?) = validate()
-      })
+      dialog.isOKActionEnabled = secretField.password.isNotEmpty()
+      addValidateFieldNotEmpty(dialog, secretField)
       val result = if (dialog.showAndGet()) {
-        if (checkBox.isSelected) {
-          // TODO
+        val password = secretField.password.joinToString("")
+        if (keyringCheckbox.isSelected) {
+          val credentials = Credentials("", password)
+          PasswordSafe.instance[credentialAttributes] = credentials
         }
-        secretField.password.joinToString("").toRString()
+        password.toRString()
       }
       else rError("Ask for secret operation was cancelled.")
       promise.setResult(result)
     }
     return promise
+  }
+
+  private fun createCredentialAttributes(key: String): CredentialAttributes {
+    return CredentialAttributes(generateServiceName("rstudioapi", key))
   }
 
   fun selectFile(rInterop: RInterop, args: RObject): Promise<RObject> {
@@ -189,7 +195,7 @@ object DialogUtils {
 
   fun showDialog(args: RObject): Promise<RObject> {
     val (title, message, url) = args.rString.stringsList
-    val msg = "$message\n<a href=\"$url\">$url</a>"
+    val msg = RBundle.message("rstudioapi.show.dialog.message", message, url)
     val promise = AsyncPromise<RObject>()
     runInEdt {
       Messages.showInfoMessage(msg, title)
@@ -200,5 +206,16 @@ object DialogUtils {
 
   fun updateDialog(args: RObject): Promise<RObject> {
     TODO()
+  }
+
+  private fun addValidateFieldNotEmpty(dialog: DialogWrapper, field: JPasswordField) {
+    val validate: () -> Unit = {
+      dialog.isOKActionEnabled = field.password.isNotEmpty()
+    }
+    field.document.addDocumentListener(object : DocumentListener {
+      override fun changedUpdate(e: DocumentEvent?) = validate()
+      override fun insertUpdate(e: DocumentEvent?) = validate()
+      override fun removeUpdate(e: DocumentEvent?) = validate()
+    })
   }
 }
