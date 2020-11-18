@@ -19,6 +19,7 @@ import org.jetbrains.r.refactoring.RNamesValidator
 import javax.swing.Icon
 import kotlin.math.min
 
+const val ARGUMENT_VALUE_PRIORITY = 140.0
 const val LIBRARY_METHOD_PRIORITY = 120.0
 const val TABLE_MANIPULATION_PRIORITY = 110.0
 const val IMPORT_PACKAGE_PRIORITY = 110.0

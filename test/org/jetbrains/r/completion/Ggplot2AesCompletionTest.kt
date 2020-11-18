@@ -54,6 +54,26 @@ class Ggplot2AesCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testGeomValueCompletionNoStringForQplot() {
+    checkCompletion(
+      """
+        qplot(x = cty, y = hwy, data = mpg, geom = <caret>)
+      """.trimIndent(),
+      listOf("\"point\"", "\"bar\"", "\"polygon\""),
+      listOf()
+    )
+  }
+
+  fun testGeomValueCompletionStringForQplot() {
+    checkCompletion(
+      """
+        qplot(x = cty, y = hwy, data = mpg, geom = "<caret>")
+      """.trimIndent(),
+      listOf("point", "bar", "polygon"),
+      listOf()
+    )
+  }
+
   private fun checkCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissing: List<String>) {
     myFixture.configureByText("a.R", text)
     val result = myFixture.completeBasic()

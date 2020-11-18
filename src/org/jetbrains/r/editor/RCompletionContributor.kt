@@ -233,7 +233,8 @@ class RCompletionContributor : CompletionContributor() {
       }
 
       RPackageCompletionUtil.addPackageCompletion(position, result)
-      addNamedArgumentsCompletion(originalFile, parent, result)
+      addNamedArgumentsCompletion(position, result)
+      addArgumentValueCompletion(position, result)
       val prefix = position.name?.let { StringUtil.trimEnd(it, CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED) } ?: ""
       RPackageCompletionUtil.addCompletionFromIndices(project, RSearchScopeUtil.getScope(originalFile),
                                                       parameters.originalFile, prefix, shownNames, result, elementFactory)
@@ -313,7 +314,8 @@ class RCompletionContributor : CompletionContributor() {
       }
     }
 
-    private fun addNamedArgumentsCompletion(originalFile: PsiFile, parent: PsiElement?, result: CompletionResultSet) {
+    private fun addNamedArgumentsCompletion(position: PsiElement, result: CompletionResultSet) {
+      val parent = position.parent
       if (parent !is RArgumentList && parent !is RNamedArgument) return
 
       val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
@@ -328,7 +330,7 @@ class RCompletionContributor : CompletionContributor() {
         extension.completeArgument(mainCall, result)
       }
 
-      val info = originalFile.runtimeInfo
+      val info = position.containingFile.originalFile.runtimeInfo
       val mainFunctionName = when (val expression = mainCall.expression) {
         is RNamespaceAccessExpression -> expression.identifier?.name ?: return
         is RIdentifierExpression -> expression.name
@@ -543,6 +545,7 @@ class RCompletionContributor : CompletionContributor() {
       val stringLiteral = PsiTreeUtil.getParentOfType(parameters.position, RStringLiteralExpression::class.java, false) ?: return
       addTableLiterals(stringLiteral, parameters, result)
       addFilePathCompletion(parameters, stringLiteral, result)
+      addArgumentValueCompletion(stringLiteral, result)
     }
 
     private fun addTableLiterals(stringLiteral: RStringLiteralExpression,
@@ -669,6 +672,17 @@ class RCompletionContributor : CompletionContributor() {
         if (!provider.addCompletionStatically(psiElement, shownNames, result)) {
           runtimeInfo?.let { provider.addCompletionFromRuntime(psiElement, shownNames, result, it) }
         }
+      }
+    }
+
+    private fun addArgumentValueCompletion(position: PsiElement, result: CompletionResultSet) {
+      val parent = position.parent
+      if (parent !is RArgumentList && parent !is RNamedArgument) return
+      if (parent is RNamedArgument && parent.assignedValue != position) return
+      val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
+
+      for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
+        extension.completeArgumentValue(position, mainCall, result)
       }
     }
 

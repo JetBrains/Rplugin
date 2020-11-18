@@ -1,11 +1,13 @@
 package org.jetbrains.r.codeInsight.libraries
 
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
+import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.psi.PsiElement
+import org.jetbrains.r.editor.completion.ARGUMENT_VALUE_PRIORITY
+import org.jetbrains.r.editor.completion.RLookupElement
 import org.jetbrains.r.editor.completion.RLookupElementFactory
-import org.jetbrains.r.psi.api.RArgumentList
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
+import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 class Ggplot2SupportProvider : RLibrarySupportProvider {
@@ -16,6 +18,24 @@ class Ggplot2SupportProvider : RLibrarySupportProvider {
 
     if (context.isFunctionFromLibrarySoft("aes", "ggplot2")) {
       completeAes(context, completionConsumer)
+    }
+  }
+
+  override fun completeArgumentValue(position: PsiElement, context: PsiElement, completionConsumer: CompletionResultSet) {
+    if (context !is RCallExpression) {
+      return
+    }
+
+    val parent = position.parent
+    if (context.isFunctionFromLibrarySoft("qplot", "ggplot2") &&
+        (position is RStringLiteralExpression || position is RIdentifierExpression && position.name == DUMMY_IDENTIFIER_TRIMMED)
+        && parent is RNamedArgument && parent.assignedValue == position && parent.name == "geom") {
+
+      for (geom in GEOM_TYPES) {
+        val lookupString = if (position is RIdentifierExpression) "\"" + geom + "\"" else geom
+        val lookupElement = PrioritizedLookupElement.withPriority(RLookupElement(lookupString, true), ARGUMENT_VALUE_PRIORITY)
+        completionConsumer.addElement(lookupElement)
+      }
     }
   }
 
@@ -68,5 +88,7 @@ class Ggplot2SupportProvider : RLibrarySupportProvider {
       "stat_contour_filled" to listOf("z", "fill", "group", "order"), // https://ggplot2.tidyverse.org/reference/geom_contour.html
       null to listOf("size", "stroke")
     )
+
+    val GEOM_TYPES = AES_NAMED_ARGUMENTS.keys.filterNotNull().filter{it.startsWith("geom_")}.map {it.substring("geom_".length)}
   }
 }

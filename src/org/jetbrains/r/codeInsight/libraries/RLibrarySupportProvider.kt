@@ -27,5 +27,13 @@ interface RLibrarySupportProvider {
    */
   fun completeIdentifier(element: PsiElement, lookupElementFactory: RLookupElementFactory, completionConsumer: CompletionResultSet) {}
 
+  /**
+   * Implement this method to provide library specific completion of argument name
+   */
   fun completeArgument(context: PsiElement, completionConsumer: CompletionResultSet) {}
+
+  /**
+   * Implement this method to provide library specific completion of argument values (RStringLiteralExpression or RIdentifierExpression)
+   */
+  fun completeArgumentValue(position: PsiElement, context: PsiElement, completionConsumer: CompletionResultSet) {}
 }
