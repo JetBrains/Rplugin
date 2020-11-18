@@ -6,5 +6,6 @@ package org.jetbrains.r.run.visualize
 
 object RImportDataUtil {
   val supportedTextFormats = listOf("txt", "csv", "tsv")
+  val suggestedTextFormats = listOf("csv", "tsv")  // Suggest importing these formats via editor notifications
   val supportedExcelFormats = listOf("xls", "xlsx")
 }

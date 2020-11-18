@@ -47,7 +47,7 @@ class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotif
   }
 
   private fun filterActions(project: Project, file: VirtualFile): List<RImportDataContextAction> {
-    return availableActions.filter { it.isApplicableTo(file) && it.isEnabled(project) }
+    return availableActions.filter { it.isSuggestedFor(file) && it.isEnabled(project) }
   }
 
   private fun createPanel(project: Project, file: VirtualFile, actions: List<RImportDataContextAction>): EditorNotificationPanel {
