@@ -32,7 +32,7 @@ class RRunConfigurationProducerTest : RLightCodeInsightFixtureTestCase() {
     }
     assertEquals("/src", (runConfiguration as RRunConfiguration).workingDirectory)
     assertEquals("/src/my_file.R", runConfiguration.filePath)
-    assertEquals("", runConfiguration.arguments)
+    assertEquals("", runConfiguration.scriptArguments)
   }
 
   private fun getConfigurationContext(element: PsiElement): ConfigurationContext {

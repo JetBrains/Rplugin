@@ -11,7 +11,7 @@ import org.jdom.Element
 class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunConfigurationBase<RRunConfiguration>(project, factory, null) {
   var filePath: String = ""
   var workingDirectory: String = ""
-  var arguments: String = ""
+  var scriptArguments: String = ""
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? = RCommandLineRunningState(environment)
 
@@ -32,7 +32,7 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
 
     val readArgs = JDOMExternalizerUtil.readCustomField(element, ARGS)
     if (readArgs != null) {
-      arguments = readArgs
+      scriptArguments = readArgs
     }
   }
 
@@ -40,7 +40,7 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
     super.writeExternal(element)
     JDOMExternalizerUtil.writeCustomField(element, FILE_PATH, filePath)
     JDOMExternalizerUtil.writeCustomField(element, WORKING_DIRECTORY, workingDirectory)
-    JDOMExternalizerUtil.writeCustomField(element, ARGS, arguments)
+    JDOMExternalizerUtil.writeCustomField(element, ARGS, scriptArguments)
   }
 }
 
