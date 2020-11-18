@@ -1,5 +1,6 @@
 package org.jetbrains.r.run.configuration
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -18,17 +19,20 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   private lateinit var filePath: TextFieldWithBrowseButton
   private lateinit var workingDirectory: TextFieldWithBrowseButton
   private lateinit var arguments: JTextField
+  private lateinit var environmentVariables: EnvironmentVariablesComponent
 
   override fun resetEditorFrom(s: RRunConfiguration) {
     filePath.text = s.filePath
     workingDirectory.text = s.workingDirectory
     arguments.text = s.scriptArguments
+    environmentVariables.envs = s.environmentVariables
   }
 
   override fun applyEditorTo(s: RRunConfiguration) {
     s.filePath = filePath.text
     s.workingDirectory = workingDirectory.text
     s.scriptArguments = arguments.text
+    s.environmentVariables = environmentVariables.envs
   }
 
   override fun createEditor(): JComponent {
@@ -56,6 +60,12 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.script.args.label")), g.nextLine().next())
     arguments = JTextField()
     panel.add(arguments, g.next().coverLine())
+
+    panel.add(JBLabel(RBundle.message("r.run.configuration.editor.env.variables.label")), g.nextLine().next())
+    environmentVariables = EnvironmentVariablesComponent()
+    environmentVariables.text = ""
+
+    panel.add(environmentVariables, g.next().coverLine())
 
     return panel
   }

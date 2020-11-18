@@ -12,6 +12,7 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
   var filePath: String = ""
   var workingDirectory: String = ""
   var scriptArguments: String = ""
+  var environmentVariables: Map<String, String> = HashMap()
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? = RCommandLineRunningState(environment)
 
