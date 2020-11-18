@@ -539,6 +539,8 @@ You can find the source code in the following repositories:
 
         <projectService serviceImplementation="org.jetbrains.r.editor.WelcomeGuideManager" preload="notLightEdit"/>
 
+        <postStartupActivity implementation="org.jetbrains.r.configuration.RInterpreterLocationPusher"/>
+
         <xdebugger.breakpointType implementation="org.jetbrains.r.run.debug.RLineBreakpointType"/>
 
         <xdebugger.debuggerSupport implementation="org.jetbrains.r.console.RDebuggerSupport" order="first,before XDebuggerSupport"/>
