@@ -130,7 +130,7 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
   }
 
   companion object {
-    private const val COMPLEXITY_RATIO_THRESHOLD = 0.75
+    private const val COMPLEXITY_RATIO_THRESHOLD = 0.8
     private const val TOTAL_COMPLEXITY_THRESHOLD = 1000
     private const val TIMER_DELAY = 500L
 
