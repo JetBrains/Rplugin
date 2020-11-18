@@ -22,13 +22,13 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   override fun resetEditorFrom(s: RRunConfiguration) {
     filePath.text = s.filePath
     workingDirectory.text = s.workingDirectory
-    arguments.text = s.arguments
+    arguments.text = s.scriptArguments
   }
 
   override fun applyEditorTo(s: RRunConfiguration) {
     s.filePath = filePath.text
     s.workingDirectory = workingDirectory.text
-    s.arguments = arguments.text
+    s.scriptArguments = arguments.text
   }
 
   override fun createEditor(): JComponent {
@@ -53,7 +53,7 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
                                              FileChooserDescriptorFactory.createSingleFolderDescriptor())
     panel.add(workingDirectory, g.next().coverLine())
 
-    panel.add(JBLabel(RBundle.message("r.run.configuration.editor.args.label")), g.nextLine().next())
+    panel.add(JBLabel(RBundle.message("r.run.configuration.editor.script.args.label")), g.nextLine().next())
     arguments = JTextField()
     panel.add(arguments, g.next().coverLine())
 
