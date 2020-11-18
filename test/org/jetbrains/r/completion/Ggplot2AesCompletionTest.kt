@@ -74,6 +74,26 @@ class Ggplot2AesCompletionTest : RProcessHandlerBaseTestCase() {
     )
   }
 
+  fun testGeomValueCompletionNoStringForStat() {
+    checkCompletion(
+      """
+        stat_bin(geom = <caret>)
+      """.trimIndent(),
+      listOf("\"point\"", "\"bar\"", "\"polygon\""),
+      listOf()
+    )
+  }
+
+  fun testGeomValueCompletionStringForStat() {
+    checkCompletion(
+      """
+        stat_bin(geom = "<caret>")
+      """.trimIndent(),
+      listOf("point", "bar", "polygon"),
+      listOf()
+    )
+  }
+
   private fun checkCompletion(text: String, expectedToBePresent: List<String>, expectedToBeMissing: List<String>) {
     myFixture.configureByText("a.R", text)
     val result = myFixture.completeBasic()

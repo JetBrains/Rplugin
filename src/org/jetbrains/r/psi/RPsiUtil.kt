@@ -204,7 +204,7 @@ fun PsiElement.findBlockParent(): RPsiElement {
   return parent.findBlockParent()
 }
 
-fun RCallExpression.isFunctionFromLibrarySoft(functionName: String, packageName: String): Boolean {
+fun RCallExpression.isFunctionFromLibrarySoft(functionNamePattern: String, packageName: String): Boolean {
   val expr = expression
   val (name, namespaceName) = when (expr) {
     is RIdentifierExpression -> expr.name to ""
@@ -213,7 +213,7 @@ fun RCallExpression.isFunctionFromLibrarySoft(functionName: String, packageName:
   }
 
   if (namespaceName.isNotEmpty() && namespaceName != packageName) return false
-  if (name != functionName) return false
+  if (name == null || !name.matches(Regex(functionNamePattern))) return false
   return true
 }
 

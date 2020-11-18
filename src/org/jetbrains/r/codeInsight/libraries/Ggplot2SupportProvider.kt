@@ -27,7 +27,7 @@ class Ggplot2SupportProvider : RLibrarySupportProvider {
     }
 
     val parent = position.parent
-    if (context.isFunctionFromLibrarySoft("qplot", "ggplot2") &&
+    if ((context.isFunctionFromLibrarySoft("qplot", "ggplot2") || context.isFunctionFromLibrarySoft("stat_.*", "ggplot2")) &&
         (position is RStringLiteralExpression || position is RIdentifierExpression && position.name == DUMMY_IDENTIFIER_TRIMMED)
         && parent is RNamedArgument && parent.assignedValue == position && parent.name == "geom") {
 
