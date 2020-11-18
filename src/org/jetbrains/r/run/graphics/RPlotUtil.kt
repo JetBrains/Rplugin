@@ -343,6 +343,9 @@ object RPlotUtil {
     }
 
     private fun replay(circle: RFigure.Circle) {
+      if (isPreview && (circle.center and BIT_63 != 0L)) {
+        return
+      }
       val x = calculateX(circle.center)
       val y = calculateY(circle.center)
       val radius = calculate(circle.radius, currentViewport.height)
