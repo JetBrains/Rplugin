@@ -59,7 +59,6 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       }
     })
     runInEdt {
-      tryAddContent(toolWindow, project)
       addCreateConsoleTabAction(toolWindow)
       addRenameConsoleDoubleClickAction(toolWindow)
     }
