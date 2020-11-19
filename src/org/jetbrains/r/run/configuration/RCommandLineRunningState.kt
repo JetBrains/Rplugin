@@ -33,7 +33,8 @@ class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLine
     }
 
     val processHandler = interpreter.runHelperProcess(virtualFile.path, configuration.scriptArguments.split(" "),
-                                                      workingDirectory = configuration.workingDirectory)
+                                                      workingDirectory = configuration.workingDirectory,
+                                                      environment = configuration.environmentVariablesData.envs)
 
     return processHandler
   }
