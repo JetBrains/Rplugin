@@ -12,6 +12,7 @@ import org.jdom.Element
 class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunConfigurationBase<RRunConfiguration>(project, factory, null) {
   var filePath: String = ""
   var workingDirectory: String = ""
+  var interpreterArguments: String = ""
   var scriptArguments: String = ""
   var environmentVariablesData: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
