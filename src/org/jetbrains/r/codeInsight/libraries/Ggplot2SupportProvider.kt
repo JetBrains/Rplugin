@@ -11,23 +11,15 @@ import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 class Ggplot2SupportProvider : RLibrarySupportProvider {
-  override fun completeArgument(context: PsiElement, completionConsumer: CompletionResultSet) {
-    if (context !is RCallExpression) {
-      return
-    }
-
-    if (context.isFunctionFromLibrarySoft("aes", "ggplot2")) {
-      completeAes(context, completionConsumer)
+  override fun completeArgumentName(call: RCallExpression, completionConsumer: CompletionResultSet) {
+    if (call.isFunctionFromLibrarySoft("aes", "ggplot2")) {
+      completeAes(call, completionConsumer)
     }
   }
 
-  override fun completeArgumentValue(position: PsiElement, context: PsiElement, completionConsumer: CompletionResultSet) {
-    if (context !is RCallExpression) {
-      return
-    }
-
+  override fun completeArgumentValue(position: PsiElement, call: RCallExpression, completionConsumer: CompletionResultSet) {
     val parent = position.parent
-    if ((context.isFunctionFromLibrarySoft("qplot", "ggplot2") || context.isFunctionFromLibrarySoft("stat_.*", "ggplot2")) &&
+    if ((call.isFunctionFromLibrarySoft("qplot", "ggplot2") || call.isFunctionFromLibrarySoft("stat_.*", "ggplot2")) &&
         (position is RStringLiteralExpression || position is RIdentifierExpression && position.name == DUMMY_IDENTIFIER_TRIMMED)
         && parent is RNamedArgument && parent.assignedValue == position && parent.name == "geom") {
 

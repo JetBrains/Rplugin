@@ -327,7 +327,7 @@ class RCompletionContributor : CompletionContributor() {
       }
 
       for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
-        extension.completeArgument(mainCall, result)
+        extension.completeArgumentName(mainCall, result)
       }
 
       val info = position.containingFile.originalFile.runtimeInfo

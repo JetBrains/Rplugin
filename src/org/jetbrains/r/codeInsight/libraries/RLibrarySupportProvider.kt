@@ -5,6 +5,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
 import org.jetbrains.r.editor.completion.RLookupElementFactory
+import org.jetbrains.r.psi.api.RCallExpression
 import org.jetbrains.r.psi.api.RPsiElement
 
 interface RLibrarySupportProvider {
@@ -30,10 +31,10 @@ interface RLibrarySupportProvider {
   /**
    * Implement this method to provide library specific completion of argument name
    */
-  fun completeArgument(context: PsiElement, completionConsumer: CompletionResultSet) {}
+  fun completeArgumentName(call: RCallExpression, completionConsumer: CompletionResultSet) {}
 
   /**
    * Implement this method to provide library specific completion of argument values (RStringLiteralExpression or RIdentifierExpression)
    */
-  fun completeArgumentValue(position: PsiElement, context: PsiElement, completionConsumer: CompletionResultSet) {}
+  fun completeArgumentValue(position: PsiElement, call: RCallExpression, completionConsumer: CompletionResultSet) {}
 }
