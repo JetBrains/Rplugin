@@ -1,6 +1,7 @@
 package org.jetbrains.r.run.configuration
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -25,14 +26,16 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
     filePath.text = s.filePath
     workingDirectory.text = s.workingDirectory
     arguments.text = s.scriptArguments
-    environmentVariables.envs = s.environmentVariables
+    environmentVariables.envs = s.environmentVariablesData.envs
+    environmentVariables.isPassParentEnvs = s.environmentVariablesData.isPassParentEnvs
   }
 
   override fun applyEditorTo(s: RRunConfiguration) {
     s.filePath = filePath.text
     s.workingDirectory = workingDirectory.text
     s.scriptArguments = arguments.text
-    s.environmentVariables = environmentVariables.envs
+
+    s.environmentVariablesData = EnvironmentVariablesData.create(environmentVariables.envs, environmentVariables.isPassParentEnvs)
   }
 
   override fun createEditor(): JComponent {

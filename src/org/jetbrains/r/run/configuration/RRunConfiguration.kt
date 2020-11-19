@@ -1,6 +1,7 @@
 package org.jetbrains.r.run.configuration
 
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
@@ -12,7 +13,7 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
   var filePath: String = ""
   var workingDirectory: String = ""
   var scriptArguments: String = ""
-  var environmentVariables: Map<String, String> = HashMap()
+  var environmentVariablesData: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? = RCommandLineRunningState(environment)
 
@@ -35,6 +36,8 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
     if (readArgs != null) {
       scriptArguments = readArgs
     }
+
+    environmentVariablesData = EnvironmentVariablesData.readExternal(element)
   }
 
   override fun writeExternal(element: Element) {
@@ -42,6 +45,7 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
     JDOMExternalizerUtil.writeCustomField(element, FILE_PATH, filePath)
     JDOMExternalizerUtil.writeCustomField(element, WORKING_DIRECTORY, workingDirectory)
     JDOMExternalizerUtil.writeCustomField(element, ARGS, scriptArguments)
+    environmentVariablesData.writeExternal(element)
   }
 }
 
