@@ -32,7 +32,6 @@ import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.components.InlayProgressStatus
-import org.intellij.datavis.r.ui.InlineToolbar
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.CancellablePromise
@@ -258,7 +257,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
           updateInlays()
         }
       }
-    })
+    }, editor.disposable)
   }
 
   private fun scheduleIntervalUpdate(offset: Int, length: Int) {

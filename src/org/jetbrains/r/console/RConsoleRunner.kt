@@ -177,16 +177,15 @@ class RConsoleRunner(private val interpreter: RInterpreter,
     panel.add(consoleView.component, BorderLayout.CENTER)
 
     actionToolbar.setTargetComponent(panel)
-    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, consoleTitle, RFileType.icon)
 
+    if (ApplicationManager.getApplication().isUnitTestMode) return
+    // do not create RunContentDescriptor for tests
+    val contentDescriptor = RunContentDescriptor(consoleView, consoleView.rInterop.processHandler, panel, consoleTitle, RFileType.icon)
     contentDescriptor.setFocusComputable { consoleView.consoleEditor.contentComponent }
     contentDescriptor.isAutoFocusContent = true
-
     registerActionShortcuts(actions, consoleView.consoleEditor.component)
     registerActionShortcuts(actions, panel)
-    if (!ApplicationManager.getApplication().isUnitTestMode) {
-      RConsoleToolWindowFactory.addContent(project, contentDescriptor)
-    }
+    RConsoleToolWindowFactory.addContent(project, contentDescriptor)
   }
 
   private fun createSetCurrentDirectory(): AnAction {
