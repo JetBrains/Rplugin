@@ -19,13 +19,15 @@ import javax.swing.JTextField
 class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   private lateinit var filePath: TextFieldWithBrowseButton
   private lateinit var workingDirectory: TextFieldWithBrowseButton
-  private lateinit var arguments: JTextField
+  private lateinit var interpreterArguments: JTextField
+  private lateinit var scriptArguments: JTextField
   private lateinit var environmentVariables: EnvironmentVariablesComponent
 
   override fun resetEditorFrom(s: RRunConfiguration) {
     filePath.text = s.filePath
     workingDirectory.text = s.workingDirectory
-    arguments.text = s.scriptArguments
+    interpreterArguments.text = s.interpreterArguments
+    scriptArguments.text = s.scriptArguments
     environmentVariables.envs = s.environmentVariablesData.envs
     environmentVariables.isPassParentEnvs = s.environmentVariablesData.isPassParentEnvs
   }
@@ -33,7 +35,8 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   override fun applyEditorTo(s: RRunConfiguration) {
     s.filePath = filePath.text
     s.workingDirectory = workingDirectory.text
-    s.scriptArguments = arguments.text
+    s.interpreterArguments = interpreterArguments.text
+    s.scriptArguments = scriptArguments.text
 
     s.environmentVariablesData = EnvironmentVariablesData.create(environmentVariables.envs, environmentVariables.isPassParentEnvs)
   }
@@ -60,9 +63,13 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
                                              FileChooserDescriptorFactory.createSingleFolderDescriptor())
     panel.add(workingDirectory, g.next().coverLine())
 
+    panel.add(JBLabel(RBundle.message("r.run.configuration.editor.interpreter.args.label")), g.nextLine().next())
+    interpreterArguments = JTextField()
+    panel.add(interpreterArguments, g.next().coverLine())
+
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.script.args.label")), g.nextLine().next())
-    arguments = JTextField()
-    panel.add(arguments, g.next().coverLine())
+    scriptArguments = JTextField()
+    panel.add(scriptArguments, g.next().coverLine())
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.env.variables.label")), g.nextLine().next())
     environmentVariables = EnvironmentVariablesComponent()
