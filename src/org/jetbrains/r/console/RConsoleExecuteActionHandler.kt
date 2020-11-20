@@ -40,6 +40,8 @@ import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.*
 import org.jetbrains.r.rinterop.rstudioapi.*
+import org.jetbrains.r.run.visualize.RDataFrameViewer
+import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import org.jetbrains.r.util.PromiseUtil
 import java.util.*
 import kotlin.collections.HashSet
@@ -137,6 +139,11 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
 
     override fun onViewRequest(ref: RReference, title: String, value: RValue): Promise<Unit> {
       return RPomTarget.createPomTarget(RVar(title, ref, value)).navigateAsync(true)
+    }
+
+    override fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> {
+      RVisualizeTableUtil.showTable(consoleView.project, viewer, title)
+      return resolvedPromise()
     }
 
     override fun onException(exception: RExceptionInfo) {

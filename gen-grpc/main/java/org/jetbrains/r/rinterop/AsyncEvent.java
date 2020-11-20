@@ -241,6 +241,20 @@ private static final long serialVersionUID = 0L;
             eventCase_ = 15;
             break;
           }
+          case 130: {
+            org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder subBuilder = null;
+            if (eventCase_ == 16) {
+              subBuilder = ((org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_).toBuilder();
+            }
+            event_ =
+                input.readMessage(org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_);
+              event_ = subBuilder.buildPartial();
+            }
+            eventCase_ = 16;
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -2369,6 +2383,644 @@ private static final long serialVersionUID = 0L;
 
     @java.lang.Override
     public org.jetbrains.r.rinterop.AsyncEvent.ViewRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ViewTableRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:rplugininterop.AsyncEvent.ViewTableRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
+     */
+    int getPersistentRefIndex();
+
+    /**
+     * <code>string title = 2;</code>
+     * @return The title.
+     */
+    java.lang.String getTitle();
+    /**
+     * <code>string title = 2;</code>
+     * @return The bytes for title.
+     */
+    com.google.protobuf.ByteString
+        getTitleBytes();
+  }
+  /**
+   * Protobuf type {@code rplugininterop.AsyncEvent.ViewTableRequest}
+   */
+  public static final class ViewTableRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:rplugininterop.AsyncEvent.ViewTableRequest)
+      ViewTableRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ViewTableRequest.newBuilder() to construct.
+    private ViewTableRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ViewTableRequest() {
+      title_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ViewTableRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ViewTableRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              persistentRefIndex_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              title_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ViewTableRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ViewTableRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.class, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder.class);
+    }
+
+    public static final int PERSISTENTREFINDEX_FIELD_NUMBER = 1;
+    private int persistentRefIndex_;
+    /**
+     * <code>int32 persistentRefIndex = 1;</code>
+     * @return The persistentRefIndex.
+     */
+    @java.lang.Override
+    public int getPersistentRefIndex() {
+      return persistentRefIndex_;
+    }
+
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object title_;
+    /**
+     * <code>string title = 2;</code>
+     * @return The title.
+     */
+    @java.lang.Override
+    public java.lang.String getTitle() {
+      java.lang.Object ref = title_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        title_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string title = 2;</code>
+     * @return The bytes for title.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTitleBytes() {
+      java.lang.Object ref = title_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        title_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (persistentRefIndex_ != 0) {
+        output.writeInt32(1, persistentRefIndex_);
+      }
+      if (!getTitleBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, title_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (persistentRefIndex_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, persistentRefIndex_);
+      }
+      if (!getTitleBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, title_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest)) {
+        return super.equals(obj);
+      }
+      org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest other = (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) obj;
+
+      if (getPersistentRefIndex()
+          != other.getPersistentRefIndex()) return false;
+      if (!getTitle()
+          .equals(other.getTitle())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PERSISTENTREFINDEX_FIELD_NUMBER;
+      hash = (53 * hash) + getPersistentRefIndex();
+      hash = (37 * hash) + TITLE_FIELD_NUMBER;
+      hash = (53 * hash) + getTitle().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code rplugininterop.AsyncEvent.ViewTableRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:rplugininterop.AsyncEvent.ViewTableRequest)
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ViewTableRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ViewTableRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.class, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder.class);
+      }
+
+      // Construct using org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        persistentRefIndex_ = 0;
+
+        title_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.jetbrains.r.rinterop.Service.internal_static_rplugininterop_AsyncEvent_ViewTableRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getDefaultInstanceForType() {
+        return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest build() {
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest buildPartial() {
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest result = new org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest(this);
+        result.persistentRefIndex_ = persistentRefIndex_;
+        result.title_ = title_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) {
+          return mergeFrom((org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest other) {
+        if (other == org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance()) return this;
+        if (other.getPersistentRefIndex() != 0) {
+          setPersistentRefIndex(other.getPersistentRefIndex());
+        }
+        if (!other.getTitle().isEmpty()) {
+          title_ = other.title_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int persistentRefIndex_ ;
+      /**
+       * <code>int32 persistentRefIndex = 1;</code>
+       * @return The persistentRefIndex.
+       */
+      @java.lang.Override
+      public int getPersistentRefIndex() {
+        return persistentRefIndex_;
+      }
+      /**
+       * <code>int32 persistentRefIndex = 1;</code>
+       * @param value The persistentRefIndex to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPersistentRefIndex(int value) {
+        
+        persistentRefIndex_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 persistentRefIndex = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPersistentRefIndex() {
+        
+        persistentRefIndex_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object title_ = "";
+      /**
+       * <code>string title = 2;</code>
+       * @return The title.
+       */
+      public java.lang.String getTitle() {
+        java.lang.Object ref = title_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          title_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @return The bytes for title.
+       */
+      public com.google.protobuf.ByteString
+          getTitleBytes() {
+        java.lang.Object ref = title_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          title_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @param value The title to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTitle(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        title_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTitle() {
+        
+        title_ = getDefaultInstance().getTitle();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string title = 2;</code>
+       * @param value The bytes for title to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTitleBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        title_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:rplugininterop.AsyncEvent.ViewTableRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:rplugininterop.AsyncEvent.ViewTableRequest)
+    private static final org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest();
+    }
+
+    public static org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ViewTableRequest>
+        PARSER = new com.google.protobuf.AbstractParser<ViewTableRequest>() {
+      @java.lang.Override
+      public ViewTableRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ViewTableRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ViewTableRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ViewTableRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4627,6 +5279,7 @@ private static final long serialVersionUID = 0L;
     RSTUDIOAPIREQUEST(13),
     DEBUGREMOVEBREAKPOINTREQUEST(14),
     DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST(15),
+    VIEWTABLEREQUEST(16),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -4659,6 +5312,7 @@ private static final long serialVersionUID = 0L;
         case 13: return RSTUDIOAPIREQUEST;
         case 14: return DEBUGREMOVEBREAKPOINTREQUEST;
         case 15: return DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST;
+        case 16: return VIEWTABLEREQUEST;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -5135,6 +5789,37 @@ private static final long serialVersionUID = 0L;
     return org.jetbrains.r.rinterop.SourcePosition.getDefaultInstance();
   }
 
+  public static final int VIEWTABLEREQUEST_FIELD_NUMBER = 16;
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   * @return Whether the viewTableRequest field is set.
+   */
+  @java.lang.Override
+  public boolean hasViewTableRequest() {
+    return eventCase_ == 16;
+  }
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   * @return The viewTableRequest.
+   */
+  @java.lang.Override
+  public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getViewTableRequest() {
+    if (eventCase_ == 16) {
+       return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
+    }
+    return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+  }
+  /**
+   * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+   */
+  @java.lang.Override
+  public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder getViewTableRequestOrBuilder() {
+    if (eventCase_ == 16) {
+       return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
+    }
+    return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -5194,6 +5879,9 @@ private static final long serialVersionUID = 0L;
     }
     if (eventCase_ == 15) {
       output.writeMessage(15, (org.jetbrains.r.rinterop.SourcePosition) event_);
+    }
+    if (eventCase_ == 16) {
+      output.writeMessage(16, (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_);
     }
     unknownFields.writeTo(output);
   }
@@ -5263,6 +5951,10 @@ private static final long serialVersionUID = 0L;
     if (eventCase_ == 15) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(15, (org.jetbrains.r.rinterop.SourcePosition) event_);
+    }
+    if (eventCase_ == 16) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(16, (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -5341,6 +6033,10 @@ private static final long serialVersionUID = 0L;
         if (!getDebugPrintSourcePositionToConsoleRequest()
             .equals(other.getDebugPrintSourcePositionToConsoleRequest())) return false;
         break;
+      case 16:
+        if (!getViewTableRequest()
+            .equals(other.getViewTableRequest())) return false;
+        break;
       case 0:
       default:
     }
@@ -5415,6 +6111,10 @@ private static final long serialVersionUID = 0L;
       case 15:
         hash = (37 * hash) + DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST_FIELD_NUMBER;
         hash = (53 * hash) + getDebugPrintSourcePositionToConsoleRequest().hashCode();
+        break;
+      case 16:
+        hash = (37 * hash) + VIEWTABLEREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getViewTableRequest().hashCode();
         break;
       case 0:
       default:
@@ -5677,6 +6377,13 @@ private static final long serialVersionUID = 0L;
           result.event_ = debugPrintSourcePositionToConsoleRequestBuilder_.build();
         }
       }
+      if (eventCase_ == 16) {
+        if (viewTableRequestBuilder_ == null) {
+          result.event_ = event_;
+        } else {
+          result.event_ = viewTableRequestBuilder_.build();
+        }
+      }
       result.eventCase_ = eventCase_;
       onBuilt();
       return result;
@@ -5787,6 +6494,10 @@ private static final long serialVersionUID = 0L;
         }
         case DEBUGPRINTSOURCEPOSITIONTOCONSOLEREQUEST: {
           mergeDebugPrintSourcePositionToConsoleRequest(other.getDebugPrintSourcePositionToConsoleRequest());
+          break;
+        }
+        case VIEWTABLEREQUEST: {
+          mergeViewTableRequest(other.getViewTableRequest());
           break;
         }
         case EVENT_NOT_SET: {
@@ -7791,6 +8502,147 @@ private static final long serialVersionUID = 0L;
       eventCase_ = 15;
       onChanged();;
       return debugPrintSourcePositionToConsoleRequestBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder> viewTableRequestBuilder_;
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     * @return Whether the viewTableRequest field is set.
+     */
+    @java.lang.Override
+    public boolean hasViewTableRequest() {
+      return eventCase_ == 16;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     * @return The viewTableRequest.
+     */
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest getViewTableRequest() {
+      if (viewTableRequestBuilder_ == null) {
+        if (eventCase_ == 16) {
+          return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+      } else {
+        if (eventCase_ == 16) {
+          return viewTableRequestBuilder_.getMessage();
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    public Builder setViewTableRequest(org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest value) {
+      if (viewTableRequestBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        event_ = value;
+        onChanged();
+      } else {
+        viewTableRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 16;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    public Builder setViewTableRequest(
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder builderForValue) {
+      if (viewTableRequestBuilder_ == null) {
+        event_ = builderForValue.build();
+        onChanged();
+      } else {
+        viewTableRequestBuilder_.setMessage(builderForValue.build());
+      }
+      eventCase_ = 16;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    public Builder mergeViewTableRequest(org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest value) {
+      if (viewTableRequestBuilder_ == null) {
+        if (eventCase_ == 16 &&
+            event_ != org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance()) {
+          event_ = org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.newBuilder((org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          event_ = value;
+        }
+        onChanged();
+      } else {
+        if (eventCase_ == 16) {
+          viewTableRequestBuilder_.mergeFrom(value);
+        }
+        viewTableRequestBuilder_.setMessage(value);
+      }
+      eventCase_ = 16;
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    public Builder clearViewTableRequest() {
+      if (viewTableRequestBuilder_ == null) {
+        if (eventCase_ == 16) {
+          eventCase_ = 0;
+          event_ = null;
+          onChanged();
+        }
+      } else {
+        if (eventCase_ == 16) {
+          eventCase_ = 0;
+          event_ = null;
+        }
+        viewTableRequestBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder getViewTableRequestBuilder() {
+      return getViewTableRequestFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    @java.lang.Override
+    public org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder getViewTableRequestOrBuilder() {
+      if ((eventCase_ == 16) && (viewTableRequestBuilder_ != null)) {
+        return viewTableRequestBuilder_.getMessageOrBuilder();
+      } else {
+        if (eventCase_ == 16) {
+          return (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_;
+        }
+        return org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.rplugininterop.AsyncEvent.ViewTableRequest viewTableRequest = 16;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder> 
+        getViewTableRequestFieldBuilder() {
+      if (viewTableRequestBuilder_ == null) {
+        if (!(eventCase_ == 16)) {
+          event_ = org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.getDefaultInstance();
+        }
+        viewTableRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest.Builder, org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequestOrBuilder>(
+                (org.jetbrains.r.rinterop.AsyncEvent.ViewTableRequest) event_,
+                getParentForChildren(),
+                isClean());
+        event_ = null;
+      }
+      eventCase_ = 16;
+      onChanged();;
+      return viewTableRequestBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

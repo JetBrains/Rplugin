@@ -60,6 +60,7 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
 
   val preferredHeight: Int
     get() = table.preferredSize.height
+  var autoRefresh = viewer.canRefresh
 
   class TableCopyProvider(private val table: JBTable) : CopyProvider {
     override fun performCopy(dataContext: DataContext) {
@@ -235,6 +236,27 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
     }
     createButton(paginateTable)
 
+    val autoRefreshAction = object : DumbAwareToggleAction(RBundle.message("action.dataframe.viewer.auto.refresh.name"),
+                                                           RBundle.message("action.dataframe.viewer.auto.refresh.description"),
+                                                           AllIcons.Actions.Refresh) {
+      override fun isSelected(e: AnActionEvent): Boolean {
+        return autoRefresh
+      }
+
+      override fun setSelected(e: AnActionEvent, state: Boolean) {
+        autoRefresh = state
+        if (state) {
+          refreshTable()
+        }
+      }
+
+      override fun update(e: AnActionEvent) {
+        super.update(e)
+        e.presentation.isEnabled = viewer.canRefresh
+      }
+    }
+    createButton(autoRefreshAction)
+
     add(actionsPanel, BorderLayout.NORTH)
   }
 
@@ -324,6 +346,28 @@ class RDataFrameTablePage(val viewer: RDataFrameViewer) : JPanel(BorderLayout())
                      NotificationType.ERROR, null)
           .notify(viewer.project)
       }
+    }
+  }
+
+  fun refreshTable() {
+    viewer.refresh().onSuccess { refreshed ->
+      if (!refreshed) return@onSuccess
+      filterHeader?.table = null
+      filterHeader = null
+
+      table.columnModel = RVisualizeTableUtil.createColumnModel(viewer)
+      (table.model as RDataFrameTableModel).apply {
+        fireTableStructureChanged()
+        fireTableDataChanged()
+      }
+      val rowSorter = table.rowSorter as RDataFrameRowSorter
+      rowSorter.restore()
+      rowSorter.setSortKeys(null)
+      paginator?.updateShownRange()
+      rowSorter.update()
+
+      repaint()
+      filterTableButton.update()
     }
   }
 

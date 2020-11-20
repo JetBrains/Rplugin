@@ -10,8 +10,8 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.AppUIUtil
 import org.jetbrains.r.RBundle
 import java.awt.BorderLayout
 import java.awt.FlowLayout
@@ -38,7 +38,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
   private var currentPageSize = 10
   private var currentPageChanging = false
 
-  private val rowSorterListener = RowSorterListener { if (it.type == RowSorterEvent.Type.SORTED) updateInfo() }
+  private val rowSorterListener = RowSorterListener { if (it.type == RowSorterEvent.Type.SORTED) updateShownRange() }
     .also { rowSorter.addRowSorterListener(it) }
 
   init {
@@ -48,7 +48,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
       private fun updatePageOffset() {
         if (currentPageChanging) return
         currentPageIndex = currentPageComponent.text.toIntOrNull() ?: return
-        updateInfo()
+        updateShownRange()
       }
 
       override fun changedUpdate(e: DocumentEvent?) = updatePageOffset()
@@ -69,7 +69,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
         val newPageSize = pageSizeComponent.selectedItem as Int
         currentPageIndex = currentPageIndex * currentPageSize / newPageSize
         currentPageSize = newPageSize
-        updateInfo()
+        updateShownRange()
       }
     }
 
@@ -94,7 +94,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
 
     parentPanel.add(this, BorderLayout.SOUTH)
     parentPanel.revalidate()
-    updateInfo()
+    updateShownRange()
   }
 
   fun cleanUp() {
@@ -109,7 +109,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
 
   private fun getPagesCount() = max(1, (rowSorter.modelRowCount + currentPageSize - 1) / currentPageSize)
 
-  private fun updateInfo() = AppUIUtil.invokeOnEdt {
+  fun updateShownRange() = invokeLater {
     currentPageChanging = true
     val rowCount = rowSorter.modelRowCount
     val pagesCount = getPagesCount()
@@ -147,7 +147,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
                                              RBundle.message("action.dataframe.viewer.first.description"), AllIcons.Actions.Play_first) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex = 0
-        updateInfo()
+        updateShownRange()
       }
     }
     toFirst = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
@@ -156,7 +156,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
                                RBundle.message("action.dataframe.viewer.previous.description"), AllIcons.Actions.Play_back) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex--
-        updateInfo()
+        updateShownRange()
       }
     }
     toPrevious = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
@@ -165,7 +165,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
                                RBundle.message("action.dataframe.viewer.next.description"), AllIcons.Actions.Play_forward) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex++
-        updateInfo()
+        updateShownRange()
       }
     }
     toNext = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
@@ -174,7 +174,7 @@ class RDataFrameTablePaginator(private val rowSorter: RDataFrameRowSorter, paren
                                RBundle.message("action.dataframe.viewer.description"), AllIcons.Actions.Play_last) {
       override fun actionPerformed(e: AnActionEvent) {
         currentPageIndex = getPagesCount() - 1
-        updateInfo()
+        updateShownRange()
       }
     }
     toLast = ActionButton(action, action.templatePresentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)

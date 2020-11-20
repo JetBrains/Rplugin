@@ -5,6 +5,7 @@
 package org.jetbrains.r.run
 
 import junit.framework.TestCase
+import org.jetbrains.r.blockingGetAndDispatchEvents
 import org.jetbrains.r.rinterop.RReference
 import org.jetbrains.r.run.visualize.RDataFrameException
 import org.jetbrains.r.run.visualize.RDataFrameViewer
@@ -182,6 +183,31 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
     val parser = RFilterParser(1)
     val filtered = viewer.filter(parser.parseText("aa").proto)
     TestCase.assertEquals(listOf("Xaa", "Yaa", "Xaa"), List(filtered.nRows) { filtered.getValueAt(it, 1) })
+  }
+
+  fun testRefresh() {
+    rInterop.executeCode("aaa <- dplyr::tibble(xx = (1:5)^2.0)")
+    val viewer = createViewer("aaa")
+    TestCase.assertTrue(viewer.canRefresh)
+
+    TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+    rInterop.executeCode("aaa <- dplyr::tibble(xx = (1:4)^3.0, yy = c('AA', 'BB', 'CC', 'DD'))")
+
+    TestCase.assertTrue(viewer.canRefresh)
+    TestCase.assertEquals(2, viewer.nColumns)
+    TestCase.assertEquals(5, viewer.nRows)
+    TestCase.assertEquals("xx", viewer.getColumnName(1))
+    TestCase.assertEquals(listOf(1.0, 4.0, 9.0, 16.0, 25.0), List(5) { viewer.getValueAt(it, 1) })
+
+    TestCase.assertTrue(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+
+    TestCase.assertTrue(viewer.canRefresh)
+    TestCase.assertEquals(3, viewer.nColumns)
+    TestCase.assertEquals(4, viewer.nRows)
+    TestCase.assertEquals("xx", viewer.getColumnName(1))
+    TestCase.assertEquals("yy", viewer.getColumnName(2))
+    TestCase.assertEquals(listOf(1.0, 8.0, 27.0, 64.0), List(4) { viewer.getValueAt(it, 1) })
+    TestCase.assertEquals(listOf("AA", "BB", "CC", "DD"), List(4) { viewer.getValueAt(it, 2) })
   }
 
   private fun createViewer(expr: String): RDataFrameViewer {

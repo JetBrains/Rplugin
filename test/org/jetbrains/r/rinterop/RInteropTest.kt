@@ -5,6 +5,7 @@
 package org.jetbrains.r.rinterop
 
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.SystemInfo
 import junit.framework.TestCase
 import org.jetbrains.concurrency.AsyncPromise
@@ -12,6 +13,7 @@ import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
+import org.jetbrains.r.run.visualize.RDataFrameViewer
 
 class RInteropTest : RProcessHandlerBaseTestCase() {
   fun testExecuteCode() {
@@ -39,7 +41,7 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals("", result.stderr)
   }
 
-  fun testExecuteMultilineWithFor() {
+fun testExecuteMultilineWithFor() {
     val result = rInterop.executeCode("""
       x <- 312312
       print(x)
@@ -123,12 +125,33 @@ class RInteropTest : RProcessHandlerBaseTestCase() {
       }
     })
     rInterop.asyncEventsStartProcessing()
-    rInterop.replExecute("tt = data.frame(x = 1:9, y = 2:10)")
-    rInterop.replExecute("View(tt, 'abcdd')")
+    rInterop.replExecute("""
+      f <- function(xyz1) {
+        return(xyz1 + 1)
+      }
+      View(f, "abcdd")
+    """.trimIndent())
     val (value, title) = promise.blockingGet(DEFAULT_TIMEOUT)!!
     TestCase.assertEquals("abcdd", title)
-    TestCase.assertTrue(value is RValueDataFrame)
-    TestCase.assertEquals(9, (value as RValueDataFrame).rows)
+    TestCase.assertTrue(value is RValueFunction)
+    TestCase.assertTrue("function(xyz1)" in (value as RValueFunction).header)
+  }
+
+  fun testViewTableRequest() {
+    val promise = AsyncPromise<Pair<RDataFrameViewer, String>>()
+    rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
+      override fun onViewTableRequest(viewer: RDataFrameViewer, title: String): Promise<Unit> {
+        Disposer.register(rInterop, viewer)
+        promise.setResult(viewer to title)
+        return resolvedPromise()
+      }
+    })
+    rInterop.asyncEventsStartProcessing()
+    rInterop.replExecute("tt = data.frame(x = 1:9, y = 2:10)")
+    rInterop.replExecute("View(tt, 'abcdd')")
+    val (viewer, title) = promise.blockingGet(DEFAULT_TIMEOUT)!!
+    TestCase.assertEquals("abcdd", title)
+    TestCase.assertEquals(9, viewer.nRows)
   }
 
   fun testParallelPrint() {

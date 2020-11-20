@@ -64,6 +64,11 @@ private static final long serialVersionUID = 0L;
                 input.readMessage(org.jetbrains.r.rinterop.DataFrameInfoResponse.Column.parser(), extensionRegistry));
             break;
           }
+          case 24: {
+
+            canRefresh_ = input.readBool();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -1093,6 +1098,17 @@ private static final long serialVersionUID = 0L;
     return columns_.get(index);
   }
 
+  public static final int CANREFRESH_FIELD_NUMBER = 3;
+  private boolean canRefresh_;
+  /**
+   * <code>bool canRefresh = 3;</code>
+   * @return The canRefresh.
+   */
+  @java.lang.Override
+  public boolean getCanRefresh() {
+    return canRefresh_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -1113,6 +1129,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < columns_.size(); i++) {
       output.writeMessage(2, columns_.get(i));
     }
+    if (canRefresh_ != false) {
+      output.writeBool(3, canRefresh_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -1129,6 +1148,10 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < columns_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, columns_.get(i));
+    }
+    if (canRefresh_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(3, canRefresh_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -1149,6 +1172,8 @@ private static final long serialVersionUID = 0L;
         != other.getNRows()) return false;
     if (!getColumnsList()
         .equals(other.getColumnsList())) return false;
+    if (getCanRefresh()
+        != other.getCanRefresh()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -1166,6 +1191,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + COLUMNS_FIELD_NUMBER;
       hash = (53 * hash) + getColumnsList().hashCode();
     }
+    hash = (37 * hash) + CANREFRESH_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getCanRefresh());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -1308,6 +1336,8 @@ private static final long serialVersionUID = 0L;
       } else {
         columnsBuilder_.clear();
       }
+      canRefresh_ = false;
+
       return this;
     }
 
@@ -1345,6 +1375,7 @@ private static final long serialVersionUID = 0L;
       } else {
         result.columns_ = columnsBuilder_.build();
       }
+      result.canRefresh_ = canRefresh_;
       onBuilt();
       return result;
     }
@@ -1421,6 +1452,9 @@ private static final long serialVersionUID = 0L;
             columnsBuilder_.addAllMessages(other.columns_);
           }
         }
+      }
+      if (other.getCanRefresh() != false) {
+        setCanRefresh(other.getCanRefresh());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1721,6 +1755,37 @@ private static final long serialVersionUID = 0L;
         columns_ = null;
       }
       return columnsBuilder_;
+    }
+
+    private boolean canRefresh_ ;
+    /**
+     * <code>bool canRefresh = 3;</code>
+     * @return The canRefresh.
+     */
+    @java.lang.Override
+    public boolean getCanRefresh() {
+      return canRefresh_;
+    }
+    /**
+     * <code>bool canRefresh = 3;</code>
+     * @param value The canRefresh to set.
+     * @return This builder for chaining.
+     */
+    public Builder setCanRefresh(boolean value) {
+      
+      canRefresh_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool canRefresh = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearCanRefresh() {
+      
+      canRefresh_ = false;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
