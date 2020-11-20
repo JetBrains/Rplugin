@@ -361,6 +361,7 @@ You can find the source code in the following repositories:
                                             implementationClass="org.jetbrains.r.editor.RMarkdownCellTypeAwareLexerProvider"/>
         <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
+        <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
