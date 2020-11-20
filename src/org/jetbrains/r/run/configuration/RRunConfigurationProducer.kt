@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.runConfigurationType
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
+import org.jetbrains.r.interpreter.RInterpreterUtil.getDefaultInterpreterOptions
 import org.jetbrains.r.psi.api.RFile
 
 class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration>() {
@@ -24,6 +25,9 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
 
     val moduleDirectory = context.module.guessModuleDir()
     configuration.workingDirectory = moduleDirectory?.path ?: psiFile.virtualFile.parent.path
+    if (configuration.interpreterArgs.isEmpty()) {
+      configuration.interpreterArgs = getDefaultInterpreterOptions(context.project).joinToString(separator = " ")
+    }
 
     return true
   }

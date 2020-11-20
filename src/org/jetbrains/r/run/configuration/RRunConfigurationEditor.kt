@@ -19,14 +19,14 @@ import javax.swing.JTextField
 class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   private lateinit var filePath: TextFieldWithBrowseButton
   private lateinit var workingDirectory: TextFieldWithBrowseButton
-  private lateinit var interpreterArguments: JTextField
+  private lateinit var interpreterArgs: JTextField
   private lateinit var scriptArguments: JTextField
   private lateinit var environmentVariables: EnvironmentVariablesComponent
 
   override fun resetEditorFrom(s: RRunConfiguration) {
     filePath.text = s.filePath
     workingDirectory.text = s.workingDirectory
-    interpreterArguments.text = s.interpreterArguments
+    interpreterArgs.text = s.interpreterArgs
     scriptArguments.text = s.scriptArguments
     environmentVariables.envs = s.environmentVariablesData.envs
     environmentVariables.isPassParentEnvs = s.environmentVariablesData.isPassParentEnvs
@@ -35,7 +35,7 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
   override fun applyEditorTo(s: RRunConfiguration) {
     s.filePath = filePath.text
     s.workingDirectory = workingDirectory.text
-    s.interpreterArguments = interpreterArguments.text
+    s.interpreterArgs = interpreterArgs.text
     s.scriptArguments = scriptArguments.text
 
     s.environmentVariablesData = EnvironmentVariablesData.create(environmentVariables.envs, environmentVariables.isPassParentEnvs)
@@ -64,8 +64,8 @@ class RRunConfigurationEditor: SettingsEditor<RRunConfiguration>() {
     panel.add(workingDirectory, g.next().coverLine())
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.interpreter.args.label")), g.nextLine().next())
-    interpreterArguments = JTextField()
-    panel.add(interpreterArguments, g.next().coverLine())
+    interpreterArgs = JTextField()
+    panel.add(interpreterArgs, g.next().coverLine())
 
     panel.add(JBLabel(RBundle.message("r.run.configuration.editor.script.args.label")), g.nextLine().next())
     scriptArguments = JTextField()

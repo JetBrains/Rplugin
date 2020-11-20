@@ -32,10 +32,10 @@ class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLine
       throw ExecutionException(RBundle.message("r.run.cant.retrieve.r.interpreter.error.message"))
     }
 
-    val processHandler = interpreter.runHelperProcess(virtualFile.path, configuration.scriptArguments.split(" "),
-                                                      workingDirectory = configuration.workingDirectory,
-                                                      environment = configuration.environmentVariablesData.envs)
-
-    return processHandler
+    return interpreter.runHelperProcess(virtualFile.path,
+                                        scriptArgs = configuration.scriptArguments.split(" "),
+                                        workingDirectory = configuration.workingDirectory,
+                                        environment = configuration.environmentVariablesData.envs,
+                                        interpreterArgs = configuration.interpreterArgs.split(" "))
   }
 }

@@ -312,11 +312,21 @@ object RInterpreterUtil {
     return runRInterpreter(interpreterLocation, interpreterArgs, workingDirectory, processAdapterProducer)
   }
 
-  fun getRunHelperArgs(helper: String, args: List<String>, project: Project? = null): List<String> {
+  fun getDefaultInterpreterOptions(project: Project?): MutableList<String> {
     val list = mutableListOf("--slave", "--no-save", "--no-restore", "--no-site-file", "--no-environ")
     if (project != null && RSettings.getInstance(project).disableRprofile) list.add("--no-init-file")
-    list.addAll(listOf("-f", helper, "--args", *args.toTypedArray()))
     return list
+  }
+
+  fun getRunHelperArgs(helper: String, args: List<String>, project: Project? = null, interpreterArgs: List<String>? = null): List<String> {
+    val allArgs = ArrayList<String>()
+    if (interpreterArgs == null) {
+      allArgs.addAll(getDefaultInterpreterOptions(project))
+    } else {
+      allArgs.addAll(interpreterArgs)
+    }
+    allArgs.addAll(listOf("-f", helper, "--args", *args.toTypedArray()))
+    return allArgs
   }
 
   private fun runRInterpreter(interpreterLocation: RInterpreterLocation,

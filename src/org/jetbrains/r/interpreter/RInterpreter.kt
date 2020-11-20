@@ -104,11 +104,12 @@ fun RInterpreter.runProcessOnHost(command: GeneralCommandLine, workingDirectory:
   interpreterLocation.runProcessOnHost(command, workingDirectory, isSilent)
 
 fun RInterpreter.runHelperProcess(script: String,
-                                  args: List<String>,
+                                  scriptArgs: List<String>,
                                   workingDirectory: String = basePath,
-                                  environment: Map<String, String>? = null): BaseProcessHandler<*> {
-  val interpreterArgs = RInterpreterUtil.getRunHelperArgs(script, args, project)
-  return interpreterLocation.runInterpreterOnHost(interpreterArgs, workingDirectory, environment)
+                                  environment: Map<String, String>? = null,
+                                  interpreterArgs: List<String>? = null): BaseProcessHandler<*> {
+  val allArguments = RInterpreterUtil.getRunHelperArgs(script, scriptArgs, project, interpreterArgs)
+  return interpreterLocation.runInterpreterOnHost(allArguments, workingDirectory, environment)
 }
 
 fun RInterpreter.runMultiOutputHelper(helper: File, workingDirectory: String?, args: List<String>, processor: RMultiOutputProcessor) {
