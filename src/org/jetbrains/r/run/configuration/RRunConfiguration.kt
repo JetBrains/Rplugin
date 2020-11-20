@@ -12,7 +12,7 @@ import org.jdom.Element
 class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunConfigurationBase<RRunConfiguration>(project, factory, null) {
   var filePath: String = ""
   var workingDirectory: String = ""
-  var interpreterArguments: String = ""
+  var interpreterArgs: String = ""
   var scriptArguments: String = ""
   var environmentVariablesData: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
@@ -33,9 +33,14 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
       workingDirectory = readWorkingDirectory
     }
 
-    val readArgs = JDOMExternalizerUtil.readCustomField(element, ARGS)
+    val readArgs = JDOMExternalizerUtil.readCustomField(element, SCRIPT_ARGUMENTS)
     if (readArgs != null) {
       scriptArguments = readArgs
+    }
+
+    val readInterpreterArguments = JDOMExternalizerUtil.readCustomField(element, INTERPRETER_ARGUMENTS)
+    if (readInterpreterArguments != null) {
+      interpreterArgs = readInterpreterArguments
     }
 
     environmentVariablesData = EnvironmentVariablesData.readExternal(element)
@@ -45,11 +50,13 @@ class RRunConfiguration(project: Project, factory: ConfigurationFactory): RunCon
     super.writeExternal(element)
     JDOMExternalizerUtil.writeCustomField(element, FILE_PATH, filePath)
     JDOMExternalizerUtil.writeCustomField(element, WORKING_DIRECTORY, workingDirectory)
-    JDOMExternalizerUtil.writeCustomField(element, ARGS, scriptArguments)
+    JDOMExternalizerUtil.writeCustomField(element, INTERPRETER_ARGUMENTS, interpreterArgs)
+    JDOMExternalizerUtil.writeCustomField(element, SCRIPT_ARGUMENTS, scriptArguments)
     environmentVariablesData.writeExternal(element)
   }
 }
 
 private const val FILE_PATH = "r-file-path"
 private const val WORKING_DIRECTORY = "working-directory"
-private const val ARGS = "args"
+private const val INTERPRETER_ARGUMENTS = "interpreter-arguments"
+private const val SCRIPT_ARGUMENTS = "script-arguments"
