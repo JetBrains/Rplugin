@@ -8,12 +8,14 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.intellij.datavis.r.inlays.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
+import org.jetbrains.r.editor.ui.psiFile
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -24,9 +26,15 @@ import java.util.concurrent.Future
 class ChunkDescriptorProvider : InlayDescriptorProvider {
   override fun getInlayDescriptor(editor: Editor): InlayElementDescriptor? {
     return runReadAction {
+      if (isNewMode(editor)) return@runReadAction null
       val psiFile = PsiDocumentManager.getInstance(editor.project ?: return@runReadAction null).getPsiFile(editor.document)
       if (psiFile?.virtualFile?.fileType is RMarkdownFileType) RMarkdownInlayDescriptor(psiFile) else null
     }
+  }
+
+  companion object {
+    fun isNewMode(editor: Editor): Boolean =
+      Registry.`is`("r.interpreter.useOutputInlays") && (editor.psiFile?.name?.endsWith("New.rmd")?: false)
   }
 }
 
