@@ -8,8 +8,6 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.psi.PsiDocumentManager
-import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
 import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.r.rendering.chunk.ChunkActionByOffset
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
@@ -67,10 +65,9 @@ internal class RMarkdownCellToolbarController private constructor(
                          currentControllers: Collection<NotebookCellInlayController>,
                          intervalIterator: ListIterator<NotebookCellLines.Interval>
     ): NotebookCellInlayController? {
-      val psiFile = editor.project?.let { PsiDocumentManager.getInstance(it) }?.getPsiFile(editor.document)
-      if (psiFile !is MarkdownFile) {
+      if (!isRMarkdown(editor))
         return null
-      }
+
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
         NotebookCellLines.CellType.CODE ->
