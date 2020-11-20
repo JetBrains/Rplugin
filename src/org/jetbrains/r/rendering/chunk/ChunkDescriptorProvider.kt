@@ -39,22 +39,27 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
 }
 
 class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDescriptor {
-  override fun cleanup(psi: PsiElement): Future<Void>? {
-    val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
-    return FileUtil.asyncDelete(File(cacheDirectory))
-  }
+  override fun cleanup(psi: PsiElement): Future<Void> =
+    RMarkdownInlayDescriptor.cleanup(psi)
 
   override fun isInlayElement(psi: PsiElement): Boolean {
     return psi is LeafPsiElement && psi.elementType == MarkdownTokenTypes.CODE_FENCE_END &&
            (psi.prevSibling?.prevSibling?.let { it is LeafPsiElement && it.elementType === R_FENCE_ELEMENT_TYPE } == true)
   }
 
-  override fun getInlayOutputs(psi: PsiElement): List<InlayOutput> {
-    return getImages(psi) + getUrls(psi) + getTables(psi) + getOutputs(psi)
-  }
+  override fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
+    RMarkdownInlayDescriptor.getInlayOutputs(psi)
 
 
   companion object {
+    fun cleanup(psi: PsiElement): Future<Void> {
+      val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
+      return FileUtil.asyncDelete(File(cacheDirectory))
+    }
+
+    fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
+      getImages(psi) + getUrls(psi) + getTables(psi) + getOutputs(psi)
+
     fun getImages(psi: PsiElement): List<InlayOutput> {
       return getImageFilesOrdered(psi).map { imageFile ->
         val text = imageFile.absolutePath
