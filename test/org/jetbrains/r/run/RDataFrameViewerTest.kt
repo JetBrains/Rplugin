@@ -210,6 +210,22 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
     TestCase.assertEquals(listOf("AA", "BB", "CC", "DD"), List(4) { viewer.getValueAt(it, 2) })
   }
 
+  fun testRefreshDataTable() {
+    rInterop.executeCode("aaa <- data.table::data.table(a = c(10.0, 20.0, 40.0), b = c(2.0, 4.0, 6.0))")
+    val viewer = createViewer("aaa")
+    TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+
+    rInterop.executeCode("aaa[, z := a + b]")
+    TestCase.assertTrue(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+    TestCase.assertEquals(4, viewer.nColumns)
+    TestCase.assertEquals(3, viewer.nRows)
+    TestCase.assertEquals("a", viewer.getColumnName(1))
+    TestCase.assertEquals("b", viewer.getColumnName(2))
+    TestCase.assertEquals("z", viewer.getColumnName(3))
+    TestCase.assertEquals(listOf(12.0, 24.0, 46.0), List(3) { viewer.getValueAt(it, 3) })
+    TestCase.assertFalse(viewer.refresh().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)!!)
+  }
+
   private fun createViewer(expr: String): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(RReference.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
   }
