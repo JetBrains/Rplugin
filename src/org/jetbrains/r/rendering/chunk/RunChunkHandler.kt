@@ -38,6 +38,7 @@ import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleView
+import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rinterop.RIExecutionResult
@@ -189,9 +190,11 @@ object RunChunkHandler {
 
     updateProgressBar(editor, inlayElement)
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
+    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.clearOutputs()}
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
         InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
+        editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.addText(it.text, it.kind) }
       }.onProcessed { result ->
         dumpAndShutdownAsync(graphicsDeviceRef.get()).onProcessed {
           pullOutputsWithLogAsync(rInterop, cacheDirectory).onProcessed {
@@ -311,6 +314,7 @@ object RunChunkHandler {
     }
     val inlaysManager = InlaysManager.getEditorManager(editor)
     inlaysManager?.updateCell(inlayElement, createTextOutput = !success)
+    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.updateOutputs() }
     inlaysManager?.updateInlayProgressStatus(inlayElement, status)
     cleanupOutdatedOutputs(element)
 
