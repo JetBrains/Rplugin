@@ -7,6 +7,7 @@ package org.jetbrains.r.rinterop
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.google.protobuf.*
+import com.intellij.codeInsight.CodeInsightBundle
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.Disposable
@@ -47,6 +48,7 @@ import org.jetbrains.r.packages.RequiredPackageException
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.TableInfo
 import org.jetbrains.r.psi.TableType
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.rstudioapi.RStudioApiFunctionId
 import org.jetbrains.r.run.graphics.RGraphicsDeviceManager
 import org.jetbrains.r.run.graphics.RGraphicsUtils
@@ -1045,6 +1047,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
+        invokeLater {
+          RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
+        }
         val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
         fireListeners { it.onShowHelpRequest(httpdResponse) }
       }
