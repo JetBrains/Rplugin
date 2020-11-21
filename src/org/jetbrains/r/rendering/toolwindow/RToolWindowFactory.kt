@@ -108,7 +108,7 @@ class RToolWindowFactory : ToolWindowFactory, DumbAware  {
       }
     }
 
-    private fun getDocumentationComponent(project: Project): DocumentationComponent =
+    fun getDocumentationComponent(project: Project): DocumentationComponent =
       findContent(project, HELP).component as DocumentationComponent
 
     private fun getViewerComponent(project: Project): RViewerToolWindow =

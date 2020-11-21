@@ -5,9 +5,13 @@
 
 package org.jetbrains.r.documentation
 
+import com.intellij.codeInsight.CodeInsightBundle
+import com.intellij.codeInsight.documentation.DocumentationComponent
+import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
@@ -16,6 +20,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.ui.popup.AbstractPopup
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RLanguage
 import org.jetbrains.r.console.runtimeInfo
@@ -26,6 +32,7 @@ import org.jetbrains.r.packages.RequiredPackageInstaller
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.refactoring.RNamesValidator
+import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
 import org.jetbrains.r.rinterop.RInterop
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.getWithCheckCanceled
@@ -34,7 +41,9 @@ import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
+import java.util.function.Supplier
 
 private const val WINDOWS_MAX_PATH_LENGTH = 259
 private const val INSTALL_REQUIRED_PACKAGES_LINK = "#Install#"
@@ -94,7 +103,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   @Throws(RequiredPackageException::class)
   private fun getHtmlLocalFunction(rInterop: RInterop,
                                    localFunction: RAssignmentStatement,
-                                   docStringValue: String?): String? {
+                                   docStringValue: String?): Supplier<FetchedDoc>? {
     // TODO(This is a temporary solution, full support for roxygen see DS-16)
     docStringValue ?: return null
 
@@ -126,17 +135,22 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     val functionText = "#'${docStringValue.replace("<br>", "\n#'")}\n${localFunction.text.takeWhile { it != '{' }}{}"
       .replace("\\", "\\\\")
       .replace("\"", "\\\"")
-    val result = rInterop.convertRoxygenToHTML(functionName, functionText)
-    if (result.exception != null) {
-      LOG.error("RoxygenToHTML. ${result.exception}")
-      return null
+    return Supplier {
+      val result = rInterop.convertRoxygenToHTML(functionName, functionText)
+      val docText = if (result.exception != null) {
+        LOG.error("RoxygenToHTML. ${result.exception}")
+        null
+      }
+      else {
+        convertHelpPage(RInterop.HttpdResponse(result.stdout, "")) +
+          "<hr>\n<div style=\"text-align: center;\">[Package <em>${fileName}</em>]</div>\n"
+      }
+      FetchedDoc(docText)
     }
-    return convertHelpPage(RInterop.HttpdResponse(result.stdout, "")) +
-           "<hr>\n<div style=\"text-align: center;\">[Package <em>${localFunction.containingFile.name}</em>]</div>\n"
   }
 
   @Throws(RequiredPackageException::class)
-  private fun getDocumentationLocalFunction(rInterop: RInterop, reference: PsiElement): String? {
+  private fun getDocumentationLocalFunction(rInterop: RInterop, reference: PsiElement): Supplier<FetchedDoc>? {
     // locally defined function definitions
     var localFunction = reference
 
@@ -190,24 +204,63 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     return path
   }
 
+  override fun generateHoverDoc(element: PsiElement, originalElement: PsiElement?): String? {
+    if (element.language != RLanguage.INSTANCE || element is PsiComment) return null
+
+    // On hover popup appears only if doc exists, we can't do this asynchronously
+    return generateDocSupplier(element, originalElement)?.get()?.docText
+  }
+
   override fun generateDoc(psiElement: PsiElement?, identifier: PsiElement?): String? {
     if (psiElement == null || psiElement.language != RLanguage.INSTANCE || psiElement is PsiComment) return null
-    psiElement.getCopyableUserData(ELEMENT_TEXT)?.let { return it() }
+    psiElement.getCopyableUserData(ELEMENT_TEXT)?.let {
+      psiElement.putCopyableUserData(ELEMENT_TEXT, null)
+      return it().docText
+    }
+    val supplier = generateDocSupplier(psiElement, identifier) ?: return null
+    val task = runAsync { supplier.get() }
+    try {
+      return task.blockingGet(150)?.docText
+    }
+    catch (e: TimeoutException) {
+      task.onSuccess { docText ->
+        invokeLater {
+          val project = psiElement.project
+          if (project.isDisposed) return@invokeLater
+          psiElement.putCopyableUserData(ELEMENT_TEXT) { docText }
+          val documentationManager = DocumentationManager.getInstance(project)
+          val hint = documentationManager.docInfoHint
+          val component =
+            if (hint != null) (hint as AbstractPopup).component as DocumentationComponent
+            else RToolWindowFactory.getDocumentationComponent(project)
+          documentationManager.queueFetchDocInfo(psiElement, component)
+        }
+      }
+      return CodeInsightBundle.message("javadoc.fetching.progress")
+    }
+  }
+
+  private fun generateDocSupplier(psiElement: PsiElement, identifier: PsiElement?): Supplier<FetchedDoc>? {
     val rInterop = psiElement.containingFile.runtimeInfo?.rInterop ?: return null
     if (psiElement is RDocumentationFakeTargetElement) {
       val url = psiElement.name.orEmpty()
-      if (url.startsWith("http")) {
-        val stream = URL(url).openStream()
-        return Scanner(stream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
+      return Supplier {
+        val docText = if (url.startsWith("http")) {
+          val stream = URL(url).openStream()
+          Scanner(stream, StandardCharsets.UTF_8).use { it.useDelimiter("\\A").next() }
+        }
+        else {
+          rInterop.httpdRequest(url)?.let { convertHelpPage(it) }
+        }
+        FetchedDoc(docText)
       }
-      return rInterop.httpdRequest(url)?.let { convertHelpPage(it) }
     }
-    checkPossibilityReturnDocumentation(psiElement) { return it }
+    checkPossibilityReturnDocumentation(psiElement) { return Supplier { FetchedDoc(it) } }
     val element = PsiTreeUtil.getNonStrictParentOfType(psiElement, RPsiElement::class.java) ?: return null
     try {
       getDocumentationLocalFunction(rInterop, element)?.let { return it }
     } catch (e: RequiredPackageException) {
-      return e.message
+      return Supplier { FetchedDoc(e.message) }
     }
 
     val (symbol, pkg) = when {
@@ -229,8 +282,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       element is RIdentifierExpression -> element.name to null
       else -> element.text to null
     }
-    val response = rInterop.getDocumentationForSymbol(symbol, pkg).getWithCheckCanceled() ?: return null
-    return convertHelpPage(response)
+    return Supplier {
+      val docText = rInterop.getDocumentationForSymbol(symbol, pkg).getWithCheckCanceled()?.let { convertHelpPage(it) }
+      FetchedDoc(docText)
+    }
   }
 
   /**
@@ -304,7 +359,8 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
   companion object {
     private const val PACKAGE_METHOD_SEPARATOR = "::"
     private const val BACKTICK = '`'
-    private val ELEMENT_TEXT = Key<() -> String>("org.jetbrains.r.documentation.ElementText")
+    private data class FetchedDoc(val docText: String?)
+    private val ELEMENT_TEXT = Key<() -> FetchedDoc>("org.jetbrains.r.documentation.ElementText")
     private val DOCUMENTATION_COMMENT_REGEX = "^# `?.+`?::`?.+`?$".toRegex()
 
     private fun getMethodNameAndPackage(documentationComment: String): Pair<String, String?> {
@@ -335,7 +391,7 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
 
     fun makeElementForText(rInterop: RInterop, httpdResponse: RInterop.HttpdResponse): PsiElement {
       return RElementFactory.createRPsiElementFromText(rInterop.project, "text").also {
-        it.putCopyableUserData(ELEMENT_TEXT) { convertHelpPage(httpdResponse) }
+        it.putCopyableUserData(ELEMENT_TEXT) { FetchedDoc(convertHelpPage(httpdResponse)) }
       }
     }
 
