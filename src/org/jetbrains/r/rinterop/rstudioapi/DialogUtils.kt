@@ -113,6 +113,9 @@ object DialogUtils {
           val credentials = Credentials("", password)
           PasswordSafe.instance[credentialAttributes] = credentials
         }
+        else {
+          PasswordSafe.instance[credentialAttributes] = null
+        }
         password.toRString()
       }
       else rError("Ask for secret operation was cancelled.")
