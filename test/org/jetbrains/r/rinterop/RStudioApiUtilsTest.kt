@@ -13,6 +13,9 @@ import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.console.jobs.RJobDescriptor
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobRunner.Listener
+import org.jetbrains.r.rinterop.rstudioapi.RSessionUtils
+import org.jetbrains.r.rinterop.rstudioapi.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.toRString
 import java.nio.file.Paths
 import kotlin.streams.toList
 
@@ -171,42 +174,16 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
   }
 
   fun testBasic_sendToConsoleWithExecution() {
-    console.executeText("""
-      |rstudioapi::sendToConsole("s <- 2 + 4")
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.trim().split("\n")
-    TestCase.assertEquals(2, commands.size)
-    TestCase.assertEquals("> s <- 2 + 4", commands[1])
+    RSessionUtils.sendToConsole(rInterop, sendToConsoleRequest("s <- 2 + 4", true))
+      .blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("> s <- 2 + 4", console.text.trim())
+    TestCase.assertEquals("", console.consoleEditor.document.text)
   }
 
   fun testBasic_sendToConsoleWithoutExecution() {
-    console.executeText("""
-      |rstudioapi::sendToConsole("s <- 2 + 4", FALSE)
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.trim().split("\n")
-    TestCase.assertEquals(1, commands.size)
-    TestCase.assertEquals("s <- 2 + 4", console.consoleEditor.document.text)
-  }
-
-  fun testBasic_sendToConsoleWithExecutionNoEcho() {
-    console.executeText("""
-      |rstudioapi::sendToConsole("s <- 2 + 4", TRUE, FALSE)
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.trim().split("\n")
-    TestCase.assertEquals(2, commands.size)
-    TestCase.assertEquals("> s <- 2 + 4", commands[1])
-  }
-
-  fun testBasic_sendToConsoleWithoutExecutionNoEcho() {
-    console.executeText("""
-      |rstudioapi::sendToConsole("s <- 2 + 4", FALSE, FALSE)
-    """.trimMargin()).blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    sendToConsolePromise().blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
-    val commands = console.text.trim().split("\n")
-    TestCase.assertEquals(1, commands.size)
+    RSessionUtils.sendToConsole(rInterop, sendToConsoleRequest("s <- 2 + 4", false))
+      .blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
+    TestCase.assertEquals("", console.text.trim())
     TestCase.assertEquals("s <- 2 + 4", console.consoleEditor.document.text)
   }
 
@@ -361,11 +338,13 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
     return promise
   }
 
-  private fun sendToConsolePromise(): Promise<Unit> {
-    val promise = AsyncPromise<Unit>()
-    console.executeActionHandler.executeLater {
-      promise.setResult(Unit)
-    }
-    return promise
+  private fun sendToConsoleRequest(code: String, execute: Boolean): RObject {
+    return RObject.newBuilder().setList(RObject.List.newBuilder()
+                                          .addRObjects(0, code.toRString())
+                                          .addRObjects(1, execute.toRBoolean())
+                                          .addRObjects(2, false.toRBoolean())
+                                          .addRObjects(3, false.toRBoolean())
+                                          .addRObjects(4, "".toRString())
+    ).build()
   }
 }
