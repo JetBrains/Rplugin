@@ -70,8 +70,11 @@ class RMarkdownOutputInlayController private constructor(
 
       val outputs = RMarkdownInlayDescriptor.getInlayOutputs(psiElement)
       if (outputs.isEmpty()) return@invokeLater
-      val currentInlay = inlay
-      inlayComponent.addInlayOutputs(outputs) { Disposer.dispose(currentInlay) }
+
+      inlayComponent.addInlayOutputs(outputs) {
+        RMarkdownInlayDescriptor.cleanup(psiElement)
+        clearOutputs()
+      }
     }
   }
 
