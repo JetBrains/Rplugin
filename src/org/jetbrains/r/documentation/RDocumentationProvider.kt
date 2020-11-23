@@ -208,6 +208,10 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
     if (element.language != RLanguage.INSTANCE || element is PsiComment) return null
 
     // On hover popup appears only if doc exists, we can't do this asynchronously
+    return generateDocSynchronously(element, originalElement)
+  }
+
+  fun generateDocSynchronously(element: PsiElement, originalElement: PsiElement?): String? {
     return generateDocSupplier(element, originalElement)?.get()?.docText
   }
 
