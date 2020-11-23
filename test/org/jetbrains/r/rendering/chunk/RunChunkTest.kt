@@ -60,7 +60,7 @@ class RunChunkTest : RConsoleBaseTestCase() {
   fun testHtmlOutput() {
     rInterop.executeCode("library(plotly)", true)
     val result = doRunChunk("""
-      ```{r}
+    ```{r}
     p <- plot_ly(
       type = 'scatterpolar',
       mode = 'lines'
