@@ -4,6 +4,7 @@
 
 package org.jetbrains.r.completion
 
+import com.intellij.util.containers.toArray
 import org.jetbrains.r.console.RConsoleRuntimeInfoImpl
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.run.RProcessHandlerBaseTestCase
@@ -14,7 +15,8 @@ class ChunkOptionsCompletionTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testFig() {
-    doTest(" ```{r, fig.<caret>}```", "fig.cap", "fig.env", "fig.ext", "fig.height", "fig.path", "fig.pos")
+    val variants = arrayOf("align", "cap", "env", "ext", "height", "keep", "lp", "path", "pos", "retina", "scap", "show", "subcap", "width")
+    doTest("```{r, fig.<caret>}```", *variants.map { "fig.$it" }.toTypedArray())
   }
 
   fun testMissingComma() {
