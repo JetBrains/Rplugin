@@ -145,8 +145,6 @@ object RStudioApiUtils {
                            rInterop.project.getUserData(SOURCE_MARKERS_KEY) ?: throw Error("projectMarkers is null")
                          }
 
-    projectMarkers.map { it.value.remove(name) }
-
     val markerMap = hashMapOf<String, MutableList<RStudioAPISourceMarkerInspection.RStudioAPIMarker>>()
 
     if (autoSelect == "error" && markers.none { it[0].rString.getStrings(0) == "error" }) {
