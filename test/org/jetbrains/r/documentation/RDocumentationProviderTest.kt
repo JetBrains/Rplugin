@@ -278,7 +278,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     assertNotNull("No original element at ${psiUnderCaret()?.text}", originalElement)
     originalElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
-    val docText = docProvider.generateDoc(docElement, originalElement)
+    val docText = docProvider.generateDocSynchronously(docElement, originalElement)
 
     if (documentationExist) {
       assertNotNull("No document found for ${originalElement.text}", docText)
@@ -307,7 +307,7 @@ class RDocumentationProviderTest : RProcessHandlerBaseTestCase() {
     assertTrue("Bad element fo link ${link}", docElement != null)
 
     docElement!!.containingFile.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
-    val docText = docProvider.generateDoc(docElement, null)
+    val docText = docProvider.generateDocSynchronously(docElement, null)
 
     assertNotNull("No document found for ${link}", docText)
     assertTrue("Wrong help page returned for ${link}: $docText", docText!!.contains(substr))
