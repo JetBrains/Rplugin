@@ -95,7 +95,10 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
     while (lexer.tokenType != null &&
            lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType &&
            lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType) {
-      lexer.advance()
+      when (lexer.tokenType) {
+        MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer) // quoted line
+        else -> lexer.advance()
+      }
     }
   }
 
