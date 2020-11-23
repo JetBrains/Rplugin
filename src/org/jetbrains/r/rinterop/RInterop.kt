@@ -772,7 +772,9 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       Disposer.register(persistentRef, Disposable {
         dataFrameViewerCache.remove(index)
       })
-      RDataFrameViewerImpl(persistentRef)
+      RDataFrameViewerImpl(persistentRef).also {
+        Disposer.register(this, it)
+      }
     }
   }
 

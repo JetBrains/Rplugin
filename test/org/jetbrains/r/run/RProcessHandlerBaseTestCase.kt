@@ -4,7 +4,6 @@
 
 package org.jetbrains.r.run
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
@@ -137,15 +136,11 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
   companion object {
     const val DEFAULT_TIMEOUT = 20000
     const val maxInteropNumber = 8
-    private val interopSpawner: InteropSpawner by lazy {
-      InteropSpawner().also {
-        Disposer.register(ApplicationManager.getApplication(), it)
-      }
-    }
+    private val interopSpawner: InteropSpawner by lazy { InteropSpawner() }
     @Volatile
     private var state: RInterpreterStateImpl? = null
 
-    class InteropSpawner : Disposable {
+    class InteropSpawner {
       private val interopCache = ArrayList<RInterop>()
       private val interopPromises = ArrayList<Promise<RInterop>>()
 
@@ -154,10 +149,11 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
         synchronized(this) {
           while (interopPromises.size + interopCache.size < maxInteropNumber) {
             val promise = RInteropUtil.runRWrapperAndInterop(interpreter, workingDirectory)
-            promise.onSuccess {
+            promise.onSuccess { interop ->
               synchronized(this@InteropSpawner) {
                 if (interopPromises.contains(promise)) {
-                  interopCache.add(it)
+                  Disposer.register(ApplicationManager.getApplication(), interop)
+                  interopCache.add(interop)
                   interopPromises.remove(promise)
                 }
               }
@@ -184,13 +180,6 @@ abstract class RProcessHandlerBaseTestCase : RUsefulTestCase() {
           }
         }
         throw IllegalStateException("Should not happen")
-      }
-
-      override fun dispose() {
-        synchronized(this) {
-          interopCache.forEach { it.dispose() }
-          interopCache.clear()
-        }
       }
     }
 
