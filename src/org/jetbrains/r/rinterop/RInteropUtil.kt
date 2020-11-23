@@ -280,7 +280,7 @@ object RInteropUtil {
 
   private fun getRPaths(interpreter: RInterpreter): RPaths {
     val script = RPluginUtil.findFileInRHelpers("R/GetEnvVars.R").takeIf { it.exists() }
-                 ?: throw RuntimeException("GetEnvVars.R not found")
+                 ?: throw RuntimeException("GetEnvVars.R not found, plugin directory: ${PathManager.getPluginsPath()}")
     val output = interpreter.runHelper(script, emptyList())
     val paths = output.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     if (paths.size < 5) {
