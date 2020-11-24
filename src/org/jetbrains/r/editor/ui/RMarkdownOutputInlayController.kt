@@ -36,6 +36,7 @@ class RMarkdownOutputInlayController private constructor(
 
   init {
     inlayComponent = addInlayComponent(editor, psiElement)
+    registerDisposable(inlayComponent)
     notebook.update(this)
     updateOutputs()
   }
@@ -85,6 +86,7 @@ class RMarkdownOutputInlayController private constructor(
 
   private fun resetComponent(oldComponent: NotebookInlayComponent) {
     inlayComponent = addInlayComponent(editor, psiElement)
+    registerDisposable(inlayComponent)
     Disposer.dispose(oldComponent.inlay!!)
   }
 
@@ -107,8 +109,6 @@ class RMarkdownOutputInlayController private constructor(
 
     inlayComponent.assignInlay(inlay)
     setupInlayComponent(editor, inlayComponent)
-
-    registerDisposable(inlayComponent)
 
     return inlayComponent
   }
