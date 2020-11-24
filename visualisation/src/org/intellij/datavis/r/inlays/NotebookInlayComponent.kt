@@ -6,7 +6,6 @@ package org.intellij.datavis.r.inlays
 
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -16,8 +15,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.*
-import org.intellij.datavis.r.inlays.dataframe.DataFrame
-import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
 import org.intellij.datavis.r.ui.UiCustomizer
 import java.awt.BorderLayout
 import java.awt.Cursor
@@ -226,27 +223,6 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     state?.updateProgressStatus(progressStatus)
   }
 
-  private fun createOrSetInlayData(dataFrame: DataFrame): NotebookInlayData {
-    if (state !is NotebookInlayData) {
-      if (state != null) {
-        remove(state)
-      }
-
-      state = NotebookInlayData(editor.project!!, disposable, dataFrame).apply {
-        onHeightCalculated = { height ->
-          ApplicationManager.getApplication().invokeLater {
-            adjustSize(height)
-          }
-        }
-      }.also { addState(it) }
-    }
-    else {
-      (state as NotebookInlayData).setDataFrame(dataFrame)
-    }
-    resizable = true
-    return state as NotebookInlayData
-  }
-
   private fun addState(state: NotebookInlayState) {
     add(state, BorderLayout.CENTER)
 
@@ -327,20 +303,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     }
     else {
       val inlay = inlayOutputs.first()
-      if (inlay.type == "TABLE") {
-        runAsyncInlay {
-          val csv = DataFrameCSVAdapter.fromCsvString(inlay.data)
-          invokeLater {
-            createOrSetInlayData(csv).clearAction = cleanup
-            if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
-              deltaSize(0, InlayDimensions.previewHeight - size.height)
-            }
-          }
-        }
-      }
-      else {
-        onOutput(inlay.data, inlay.type, inlay.progressStatus, cleanup)
-      }
+      onOutput(inlay.data, inlay.type, inlay.progressStatus, cleanup)
     }
   }
 

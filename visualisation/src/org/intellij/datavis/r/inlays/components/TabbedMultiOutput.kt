@@ -5,9 +5,10 @@
 package org.intellij.datavis.r.inlays.components
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
@@ -17,8 +18,6 @@ import com.intellij.ui.tabs.TabsListener
 import com.intellij.ui.tabs.impl.JBTabsImpl
 import org.intellij.datavis.r.inlays.InlayOutput
 import org.intellij.datavis.r.inlays.MouseWheelUtils
-import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
-import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -83,25 +82,11 @@ class TabbedMultiOutput(val editor: Editor, parent: Disposable) : NotebookInlayM
     tabs.removeAllTabs()
     tabsOutput.clear()
     inlayOutputs.forEach { inlayOutput ->
-      if (inlayOutput.type == "TABLE") {
-        runAsyncInlay {
-          val data = DataFrameCSVAdapter.fromCsvString(inlayOutput.data)
-          invokeLater {
-            NotebookInlayData(project, disposable, data).apply {
-              addTab(inlayOutput)
-              setupOnHeightCalculated()
-              setDataFrame(data)
-            }
-          }
-        }
-      }
-      else {
-        NotebookInlayOutput(editor, disposable).apply {
-          setupOnHeightCalculated()
-          addData(inlayOutput.type, inlayOutput.data, inlayOutput.progressStatus)
-          tabsOutput.add(this)
-          addTab(inlayOutput)
-        }
+      NotebookInlayOutput(editor, disposable).apply {
+        setupOnHeightCalculated()
+        addData(inlayOutput.type, inlayOutput.data, inlayOutput.progressStatus)
+        tabsOutput.add(this)
+        addTab(inlayOutput)
       }
     }
   }
