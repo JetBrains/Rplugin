@@ -157,6 +157,88 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
+  fun `test quoted cell`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      markdown
+      > ```{r}
+      > commented code
+      > ```
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 40)
+      }
+      intervals {
+        interval(MARKDOWN, 0..3)
+      }
+    }
+  }
+
+  @Test
+  fun `test quoted code cell surrounded by markdown`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      markdown line
+      > ```{r}
+      > commented code
+      > ```
+      last line
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 55)
+      }
+      intervals {
+        interval(MARKDOWN, 0..4)
+      }
+    }
+  }
+
+  @Test
+  fun `test invalid code cell with leading whitespaces`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      markdown line
+        ```{r}
+      invalid code cell
+      ```
+      last line
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 54)
+      }
+      intervals {
+        interval(MARKDOWN, 0..4)
+      }
+    }
+  }
+
+  @Test
+  fun `test ignore code cell with leading markdown`(): Unit = edt {
+    fixture.openNotebookTextInEditor("""
+      valid markdown
+        ```{r}invalid``` ```{r}cells```
+      ```{r}valid cell``` invalid markdown ```{r} invalid code cell ``` 
+      valid markdown
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 49)
+        marker(CODE, 49, 67)
+        marker(MARKDOWN, 116, 14)
+      }
+      intervals {
+        interval(MARKDOWN, 0..1)
+        interval(CODE, 2..2)
+        interval(MARKDOWN, 3..3)
+      }
+    }
+  }
+
+  @Test
   fun `test add text to empty document and delete`(): Unit = edt {
     fixture.openNotebookTextInEditor("")
 
@@ -300,24 +382,6 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       }
       intervals {
         interval(MARKDOWN, 0..2)
-      }
-      intervalListenerCall(0) {
-        before {
-          interval(MARKDOWN, 0..2)
-        }
-        after {
-          interval(MARKDOWN, 0..0)
-          interval(MARKDOWN, 1..2)
-        }
-      }
-      intervalListenerCall(0) {
-        before {
-          interval(MARKDOWN, 0..0)
-          interval(MARKDOWN, 1..2)
-        }
-        after {
-          interval(MARKDOWN, 0..2)
-        }
       }
     }
 

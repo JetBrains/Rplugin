@@ -29,13 +29,10 @@ class RMarkdownOutputInlayController private constructor(
   override val psiElement: PsiElement) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponent
-
-  override val inlay: Inlay<*>
-    get() = inlayComponent.inlay!!
+  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, psiElement)
+  override var inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
-    inlayComponent = addInlayComponent(editor, psiElement)
     registerDisposable(inlayComponent)
     notebook.update(this)
     updateOutputs()
@@ -86,8 +83,9 @@ class RMarkdownOutputInlayController private constructor(
 
   private fun resetComponent(oldComponent: NotebookInlayComponent) {
     inlayComponent = addInlayComponent(editor, psiElement)
+    inlay = inlayComponent.inlay!!
     registerDisposable(inlayComponent)
-    Disposer.dispose(oldComponent.inlay!!)
+    oldComponent.inlay?.let { Disposer.dispose(it) }
   }
 
   private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, ): NotebookInlayComponent {
