@@ -33,6 +33,7 @@ import org.intellij.datavis.r.VisualizationBundle
 import org.intellij.datavis.r.inlays.ClipboardUtils
 import org.intellij.datavis.r.inlays.InlayDimensions
 import org.intellij.datavis.r.inlays.MouseWheelUtils
+import org.intellij.datavis.r.inlays.dataframe.DataFrameCSVAdapter
 import org.intellij.datavis.r.inlays.runAsyncInlay
 import org.intellij.datavis.r.ui.ToolbarUtil
 import org.intellij.datavis.r.ui.UiCustomizer
@@ -435,4 +436,29 @@ class InlayOutputHtml(parent: Disposable, editor: Editor, clearAction: () -> Uni
                                              jbBrowser.cefBrowser.url, 0)
     }
   }
+}
+
+class InlayOutputTable(val parent: Disposable, editor: Editor, clearAction: () -> Unit) : InlayOutput(parent, editor, clearAction) {
+
+  private val inlayTablePage: InlayTablePage = InlayTablePage()
+
+  init {
+    toolbarPane.dataComponent = inlayTablePage
+    MouseWheelUtils.wrapMouseWheelListeners(inlayTablePage.scrollPane, parent)
+  }
+
+  override fun clear() {}
+
+  override fun addData(data: String, type: String) {
+    val dataFrame = DataFrameCSVAdapter.fromCsvString(data)
+    inlayTablePage.setDataFrame(dataFrame)
+  }
+
+  override fun scrollToTop() {}
+
+  override fun getCollapsedDescription(): String = "Table output"
+
+  override fun saveAs() {}
+
+  override fun acceptType(type: String): Boolean = type == "TABLE"
 }

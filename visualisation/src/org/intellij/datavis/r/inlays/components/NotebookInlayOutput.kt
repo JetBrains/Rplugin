@@ -53,6 +53,9 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
 
   private var output: InlayOutput? = null
 
+
+  private fun addTableOutput() = createOutput { parent, editor, clearAction -> InlayOutputTable(parent, editor, clearAction) }
+
   private fun addTextOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputText(parent, editor, clearAction) }
 
   private fun addHtmlOutput() = createOutput {  parent, editor, clearAction ->  InlayOutputHtml(parent, editor, clearAction) }
@@ -105,6 +108,7 @@ class NotebookInlayOutput(private val editor: Editor, private val parent: Dispos
     }
     else {
       inlayOutput = when (type) {
+        "TABLE" -> output?.takeIf { it is InlayOutputTable } ?: addTableOutput()
         "HTML", "URL" -> output?.takeIf { it is InlayOutputHtml } ?: addHtmlOutput()
         "IMG", "IMGBase64", "IMGSVG" -> output?.takeIf { it is InlayOutputImg } ?: addImgOutput()
         else -> getOrAddTextOutput()
