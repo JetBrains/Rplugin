@@ -44,13 +44,15 @@ internal enum class RMarkdownCodeMarkers(debugName: String) {
 
 /**
  * merge ```{r} to BACKTICK_WITH_LANG and ``` to BACKTICK_NO_LANG
+ * ```{ should be at the start of line, otherwise it is ignored
  */
 internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
   private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
     if (type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
-      if (originalLexer.tokenText.startsWith("{")) {
+      val isStartOfLine = tokenStart == 0 || bufferSequence[tokenStart - 1] == '\n'
+      if (isStartOfLine && originalLexer.tokenText.startsWith("{")) {
         originalLexer.advance()
         RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType
       }
@@ -91,8 +93,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
 
   private fun consumeMarkdown(lexer: Lexer) {
     while (lexer.tokenType != null &&
-           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType &&
-           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType) {
+           lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType) {
       when (lexer.tokenType) {
         MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer) // quoted line
         else -> lexer.advance()
@@ -104,6 +105,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
     while (true) {
       when (lexer.tokenType) {
         null, RMarkdownCodeMarkers.BACKTICK_NO_LANG.elementType, RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> return
+        MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer)
         else -> {
           if (lexer.tokenType == MarkdownTokenTypes.TEXT && lexer.tokenText == "---") {
             lexer.advance()
