@@ -96,8 +96,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         if (value) {
           scheduleRescalingIfNecessary()
         } else if (isStandalone) {
-          graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
-          rescale(preferredImageSize, targetResolution)
+          val newSize = preferredImageSize
+          if (newSize.isValid) {
+            graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
+            rescale(newSize, targetResolution)
+          }
         }
       }
     }

@@ -395,13 +395,15 @@ object RPlotUtil {
       val yFrom = calculateY(raster.from)
       val xTo = calculateX(raster.to)
       val yTo = calculateY(raster.to)
-      val original = fitTheme(raster.image)
       val multiplier = if (RGraphicsUtils.isHiDpi) 2 else 1
-      val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
       val width = ((xTo - xFrom) * multiplier).toInt()
       val height = ((yTo - yFrom) * multiplier).toInt()
-      val scaled = original.getScaledInstance(width, height, mode)
-      plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
+      if (width > 0 && height > 0) {
+        val original = fitTheme(raster.image)
+        val mode = if (raster.interpolate) Image.SCALE_SMOOTH else Image.SCALE_FAST
+        val scaled = original.getScaledInstance(width, height, mode)
+        plotter.drawRaster(scaled, xFrom, yFrom, raster.angle)
+      }
     }
 
     private fun replay(rectangle: RFigure.Rectangle) {
