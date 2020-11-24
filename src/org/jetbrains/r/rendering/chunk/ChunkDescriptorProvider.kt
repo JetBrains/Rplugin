@@ -6,6 +6,7 @@ package org.jetbrains.r.rendering.chunk
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
@@ -13,20 +14,26 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.ui.scale.JBUIScale
+import com.intellij.util.IconUtil
 import com.intellij.util.ui.ImageUtil
+import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.r.editor.ui.psiFile
+import org.jetbrains.plugins.notebooks.editor.use
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
+import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.concurrent.Future
 import javax.imageio.ImageIO
-import javax.swing.ImageIcon
+import javax.swing.Icon
 
 class ChunkDescriptorProvider : InlayDescriptorProvider {
   override fun getInlayDescriptor(editor: Editor): InlayElementDescriptor? {
@@ -69,21 +76,19 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getImageFilesOrdered(psi).map { imageFile ->
         val text = imageFile.absolutePath
         val preview = ImageIO.read(imageFile)?.let { image ->
-          ImageIcon(createPreview(image))
+          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image)))
         }
         InlayOutput(text, "IMG", preview = preview)
       }
     }
 
     private fun createPreview(image: BufferedImage): BufferedImage {
-      val previewHeight = InlayDimensions.lineHeight * 2
-      val factor = previewHeight.toDouble() / image.height
-      val previewWidth = (image.width * factor).toInt()
+      val previewHeight = PREVIEW_ICON_HEIGHT
+      val previewWidth = PREVIEW_ICON_WIDTH
       return ImageUtil.createImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_RGB).also { preview ->
-        preview.createGraphics().apply {
-          setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-          drawImage(image, 0, 0, previewWidth, previewHeight, null)
-          dispose()
+        preview.createGraphics().use {
+          it.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+          it.drawImage(image, 0, 0, previewWidth, previewHeight, null)
         }
       }
     }
@@ -118,8 +123,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
         InlayOutput("file://" + html.absolutePath.toString(),
                     "URL",
-                    title = "HTML",
-                    preferredWidth = preferredWidth)
+                    preview = createIconWithText("HTML"))
       } ?: emptyList()
     }
 
@@ -128,8 +132,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
         InlayOutput(csv.readText(),
                     "TABLE",
-                    title = "Table",
-                    preferredWidth = preferredWidth)
+                    preview = createIconWithText("Table"))
       } ?: emptyList()
     }
 
@@ -137,8 +140,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return ChunkPathManager.getOutputFile(psi)?.let { File(it) }?.takeIf { it.exists() }?.let {
         listOf(InlayOutput(it.absolutePath,
                            "Output",
-                           title = "R Console",
-                           preferredWidth = preferredWidth))
+                           preview = createIconWithText("Console")))
       } ?: emptyList()
     }
 
@@ -168,5 +170,20 @@ private data class ExternalImage(
     }
   }
 }
+
+private fun createIconWithText(text: String): Icon {
+  val image = ImageUtil.createImage( PREVIEW_ICON_WIDTH, PREVIEW_ICON_HEIGHT, BufferedImage.TYPE_INT_RGB)
+  val rectangle = Rectangle(0, 0, PREVIEW_ICON_WIDTH, PREVIEW_ICON_HEIGHT)
+  image.createGraphics().use { graphics ->
+    graphics.color = EditorColorsManager.getInstance().globalScheme.defaultBackground
+    graphics.fill(rectangle)
+    graphics.color = EditorColorsManager.getInstance().globalScheme.defaultForeground
+    UIUtil.drawCenteredString(graphics, rectangle, text, true, true)
+  }
+  return IconUtil.createImageIcon(image as Image)
+}
+
+private val PREVIEW_ICON_WIDTH = JBUIScale.scale(150)
+private val PREVIEW_ICON_HEIGHT = JBUIScale.scale(100)
 
 private val RMARKDOWN_CHUNK = TextAttributesKey.createTextAttributesKey("RMARKDOWN_CHUNK")
