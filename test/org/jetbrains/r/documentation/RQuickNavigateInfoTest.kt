@@ -79,7 +79,7 @@ class RQuickNavigateInfoTest : RProcessHandlerBaseTestCase() {
     val generated = getQuickNavigateText()
     val expectedFile = File(Path.of(testDataPath, getTestName(true) + ".html").toString())
     val rVersion = RInterpreterManager.getInstance(myFixture.project).interpreterOrNull!!.version.toString()
-    val expectedText = expectedFile.readText().replace("\n\\s*".toRegex(), "").replace(R_VERSION_LITERAL, rVersion).trim()
+    val expectedText = expectedFile.readText().replace("\r?\n\\s*".toRegex(), "").replace(R_VERSION_LITERAL, rVersion).trim()
     assertEquals(expectedText, generated)
   }
 
