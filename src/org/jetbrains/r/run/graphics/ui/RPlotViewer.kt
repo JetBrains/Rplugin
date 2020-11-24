@@ -10,6 +10,7 @@ import org.jetbrains.r.run.graphics.RGraphicsUtils
 import org.jetbrains.r.run.graphics.RPlot
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.settings.RGraphicsSettings
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.util.*
@@ -82,13 +83,16 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
     }
   }
 
-  private fun getOrCreateImage(plot: RPlot): BufferedImage {
-    return cachedImage.getIfSameSize() ?: createImage(plot).also { image ->
+  private fun getOrCreateImage(plot: RPlot): BufferedImage? {
+    return cachedImage.getIfSameSize() ?: createImage(plot)?.also { image ->
       cachedImage = SoftReference(image)
     }
   }
 
-  private fun createImage(plot: RPlot): BufferedImage {
+  private fun createImage(plot: RPlot): BufferedImage? {
+    if (!size.isValid) {
+      return null
+    }
     val isPreview = plot.totalComplexity > TOTAL_COMPLEXITY_THRESHOLD && plot.complexityRatio < COMPLEXITY_RATIO_THRESHOLD
     if (isPreview) {
       scheduleRender(plot)
@@ -100,7 +104,7 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
     scheduleTask {
       // Note: the rendering is started with a delay.
       // It's necessary to check whether the viewer still shows the same plot
-      if (this.plot === plot) {
+      if (this.plot === plot && size.isValid) {
         val darkMode = this.darkMode
         val parameters = this.parameters
         val image = RPlotUtil.createImage(plot, parameters, darkMode, isPreview = false)
@@ -133,6 +137,9 @@ class RPlotViewer(project: Project, parent: Disposable) : JComponent() {
     private const val COMPLEXITY_RATIO_THRESHOLD = 0.8
     private const val TOTAL_COMPLEXITY_THRESHOLD = 1000
     private const val TIMER_DELAY = 500L
+
+    private val Dimension.isValid: Boolean
+      get() = width > 0 && height > 0
 
     private val RPlot.complexityRatio: Double
       get() = previewComplexity.toDouble() / totalComplexity.toDouble()
