@@ -12,7 +12,9 @@ import com.intellij.psi.PsiManager
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.common.ExpiringList
+import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterState
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.packages.RInstalledPackage
 import org.jetbrains.r.packages.RSkeletonUtil
 import org.jetbrains.r.rinterop.RInterop
@@ -31,8 +33,8 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
       skeletonFiles
         .mapNotNull { RSkeletonUtil.skeletonFileToRPackage(it) }
         .map {
-          val canonicalPath = Path.of(RUsefulTestCase.SKELETON_LIBRARY_PATH, it.name).toString()
-          RInstalledPackage(it.name, it.version, null, RUsefulTestCase.SKELETON_LIBRARY_PATH, canonicalPath, emptyMap())
+          val canonicalPath = Path.of(skeletonsDirectory, it.name).toString()
+          RInstalledPackage(it.name, it.version, null, skeletonsDirectory, canonicalPath, emptyMap())
         }) { false }
 
   override val skeletonFiles: Set<VirtualFile>
@@ -60,8 +62,10 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
   override val libraryPaths: List<RInterpreterState.LibraryPath>
     get() = provider.libraryPaths
 
-  override val skeletonsDirectory: String
-    get() = RUsefulTestCase.SKELETON_LIBRARY_PATH
+  override val skeletonsDirectory by lazy {
+    val version = RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT)!!.version.toString()
+    Path.of(RUsefulTestCase.SKELETON_LIBRARY_PATH, version).toString()
+  }
 
   override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.packageName == name }
 

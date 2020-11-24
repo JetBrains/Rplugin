@@ -174,38 +174,40 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
 
   private fun prepareTestSkeletons(project: Project) {
     RSkeletonUtil.checkVersion(SKELETON_LIBRARY_PATH)
-    val missingTestSkeletons = missingTestSkeletons()
+    val rInterpreter = RInterpreterManager.getInterpreterBlocking(project, DEFAULT_TIMEOUT)!!
+    val interpreterVersion = rInterpreter.version.toString()
+    val missingTestSkeletons = missingTestSkeletons(interpreterVersion)
     if (missingTestSkeletons.isEmpty()) return
 
     System.err.println("Generate binary summary for: " + missingTestSkeletons)
 
-    val rInterpreter = RInterpreterManager.getInterpreterBlocking(project, DEFAULT_TIMEOUT)!!
     val rInterop = RInteropUtil.runRWrapperAndInterop(rInterpreter).blockingGet(DEFAULT_TIMEOUT)!!.apply {
       updateState().blockingGet(DEFAULT_TIMEOUT)
     }
     val packagesForTest = mutableListOf<Pair<RPackage, Path>>()
+    val versionedSkeletonLibraryPath = Path.of(SKELETON_LIBRARY_PATH, interpreterVersion).toString()
     missingTestSkeletons.map {
       val installedPackage = rInterop.state.getPackageByName(it)
                              ?: throw IllegalStateException("No package $it found for ${rInterpreter.interpreterLocation}")
       val rPackage = RPackage(installedPackage.name, installedPackage.version)
 
       // Base skeleton
-      val skeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, installedPackage)
+      val skeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(versionedSkeletonLibraryPath, installedPackage)
       Files.createDirectories(skeletonPath.parent)
       packagesForTest.add(rPackage to skeletonPath)
 
       // Mock skeleton
-      val mockPath = Path.of(SKELETON_LIBRARY_PATH, it).toString()
+      val mockPath = Path.of(versionedSkeletonLibraryPath, it).toString()
       val mockInstalledPackage =
-        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, SKELETON_LIBRARY_PATH, mockPath, emptyMap())
-      val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(SKELETON_LIBRARY_PATH, mockInstalledPackage)
+        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, versionedSkeletonLibraryPath, mockPath, emptyMap())
+      val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(versionedSkeletonLibraryPath, mockInstalledPackage)
       packagesForTest.add(rPackage to mockSkeletonPath)
     }
     RSkeletonUtil.generateSkeletons(packagesForTest, rInterop)
   }
 
-  private fun missingTestSkeletons(): Set<String> {
-    val skeletonsDirectory = File(SKELETON_LIBRARY_PATH)
+  private fun missingTestSkeletons(interpreterVersion: String): Set<String> {
+    val skeletonsDirectory = File(SKELETON_LIBRARY_PATH, interpreterVersion)
     if (!skeletonsDirectory.exists()) {
       if (!skeletonsDirectory.mkdirs()) {
         throw IOException("Can't create $skeletonsDirectory")
