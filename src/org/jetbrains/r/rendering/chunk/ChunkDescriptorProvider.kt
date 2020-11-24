@@ -39,7 +39,7 @@ class ChunkDescriptorProvider : InlayDescriptorProvider {
 
   companion object {
     fun isNewMode(editor: Editor): Boolean =
-      Registry.`is`("r.interpreter.useOutputInlays") && (editor.psiFile?.name?.endsWith("New.rmd")?: false)
+      Registry.`is`("r.interpreter.useOutputInlays")
   }
 }
 
