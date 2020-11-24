@@ -2,12 +2,14 @@ package org.jetbrains.r.run.configuration
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFileManager
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.interpreter.RInterpreterManager
-import org.jetbrains.r.interpreter.runHelperProcess
 
 class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLineState(environment) {
   override fun startProcess(): ProcessHandler {
@@ -27,15 +29,17 @@ class RCommandLineRunningState(environment: ExecutionEnvironment?) : CommandLine
       throw ExecutionException(RBundle.message("r.run.r.file.doesnt.exist.error.message"))
     }
 
-    val interpreter = RInterpreterManager.getInterpreterOrNull(project)
-    if (interpreter == null) {
-      throw ExecutionException(RBundle.message("r.run.cant.retrieve.r.interpreter.error.message"))
-    }
-
-    return interpreter.runHelperProcess(virtualFile.path,
-                                        scriptArgs = configuration.scriptArguments.split(" "),
-                                        workingDirectory = configuration.workingDirectory,
-                                        environment = configuration.environmentVariablesData.envs,
-                                        interpreterArgs = configuration.interpreterArgs.split(" "))
+    val result =  RProcessHandler(virtualFile.path,
+                                  scriptArgs = configuration.scriptArguments.split(" "),
+                                  workingDirectory = configuration.workingDirectory,
+                                  environment = configuration.environmentVariablesData.envs,
+                                  interpreterArgs = configuration.interpreterArgs.split(" "),
+                                  project = project)
+    result.addProcessListener(object : ProcessAdapter() {
+      override fun processTerminated(event: ProcessEvent) {
+        result.notifyTextAvailable(RBundle.message("r.run.exit.message", event.exitCode), ProcessOutputTypes.SYSTEM)
+      }
+    })
+    return result
   }
 }
