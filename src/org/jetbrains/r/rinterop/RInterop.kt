@@ -1047,7 +1047,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         }
       }
       AsyncEvent.EventCase.SHOWHELPREQUEST -> {
-        invokeLater {
+        if (!ApplicationManager.getApplication().isUnitTestMode) invokeLater {
           RToolWindowFactory.getDocumentationComponent(project).setText(CodeInsightBundle.message("javadoc.fetching.progress"), null, null)
         }
         val httpdResponse = event.showHelpRequest.takeIf { it.success }?.let { HttpdResponse(it.content, it.url) } ?: return
