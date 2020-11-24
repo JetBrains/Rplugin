@@ -740,6 +740,7 @@ You can find the source code in the following repositories:
       <!-- Run configuration -->
       <configurationType implementation="org.jetbrains.r.run.configuration.RRunConfigurationType"/>
       <runConfigurationProducer implementation="org.jetbrains.r.run.configuration.RRunConfigurationProducer"/>
+      <programRunner implementation="org.jetbrains.r.run.configuration.RProgramRunner"/>
     </extensions>
 
   <extensions defaultExtensionNs="org.intellij.intelliLang">
