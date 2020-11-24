@@ -5,9 +5,10 @@ import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.components.ImageInverter
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.rinterop.*
-import org.jetbrains.r.rinterop.Font
-import org.jetbrains.r.rinterop.Stroke
-import java.awt.*
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Image
+import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -36,6 +37,11 @@ object RPlotUtil {
       return null
     }
     return Plot.parseFrom(plotFile.inputStream())
+  }
+
+  fun fitTheme(image: BufferedImage): BufferedImage {
+    val colorScheme = EditorColorsManager.getInstance().globalScheme
+    return ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image)
   }
 
   private fun getPlotFile(directory: File, number: Int): File {
