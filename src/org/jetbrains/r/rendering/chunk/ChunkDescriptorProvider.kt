@@ -12,14 +12,19 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.util.ui.ImageUtil
 import org.intellij.datavis.r.inlays.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RSnapshot
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
 import java.io.File
 import java.util.concurrent.Future
+import javax.imageio.ImageIO
+import javax.swing.ImageIcon
 
 class ChunkDescriptorProvider : InlayDescriptorProvider {
   override fun getInlayDescriptor(editor: Editor): InlayElementDescriptor? {
@@ -50,7 +55,23 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
     fun getImages(psi: PsiElement): List<InlayOutput> {
       return getImageFilesOrdered(psi).map { imageFile ->
         val text = imageFile.absolutePath
-        InlayOutput(text, "IMG")
+        val preview = ImageIO.read(imageFile)?.let { image ->
+          ImageIcon(createPreview(image))
+        }
+        InlayOutput(text, "IMG", preview = preview)
+      }
+    }
+
+    private fun createPreview(image: BufferedImage): BufferedImage {
+      val previewHeight = InlayDimensions.lineHeight * 2
+      val factor = previewHeight.toDouble() / image.height
+      val previewWidth = (image.width * factor).toInt()
+      return ImageUtil.createImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_RGB).also { preview ->
+        preview.createGraphics().apply {
+          setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+          drawImage(image, 0, 0, previewWidth, previewHeight, null)
+          dispose()
+        }
       }
     }
 
