@@ -21,6 +21,7 @@ import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.*
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.use
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
@@ -124,7 +125,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
         InlayOutput("file://" + html.absolutePath.toString(),
                     "URL",
-                    preview = createIconWithText("HTML"))
+                    preview = createIconWithText(RBundle.message("rmarkdown.output.html.title")))
       } ?: emptyList()
     }
 
@@ -133,7 +134,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
         InlayOutput(csv.readText(),
                     "TABLE",
-                    preview = createIconWithText("Table"))
+                    preview = createIconWithText(RBundle.message("rmarkdown.output.table.title")))
       } ?: emptyList()
     }
 
@@ -141,7 +142,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return ChunkPathManager.getOutputFile(psi)?.let { File(it) }?.takeIf { it.exists() }?.let {
         listOf(InlayOutput(it.absolutePath,
                            "Output",
-                           preview = createIconWithText("Console")))
+                           preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))
       } ?: emptyList()
     }
 
