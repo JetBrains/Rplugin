@@ -228,5 +228,6 @@ class RDataFrameViewerTest : RProcessHandlerBaseTestCase() {
 
   private fun createViewer(expr: String): RDataFrameViewer {
     return rInterop.dataFrameGetViewer(RReference.expressionRef(expr, rInterop)).blockingGet(DEFAULT_TIMEOUT)!!
+      .also { it.registerDisposable(rInterop, null) }
   }
 }
