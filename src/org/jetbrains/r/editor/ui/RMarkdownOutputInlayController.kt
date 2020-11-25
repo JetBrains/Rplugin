@@ -179,22 +179,24 @@ class RMarkdownOutputInlayController private constructor(
 
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
-        NotebookCellLines.CellType.CODE ->
-          currentControllers.asSequence()
-            .filterIsInstance<RMarkdownCellToolbarController>()
-            .firstOrNull {
-              it.inlay.offset == offset(editor.document, interval.lines)
-            }
-          ?: createController(editor, offset(editor.document, interval.lines))
+        NotebookCellLines.CellType.CODE -> {
+          getCodeFenceEnd(editor, offset(editor.document, interval.lines))?.let{ codeEndElement ->
+            currentControllers.asSequence()
+              .filterIsInstance<RMarkdownOutputInlayController>()
+              .firstOrNull {
+                it.psiElement == codeEndElement
+              }
+            ?: RMarkdownOutputInlayController(editor, this, codeEndElement)
+          }
+        }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
       }
     }
 
-    private fun createController(editor: EditorImpl, offset: Int): NotebookCellInlayController? {
+    private fun getCodeFenceEnd(editor: EditorImpl, offset: Int): PsiElement? {
       val psiElement = getPsiElement(editor, offset) ?: return null
-      val codeEndElement = getCodeFenceEnd(psiElement) ?: return null
-      return RMarkdownOutputInlayController(editor, this, codeEndElement)
+      return getCodeFenceEnd(psiElement)
     }
   }
 }
