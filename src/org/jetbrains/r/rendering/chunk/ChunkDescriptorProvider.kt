@@ -26,6 +26,7 @@ import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
 import org.jetbrains.r.run.graphics.RGraphicsDevice
 import org.jetbrains.r.run.graphics.RPlotUtil
 import org.jetbrains.r.run.graphics.RSnapshot
+import org.jetbrains.r.settings.RGraphicsSettings
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.RenderingHints
@@ -76,7 +77,7 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       return getImageFilesOrdered(psi).map { imageFile ->
         val text = imageFile.absolutePath
         val preview = ImageIO.read(imageFile)?.let { image ->
-          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image)))
+          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), RGraphicsSettings.isDarkModeEnabled(psi.project)))
         }
         InlayOutput(text, "IMG", preview = preview)
       }
