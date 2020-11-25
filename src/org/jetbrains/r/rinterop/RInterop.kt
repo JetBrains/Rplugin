@@ -1291,6 +1291,16 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
           cacheIndex = currentCacheIndex
           currentPromise?.cancel()
           val promise = AsyncPromise<T>().also { currentPromise = it }
+          promise.onError {
+            if (it is CancellationException) {
+              synchronized(this@AsyncCached) {
+                if (promise === currentPromise) {
+                  currentPromise = null
+                  --cacheIndex
+                }
+              }
+            }
+          }
           f().onSuccess {
             cached = it
             promise.setResult(it)
@@ -1310,9 +1320,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       return currentPromise ?: resolvedPromise(cached)
     }
 
-    fun getWithCheckCancel(): T {
+    fun safeGet(): T {
       val result = value
-      currentPromise?.let { return it.getWithCheckCanceled(false) }
+      if (!isUnitTestMode && ApplicationManager.getApplication().isDispatchThread) return result
+      currentPromise?.let { return it.getWithCheckCanceled() }
       return result
     }
   }

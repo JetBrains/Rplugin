@@ -269,19 +269,19 @@ fun testExecuteMultilineWithFor() {
   }
 
   fun testLoadedPackages() {
-    var packages = rInterop.loadedPackages.getWithCheckCancel()
+    var packages = rInterop.loadedPackages.safeGet()
     TestCase.assertFalse("compiler" in packages)
     TestCase.assertFalse("tools" in packages)
 
     rInterop.executeCode("library(compiler); library(tools)")
     rInterop.invalidateCaches()
-    packages = rInterop.loadedPackages.getWithCheckCancel()
+    packages = rInterop.loadedPackages.safeGet()
     TestCase.assertTrue("compiler" in packages)
     TestCase.assertTrue("tools" in packages)
 
     rInterop.executeCode("detach('package:compiler'); detach('package:tools')")
     rInterop.invalidateCaches()
-    packages = rInterop.loadedPackages.getWithCheckCancel()
+    packages = rInterop.loadedPackages.safeGet()
     TestCase.assertFalse("compiler" in packages)
     TestCase.assertFalse("tools" in packages)
   }
