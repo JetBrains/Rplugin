@@ -139,10 +139,14 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
   }
 
   fun testSystem2() {
-    File(rInterop.workingDir, "a.R").writeText("""
+    val dir = FileUtil.createTempDirectory("r_system2_test", null, true)
+    val script = File(dir, "a.R")
+    script.writeText("""
       cat("OUT_1\n")
       cat("ERR_2\n", file=stderr())
     """.trimIndent())
+    val outFile = File(dir, "out.txt")
+    val errFile = File(dir, "err.txt")
     for (outVariant in OutputVariants.values()) {
       for (errVariant in OutputVariants.values()) {
         if (errVariant == OutputVariants.COLLECT && outVariant != OutputVariants.COLLECT) {
@@ -152,31 +156,33 @@ class SubprocessTest : RProcessHandlerBaseTestCase() {
           OutputVariants.IGNORE -> "FALSE"
           OutputVariants.COLLECT -> "TRUE"
           OutputVariants.CONSOLE -> "''"
-          OutputVariants.FILE -> "'out.txt'"
+          OutputVariants.FILE -> "\"${StringUtil.escapeStringCharacters(outFile.absolutePath)}\""
         }
         val errValue = when (errVariant) {
           OutputVariants.IGNORE -> "FALSE"
           OutputVariants.COLLECT -> "TRUE"
           OutputVariants.CONSOLE -> "''"
-          OutputVariants.FILE -> "'err.txt'"
+          OutputVariants.FILE -> "\"${StringUtil.escapeStringCharacters(errFile.absolutePath)}\""
         }
         val output = rInterop.executeCodeAsync(
           """s <- system2("${StringUtil.escapeStringCharacters(interpreter.interpreterPathOnHost)}",
-            |              c('--vanilla', '--slave', '-f', 'a.R'), stdout = $outValue, stderr = $errValue)""".trimMargin(),
+            |              c("--vanilla", "--slave", "-f",
+            |                "${StringUtil.escapeStringCharacters(script.absolutePath)}"),
+            |              stdout = $outValue, stderr = $errValue)""".trimMargin(),
           isRepl = true, returnOutput = true).blockingGet(DEFAULT_TIMEOUT)!!
         val s = rInterop.executeCode("cat(s)").stdout
 
         TestCase.assertEquals(outVariant == OutputVariants.COLLECT, "OUT_1" in s)
         TestCase.assertEquals(outVariant == OutputVariants.CONSOLE, "OUT_1" in output.stdout)
         TestCase.assertEquals(outVariant == OutputVariants.FILE,
-                              File(rInterop.workingDir, "out.txt").let { it.exists() && it.readText().trim() == "OUT_1" })
+                              outFile.let { it.exists() && it.readText().trim() == "OUT_1" })
         TestCase.assertEquals(errVariant == OutputVariants.COLLECT, "ERR_2" in s)
         TestCase.assertEquals(errVariant == OutputVariants.CONSOLE, "ERR_2" in output.stderr)
         TestCase.assertEquals(errVariant == OutputVariants.FILE,
-                              File(rInterop.workingDir, "err.txt").let { it.exists() && it.readText().trim() == "ERR_2" })
+                              errFile.let { it.exists() && it.readText().trim() == "ERR_2" })
 
-        File(rInterop.workingDir, "out.txt").takeIf { it.exists() }?.delete()
-        File(rInterop.workingDir, "err.txt").takeIf { it.exists() }?.delete()
+        outFile.takeIf { it.exists() }?.delete()
+        errFile.takeIf { it.exists() }?.delete()
       }
     }
   }

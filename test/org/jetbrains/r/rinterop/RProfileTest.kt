@@ -48,31 +48,6 @@ class RProfileTest : RUsefulTestCase() {
     }
   }
 
-  fun testError() {
-    doTest("""
-      aaa <- 123
-      stop("XyzXyz")
-      aaa <- 789
-      aaa <- 12345
-    """.trimIndent()) { rInterop ->
-      val output = StringBuilder()
-      val promptPromise = AsyncPromise<Unit>()
-      rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
-        override fun onText(text: String, type: ProcessOutputType) {
-          output.append(text)
-        }
-
-        override fun onPrompt(isDebug: Boolean) {
-          promptPromise.setResult(Unit)
-        }
-      })
-      rInterop.asyncEventsStartProcessing()
-      promptPromise.blockingGet(DEFAULT_TIMEOUT)
-      TestCase.assertEquals("123", rInterop.executeCode("cat(aaa)").stdout)
-      TestCase.assertTrue("XyzXyz" in output.toString())
-    }
-  }
-
   private inline fun doTest(code: String, f: (RInterop) -> Unit) {
     val file = File(project.basePath, ".Rprofile")
     try {
