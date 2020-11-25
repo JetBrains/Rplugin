@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.runConfigurationType
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
+import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import org.jetbrains.r.interpreter.RInterpreterUtil.getDefaultInterpreterOptions
 import org.jetbrains.r.psi.api.RFile
 
@@ -16,7 +17,7 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
     val location = context.location ?: return false
     val element = location.psiElement
     val psiFile = element.containingFile ?: return false
-    if (psiFile !is RFile) {
+    if (psiFile !is RFile || psiFile.viewProvider is TemplateLanguageFileViewProvider) {
       return false
     }
 

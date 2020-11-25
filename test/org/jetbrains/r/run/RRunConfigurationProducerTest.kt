@@ -3,6 +3,7 @@ package org.jetbrains.r.run
 import com.intellij.execution.Location
 import com.intellij.execution.PsiLocation
 import com.intellij.execution.actions.ConfigurationContext
+import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.module.ModuleUtilCore
@@ -21,10 +22,7 @@ class RRunConfigurationProducerTest : RLightCodeInsightFixtureTestCase() {
       """.trimIndent()
     )
 
-    val templateConfigurationContext = getConfigurationContext(myFixture.file)
-
-    val configurationContext = RRunConfigurationProducer().createConfigurationFromContext(templateConfigurationContext)
-    val runConfiguration = configurationContext?.configurationSettings?.configuration
+    val runConfiguration = getConfigurationFromCaret()
     assertNotNull(runConfiguration)
 
     if (runConfiguration !is RRunConfiguration) {
@@ -34,6 +32,26 @@ class RRunConfigurationProducerTest : RLightCodeInsightFixtureTestCase() {
     assertEquals("/src/my_file.R", runConfiguration.filePath)
     assertEquals("", runConfiguration.scriptArguments)
     assertEquals(0, runConfiguration.environmentVariablesData.envs.size)
+  }
+
+  fun testDoNotCreateRunConfigurationForRMarkdown() {
+    myFixture.configureByText(
+      "my_file.Rmd",
+      """
+        ```{r i<caret>nclude = FALSE}
+        ```
+      """.trimIndent()
+    )
+
+    val runConfiguration = getConfigurationFromCaret()
+    assertNull(runConfiguration)
+  }
+
+  private fun getConfigurationFromCaret(): RunConfiguration? {
+    val templateConfigurationContext = getConfigurationContext(myFixture.file)
+
+    val configurationContext = RRunConfigurationProducer().createConfigurationFromContext(templateConfigurationContext)
+    return configurationContext?.configurationSettings?.configuration
   }
 
   private fun getConfigurationContext(element: PsiElement): ConfigurationContext {
