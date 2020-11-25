@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.editor.ex.util.EditorScrollingPositionKeeper
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -22,6 +23,7 @@ import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle
+import java.awt.event.ComponentEvent
 
 class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
@@ -74,6 +76,11 @@ class RMarkdownOutputInlayController private constructor(
         clearOutputs()
       }
     }
+  }
+
+  override fun setWidth(width: Int) {
+    inlayComponent.setSize(width, inlayComponent.height)
+    inlayComponent.inlay?.update()
   }
 
   override fun dispose() {
@@ -205,11 +212,17 @@ interface RMarkdownNotebookOutput {
 
   fun dispose()
 
+  fun setWidth(width: Int)
+
   val psiElement: PsiElement
 }
 
-class RMarkdownNotebook {
+class RMarkdownNotebook(editor: EditorEx) {
   private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
+
+  init {
+    addResizeListener(editor)
+  }
 
   operator fun get(cell: PsiElement): RMarkdownNotebookOutput? = outputs[cell]
 
@@ -222,13 +235,26 @@ class RMarkdownNotebook {
     outputs.remove(output.psiElement, output)
   }
 
+  private fun addResizeListener(editor: EditorEx) {
+    editor.component.addComponentListener(object : java.awt.event.ComponentAdapter() {
+      override fun componentResized(e: ComponentEvent) {
+        val inlayWidth = InlayDimensions.calculateInlayWidth(editor)
+        if (inlayWidth > 0) {
+          outputs.values.forEach {
+            it.setWidth(inlayWidth)
+          }
+        }
+      }
+    })
+  }
+
   companion object {
-    private fun install(editor: Editor): RMarkdownNotebook =
-      RMarkdownNotebook().also {
+    private fun install(editor: EditorEx): RMarkdownNotebook =
+      RMarkdownNotebook(editor).also {
         key.set(editor, it)
       }
 
-    fun installIfNotExists(editor: Editor): RMarkdownNotebook =
+    fun installIfNotExists(editor: EditorEx): RMarkdownNotebook =
       editor.rMarkdownNotebook ?: install(editor)
   }
 }
