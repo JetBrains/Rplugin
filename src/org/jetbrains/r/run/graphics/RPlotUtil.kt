@@ -39,9 +39,11 @@ object RPlotUtil {
     return Plot.parseFrom(plotFile.inputStream())
   }
 
-  fun fitTheme(image: BufferedImage): BufferedImage {
-    val colorScheme = EditorColorsManager.getInstance().globalScheme
-    return ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image)
+  fun fitTheme(image: BufferedImage, darkMode: Boolean): BufferedImage {
+    val editorColorsManager = EditorColorsManager.getInstance()
+    val colorScheme = editorColorsManager.globalScheme
+    val shouldInvert = darkMode && editorColorsManager.isDarkEditor
+    return if (shouldInvert) ImageInverter(colorScheme.defaultForeground, colorScheme.defaultBackground).invert(image) else image
   }
 
   private fun getPlotFile(directory: File, number: Int): File {
