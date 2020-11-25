@@ -41,7 +41,7 @@ class RVariableLoader internal constructor(val obj: RReference) {
       promise.thenCancellable { result }
     }
   }
-  val variables get() = variablesAsync.getWithCheckCancel()
+  val variables get() = variablesAsync.safeGet()
 
   data class VariablesPart(val vars: List<RVar>, val totalCount: Long)
 
