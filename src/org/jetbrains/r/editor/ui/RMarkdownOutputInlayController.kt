@@ -89,6 +89,8 @@ class RMarkdownOutputInlayController private constructor(
   }
 
   private fun resetComponent(oldComponent: NotebookInlayComponent) {
+    if (Disposer.isDisposed(editor.disposable))
+      return
     inlayComponent = addInlayComponent(editor, psiElement)
     inlay = inlayComponent.inlay!!
     registerDisposable(inlayComponent)
