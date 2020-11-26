@@ -4,24 +4,43 @@
 
 package org.jetbrains.r.annotator
 
+import com.intellij.ide.IdeEventQueue
+import com.intellij.openapi.editor.colors.EditorColorsScheme
+import com.intellij.openapi.editor.colors.impl.DefaultColorsScheme
+import com.intellij.openapi.editor.colors.impl.EditorColorsSchemeImpl
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.psi.impl.source.tree.injected.changesHandler.range
-import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.UsefulTestCase
 import org.jetbrains.r.console.RConsoleBaseTestCase
 import org.jetbrains.r.highlighting.*
 import java.awt.Color
+import java.awt.Font
 
 class RConsoleHighlightingTest : RConsoleBaseTestCase() {
   fun testAnnotatorHighlightingFromMultilineInput() {
+    val scheme: EditorColorsScheme = object : EditorColorsSchemeImpl(DefaultColorsScheme()) {
+      init {
+        initFonts()
+      }
+    }
+    fun color(x : Int) = TextAttributes(Color(x), Color(x), null, null, Font.PLAIN)
+    scheme.setAttributes(LOCAL_VARIABLE, color(1))
+    scheme.setAttributes(FUNCTION_CALL, color(2))
+    scheme.setAttributes(NAMED_ARGUMENT, color(3))
+
+    (console.consoleEditor as EditorEx).colorsScheme = scheme
+
     console.appendCommandText("""
       some_var <- list(xxx = 10,
         yyy = 10,
         zzz = list(5))
     """.trimIndent())
     console.flushDeferredText()
+
+    IdeEventQueue.getInstance().flushQueue()
 
     val editor = console.editor
     val markup = DocumentMarkupModel.forDocument(editor.document, project, true)
@@ -46,7 +65,7 @@ class RConsoleHighlightingTest : RConsoleBaseTestCase() {
 
     val colorsScheme = console.consoleEditor.colorsScheme
 
-    val funDeclarationAttributes = colorsScheme.getAttributes(FUNCTION_DECLARATION)
+    val localVariableAttributes = colorsScheme.getAttributes(LOCAL_VARIABLE)
     val operatorAttributes = colorsScheme.getAttributes(OPERATION_SIGN)
     val commaAttributes = colorsScheme.getAttributes(COMMA)
     val parenthesesAttributes = colorsScheme.getAttributes(PARENTHESES)
@@ -56,7 +75,7 @@ class RConsoleHighlightingTest : RConsoleBaseTestCase() {
 
     UsefulTestCase.assertSameLines("""
       (0,2): '> ' : $promptAttributes
-      (2,10): 'some_var' : $funDeclarationAttributes
+      (2,10): 'some_var' : $localVariableAttributes
       (2,11): 'some_var ' : $textAttributes
       (11,13): '<-' : $operatorAttributes
       (13,18): ' list' : $textAttributes

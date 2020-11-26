@@ -240,23 +240,6 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     }
   }
 
-  override fun addTextRangeToHistory(textRange: TextRange, inputEditor: EditorEx, preserveMarkup: Boolean): String {
-    val addTextRangeToHistory = super.addTextRangeToHistory(textRange, inputEditor, preserveMarkup)
-    moveHighlightingFromAnnotatorToHistory(inputEditor, textRange)
-    return addTextRangeToHistory
-  }
-
-  private fun moveHighlightingFromAnnotatorToHistory(inputEditor: EditorEx, textRange: TextRange) {
-    val to = DocumentMarkupModel.forDocument(editor.document, project, true)
-    val from = DocumentMarkupModel.forDocument(inputEditor.document, project, true)
-    val infos: List<HighlightInfo> = from.allHighlighters.mapNotNull { rangeHighlighter ->
-      if (!rangeHighlighter.isValid) return@mapNotNull null
-      rangeHighlighter.errorStripeTooltip as? HighlightInfo
-    }
-    val input = textRange.subSequence(from.document.charsSequence)
-    scheduleAnnotationsForHistory(to, input, infos, textRange)
-  }
-
   fun annotateForHistory() {
     val annotationSession = AnnotationSession(file)
     val annotationHolder = AnnotationHolderImpl(annotationSession)
@@ -347,8 +330,12 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
 
   override fun flushDeferredText() {
     super.flushDeferredText()
-    postFlushActions.forEach { it() }
-    postFlushActions.clear()
+    invokeLater {
+      if (!hasDeferredOutput()) {
+        postFlushActions.forEach { it() }
+        postFlushActions.clear()
+      }
+    }
   }
 
   class REofAction : DumbAwareAction() {
