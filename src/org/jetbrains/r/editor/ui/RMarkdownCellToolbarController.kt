@@ -8,8 +8,10 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import org.jetbrains.plugins.notebooks.editor.*
-import org.jetbrains.r.rendering.chunk.ChunkActionByOffset
+import org.jetbrains.r.rendering.chunk.ChunkAction
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
 import java.awt.Cursor
 import java.awt.Dimension
@@ -25,11 +27,10 @@ import kotlin.math.max
 internal class RMarkdownCellToolbarController private constructor(
   val editor: EditorImpl,
   override val factory: Factory,
-  lines: IntRange,
-  offset: Int,
+  inlayOffset: Int,
 ) : NotebookCellInlayController, EditorCustomElementRenderer {
 
-  private val panel = RMarkdownCellToolbarPanel(editor, offset)
+  private val panel = RMarkdownCellToolbarPanel(editor)
 
   init {
     @Suppress("UsePropertyAccessSyntax")
@@ -54,9 +55,16 @@ internal class RMarkdownCellToolbarController private constructor(
         isRelatedToPrecedingText,
         true,
         editor.notebookAppearance.JUPYTER_CELL_SPACERS_INLAY_PRIORITY,
-        offset(editor.document, lines)
+        inlayOffset
       )
     )!!
+
+  init {
+    PsiDocumentManager.getInstance(editor.project!!).performForCommittedDocument(editor.document) {
+      val psiElement = getFenceLangByOffset(editor.psiFile!!, inlay.offset)
+      panel.addToolbar(psiElement!!)
+    }
+  }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) = Unit
 
@@ -70,14 +78,17 @@ internal class RMarkdownCellToolbarController private constructor(
 
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
-        NotebookCellLines.CellType.CODE ->
+        NotebookCellLines.CellType.CODE -> {
+          val offset = offset(editor.document, interval.lines)
+
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownCellToolbarController>()
             .firstOrNull {
               it.inlay.isRelatedToPrecedingText == isRelatedToPrecedingText
-              && it.inlay.offset == offset(editor.document, interval.lines)
+              && it.inlay.offset == offset
             }
-          ?: RMarkdownCellToolbarController(editor, this, interval.lines, offset(editor.document, interval.lines))
+          ?: RMarkdownCellToolbarController(editor, this, offset)
+         }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
       }
@@ -88,7 +99,7 @@ internal class RMarkdownCellToolbarController private constructor(
     private const val isRelatedToPrecedingText: Boolean = true
 
     private fun offset(document: Document, codeLines: IntRange): Int =
-      Integer.min(document.getLineEndOffset(codeLines.first), document.textLength)
+      Integer.min(document.getLineStartOffset(codeLines.first) + 1, document.textLength)
   }
 }
 
@@ -113,20 +124,25 @@ private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pane
 }
 
 
-private class RMarkdownCellToolbarPanel(editor: EditorImpl, offset: Int) : JPanel() {
-  private val toolbar =
-    ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, offset), true)
+private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : JPanel() {
+  private var hasToolbar = false
+
+  fun addToolbar(psiElement: PsiElement) {
+    require(!hasToolbar)
+    hasToolbar = true
+    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, psiElement), true)
+    add(toolbar.component)
+    toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+  }
 
   init {
     isOpaque = false
     background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-    add(toolbar.component)
-    toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
   }
 
-  private fun createToolbarActionGroup(editor: Editor, offset: Int): ActionGroup {
-    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkActionByOffset(editor, action, offset)}
+  private fun createToolbarActionGroup(editor: Editor, psiElement: PsiElement): ActionGroup {
+    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkAction(action, psiElement, editor)}
     return DefaultActionGroup(wrapped)
   }
 }

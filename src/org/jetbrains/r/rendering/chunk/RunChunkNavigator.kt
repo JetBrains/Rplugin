@@ -33,7 +33,7 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
   fun createRunChunkActionsList(): List<AnAction> = actionIds.map { getAction(it) }
 
   private fun createRunChunkActionGroup(element: PsiElement): DefaultActionGroup =
-    DefaultActionGroup(actionIds.map { id -> ChunkActionByElement(getAction(id), element) })
+    DefaultActionGroup(actionIds.map { id -> ChunkAction(getAction(id), element) })
 
   private val actionIds = listOf(
     RUN_CHUNK_ACTION_ID,
@@ -46,53 +46,25 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
 }
 
 
-internal abstract class ChunkActionBase(protected val action: AnAction): DumbAwareAction() {
+internal class ChunkAction(private val action: AnAction, private val contextVariablesOverride: Map<String, Any>): DumbAwareAction() {
   init {
     copyFrom(action)
   }
 
+  constructor(action: AnAction, element: PsiElement): this(action, mapOf(CODE_FENCE_DATA_KEY.name to element))
+
+  constructor(action: AnAction, element: PsiElement, editor: Editor): this(action, mapOf(CODE_FENCE_DATA_KEY.name to element,
+                                                                                         CommonDataKeys.EDITOR.name to editor))
+
+  override fun update(e: AnActionEvent) {
+    e.presentation.isEnabled = canRunChunk(CommonDataKeys.EDITOR.getData(createContext(e)))
+  }
+
   override fun actionPerformed(e: AnActionEvent) {
-    val element = getElement(e) ?: return
-    RActionUtil.performDelegatedAction(action, createActionEvent(e, element))
+    val actionEvent = AnActionEvent.createFromInputEvent(e.inputEvent, "", null, createContext(e))
+    RActionUtil.performDelegatedAction(action, actionEvent)
   }
 
-  private fun createActionEvent(e: AnActionEvent, element: PsiElement): AnActionEvent =
-    AnActionEvent.createFromInputEvent(e.inputEvent, "", null, createContext(element, e.dataContext))
-
-  protected abstract fun getElement(e: AnActionEvent): PsiElement?
-
-  protected abstract fun createContext(element: PsiElement, parentContext: DataContext): DataContext
-}
-
-
-internal class ChunkActionByElement(action: AnAction, private val element: PsiElement) : ChunkActionBase(action) {
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = canRunChunk(e.editor)
-  }
-
-  override fun getElement(e: AnActionEvent) = element
-
-  override fun createContext(element: PsiElement, parentContext: DataContext): DataContext =
-    SimpleDataContext.getSimpleContext(CODE_FENCE_DATA_KEY.name, element, parentContext)
-}
-
-
-internal class ChunkActionByOffset(private val editor: Editor, action: AnAction, private val offset: Int) : ChunkActionBase(action) {
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabled = canRunChunk(editor)
-  }
-
-  override fun getElement(e: AnActionEvent): PsiElement? =
-    psiFile?.viewProvider
-      ?.let { it.findElementAt(offset, it.baseLanguage) }
-      ?.let { it.parent.children.find { it.elementType == MarkdownTokenTypes.FENCE_LANG } }
-
-  private val psiFile: PsiFile?
-    get() = editor.project?.let { PsiDocumentManager.getInstance(it) }?.getPsiFile(editor.document)
-
-  override fun createContext(element: PsiElement, parentContext: DataContext): DataContext =
-    SimpleDataContext.getSimpleContext(mapOf(
-      CODE_FENCE_DATA_KEY.name to element,
-      CommonDataKeys.EDITOR.name to editor,
-    ), parentContext)
+  private fun createContext(e: AnActionEvent): DataContext =
+    SimpleDataContext.getSimpleContext(contextVariablesOverride, e.dataContext)
 }
