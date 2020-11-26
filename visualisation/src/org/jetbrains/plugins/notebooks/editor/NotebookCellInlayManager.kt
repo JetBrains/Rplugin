@@ -134,6 +134,8 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private fun addDocumentListener() {
     val documentListener = object : DocumentListener {
       private var matchingCellsBeforeChange: List<NotebookCellLines.Interval> = emptyList()
+      @Volatile
+      private var isBulkModeEnabled = false;
 
       private fun interestingLogicalLines(document: Document, startOffset: Int, length: Int): IntRange {
         // Adding one additional line is needed to handle deletions at the end of the document.
@@ -143,7 +145,13 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
         return document.getLineNumber(startOffset)..end
       }
 
+      override fun bulkUpdateStarting(document: Document) {
+        isBulkModeEnabled = true
+        matchingCellsBeforeChange = notebookCellLines.getMatchingCells(0 until document.lineCount)
+      }
+
       override fun beforeDocumentChange(event: DocumentEvent) {
+        if (isBulkModeEnabled) return
         val document = event.document
         val logicalLines = interestingLogicalLines(document, event.offset, event.oldLength)
 
@@ -151,19 +159,15 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
 
       override fun documentChanged(event: DocumentEvent) {
+        if (isBulkModeEnabled) return
         val logicalLines = interestingLogicalLines(event.document, event.offset, event.newLength)
         ensureInlaysAndHighlightersExist(matchingCellsBeforeChange, logicalLines)
       }
 
       override fun bulkUpdateFinished(document: Document) {
-        // TODO is everything below needed?
-        for (highlighter in getMatchingHighlightersForLines(0 until document.lineCount)) {
-          editor.markupModel.removeHighlighter(highlighter)
-        }
-        for (controller in getMatchingInlaysForOffsets(0, document.textLength)) {
-          Disposer.dispose(controller.inlay, false)
-        }
-        handleRefreshedDocument()
+        isBulkModeEnabled = false
+        // bulk mode is over, now we could access inlays, let's update them all
+        ensureInlaysAndHighlightersExist(matchingCellsBeforeChange, 0 until document.lineCount)
       }
     }
 
