@@ -309,10 +309,8 @@ class RMarkdownNotebook(editor: EditorEx) {
     editor.document.addDocumentListener(object: DocumentListener {
       override fun documentChanged(event: DocumentEvent) {
         PsiDocumentManager.getInstance(project).performForCommittedDocument(editor.document) {
-          invokeLater {
-            outputs.values.forEach {
-              it.onPsiDocumentCommitted()
-            }
+          outputs.values.forEach {
+            it.onPsiDocumentCommitted()
           }
         }
       }
