@@ -151,8 +151,8 @@ class RMarkdownOutputInlayController private constructor(
     if (Disposer.isDisposed(editor.disposable)) return
 
     val offset = extractOffset(psiElement)
-    inlayComponent.inlay?.let {
-      if (it.offset == offset) return
+    if (inlayComponent.inlay?.offset == offset) {
+      return
     }
 
     skipDisposeComponent {
