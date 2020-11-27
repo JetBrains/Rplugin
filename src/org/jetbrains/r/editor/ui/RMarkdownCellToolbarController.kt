@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Disposer
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPointerManager
 import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.r.rendering.chunk.ChunkAction
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
@@ -152,7 +153,8 @@ private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : JPanel() {
   }
 
   private fun createToolbarActionGroup(editor: Editor, psiElement: PsiElement): ActionGroup {
-    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkAction(action, psiElement, editor)}
+    val psiElementPointer = SmartPointerManager.createPointer(psiElement)
+    val wrapped = RunChunkNavigator.createRunChunkActionsList().map{ action -> ChunkAction(action, psiElementPointer, editor)}
     return DefaultActionGroup(wrapped)
   }
 }
