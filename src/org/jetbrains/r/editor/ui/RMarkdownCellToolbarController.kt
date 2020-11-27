@@ -1,7 +1,6 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
@@ -9,8 +8,6 @@ import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.openapi.util.Disposer
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SmartPointerManager
 import org.jetbrains.plugins.notebooks.editor.*
@@ -63,17 +60,8 @@ internal class RMarkdownCellToolbarController private constructor(
     )!!
 
   init {
-    PsiDocumentManager.getInstance(editor.project!!).performForCommittedDocument(editor.document) {
-      val psiElement = getFenceLangByOffset(editor.psiFile!!, inlay.offset)
-      if (psiElement != null) {
-        panel.addToolbar(psiElement)
-      }
-      else {
-        if (editor.document.textLength > 0) {
-          Logger.getInstance(this.javaClass).error("psi structure and RMarkdownMergingLangLexer result don't match")
-        }
-        Disposer.dispose(inlay)
-      }
+    performForCommittedPsi(editor, inlay) { psiElement ->
+      panel.addToolbar(psiElement)
     }
   }
 
