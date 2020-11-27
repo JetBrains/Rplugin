@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
@@ -37,6 +38,7 @@ fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
 
 val CODE_FENCE_DATA_KEY = DataKey.create<PsiElement>("org.jetbrains.r.rendering.chunk.actions.codeFence")
+val CODE_FENCE_DATA_KEY_SMART_PTR = DataKey.create<SmartPsiElementPointer<PsiElement>>("org.jetbrains.r.rendering.chunk.actions.codeFenceSmartPointer")
 
 const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
@@ -107,6 +109,7 @@ private fun isConsoleReady(project: Project): Boolean {
 
 private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
   e.getData(CODE_FENCE_DATA_KEY)?.let { return it }
+  e.getData(CODE_FENCE_DATA_KEY_SMART_PTR)?.element?.let { return it }
   val offset = e.caret?.offset ?: return null
   val file = e.psiFile ?: return null
   val markdown = SourceTreeToPsiMap.treeElementToPsi(file.node.findLeafElementAt(offset))
@@ -146,7 +149,7 @@ internal fun findInlayElementByFenceElement(element: PsiElement) =
   TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
 private val AnActionEvent.codeFence: PsiElement?
-  get() = getData(CODE_FENCE_DATA_KEY)
+  get() = getData(CODE_FENCE_DATA_KEY)?: getData(CODE_FENCE_DATA_KEY_SMART_PTR).let { it?.element }
 
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
   val editor = e.editor ?: return

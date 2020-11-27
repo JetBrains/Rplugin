@@ -10,13 +10,9 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.util.elementType
-import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
+import com.intellij.psi.SmartPsiElementPointer
 import org.jetbrains.r.actions.RActionUtil
-import org.jetbrains.r.actions.editor
 
 import java.awt.event.MouseEvent
 
@@ -53,8 +49,10 @@ internal class ChunkAction(private val action: AnAction, private val contextVari
 
   constructor(action: AnAction, element: PsiElement): this(action, mapOf(CODE_FENCE_DATA_KEY.name to element))
 
-  constructor(action: AnAction, element: PsiElement, editor: Editor): this(action, mapOf(CODE_FENCE_DATA_KEY.name to element,
-                                                                                         CommonDataKeys.EDITOR.name to editor))
+  constructor(action: AnAction, elementSmartPointer: SmartPsiElementPointer<PsiElement>, editor: Editor): this(action, mapOf(
+    CODE_FENCE_DATA_KEY_SMART_PTR.name to elementSmartPointer,
+    CommonDataKeys.EDITOR.name to editor)
+  )
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = canRunChunk(CommonDataKeys.EDITOR.getData(createContext(e)))
