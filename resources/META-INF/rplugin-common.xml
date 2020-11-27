@@ -370,6 +370,10 @@ You can find the source code in the following repositories:
         <editor.outputs.notebookOutputDataKeyExtractor implementation="org.jetbrains.r.editor.ui.RMarkdownOutputDataKeyExtractor"/>
     </extensions>
 
+    <applicationListeners>
+        <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerInitializerListener" topic="com.intellij.ide.AppLifecycleListener" activeInHeadlessMode="false"/>
+    </applicationListeners>
+
     <extensions defaultExtensionNs="com.intellij">
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
