@@ -9,6 +9,7 @@ import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
+import java.io.File
 import java.nio.file.Paths
 
 class MachineLearningCompletionServerService: Disposable {
@@ -16,12 +17,16 @@ class MachineLearningCompletionServerService: Disposable {
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
     private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
-    private const val RELAUNCH_TIMEOUT_MS = 5_000L
-    private const val LAUNCH_SERVER_COMMAND = "python3"
-    private val LOCAL_SERVER_MAIN_FILE_PATH = RPluginUtil.helperPathOrNull?.let {
-      Paths.get(it, "python_server").toString()
-    }
+    private const val RELAUNCH_TIMEOUT_MS = 20_000L
+    private val LOCAL_SERVER_DIRECTORY = resolveWithNullable(RPluginUtil.helperPathOrNull, "python_server")
+    private val LAUNCH_SERVER_COMMAND = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "dist", "./run_demo")
+    private val LOCAL_SERVER_CONFIG_PATH = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "config.yml")
     fun getInstance() = service<MachineLearningCompletionServerService>()
+
+    private fun resolveWithNullable(first: String?, vararg more: String): String? =
+      first?.let {
+        return Paths.get(first, *more).toString()
+      }
   }
 
   private var localServer: Process? = null
@@ -70,11 +75,19 @@ class MachineLearningCompletionServerService: Disposable {
   }
 
   private fun launchServer(host: String, port: Int) {
-    if (!isLocalHost(host) || LOCAL_SERVER_MAIN_FILE_PATH == null) {
+    if (!isLocalHost(host)
+        || LOCAL_SERVER_DIRECTORY == null
+        || LAUNCH_SERVER_COMMAND == null
+        || LOCAL_SERVER_CONFIG_PATH == null) {
       return
     }
     try {
-      localServer = ProcessBuilder(LAUNCH_SERVER_COMMAND, LOCAL_SERVER_MAIN_FILE_PATH, host, port.toString()).start()
+      localServer = ProcessBuilder(LAUNCH_SERVER_COMMAND,
+                                   "--config=$LOCAL_SERVER_CONFIG_PATH",
+                                   "--host=$host",
+                                   "--port=$port")
+        .directory(File(LOCAL_SERVER_DIRECTORY))
+        .start()
     } catch (e: Exception) {
       LOG.warn("Exception has occurred in R ML Completion server thread", e)
     }
