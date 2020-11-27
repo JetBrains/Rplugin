@@ -6,12 +6,12 @@ package org.jetbrains.r.editor
 
 import com.intellij.codeInsight.lookup.CharFilter
 import com.intellij.codeInsight.lookup.Lookup
-import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.RLanguage
 
 
 class RCharFilter : CharFilter() {
   override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup?): Result? {
-    if (lookup?.psiFile !is RFile) return null
+    if (lookup?.psiElement?.language !is RLanguage) return null
 
     if (Character.isLetterOrDigit(c) || c == '.' || c == '_') {
       return Result.ADD_TO_PREFIX
