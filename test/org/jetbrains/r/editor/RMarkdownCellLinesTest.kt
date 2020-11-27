@@ -88,6 +88,29 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
+  fun `test uncompleted code cell surrounded by markdown`(): Unit = edt{
+    fixture.openNotebookTextInEditor("""
+      markdown
+      ```{r setup}
+      uncompleted cell
+      `
+      markdown
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(MARKDOWN, 0, 9)
+        marker(MARKDOWN, 9, 40)
+      }
+      intervals {
+        interval(MARKDOWN, 0..0)
+        interval(MARKDOWN, 1..4)
+      }
+    }
+  }
+
+
+  @Test
   fun `two code cells`(): Unit = edt{
     fixture.openNotebookTextInEditor("""
       ```{r}
@@ -138,7 +161,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `single line code cells`(): Unit = edt {
+  fun `single line code cells isnt chunks`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       ```{r}```
       ```{r} code ```
@@ -146,12 +169,12 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0, 10)
-        marker(CODE, 10, 15)
+        marker(MARKDOWN, 0, 10)
+        marker(MARKDOWN, 10, 15)
       }
       intervals {
-        interval(CODE, 0..0)
-        interval(CODE, 1..1)
+        interval(MARKDOWN, 0..0)
+        interval(MARKDOWN, 1..1)
       }
     }
   }
@@ -220,20 +243,18 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     fixture.openNotebookTextInEditor("""
       valid markdown
         ```{r}invalid``` ```{r}cells```
-      ```{r}valid cell``` invalid markdown ```{r} invalid code cell ``` 
+      ```{r}invalid code cell``` invalid markdown ```{r} invalid code cell ``` 
       valid markdown
     """.trimIndent())
 
     assertCodeCells {
       markers {
         marker(MARKDOWN, 0, 49)
-        marker(CODE, 49, 67)
-        marker(MARKDOWN, 116, 14)
+        marker(MARKDOWN, 49, 88)
       }
       intervals {
         interval(MARKDOWN, 0..1)
-        interval(CODE, 2..2)
-        interval(MARKDOWN, 3..3)
+        interval(MARKDOWN, 2..3)
       }
     }
   }
@@ -356,7 +377,7 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
-  fun `test insert code cell`(): Unit = edt {
+  fun `test insert invalid code cell in one line`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       markdown line 1
       <caret>
@@ -376,7 +397,6 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       fixture.type("```")
       // actually it types ```<caret>`,
       // ``` is valid start of cell, but ```` is invalid and ignored
-      // so cell added and removed
       markers {
         marker(MARKDOWN, 0, 36)
       }
@@ -407,25 +427,47 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
     }
 
     assertCodeCells("add code cell end") {
-      // one ` was already typed and placed after caret
+      // one ` was already typed and placed after caret.
+      // line with ```{r}``` isn't a chunk
       fixture.type("``")
       markers {
         marker(MARKDOWN, 0, 16)
-        marker(CODE, 16, 10)
-        marker(MARKDOWN, 26, 15)
+        marker(MARKDOWN, 16, 25)
       }
       intervals {
         interval(MARKDOWN, 0..0)
-        interval(CODE, 1..1)
-        interval(MARKDOWN, 2..2)
+        interval(MARKDOWN, 1..2)
+      }
+    }
+  }
+
+  @Test
+  fun `test insert code chunk`(): Unit = edt{
+    fixture.openNotebookTextInEditor("""
+      markdown line 1
+      ```{r}<caret>```
+      markdown line 2
+    """.trimIndent())
+
+    assertCodeCells("make valid code chunk") {
+      fixture.type("\n")
+      markers {
+        marker(MARKDOWN, 0, 16)
+        marker(CODE, 16, 11)
+        marker(MARKDOWN, 27, 15)
+      }
+      intervals {
+        interval(MARKDOWN, 0..0)
+        interval(CODE, 1..2)
+        interval(MARKDOWN, 3..3)
       }
       intervalListenerCall(1) {
         before {
           interval(MARKDOWN, 1..2)
         }
         after {
-          interval(CODE, 1..1)
-          interval(MARKDOWN, 2..2)
+          interval(CODE, 1..2)
+          interval(MARKDOWN, 3..3)
         }
       }
     }
@@ -435,20 +477,22 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   fun `test markdown merge when remove code cell`(): Unit = edt {
     fixture.openNotebookTextInEditor("""
       line 0
-      ```{r} code```<caret>
+      ```{r}<caret>
+      code
+      ```
       line 1
     """.trimIndent())
 
     assertCodeCells {
       markers {
         marker(MARKDOWN, 0,7 )
-        marker(CODE, 7, 15)
-        marker(MARKDOWN, 22, 6)
+        marker(CODE, 7, 16)
+        marker(MARKDOWN, 23, 6)
       }
       intervals {
         interval(MARKDOWN, 0..0)
-        interval(CODE, 1..1)
-        interval(MARKDOWN, 2..2)
+        interval(CODE, 1..3)
+        interval(MARKDOWN, 4..4)
       }
     }
 
@@ -456,19 +500,19 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
       fixture.performEditorAction(IdeActions.ACTION_EDITOR_DELETE_LINE)
 
       markers {
-        marker(MARKDOWN, 0,13 )
+        marker(MARKDOWN, 0, 22)
       }
       intervals {
-        interval(MARKDOWN, 0..1)
+        interval(MARKDOWN, 0..3)
       }
       intervalListenerCall(0){
         before {
           interval(MARKDOWN, 0..0)
-          interval(CODE, 1..1)
-          interval(MARKDOWN, 2..2)
+          interval(CODE, 1..3)
+          interval(MARKDOWN, 4..4)
         }
         after {
-          interval(MARKDOWN, 0..1)
+          interval(MARKDOWN, 0..3)
         }
       }
     }
