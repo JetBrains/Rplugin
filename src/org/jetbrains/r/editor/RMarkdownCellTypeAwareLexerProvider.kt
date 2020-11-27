@@ -44,15 +44,15 @@ internal enum class RMarkdownCodeMarkers(debugName: String) {
 
 /**
  * merge ```{r} to BACKTICK_WITH_LANG and ``` to BACKTICK_NO_LANG
- * ```{ should be at the start of line, otherwise it is ignored
+ * ```{ and ``` should be at the start of line, otherwise they are ignored
  */
 internal class RMarkdownMapBackticks : MergingLexerAdapterBase(MarkdownLexerAdapter()) {
   override fun getMergeFunction(): MergeFunction = mergeFunction
 
   private val mergeFunction: MergeFunction = MergeFunction { type, originalLexer ->
-    if (type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
-      val isStartOfLine = tokenStart == 0 || bufferSequence[tokenStart - 1] == '\n'
-      if (isStartOfLine && originalLexer.tokenText.startsWith("{")) {
+    val isStartOfLine = tokenStart == 0 || bufferSequence[tokenStart - 1] == '\n'
+    if (isStartOfLine && type == MarkdownTokenTypes.BACKTICK && tokenText == "```") {
+      if (originalLexer.tokenText.startsWith("{")) {
         originalLexer.advance()
         RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType
       }
@@ -94,10 +94,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
   private fun consumeMarkdown(lexer: Lexer) {
     while (lexer.tokenType != null &&
            lexer.tokenType != RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType) {
-      when (lexer.tokenType) {
-        MarkdownTokenTypes.BLOCK_QUOTE -> consumeToEndOfLine(lexer) // quoted line
-        else -> lexer.advance()
-      }
+      consumeToEndOfLine(lexer) // quoted line
     }
   }
 
@@ -112,7 +109,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
             consumeEndOfLine(lexer)
             return
           }
-          lexer.advance()
+          consumeToEndOfLine(lexer)
         }
       }
     }
@@ -130,7 +127,7 @@ internal class RMarkdownMergingLangLexer : MergingLexerAdapterBase(RMarkdownMapB
         RMarkdownCodeMarkers.BACKTICK_WITH_LANG.elementType -> {
           return false
         }
-        else -> lexer.advance()
+        else -> consumeToEndOfLine(lexer)
       }
     }
   }
