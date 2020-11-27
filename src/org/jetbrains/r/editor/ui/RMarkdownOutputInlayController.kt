@@ -271,7 +271,7 @@ interface RMarkdownNotebookOutput {
   val psiElement: PsiElement
 }
 
-class RMarkdownNotebook(editor: EditorEx) {
+class RMarkdownNotebook(editor: EditorImpl) {
   private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
 
   init {
@@ -303,7 +303,7 @@ class RMarkdownNotebook(editor: EditorEx) {
     })
   }
 
-  private fun addDocumentListener(editor: EditorEx) {
+  private fun addDocumentListener(editor: EditorImpl) {
     val project = editor.project ?: return
 
     editor.document.addDocumentListener(object: DocumentListener {
@@ -314,16 +314,16 @@ class RMarkdownNotebook(editor: EditorEx) {
           }
         }
       }
-    })
+    }, editor.disposable)
   }
 
   companion object {
-    private fun install(editor: EditorEx): RMarkdownNotebook =
+    private fun install(editor: EditorImpl): RMarkdownNotebook =
       RMarkdownNotebook(editor).also {
         key.set(editor, it)
       }
 
-    fun installIfNotExists(editor: EditorEx): RMarkdownNotebook =
+    fun installIfNotExists(editor: EditorImpl): RMarkdownNotebook =
       editor.rMarkdownNotebook ?: install(editor)
   }
 }
