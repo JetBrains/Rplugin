@@ -1,7 +1,6 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
@@ -11,9 +10,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownFile
-
-internal fun offset(document: Document, codeLines: IntRange): Int =
-  Integer.min(document.getLineEndOffset(codeLines.first), document.textLength)
 
 internal fun isRMarkdown(editor: Editor): Boolean =
   editor.psiFile is MarkdownFile

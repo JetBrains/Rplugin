@@ -2,6 +2,7 @@ package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -31,10 +32,12 @@ import java.awt.event.ComponentEvent
 class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
-  override val psiElement: PsiElement) : NotebookCellInlayController, RMarkdownNotebookOutput {
+  override val psiElement: PsiElement,
+  inlayOffset: Int
+) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
   private val notebook: RMarkdownNotebook = RMarkdownNotebook.installIfNotExists(editor)
-  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, psiElement)
+  private var inlayComponent: NotebookInlayComponent = addInlayComponent(editor, psiElement, inlayOffset)
   override var inlay: Inlay<*> = inlayComponent.inlay!!
 
   init {
@@ -118,15 +121,13 @@ class RMarkdownOutputInlayController private constructor(
   private fun resetComponent(oldComponent: NotebookInlayComponent) {
     if (Disposer.isDisposed(editor.disposable))
       return
-    inlayComponent = addInlayComponent(editor, psiElement)
+    inlayComponent = addInlayComponent(editor, psiElement, inlay.offset)
     inlay = inlayComponent.inlay!!
     registerDisposable(inlayComponent)
     oldComponent.inlay?.let { Disposer.dispose(it) }
   }
 
-  private fun addInlayComponent(editor: EditorImpl, cell: PsiElement): NotebookInlayComponent {
-    val offset = extractOffset(cell)
-
+  private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponent {
     InlayDimensions.init(editor)
     val inlayComponent = UiCustomizer.instance.createNotebookInlayComponent(cell, editor)
 
@@ -180,13 +181,14 @@ class RMarkdownOutputInlayController private constructor(
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
-          getCodeFenceEnd(editor, offset(editor.document, interval.lines))?.let{ codeEndElement ->
-            currentControllers.asSequence()
-              .filterIsInstance<RMarkdownOutputInlayController>()
-              .firstOrNull {
-                it.psiElement == codeEndElement
-              }
-            ?: RMarkdownOutputInlayController(editor, this, codeEndElement)
+          val offset = extractOffset(editor.document, interval.lines)
+          currentControllers.asSequence()
+            .filterIsInstance<RMarkdownOutputInlayController>()
+            .firstOrNull {
+              it.inlay.offset == offset
+            }
+          ?: getCodeFenceEnd(editor, offset)?.let{ codeEndElement ->
+            RMarkdownOutputInlayController(editor, this, codeEndElement, offset)
           }
         }
         NotebookCellLines.CellType.MARKDOWN,
@@ -244,6 +246,9 @@ private fun disposeComponent(component: NotebookInlayComponent) {
 
 private fun extractOffset(cell: PsiElement) =
   cell.endOffset - 1
+
+private fun extractOffset(document: Document, lines: IntRange) =
+  Integer.max(document.getLineEndOffset(lines.last) - 1, 0)
 
 private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.name)
 
