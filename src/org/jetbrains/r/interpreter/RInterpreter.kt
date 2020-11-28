@@ -12,7 +12,6 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -35,7 +34,8 @@ interface RInterpreter : RInterpreterInfo {
   val interpreterPathOnHost: String
 
   fun suggestConsoleName(workingDirectory: String): String {
-    return "[ ${FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(workingDirectory))} ]"
+    val path = Path.of(project.basePath).parent.relativize(Path.of(workingDirectory)).toString()
+    return LocalFileSystem.getInstance().extractPresentableUrl(path)
   }
 
   fun getFilePathAtHost(file: VirtualFile): String? {
