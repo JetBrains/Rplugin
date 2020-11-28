@@ -26,7 +26,7 @@ import org.jetbrains.concurrency.isPending
 import org.jetbrains.concurrency.isRejected
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
-import org.jetbrains.r.console.RConsoleManager
+import org.jetbrains.r.console.RConsoleToolWindowFactory
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -133,11 +133,17 @@ class RInterpreterPopupFactory(private val project: Project) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val groupedInterpreters = allInterpreters.groupBy { it.interpreterLocation.javaClass }
-    groupedInterpreters.forEach { (_, interpreterGroup) ->
-      group.addAll(interpreterGroup.map { SwitchToRInterpreterAction(it) })
-      group.addSeparator()
-    }
+    groupedInterpreters.forEach { (clazz, interpreterGroup) ->
+        if (clazz == RLocalInterpreterLocation::class.java) {
+          group.addSeparator(RBundle.message("interpreter.status.bar.local.interpreters.header"))
+        }
+        else {
+          group.addSeparator(RBundle.message("interpreter.status.bar.remote.interpreters.header"))
+        }
+        group.addAll(interpreterGroup.map { SwitchToRInterpreterAction(it) })
+      }
 
+    group.addSeparator()
     group.add(RInterpreterSettingsAction())
     RInterpreterSettingsProvider.getProviders().forEach {
       group.add(AddRInterpreterAction(it, allInterpreters))
