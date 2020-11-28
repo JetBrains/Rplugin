@@ -18,6 +18,7 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
+import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import icons.RIcons
 import org.jetbrains.annotations.Nls
 import org.jetbrains.concurrency.CancellablePromise
@@ -25,6 +26,7 @@ import org.jetbrains.concurrency.isPending
 import org.jetbrains.concurrency.isRejected
 import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.settings.RInterpreterSettings
@@ -39,13 +41,22 @@ class RInterpreterBarWidgetFactory : StatusBarWidgetFactory {
 
   override fun getDisplayName(): String = RBundle.message("interpreter.status.bar.display.name")
 
-  override fun isAvailable(project: Project): Boolean = true
+  override fun isAvailable(project: Project): Boolean {
+    val consoleContent = RConsoleToolWindowFactory.getRConsoleToolWindows(project)?.contentManager?.contents ?: return false
+    return consoleContent.isNotEmpty()
+  }
 
   override fun createWidget(project: Project): StatusBarWidget = RInterpreterStatusBarWidget(project)
 
   override fun disposeWidget(widget: StatusBarWidget) = Disposer.dispose(widget)
 
   override fun canBeEnabledOn(statusBar: StatusBar): Boolean = true
+
+  companion object {
+    fun updateWidget(project: Project) {
+      project.getService(StatusBarWidgetsManager::class.java).updateWidget(RInterpreterBarWidgetFactory::class.java)
+    }
+  }
 }
 
 private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, false) {

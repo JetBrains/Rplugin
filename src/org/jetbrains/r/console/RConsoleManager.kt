@@ -21,6 +21,7 @@ import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.resolvedPromise
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.configuration.RInterpreterBarWidgetFactory
 import org.jetbrains.r.interpreter.RInterpreter
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.packages.RPackageProjectManager
@@ -100,6 +101,7 @@ class RConsoleManager(private val project: Project) {
           currentConsole = findComponentOfType(event.content.component, RConsoleView::class.java)
           currentConsole?.onSelect()
         }
+        RInterpreterBarWidgetFactory.updateWidget(project)
       }
 
       override fun contentRemoved(event: ContentManagerEvent) {
@@ -107,6 +109,7 @@ class RConsoleManager(private val project: Project) {
           currentConsole = null
           RConsoleToolWindowFactory.setAvailableForRToolWindows(project, false)
         }
+        RInterpreterBarWidgetFactory.updateWidget(project)
       }
 
       override fun selectionChanged(event: ContentManagerEvent) {
