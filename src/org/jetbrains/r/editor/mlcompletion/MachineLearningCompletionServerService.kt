@@ -86,6 +86,8 @@ class MachineLearningCompletionServerService: Disposable {
                                    "--config=$LOCAL_SERVER_CONFIG_PATH",
                                    "--host=$host",
                                    "--port=$port")
+        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+        .redirectError(ProcessBuilder.Redirect.DISCARD)
         .directory(File(LOCAL_SERVER_DIRECTORY))
         .start()
     } catch (e: Exception) {
