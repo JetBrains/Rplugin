@@ -7,8 +7,10 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
+import javax.swing.Icon
 
 interface RInterpreterSettingsProvider {
   fun getLocationFromState(state: RSettings.State): RInterpreterLocation?
@@ -19,7 +21,16 @@ interface RInterpreterSettingsProvider {
 
   fun serializeLocation(location: RInterpreterLocation, serializable: RSerializableInterpreter): Boolean
 
+  @Nls
   fun getAddInterpreterActionName(): String
+
+  @Nls
+  fun getAddInterpreterWidgetActionName(): String
+
+  @Nls
+  fun getAddInterpreterWidgetActionDescription(): String
+
+  fun getAddInterpreterWidgetActionIcon(): Icon
 
   fun showAddInterpreterDialog(existingInterpreters: List<RInterpreterInfo>, onAdded: (RInterpreterInfo) -> Unit)
 

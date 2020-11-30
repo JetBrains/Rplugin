@@ -116,7 +116,7 @@ private class RInterpreterStatusBarWidget(project: Project) : EditorBasedStatusB
     }, this)
   }
 
-  override fun createPopup(context: DataContext): ListPopup? = RInterpreterPopupFactory(project).createPopup(context)
+  override fun createPopup(context: DataContext): ListPopup = RInterpreterPopupFactory(project).createPopup(context)
 
   override fun ID(): String = rInterpreterWidgetId
 
@@ -127,27 +127,23 @@ class RInterpreterPopupFactory(private val project: Project) {
 
   private val settings = RSettings.getInstance(project)
 
-  fun createPopup(context: DataContext): ListPopup? {
+  fun createPopup(context: DataContext): ListPopup {
     val group = DefaultActionGroup()
     val allInterpreters = ExecuteExpressionUtils.getSynchronously(RBundle.message("project.settings.interpreters.loading")) {
       RInterpreterUtil.suggestAllInterpreters(true)
     }
     val groupedInterpreters = allInterpreters.groupBy { it.interpreterLocation.javaClass }
-    groupedInterpreters.forEach { (clazz, interpreterGroup) ->
-        if (clazz == RLocalInterpreterLocation::class.java) {
-          group.addSeparator(RBundle.message("interpreter.status.bar.local.interpreters.header"))
-        }
-        else {
-          group.addSeparator(RBundle.message("interpreter.status.bar.remote.interpreters.header"))
-        }
+    groupedInterpreters.forEach { (_, interpreterGroup) ->
+        group.addSeparator(interpreterGroup.first().interpreterLocation.getWidgetSwitchInterpreterActionHeader())
         group.addAll(interpreterGroup.map { SwitchToRInterpreterAction(it) })
       }
 
-    group.addSeparator()
-    group.add(RInterpreterSettingsAction())
+    group.addSeparator(RBundle.message("interpreter.status.bar.add.new.header"))
     RInterpreterSettingsProvider.getProviders().forEach {
       group.add(AddRInterpreterAction(it, allInterpreters))
     }
+    group.addSeparator()
+    group.add(RInterpreterSettingsAction())
 
     val currentInterpreterLocation = settings.interpreterLocation
     return JBPopupFactory.getInstance().createActionGroupPopup(
@@ -185,7 +181,9 @@ class RInterpreterPopupFactory(private val project: Project) {
     override fun actionPerformed(e: AnActionEvent) = switchToInterpreter(interpreterInfo)
   }
 
-  private inner class RInterpreterSettingsAction : DumbAwareAction(RBundle.message("interpreter.status.bar.settings.action.name")) {
+  private inner class RInterpreterSettingsAction : DumbAwareAction(RBundle.message("interpreter.status.bar.settings.action.name"),
+                                                                   RBundle.message("interpreter.status.bar.settings.action.description"),
+                                                                   null) {
     override fun actionPerformed(e: AnActionEvent) {
       ShowSettingsUtil.getInstance().showSettingsDialog(project, RSettingsProjectConfigurable::class.java)
     }
@@ -193,7 +191,9 @@ class RInterpreterPopupFactory(private val project: Project) {
 
   private inner class AddRInterpreterAction(private val provider: RInterpreterSettingsProvider,
                                             private val allInterpreters: List<RInterpreterInfo>)
-    : DumbAwareAction(provider.getAddInterpreterActionName()) {
+    : DumbAwareAction(provider.getAddInterpreterWidgetActionName(),
+                      provider.getAddInterpreterWidgetActionDescription(),
+                      provider.getAddInterpreterWidgetActionIcon()) {
     override fun actionPerformed(e: AnActionEvent) {
       provider.showAddInterpreterDialog(allInterpreters) {
         RInterpreterSettings.setEnabledInterpreters(allInterpreters + it)
