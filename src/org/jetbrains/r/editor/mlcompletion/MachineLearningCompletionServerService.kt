@@ -17,7 +17,7 @@ class MachineLearningCompletionServerService: Disposable {
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
     private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
-    private const val RELAUNCH_TIMEOUT_MS = 20_000L
+    private const val RELAUNCH_TIMEOUT_MS = 30_000L
     private val LOCAL_SERVER_DIRECTORY = resolveWithNullable(RPluginUtil.helperPathOrNull, "python_server")
     private val LAUNCH_SERVER_COMMAND = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "dist", "./run_demo")
     private val LOCAL_SERVER_CONFIG_PATH = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "config.yml")
