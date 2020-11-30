@@ -24,7 +24,6 @@ import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.colors.EditorColors
-import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
 import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.impl.EditorImpl
@@ -37,8 +36,6 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -113,7 +110,7 @@ class RConsoleView(val rInterop: RInterop, title: String) : LanguageConsoleImpl(
     })
     executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
       override fun onCommandExecuted() {
-        workingDirectory = FileUtil.getLocationRelativeToUserHome(LocalFileSystem.getInstance().extractPresentableUrl(rInterop.workingDir))
+        workingDirectory = rInterop.workingDir
         RVisualizeTableUtil.refreshTables(project)
       }
     })
