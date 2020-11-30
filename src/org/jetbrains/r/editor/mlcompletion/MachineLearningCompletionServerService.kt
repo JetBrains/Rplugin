@@ -82,14 +82,16 @@ class MachineLearningCompletionServerService: Disposable {
       return
     }
     try {
-      localServer = ProcessBuilder(LAUNCH_SERVER_COMMAND,
+      val processBuilder = ProcessBuilder(LAUNCH_SERVER_COMMAND,
                                    "--config=$LOCAL_SERVER_CONFIG_PATH",
                                    "--host=$host",
                                    "--port=$port")
         .redirectOutput(ProcessBuilder.Redirect.DISCARD)
         .redirectError(ProcessBuilder.Redirect.DISCARD)
         .directory(File(LOCAL_SERVER_DIRECTORY))
-        .start()
+      processBuilder.environment()
+        .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
+      localServer = processBuilder.start()
     } catch (e: Exception) {
       LOG.warn("Exception has occurred in R ML Completion server thread", e)
     }
