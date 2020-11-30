@@ -4,11 +4,13 @@
 
 package org.jetbrains.r.settings
 
+import com.intellij.icons.AllIcons.Nodes.HomeFolder
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.configuration.RAddInterpreterDialog
 import org.jetbrains.r.interpreter.RInterpreterInfo
 import org.jetbrains.r.interpreter.RInterpreterLocation
 import org.jetbrains.r.interpreter.RLocalInterpreterLocation
+import javax.swing.Icon
 
 class RLocalInterpreterSettingsProvider : RInterpreterSettingsProvider {
   override fun getLocationFromState(state: RSettings.State): RInterpreterLocation? {
@@ -42,6 +44,12 @@ class RLocalInterpreterSettingsProvider : RInterpreterSettingsProvider {
   }
 
   override fun getAddInterpreterActionName() = RBundle.message("project.settings.details.step.add")
+
+  override fun getAddInterpreterWidgetActionName() = RBundle.message("interpreter.status.bar.add.local.action.name")
+
+  override fun getAddInterpreterWidgetActionDescription(): String = RBundle.message("interpreter.status.bar.add.local.action.description")
+
+  override fun getAddInterpreterWidgetActionIcon(): Icon = HomeFolder
 
   override fun showAddInterpreterDialog(existingInterpreters: List<RInterpreterInfo>, onAdded: (RInterpreterInfo) -> Unit) {
     return RAddInterpreterDialog.show(existingInterpreters, onAdded)
