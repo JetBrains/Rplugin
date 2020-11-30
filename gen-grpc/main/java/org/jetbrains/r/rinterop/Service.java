@@ -1000,7 +1000,7 @@ public final class Service {
       "st\022P\n\021shortS4ClassInfos\030\001 \003(\01325.rplugini" +
       "nterop.ShortS4ClassInfoList.ShortS4Class" +
       "Info\032D\n\020ShortS4ClassInfo\022\014\n\004name\030\001 \001(\t\022\017" +
-      "\n\007package\030\002 \001(\t\022\021\n\tisVirtual\030\003 \001(\0102\331:\n\nR" +
+      "\n\007package\030\002 \001(\t\022\021\n\tisVirtual\030\003 \001(\0102\260;\n\nR" +
       "PIService\022D\n\007getInfo\022\026.google.protobuf.E" +
       "mpty\032\037.rplugininterop.GetInfoResponse\"\000\022" +
       ">\n\006isBusy\022\026.google.protobuf.Empty\032\032.goog" +
@@ -1184,12 +1184,14 @@ public final class Service {
       "onse\022\027.rplugininterop.RObject\032\026.google.p" +
       "rotobuf.Empty\"\000\022E\n\rsetSaveOnExit\022\032.googl" +
       "e.protobuf.BoolValue\032\026.google.protobuf.E" +
-      "mpty\"\000\022\\\n\032getLoadedShortS4ClassInfos\022\026.g" +
-      "oogle.protobuf.Empty\032$.rplugininterop.Sh" +
-      "ortS4ClassInfoList\"\000\022X\n\031getS4ClassInfoBy" +
-      "ClassName\022\034.google.protobuf.StringValue\032" +
-      "\033.rplugininterop.S4ClassInfo\"\000B\034\n\030org.je" +
-      "tbrains.r.rinteropP\001b\006proto3"
+      "mpty\"\000\022U\n\024setRStudioApiEnabled\022\032.google." +
+      "protobuf.BoolValue\032\035.rplugininterop.Comm" +
+      "andOutput\"\0000\001\022\\\n\032getLoadedShortS4ClassIn" +
+      "fos\022\026.google.protobuf.Empty\032$.rpluginint" +
+      "erop.ShortS4ClassInfoList\"\000\022X\n\031getS4Clas" +
+      "sInfoByClassName\022\034.google.protobuf.Strin" +
+      "gValue\032\033.rplugininterop.S4ClassInfo\"\000B\034\n" +
+      "\030org.jetbrains.r.rinteropP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

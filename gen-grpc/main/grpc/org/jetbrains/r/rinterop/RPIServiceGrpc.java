@@ -2786,6 +2786,37 @@ public final class RPIServiceGrpc {
     return getSetSaveOnExitMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.BoolValue,
+      org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "setRStudioApiEnabled",
+      requestType = com.google.protobuf.BoolValue.class,
+      responseType = org.jetbrains.r.rinterop.CommandOutput.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.BoolValue,
+      org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.BoolValue, org.jetbrains.r.rinterop.CommandOutput> getSetRStudioApiEnabledMethod;
+    if ((getSetRStudioApiEnabledMethod = RPIServiceGrpc.getSetRStudioApiEnabledMethod) == null) {
+      synchronized (RPIServiceGrpc.class) {
+        if ((getSetRStudioApiEnabledMethod = RPIServiceGrpc.getSetRStudioApiEnabledMethod) == null) {
+          RPIServiceGrpc.getSetRStudioApiEnabledMethod = getSetRStudioApiEnabledMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.BoolValue, org.jetbrains.r.rinterop.CommandOutput>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "setRStudioApiEnabled"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.BoolValue.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  org.jetbrains.r.rinterop.CommandOutput.getDefaultInstance()))
+              .setSchemaDescriptor(new RPIServiceMethodDescriptorSupplier("setRStudioApiEnabled"))
+              .build();
+        }
+      }
+    }
+    return getSetRStudioApiEnabledMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
       org.jetbrains.r.rinterop.ShortS4ClassInfoList> getGetLoadedShortS4ClassInfosMethod;
 
@@ -3548,6 +3579,13 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void setRStudioApiEnabled(com.google.protobuf.BoolValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
+      asyncUnimplementedUnaryCall(getSetRStudioApiEnabledMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetLoadedShortS4ClassInfosMethod(), responseObserver);
@@ -4185,6 +4223,13 @@ public final class RPIServiceGrpc {
                 com.google.protobuf.BoolValue,
                 com.google.protobuf.Empty>(
                   this, METHODID_SET_SAVE_ON_EXIT)))
+          .addMethod(
+            getSetRStudioApiEnabledMethod(),
+            asyncServerStreamingCall(
+              new MethodHandlers<
+                com.google.protobuf.BoolValue,
+                org.jetbrains.r.rinterop.CommandOutput>(
+                  this, METHODID_SET_RSTUDIO_API_ENABLED)))
           .addMethod(
             getGetLoadedShortS4ClassInfosMethod(),
             asyncUnaryCall(
@@ -4958,6 +5003,14 @@ public final class RPIServiceGrpc {
 
     /**
      */
+    public void setRStudioApiEnabled(com.google.protobuf.BoolValue request,
+        io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput> responseObserver) {
+      asyncServerStreamingCall(
+          getChannel().newCall(getSetRStudioApiEnabledMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void getLoadedShortS4ClassInfos(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList> responseObserver) {
       asyncUnaryCall(
@@ -5650,6 +5703,14 @@ public final class RPIServiceGrpc {
     public com.google.protobuf.Empty setSaveOnExit(com.google.protobuf.BoolValue request) {
       return blockingUnaryCall(
           getChannel(), getSetSaveOnExitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public java.util.Iterator<org.jetbrains.r.rinterop.CommandOutput> setRStudioApiEnabled(
+        com.google.protobuf.BoolValue request) {
+      return blockingServerStreamingCall(
+          getChannel(), getSetRStudioApiEnabledMethod(), getCallOptions(), request);
     }
 
     /**
@@ -6394,8 +6455,9 @@ public final class RPIServiceGrpc {
   private static final int METHODID_CLIENT_REQUEST_FINISHED = 86;
   private static final int METHODID_R_STUDIO_API_RESPONSE = 87;
   private static final int METHODID_SET_SAVE_ON_EXIT = 88;
-  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 89;
-  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 90;
+  private static final int METHODID_SET_RSTUDIO_API_ENABLED = 89;
+  private static final int METHODID_GET_LOADED_SHORT_S4CLASS_INFOS = 90;
+  private static final int METHODID_GET_S4CLASS_INFO_BY_CLASS_NAME = 91;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -6770,6 +6832,10 @@ public final class RPIServiceGrpc {
           serviceImpl.setSaveOnExit((com.google.protobuf.BoolValue) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
+        case METHODID_SET_RSTUDIO_API_ENABLED:
+          serviceImpl.setRStudioApiEnabled((com.google.protobuf.BoolValue) request,
+              (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.CommandOutput>) responseObserver);
+          break;
         case METHODID_GET_LOADED_SHORT_S4CLASS_INFOS:
           serviceImpl.getLoadedShortS4ClassInfos((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<org.jetbrains.r.rinterop.ShortS4ClassInfoList>) responseObserver);
@@ -6928,6 +6994,7 @@ public final class RPIServiceGrpc {
               .addMethod(getClientRequestFinishedMethod())
               .addMethod(getRStudioApiResponseMethod())
               .addMethod(getSetSaveOnExitMethod())
+              .addMethod(getSetRStudioApiEnabledMethod())
               .addMethod(getGetLoadedShortS4ClassInfosMethod())
               .addMethod(getGetS4ClassInfoByClassNameMethod())
               .build();
