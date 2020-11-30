@@ -34,14 +34,7 @@ object RSessionUtils {
     }
 
     if (focus) {
-      val toolWindow = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
-      if (toolWindow != null) {
-        RConsoleToolWindowFactory.getConsoleContent(console)?.let { content ->
-          toolWindow.activate {
-            toolWindow.contentManager.setSelectedContent(content)
-          }
-        }
-      }
+      RConsoleToolWindowFactory.focusOnCurrentConsole(rInterop.project)
     }
 
     val consoleSetText = { text: String ->
