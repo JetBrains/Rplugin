@@ -263,6 +263,10 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       shouldLimitMaxHeight = false
     }
 
+    InlayStateCustomizer.EP.extensionList
+      .filter { it.isApplicableTo(output::class.java) }
+      .forEach { customizer -> customizer.customize(output) }
+
     if (UiCustomizer.instance.isResizeOutputToPreviewHeight && size.height == InlayDimensions.smallHeight) {
       deltaSize(0, InlayDimensions.previewHeight - size.height)
     }
@@ -294,7 +298,12 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       }?.also { addState(it) }
     }
     resizable = true
-    (state as NotebookInlayMultiOutput).onOutputs(inlayOutputs)
+    (state as? NotebookInlayMultiOutput)?.let { st ->
+      st.onOutputs(inlayOutputs)
+      InlayStateCustomizer.EP.extensionList
+        .filter { it.isApplicableTo(st::class.java) }
+        .forEach { customizer -> customizer.customize(st) }
+    }
   }
 
   fun addInlayOutputs(inlayOutputs: List<InlayOutput>, cleanup: (() -> Unit)) {

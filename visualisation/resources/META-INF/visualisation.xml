@@ -30,6 +30,10 @@
     <extensionPoint qualifiedName="org.jetbrains.plugins.notebooks.notebookCellGutterController"
                     interface="org.jetbrains.plugins.notebooks.editor.NotebookCellGutterController"
                     dynamic="true"/>
+
+    <extensionPoint qualifiedName="com.intellij.datavis.inlays.components.inlayStateCustomizer"
+                    interface="org.intellij.datavis.r.inlays.components.InlayStateCustomizer"
+                    dynamic="true"/>
   </extensionPoints>
 
   <actions>
