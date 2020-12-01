@@ -33,7 +33,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
   }
 
-  private fun constructRequest(parameters: CompletionParameters) : MachineLearningCompletionHttpRequest {
+  private fun constructRequest(parameters: CompletionParameters): MachineLearningCompletionHttpRequest {
     val previousText = parameters.originalFile.text.subSequence(0, parameters.offset)
     val localTextContent = parameters.position.text
     val isInsideToken = localTextContent != CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED
@@ -49,7 +49,8 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
             request.write(GSON.toJson(requestData))
             return@connect GSON.fromJson(request.reader.readText(), MachineLearningCompletionHttpResponse::class.java)
           }
-      } catch (e: IOException) {
+      }
+      catch (e: IOException) {
         serverService.tryRelaunchServer()
         return@Callable MachineLearningCompletionHttpResponse.emptyResponse
       }
@@ -59,7 +60,8 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
   private fun <T> safeAwaitWithCheckCanceled(future: Future<T>): T? {
     try {
       return awaitWithCheckCanceled(future)
-    } catch (e: RuntimeException) {
+    }
+    catch (e: RuntimeException) {
       if (e is ProcessCanceledException) {
         throw e
       }

@@ -12,7 +12,7 @@ import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
 import java.io.File
 import java.nio.file.Paths
 
-class MachineLearningCompletionServerService: Disposable {
+class MachineLearningCompletionServerService : Disposable {
 
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
@@ -33,7 +33,7 @@ class MachineLearningCompletionServerService: Disposable {
   private var lastRelaunchInitializedTime: Long = System.currentTimeMillis()
 
   val serverAddress
-  get() = "http://${settings.state.host}:${settings.state.port}"
+    get() = "http://${settings.state.host}:${settings.state.port}"
 
   init {
     val settingsListener = object : MachineLearningCompletionSettingsChangeListener {
@@ -44,7 +44,8 @@ class MachineLearningCompletionServerService: Disposable {
         }
         if (beforeState.isEnabled && !afterState.isEnabled) {
           shutdownServer()
-        } else {
+        }
+        else {
           tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
         }
       }
@@ -83,16 +84,17 @@ class MachineLearningCompletionServerService: Disposable {
     }
     try {
       val processBuilder = ProcessBuilder(LAUNCH_SERVER_COMMAND,
-                                   "--config=$LOCAL_SERVER_CONFIG_PATH",
-                                   "--host=$host",
-                                   "--port=$port")
+                                          "--config=$LOCAL_SERVER_CONFIG_PATH",
+                                          "--host=$host",
+                                          "--port=$port")
         .redirectOutput(ProcessBuilder.Redirect.DISCARD)
         .redirectError(ProcessBuilder.Redirect.DISCARD)
         .directory(File(LOCAL_SERVER_DIRECTORY))
       processBuilder.environment()
         .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
       localServer = processBuilder.start()
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       LOG.warn("Exception has occurred in R ML Completion server thread", e)
     }
   }
