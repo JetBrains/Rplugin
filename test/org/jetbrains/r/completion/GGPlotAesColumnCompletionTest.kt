@@ -79,6 +79,30 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
                          expected = listOf("yyyy_aa", "yyyy_ab"))
   }
 
+  fun testSeveralVariables() {
+    checkCompletionDplyr(
+      """
+        my_table <- tibble(custom_column_1 = norm(10), custom_column_2 = norm(10))
+        a <- ggplot(my_table, aes(custom_column_1, custom_column_1))
+        b <- a
+        b + facet_grid(cols = vars(custom_c<caret>))
+      """.trimIndent(),
+                         initial = emptyList(),
+                         expected = listOf("custom_column_1", "custom_column_2"))
+  }
+
+  fun testVariableResolvedToOperation() {
+    checkCompletionDplyr(
+      """
+        my_table <- tibble(custom_column_1 = norm(10), custom_column_2 = norm(10))
+        a <- ggplot(my_table, aes(custom_column_1, custom_column_1))
+        b <- a + geom_point()
+        b + facet_grid(cols = vars(custom_c<caret>))
+      """.trimIndent(),
+      initial = emptyList(),
+      expected = listOf("custom_column_1", "custom_column_2"))
+  }
+
   fun testInQplot() {
     checkCompletionDplyr(
       """
@@ -127,8 +151,11 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
     myFixture.configureByText("a.R", text)
     myFixture.file.addRuntimeInfo(RConsoleRuntimeInfoImpl(rInterop))
     val result = myFixture.completeBasic()
-    TestCase.assertNotNull(result)
     val lookupStrings = result.map { it.lookupString }.filter { it != "table" }
-    TestCase.assertEquals(expected, lookupStrings)
+    for (expectedItem in expected) {
+      if (expectedItem !in lookupStrings) {
+        TestCase.fail("Element ${expectedItem} missing")
+      }
+    }
   }
 }

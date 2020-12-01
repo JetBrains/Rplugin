@@ -5,14 +5,13 @@ import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
 import com.intellij.util.Processor
 import org.jetbrains.r.console.runtimeInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
-import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.TableColumnInfo
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
+import org.jetbrains.r.psi.references.RResolveUtil
 
 class RGgplotTableContextManager : RTableContextManager {
   override fun processColumnsInContext(context: PsiElement, processor: Processor<TableColumnInfo>): Boolean {
@@ -21,44 +20,69 @@ class RGgplotTableContextManager : RTableContextManager {
     }
 
     val call = PsiTreeUtil.getParentOfType(context, RCallExpression::class.java, false) ?: return true
-    if (call.isFunctionFromLibrarySoft("qplot", "ggplot2")) {
-      // handle qplot(x = cty, y = hwy, data = mpg, geom = "point")
-      return processColumnsFromDataArgument(call, processor)
-    }
-
-    val ggplotCall = (if (call.parent is RNamedArgument) call.parent.parent.parent else call.parent.parent) as? RCallExpression
-    if (ggplotCall != null && ggplotCall.isFunctionFromLibrarySoft("ggplot", "ggplot2")) {
-      // handle ggplot(data, aes(<caret>)) case
-      return processColumnsFromDataArgument(ggplotCall, processor)
-    }
-    else  {
-      // handle ggplot(data, aes(P1, P2)) + geom_point(aes(<caret>), size=2)
-      return processPlusOperator(call, processor)
-    }
+    return processElement(call, processor)
   }
 
-  private fun processPlusOperator(aesCall: RCallExpression, processor: Processor<TableColumnInfo>): Boolean {
-    var parent = aesCall.parent
-    var operator: ROperatorExpression? = null
-    while (parent != null && parent !is RFile && parent !is RFunctionExpression) {
-      if (parent is ROperatorExpression && parent.operator.elementType == RElementTypes.R_PLUSMINUS_OPERATOR) operator = parent
-      parent = parent.parent
-    }
-    if (operator is ROperatorExpression) {
-      while (operator?.leftExpr is ROperatorExpression) {
-        operator = operator.leftExpr as? ROperatorExpression
-      }
-      val left = operator?.leftExpr
-      if (left is RCallExpression && left.expression.text == "ggplot") {
-        return processColumnsFromDataArgument(left, processor)
-      } else {
-        val runtimeInfo = aesCall.containingFile.originalFile.runtimeInfo ?: return true
-        val loadTableColumns = runtimeInfo.loadTableColumns(left?.text.toString() + "$" + "data")
-        for (column in loadTableColumns.columns) {
-          if (!processor.process(column)) {
-            return false
-          }
+  private fun isGgplotDefineCall(expression: RCallExpression) = expression.isFunctionFromLibrarySoft("qplot|ggplot", "ggplot2")
+
+  /**
+   * Looks element that defines the table ggplot working on. And processes the columns of the table
+   */
+  private fun processElement(element: PsiElement, processor: Processor<TableColumnInfo>): Boolean {
+    var currentElement: PsiElement? = element
+    while (currentElement != null && currentElement !is RFunctionExpression) {
+      if (currentElement is RCallExpression) {
+        if (isGgplotDefineCall(currentElement)) {
+          // handle qplot(x = cty, y = hwy, data = mpg, geom = "point") or ggplot(mpg, aes(cty, hwy))
+          return processColumnsFromDataArgument(currentElement, processor)
         }
+      } else if (currentElement is ROperatorExpression && currentElement.isBinary && currentElement.operator?.name == "+") {
+        return processPlusOperator(currentElement, processor)
+      } else if (currentElement is RIdentifierExpression) {
+        return processGgplotVariable(currentElement, processor)
+      }
+      currentElement = currentElement.parent
+    }
+    return true
+  }
+
+  /**
+   * Processes ggplot plus operation in order to find the table
+   */
+  private fun processPlusOperator(operator: ROperatorExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val left = operator.leftExpr
+    if (left != null) {
+      return processElement(left, processor)
+    }
+    return true
+  }
+
+  /**
+   * Processes columns of the defined by variable
+   */
+  private fun processGgplotVariable(variable: RIdentifierExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val precedingModification = RResolveUtil.findPrecedingInstruction(variable) { element: PsiElement ->
+      if (element is RAssignmentStatement && element.name == variable.name) {
+        return@findPrecedingInstruction element.assignedValue
+      }
+      return@findPrecedingInstruction null
+    }
+    if (precedingModification is RExpression) {
+      return processElement(precedingModification, processor)
+    }
+
+    return processElementByConsole(variable, processor)
+  }
+
+  /**
+   * Retrieves columns of the variable from the console
+   */
+  private fun processElementByConsole(variable: RIdentifierExpression, processor: Processor<TableColumnInfo>): Boolean {
+    val runtimeInfo = variable.containingFile.originalFile.runtimeInfo ?: return true
+    val loadTableColumns = runtimeInfo.loadTableColumns(variable.name + "$" + "data")
+    for (column in loadTableColumns.columns) {
+      if (!processor.process(column)) {
+        return false
       }
     }
     return true
