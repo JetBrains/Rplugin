@@ -112,6 +112,7 @@ val GGPLOT_COLUMN_ARGUMENTS = mapOf(
   "facet_grid" to emptyList(),
   "facet_wrap" to emptyList(),
   "qplot" to listOf("x", "y"),
+  "vars" to emptyList()
 )
 
 class MethodTakingColumnsFilter : ElementFilter {

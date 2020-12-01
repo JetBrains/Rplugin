@@ -114,6 +114,18 @@ class GGPlotAesColumnCompletionTest : RInterpreterBaseTestCase() {
     )
   }
 
+  fun testInVar() {
+    checkCompletionDplyr(
+      """
+      my_table <- tibble(custom_column_1 = norm(10), custom_column_2 = norm(10))
+      t <- ggplot(my_table, aes(custom_column_1, custom_column_1)) + geom_point()
+      t + facet_grid(cols = vars(custom<caret>))
+      """.trimIndent(),
+      listOf("custom_column_1", "custom_column_2"),
+      listOf()
+    )
+  }
+
   private fun checkCompletionDataTable(text: String,
                                         expected: List<String> = emptyList(),
                                         initial: List<String>? = null,
