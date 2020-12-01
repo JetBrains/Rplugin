@@ -21,6 +21,7 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
   override fun setUp() {
     super.setUp()
     rInterop.asyncEventsStartProcessing()
+    rInterop.rStudioApiEnabled = true
   }
 
   fun testBasic_getSourceEditorContext() {

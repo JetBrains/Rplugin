@@ -24,7 +24,6 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.ConcurrencyUtil
@@ -397,7 +396,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
     setLastValue: Boolean = false, isSource: Boolean = false,
     outputConsumer: ((String, ProcessOutputType) -> Unit)? = null):
     CancellablePromise<RIExecutionResult> {
-    rStudioApiEnabled = Registry.`is`("r.rstudioapi.enable")
     val request = ExecuteCodeRequest.newBuilder()
       .setCode(code)
       .setSourceFileId(sourceFileId)

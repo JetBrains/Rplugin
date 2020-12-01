@@ -26,6 +26,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
   private val loadWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.load.workspace.checkbox"))
   private val saveWorkspaceCheckBox = JCheckBox(RBundle.message("project.settings.save.workspace.checkbox"))
   private val disableRprofileCheckbox = JCheckBox(RBundle.message("project.settings.disable.rprofile.checkbox"))
+  private val rStudioApiEnabledCheckbox = JCheckBox(RBundle.message("project.settings.enable.rstudioapi.checkbox"))
   private val component: JComponent
   private val extensionConfigurables = RInterpreterSettingsProvider.getProviders().mapNotNull { it.createSettingsConfigurable(project) }
 
@@ -35,6 +36,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       row { component(loadWorkspaceCheckBox) }
       row { component(saveWorkspaceCheckBox) }
       row { component(disableRprofileCheckbox) }
+      row { component(rStudioApiEnabledCheckbox) }
       extensionConfigurables
         .mapNotNull { it.createComponent() }
         .forEach { newComponent ->
@@ -48,6 +50,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
            loadWorkspaceCheckBox.isSelected != settings.loadWorkspace ||
            saveWorkspaceCheckBox.isSelected != settings.saveWorkspace ||
            disableRprofileCheckbox.isSelected != settings.disableRprofile ||
+           rStudioApiEnabledCheckbox.isSelected != settings.rStudioApiEnabled ||
            extensionConfigurables.any { it.isModified }
   }
 
@@ -67,6 +70,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     loadWorkspaceCheckBox.isSelected = settings.loadWorkspace
     saveWorkspaceCheckBox.isSelected = settings.saveWorkspace
     disableRprofileCheckbox.isSelected = settings.disableRprofile
+    rStudioApiEnabledCheckbox.isSelected = settings.rStudioApiEnabled
   }
 
   override fun apply() {
@@ -84,6 +88,10 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
       onSaveWorkspaceChanged()
     }
     settings.disableRprofile = disableRprofileCheckbox.isSelected
+    if (settings.rStudioApiEnabled != rStudioApiEnabledCheckbox.isSelected) {
+      settings.rStudioApiEnabled = rStudioApiEnabledCheckbox.isSelected
+      onRStudioApiEnabledChanged()
+    }
     reset()
   }
 
@@ -95,6 +103,13 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     if (project.isDefault) return
     RConsoleManager.getInstance(project).consoles.forEach {
       it.rInterop.saveOnExit = settings.saveWorkspace
+    }
+  }
+
+  private fun onRStudioApiEnabledChanged() {
+    if (project.isDefault) return
+    RConsoleManager.getInstance(project).consoles.forEach {
+      it.rInterop.rStudioApiEnabled = settings.rStudioApiEnabled
     }
   }
 
