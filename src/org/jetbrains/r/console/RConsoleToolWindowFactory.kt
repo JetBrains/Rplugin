@@ -13,9 +13,11 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -37,7 +39,9 @@ import org.jetbrains.r.actions.RActionUtil
 import org.jetbrains.r.configuration.RSettingsProjectConfigurable
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterManagerImpl
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.rendering.toolwindow.RToolWindowFactory
+import org.jetbrains.r.settings.RSettings
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.SwingConstants
 
@@ -53,6 +57,16 @@ class RConsoleToolWindowFactory : ToolWindowFactory, DumbAware {
       override fun stateChanged() {
         val visible = toolWindow.isVisible
         if (!previousVisibility.get() && visible) {
+          if (RSettings.getInstance(project).interpreterLocation == null) {
+            ProgressManager.getInstance().runProcessWithProgressSynchronously( {
+              RInterpreterUtil.suggestAllInterpreters(true, true).firstOrNull()?.let { interpreterInfo ->
+                invokeAndWaitIfNeeded {
+                  if (project.isDisposed) return@invokeAndWaitIfNeeded
+                  RSettings.getInstance(project).interpreterLocation = interpreterInfo.interpreterLocation
+                }
+              }
+            }, RBundle.message("console.starting.label.text"), false, project)
+          }
           tryAddContent(toolWindow, project)
         }
         previousVisibility.set(visible)
