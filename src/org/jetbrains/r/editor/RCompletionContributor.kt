@@ -320,6 +320,7 @@ class RCompletionContributor : CompletionContributor() {
 
       val mainCall = (if (parent is RNamedArgument) parent.parent.parent else parent.parent) as? RCallExpression ?: return
       val shownNames = HashSet<String>()
+      shownNames.add("...")
 
       val declarations = RPsiUtil.resolveCall(mainCall)
       for (functionDeclaration in declarations) {
