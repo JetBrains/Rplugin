@@ -50,7 +50,7 @@ object RSkeletonUtil {
 
   private val RAM_SIZE_HELPER by lazy { RPluginUtil.findFileInRHelpers("R/ram_size.R") }
 
-  private val LOG = Logger.getInstance("#" + RSkeletonUtil::class.java.name)
+  private val LOG = Logger.getInstance(RSkeletonUtil::class.java)
 
   fun checkVersion(skeletonsDirectoryPath: String) {
     val skeletonsDirectory = File(skeletonsDirectoryPath)

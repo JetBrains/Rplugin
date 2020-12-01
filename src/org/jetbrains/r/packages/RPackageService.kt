@@ -31,7 +31,7 @@ class RPackageService : PersistentStateComponent<RPackageService> {
   }
 
   companion object {
-    val LOG = Logger.getInstance("#" + RPackageService::class.java.name)
+    val LOG = Logger.getInstance(RPackageService::class.java)
 
     fun getInstance(project: Project): RPackageService {
       return project.getService(RPackageService::class.java)
