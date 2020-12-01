@@ -729,7 +729,6 @@ You can find the source code in the following repositories:
         <registryKey defaultValue="120000" key="r.interpreter.defaultTimeout" description="Default timeout for R interpreter operations"/>
         <registryKey defaultValue="30000" key="r.interpreter.initializedTimeout" description="Timeout for initializing Rwrapper"/>
         <registryKey defaultValue="true" key="r.interpreter.useOutputInlays" description="Use new implementation for output inlays"/>
-        <registryKey defaultValue="false" key="r.rstudioapi.enable" description="Use RStudio API implementation (experimental)"/>
 
         <!-- Interpreter -->
         <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>

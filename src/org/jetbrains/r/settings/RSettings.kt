@@ -53,6 +53,12 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
       state.disableRprofile  = value
     }
 
+  var rStudioApiEnabled: Boolean
+    get() = state.rStudioApiEnabled
+    set(value) {
+      state.rStudioApiEnabled  = value
+    }
+
   fun addInterpreterLocationListener(listener: RInterpreterLocationListener, parentDisposable: Disposable? = null) {
     interpreterLocationListeners.add(listener)
     if (parentDisposable != null) {
@@ -82,6 +88,7 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
     var loadWorkspace by property(false)
     var saveWorkspace by property(false)
     var disableRprofile by property(false)
+    var rStudioApiEnabled by property(false)
     var packageBuildSettingsState by property<RPackageBuildSettings.State>()
 
     fun setNoInterpreter() {
