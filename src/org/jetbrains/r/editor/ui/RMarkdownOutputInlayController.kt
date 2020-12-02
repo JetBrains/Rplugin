@@ -291,7 +291,7 @@ interface RMarkdownNotebookOutput {
 
 class RMarkdownNotebook(editor: EditorImpl) {
   private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
-  private val viewportQueue = editor.project?.let { MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, it) }
+  private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, editor.disposable)
 
   init {
     addResizeListener(editor)
@@ -339,7 +339,7 @@ class RMarkdownNotebook(editor: EditorImpl) {
 
   private fun addViewportListener(editor: EditorImpl) {
     editor.scrollPane.viewport.addChangeListener{
-      viewportQueue?.queue(object: Update(VIEWPORT_TASK_IDENTITY) {
+      viewportQueue.queue(object: Update(VIEWPORT_TASK_IDENTITY) {
         override fun run() =
           updateInlaysForViewport(editor)
       })
