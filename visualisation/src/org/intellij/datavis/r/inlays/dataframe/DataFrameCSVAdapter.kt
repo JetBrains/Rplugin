@@ -132,6 +132,11 @@ class DataFrameCSVAdapter {
         previous = i + 1
 
         if (data[i] == '\n') {
+          // fill last columns if data not exists (even for incorrect csv file all columns should contain same count of elements)
+          while (column + 1 < columnsInfo.size) {
+            column++
+            columnsInfo[column].type!!.appendToDataArray(columns[column], "")
+          }
           column = 0
         }
         else {
