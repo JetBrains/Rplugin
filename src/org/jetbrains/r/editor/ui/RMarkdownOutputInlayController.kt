@@ -17,6 +17,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.refactoring.suggested.endOffset
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
@@ -166,6 +168,15 @@ class RMarkdownOutputInlayController private constructor(
     inlayComponent.updateComponentBounds(inlayComponent.inlay!!)
   }
 
+  override fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange) {
+    if (Disposer.isDisposed(inlay))
+      return
+
+    val bounds = inlayComponent.bounds
+    val isInViewport = bounds.y <= viewportRange.last && bounds.y + bounds.height >= viewportRange.first
+    inlayComponent.onViewportChange(isInViewport)
+  }
+
   class Factory : NotebookCellInlayController.Factory {
     override fun compute(editor: EditorImpl,
                          currentControllers: Collection<NotebookCellInlayController>,
@@ -271,6 +282,8 @@ interface RMarkdownNotebookOutput {
 
   fun onPsiDocumentCommitted()
 
+  fun onUpdateViewport(viewportRange: IntRange, expansionRange: IntRange)
+
   fun setWidth(width: Int)
 
   val psiElement: PsiElement
@@ -278,10 +291,12 @@ interface RMarkdownNotebookOutput {
 
 class RMarkdownNotebook(editor: EditorImpl) {
   private val outputs: MutableMap<PsiElement, RMarkdownNotebookOutput> = LinkedHashMap()
+  private val viewportQueue = editor.project?.let { MergingUpdateQueue(VIEWPORT_TASK_NAME, VIEWPORT_TIME_SPAN, true, null, it) }
 
   init {
     addResizeListener(editor)
     addDocumentListener(editor)
+    addViewportListener(editor)
   }
 
   operator fun get(cell: PsiElement): RMarkdownNotebookOutput? = outputs[cell]
@@ -322,7 +337,31 @@ class RMarkdownNotebook(editor: EditorImpl) {
     }, editor.disposable)
   }
 
+  private fun addViewportListener(editor: EditorImpl) {
+    editor.scrollPane.viewport.addChangeListener{
+      viewportQueue?.queue(object: Update(VIEWPORT_TASK_IDENTITY) {
+        override fun run() =
+          updateInlaysForViewport(editor)
+      })
+    }
+  }
+
+  private fun updateInlaysForViewport(editor: EditorImpl) {
+    invokeLater {
+      if (Disposer.isDisposed(editor.disposable)) return@invokeLater
+      val viewportRange = calculateViewportRange(editor)
+      val expansionRange = calculateInlayExpansionRange(editor, viewportRange)
+      outputs.values.forEach {
+        it.onUpdateViewport(viewportRange, expansionRange)
+      }
+    }
+  }
+
   companion object {
+    private const val VIEWPORT_TASK_NAME = "On viewport change"
+    private const val VIEWPORT_TASK_IDENTITY = "On viewport change task"
+    private const val VIEWPORT_TIME_SPAN = 50
+
     private fun install(editor: EditorImpl): RMarkdownNotebook =
       RMarkdownNotebook(editor).also {
         key.set(editor, it)
