@@ -66,4 +66,10 @@ public interface InitOrBuilder extends
    */
   com.google.protobuf.ByteString
       getHttpUserAgentBytes();
+
+  /**
+   * <code>bool enableRStudioApi = 7;</code>
+   * @return The enableRStudioApi.
+   */
+  boolean getEnableRStudioApi();
 }
