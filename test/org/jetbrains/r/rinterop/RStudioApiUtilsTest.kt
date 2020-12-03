@@ -14,10 +14,10 @@ import org.jetbrains.r.console.jobs.RJobDescriptor
 import org.jetbrains.r.console.jobs.RJobRunner
 import org.jetbrains.r.console.jobs.RJobRunner.Listener
 import org.jetbrains.r.rinterop.rstudioapi.RSessionUtils
-import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
-import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection
 import org.jetbrains.r.rinterop.rstudioapi.RStudioAPISourceMarkerInspection.RStudioAPIMarker
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRBoolean
+import org.jetbrains.r.rinterop.rstudioapi.RStudioApiUtils.toRString
 import kotlin.streams.toList
 
 class RStudioApiUtilsTest : RConsoleBaseTestCase() {
@@ -25,7 +25,6 @@ class RStudioApiUtilsTest : RConsoleBaseTestCase() {
   override fun setUp() {
     super.setUp()
     rInterop.asyncEventsStartProcessing()
-    rInterop.rStudioApiEnabled = true
   }
 
   fun testBasic_getSourceEditorContext() {
