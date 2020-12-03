@@ -6,7 +6,9 @@ package org.jetbrains.r.configuration
 
 import com.intellij.openapi.options.UnnamedConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.layout.*
+import org.jetbrains.concurrency.runAsync
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.execution.ExecuteExpressionUtils.getSynchronously
@@ -90,7 +92,7 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     settings.disableRprofile = disableRprofileCheckbox.isSelected
     if (settings.rStudioApiEnabled != rStudioApiEnabledCheckbox.isSelected) {
       settings.rStudioApiEnabled = rStudioApiEnabledCheckbox.isSelected
-      onRStudioApiEnabledChanged()
+      onRStudioApiEnabledChanged(rStudioApiEnabledCheckbox.isSelected)
     }
     reset()
   }
@@ -106,10 +108,13 @@ class RSettingsConfigurable(private val project: Project) : UnnamedConfigurable 
     }
   }
 
-  private fun onRStudioApiEnabledChanged() {
+  private fun onRStudioApiEnabledChanged(value: Boolean) {
     if (project.isDefault) return
-    RConsoleManager.getInstance(project).consoles.forEach {
-      it.rInterop.rStudioApiEnabled = settings.rStudioApiEnabled
+    RConsoleManager.getInstance(project).consoles.forEach { rConsoleView ->
+      runAsync {
+        if (Disposer.isDisposed(rConsoleView)) return@runAsync
+        rConsoleView.rInterop.setRStudioApiEnabled(value)
+      }
     }
   }
 
