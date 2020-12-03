@@ -205,15 +205,6 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
         saveOnExitValue = value
       }
     }
-  private var rStudioApiEnabledValue = false
-  var rStudioApiEnabled: Boolean
-    get() = rStudioApiEnabledValue
-    set(value) {
-      if (rStudioApiEnabledValue != value) {
-        executeRequestAsync(RPIServiceGrpc.getSetRStudioApiEnabledMethod(), BoolValue.of(value))
-        rStudioApiEnabledValue = value
-      }
-    }
 
   init {
     processAsyncEvents()
@@ -240,6 +231,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       }
       initRequest.setWorkspaceFile(it).setLoadWorkspace(loadWorkspace).setSaveOnExit(saveOnExit)
     }
+    initRequest.enableRStudioApi = RSettings.getInstance(project).rStudioApiEnabled
     initRequest.setRScriptsPath(rScriptsPath).projectDir = baseDir
     initRequest.httpUserAgent = "Rkernel/" + (ApplicationInfo.getInstance()?.build?.asStringWithoutProductCode() ?: "IntelliJ")
 
@@ -921,6 +913,10 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
 
   fun getObjectSizes(refs: List<RReference>): List<Long> {
     return execute(asyncStub::getObjectSizes, RRefList.newBuilder().addAllRefs(refs.map { it.proto }).build()).listList
+  }
+
+  fun setRStudioApiEnabled(isEnabled: Boolean) {
+    executeRequestAsync(RPIServiceGrpc.getSetRStudioApiEnabledMethod(), BoolValue.of(isEnabled))
   }
 
   private fun <TRequest : GeneratedMessageV3> executeRequest(
