@@ -134,6 +134,27 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
   }
 
   @Test
+  fun `code cell with newline at the end of file`(): Unit = edt{
+    fixture.openNotebookTextInEditor("""
+      ```{r}
+      code
+      ```
+      
+    """.trimIndent())
+
+    assertCodeCells {
+      markers {
+        marker(CODE, 0 ,16)
+        // incorrect behaviour, another MARKDOWN should be at the end
+      }
+      intervals {
+        interval(CODE, 0..3)
+        // incorrect behaviour, should be CODE 0..2, MARKDOWN 3..3
+      }
+    }
+  }
+
+  @Test
   fun `rmd notebook header`(): Unit = edt{
     fixture.openNotebookTextInEditor("""
       ---
