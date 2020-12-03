@@ -1,0 +1,9 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="false">
+  <name>R Language for IntelliJ (DS)</name>
+  <vendor>JetBrains</vendor>
+  <id>R4IntellijDS</id>
+  <depends>org.intellij.datavis.r.inlays.visualisation</depends>
+  <xi:include href="/META-INF/rplugin-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <depends optional="true" config-file="rplugin-python.xml">com.intellij.modules.python</depends>
+  <depends optional="true" config-file="rplugin-remote.xml">org.jetbrains.plugins.remote-run</depends>
+</idea-plugin>

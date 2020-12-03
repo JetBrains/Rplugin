@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/resources-ds">
+      <sourceFolder url="file://$MODULE_DIR$/resources-ds" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="intellij.visualisation.ds" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.r" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.r.python" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.r.ultimate" scope="RUNTIME" />
+  </component>
+</module>

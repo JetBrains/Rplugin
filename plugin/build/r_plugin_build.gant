@@ -1,0 +1,25 @@
+import org.jetbrains.intellij.build.BuildTasks
+import org.jetbrains.intellij.build.BuildOptions
+import org.jetbrains.intellij.build.BuildContext
+import org.jetbrains.intellij.build.ProductProperties
+import org.jetbrains.intellij.build.ProprietaryBuildTools
+import org.jetbrains.intellij.build.impl.BuildUtils
+import org.jetbrains.jps.idea.IdeaProjectLoader
+
+target("default": "Build R Plugin") {
+  try {
+    def options = new BuildOptions()
+    String home = new File(IdeaProjectLoader.guessHome(this)).parentFile.absolutePath
+    String signJarPath = "$home/build/lib/jet-sign.jar"
+    BuildUtils.addUltimateBuildScriptsToClassPath(home, binding.ant)
+    ProprietaryBuildTools tools = (ProprietaryBuildTools) Class.forName("org.jetbrains.intellij.build.JetBrainsBuildTools").getMethod("create", String.class).invoke(null, signJarPath)
+    ProductProperties properties = (ProductProperties) Class.forName("org.jetbrains.intellij.build.IdeaUltimateProperties").getConstructor(String.class).newInstance(home)
+
+    def buildContext = BuildContext.createContext("$home/community", home, properties, tools, options)
+    BuildTasks.create(buildContext).buildNonBundledPlugins(["intellij.r.plugin"])
+  }
+  catch (Exception e) {
+    e.printStackTrace()
+    throw e
+  }
+}
