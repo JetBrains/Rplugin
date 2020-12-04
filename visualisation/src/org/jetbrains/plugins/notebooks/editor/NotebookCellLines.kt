@@ -18,6 +18,10 @@ import com.intellij.util.containers.addIfNotNull
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.Interval
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.IntervalListener
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.Marker
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
@@ -33,11 +37,7 @@ import kotlin.math.min
  * We haven't decided which model is correct and which should be fixed. So, for now avoid using stem cells in tests,
  * while UI of PyCharm DS doesn't allow to create a stem cell at all.
  */
-class NotebookCellLines private constructor(private val document: Document,
-                                            private val cellTypeAwareLexerProvider: NotebookCellTypeAwareLexerProvider) {
-  private val markerCache = mutableListOf<Marker>()
-  private val intervalCache = mutableListOf<Interval>()
-
+interface NotebookCellLines{
   enum class CellType {
     CODE, MARKDOWN, RAW
   }
@@ -81,17 +81,43 @@ class NotebookCellLines private constructor(private val document: Document,
     fun segmentChanged(oldIntervals: List<Interval>, newIntervals: List<Interval>)
   }
 
-  val intervalListeners = EventDispatcher.create(IntervalListener::class.java)
+  fun getIterator(interval: Interval): ListIterator<Interval>
 
-  var modificationStamp: Long = 0
+  fun markersIterator(startOffset: Int = 0): ListIterator<Marker>
+
+  fun intervalsIterator(startLine: Int = 0): ListIterator<Interval>
+
+  val intervalListeners: EventDispatcher<IntervalListener>
+
+  val modificationStamp: Long
+
+  companion object {
+    fun get(editor: Editor): NotebookCellLines {
+      return JupyterNotebookCellLines.get(editor)
+    }
+
+    /** It's uneasy to change a registry value inside tests. */   // TODO Lies! See SshX11ForwardingTest.
+    @TestOnly
+    var overriddenBinarySearchThreshold: Int? = null
+  }
+}
+
+class JupyterNotebookCellLines private constructor(private val document: Document,
+                                                   private val cellTypeAwareLexerProvider: NotebookCellTypeAwareLexerProvider): NotebookCellLines {
+  private val markerCache = mutableListOf<Marker>()
+  private val intervalCache = mutableListOf<Interval>()
+
+  override val intervalListeners = EventDispatcher.create(IntervalListener::class.java)
+
+  override var modificationStamp: Long = 0
     private set
 
-  fun markersIterator(startOffset: Int = 0): ListIterator<Marker> {
+  override fun markersIterator(startOffset: Int): ListIterator<Marker> {
     ApplicationManager.getApplication().assertReadAccessAllowed()
     return markerCache.listIterator(getMarkerUpperBound(startOffset))
   }
 
-  fun intervalsIterator(startLine: Int = 0): ListIterator<Interval> {
+  override fun intervalsIterator(startLine: Int): ListIterator<Interval> {
     ApplicationManager.getApplication().assertReadAccessAllowed()
     var fromIndex =
       if (intervalCache.size < BINARY_SEARCH_THRESHOLD) 0
@@ -105,7 +131,7 @@ class NotebookCellLines private constructor(private val document: Document,
     return intervalCache.listIterator(fromIndex)
   }
 
-  fun getIterator(interval: Interval): ListIterator<Interval> {
+  override fun getIterator(interval: Interval): ListIterator<Interval> {
     check(interval == intervalCache[interval.ordinal])
     return intervalCache.listIterator(interval.ordinal)
   }
@@ -468,17 +494,13 @@ class NotebookCellLines private constructor(private val document: Document,
     }
 
   companion object {
-    private val LOG = logger<NotebookCellLines>()
+    private val LOG = logger<JupyterNotebookCellLines>()
     private val map = ContainerUtil.createConcurrentWeakMap<Document, Promise<NotebookCellLines>>()
-
-    /** It's uneasy to change a registry value inside tests. */   // TODO Lies! See SshX11ForwardingTest.
-    @TestOnly
-    var overriddenBinarySearchThreshold: Int? = null
 
     // TODO Maybe get rid of the linear or binary search? It looks like an over-optimization.
     private val BINARY_SEARCH_THRESHOLD: Int
       get() =
-        overriddenBinarySearchThreshold
+        NotebookCellLines.overriddenBinarySearchThreshold
         ?: Registry.intValue("pycharm.ds.notebook.editor.ui.binary.search.threshold")
 
 
@@ -486,7 +508,7 @@ class NotebookCellLines private constructor(private val document: Document,
       val lexerProvider = NotebookCellTypeAwareLexerProvider.forLanguage(language)
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
-                          ?: promise.also { NotebookCellLines(document, lexerProvider).initialize(it) }
+                          ?: promise.also { JupyterNotebookCellLines(document, lexerProvider).initialize(it) }
       return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
     }
 
