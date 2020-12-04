@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.lang.Language
+import com.intellij.lexer.Lexer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Attachment
@@ -12,6 +13,7 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.tree.IElementType
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.addIfNotNull
@@ -28,7 +30,7 @@ import kotlin.math.min
 
 
 class JupyterNotebookCellLines private constructor(private val document: Document,
-                                                   private val cellTypeAwareLexerProvider: NotebookCellTypeAwareLexerProvider): NotebookCellLines {
+                                                   private val cellTypeAwareLexerProvider: LexerProvider): NotebookCellLines {
   private val markerCache = mutableListOf<Marker>()
   private val intervalCache = mutableListOf<Interval>()
 
@@ -429,8 +431,10 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
         ?: Registry.intValue("pycharm.ds.notebook.editor.ui.binary.search.threshold")
 
 
-    fun get(document: Document, language: Language): NotebookCellLines {
-      val lexerProvider = NotebookCellTypeAwareLexerProvider.forLanguage(language)
+    fun get(document: Document, language: Language): NotebookCellLines =
+      get(document, NotebookCellTypeAwareLexerProvider.forLanguage(language))
+
+    fun get(document: Document, lexerProvider: LexerProvider): NotebookCellLines {
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
                           ?: promise.also { JupyterNotebookCellLines(document, lexerProvider).initialize(it) }
@@ -443,6 +447,16 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
       val psiFile = psiDocumentManager.getPsiFile(document) ?: error("document ${document} doesn't have PSI file")
       return get(document, psiFile.language)
     }
+  }
+
+  interface LexerProvider {
+    val longestTokenLength: Int
+
+    fun createNotebookCellTypeAwareLexer(): Lexer
+
+    fun getCellType(tokenType: IElementType): CellType?
+
+    fun shouldParseWholeFile(): Boolean = false
   }
 }
 
