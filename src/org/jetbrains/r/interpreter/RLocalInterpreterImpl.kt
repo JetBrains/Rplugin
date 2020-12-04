@@ -28,10 +28,8 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class RLocalInterpreterImpl(
-  override val interpreterLocation: RLocalInterpreterLocation,
-  versionInfo: Map<String, String>, project: Project) : RInterpreterBase(versionInfo, project) {
-  val interpreterPath get() = interpreterLocation.path
+class RLocalInterpreterImpl(location: RLocalInterpreterLocation, project: Project) : RInterpreterBase(location, project) {
+  val interpreterPath = location.path
   override val basePath = project.basePath!!
   override val hostOS get() = OperatingSystem.current()
   override val interpreterPathOnHost get() = interpreterPath

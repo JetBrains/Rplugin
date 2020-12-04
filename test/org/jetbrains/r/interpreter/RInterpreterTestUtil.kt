@@ -17,8 +17,7 @@ object RInterpreterTestUtil {
   fun makeChildInterpreter(project: Project): RLocalInterpreterImpl {
     val interpreterPath = RInterpreterUtil.suggestHomePath()
     val location = RLocalInterpreterLocation(interpreterPath)
-    val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
-    return RLocalInterpreterImpl(location, versionInfo, project)
+    return RLocalInterpreterImpl(location, project)
   }
 
   fun waitForAtomic(atomic: AtomicInteger, expected: Int, timeout: Long) {

@@ -63,8 +63,7 @@ data class RLocalInterpreterLocation(val path: String): RInterpreterLocation {
     if (!RInterpreterUtil.checkInterpreterLocation(project, this)) {
       throw RuntimeException("Invalid R Interpreter")
     }
-    val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(this)
-    return RLocalInterpreterImpl(this, versionInfo, project)
+    return RLocalInterpreterImpl(this, project)
   }
 
   override fun lastModified(): Long {

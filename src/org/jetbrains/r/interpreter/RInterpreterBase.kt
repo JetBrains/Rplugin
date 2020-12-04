@@ -11,10 +11,10 @@ import com.intellij.openapi.util.Version
 import org.jetbrains.r.util.tryRegisterDisposable
 import java.nio.file.Path
 
-abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
-                                override val project: Project) : RInterpreter {
-
-  override val version: Version = buildVersion(versionInfo)
+abstract class RInterpreterBase(location: RInterpreterLocation, override val project: Project) : RInterpreter {
+  override val interpreterLocation = location
+  override val version: Version = RInterpreterUtil.getVersionByLocation(location) ?: throw RuntimeException("Invalid R interpreter")
+  private val versionInfo = RInterpreterUtil.loadInterpreterVersionInfo(location)
   override val interpreterName: String get() = versionInfo["version.string"]?.replace(' ', '_')  ?: "unnamed"
   private val fsNotifier by lazy {
     RFsNotifier(this).also { project.tryRegisterDisposable(it) }
@@ -24,14 +24,6 @@ abstract class RInterpreterBase(private val versionInfo: Map<String, String>,
   }
 
   open fun onUnsetAsProjectInterpreter() {
-  }
-
-  private fun buildVersion(versionInfo: Map<String, String>): Version {
-    val major = versionInfo["major"]?.toInt() ?: 0
-    val minorAndUpdate = versionInfo["minor"]?.split(".")
-    val minor = if (minorAndUpdate?.size == 2) minorAndUpdate[0].toInt() else 0
-    val update = if (minorAndUpdate?.size == 2) minorAndUpdate[1].toInt() else 0
-    return Version(major, minor, update)
   }
 
   override fun addFsNotifierListenerForHost(roots: List<String>, parentDisposable: Disposable, listener: (Path) -> Unit) {
