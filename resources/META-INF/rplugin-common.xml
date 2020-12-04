@@ -357,8 +357,8 @@ You can find the source code in the following repositories:
     </actions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
-        <notebookCellTypeAwareLexerProvider language="RMarkdown"
-                                            implementationClass="org.jetbrains.r.editor.RMarkdownCellTypeAwareLexerProvider"/>
+        <notebookCellLinesProvider language="RMarkdown"
+                                   implementationClass="org.jetbrains.r.editor.RMarkdownCellLinesProvider"/>
         <editor.notebookEditorAppearanceProvider implementation="org.jetbrains.r.editor.RMarkdownNotebookEditorAppearanceProvider"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownCellToolbarController$Factory"/>
         <notebookCellInlayController implementation="org.jetbrains.r.editor.ui.RMarkdownOutputInlayController$Factory"/>
