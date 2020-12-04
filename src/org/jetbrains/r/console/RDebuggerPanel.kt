@@ -48,6 +48,7 @@ import org.jetbrains.r.debugger.RXVariablesView
 import org.jetbrains.r.rinterop.RSourceFileManager
 import org.jetbrains.r.rinterop.RVar
 import org.jetbrains.r.run.debug.stack.RXStackFrame
+import org.jetbrains.r.util.tryRegisterDisposable
 import java.awt.BorderLayout
 import javax.swing.Icon
 import javax.swing.JComponent
@@ -340,7 +341,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   private fun updateStack(stack: List<RXStackFrame>) {
-    stack.forEach { Disposer.register(this, it) }
+    stack.forEach { tryRegisterDisposable(it) }
     invokeLater {
       bottomComponent?.let {
         bottomComponent = null
