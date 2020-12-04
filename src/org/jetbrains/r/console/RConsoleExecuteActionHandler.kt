@@ -360,6 +360,15 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
               RStudioApiUtils.executeCommand(rInterop, args)
               promise.setResult(RObject.getDefaultInstance())
             }
+            RStudioApiFunctionId.OPEN_PROJECT_ID -> {
+              ProjectsUtils.openProject(args)
+              promise.setResult(getRNull())
+            }
+            RStudioApiFunctionId.WRITE_PROJECT_FILE -> {
+              ProjectsUtils.writeProjectFile(args).then {
+                promise.setResult(it)
+              }.onError { promise.setError(it) }
+            }
           }
         } catch (e: Throwable) {
           promise.setError(e)

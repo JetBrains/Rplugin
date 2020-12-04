@@ -67,7 +67,9 @@ enum class RStudioApiFunctionId {
   DOCUMENT_CLOSE_ID,
   SOURCE_MARKERS_ID,
   TRANSLATE_LOCAL_URL_ID,
-  EXECUTE_COMMAND_ID;
+  EXECUTE_COMMAND_ID,
+  OPEN_PROJECT_ID,
+  WRITE_PROJECT_FILE;
 
   companion object {
     fun fromInt(a: Int): RStudioApiFunctionId? {
@@ -113,6 +115,8 @@ enum class RStudioApiFunctionId {
         38 -> SOURCE_MARKERS_ID
         39 -> TRANSLATE_LOCAL_URL_ID
         40 -> EXECUTE_COMMAND_ID
+        41 -> OPEN_PROJECT_ID
+        42 -> WRITE_PROJECT_FILE
         else -> null
       }
     }
