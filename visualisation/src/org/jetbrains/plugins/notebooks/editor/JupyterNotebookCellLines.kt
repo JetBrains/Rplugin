@@ -430,22 +430,11 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
         NotebookCellLines.overriddenBinarySearchThreshold
         ?: Registry.intValue("pycharm.ds.notebook.editor.ui.binary.search.threshold")
 
-
-    fun get(document: Document, language: Language): NotebookCellLines =
-      get(document, NotebookCellTypeAwareLexerProvider.forLanguage(language))
-
     fun get(document: Document, lexerProvider: LexerProvider): NotebookCellLines {
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
                           ?: promise.also { JupyterNotebookCellLines(document, lexerProvider).initialize(it) }
       return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
-    }
-
-    fun get(editor: Editor): NotebookCellLines {
-      val psiDocumentManager = PsiDocumentManager.getInstance(editor.project!!)
-      val document = editor.document
-      val psiFile = psiDocumentManager.getPsiFile(document) ?: error("document ${document} doesn't have PSI file")
-      return get(document, psiFile.language)
     }
   }
 

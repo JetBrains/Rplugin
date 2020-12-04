@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.EventDispatcher
 import org.jetbrains.annotations.TestOnly
 import java.util.*
@@ -71,7 +72,10 @@ interface NotebookCellLines{
 
   companion object {
     fun get(editor: Editor): NotebookCellLines {
-      return JupyterNotebookCellLines.get(editor)
+      val psiDocumentManager = PsiDocumentManager.getInstance(editor.project!!)
+      val document = editor.document
+      val psiFile = psiDocumentManager.getPsiFile(document) ?: error("document ${document} doesn't have PSI file")
+      return NotebookCellLinesProvider.forLanguage(psiFile.language).create(document)
     }
 
     /** It's uneasy to change a registry value inside tests. */   // TODO Lies! See SshX11ForwardingTest.
