@@ -5,7 +5,7 @@ import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import javax.swing.JComponent
 
-class RGraphicsSettingsDialogEx(private var resolution: Int, private var isStandalone: Boolean, private val onOk: (Int, Boolean) -> Unit) :
+class RGraphicsSettingsDialogEx(private var resolution: Int, private val onOk: (Int) -> Unit) :
   DialogWrapper(null, true)
 {
   init {
@@ -23,17 +23,12 @@ class RGraphicsSettingsDialogEx(private var resolution: Int, private var isStand
           label(DPI_TEXT)
         }
       }
-      titledRow(ENGINE_TEXT) {
-        row {
-          checkBox(STANDALONE_TEXT, self::isStandalone, STANDALONE_COMMENT)
-        }
-      }
     }
   }
 
   override fun doOKAction() {
     super.doOKAction()
-    onOk(resolution, isStandalone)
+    onOk(resolution)
   }
 
   companion object {
@@ -46,12 +41,8 @@ class RGraphicsSettingsDialogEx(private var resolution: Int, private var isStand
     private val RESOLUTION_TEXT = RBundle.message("graphics.panel.settings.dialog.resolution")
     private val DPI_TEXT = RBundle.message("graphics.panel.settings.dialog.dpi")
 
-    private val ENGINE_TEXT = RBundle.message("graphics.panel.settings.dialog.engine")
-    private val STANDALONE_TEXT = RBundle.message("graphics.panel.settings.dialog.standalone.text")
-    private val STANDALONE_COMMENT = RBundle.message("graphics.panel.settings.dialog.standalone.comment")
-
-    fun show(resolution: Int, isStandalone: Boolean, onOk: (Int, Boolean) -> Unit) {
-      RGraphicsSettingsDialogEx(resolution, isStandalone, onOk).show()
+    fun show(resolution: Int, onOk: (Int) -> Unit) {
+      RGraphicsSettingsDialogEx(resolution, onOk).show()
     }
   }
 }
