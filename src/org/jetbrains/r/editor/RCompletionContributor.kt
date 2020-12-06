@@ -9,7 +9,9 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
@@ -18,9 +20,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.RS4ClassInfo
-import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
-import org.jetbrains.r.classes.s4.RS4ClassSlot
+import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
@@ -498,22 +498,23 @@ class RCompletionContributor : CompletionContributor() {
       val runtimeInfo = file.runtimeInfo
       val loadedPackages = runtimeInfo?.loadedPackages?.keys
       val shownNames = HashSet<String>()
-      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { info ->
+      RS4ClassNameIndex.processAllS4ClassInfos(project, scope, Processor { (declaration, info) ->
         if (omitVirtual && info.isVirtual) return@Processor true
         if (nameToOmit != info.className) {
-          result.addS4ClassName(classNameExpression, info, shownNames, loadedPackages)
+          result.addS4ClassName(classNameExpression, declaration, info, shownNames, loadedPackages)
         }
         return@Processor true
       })
       runtimeInfo?.loadShortS4ClassInfos()?.forEach { info ->
         if (omitVirtual && info.isVirtual) return@forEach
         if (nameToOmit != info.className) {
-          result.addS4ClassName(classNameExpression, info, shownNames, loadedPackages)
+          result.addS4ClassName(classNameExpression, null, info, shownNames, loadedPackages)
         }
       }
     }
 
     private fun CompletionResultSet.addS4ClassName(classNameExpression: RExpression,
+                                                   classDeclaration: RCallExpression?,
                                                    classInfo: RS4ClassInfo,
                                                    shownNames: MutableSet<String>,
                                                    loadedPackages: Set<String>?) {
@@ -522,20 +523,29 @@ class RCompletionContributor : CompletionContributor() {
       shownNames.add(className)
 
       val packageName = classInfo.packageName
+      val isUser = classDeclaration != null && !RPsiUtil.isLibraryElement(classDeclaration)
       val isLoaded = loadedPackages?.contains(packageName) ?: true
       val priority =
         when {
           classInfo.packageName == "methods" && "language" in classInfo.superClasses -> LANGUAGE_S4_CLASS_NAME
-          isLoaded || packageName.isEmpty() -> LOADED_S4_CLASS_NAME
+          isUser || isLoaded -> LOADED_S4_CLASS_NAME
           else -> NOT_LOADED_S4_CLASS_NAME
         }
+      val location =
+        if (isUser) {
+          val virtualFile = classDeclaration!!.containingFile.virtualFile
+          val projectDir = classDeclaration.project.guessProjectDir()
+          if (virtualFile == null || projectDir == null) ""
+          else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
+        }
+        else packageName
       if (classNameExpression is RStringLiteralExpression) {
         addElement(RLookupElementFactory.createLookupElementWithPriority(
-          RLookupElement(escape(className), true, AllIcons.Nodes.Field, packageName = packageName),
+          RLookupElement(escape(className), true, AllIcons.Nodes.Field, packageName = location),
           STRING_LITERAL_INSERT_HANDLER, priority))
       }
       else {
-        addElement(rCompletionElementFactory.createQuotedLookupElement(className, priority, true, AllIcons.Nodes.Field, packageName))
+        addElement(rCompletionElementFactory.createQuotedLookupElement(className, priority, true, AllIcons.Nodes.Field, location))
       }
     }
   }
