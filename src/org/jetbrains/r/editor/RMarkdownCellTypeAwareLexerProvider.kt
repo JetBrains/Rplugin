@@ -16,9 +16,7 @@ import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
   override val longestTokenLength: Int = 0
 
-  override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
-
-  override fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
+  private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
     when (tokenType) {
       RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
       RMarkdownCellType.MARKDOWN_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
@@ -30,6 +28,9 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
 
   override fun create(document: Document): NotebookCellLines =
     NotebookCellLinesImpl.get(document, this)
+
+  override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
+    NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this::getCellType, chars, ordinalIncrement, offsetIncrement)
 }
 
 
