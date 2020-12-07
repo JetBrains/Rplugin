@@ -1,19 +1,14 @@
 package org.jetbrains.plugins.notebooks.editor
 
-import com.intellij.lang.Language
-import com.intellij.lexer.Lexer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.util.registry.Registry
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.tree.IElementType
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.addIfNotNull
@@ -30,7 +25,7 @@ import kotlin.math.min
 
 
 class NotebookCellLinesImpl private constructor(private val document: Document,
-                                                private val cellTypeAwareLexerProvider: LexerProvider): NotebookCellLines {
+                                                private val cellTypeAwareLexerProvider: NotebookCellLinesLexer): NotebookCellLines {
   private val markerCache = mutableListOf<Marker>()
   private val intervalCache = mutableListOf<Interval>()
 
@@ -411,40 +406,11 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         NotebookCellLines.overriddenBinarySearchThreshold
         ?: Registry.intValue("pycharm.ds.notebook.editor.ui.binary.search.threshold")
 
-    fun get(document: Document, lexerProvider: LexerProvider): NotebookCellLines {
+    fun get(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines {
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
                           ?: promise.also { NotebookCellLinesImpl(document, lexerProvider).initialize(it) }
       return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
-    }
-  }
-
-  interface LexerProvider {
-    val longestTokenLength: Int
-
-    fun createNotebookCellTypeAwareLexer(): Lexer
-
-    fun getCellType(tokenType: IElementType): CellType?
-
-    fun shouldParseWholeFile(): Boolean = false
-
-    fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<Marker> = sequence {
-      val lexer = createNotebookCellTypeAwareLexer()
-      lexer.start(chars, 0, chars.length)
-      var ordinal = 0
-      while (true) {
-        val tokenType = lexer.tokenType ?: break
-        val cellType = getCellType(tokenType)
-        if (cellType != null) {
-          yield(Marker(
-            ordinal = ordinal++ + ordinalIncrement,
-            type = cellType,
-            offset = lexer.currentPosition.offset + offsetIncrement,
-            length = lexer.tokenText.length,
-          ))
-        }
-        lexer.advance()
-      }
     }
   }
 }

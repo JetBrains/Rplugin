@@ -9,10 +9,11 @@ import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesLexer
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesImpl.LexerProvider {
+class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
   override val longestTokenLength: Int = 0
 
   override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
