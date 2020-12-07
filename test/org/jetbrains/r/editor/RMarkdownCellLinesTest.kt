@@ -144,12 +144,13 @@ class RMarkdownCellLinesTest: RMarkdownEditorUiTestBase() {
 
     assertCodeCells {
       markers {
-        marker(CODE, 0 ,16)
-        // incorrect behaviour, another MARKDOWN should be at the end
+        marker(CODE, 0, 16)
+        marker(MARKDOWN, 16, 0)
+        // last line has zero symbols
       }
       intervals {
-        interval(CODE, 0..3)
-        // incorrect behaviour, should be CODE 0..2, MARKDOWN 3..3
+        interval(CODE, 0..2)
+        interval(MARKDOWN, 3..3)
       }
     }
   }
