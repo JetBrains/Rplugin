@@ -388,7 +388,14 @@ class RDocumentationProvider : AbstractDocumentationProvider() {
       }
 
       val documentationColor = getHexFromColor(DOC_COMMENT.defaultAttributes.foregroundColor)
-      documentation.insert(0, "<div style=\"color:${documentationColor};padding:5px\"")
+      val noWrapCss = """
+        <style>
+          td code {
+            white-space: nowrap;
+          }        
+        </style>
+        """.trimIndent()
+      documentation.insert(0, "${noWrapCss}\n<div style=\"color:${documentationColor};padding:5px\">")
       documentation.insert(documentation.length, "</div>")
     }
 
