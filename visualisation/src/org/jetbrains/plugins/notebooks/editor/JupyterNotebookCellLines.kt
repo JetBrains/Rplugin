@@ -74,7 +74,7 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
 
   private fun initializeEmptyLists() {
     wrapErrors(null) {
-      markerCache.addAll(markerSequence(document.immutableCharSequence, 0, 0))
+      markerCache.addAll(cellTypeAwareLexerProvider.markerSequence(document.immutableCharSequence, 0, 0))
       intervalCache.addAll(adjustedMarkers(0, markerCache).asSequence().zipWithNext(::markersToInterval))
     }
     checkIntegrity(null)
@@ -89,8 +89,8 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
       interestingTextAbsoluteOffset,
       min(text.length, initialOffset + cellTypeAwareLexerProvider.longestTokenLength - 1)
     )
-    return markerSequence(interestingText, 0, interestingTextAbsoluteOffset).firstOrNull()?.offset?.takeIf { it < initialOffset }
-           ?: initialOffset
+    return cellTypeAwareLexerProvider.markerSequence(interestingText, 0, interestingTextAbsoluteOffset)
+             .firstOrNull()?.offset?.takeIf { it < initialOffset } ?: initialOffset
   }
 
   private val documentListener = object : DocumentListener {
@@ -199,7 +199,7 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
         + 1
       )
 
-    val newMarkers = markerSequence(
+    val newMarkers = cellTypeAwareLexerProvider.markerSequence(
       chars = document.immutableCharSequence.subSequence(startDocumentOffset, endDocumentOffset),
       ordinalIncrement = markerCacheCutStart,
       offsetIncrement = startDocumentOffset,
@@ -328,25 +328,6 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
     }
   }
 
-  private fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<Marker> = sequence {
-    val lexer = cellTypeAwareLexerProvider.createNotebookCellTypeAwareLexer()
-    lexer.start(chars, 0, chars.length)
-    var ordinal = 0
-    while (true) {
-      val tokenType = lexer.tokenType ?: break
-      val cellType = cellTypeAwareLexerProvider.getCellType(tokenType)
-      if (cellType != null) {
-        yield(Marker(
-          ordinal = ordinal++ + ordinalIncrement,
-          type = cellType,
-          offset = lexer.currentPosition.offset + offsetIncrement,
-          length = lexer.tokenText.length,
-        ))
-      }
-      lexer.advance()
-    }
-  }
-
   private fun checkIntegrity(event: DocumentEvent?) {  // TODO It's expensive. Should be deleted later, or covered by a flag.
     val problems = mutableListOf<String>()
     for ((idx, marker) in markerCache.withIndex()) {
@@ -446,6 +427,25 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
     fun getCellType(tokenType: IElementType): CellType?
 
     fun shouldParseWholeFile(): Boolean = false
+
+    fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<Marker> = sequence {
+      val lexer = createNotebookCellTypeAwareLexer()
+      lexer.start(chars, 0, chars.length)
+      var ordinal = 0
+      while (true) {
+        val tokenType = lexer.tokenType ?: break
+        val cellType = getCellType(tokenType)
+        if (cellType != null) {
+          yield(Marker(
+            ordinal = ordinal++ + ordinalIncrement,
+            type = cellType,
+            offset = lexer.currentPosition.offset + offsetIncrement,
+            length = lexer.tokenText.length,
+          ))
+        }
+        lexer.advance()
+      }
+    }
   }
 }
 
