@@ -199,9 +199,6 @@ class RMarkdownOutputInlayController private constructor(
               it.inlay.offset == offset
             }
           ?: makeController(editor, offset)
-          ?: extractOffsetOfPreviousLine(editor.document, interval.lines)?.let { makeController(editor, it) }
-          // alternative offset - workaround for case when last empty line at the end of file is interpreted as code
-          // see RMarkdownCellLinesTest.`code cell with newline at the end of file`
         }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
@@ -266,12 +263,6 @@ private fun extractOffset(cell: PsiElement) =
 
 private fun extractOffset(document: Document, lines: IntRange) =
   Integer.max(document.getLineEndOffset(lines.last) - 1, 0)
-
-private fun extractOffsetOfPreviousLine(document: Document, lines: IntRange): Int? =
-  if (lines.last - 1 >= lines.first)
-    Integer.max(document.getLineEndOffset(lines.last - 1) - 1, 0)
-  else
-    null
 
 private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.name)
 
