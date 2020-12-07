@@ -335,8 +335,8 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       if (marker.offset < 0 || marker.offset + marker.length > document.textLength)
         problems += "$marker is out of document contents"
 
-      if (marker.length <= 0)
-        problems += "$marker length is not positive"
+      if (marker.length < 0)
+        problems += "$marker length is negative"
     }
 
     for ((idx, interval) in intervalCache.withIndex()) {
