@@ -134,7 +134,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private fun addDocumentListener() {
     val documentListener = object : DocumentListener {
       private var matchingCellsBeforeChange: List<NotebookCellLines.Interval> = emptyList()
-      @Volatile
       private var isBulkModeEnabled = false;
 
       private fun interestingLogicalLines(document: Document, startOffset: Int, length: Int): IntRange {
