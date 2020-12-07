@@ -89,7 +89,7 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   }
 
   override fun dispose() {
-    timer
+    timer.cancel()
   }
 
   enum class TimeSlot {
@@ -104,12 +104,22 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   }
 
   private inner class LibraryWatcherTimer(private val delay: Long) {
+    private val threadName = "R Library Watcher refresher"
+    private var timer = Timer(threadName)
+    private val refreshTask
+      get() = object : TimerTask() {
+        override fun run() = refresh()
+      }
+
+    fun cancel() {
+      timer.cancel()
+    }
+
     @Synchronized
     fun scheduleRefresh() {
-      runAsync {
-        Thread.sleep(delay)
-        refresh()
-      }
+      timer.cancel()
+      timer = Timer(threadName)
+      timer.schedule(refreshTask, delay)
     }
   }
 
