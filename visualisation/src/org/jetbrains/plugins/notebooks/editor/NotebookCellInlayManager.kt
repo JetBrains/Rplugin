@@ -240,10 +240,11 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun rememberController(controller: NotebookCellInlayController) {
-    inlays[controller.inlay] = controller
-    Disposer.register(controller.inlay, Disposable {
-      inlays.remove(controller.inlay)
-    })
+    if (inlays.put(controller.inlay, controller) !== controller.inlay) {
+      Disposer.register(controller.inlay, Disposable {
+        inlays.remove(controller.inlay)
+      })
+    }
   }
 
   private fun getMatchingHighlightersForLines(lines: IntRange): List<RangeHighlighterEx> =
