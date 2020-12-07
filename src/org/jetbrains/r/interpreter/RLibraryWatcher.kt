@@ -88,7 +88,9 @@ class RLibraryWatcher(private val project: Project) : Disposable {
     switch.enable()
   }
 
-  override fun dispose() {}
+  override fun dispose() {
+    timer
+  }
 
   enum class TimeSlot {
     /** Time slot for services that should be updated at first */
@@ -102,17 +104,12 @@ class RLibraryWatcher(private val project: Project) : Disposable {
   }
 
   private inner class LibraryWatcherTimer(private val delay: Long) {
-    private var timer = Timer()
-    private val refreshTask
-      get() = object : TimerTask() {
-        override fun run() = refresh()
-      }
-
     @Synchronized
     fun scheduleRefresh() {
-      timer.cancel()
-      timer = Timer()
-      timer.schedule(refreshTask, delay)
+      runAsync {
+        Thread.sleep(delay)
+        refresh()
+      }
     }
   }
 
