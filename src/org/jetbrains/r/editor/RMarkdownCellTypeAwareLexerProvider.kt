@@ -30,9 +30,26 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesL
     NotebookCellLinesImpl.get(document, this)
 
   override fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker> =
-    NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this::getCellType, chars, ordinalIncrement, offsetIncrement)
-}
+    sequence {
+      var lastMarker: NotebookCellLines.Marker? = null
+      val seq = NotebookCellLinesLexer.defaultMarkerSequence({ RMarkdownMergingLangLexer() }, this@RMarkdownCellLinesProvider::getCellType,
+                                                             chars, ordinalIncrement, offsetIncrement)
 
+      for(marker in seq) {
+        lastMarker = marker
+        yield(marker)
+      }
+
+      if (lastMarker?.type == NotebookCellLines.CellType.CODE && chars.endsWith('\n')) {
+        yield(NotebookCellLines.Marker(
+          ordinal = lastMarker.ordinal + 1,
+          type = NotebookCellLines.CellType.MARKDOWN,
+          offset = chars.length + offsetIncrement,
+          length = 0
+        ))
+      }
+    }
+}
 
 internal enum class RMarkdownCellType(val debugName: String) {
   HEADER_CELL("HEADER_CELL"),
