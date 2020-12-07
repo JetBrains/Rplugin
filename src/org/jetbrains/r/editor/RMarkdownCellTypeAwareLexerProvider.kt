@@ -7,12 +7,12 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.tree.IElementType
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.lexer.MarkdownLexerAdapter
-import org.jetbrains.plugins.notebooks.editor.JupyterNotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesImpl
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
-class RMarkdownCellLinesProvider : NotebookCellLinesProvider, JupyterNotebookCellLines.LexerProvider {
+class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesImpl.LexerProvider {
   override val longestTokenLength: Int = 0
 
   override fun createNotebookCellTypeAwareLexer(): Lexer = RMarkdownMergingLangLexer()
@@ -28,7 +28,7 @@ class RMarkdownCellLinesProvider : NotebookCellLinesProvider, JupyterNotebookCel
   override fun shouldParseWholeFile(): Boolean = true
 
   override fun create(document: Document): NotebookCellLines =
-    JupyterNotebookCellLines.get(document, this)
+    NotebookCellLinesImpl.get(document, this)
 }
 
 

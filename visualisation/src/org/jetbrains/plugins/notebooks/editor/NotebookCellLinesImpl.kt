@@ -29,8 +29,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class JupyterNotebookCellLines private constructor(private val document: Document,
-                                                   private val cellTypeAwareLexerProvider: LexerProvider): NotebookCellLines {
+class NotebookCellLinesImpl private constructor(private val document: Document,
+                                                private val cellTypeAwareLexerProvider: LexerProvider): NotebookCellLines {
   private val markerCache = mutableListOf<Marker>()
   private val intervalCache = mutableListOf<Interval>()
 
@@ -402,7 +402,7 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
     }
 
   companion object {
-    private val LOG = logger<JupyterNotebookCellLines>()
+    private val LOG = logger<NotebookCellLinesImpl>()
     private val map = ContainerUtil.createConcurrentWeakMap<Document, Promise<NotebookCellLines>>()
 
     // TODO Maybe get rid of the linear or binary search? It looks like an over-optimization.
@@ -414,7 +414,7 @@ class JupyterNotebookCellLines private constructor(private val document: Documen
     fun get(document: Document, lexerProvider: LexerProvider): NotebookCellLines {
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
-                          ?: promise.also { JupyterNotebookCellLines(document, lexerProvider).initialize(it) }
+                          ?: promise.also { NotebookCellLinesImpl(document, lexerProvider).initialize(it) }
       return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
     }
   }
