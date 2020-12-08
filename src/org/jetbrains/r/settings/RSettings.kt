@@ -54,9 +54,9 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
     }
 
   var rStudioApiEnabled: Boolean
-    get() = state.RStudioApiEnabled
+    get() = state.rstudioApiEnabled
     set(value) {
-      state.RStudioApiEnabled  = value
+      state.rstudioApiEnabled  = value
     }
 
   fun addInterpreterLocationListener(listener: RInterpreterLocationListener, parentDisposable: Disposable? = null) {
@@ -88,7 +88,8 @@ class RSettings(private val project: Project) : SimplePersistentStateComponent<R
     var loadWorkspace by property(false)
     var saveWorkspace by property(false)
     var disableRprofile by property(false)
-    var RStudioApiEnabled by property(true)
+    // names like rStudioApiEnabled are not supported by settings
+    var rstudioApiEnabled by property(true)
     var packageBuildSettingsState by property<RPackageBuildSettings.State>()
 
     fun setNoInterpreter() {
