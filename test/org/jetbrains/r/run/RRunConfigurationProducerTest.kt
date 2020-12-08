@@ -9,11 +9,14 @@ import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.MapDataContext
-import org.jetbrains.r.RLightCodeInsightFixtureTestCase
+import org.jetbrains.r.RUsefulTestCase
+import org.jetbrains.r.interpreter.RInterpreterManager
+import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.run.configuration.RRunConfiguration
 import org.jetbrains.r.run.configuration.RRunConfigurationProducer
+import org.jetbrains.r.settings.RSettings
 
-class RRunConfigurationProducerTest : RLightCodeInsightFixtureTestCase() {
+class RRunConfigurationProducerTest : RUsefulTestCase() {
   fun testCreateRunConfiguration() {
     myFixture.configureByText(
       "my_file.R",
@@ -45,6 +48,12 @@ class RRunConfigurationProducerTest : RLightCodeInsightFixtureTestCase() {
 
     val runConfiguration = getConfigurationFromCaret()
     assertNull(runConfiguration)
+  }
+
+  override fun setUp() {
+    super.setUp()
+    val rInterpreter = RInterpreterManager.getInterpreterBlocking(project, RInterpreterUtil.DEFAULT_TIMEOUT)!!
+    RSettings.getInstance(myFixture.project).interpreterLocation = rInterpreter.interpreterLocation
   }
 
   private fun getConfigurationFromCaret(): RunConfiguration? {
