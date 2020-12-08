@@ -38,11 +38,11 @@ class RGraphicsDevice(
   var lastUpdate: RGraphicsUpdate = RGraphicsCompletedUpdate(lastOutputs)
     private set
 
-  var configuration: Configuration = Configuration(initialParameters, null)
+  var configuration: Configuration = Configuration(initialParameters, !RGraphicsSettings.isStandalone(rInterop.project), null)
     set(value) {
       field = value
       value.snapshotNumber?.let { number ->
-        if (!RGraphicsSettings.isStandalone(rInterop.project)) {
+        if (value.isRescalingEnabled) {
           number2OutputInfos[number]?.let { info ->
             if (info.output.snapshot == null || info.parameters != value.screenParameters) {
               rescaleInMemoryAsync(number, value.screenParameters)
@@ -368,6 +368,7 @@ class RGraphicsDevice(
 
   data class Configuration(
     val screenParameters: RGraphicsUtils.ScreenParameters,
+    val isRescalingEnabled: Boolean,
     val snapshotNumber: Int?
   )
 
