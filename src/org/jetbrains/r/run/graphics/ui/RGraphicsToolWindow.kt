@@ -50,6 +50,9 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private val graphicsPanel = GraphicsPanel(project, project)
   private val plotViewer = RPlotViewer(project, project)
 
+  private val usesPlotViewer: Boolean
+    get() = isStandalone && lastOutput?.plot?.error == null
+
   init {
     updateContent()
     toolbar = createToolbar(project)
@@ -70,7 +73,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun updateContent() {
-    val targetContent = if (isStandalone) plotViewer else graphicsPanel.component
+    val targetContent = if (usesPlotViewer) plotViewer else graphicsPanel.component
     updateContent(targetContent)
   }
 
@@ -129,7 +132,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun showCurrent() {
     lastOutput?.let { output ->
       updateContent()
-      if (isStandalone) {
+      if (usesPlotViewer) {
         showPlot(output.plot)
       } else {
         if (output.snapshot != null) {
@@ -142,21 +145,8 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun showPlot(plot: RPlot) {
-    if (plot.error != null) {
-      updateContent(graphicsPanel.component)
-      val message = RPlotUtil.getErrorDescription(plot.error)
-      graphicsPanel.showMessageWithLink(message, SWITCH_TO_BUILTIN_TEXT, this::switchToBuiltinEngine)
-    } else {
-      plotViewer.resolution = resolution
-      plotViewer.plot = plot
-    }
-  }
-
-  private fun switchToBuiltinEngine() {
-    RGraphicsSettings.setStandalone(project, false)
-    isStandalone = false
-    showCurrent()
-    postScreenParameters()
+    plotViewer.resolution = resolution
+    plotViewer.plot = plot
   }
 
   private fun createToolbar(project: Project): JComponent {
@@ -205,7 +195,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   private fun exportCurrentOutput() {
     lastOutput?.let { output ->
       val initialSize = getAdjustedScreenDimension()
-      if (isStandalone) {
+      if (usesPlotViewer) {
         RGraphicsExportDialog.show(project, project, output.plot, initialSize, resolution)
       } else {
         output.snapshot?.let { snapshot ->
@@ -217,7 +207,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun copyCurrentOutput() {
     lastOutput?.let {
-      val image = if (isStandalone) plotViewer.image else graphicsPanel.image
+      val image = if (usesPlotViewer) plotViewer.image else graphicsPanel.image
       if (image != null) {
         ClipboardUtils.copyImageToClipboard(image)
       }
@@ -226,7 +216,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun zoomCurrentOutput() {
     lastOutput?.let { output ->
-      if (isStandalone) {
+      if (usesPlotViewer) {
         RGraphicsZoomDialog.show(project, project, output.plot, resolution)
       } else {
         output.snapshot?.let { snapshot ->
@@ -260,7 +250,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private fun getAdjustedScreenDimension(): Dimension {
-    return if (isStandalone) plotViewer.size else graphicsPanel.imageComponentSize
+    return if (usesPlotViewer) plotViewer.size else graphicsPanel.imageComponentSize
   }
 
   private fun schedulePostScreenParameters() {
@@ -275,11 +265,12 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     val newDimension = getAdjustedScreenDimension()
     if (newDimension.isValid) {
       RGraphicsSettings.setScreenDimension(project, newDimension)
-      if (!isStandalone) {
+      val isRescalingEnabled = !usesPlotViewer
+      if (isRescalingEnabled) {
         repository.configuration?.let { oldConfiguration ->
           val parameters = oldConfiguration.screenParameters
           val newParameters = parameters.copy(dimension = newDimension, resolution = resolution)
-          repository.configuration = oldConfiguration.copy(screenParameters = newParameters)
+          repository.configuration = oldConfiguration.copy(screenParameters = newParameters, isRescalingEnabled = isRescalingEnabled)
         }
       }
     }
@@ -287,7 +278,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
 
   private fun postOutputNumber() {
     repository.configuration?.let { oldConfiguration ->
-      repository.configuration = oldConfiguration.copy(snapshotNumber = lastNumber)
+      repository.configuration = oldConfiguration.copy(isRescalingEnabled = !usesPlotViewer, snapshotNumber = lastNumber)
     }
   }
 
@@ -296,12 +287,11 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
   }
 
   private inner class EngineComboBox : ComboBoxAction(), DumbAware {
-    init {
-      templatePresentation.description = ENGINE_TOOLTIP
-    }
-
     override fun update(e: AnActionEvent) {
-      e.presentation.text = if (isStandalone) ENGINE_IDE_TEXT else ENGINE_R_TEXT
+      val canRenderPlot = lastOutput?.plot?.error == null
+      e.presentation.text = if (isStandalone && canRenderPlot) ENGINE_IDE_TEXT else ENGINE_R_TEXT
+      e.presentation.description = if (canRenderPlot) ENGINE_TOOLTIP else ENGINE_CORRUPTED_TOOLTIP
+      e.presentation.isEnabled = canRenderPlot
     }
 
     override fun createPopupActionGroup(button: JComponent): DefaultActionGroup {
@@ -369,6 +359,7 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private val SWITCH_TO_BUILTIN_TEXT = RBundle.message("plot.viewer.switch.to.builtin")
 
     private val ENGINE_TOOLTIP = RBundle.message("graphics.panel.engine.tooltip")
+    private val ENGINE_CORRUPTED_TOOLTIP = RBundle.message("graphics.panel.engine.corrupted.tooltip")
     private val ENGINE_IDE_TEXT = RBundle.message("graphics.panel.engine.ide.text")
     private val ENGINE_IDE_DESCRIPTION = RBundle.message("graphics.panel.engine.ide.description")
     private val ENGINE_R_TEXT = RBundle.message("graphics.panel.engine.r.text")
