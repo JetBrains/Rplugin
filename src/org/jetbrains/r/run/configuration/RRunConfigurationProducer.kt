@@ -3,6 +3,8 @@ package org.jetbrains.r.run.configuration
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.runConfigurationType
+import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
@@ -20,6 +22,12 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
     val element = location.psiElement
     val psiFile = element.containingFile ?: return false
     if (psiFile !is RFile || psiFile.viewProvider is TemplateLanguageFileViewProvider) {
+      return false
+    }
+
+    val dataContext = context.dataContext
+    val contextComponent = PlatformDataKeys.CONTEXT_COMPONENT.getData(dataContext);
+    if (contextComponent is EditorComponentImpl) {
       return false
     }
 
