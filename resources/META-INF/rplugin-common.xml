@@ -236,6 +236,9 @@ You can find the source code in the following repositories:
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt I" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt I" replace-all="true"/>
             </action>
+            <action id="org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
+                    class="org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
+                    icon="AllIcons.General.Reset"/>
         </group>
     </actions>
 

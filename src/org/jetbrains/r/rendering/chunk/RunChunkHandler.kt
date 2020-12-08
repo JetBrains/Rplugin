@@ -190,7 +190,7 @@ object RunChunkHandler {
 
     updateProgressBar(editor, inlayElement)
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
-    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.clearOutputs()}
+    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.clearOutputs(removeFiles = false)}
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
         InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)

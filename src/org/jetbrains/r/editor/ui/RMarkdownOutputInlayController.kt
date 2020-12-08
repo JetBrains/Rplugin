@@ -79,8 +79,11 @@ class RMarkdownOutputInlayController private constructor(
     }
   }
 
-  override fun clearOutputs() {
+  override fun clearOutputs(removeFiles: Boolean) {
     invokeLater { // preserve order with addText() calls
+      if (removeFiles) {
+        RMarkdownInlayDescriptor.cleanup(psiElement)
+      }
       resetComponent(inlayComponent)
     }
   }
@@ -104,8 +107,7 @@ class RMarkdownOutputInlayController private constructor(
       if (outputs.isEmpty()) return@invokeLater
 
       inlayComponent.addInlayOutputs(outputs) {
-        RMarkdownInlayDescriptor.cleanup(psiElement)
-        clearOutputs()
+        clearOutputs(removeFiles = true)
       }
     }
   }
@@ -273,7 +275,7 @@ private val key = Key.create<RMarkdownNotebook>(RMarkdownNotebook::class.java.na
  */
 interface RMarkdownNotebookOutput {
   /** clear outputs and text */
-  fun clearOutputs()
+  fun clearOutputs(removeFiles: Boolean)
 
   /** add text as output */
   fun addText(text: String, outputType: Key<*>)
@@ -302,7 +304,13 @@ class RMarkdownNotebook(editor: EditorImpl) {
     addViewportListener(editor)
   }
 
-  operator fun get(cell: PsiElement): RMarkdownNotebookOutput? = outputs[cell]
+  operator fun get(cell: PsiElement): RMarkdownNotebookOutput? = correctCell(cell)?.let { outputs[it] }
+
+  private fun correctCell(cell: PsiElement): PsiElement? =
+    when (cell.elementType) {
+      MarkdownTokenTypes.FENCE_LANG -> cell.parent.children.find { it.elementType == MarkdownTokenTypes.CODE_FENCE_END }
+      else -> cell
+    }
 
   fun update(output: RMarkdownNotebookOutput) {
     val previousOutput = outputs.put(output.psiElement, output) as RMarkdownOutputInlayController?

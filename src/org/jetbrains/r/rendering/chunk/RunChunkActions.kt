@@ -26,6 +26,7 @@ import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.console.RConsoleToolWindowFactory
+import org.jetbrains.r.editor.ui.rMarkdownNotebook
 import org.jetbrains.r.rendering.editor.ChunkExecutionState
 import org.jetbrains.r.rendering.editor.chunkExecutionState
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
@@ -44,6 +45,7 @@ const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
 const val RUN_CHUNKS_ABOVE_ID = "org.jetbrains.r.rendering.chunk.RunChunksAboveAction"
 const val RUN_CHUNKS_BELOW_ID = "org.jetbrains.r.rendering.chunk.RunChunksBelowAction"
+const val CLEAR_CHUNK_OUTPUTS_ID = "org.jetbrains.r.rendering.chunk.ClearChunkOutputsAction"
 
 class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
   override fun update(e: AnActionEvent) {
@@ -90,6 +92,17 @@ class DebugChunkAction : DumbAwareAction(), RPromotedAction {
 
   override fun actionPerformed(e: AnActionEvent) {
     showConsoleAndRun(e) { executeChunk(e, isDebug = true) }
+  }
+}
+
+class ClearChunkOutputsAction: DumbAwareAction(), RPromotedAction {
+  override fun update(e: AnActionEvent) {
+    e.presentation.isEnabled = isEnabled(e)
+  }
+
+  override fun actionPerformed(e: AnActionEvent) {
+    val psiElement = getCodeFenceByEvent(e) ?: return
+    e.editor?.rMarkdownNotebook?.get(psiElement)?.clearOutputs(removeFiles = true)
   }
 }
 

@@ -26,16 +26,26 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
     }
   }
 
-  fun createRunChunkActionsList(): List<AnAction> = actionIds.map { getAction(it) }
+  fun createChunkToolbarActionsList(psiElement: SmartPsiElementPointer<PsiElement>, editor: Editor): List<AnAction> {
+    val actions = actionIds.flatMap { sublist ->
+      sublist.map { id -> ChunkAction(getAction(id), psiElement, editor) } + Separator()
+    }
+    return actions.dropLast(1) // remove last Separator()
+  }
 
   private fun createRunChunkActionGroup(element: PsiElement): DefaultActionGroup =
-    DefaultActionGroup(actionIds.map { id -> ChunkAction(getAction(id), element) })
+    DefaultActionGroup(actionIds[0].map { id -> ChunkAction(getAction(id), element) })
 
   private val actionIds = listOf(
-    RUN_CHUNK_ACTION_ID,
-    DEBUG_CHUNK_ACTION_ID,
-    RUN_CHUNKS_ABOVE_ID,
-    RUN_CHUNKS_BELOW_ID
+    listOf(
+      RUN_CHUNK_ACTION_ID,
+      DEBUG_CHUNK_ACTION_ID,
+      RUN_CHUNKS_ABOVE_ID,
+      RUN_CHUNKS_BELOW_ID
+    ),
+    listOf(
+      CLEAR_CHUNK_OUTPUTS_ID
+    )
   )
 
   private fun getAction(id: String) = ActionManager.getInstance().getAction(id)
