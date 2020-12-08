@@ -11,4 +11,5 @@ object NewOutputInlaysSwitch {
   val useNewForAnything: Boolean = types.isNotEmpty()
   val useNewForText: Boolean = "text" in types
   val useNewForTable: Boolean = "jupyter_table" in types
+  val useNewForImage = "image" in types
 }
