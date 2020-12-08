@@ -8,7 +8,9 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
 import org.jetbrains.r.interpreter.RInterpreterUtil.getDefaultInterpreterOptions
+import org.jetbrains.r.interpreter.RLocalInterpreterLocation
 import org.jetbrains.r.psi.api.RFile
+import org.jetbrains.r.settings.RSettings
 
 class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration>() {
   override fun setupConfigurationFromContext(configuration: RRunConfiguration,
@@ -18,6 +20,11 @@ class RRunConfigurationProducer : LazyRunConfigurationProducer<RRunConfiguration
     val element = location.psiElement
     val psiFile = element.containingFile ?: return false
     if (psiFile !is RFile || psiFile.viewProvider is TemplateLanguageFileViewProvider) {
+      return false
+    }
+
+    val interpreterLocation = RSettings.getInstance(configuration.project).interpreterLocation
+    if (interpreterLocation !is RLocalInterpreterLocation) {
       return false
     }
 
