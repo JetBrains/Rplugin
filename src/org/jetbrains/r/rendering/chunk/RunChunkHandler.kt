@@ -254,6 +254,10 @@ object RunChunkHandler {
       RGraphicsUtils.ScreenParameters(Dimension(800, 600), null)
     } else {
       val inlayContentSize = InlayDimensions.calculateInlayContentSize(editor)
+      if (inlayContentSize.width == 0) {
+        // if editor is hidden
+        inlayContentSize.width = 800
+      }
       val imageSize = GraphicsPanel.calculateImageSizeForRegion(inlayContentSize)
       val resolution = RMarkdownGraphicsSettings.getInstance(project).globalResolution
       RGraphicsUtils.ScreenParameters(imageSize, resolution)
