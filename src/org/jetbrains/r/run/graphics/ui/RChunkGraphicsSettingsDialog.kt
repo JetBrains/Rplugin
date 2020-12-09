@@ -5,9 +5,11 @@
 package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
-import javax.swing.JComponent
+import java.awt.Component
+import javax.swing.*
 
 class RChunkGraphicsSettingsDialog(
   private val initialSettings: Settings,
@@ -32,6 +34,9 @@ class RChunkGraphicsSettingsDialog(
   private var localStandalone = initialSettings.localStandalone
   private var globalStandalone = initialSettings.globalStandalone
 
+  private val localComboBoxModel = CollectionComboBoxModel(listOf(true, false), localStandalone)
+  private val globalComboBoxModel = CollectionComboBoxModel(listOf(true, false), globalStandalone)
+
   init {
     setResizable(false)
     title = TITLE
@@ -49,8 +54,8 @@ class RChunkGraphicsSettingsDialog(
           intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
           label(DPI_TEXT)
         }
-        row {
-          checkBox(STANDALONE_TEXT, self::localStandalone)
+        row(ENGINE_TEXT) {
+          comboBox(localComboBoxModel, self::localStandalone, EngineCellRenderer())
         }
       }
       titledRow(GLOBAL_SETTINGS_TITLE) {
@@ -63,8 +68,8 @@ class RChunkGraphicsSettingsDialog(
             checkBox(DARK_MODE_TEXT, self::isDarkModeEnabled)
           }
         }
-        row {
-          checkBox(STANDALONE_TEXT, self::globalStandalone, STANDALONE_COMMENT)
+        row(ENGINE_TEXT) {
+          comboBox(globalComboBoxModel, self::globalStandalone, EngineCellRenderer())
         }
       }
     }
@@ -84,6 +89,36 @@ class RChunkGraphicsSettingsDialog(
     val localStandalone: Boolean
   )
 
+  private class EngineCellRenderer : ListCellRenderer<Boolean?> {
+    private val delegate = DefaultListCellRenderer()
+
+    override fun getListCellRendererComponent(list: JList<out Boolean?>?,
+                                              value: Boolean?,
+                                              index: Int,
+                                              isSelected: Boolean,
+                                              cellHasFocus: Boolean): Component {
+      return delegate.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus).apply {
+        if (this !is JLabel) {
+          return@apply
+        }
+        when (value) {
+          true -> {
+            text = ENGINE_IDE_TEXT
+            toolTipText = ENGINE_IDE_TOOLTIP
+          }
+          false -> {
+            text = ENGINE_R_TEXT
+            toolTipText = ENGINE_R_TOOLTIP
+          }
+          else -> {
+            text = ""
+            toolTipText = ""
+          }
+        }
+      }
+    }
+  }
+
   companion object {
     private const val DEFAULT_RESOLUTION = 75  // It's never required in practice and for backward compatibility purposes only
     private const val INPUT_COLUMN_COUNT = 7
@@ -98,7 +133,10 @@ class RChunkGraphicsSettingsDialog(
     private val GLOBAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.all.plots")
     private val DARK_MODE_TEXT = RBundle.message("chunk.graphics.settings.dialog.adapt.to.dark.theme")
 
-    private val STANDALONE_TEXT = RBundle.message("graphics.panel.settings.dialog.standalone.text")
-    private val STANDALONE_COMMENT = RBundle.message("graphics.panel.settings.dialog.standalone.comment")
+    private val ENGINE_TEXT = RBundle.message("graphics.panel.engine.text")
+    private val ENGINE_IDE_TEXT = RBundle.message("graphics.panel.engine.ide.text")
+    private val ENGINE_IDE_TOOLTIP = RBundle.message("graphics.panel.engine.ide.tooltip")
+    private val ENGINE_R_TEXT = RBundle.message("graphics.panel.engine.r.text")
+    private val ENGINE_R_TOOLTIP = RBundle.message("graphics.panel.engine.r.tooltip")
   }
 }
