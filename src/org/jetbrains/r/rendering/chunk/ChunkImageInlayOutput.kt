@@ -29,27 +29,19 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
 
   private val manager = ChunkGraphicsManager(project)
 
-  @Volatile
-  private var globalResolution: Int? = null
-
   override val useDefaultSaveAction = false
   override val extraActions = createExtraActions()
 
   init {
     toolbarPane.dataComponent = wrapper.component
-    setResolution(manager.globalResolution)
+    wrapper.targetResolution = manager.globalResolution
     manager.addGlobalResolutionListener(parent) { newGlobalResolution ->
-      setResolution(newGlobalResolution)
+      wrapper.targetResolution = newGlobalResolution
     }
     wrapper.isStandalone = manager.isStandalone
     manager.addStandaloneListener(parent) { newStandalone ->
       wrapper.isStandalone = newStandalone
     }
-  }
-
-  private fun setResolution(resolution: Int) {
-    wrapper.targetResolution = resolution
-    globalResolution = resolution
   }
 
   override fun addToolbar() {
@@ -172,7 +164,6 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
         manager.isDarkModeEnabled = newDarkModeEnabled
       }
       newSettings.globalResolution?.let { newGlobalResolution ->
-        // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
         manager.globalResolution = newGlobalResolution
       }
     }
@@ -182,7 +173,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   private fun getInitialSettings(isDarkModeEnabled: Boolean?) = RChunkGraphicsSettingsDialog.Settings(
     wrapper.isAutoResizeEnabled,
     isDarkModeEnabled,
-    globalResolution,
+    manager.globalResolution,
     wrapper.localResolution,
     manager.isStandalone,
     wrapper.isStandalone
