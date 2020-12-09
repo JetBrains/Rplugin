@@ -6,7 +6,7 @@ package org.jetbrains.r.rinterop
 
 import com.google.gson.*
 import com.google.protobuf.GeneratedMessageV3
-import com.intellij.util.containers.ContainerUtil
+import com.intellij.concurrency.ConcurrentCollectionFactory
 import io.grpc.MethodDescriptor
 import java.lang.reflect.Type
 import java.util.*
@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class RInteropGrpcLogger(private val maxMessages: Int? = null) {
   val messages = ArrayDeque<Message>()
-  private val commandMessages = ContainerUtil.createConcurrentIntObjectMap<CommandMessage>()
-  private val stubMessages = ContainerUtil.createConcurrentIntObjectMap<Pair<ByteArray, String>>()
+  private val commandMessages = ConcurrentCollectionFactory.createConcurrentIntObjectMap<CommandMessage>()
+  private val stubMessages = ConcurrentCollectionFactory.createConcurrentIntObjectMap<Pair<ByteArray, String>>()
   private val stubMessageEnumerator: AtomicInteger = AtomicInteger(0)
 
   fun nextStubNumber(): Int {
