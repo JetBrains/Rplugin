@@ -57,6 +57,11 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     updateContent()
     toolbar = createToolbar(project)
     project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(RGraphicsSettings.isDarkModeEnabled(project))
+    RGraphicsSettings.addStandaloneListener(project, project) { newStandalone ->
+      isStandalone = newStandalone
+      showCurrent()
+      postScreenParameters()
+    }
 
     graphicsPanel.component.addResizeListener {
       schedulePostScreenParameters()
@@ -311,9 +316,6 @@ class RGraphicsToolWindow(private val project: Project) : SimpleToolWindowPanel(
     private fun setStandalone(newStandalone: Boolean) {
       if (newStandalone != isStandalone) {
         RGraphicsSettings.setStandalone(project, newStandalone)
-        isStandalone = newStandalone
-        showCurrent()
-        postScreenParameters()
       }
     }
   }

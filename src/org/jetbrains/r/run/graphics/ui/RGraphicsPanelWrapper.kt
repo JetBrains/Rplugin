@@ -83,7 +83,11 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
       if (field != value && canSwitchTo(value)) {
         field = value
         updateContent()
-        scheduleRescalingIfNecessary()
+        if (usesViewer) {
+          localResolution = plotViewer.resolution
+        } else {
+          scheduleRescalingIfNecessary()
+        }
       }
     }
 
@@ -165,10 +169,12 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     isAutoResizeEnabled = true
     localResolution = null
     updateContent()
-    if (isStandalone) {
-      localResolution = targetResolution
+    if (plot != null) {
       plotViewer.resolution = targetResolution
-      plotViewer.plot = plot!!
+      plotViewer.plot = plot
+    }
+    if (usesViewer) {
+      localResolution = targetResolution
     } else {
       graphicsPanel.showLoadingMessage(WAITING_MESSAGE)
       rescaleIfNecessary()
@@ -196,7 +202,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
     if (newStandalone) {
       return plot != null && plot?.error == null
     } else {
-      return snapshot != null
+      return plot == null || snapshot != null
     }
   }
 
