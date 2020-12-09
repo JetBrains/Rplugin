@@ -38,10 +38,12 @@ class RMarkdownGraphicsSettings(private val project: Project) : SimplePersistent
 
   private fun updateResolution(newResolution: Int) {
     state.apply {
-      globalResolution = newResolution
       version = CURRENT_VERSION
+      if (globalResolution != newResolution) {
+        globalResolution = newResolution
+        project.messageBus.syncPublisher(CHANGE_GLOBAL_RESOLUTION_TOPIC).onGlobalResolutionChange(newResolution)
+      }
     }
-    project.messageBus.syncPublisher(CHANGE_GLOBAL_RESOLUTION_TOPIC).onGlobalResolutionChange(newResolution)
   }
 
   class State : BaseState() {

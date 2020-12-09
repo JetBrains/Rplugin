@@ -169,15 +169,11 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
       }
       manager.isStandalone = newSettings.globalStandalone
       newSettings.isDarkModeEnabled?.let { newDarkModeEnabled ->
-        if (newDarkModeEnabled != isDarkModeEnabled) {
-          manager.isDarkModeEnabled = newDarkModeEnabled
-        }
+        manager.isDarkModeEnabled = newDarkModeEnabled
       }
       newSettings.globalResolution?.let { newGlobalResolution ->
-        if (newGlobalResolution != globalResolution) {
-          // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
-          manager.globalResolution = newGlobalResolution
-        }
+        // Note: no need to set `this.globalResolution` here: it will be changed automatically by a listener below
+        manager.globalResolution = newGlobalResolution
       }
     }
     dialog.show()
