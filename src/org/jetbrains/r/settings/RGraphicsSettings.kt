@@ -50,8 +50,11 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
       getInstance(project).state.darkMode
 
     fun setDarkMode(project: Project, isEnabled: Boolean) {
-      getInstance(project).state.darkMode = isEnabled
-      project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
+      val state = getInstance(project).state
+      if (state.darkMode != isEnabled) {
+        state.darkMode = isEnabled
+        project.messageBus.syncPublisher(CHANGE_DARK_MODE_TOPIC).onDarkModeChanged(isEnabled)
+      }
     }
 
     fun isStandalone(project: Project): Boolean {
@@ -59,8 +62,11 @@ class RGraphicsSettings : SimplePersistentStateComponent<RGraphicsSettingsState>
     }
 
     fun setStandalone(project: Project, value: Boolean) {
-      getInstance(project).state.isStandalone = value
-      project.messageBus.syncPublisher(CHANGE_STANDALONE_TOPIC).onStandaloneChange(value)
+      val state = getInstance(project).state
+      if (state.isStandalone != value) {
+        state.isStandalone = value
+        project.messageBus.syncPublisher(CHANGE_STANDALONE_TOPIC).onStandaloneChange(value)
+      }
     }
 
     fun getImageNumber(project: Project): Int {
