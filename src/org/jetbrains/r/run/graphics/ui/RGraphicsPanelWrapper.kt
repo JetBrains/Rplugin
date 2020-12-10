@@ -86,6 +86,7 @@ class RGraphicsPanelWrapper(project: Project, private val parent: Disposable) {
         if (usesViewer) {
           localResolution = plotViewer.resolution
         } else {
+          localResolution = null  // Note: force rescaling for builtin engine
           scheduleRescalingIfNecessary()
         }
       }
