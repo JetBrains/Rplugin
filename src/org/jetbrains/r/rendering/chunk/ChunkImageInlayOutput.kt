@@ -32,15 +32,21 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   override val useDefaultSaveAction = false
   override val extraActions = createExtraActions()
 
+  private var overridesGlobal = false
+
   init {
     toolbarPane.dataComponent = wrapper.component
     wrapper.targetResolution = manager.globalResolution
     manager.addGlobalResolutionListener(parent) { newGlobalResolution ->
-      wrapper.targetResolution = newGlobalResolution
+      if (!overridesGlobal) {
+        wrapper.targetResolution = newGlobalResolution
+      }
     }
     wrapper.isStandalone = manager.isStandalone
     manager.addStandaloneListener(parent) { newStandalone ->
-      wrapper.isStandalone = newStandalone
+      if (!overridesGlobal) {
+        wrapper.isStandalone = newStandalone
+      }
     }
   }
 
@@ -154,9 +160,11 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
     val initialSettings = getInitialSettings(isDarkModeEnabled)
     val dialog = RChunkGraphicsSettingsDialog(initialSettings) { newSettings ->
       wrapper.isAutoResizeEnabled = newSettings.isAutoResizedEnabled
-      wrapper.targetResolution = newSettings.localResolution
-      wrapper.isStandalone = newSettings.localStandalone
-      if (newSettings.localStandalone && wrapper.isStandalone != newSettings.localStandalone) {
+      overridesGlobal = newSettings.overridesGlobal
+      wrapper.targetResolution = if (overridesGlobal) newSettings.localResolution else newSettings.globalResolution
+      val newStandalone = if (overridesGlobal) newSettings.localStandalone else newSettings.globalStandalone
+      wrapper.isStandalone = newStandalone
+      if (newStandalone && wrapper.isStandalone != newStandalone) {
         Messages.showErrorDialog(project, SWITCH_ERROR_DESCRIPTION, SWITCH_ERROR_TITLE)
       }
       manager.isStandalone = newSettings.globalStandalone
@@ -173,6 +181,7 @@ class ChunkImageInlayOutput(private val parent: Disposable, editor: Editor, clea
   private fun getInitialSettings(isDarkModeEnabled: Boolean?) = RChunkGraphicsSettingsDialog.Settings(
     wrapper.isAutoResizeEnabled,
     isDarkModeEnabled,
+    overridesGlobal,
     manager.globalResolution,
     wrapper.localResolution,
     manager.isStandalone,
