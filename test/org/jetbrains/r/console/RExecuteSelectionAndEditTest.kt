@@ -25,11 +25,7 @@ class RExecuteSelectionAndEditTest : RConsoleBaseTestCase() {
     val document = FileDocumentManager.getInstance().getDocument(myFixture.file.virtualFile)!!
 
     var executedPromise = AsyncPromise<Unit>()
-    console.executeActionHandler.addListener(object : RConsoleExecuteActionHandler.Listener {
-      override fun onCommandExecuted() {
-        executedPromise.setResult(Unit)
-      }
-    })
+    var remaining = 5
     rInterop.addAsyncEventsListener(object : RInterop.AsyncEventsListener {
       override fun onRequestReadLn(prompt: String) {
         invokeLater {
@@ -44,6 +40,11 @@ class RExecuteSelectionAndEditTest : RConsoleBaseTestCase() {
           rInterop.replSendReadLn("xyz")
         }
       }
+
+      override fun onPrompt(isDebug: Boolean) {
+        --remaining
+        if (remaining <= 0) executedPromise.setResult(Unit)
+      }
     })
 
     myFixture.editor.selectionModel.setSelection(0, document.textLength)
@@ -56,6 +57,7 @@ class RExecuteSelectionAndEditTest : RConsoleBaseTestCase() {
     TestCase.assertEquals("444", rInterop.executeCode("cat(e)").stdout)
 
     executedPromise = AsyncPromise()
+    remaining = 3
     myFixture.editor.selectionModel.setSelection(0, document.textLength)
     ActionManager.getInstance().getAction("org.jetbrains.r.actions.RunSelection").actionPerformed(createAnActionEvent())
     executedPromise.blockingGetAndDispatchEvents(DEFAULT_TIMEOUT)
