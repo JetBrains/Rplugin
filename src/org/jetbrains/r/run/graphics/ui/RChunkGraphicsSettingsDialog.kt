@@ -6,6 +6,7 @@ package org.jetbrains.r.run.graphics.ui
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.CollectionComboBoxModel
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import java.awt.Component
@@ -17,7 +18,8 @@ class RChunkGraphicsSettingsDialog(
 ) : DialogWrapper(null, true) {
 
   private val settings: Settings
-    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, globalResolution, localResolution, globalStandalone, localStandalone)
+    get() = Settings(isAutoResizeEnabled, isDarkModeEnabledOrNull, overridesGlobal, globalResolution, localResolution,
+                     globalStandalone, localStandalone)
 
   private val isDarkModeEnabledOrNull
     get() = isDarkModeEnabled.takeIf { isDarkModeVisible }
@@ -27,6 +29,7 @@ class RChunkGraphicsSettingsDialog(
 
   private var isAutoResizeEnabled = initialSettings.isAutoResizedEnabled
   private var isDarkModeEnabled = initialSettings.isDarkModeEnabled ?: false
+  private var overridesGlobal = initialSettings.overridesGlobal
 
   private var localResolution = initialSettings.localResolution ?: DEFAULT_RESOLUTION
   private var globalResolution = initialSettings.globalResolution ?: DEFAULT_RESOLUTION
@@ -50,12 +53,16 @@ class RChunkGraphicsSettingsDialog(
         row {
           checkBox(AUTO_RESIZE_TEXT, self::isAutoResizeEnabled)
         }
+        val overrideCheckBox = JBCheckBox(OVERRIDE_GLOBAL_TEXT, overridesGlobal)
+        row {
+          overrideCheckBox().withSelectedBinding(self::overridesGlobal.toBinding())
+        }
         row(RESOLUTION_TEXT) {
-          intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE)
+          intTextField(self::localResolution, INPUT_COLUMN_COUNT, INPUT_RANGE).enableIf(overrideCheckBox.selected)
           label(DPI_TEXT)
         }
         row(ENGINE_TEXT) {
-          comboBox(localComboBoxModel, self::localStandalone, EngineCellRenderer())
+          comboBox(localComboBoxModel, self::localStandalone, EngineCellRenderer()).enableIf(overrideCheckBox.selected)
         }
       }
       titledRow(GLOBAL_SETTINGS_TITLE) {
@@ -83,6 +90,7 @@ class RChunkGraphicsSettingsDialog(
   data class Settings(
     val isAutoResizedEnabled: Boolean,
     val isDarkModeEnabled: Boolean?,
+    val overridesGlobal: Boolean,
     val globalResolution: Int?,
     val localResolution: Int?,
     val globalStandalone: Boolean,
@@ -125,6 +133,7 @@ class RChunkGraphicsSettingsDialog(
     private val INPUT_RANGE = IntRange(1, 9999)
 
     private val TITLE = RBundle.message("chunk.graphics.settings.dialog.title")
+    private val OVERRIDE_GLOBAL_TEXT = RBundle.message("chunk.graphics.settings.dialog.override.global.text")
     private val LOCAL_SETTINGS_TITLE = RBundle.message("chunk.graphics.settings.dialog.for.current.plot")
     private val AUTO_RESIZE_TEXT = RBundle.message("graphics.panel.settings.dialog.auto.resize")
     private val RESOLUTION_TEXT = RBundle.message("graphics.panel.settings.dialog.resolution")
