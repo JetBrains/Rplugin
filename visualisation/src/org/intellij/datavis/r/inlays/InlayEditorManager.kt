@@ -386,7 +386,7 @@ class EditorInlaysManager(val project: Project, private val editor: EditorImpl, 
   }
 
   private fun addBlockElement(offset: Int, inlayComponent: NotebookInlayComponent): Inlay<NotebookInlayComponent> {
-    return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)!!
+    return editor.inlayModel.addBlockElement(offset, true, false, INLAY_PRIORITY, inlayComponent)
   }
 
   private fun addInlayComponent(cell: PsiElement): NotebookInlayComponent {
