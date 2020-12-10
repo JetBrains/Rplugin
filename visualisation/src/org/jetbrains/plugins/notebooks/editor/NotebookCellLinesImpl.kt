@@ -70,13 +70,10 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   private fun initializeEmptyLists() {
     wrapErrors(null) {
       markerCache.addAll(cellTypeAwareLexerProvider.markerSequence(document.immutableCharSequence, 0, 0))
-      intervalCache.addAll(adjustedMarkers(0, markerCache).asSequence().zipWithNext(::markersToInterval))
+      intervalCache.addAll(adjustedMarkers(markerCache, 0, markerCache, document.textLength).asSequence().zipWithNext(markersToInterval(document)))
     }
     checkIntegrity(null)
   }
-
-  private fun markersToInterval(a: Marker, b: Marker) =
-    Interval(a.ordinal, a.type, document.getLineNumber(a.offset)..document.getLineNumber(max(0, b.offset - 1)))
 
   private fun shiftOffsetToMarkerStart(text: CharSequence, initialOffset: Int): Int {
     val interestingTextAbsoluteOffset = max(0, initialOffset - cellTypeAwareLexerProvider.longestTokenLength + 1)
@@ -218,41 +215,11 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       }
     }
 
-    val adjustedNewMarkers = adjustedMarkers(markerCacheCutStart, newMarkers)
+    val adjustedNewMarkers = adjustedMarkers(markerCache, markerCacheCutStart, newMarkers, document.textLength)
     return UpdateMarkersResult(
       firstIntervalOrdinal = max(0, markerCacheCutStart - if (markerCacheCutStart == 0 && markerCache.getOrNull(0)?.offset != 0) 0 else 1),
       markerSizeDiff = adjustedNewMarkers.size - adjustedOldMarkersSize,
       adjustedNewMarkers = adjustedNewMarkers,
-    )
-  }
-
-  private fun adjustedMarkers(startOrdinal: Int, sublist: List<Marker>): List<Marker> = mutableListOf<Marker>().also { result ->
-    // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
-    // A bogus interval at the start should be created in order to generate the interval above the first real marker.
-    // However, the bogus marker isn't needed if there's a marker right at the document start.
-    val ephemeralStart =
-      startOrdinal == 0 &&
-      markerCache.getOrNull(0)?.offset != 0 &&
-      sublist.firstOrNull().let { it?.ordinal != 0 || it.offset != 0 }
-    result.addIfNotNull(
-      when {
-        ephemeralStart -> Marker(0, CellType.RAW, 0, 0)
-        sublist.firstOrNull()?.ordinal == 0 -> null
-        else -> markerCache.getOrNull(startOrdinal - 1)
-      })
-
-    val ordinalShift = result.firstOrNull()?.ordinal?.let { it + 1 } ?: 0
-    for ((index, marker) in sublist.withIndex()) {
-      result.add(marker.copy(ordinal = index + ordinalShift))
-    }
-
-    val lastOrdinal = (result.lastOrNull()?.ordinal ?: startOrdinal) + (if (ephemeralStart) 0 else 1)
-    result.add(
-      markerCache.getOrNull(lastOrdinal)
-      // Intervals are constructed by combining two adjacent markers. A bogus interval at the end should be created in order to
-      // generate the interval below the last marker.
-      // +1 -- later it'll be decreased back while constructing the last interval.
-      ?: Marker(lastOrdinal, CellType.RAW, document.textLength + 1, 0)
     )
   }
 
@@ -266,7 +233,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       // Interval is an entity between two adjacent markers. Amount of intervals is always less than amount of *adjusted* markers by one.
       firstIntervalOrdinal + newMarkers.size - markerSizeDiff - 1,
     ).toList()
-    val newIntervals = newMarkers.zipWithNext(::markersToInterval)
+    val newIntervals = newMarkers.zipWithNext(markersToInterval(document))
     if (oldIntervals != newIntervals) {
       val lineDiff =
         (newIntervals.takeIf { it.isNotEmpty() }?.run { last().lines.last - first().lines.first + 1 } ?: 0) -
@@ -436,4 +403,38 @@ private fun <T> MutableList<T>.substitute(start: Int, end: Int, pattern: List<T>
       }
     }
   }
+}
+
+internal fun adjustedMarkers(markers: List<Marker>, startOrdinal: Int, sublist: List<Marker>, documentTextLength: Int): List<Marker> = mutableListOf<Marker>().also { result ->
+  // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
+  // A bogus interval at the start should be created in order to generate the interval above the first real marker.
+  // However, the bogus marker isn't needed if there's a marker right at the document start.
+  val ephemeralStart =
+    startOrdinal == 0 &&
+    markers.getOrNull(0)?.offset != 0 &&
+    sublist.firstOrNull().let { it?.ordinal != 0 || it.offset != 0 }
+  result.addIfNotNull(
+    when {
+      ephemeralStart -> Marker(0, CellType.RAW, 0, 0)
+      sublist.firstOrNull()?.ordinal == 0 -> null
+      else -> markers.getOrNull(startOrdinal - 1)
+    })
+
+  val ordinalShift = result.firstOrNull()?.ordinal?.let { it + 1 } ?: 0
+  for ((index, marker) in sublist.withIndex()) {
+    result.add(marker.copy(ordinal = index + ordinalShift))
+  }
+
+  val lastOrdinal = (result.lastOrNull()?.ordinal ?: startOrdinal) + (if (ephemeralStart) 0 else 1)
+  result.add(
+    markers.getOrNull(lastOrdinal)
+    // Intervals are constructed by combining two adjacent markers. A bogus interval at the end should be created in order to
+    // generate the interval below the last marker.
+    // +1 -- later it'll be decreased back while constructing the last interval.
+    ?: Marker(lastOrdinal, CellType.RAW, documentTextLength + 1, 0)
+  )
+}
+
+internal fun markersToInterval(document: Document) = { a: Marker, b: Marker ->
+  Interval(a.ordinal, a.type, document.getLineNumber(a.offset)..document.getLineNumber(max(0, b.offset - 1)))
 }
