@@ -169,7 +169,7 @@ private class OuterComponent private constructor(
     viewport.isOpaque = false
   }
 
-  /** Although it's a scroll pane, it should be resizable depending on the content. */
+  /** Although it's a scroll pane, it's size can change because of resize, addition or deletion of its child components. */
   override fun isValidateRoot(): Boolean = false
 
   override fun validate() {
