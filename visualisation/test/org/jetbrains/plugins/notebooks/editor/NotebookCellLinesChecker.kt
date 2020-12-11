@@ -6,16 +6,16 @@ import com.intellij.psi.PsiDocumentManager
 import org.assertj.core.api.Assertions.assertThat
 
 class NotebookCellLinesChecker(private val lexer: NotebookCellLinesLexer) {
-  private fun getExpected(document: Document): Pair<List<NotebookCellLines.Marker>, List<NotebookCellLines.Interval>> {
-    val markers = lexer.markerSequence(document.text , 0, 0).toList()
-    val intervals = adjustedMarkers(markers, 0, markers, document.textLength).asSequence().zipWithNext(markersToInterval(document)).toList()
+  private fun extractState(notebookCellLines: NotebookCellLines): Pair<List<NotebookCellLines.Marker>, List<NotebookCellLines.Interval>> {
+    val markers = notebookCellLines.markersIterator(0).asSequence().toList()
+    val intervals = notebookCellLines.intervalsIterator(0).asSequence().toList()
     return Pair(markers, intervals)
   }
 
   fun check(document: Document, cellLines: NotebookCellLines) {
-    val (expectedMarkers, expectedIntervals) = getExpected(document)
-    val cachedMarkers = cellLines.markersIterator(0).asSequence().toList()
-    val cachedIntervals = cellLines.intervalsIterator(0).asSequence().toList()
+    val singleUseImpl = NotebookCellLinesImpl.getForSingleUsage(document, lexer)
+    val (expectedMarkers, expectedIntervals) = extractState(singleUseImpl)
+    val (cachedMarkers, cachedIntervals) = extractState(cellLines)
 
     assertThat(cachedMarkers).containsExactly(*expectedMarkers.toTypedArray())
     assertThat(cachedIntervals).containsExactly(*expectedIntervals.toTypedArray())
