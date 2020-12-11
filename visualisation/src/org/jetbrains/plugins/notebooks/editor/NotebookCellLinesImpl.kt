@@ -12,6 +12,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.addIfNotNull
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType
@@ -58,9 +59,10 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     return intervalCache.listIterator(interval.ordinal)
   }
 
-  private fun initialize(it: AsyncPromise<NotebookCellLines>) {
+  private fun initialize(it: AsyncPromise<NotebookCellLines>, useDocumentListener: Boolean) {
     runReadAction {
-      document.addDocumentListener(documentListener)
+      if (useDocumentListener)
+        document.addDocumentListener(documentListener)
 
       initializeEmptyLists()
     }
@@ -376,8 +378,15 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     fun get(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines {
       val promise = AsyncPromise<NotebookCellLines>()
       val actualPromise = map.putIfAbsent(document, promise)
-                          ?: promise.also { NotebookCellLinesImpl(document, lexerProvider).initialize(it) }
+                          ?: promise.also { NotebookCellLinesImpl(document, lexerProvider).initialize(it, useDocumentListener = true) }
       return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
+    }
+
+    @TestOnly
+    fun getForSingleUsage(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines {
+      val promise = AsyncPromise<NotebookCellLines>()
+      NotebookCellLinesImpl(document, lexerProvider).initialize(promise, useDocumentListener = false)
+      return promise.blockingGet(1, TimeUnit.MILLISECONDS)!!
     }
   }
 }
@@ -405,7 +414,7 @@ private fun <T> MutableList<T>.substitute(start: Int, end: Int, pattern: List<T>
   }
 }
 
-internal fun adjustedMarkers(markers: List<Marker>, startOrdinal: Int, sublist: List<Marker>, documentTextLength: Int): List<Marker> = mutableListOf<Marker>().also { result ->
+private fun adjustedMarkers(markers: List<Marker>, startOrdinal: Int, sublist: List<Marker>, documentTextLength: Int): List<Marker> = mutableListOf<Marker>().also { result ->
   // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
   // A bogus interval at the start should be created in order to generate the interval above the first real marker.
   // However, the bogus marker isn't needed if there's a marker right at the document start.
@@ -435,6 +444,6 @@ internal fun adjustedMarkers(markers: List<Marker>, startOrdinal: Int, sublist: 
   )
 }
 
-internal fun markersToInterval(document: Document) = { a: Marker, b: Marker ->
+private fun markersToInterval(document: Document) = { a: Marker, b: Marker ->
   Interval(a.ordinal, a.type, document.getLineNumber(a.offset)..document.getLineNumber(max(0, b.offset - 1)))
 }
