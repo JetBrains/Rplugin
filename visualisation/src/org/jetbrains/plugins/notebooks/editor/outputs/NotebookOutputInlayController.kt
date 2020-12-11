@@ -1,10 +1,12 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
@@ -149,12 +151,15 @@ class NotebookOutputInlayController private constructor(
   }
 }
 
+val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
+  get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<OuterComponent>()
+
 private class OuterComponent private constructor(
   private val editor: EditorImpl,
   innerComponent: InnerComponent,
 ) : JBScrollPane(innerComponent) {
   init {
-    border = JBUI.Borders.empty(0, 0, 10, 0)
+    border = JBUI.Borders.empty(10, 0)
     background = editor.backgroundColor
   }
 
