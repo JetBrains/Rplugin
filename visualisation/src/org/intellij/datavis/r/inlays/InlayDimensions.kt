@@ -35,7 +35,7 @@ object InlayDimensions {
   val multiOutputHeightThreshold: Int by lazy {
     val screenSize = try {
       Toolkit.getDefaultToolkit().screenSize
-    } catch (e: Error) {
+    } catch (e: Throwable) {
       // Can happen in a test environment when `HeadlessToolkit` is used.
       return@lazy 500
     }
