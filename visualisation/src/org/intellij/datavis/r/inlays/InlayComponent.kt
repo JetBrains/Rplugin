@@ -43,7 +43,11 @@ open class InlayComponent : JPanel(BorderLayout()), EditorCustomElementRenderer 
     }
     set(value) {
       if (value && resizeController == null) {
-        resizeController = ResizeController(this)
+        resizeController = ResizeController(
+          component = this,
+          editor = inlay!!.editor,
+          deltaSize = this::deltaSize,
+        )
         addMouseMotionListener(resizeController)
         addMouseListener(resizeController)
       }

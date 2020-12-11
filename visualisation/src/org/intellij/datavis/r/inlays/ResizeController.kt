@@ -1,12 +1,14 @@
 package org.intellij.datavis.r.inlays
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.impl.FontInfo
 import com.intellij.openapi.editor.impl.view.EditorPainter
 import com.intellij.openapi.editor.impl.view.FontLayoutService
 import com.intellij.util.ui.JBUI
+import java.awt.Component
 import java.awt.Cursor
+import java.awt.Dimension
 import java.awt.Point
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -14,7 +16,11 @@ import javax.swing.SwingUtilities
 import kotlin.math.abs
 
 /** Realizes resize of InlayComponent by dragging resize icon in right bottom corner of component. */
-class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapter() {
+class ResizeController(
+  private val component: Component,
+  private val editor: Editor,
+  private val deltaSize: (dx: Int, dy: Int) -> Unit = component::swingDeltaSize,
+) : MouseAdapter() {
 
   private var prevPoint: Point? = null
 
@@ -26,14 +32,12 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
   private val defaultCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
 
   private fun setCursor(cursor: Cursor) {
-    if (inlayComponent.cursor != cursor) {
-      inlayComponent.cursor = cursor
+    if (component.cursor != cursor) {
+      component.cursor = cursor
     }
   }
 
   override fun mouseReleased(e: MouseEvent?) {
-
-    val editor = (inlayComponent.inlay!!.editor as EditorImpl)
 
     // Snapping to right margin.
     if (EditorPainter.isMarginShown(editor) && prevPoint != null) {
@@ -49,10 +53,10 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
       SwingUtilities.convertPointFromScreen(prevPoint!!, editor.contentComponent)
 
       if (abs(prevPoint!!.x - rightMargin) < JBUI.scale(40)) {
-        inlayComponent.deltaSize(rightMargin.toInt() - prevPoint!!.x, 0)
+        deltaSize(rightMargin.toInt() - prevPoint!!.x, 0)
         SwingUtilities.invokeLater {
-          inlayComponent.revalidate()
-          inlayComponent.repaint()
+          component.revalidate()
+          component.repaint()
         }
       }
     }
@@ -63,7 +67,7 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
 
   override fun mousePressed(e: MouseEvent) {
 
-    val correctedHeight = inlayComponent.height - InlayDimensions.bottomBorder
+    val correctedHeight = component.height - InlayDimensions.bottomBorder
 
     scaleMode = if (e.point.y > correctedHeight) {
       ScaleMode.N
@@ -85,7 +89,7 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
 
     val dy = if (scaleMode == ScaleMode.N) locationOnScreen.y - prevPoint!!.y else 0
 
-    inlayComponent.deltaSize(0, dy)
+    deltaSize(0, dy)
     prevPoint = locationOnScreen
   }
 
@@ -95,7 +99,7 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
       return
     }
 
-    val correctedHeight = inlayComponent.height - InlayDimensions.bottomBorder
+    val correctedHeight = component.height - InlayDimensions.bottomBorder
     setCursor(if (e.point.y > correctedHeight) nResizeCursor else defaultCursor)
   }
 
@@ -104,4 +108,12 @@ class ResizeController(private val inlayComponent: InlayComponent) : MouseAdapte
       setCursor(defaultCursor)
     }
   }
+}
+
+private fun Component.swingDeltaSize(dx: Int, dy: Int) {
+  val oldSize = size
+  size = Dimension(oldSize.width + dx, oldSize.height + dy)
+  preferredSize = size
+  revalidate()
+  repaint()
 }
