@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
+import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
@@ -19,7 +20,6 @@ import java.awt.event.ContainerEvent
 import java.awt.event.ContainerListener
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.plaf.ComponentUI
 
 /**
  * Shows outputs for intervals using [NotebookOutputDataKeyExtractor] and [NotebookOutputComponentFactory].
@@ -29,7 +29,7 @@ class NotebookOutputInlayController private constructor(
   private val editor: EditorImpl,
   lines: IntRange,
 ) : NotebookCellInlayController {
-  private val innerComponent = InnerComponent(editor)
+  private val innerComponent = InnerComponent()
   private val outerComponent = OuterComponent.create(editor, innerComponent)
 
   override val inlay: Inlay<*> =
@@ -154,19 +154,29 @@ private class OuterComponent private constructor(
   innerComponent: InnerComponent,
 ) : JBScrollPane(innerComponent) {
   init {
-    border = JBUI.Borders.empty(0)
+    border = JBUI.Borders.empty(0, 0, 10, 0)
+    background = editor.backgroundColor
+  }
+
+  override fun updateUI() {
+    super.updateUI()
+    isOpaque = false
+    viewport.isOpaque = false
   }
 
   /** Although it's a scroll pane, it should be resizable depending on the content. */
   override fun isValidateRoot(): Boolean = false
 
   override fun validate() {
-    size = preferredSize
+    if (!isPreferredSizeSet) {
+      size = preferredSize
+    }
     super.validate()
   }
 
   override fun getPreferredSize(): Dimension =
-    Dimension(
+    if (isPreferredSizeSet) super.getPreferredSize()
+    else Dimension(
       editor.textEditingAreaWidth,
       super.getPreferredSize().height.coerceAtMost(editor.scrollingModel.visibleArea.height * 2 / 3),
     )
@@ -181,11 +191,16 @@ private class OuterComponent private constructor(
           innerComponent.invalidate()
         }
       }
+
+      val resizeController = ResizeController(outerComponent, editor)
+      outerComponent.addMouseListener(resizeController)
+      outerComponent.addMouseWheelListener(resizeController)
+      outerComponent.addMouseMotionListener(resizeController)
     }
   }
 }
 
-private class InnerComponent(private val editor: EditorImpl) : JPanel() {
+private class InnerComponent : JPanel() {
   val fixedWidthLayout = FixedWidthLayout()
 
   private val childComponentListener = object : ComponentListener {
@@ -209,9 +224,9 @@ private class InnerComponent(private val editor: EditorImpl) : JPanel() {
     })
   }
 
-  override fun setUI(newUI: ComponentUI) {
-    super.setUI(newUI)
-    background = editor.contentComponent.background
+  override fun updateUI() {
+    super.updateUI()
+    isOpaque = false
   }
 
   private fun onChildChange() {
