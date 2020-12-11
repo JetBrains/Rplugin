@@ -74,6 +74,7 @@ class CodeCellLinesChecker(private val description: String,
     val codeCellLines = NotebookCellLines.get(editorGetter())
     codeCellLines.intervalListeners.addListener(intervalListener)
     val prettyDocumentTextBefore = editorGetter().prettyText
+    val notebookCellLinesChecker = NotebookCellLinesChecker.get(editorGetter())
 
     try {
       handler()
@@ -111,6 +112,8 @@ class CodeCellLinesChecker(private val description: String,
           .describedAs("Intervals: $descr")
           .isEqualTo(intervals)
       }
+
+      notebookCellLinesChecker.check(editorGetter().document, codeCellLines)
     }
 
     fun List<Pair<List<NotebookCellLines.Interval>, List<NotebookCellLines.Interval>>>.prettyListeners() =
