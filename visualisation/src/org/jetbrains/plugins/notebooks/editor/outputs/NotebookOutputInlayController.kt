@@ -13,6 +13,10 @@ import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
 import org.jetbrains.plugins.notebooks.editor.ui.registerEditorSizeWatcher
 import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
 import java.awt.*
+import java.awt.event.ComponentEvent
+import java.awt.event.ComponentListener
+import java.awt.event.ContainerEvent
+import java.awt.event.ContainerListener
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.plaf.ComponentUI
@@ -153,6 +157,14 @@ private class OuterComponent private constructor(
     border = JBUI.Borders.empty(0)
   }
 
+  /** Although it's a scroll pane, it should be resizable depending on the content. */
+  override fun isValidateRoot(): Boolean = false
+
+  override fun validate() {
+    size = preferredSize
+    super.validate()
+  }
+
   override fun getPreferredSize(): Dimension =
     Dimension(
       editor.textEditingAreaWidth,
@@ -176,13 +188,36 @@ private class OuterComponent private constructor(
 private class InnerComponent(private val editor: EditorImpl) : JPanel() {
   val fixedWidthLayout = FixedWidthLayout()
 
+  private val childComponentListener = object : ComponentListener {
+    override fun componentResized(e: ComponentEvent): Unit = onChildChange()
+    override fun componentMoved(e: ComponentEvent): Unit = onChildChange()
+    override fun componentShown(e: ComponentEvent): Unit = onChildChange()
+    override fun componentHidden(e: ComponentEvent): Unit = onChildChange()
+  }
+
   init {
     layout = fixedWidthLayout
+
+    addContainerListener(object : ContainerListener {
+      override fun componentAdded(e: ContainerEvent) {
+        e.component?.addComponentListener(childComponentListener)
+      }
+
+      override fun componentRemoved(e: ContainerEvent) {
+        e.component?.removeComponentListener(childComponentListener)
+      }
+    })
   }
 
   override fun setUI(newUI: ComponentUI) {
     super.setUI(newUI)
     background = editor.contentComponent.background
+  }
+
+  private fun onChildChange() {
+    val outerComponent = parent.parent
+    assert(outerComponent is OuterComponent)
+    outerComponent.validate()
   }
 }
 
