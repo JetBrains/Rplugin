@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.ResizeController
