@@ -157,10 +157,12 @@ val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
 private class OuterComponent private constructor(
   private val editor: EditorImpl,
   innerComponent: InnerComponent,
-) : JBScrollPane(innerComponent) {
+) : NotebookOutputNonStickyScrollPane(innerComponent) {
   init {
     border = JBUI.Borders.empty(10, 0)
     background = editor.backgroundColor
+    verticalScrollBar.background = background
+    horizontalScrollBar.background = background
   }
 
   override fun updateUI() {
