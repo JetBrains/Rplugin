@@ -189,9 +189,9 @@ private class OuterComponent private constructor(
   companion object {
     @JvmStatic
     fun create(editor: EditorImpl, innerComponent: InnerComponent) = OuterComponent(editor, innerComponent).also { outerComponent ->
-      registerEditorSizeWatcher(outerComponent) { editorComponent ->
+      registerEditorSizeWatcher(outerComponent) {
         val oldWidth = innerComponent.fixedWidthLayout.fixedWidth
-        innerComponent.fixedWidthLayout.fixedWidth = editorComponent?.editor?.textEditingAreaWidth ?: -1
+        innerComponent.fixedWidthLayout.fixedWidth = outerComponent.width - outerComponent.verticalScrollBar.width
         if (oldWidth != innerComponent.fixedWidthLayout.fixedWidth) {
           innerComponent.invalidate()
         }

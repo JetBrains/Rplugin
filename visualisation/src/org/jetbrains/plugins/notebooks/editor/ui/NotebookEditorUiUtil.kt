@@ -78,15 +78,15 @@ private fun updateUiOnParentResizeImpl(parent: JComponent, childRef: WeakReferen
  */
 fun registerEditorSizeWatcher(
   component: JComponent,
-  updateHandler: (editorComponent: EditorComponentImpl?) -> Unit,
+  updateHandler: () -> Unit,
 ) {
   var editorComponent: EditorComponentImpl? = null
 
-  updateHandler(editorComponent)
+  updateHandler()
 
   // Holds strong reference to the editor. Incautious usage may cause editor leakage.
   val editorResizeListener = object : ComponentAdapter() {
-    override fun componentResized(e: ComponentEvent): Unit = updateHandler(editorComponent)
+    override fun componentResized(e: ComponentEvent): Unit = updateHandler()
   }
 
   component.addHierarchyListener { event ->
@@ -98,7 +98,7 @@ fun registerEditorSizeWatcher(
         editorComponent?.removeComponentListener(editorResizeListener)
         editorComponent = newEditor
         editorComponent?.addComponentListener(editorResizeListener)
-        updateHandler(editorComponent)
+        updateHandler()
       }
     }
   }
