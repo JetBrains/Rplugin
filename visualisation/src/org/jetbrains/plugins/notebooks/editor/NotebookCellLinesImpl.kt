@@ -5,6 +5,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -14,10 +15,7 @@ import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.addIfNotNull
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.CellType
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.Interval
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.IntervalListener
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.Marker
+import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
@@ -25,7 +23,7 @@ import kotlin.math.min
 
 
 class NotebookCellLinesImpl private constructor(private val document: Document,
-                                                private val cellTypeAwareLexerProvider: NotebookCellLinesLexer): NotebookCellLines {
+                                                private val cellTypeAwareLexerProvider: NotebookCellLinesLexer) : NotebookCellLines {
   private val markerCache = mutableListOf<Marker>()
   private val intervalCache = mutableListOf<Interval>()
 
@@ -63,6 +61,12 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       document.addDocumentListener(documentListener)
 
       initializeEmptyLists()
+    }
+    LOG.trace {
+      commonErrorAttachments(null)
+        .joinToString(separator = "\n", prefix = "NotebookCellLines has been initialised for ${document}\n", postfix = "=== end") {
+          "=== ${it.name}:\n${it.displayText}\n"
+        }
     }
     it.setResult(this)
   }
@@ -316,6 +320,12 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       .coerceAtMost(min(oldIntervals.size, newIntervals.size) - trimLeft)
 
     if (oldIntervals.size != newIntervals.size || trimLeft + trimRight != oldIntervals.size) {
+      LOG.trace {
+        commonErrorAttachments(null)
+          .joinToString(separator = "\n", prefix = "Segments in ${document} has changed\n", postfix = "=== end") {
+            "=== ${it.name}:\n${it.displayText}\n"
+          }
+      }
       intervalListeners.multicaster.segmentChanged(
         oldIntervals.run { subList(trimLeft, size - trimRight) },
         newIntervals.run { subList(trimLeft, size - trimRight) },
