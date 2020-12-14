@@ -40,9 +40,19 @@ internal class NotebookIntervalPointerFactoryImpl(val notebookCellLines: Noteboo
 
     newIntervals.firstOrNull()?.also { firstNew ->
       pointers.addAll(firstNew.ordinal, newIntervals.map { NotebookIntervalPointerImpl(this, it.ordinal) })
-      for(i in firstNew.ordinal + newIntervals.size until pointers.size) {
-        pointers[i].ordinal = i
-      }
+    }
+
+    val invalidPointersStart =
+      newIntervals.firstOrNull()?.let { it.ordinal + newIntervals.size }
+      ?: oldIntervals.firstOrNull()?.let { it.ordinal }
+      ?: pointers.size
+
+    updateOrdinalsFrom(invalidPointersStart)
+  }
+
+  private fun updateOrdinalsFrom(pos: Int) {
+    for(i in pos until pointers.size) {
+      pointers[i].ordinal = i
     }
   }
 }
