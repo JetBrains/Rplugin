@@ -60,7 +60,7 @@ interface NotebookCellLines{
     fun segmentChanged(oldIntervals: List<Interval>, newIntervals: List<Interval>)
   }
 
-  val intervals: List<Interval>
+  fun getIterator(ordinal: Int): ListIterator<Interval>
 
   fun getIterator(interval: Interval): ListIterator<Interval>
 

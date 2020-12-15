@@ -10,8 +10,6 @@ import com.intellij.openapi.util.Key
  */
 interface NotebookIntervalPointer {
   fun get(): NotebookCellLines.Interval?
-
-  fun isValid(): Boolean
 }
 
 private val key = Key.create<NotebookIntervalPointerFactory>(NotebookIntervalPointerFactory::class.java.name)
