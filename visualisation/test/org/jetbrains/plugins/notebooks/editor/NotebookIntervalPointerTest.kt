@@ -2,6 +2,7 @@ package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.util.EventDispatcher
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.Descriptable
 import org.assertj.core.description.Description
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.Interval
@@ -92,6 +93,7 @@ class NotebookIntervalPointerTest {
           pointersToRemovedIntervals.forEach{ pointer -> assertThat(pointer.get()).isNull() }
 
           shouldBeValid(finalIntervals)
+          shouldBeInvalid(toRemove)
         }
       }
     }
@@ -151,9 +153,12 @@ private class TestEnv(intervals: List<Interval>) {
   }
 
   fun shouldBeInvalid(interval: Interval) {
-    assertThat(pointersFactory.create(interval).get())
+    val error = catchThrowable {
+      pointersFactory.create(interval).get()
+    }
+    assertThat(error)
       .describedAs { "pointer for ${interval} should be null, but current pointers = ${describe(notebookCellLines.intervals)}" }
-      .isNull()
+      .isNotNull()
   }
 
   fun shouldBeValid(intervals: List<Interval>): Unit = intervals.forEach{ shouldBeValid(it) }
