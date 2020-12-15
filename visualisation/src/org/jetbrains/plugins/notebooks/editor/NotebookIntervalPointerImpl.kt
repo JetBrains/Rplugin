@@ -1,58 +1,46 @@
 package org.jetbrains.plugins.notebooks.editor
 
 
-internal class NotebookIntervalPointerImpl(val factory: NotebookIntervalPointerFactoryImpl, var ordinal: Int?): NotebookIntervalPointer {
-  override fun get(): NotebookCellLines.Interval? =
-    ordinal?.let{ factory[it] }
-
-  override fun isValid(): Boolean =
-    ordinal != null
-
-  fun dispose() {
-    ordinal = null
-  }
+internal class NotebookIntervalPointerImpl(internal var interval: NotebookCellLines.Interval?): NotebookIntervalPointer {
+  override fun get(): NotebookCellLines.Interval? = interval
 }
 
 
-internal class NotebookIntervalPointerFactoryImpl(val notebookCellLines: NotebookCellLines): NotebookIntervalPointerFactory, NotebookCellLines.IntervalListener {
+internal class NotebookIntervalPointerFactoryImpl(private val notebookCellLines: NotebookCellLines): NotebookIntervalPointerFactory, NotebookCellLines.IntervalListener {
   private val pointers = ArrayList<NotebookIntervalPointerImpl>()
 
   init {
-    pointers.addAll(notebookCellLines.intervals.indices.map { ordinal -> NotebookIntervalPointerImpl(this, ordinal) })
+    pointers.addAll(notebookCellLines.getIterator(0).asSequence().map { NotebookIntervalPointerImpl(it) })
     notebookCellLines.intervalListeners.addListener(this)
   }
 
-  internal operator fun get(ordinal: Int): NotebookCellLines.Interval = notebookCellLines.intervals[ordinal]
-
   override fun create(ordinal: Int): NotebookIntervalPointer =
-    pointers.getOrNull(ordinal) ?: NotebookIntervalPointerImpl(this, null)
+    pointers.getOrNull(ordinal) ?: NotebookIntervalPointerImpl(null)
 
   override fun segmentChanged(oldIntervals: List<NotebookCellLines.Interval>, newIntervals: List<NotebookCellLines.Interval>) {
-    oldIntervals.firstOrNull()?.let { first ->
-      newIntervals.firstOrNull()?.let { second ->
-        require(first.ordinal == second.ordinal)
-      }
-    }
-
     pointers.removeAll(oldIntervals.map {
-      pointers[it.ordinal].also { it.dispose() }
+      pointers[it.ordinal].also { pointer ->
+        pointer.interval = null
+      }
     })
 
     newIntervals.firstOrNull()?.also { firstNew ->
-      pointers.addAll(firstNew.ordinal, newIntervals.map { NotebookIntervalPointerImpl(this, it.ordinal) })
+      pointers.addAll(firstNew.ordinal, newIntervals.map { NotebookIntervalPointerImpl(it) })
     }
 
     val invalidPointersStart =
       newIntervals.firstOrNull()?.let { it.ordinal + newIntervals.size }
-      ?: oldIntervals.firstOrNull()?.let { it.ordinal }
+      ?: oldIntervals.firstOrNull()?.ordinal
       ?: pointers.size
 
-    updateOrdinalsFrom(invalidPointersStart)
+    updatePointersFrom(invalidPointersStart)
   }
 
-  private fun updateOrdinalsFrom(pos: Int) {
+  private fun updatePointersFrom(pos: Int) {
+    val iterator = notebookCellLines.getIterator(pos)
+
     for(i in pos until pointers.size) {
-      pointers[i].ordinal = i
+      pointers[i].interval = iterator.next()
     }
   }
 }

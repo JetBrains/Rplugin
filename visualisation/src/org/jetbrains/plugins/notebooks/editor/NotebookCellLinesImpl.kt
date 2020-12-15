@@ -30,9 +30,6 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
 
   override val intervalListeners = EventDispatcher.create(IntervalListener::class.java)
 
-  override val intervals: List<Interval>
-    get() = intervalCache
-
   override var modificationStamp: Long = 0
     private set
 
@@ -53,6 +50,10 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
       ++fromIndex
     }
     return intervalCache.listIterator(fromIndex)
+  }
+
+  override fun getIterator(ordinal: Int): ListIterator<Interval> {
+    return intervalCache.listIterator(ordinal)
   }
 
   override fun getIterator(interval: Interval): ListIterator<Interval> {
