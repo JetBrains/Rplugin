@@ -4,9 +4,8 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Key
 
 /**
- * Pointer may become invalid and return null interval
  * Pointer becomes invalid when code cell is edited
- * There are no more than one pointer for each interval
+ * Invalid pointer returns null
  */
 interface NotebookIntervalPointer {
   fun get(): NotebookCellLines.Interval?
@@ -15,7 +14,6 @@ interface NotebookIntervalPointer {
 private val key = Key.create<NotebookIntervalPointerFactory>(NotebookIntervalPointerFactory::class.java.name)
 
 interface NotebookIntervalPointerFactory {
-  /** same calls will return same pointer */
   fun create(ordinal: Int): NotebookIntervalPointer
 
   companion object {
