@@ -13,6 +13,7 @@ import com.intellij.xdebugger.frame.XFullValueEvaluator
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.presentation.XValuePresentation
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
+import org.jetbrains.annotations.Nls
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.console.RConsoleManager
 import org.jetbrains.r.debugger.RDebuggerUtil
@@ -143,7 +144,7 @@ internal object RXPresentationUtils {
 
   private fun addShowTableButton(node: XValueNode,
                                  rxVar: RXVar,
-                                 text: String) {
+                                 text: @Nls String) {
     node.setFullValueEvaluator(object : XFullValueEvaluator(text) {
       override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         val ref = rxVar.rVar.ref
