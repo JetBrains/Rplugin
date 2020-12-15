@@ -14,7 +14,8 @@ interface NotebookIntervalPointer {
 private val key = Key.create<NotebookIntervalPointerFactory>(NotebookIntervalPointerFactory::class.java.name)
 
 interface NotebookIntervalPointerFactory {
-  fun create(ordinal: Int): NotebookIntervalPointer
+  /** pointer holds this interval or null if interval is obsolete */
+  fun create(interval: NotebookCellLines.Interval): NotebookIntervalPointer
 
   companion object {
     fun get(editor: EditorImpl): NotebookIntervalPointerFactory =
