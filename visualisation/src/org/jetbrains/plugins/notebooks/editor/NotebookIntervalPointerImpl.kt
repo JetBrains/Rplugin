@@ -15,9 +15,9 @@ internal class NotebookIntervalPointerFactoryImpl(private val notebookCellLines:
   }
 
   override fun create(interval: NotebookCellLines.Interval): NotebookIntervalPointer =
-    pointers.getOrNull(interval.ordinal)?.takeIf {
-      it.get() == interval
-    } ?: NotebookIntervalPointerImpl(null)
+    pointers[interval.ordinal].also {
+      require(it.interval == interval)
+    }
 
   override fun segmentChanged(oldIntervals: List<NotebookCellLines.Interval>, newIntervals: List<NotebookCellLines.Interval>) {
     pointers.removeAll(oldIntervals.map {
