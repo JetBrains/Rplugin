@@ -1,7 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor
 
 
-internal class NotebookIntervalPointerImpl(internal var interval: NotebookCellLines.Interval?): NotebookIntervalPointer {
+private class NotebookIntervalPointerImpl(var interval: NotebookCellLines.Interval?): NotebookIntervalPointer {
   override fun get(): NotebookCellLines.Interval? = interval
 }
 
