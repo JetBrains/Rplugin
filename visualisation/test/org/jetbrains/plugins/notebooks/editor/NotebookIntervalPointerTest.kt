@@ -23,36 +23,29 @@ class NotebookIntervalPointerTest {
   @Test
   fun testInitialization() {
     for (intervals in exampleIntervals) {
-      withEnv(intervals) {
-        shouldBeValid(intervals)
-        shouldBeInvalid(makeInterval(10, 10..11))
-      }
+      val env = TestEnv(intervals)
+      env.shouldBeValid(intervals)
+      env.shouldBeInvalid(makeInterval(10, 10..11))
     }
   }
 
   @Test
   fun testAddAllIntervals() {
     for (intervals in exampleIntervals) {
-      withEnv(listOf()) {
-        shouldBeInvalid(intervals)
-
-        changeSegment(listOf(), intervals, intervals)
-
-        shouldBeValid(intervals)
-      }
+      val env = TestEnv(listOf())
+      env.shouldBeInvalid(intervals)
+      env.changeSegment(listOf(), intervals, intervals)
+      env.shouldBeValid(intervals)
     }
   }
 
   @Test
   fun testRemoveAllIntervals() {
     for (intervals in exampleIntervals) {
-      withEnv(intervals) {
-        shouldBeValid(intervals)
-
-        changeSegment(intervals, listOf(), listOf())
-
-        shouldBeInvalid(intervals)
-      }
+      val env = TestEnv(intervals)
+      env.shouldBeValid(intervals)
+      env.changeSegment(intervals, listOf(), listOf())
+      env.shouldBeInvalid(intervals)
     }
   }
 
@@ -80,21 +73,21 @@ class NotebookIntervalPointerTest {
 
         val finalIntervals = fixOrdinalsAndOffsets(start + toAdd + end)
 
-        withEnv(initialIntervals) {
-          val pointersToUnchangedIntervals = (start + end).map { pointersFactory.create(it) }
-          val pointersToRemovedIntervals = toRemove.map { pointersFactory.create(it) }
+        val env = TestEnv(initialIntervals)
 
-          pointersToUnchangedIntervals.forEach { assertThat(it.get()).isNotNull() }
-          pointersToRemovedIntervals.forEach { assertThat(it.get()).isNotNull }
+        val pointersToUnchangedIntervals = (start + end).map { env.pointersFactory.create(it) }
+        val pointersToRemovedIntervals = toRemove.map { env.pointersFactory.create(it) }
 
-          changeSegment(toRemove, toAdd, finalIntervals)
+        pointersToUnchangedIntervals.forEach { assertThat(it.get()).isNotNull() }
+        pointersToRemovedIntervals.forEach { assertThat(it.get()).isNotNull }
 
-          pointersToUnchangedIntervals.forEach { pointer -> assertThat(pointer.get()).isNotNull() }
-          pointersToRemovedIntervals.forEach { pointer -> assertThat(pointer.get()).isNull() }
+        env.changeSegment(toRemove, toAdd, finalIntervals)
 
-          shouldBeValid(finalIntervals)
-          shouldBeInvalid(toRemove)
-        }
+        pointersToUnchangedIntervals.forEach { pointer -> assertThat(pointer.get()).isNotNull() }
+        pointersToRemovedIntervals.forEach { pointer -> assertThat(pointer.get()).isNull() }
+
+        env.shouldBeValid(finalIntervals)
+        env.shouldBeInvalid(toRemove)
       }
     }
   }
@@ -115,11 +108,6 @@ class NotebookIntervalPointerTest {
     }
 
     return result
-  }
-
-  private fun withEnv(initialIntervals: List<Interval>, func: TestEnv.() -> Unit) {
-    val env = TestEnv(initialIntervals)
-    env.func()
   }
 
   private fun makeInterval(ordinal: Int, lines: IntRange) =
