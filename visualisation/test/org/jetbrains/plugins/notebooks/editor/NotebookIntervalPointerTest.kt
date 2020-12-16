@@ -69,12 +69,12 @@ class NotebookIntervalPointerTest {
 
     val optionsToAdd = listOf(
       listOf(),
-      makeIntervals (2..10).map { it.copy(ordinal = it.ordinal + 1) },
+      makeIntervals(2..10).map { it.copy(ordinal = it.ordinal + 1) },
       makeIntervals(2..10, 11..20).map { it.copy(ordinal = it.ordinal + 1) }
     )
 
     for (toRemove in optionsToRemove) {
-      for(toAdd in optionsToAdd) {
+      for (toAdd in optionsToAdd) {
         val start = initialIntervals.subList(0, 1)
         val end = initialIntervals.subList(1 + toRemove.size, 4)
 
@@ -89,8 +89,8 @@ class NotebookIntervalPointerTest {
 
           changeSegment(toRemove, toAdd, finalIntervals)
 
-          pointersToUnchangedIntervals.forEach{ pointer -> assertThat(pointer.get()).isNotNull() }
-          pointersToRemovedIntervals.forEach{ pointer -> assertThat(pointer.get()).isNull() }
+          pointersToUnchangedIntervals.forEach { pointer -> assertThat(pointer.get()).isNotNull() }
+          pointersToRemovedIntervals.forEach { pointer -> assertThat(pointer.get()).isNull() }
 
           shouldBeValid(finalIntervals)
           shouldBeInvalid(toRemove)
@@ -109,7 +109,7 @@ class NotebookIntervalPointerTest {
         if (interval.lines.first == expectedOffset && interval.ordinal == index)
           interval
         else
-          interval.copy(ordinal = index, lines = expectedOffset .. (expectedOffset + interval.lines.last - interval.lines.first))
+          interval.copy(ordinal = index, lines = expectedOffset..(expectedOffset + interval.lines.last - interval.lines.first))
 
       result.add(correctInterval)
     }
@@ -161,12 +161,12 @@ private class TestEnv(intervals: List<Interval>) {
       .isNotNull()
   }
 
-  fun shouldBeValid(intervals: List<Interval>): Unit = intervals.forEach{ shouldBeValid(it) }
-  fun shouldBeInvalid(intervals: List<Interval>): Unit = intervals.forEach{ shouldBeInvalid(it) }
+  fun shouldBeValid(intervals: List<Interval>): Unit = intervals.forEach { shouldBeValid(it) }
+  fun shouldBeInvalid(intervals: List<Interval>): Unit = intervals.forEach { shouldBeInvalid(it) }
 }
 
 
-private class MockNotebookCellLines(val intervals: MutableList<Interval> = mutableListOf()): NotebookCellLines {
+private class MockNotebookCellLines(val intervals: MutableList<Interval> = mutableListOf()) : NotebookCellLines {
   init {
     checkIntervals(intervals)
   }
@@ -190,16 +190,16 @@ private fun describe(intervals: List<Interval>): String =
   intervals.joinToString(",", "[", "]")
 
 private fun checkIntervals(intervals: List<Interval>) {
-  intervals.zipWithNext().forEach{ (prev, next) ->
-    assertThat(prev.lines.last + 1).describedAs{ "wrong intervals: ${describe(intervals)}" }.isEqualTo(next.lines.first)
+  intervals.zipWithNext().forEach { (prev, next) ->
+    assertThat(prev.lines.last + 1).describedAs { "wrong intervals: ${describe(intervals)}" }.isEqualTo(next.lines.first)
   }
 
-  intervals.withIndex().forEach{ (index, interval) ->
-    assertThat(interval.ordinal).describedAs{ "wrong interval ordinal: ${describe(intervals)}" }.isEqualTo(index)
+  intervals.withIndex().forEach { (index, interval) ->
+    assertThat(interval.ordinal).describedAs { "wrong interval ordinal: ${describe(intervals)}" }.isEqualTo(index)
   }
 }
 
-fun<Self> Descriptable<Self>.describedAs(lazyMsg: () -> String): Self =
-  describedAs(object: Description() {
+fun <Self> Descriptable<Self>.describedAs(lazyMsg: () -> String): Self =
+  describedAs(object : Description() {
     override fun value(): String = lazyMsg()
   })
