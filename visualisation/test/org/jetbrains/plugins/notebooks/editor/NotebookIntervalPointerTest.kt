@@ -131,7 +131,7 @@ class NotebookIntervalPointerTest {
 
 
 private class TestEnv(intervals: List<Interval>) {
-  val notebookCellLines = NotebookCellLinesTestImpl(intervals = mutableListOf(*intervals.toTypedArray()))
+  val notebookCellLines = MockNotebookCellLines(intervals = mutableListOf(*intervals.toTypedArray()))
   val pointersFactory = NotebookIntervalPointerFactoryImpl(notebookCellLines)
 
   fun changeSegment(old: List<Interval>, new: List<Interval>, allIntervals: List<Interval>) {
@@ -166,7 +166,7 @@ private class TestEnv(intervals: List<Interval>) {
 }
 
 
-private class NotebookCellLinesTestImpl(val intervals: MutableList<Interval> = mutableListOf()): NotebookCellLines {
+private class MockNotebookCellLines(val intervals: MutableList<Interval> = mutableListOf()): NotebookCellLines {
   init {
     checkIntervals(intervals)
   }
