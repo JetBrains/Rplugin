@@ -278,31 +278,19 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   }
 
   private fun notifyChangedIntervals(oldIntervals: List<Interval>, newIntervals: List<Interval>) {
-    val trimLeft = oldIntervals.asSequence()
-      .zip(newIntervals.asSequence())
-      .takeWhile { (o, n) -> o == n }
-      .count()
+    val (trimmedOld, trimmedNew) = trimLists(oldIntervals, newIntervals) { o, n ->
+      o.type == n.type &&
+      o.lines.last - o.lines.first == n.lines.last - n.lines.first
+    }
 
-    val trimRight = oldIntervals.reversed().asSequence()
-      .zip(newIntervals.reversed().asSequence())
-      .takeWhile { (o, n) ->
-        o.type == n.type &&
-        o.lines.last - o.lines.first == n.lines.last - n.lines.first
-      }
-      .count()
-      .coerceAtMost(min(oldIntervals.size, newIntervals.size) - trimLeft)
-
-    if (oldIntervals.size != newIntervals.size || trimLeft + trimRight != oldIntervals.size) {
+    if (trimmedOld != trimmedNew) {
       LOG.trace {
         commonErrorAttachments(null)
           .joinToString(separator = "\n", prefix = "Segments in ${document} has changed\n", postfix = "=== end") {
             "=== ${it.name}:\n${it.displayText}\n"
           }
       }
-      intervalListeners.multicaster.segmentChanged(
-        oldIntervals.run { subList(trimLeft, size - trimRight) },
-        newIntervals.run { subList(trimLeft, size - trimRight) },
-      )
+      intervalListeners.multicaster.segmentChanged(trimmedOld, trimmedNew)
     }
   }
 
