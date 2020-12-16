@@ -3,6 +3,8 @@ package org.jetbrains.plugins.notebooks.editor
 
 private class NotebookIntervalPointerImpl(var interval: NotebookCellLines.Interval?): NotebookIntervalPointer {
   override fun get(): NotebookCellLines.Interval? = interval
+
+  override fun toString(): String = "NotebookIntervalPointerImpl($interval)"
 }
 
 
