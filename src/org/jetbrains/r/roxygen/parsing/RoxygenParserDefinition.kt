@@ -14,6 +14,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.r.roxygen.RoxygenLanguage
 import org.jetbrains.r.roxygen.lexer.RoxygenLexer
 import org.jetbrains.r.roxygen.psi.RoxygenFile
@@ -31,7 +32,7 @@ class RoxygenParserDefinition : ParserDefinition {
 
   override fun getFileNodeType(): IFileElementType = FILE
 
-  override fun createFile(viewProvider: FileViewProvider): PsiFile = RoxygenFile(viewProvider)
+  override fun createFile(viewProvider: @NotNull FileViewProvider): @NotNull PsiFile = RoxygenFile(viewProvider)
 
   override fun createElement(node: ASTNode): PsiElement = RoxygenElementTypes.Factory.createElement(node)
 

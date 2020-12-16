@@ -45,7 +45,7 @@ public class RParserDefinition implements ParserDefinition {
 
 
     @Override
-    public IFileElementType getFileNodeType() {
+    public @NotNull IFileElementType getFileNodeType() {
         return FILE;
     }
 
@@ -86,13 +86,13 @@ public class RParserDefinition implements ParserDefinition {
 
 
     @Override
-    public PsiFile createFile(FileViewProvider viewProvider) {
+    public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
         return new RFileImpl(viewProvider);
     }
 
 
     @Override
-    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    public @NotNull SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
         return SpaceRequirements.MAY;
     }
 }
