@@ -187,7 +187,7 @@ private class MockNotebookCellLines(val intervals: MutableList<Interval> = mutab
 
 
 private fun describe(intervals: List<Interval>): String =
-  intervals.joinToString(",", "[", "]")
+  intervals.joinToString(separator = ",", prefix = "[", postfix = "]")
 
 private fun checkIntervals(intervals: List<Interval>) {
   intervals.zipWithNext().forEach { (prev, next) ->
