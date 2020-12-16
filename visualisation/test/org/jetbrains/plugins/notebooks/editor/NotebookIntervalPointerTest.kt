@@ -137,7 +137,7 @@ private class TestEnv(intervals: List<Interval>) {
   fun changeSegment(old: List<Interval>, new: List<Interval>, allIntervals: List<Interval>) {
     old.firstOrNull()?.let { firstOld ->
       new.firstOrNull()?.let { firstNew ->
-        assertThat(firstNew.ordinal).isEqualTo(firstNew.ordinal)
+        assertThat(firstOld.ordinal).isEqualTo(firstNew.ordinal)
       }
     }
 
