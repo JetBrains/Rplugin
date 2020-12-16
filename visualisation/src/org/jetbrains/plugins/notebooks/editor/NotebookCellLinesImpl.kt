@@ -129,13 +129,6 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
 
       checkIntegrity(event)
     }
-
-    override fun bulkUpdateFinished(document: Document) {
-      ApplicationManager.getApplication().assertWriteAccessAllowed()
-      markerCache.clear()
-      intervalCache.clear()
-      initializeEmptyLists()
-    }
   }
 
   /**
