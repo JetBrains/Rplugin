@@ -23,7 +23,6 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.jetbrains.annotations.TestOnly
 import java.awt.Graphics
-import java.util.*
 import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
@@ -240,7 +239,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   }
 
   private fun rememberController(controller: NotebookCellInlayController) {
-    if (inlays.put(controller.inlay, controller) !== controller.inlay) {
+    if (inlays.put(controller.inlay, controller) !== controller) {
       Disposer.register(controller.inlay, Disposable {
         inlays.remove(controller.inlay)
       })
