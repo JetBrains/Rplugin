@@ -36,7 +36,7 @@ class NotebookOutputInlayController private constructor(
   override val inlay: Inlay<*> =
     editor.addComponentInlay(
       outerComponent,
-      isRelatedToPrecedingText = true,
+      isRelatedToPrecedingText = false,
       showAbove = false,
       priority = editor.notebookAppearance.NOTEBOOK_OUTPUT_INLAY_PRIORITY,
       offset = editor.document.getLineEndOffset(lines.last),
