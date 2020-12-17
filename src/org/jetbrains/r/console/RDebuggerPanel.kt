@@ -78,6 +78,9 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   private var currentRXStackFrames = listOf<RXStackFrame>()
 
   private val positionHighlighter = ExecutionPointHighlighter(console.project)
+  private var shouldUpdateHighlighter = true
+  private var wasCommandExecuted = false
+  private var highlightedPosition: RSourcePosition? = null
   private var wasSelected: Any? = null
 
   private var bottomComponent: JComponent? = null
@@ -130,7 +133,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       if (isEnabled) {
         val position = frame?.sourcePosition
         if (position == null) {
-          positionHighlighter.hide()
+          if (shouldUpdateHighlighter) {
+            positionHighlighter.hide()
+            highlightedPosition = null
+          }
         } else {
           val rStackFrame = frame.rStackFrame
           val newPosition = if (rStackFrame?.extendedPosition != null) {
@@ -140,7 +146,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
           } else {
             position
           }
-          positionHighlighter.show(newPosition, frame != framesView.model.getElementAt(0), null)
+          if (shouldUpdateHighlighter || highlightedPosition != rStackFrame?.position) {
+            positionHighlighter.show(newPosition, frame != framesView.model.getElementAt(0), null)
+            highlightedPosition = rStackFrame?.position
+          }
           updateNonMatchingSourceNotification(rStackFrame)
         }
       }
@@ -179,6 +188,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       AllIcons.Actions.Resume,
       "Resume",
       callback = {
+        wasCommandExecuted = true
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandContinue()
       })
@@ -200,6 +210,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       AllIcons.Actions.TraceOver,
       "StepOver",
       callback = {
+        wasCommandExecuted = true
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandStepOver()
       }
@@ -209,6 +220,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       AllIcons.Actions.TraceInto,
       "StepInto",
       callback = {
+        wasCommandExecuted = true
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandStepInto()
       }
@@ -218,6 +230,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       RIcons.Debug.StepIntoMyCode,
       "ForceStepInto",
       callback = {
+        wasCommandExecuted = true
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandStepIntoMyCode()
       }
@@ -227,6 +240,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       AllIcons.Actions.StepOut,
       "StepOut",
       callback = {
+        wasCommandExecuted = true
         console.executeActionHandler.fireBusy()
         console.rInterop.debugCommandStepOut()
       }
@@ -238,6 +252,7 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       callback = {
         val position = XDebuggerUtilImpl.getCaretPosition(console.project, it.dataContext)
         if (position != null) {
+          wasCommandExecuted = true
           console.executeActionHandler.fireBusy()
           console.rInterop.debugCommandRunToPosition(RSourcePosition(position.file, position.line))
         }
@@ -258,25 +273,6 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
     actions.add(ActionManager.getInstance().getAction("ViewBreakpoints"))
     actions.add(createMuteBreakpointsAction())
     return actions
-  }
-
-  private fun createAction(
-    text: String, icon: Icon, actionId: String? = null,
-    isActive: () -> Boolean = { console.executeActionHandler.state == RConsoleExecuteActionHandler.State.DEBUG_PROMPT },
-    callback: (AnActionEvent) -> Unit): AnAction {
-    val toolWindow: ToolWindow? = RConsoleToolWindowFactory.getRConsoleToolWindows(console.project)
-    val action = object : AnAction(text, null, icon) {
-      override fun actionPerformed(e: AnActionEvent) = callback(e)
-
-      override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = toolWindow?.isVisible == true && isActive()
-      }
-    }
-    if (actionId != null) {
-      action.registerCustomShortcutSet(ShortcutSet { KeymapManager.getInstance().activeKeymap.getShortcuts(actionId) },
-                                       WindowManager.getInstance().getFrame(console.project)?.rootPane, this)
-    }
-    return action
   }
 
   private fun createMuteBreakpointsAction(): ToggleAction {
@@ -300,7 +296,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
       isFrameViewShown = true
       isActionToolbarShown = true
       updateStack(createRXStackFrames(rInterop.debugStack))
+      invokeLater { shouldUpdateHighlighter = true }
     } else {
+      wasCommandExecuted = false
+      shouldUpdateHighlighter = false
       isFrameViewShown = false
       isActionToolbarShown = false
       val stackFrame = RXStackFrame(
@@ -311,6 +310,10 @@ class RDebuggerPanel(private val console: RConsoleView): JPanel(BorderLayout()),
   }
 
   override fun onBusy() {
+    if (!wasCommandExecuted) {
+      shouldUpdateHighlighter = false
+    }
+    wasCommandExecuted = false
     updateStack(emptyList())
     isActionToolbarShown = rInterop.isDebug
   }
