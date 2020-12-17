@@ -100,7 +100,7 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
     return ComponentUtil.getParentOfType(type, parent)
   }
 
-  private inner class MyMouseAdapter : MouseAdapter() {
+  inner class MyMouseAdapter : MouseAdapter() {
     override fun mouseEntered(e: MouseEvent) {
       if (mouseEnteredTime == 0L) {
         mouseEnteredTime = e.`when`
@@ -135,7 +135,7 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
     }
   }
 
-  private inner class MyContainerAdapter : ContainerAdapter() {
+  inner class MyContainerAdapter : ContainerAdapter() {
     override fun componentAdded(e: ContainerEvent) {
       (e.source as? JComponent)?.let {
         recursivelyAddMouseListenerToComponent(it, mouseAdapter)
@@ -173,8 +173,16 @@ private fun recursivelyRemoveListeners(comp: JComponent) {
   queue.add(comp)
   while (queue.isNotEmpty()) {
     val c = queue.removeAt(queue.lastIndex)
-    c.containerListeners.forEach { c.removeContainerListener(it) }
-    c.mouseListeners.forEach { c.removeMouseListener(it) }
+    c.containerListeners.forEach {
+      if (it is NotebookOutputNonStickyScrollPane.MyContainerAdapter) {
+        c.removeContainerListener(it)
+      }
+    }
+    c.mouseListeners.forEach {
+      if (it is NotebookOutputNonStickyScrollPane.MyMouseAdapter) {
+        c.removeMouseListener(it)
+      }
+    }
     c.components.filterIsInstance<JComponent>().forEach { queue.add(it) }
   }
 }
