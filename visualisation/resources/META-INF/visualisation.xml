@@ -67,6 +67,12 @@
     <editorFactoryListener id="org.intellij.datavis.r.inlays.InlaysManager" implementation="org.intellij.datavis.r.inlays.InlaysManager"/>
   </extensions>
 
+  <extensions defaultExtensionNs="org.jetbrains.plugins.notebooks">
+    <notebookCellGutterController
+      order="first"
+      implementation="org.jetbrains.plugins.notebooks.editor.CellBackgroundGutterController"/>
+  </extensions>
+
   <extensions defaultExtensionNs="org.intellij.datavis.r.inlays.visualisation">
     <uiCustomizer implementation="org.intellij.datavis.r.ui.DefaultUiCustomizer"/>
   </extensions>
