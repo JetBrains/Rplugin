@@ -306,7 +306,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
     }
   }
 
-  fun addInlayOutputs(inlayOutputs: List<InlayOutput>, cleanup: (() -> Unit)) {
+  fun addInlayOutputs(inlayOutputs: List<InlayOutput>, cleanup: () -> Unit) {
     if (inlayOutputs.size > 1) {
       onMultiOutput(inlayOutputs, cleanup)
     }
