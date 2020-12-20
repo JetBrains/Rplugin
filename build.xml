@@ -6,7 +6,6 @@
     <path id="dep.plugin.classpath">
         <fileset dir="${dep.idea.lib.dir}">
             <include name="annotations.jar"/>
-            <include name="extensions.jar"/>
             <include name="forms_rt.jar"/>
             <include name="guava-*.jar"/>
             <include name="idea.jar"/>
