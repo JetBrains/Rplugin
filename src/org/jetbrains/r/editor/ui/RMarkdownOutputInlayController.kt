@@ -24,6 +24,8 @@ import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
+import org.jetbrains.plugins.notebooks.editor.notebookAppearance
+import org.jetbrains.plugins.notebooks.editor.paintNotebookCellBackgroundGutter
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
@@ -71,7 +73,12 @@ class RMarkdownOutputInlayController private constructor(
     })
   }
 
-  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) = Unit
+  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
+    val interval = intervalIterator.next()
+    val inlayBounds = inlay.bounds ?: return
+    val stripeColor = editor.notebookAppearance.getCellStripeColor(editor, interval)
+    paintNotebookCellBackgroundGutter(editor, g, r, stripeColor, inlayBounds.y, inlayBounds.height)
+  }
 
   override fun addText(text: String, outputType: Key<*>) {
     invokeLater {

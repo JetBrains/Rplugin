@@ -45,6 +45,7 @@ interface NotebookEditorAppearanceColors {
   fun getGutterInputExecutionCountForegroundColor(scheme: EditorColorsScheme): Color? = null
   fun getGutterOutputExecutionCountForegroundColor(scheme: EditorColorsScheme): Color? = null
   fun getProgressStatusRunningColor(scheme: EditorColorsScheme): Color = Color.BLUE
+  fun getInlayBackgroundColor(scheme: EditorColorsScheme): Color? = null
 
   fun getSausageButtonAppearanceBackgroundColor(scheme: EditorColorsScheme): Color = Color.WHITE
   fun getSausageButtonAppearanceForegroundColor(scheme: EditorColorsScheme): Color = Color.BLACK
