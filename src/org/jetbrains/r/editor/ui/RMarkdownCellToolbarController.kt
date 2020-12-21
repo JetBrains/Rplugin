@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SmartPointerManager
 import org.jetbrains.plugins.notebooks.editor.*
+import org.jetbrains.plugins.notebooks.editor.ui.SteadyUIPanel
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
 import java.awt.Cursor
 import java.awt.Dimension
@@ -18,7 +19,6 @@ import java.awt.Graphics
 import java.awt.Rectangle
 import javax.swing.BoxLayout
 import javax.swing.JComponent
-import javax.swing.JPanel
 import javax.swing.plaf.PanelUI
 import kotlin.math.max
 
@@ -64,7 +64,12 @@ internal class RMarkdownCellToolbarController private constructor(
     }
   }
 
-  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) = Unit
+  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
+    val interval = intervalIterator.next()
+    val inlayBounds = inlay.bounds ?: return
+    val stripeColor = editor.notebookAppearance.getCellStripeColor(editor, interval)
+    paintNotebookCellBackgroundGutter(editor, g, r, stripeColor, inlayBounds.y, inlayBounds.height)
+  }
 
   class Factory : NotebookCellInlayController.Factory {
     override fun compute(editor: EditorImpl,
@@ -122,7 +127,7 @@ private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pane
 }
 
 
-private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : JPanel() {
+private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
   private var hasToolbar = false
 
   fun addToolbar(psiElement: PsiElement) {
@@ -130,6 +135,7 @@ private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : JPanel() {
     hasToolbar = true
     val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, psiElement), true)
     add(toolbar.component)
+    toolbar.component.isOpaque = false
     toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
   }
 
