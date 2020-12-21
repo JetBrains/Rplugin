@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.DocumentListener
+import com.intellij.openapi.editor.impl.EditorImpl
 import java.awt.Color
 import java.awt.Graphics
 import kotlin.math.min
@@ -63,4 +65,14 @@ fun NotebookEditorAppearance.paintCellStripe(
   val borderWidth = getCellLeftLineWidth() + CODE_CELL_LEFT_LINE_PADDING
   g.color = stripe
   g.fillRect(r.width - borderWidth, top, getCellLeftLineWidth(), height)
+}
+
+/**
+ * Creates a document listener that will be automatically unregistered when the editor is disposed.
+ */
+fun Editor.addEditorDocumentListener(listener: DocumentListener) {
+  require(this is EditorImpl)
+  if (!isDisposed) {
+    document.addDocumentListener(listener, disposable)
+  }
 }
