@@ -6,6 +6,10 @@ import java.awt.Graphics
 import kotlin.math.min
 import java.awt.Rectangle
 
+infix fun IntRange.hasIntersectionWith(other: IntRange): Boolean =
+  if (first < other.first) other.first in this || other.last in this
+  else first in other || last in other
+
 inline fun <T, G : Graphics> G.use(handler: (g: G) -> T): T =
   try {
     handler(this)
