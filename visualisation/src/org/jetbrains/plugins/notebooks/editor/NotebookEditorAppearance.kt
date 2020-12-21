@@ -58,6 +58,8 @@ interface NotebookEditorAppearanceColors {
    * Currently only code cells are supported.
    */
   fun getCellStripeColor(editor: EditorImpl, interval: NotebookCellLines.Interval): Color?
+
+  fun shouldShowCellLineNumbers(): Boolean
 }
 
 
