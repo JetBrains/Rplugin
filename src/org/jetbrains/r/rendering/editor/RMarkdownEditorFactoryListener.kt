@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayManager
 import org.jetbrains.plugins.notebooks.editor.NotebookEditorAppearanceProvider
+import org.jetbrains.plugins.notebooks.editor.NotebookGutterRenderer
 import org.jetbrains.r.rmarkdown.RMarkdownFileType
 
 class RMarkdownEditorFactoryListener : EditorFactoryListener {
@@ -20,6 +21,7 @@ class RMarkdownEditorFactoryListener : EditorFactoryListener {
   companion object {
     fun onRMarkdownFileEditorCreated(editor: EditorImpl) {
       NotebookEditorAppearanceProvider.install(editor)
+      NotebookGutterRenderer.install(editor)
       NotebookCellInlayManager.install(editor)
     }
 
