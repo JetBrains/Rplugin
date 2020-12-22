@@ -25,6 +25,31 @@ class ImageInverter(foreground: Color, background: Color) {
     convertRGBtoHSL(rgb, blackHsl)
   }
 
+  /**
+   * Check if [image] should be inverted in dark themes.
+   *
+   * @param brightnessThreshold images with average brightness exceeding the threshold will be recommended for inversion
+   * @param numberOfColorsThreshold images with number of colors below the threshold will be recommended for inversion
+   *
+   * @return true if it's recommended to invert the image
+   */
+  fun shouldInvert(image: BufferedImage, brightnessThreshold: Double = 0.7, numberOfColorsThreshold: Int = 5000): Boolean {
+    val numberOfPixels = image.height * image.width
+    val colors = IntArray(numberOfPixels)
+    image.getRGB(0, 0, image.width, image.height, colors, 0, image.width)
+
+    val averageBrightness = colors.map { argb ->
+      val color = Color(argb, image.colorModel.hasAlpha())
+      val hsb = FloatArray(3)
+      Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
+      hsb[2]
+    }.sum() / (numberOfPixels)
+
+    val numberOfColors = colors.toSet()
+
+    return averageBrightness > brightnessThreshold && numberOfColors.size < numberOfColorsThreshold
+  }
+
   fun invert(color: Color): Color {
     val alpha = invert(color.rgb)
     val argb = convertHSLtoRGB(hsl, alpha)
@@ -91,7 +116,7 @@ class ImageInverter(foreground: Color, background: Color) {
     rgb[B] = ((argb) and 255) / 255f
     convertRGBtoHSL(rgb, hsl)
     hsl[SATURATION] = hsl[SATURATION] * (50.0f + whiteHsl[SATURATION]) / 1.5f / 100f
-    hsl[LUMINANCE] = (100 - hsl[LUMINANCE]) * (whiteHsl[LUMINANCE] - blackHsl[LUMINANCE]) / 100f  + blackHsl[LUMINANCE]
+    hsl[LUMINANCE] = (100 - hsl[LUMINANCE]) * (whiteHsl[LUMINANCE] - blackHsl[LUMINANCE]) / 100f + blackHsl[LUMINANCE]
     return alpha
   }
 
