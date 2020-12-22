@@ -20,7 +20,7 @@ import java.awt.Rectangle
 
 
 class NotebookGutterRenderer {
-  var currentHighlighter: RangeHighlighter? = null
+  private var currentHighlighter: RangeHighlighter? = null
 
   fun reattachHighlighter(editor: EditorEx) {
     currentHighlighter?.let(editor.markupModel::removeHighlighter)
