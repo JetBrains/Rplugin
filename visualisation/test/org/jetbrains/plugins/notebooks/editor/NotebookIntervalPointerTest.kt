@@ -62,8 +62,8 @@ class NotebookIntervalPointerTest {
 
     val optionsToAdd = listOf(
       listOf(),
-      makeIntervals(2..10).map { it.copy(ordinal = it.ordinal + 1) },
-      makeIntervals(2..10, 11..20).map { it.copy(ordinal = it.ordinal + 1) }
+      makeIntervals(2..10).map { it.copy(ordinal = it.ordinal + 1, type = NotebookCellLines.CellType.CODE) },
+      makeIntervals(2..10, 11..20).map { it.copy(ordinal = it.ordinal + 1, type = NotebookCellLines.CellType.CODE) }
     )
 
     for (toRemove in optionsToRemove) {
@@ -89,6 +89,25 @@ class NotebookIntervalPointerTest {
         env.shouldBeValid(finalIntervals)
         env.shouldBeInvalid(toRemove)
       }
+    }
+  }
+
+  @Test
+  fun testReuseInterval() {
+    val initialIntervals = makeIntervals(0..1, 2..19, 20..199)
+    for ((i, selected) in initialIntervals.withIndex()) {
+      val dsize = 1
+      val changed = selected.copy(lines = selected.lines.first..selected.lines.last + dsize)
+      val allIntervals = fixOrdinalsAndOffsets(initialIntervals.subList(0, i) + listOf(changed) + initialIntervals.subList(i + 1, initialIntervals.size))
+
+      val env = TestEnv(initialIntervals)
+
+      val pointers = initialIntervals.map { env.pointersFactory.create(it) }
+      pointers.zip(initialIntervals).forEach { (pointer, interval) -> assertThat(pointer.get()).isEqualTo(interval) }
+
+      env.changeSegment(listOf(selected), listOf(changed), allIntervals)
+
+      pointers.zip(allIntervals).forEach { (pointer, interval) -> assertThat(pointer.get()).isEqualTo(interval)}
     }
   }
 
