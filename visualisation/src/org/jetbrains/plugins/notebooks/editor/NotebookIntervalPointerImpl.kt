@@ -22,14 +22,21 @@ internal class NotebookIntervalPointerFactoryImpl(private val notebookCellLines:
     }
 
   override fun segmentChanged(oldIntervals: List<NotebookCellLines.Interval>, newIntervals: List<NotebookCellLines.Interval>) {
-    pointers.removeAll(oldIntervals.map {
-      pointers[it.ordinal].also { pointer ->
-        pointer.interval = null
-      }
-    })
+    val isOneIntervalResized = oldIntervals.size == 1 && newIntervals.size == 1 && oldIntervals.first().type == newIntervals.first().type
 
-    newIntervals.firstOrNull()?.also { firstNew ->
-      pointers.addAll(firstNew.ordinal, newIntervals.map { NotebookIntervalPointerImpl(it) })
+    if (isOneIntervalResized) {
+      pointers[newIntervals.first().ordinal].interval = newIntervals.first()
+    }
+    else {
+      pointers.removeAll(oldIntervals.map {
+        pointers[it.ordinal].also { pointer ->
+          pointer.interval = null
+        }
+      })
+
+      newIntervals.firstOrNull()?.also { firstNew ->
+        pointers.addAll(firstNew.ordinal, newIntervals.map { NotebookIntervalPointerImpl(it) })
+      }
     }
 
     val invalidPointersStart =
