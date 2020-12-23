@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.ResizeController
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
@@ -206,7 +207,10 @@ private class OuterComponent private constructor(
   }
 }
 
-private class InnerComponent : JPanel() {
+@TestOnly
+interface NotebookOutputComponentMarker
+
+private class InnerComponent : JPanel(), NotebookOutputComponentMarker {
   val fixedWidthLayout = FixedWidthLayout()
 
   private val childComponentListener = object : ComponentListener {
