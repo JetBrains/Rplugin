@@ -67,18 +67,23 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
 
   companion object {
     fun cleanup(psi: PsiElement): Future<Void> {
-      val cacheDirectory = ChunkPathManager.getCacheDirectory(psi)!!
+      val cacheDirectory = ChunkPath.create(psi)!!.getCacheDirectory()
       return FileUtil.asyncDelete(File(cacheDirectory))
     }
 
     fun getInlayOutputs(psi: PsiElement): List<InlayOutput> =
-      getImages(psi) + getUrls(psi) + getTables(psi) + getOutputs(psi)
+      ChunkPath.create(psi)?.let { key ->
+        getInlayOutputs(key, RGraphicsSettings.isDarkModeEnabled(psi.project))
+      } ?: emptyList()
 
-    fun getImages(psi: PsiElement): List<InlayOutput> {
-      return getImageFilesOrdered(psi).map { imageFile ->
+    fun getInlayOutputs(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> =
+      getImages(chunkPath, isDarkModeEnabled) + getUrls(chunkPath) + getTables(chunkPath) + getOutputs(chunkPath)
+
+    fun getImages(chunkPath: ChunkPath, isDarkModeEnabled: Boolean): List<InlayOutput> {
+      return getImageFilesOrdered(chunkPath).map { imageFile ->
         val text = imageFile.absolutePath
         val preview = ImageIO.read(imageFile)?.let { image ->
-          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), RGraphicsSettings.isDarkModeEnabled(psi.project)))
+          IconUtil.createImageIcon(RPlotUtil.fitTheme(createPreview(image), isDarkModeEnabled))
         }
         InlayOutput(text, "IMG", preview = preview)
       }
@@ -95,33 +100,31 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       }
     }
 
-    private fun getImageFilesOrdered(psi: PsiElement): List<File> {
-      val snapshots = getSnapshots(psi)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
-      val external = getExternalImages(psi) ?: emptyList()
+    private fun getImageFilesOrdered(chunkPath: ChunkPath): List<File> {
+      val snapshots = getSnapshots(chunkPath)?.map { ExternalImage(it.file, it.number, 0) } ?: emptyList()
+      val external = getExternalImages(chunkPath) ?: emptyList()
       val triples = snapshots + external
       val sorted = triples.sortedWith(compareBy(ExternalImage::major, ExternalImage::minor))
       return sorted.map { it.file }
     }
 
-    private fun getSnapshots(psi: PsiElement): List<RSnapshot>? {
-      return ChunkPathManager.getImagesDirectory(psi)?.let { directory ->
-        RGraphicsDevice.fetchLatestNormalSnapshots(File(directory))
-      }
+    private fun getSnapshots(chunkPath: ChunkPath): List<RSnapshot>? {
+      val directory = chunkPath.getImagesDirectory()
+      return RGraphicsDevice.fetchLatestNormalSnapshots(File(directory))
     }
 
-    private fun getExternalImages(psi: PsiElement): List<ExternalImage>? {
-      return ChunkPathManager.getExternalImagesDirectory(psi)?.let { directory ->
-        File(directory).listFiles()?.mapNotNull { file ->
-          ExternalImage.from(file)
-        }
+    private fun getExternalImages(chunkPath: ChunkPath): List<ExternalImage>? {
+      val directory = chunkPath.getExternalImagesDirectory()
+      return File(directory).listFiles()?.mapNotNull { file ->
+        ExternalImage.from(file)
       }
     }
 
     private val preferredWidth
       get() = (InlayDimensions.lineHeight * 8.0f).toInt()
 
-    fun getUrls(psi: PsiElement): List<InlayOutput> {
-      val imagesDirectory = ChunkPathManager.getHtmlDirectory(psi) ?: return emptyList()
+    fun getUrls(chunkPath: ChunkPath): List<InlayOutput> {
+      val imagesDirectory = chunkPath.getHtmlDirectory()
       return getFilesByExtension(imagesDirectory, ".html")?.map { html ->
         InlayOutput("file://" + html.absolutePath.toString(),
                     "URL",
@@ -129,8 +132,8 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       } ?: emptyList()
     }
 
-    fun getTables(psi: PsiElement): List<InlayOutput> {
-      val dataDirectory = ChunkPathManager.getDataDirectory(psi) ?: return emptyList()
+    fun getTables(chunkPath: ChunkPath): List<InlayOutput> {
+      val dataDirectory = chunkPath.getDataDirectory()
       return getFilesByExtension(dataDirectory, ".csv")?.map { csv ->
         InlayOutput(csv.readText(),
                     "TABLE",
@@ -138,8 +141,8 @@ class RMarkdownInlayDescriptor(override val psiFile: PsiFile) : InlayElementDesc
       } ?: emptyList()
     }
 
-    fun getOutputs(psi: PsiElement): List<InlayOutput> {
-      return ChunkPathManager.getOutputFile(psi)?.let { File(it) }?.takeIf { it.exists() }?.let {
+    fun getOutputs(chunkPath: ChunkPath): List<InlayOutput> {
+      return chunkPath.getOutputFile().let { File(it) }.takeIf { it.exists() }?.let {
         listOf(InlayOutput(it.absolutePath,
                            "Output",
                            preview = createIconWithText(RBundle.message("rmarkdown.output.console.title"))))

@@ -164,10 +164,11 @@ object RunChunkHandler {
     val project = element.project
     val file = element.containingFile
     val inlayElement = findInlayElementByFenceElement(element) ?: return promise.apply { setError("cannot find code fence") }
+    val chunkPath = ChunkPath.create(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
     val rMarkdownParameters = createRMarkdownParameters(file)
-    val cacheDirectory = createCacheDirectory(inlayElement) ?: return promise.apply { setError("cannot create cache dir") }
+    val cacheDirectory = createCacheDirectory(chunkPath)
     val screenParameters = createScreenParameters(editor, project)
-    val imagesDirectory = ChunkPathManager.getImagesDirectory(inlayElement)
+    val imagesDirectory = chunkPath.getImagesDirectory()
     val graphicsDeviceRef = AtomicReference<RGraphicsDevice>()
 
     if (!ensureConsoleIsReady(console, project, promise)) return promise
@@ -175,10 +176,8 @@ object RunChunkHandler {
     // run before chunk handler without read action
     val beforeChunkPromise = runAsync {
       beforeRunChunk(rInterop, rMarkdownParameters, chunkText)
-      if (imagesDirectory != null) {
-        val device = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, inMemory = false)
-        graphicsDeviceRef.set(device)
-      }
+      val device = RGraphicsDevice(rInterop, File(imagesDirectory), screenParameters, inMemory = false)
+      graphicsDeviceRef.set(device)
     }
 
     val range = if (textRange == null) {
@@ -230,10 +229,10 @@ object RunChunkHandler {
   private fun createRMarkdownParameters(file: PsiFile) =
     "---${System.lineSeparator()}${RMarkdownUtil.findMarkdownParagraph(file)?.text ?: ""}${System.lineSeparator()}---"
 
-  private fun createCacheDirectory(inlayElement: PsiElement): String? {
-    return ChunkPathManager.getCacheDirectory(inlayElement)?.also { cacheDirectoryPath ->
+  private fun createCacheDirectory(chunkPath: ChunkPath): String {
+    return chunkPath.getCacheDirectory().also { cacheDirectoryPath ->
       createCleanDirectory(File(cacheDirectoryPath))
-      ChunkPathManager.getNestedDirectories(inlayElement).forEach { File(it).mkdir() }
+      chunkPath.getNestedDirectories().forEach { File(it).mkdir() }
     }
   }
 
@@ -296,8 +295,9 @@ object RunChunkHandler {
                             isBatchMode: Boolean) {
     logNonEmptyError(rInterop.runAfterChunk())
     val outputs = result?.output
-    if (outputs != null) {
-      saveOutputs(outputs, element)
+    val chunkPath = ChunkPath.create(element)
+    if (outputs != null && chunkPath != null) {
+      saveOutputs(outputs, chunkPath)
     }
     else {
       val notification = Notification(
@@ -361,14 +361,14 @@ object RunChunkHandler {
                                      .map { Integer.toHexString(it.parent.text.hashCode()) }
       return@runReadAction Pair(path, presentChunks)
     } ?: return
-    File(ChunkPathManager.getDirectoryForPath(path)).takeIf { it.exists() && it.isDirectory }?.listFiles()?.filter {
+    File(ChunkPath.getDirectoryForPath(path)).takeIf { it.exists() && it.isDirectory }?.listFiles()?.filter {
       !it.isDirectory || !presentChunks.contains(it.name)
     }?.forEach { FileUtil.delete(it) }
   }
 
-  private fun saveOutputs(outputs: List<ProcessOutput>, element: PsiElement) {
+  private fun saveOutputs(outputs: List<ProcessOutput>, chunkPath: ChunkPath) {
     if (outputs.any { it.text.isNotEmpty() }) {
-      runReadAction { ChunkPathManager.getOutputFile(element) }?.let {
+      runReadAction { chunkPath.getOutputFile() }.let {
         val text = Gson().toJson(outputs.filter { output -> output.text.isNotEmpty() })
         val file = File(it)
         check(FileUtil.createParentDirs(file)) { "cannot create parent directories" }
