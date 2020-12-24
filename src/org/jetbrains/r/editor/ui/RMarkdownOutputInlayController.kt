@@ -22,10 +22,7 @@ import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
-import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
-import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
-import org.jetbrains.plugins.notebooks.editor.notebookAppearance
-import org.jetbrains.plugins.notebooks.editor.paintNotebookCellBackgroundGutter
+import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.r.rendering.chunk.ChunkDescriptorProvider
 import org.jetbrains.r.rendering.chunk.RMarkdownInlayDescriptor
 import java.awt.Graphics
@@ -37,6 +34,7 @@ class RMarkdownOutputInlayController private constructor(
   val editor: EditorImpl,
   override val factory: NotebookCellInlayController.Factory,
   override val psiElement: PsiElement,
+  val intervalPointer: NotebookIntervalPointer,
   inlayOffset: Int
 ) : NotebookCellInlayController, RMarkdownNotebookOutput {
 
@@ -201,23 +199,25 @@ class RMarkdownOutputInlayController private constructor(
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
-          val offset = extractOffset(editor.document, interval.lines)
+          val pointer = NotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownOutputInlayController>()
             .firstOrNull {
-              it.inlay.offset == offset
+              it.intervalPointer.get() == pointer.get()
             }
-          ?: makeController(editor, offset)
+          ?: makeController(editor, pointer)
         }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
       }
     }
 
-    private fun makeController(editor: EditorImpl, offset: Int): RMarkdownOutputInlayController? =
-      getCodeFenceEnd(editor, offset)?.let{ codeEndElement ->
-        RMarkdownOutputInlayController(editor, this, codeEndElement, offset)
+    private fun makeController(editor: EditorImpl, pointer: NotebookIntervalPointer): RMarkdownOutputInlayController? {
+      val offset = extractOffset(editor.document, pointer.get()!!.lines)
+      return getCodeFenceEnd(editor, offset)?.let{ codeEndElement ->
+        RMarkdownOutputInlayController(editor, this, codeEndElement, pointer, offset)
       }
+    }
 
     private fun getCodeFenceEnd(editor: EditorImpl, offset: Int): PsiElement? {
       val psiElement = getPsiElement(editor, offset) ?: return null
