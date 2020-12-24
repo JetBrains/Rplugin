@@ -1,8 +1,10 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.util.TextRange
 import java.awt.Color
 import java.awt.Graphics
 import kotlin.math.min
@@ -76,3 +78,9 @@ fun Editor.addEditorDocumentListener(listener: DocumentListener) {
     document.addDocumentListener(listener, disposable)
   }
 }
+
+fun Document.getText(interval: NotebookCellLines.Interval): String =
+  getText(TextRange(
+    getLineStartOffset(interval.lines.first),
+    getLineEndOffset(interval.lines.last)
+  ))
