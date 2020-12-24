@@ -15,13 +15,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.datavis.r.inlays.InlaysManager
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.intellij.plugins.markdown.lang.psi.impl.MarkdownCodeFenceImpl
+import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
 import org.jetbrains.r.actions.*
 import org.jetbrains.r.console.RConsoleExecuteActionHandler
 import org.jetbrains.r.console.RConsoleManager
@@ -39,7 +39,7 @@ fun isChunkFenceLang(element: PsiElement) =
   element.node.elementType === MarkdownTokenTypes.FENCE_LANG && element.nextSibling?.nextSibling?.node?.elementType == R_FENCE_ELEMENT_TYPE
 
 val CODE_FENCE_DATA_KEY = DataKey.create<PsiElement>("org.jetbrains.r.rendering.chunk.actions.codeFence")
-val CODE_FENCE_DATA_KEY_SMART_PTR = DataKey.create<SmartPsiElementPointer<PsiElement>>("org.jetbrains.r.rendering.chunk.actions.codeFenceSmartPointer")
+val NOTEBOOK_INTERVAL_PTR = DataKey.create<NotebookIntervalPointer>("org.jetbrains.r.rendering.chunk.actions.notebookIntervalPointer")
 
 const val RUN_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.RunChunkAction"
 const val DEBUG_CHUNK_ACTION_ID = "org.jetbrains.r.rendering.chunk.DebugChunkAction"
@@ -55,7 +55,7 @@ class RunChunksAboveAction: DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
-    val offset = e.codeFence?.textRange?.startOffset ?: editor.caretModel.offset
+    val offset = getStartOffset(e, editor)
     showConsoleAndRun(e) { runInRange(editor, file, 0, offset - 1) }
   }
 }
@@ -68,7 +68,7 @@ class RunChunksBelowAction: DumbAwareAction(), RPromotedAction {
   override fun actionPerformed(e: AnActionEvent) {
     val editor = e.editor ?: return
     val file = e.psiFile ?: return
-    val offset = e.codeFence?.textRange?.startOffset ?: editor.caretModel.offset
+    val offset = getStartOffset(e, editor)
     showConsoleAndRun(e) { runInRange(editor, file, offset, Int.MAX_VALUE) }
   }
 }
@@ -122,8 +122,9 @@ private fun isConsoleReady(project: Project): Boolean {
 
 private fun getCodeFenceByEvent(e: AnActionEvent): PsiElement? {
   e.getData(CODE_FENCE_DATA_KEY)?.let { return it }
-  e.getData(CODE_FENCE_DATA_KEY_SMART_PTR)?.element?.let { return it }
-  val offset = e.caret?.offset ?: return null
+  val offset = e.intervalPointer?.get()?.let { interval -> e.editor?.document?.getLineStartOffset(interval.lines.first) }
+               ?: e.caret?.offset
+               ?: return null
   val file = e.psiFile ?: return null
   val markdown = SourceTreeToPsiMap.treeElementToPsi(file.node.findLeafElementAt(offset))
   val markdownCodeFence = PsiTreeUtil.getParentOfType(markdown, MarkdownCodeFenceImpl::class.java) ?: return null
@@ -162,7 +163,15 @@ internal fun findInlayElementByFenceElement(element: PsiElement) =
   TreeUtil.findChildBackward(element.parent.node, MarkdownTokenTypes.CODE_FENCE_END)?.psi
 
 private val AnActionEvent.codeFence: PsiElement?
-  get() = getData(CODE_FENCE_DATA_KEY)?: getData(CODE_FENCE_DATA_KEY_SMART_PTR).let { it?.element }
+  get() = getData(CODE_FENCE_DATA_KEY)
+
+private val AnActionEvent.intervalPointer: NotebookIntervalPointer?
+  get() = getData(NOTEBOOK_INTERVAL_PTR)
+
+private fun getStartOffset(e: AnActionEvent, editor: Editor): Int =
+  e.codeFence?.textRange?.startOffset
+  ?: e.intervalPointer?.get()?.let { interval -> editor.document.getLineStartOffset(interval.lines.first) }
+  ?: editor.caretModel.offset
 
 private fun showConsoleAndRun(e: AnActionEvent, action: () -> Unit) {
   val editor = e.editor ?: return

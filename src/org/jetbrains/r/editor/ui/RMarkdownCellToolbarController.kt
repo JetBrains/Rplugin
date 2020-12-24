@@ -1,15 +1,12 @@
 package org.jetbrains.r.editor.ui
 
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.psi.PsiElement
-import com.intellij.psi.SmartPointerManager
 import org.jetbrains.plugins.notebooks.editor.*
 import org.jetbrains.plugins.notebooks.editor.ui.SteadyUIPanel
 import org.jetbrains.r.rendering.chunk.RunChunkNavigator
@@ -26,10 +23,11 @@ import kotlin.math.max
 internal class RMarkdownCellToolbarController private constructor(
   val editor: EditorImpl,
   override val factory: Factory,
+  private val intervalPointer: NotebookIntervalPointer,
   inlayOffset: Int,
 ) : NotebookCellInlayController, EditorCustomElementRenderer {
 
-  private val panel = RMarkdownCellToolbarPanel(editor)
+  private val panel = RMarkdownCellToolbarPanel(editor, intervalPointer)
 
   init {
     @Suppress("UsePropertyAccessSyntax")
@@ -58,12 +56,6 @@ internal class RMarkdownCellToolbarController private constructor(
       )
     )!!
 
-  init {
-    performForCommittedPsi(editor, inlay) { psiElement ->
-      panel.addToolbar(psiElement)
-    }
-  }
-
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
     val interval = intervalIterator.next()
     val inlayBounds = inlay.bounds ?: return
@@ -82,27 +74,28 @@ internal class RMarkdownCellToolbarController private constructor(
       val interval: NotebookCellLines.Interval = intervalIterator.next()
       return when (interval.type) {
         NotebookCellLines.CellType.CODE -> {
-          val offset = offset(editor.document, interval.lines)
-
+          val intervalPointer = NotebookIntervalPointerFactory.get(editor).create(interval)
           currentControllers.asSequence()
             .filterIsInstance<RMarkdownCellToolbarController>()
             .firstOrNull {
-              it.inlay.isRelatedToPrecedingText == isRelatedToPrecedingText
-              && it.inlay.offset == offset
+              it.intervalPointer.get() == intervalPointer.get()
             }
-          ?: RMarkdownCellToolbarController(editor, this, offset)
+          ?: createController(editor, intervalPointer)
          }
         NotebookCellLines.CellType.MARKDOWN,
         NotebookCellLines.CellType.RAW -> null
       }
     }
+
+    private fun createController(editor: EditorImpl, intervalPointer: NotebookIntervalPointer): RMarkdownCellToolbarController? {
+      val offset = editor.document.getLineStartOffset(intervalPointer.get()!!.lines.first) + 1
+      if (offset > editor.document.textLength) return null
+      return RMarkdownCellToolbarController(editor, this, intervalPointer, offset)
+    }
   }
 
   companion object {
     private const val isRelatedToPrecedingText: Boolean = true
-
-    private fun offset(document: Document, codeLines: IntRange): Int =
-      Integer.min(document.getLineStartOffset(codeLines.first) + 1, document.textLength)
   }
 }
 
@@ -127,27 +120,20 @@ private class RMarkdownCellToolbarPanelUI(private val editor: EditorImpl) : Pane
 }
 
 
-private class RMarkdownCellToolbarPanel(val editor: EditorImpl) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
-  private var hasToolbar = false
+private class RMarkdownCellToolbarPanel(editor: EditorImpl, pointer: NotebookIntervalPointer) : SteadyUIPanel(RMarkdownCellToolbarPanelUI(editor)) {
+  init {
+    isOpaque = false
+    background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
+    layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
 
-  fun addToolbar(psiElement: PsiElement) {
-    require(!hasToolbar)
-    hasToolbar = true
-    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, psiElement), true)
+    val toolbar = ActionManager.getInstance().createActionToolbar("InlineToolbar", createToolbarActionGroup(editor, pointer), true)
     add(toolbar.component)
     toolbar.component.isOpaque = false
     toolbar.component.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
   }
 
-  init {
-    isOpaque = false
-    background = editor.notebookAppearance.getCodeCellBackground(editor.colorsScheme)
-    layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-  }
-
-  private fun createToolbarActionGroup(editor: Editor, psiElement: PsiElement): ActionGroup {
-    val psiElementPointer = SmartPointerManager.createPointer(psiElement)
-    val actions = RunChunkNavigator.createChunkToolbarActionsList(psiElementPointer, editor)
+  private fun createToolbarActionGroup(editor: Editor, pointer: NotebookIntervalPointer): ActionGroup {
+    val actions = RunChunkNavigator.createChunkToolbarActionsList(pointer, editor)
     return DefaultActionGroup(actions)
   }
 }

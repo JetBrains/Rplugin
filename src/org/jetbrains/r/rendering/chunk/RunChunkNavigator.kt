@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.PsiElement
-import com.intellij.psi.SmartPsiElementPointer
+import org.jetbrains.plugins.notebooks.editor.NotebookIntervalPointer
 import org.jetbrains.r.actions.RActionUtil
 
 import java.awt.event.MouseEvent
@@ -26,9 +26,9 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
     }
   }
 
-  fun createChunkToolbarActionsList(psiElement: SmartPsiElementPointer<PsiElement>, editor: Editor): List<AnAction> {
+  fun createChunkToolbarActionsList(intervalPointer: NotebookIntervalPointer, editor: Editor): List<AnAction> {
     val actions = actionIds.flatMap { sublist ->
-      sublist.map { id -> ChunkAction(getAction(id), psiElement, editor) } + Separator()
+      sublist.map { id -> ChunkAction(getAction(id), intervalPointer, editor) } + Separator()
     }
     return actions.dropLast(1) // remove last Separator()
   }
@@ -52,17 +52,17 @@ object RunChunkNavigator : GutterIconNavigationHandler<PsiElement> {
 }
 
 
-internal class ChunkAction(private val action: AnAction, private val contextVariablesOverride: Map<String, Any>): DumbAwareAction() {
+internal class ChunkAction(private val action: AnAction, private val contextVariablesOverride: Map<String, Any>) : DumbAwareAction() {
   init {
     copyFrom(action)
   }
 
-  constructor(action: AnAction, element: PsiElement): this(action, mapOf(CODE_FENCE_DATA_KEY.name to element))
+  constructor(action: AnAction, element: PsiElement) : this(action, mapOf(CODE_FENCE_DATA_KEY.name to element))
 
-  constructor(action: AnAction, elementSmartPointer: SmartPsiElementPointer<PsiElement>, editor: Editor): this(action, mapOf(
-    CODE_FENCE_DATA_KEY_SMART_PTR.name to elementSmartPointer,
-    CommonDataKeys.EDITOR.name to editor)
-  )
+  constructor(action: AnAction, intervalPointer: NotebookIntervalPointer, editor: Editor) : this(action, mapOf(
+    NOTEBOOK_INTERVAL_PTR.name to intervalPointer,
+    CommonDataKeys.EDITOR.name to editor,
+  ))
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabled = canRunChunk(CommonDataKeys.EDITOR.getData(createContext(e)))
