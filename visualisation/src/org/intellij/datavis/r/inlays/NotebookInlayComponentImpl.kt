@@ -3,6 +3,7 @@ package org.intellij.datavis.r.inlays
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiElement
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.plugins.notebooks.editor.notebookAppearance
 import java.awt.Graphics
 
 class NotebookInlayComponentImpl(cell: PsiElement, editor: EditorImpl) : NotebookInlayComponent(cell, editor) {
@@ -14,7 +15,9 @@ class NotebookInlayComponentImpl(cell: PsiElement, editor: EditorImpl) : Noteboo
       //inlay!!.editor.colorsScheme.getAttributes(RMARKDOWN_CHUNK).backgroundColor
       //}
       //else {
-      (inlay!!.editor as EditorImpl).backgroundColor
+      (inlay!!.editor as EditorImpl).let {
+        it.notebookAppearance.getInlayBackgroundColor(it.colorsScheme) ?: it.backgroundColor
+      }
     //}
 
     g2d.fillRect(0, 0, width, InlayDimensions.topOffset + InlayDimensions.cornerRadius)
