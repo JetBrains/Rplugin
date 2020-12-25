@@ -27,7 +27,7 @@ open class NotebookOutputDefaultScrollPane(private val view: Component) : JBScro
     setScrollBar(horizontalScrollBar)
   }
 
-  private fun setScrollBar(scrollBar: JScrollBar) {
+  protected open fun setScrollBar(scrollBar: JScrollBar) {
     scrollBar.apply {
       isOpaque = true
       background = view.background

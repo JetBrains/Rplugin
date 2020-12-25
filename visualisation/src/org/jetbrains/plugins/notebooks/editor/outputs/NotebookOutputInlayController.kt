@@ -5,8 +5,9 @@ import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
-import com.intellij.util.ui.JBUI
+import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
@@ -16,12 +17,14 @@ import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
 import org.jetbrains.plugins.notebooks.editor.ui.registerEditorSizeWatcher
 import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
 import java.awt.*
+import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.awt.event.ComponentListener
-import java.awt.event.ContainerEvent
-import java.awt.event.ContainerListener
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.JScrollBar
+import javax.swing.JViewport
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Shows outputs for intervals using [NotebookOutputDataKeyExtractor] and [NotebookOutputComponentFactory].
@@ -32,11 +35,11 @@ class NotebookOutputInlayController private constructor(
   lines: IntRange,
 ) : NotebookCellInlayController {
   private val innerComponent = InnerComponent()
-  private val outerComponent = OuterComponent.create(editor, innerComponent)
+  private val innerComponentScrollPane = InnerComponentScrollPane(innerComponent)
 
   override val inlay: Inlay<*> =
     editor.addComponentInlay(
-      outerComponent,
+      SurroundingComponent.create(editor, innerComponentScrollPane),
       isRelatedToPrecedingText = true,
       showAbove = false,
       priority = editor.notebookAppearance.NOTEBOOK_OUTPUT_INLAY_PRIORITY,
@@ -50,6 +53,11 @@ class NotebookOutputInlayController private constructor(
           Disposer.dispose(disposable)
         }
       }
+    }
+
+    registerEditorSizeWatcher(innerComponentScrollPane) {
+      innerComponentScrollPane.maxHeight = (editor.scrollingModel.visibleArea.height * 0.66).toInt()
+      innerComponentScrollPane.invalidate()
     }
   }
 
@@ -88,7 +96,7 @@ class NotebookOutputInlayController private constructor(
           innerComponent.remove(idx)
           val newComponentPair = factory.createComponent(editor, outputDataKey)
           if (newComponentPair != null) {
-            innerComponent.add(newComponentPair.first, idx)
+            innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint, idx)
             true
           }
           else false
@@ -116,7 +124,7 @@ class NotebookOutputInlayController private constructor(
           .firstOrNull()
       if (newComponentPair != null) {
         isFilled = true
-        innerComponent.add(newComponentPair.first)
+        innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint)
       }
     }
 
@@ -151,58 +159,108 @@ class NotebookOutputInlayController private constructor(
   }
 }
 
-val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
-  get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<OuterComponent>()
+/**
+ * A dirty hack which is aware of [com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager] bugs and features.
+ *
+ * `EditorEmbeddedComponentManager` doesn't react on invalidate. This function forcibly resized a whole cell output component
+ * to its preferred size.
+ *
+ * See also DS-573.
+ */
+fun updateOutputInlayComponentSize(grandchild: Component): Boolean {
+  val component = generateSequence(grandchild) { it.parent }.find { it is SurroundingComponent } ?: return false
+  component.size = component.preferredSize
+  return true
+}
 
-private class OuterComponent private constructor(
-  private val editor: EditorImpl,
-  innerComponent: InnerComponent,
-) : NotebookOutputNonStickyScrollPane(innerComponent) {
+val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
+  get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<SurroundingComponent>()
+
+private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConstraint
+  get() = when (this) {
+    NotebookOutputComponentFactory.WidthStretching.UNLIMITED -> FixedWidthLayout.UNLIMITED_WIDTH
+    NotebookOutputComponentFactory.WidthStretching.LIMITED -> FixedWidthLayout.LIMITED_WIDTH
+  }
+
+private class SurroundingComponent private constructor(innerComponentScrollPane: InnerComponentScrollPane) : JPanel(BorderLayout()) {
+  private var presetWidth = 0
+
   init {
-    border = JBUI.Borders.empty(10, 0)
-    background = editor.backgroundColor
-    verticalScrollBar.background = background
-    horizontalScrollBar.background = background
+    border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 10, 0))
+    add(innerComponentScrollPane, BorderLayout.CENTER)
+  }
+
+  override fun updateUI() {
+    super.updateUI()
+    isOpaque = false
+  }
+
+  override fun getPreferredSize(): Dimension = super.getPreferredSize().also {
+    it.width = presetWidth
+  }
+
+  companion object {
+    @JvmStatic
+    fun create(
+      editor: EditorImpl,
+      innerComponentScrollPane: InnerComponentScrollPane,
+    ) = SurroundingComponent(innerComponentScrollPane).also {
+      val resizeController = ResizeController(it, editor)
+      it.addMouseListener(resizeController)
+      it.addMouseWheelListener(resizeController)
+      it.addMouseMotionListener(resizeController)
+
+      MouseWheelUtils.wrapMouseWheelListeners(it, editor.disposable)
+
+      registerEditorSizeWatcher(it) {
+        it.presetWidth = editor.textEditingAreaWidth
+        it.invalidate()
+      }
+    }
+  }
+}
+
+private class InnerComponentScrollPane(innerComponent: InnerComponent) : NotebookOutputNonStickyScrollPane(innerComponent) {
+  var maxHeight = 0
+
+  init {
+    viewport.addComponentListener(ViewportComponentListener)
   }
 
   override fun updateUI() {
     super.updateUI()
     isOpaque = false
     viewport.isOpaque = false
+    verticalScrollBar.isOpaque = false
+    horizontalScrollBar.isOpaque = false
   }
 
-  /** Although it's a scroll pane, it's size can change because of resize, addition or deletion of its child components. */
+  override fun setScrollBar(scrollBar: JScrollBar): Unit = Unit
+
   override fun isValidateRoot(): Boolean = false
 
-  override fun validate() {
-    if (!isPreferredSizeSet) {
-      size = preferredSize
-    }
-    super.validate()
-  }
-
   override fun getPreferredSize(): Dimension =
-    if (isPreferredSizeSet) super.getPreferredSize()
-    else Dimension(
-      editor.textEditingAreaWidth,
-      super.getPreferredSize().height.coerceAtMost(editor.scrollingModel.visibleArea.height * 2 / 3),
-    )
+    super.getPreferredSize().also {
+      it.height = min(maxHeight, it.height)
+    }
 
-  companion object {
-    @JvmStatic
-    fun create(editor: EditorImpl, innerComponent: InnerComponent) = OuterComponent(editor, innerComponent).also { outerComponent ->
-      registerEditorSizeWatcher(outerComponent) {
-        val oldWidth = innerComponent.fixedWidthLayout.fixedWidth
-        innerComponent.fixedWidthLayout.fixedWidth = outerComponent.width - outerComponent.verticalScrollBar.width
-        if (oldWidth != innerComponent.fixedWidthLayout.fixedWidth) {
-          innerComponent.invalidate()
+  private companion object {
+    private object ViewportComponentListener : ComponentAdapter() {
+      override fun componentResized(e: ComponentEvent) {
+        val target = (e.source as JViewport).parent as InnerComponentScrollPane
+        val innerComponent = target.viewport.view as InnerComponent
+        val firstTime = innerComponent.minWidth == 0
+
+        // Tricky JBScrollPane calculates preferred sizes like there's no scrollbar, and applies that size even if there's a scrollbar.
+        // Outsmarting it.
+        innerComponent.minWidth = target.viewport.width - target.verticalScrollBar.width
+        innerComponent.invalidate()
+
+        if (firstTime) {
+          // Without this call, the component will be sized incorrectly until any AWT event.
+          innerComponent.validate()
         }
       }
-
-      val resizeController = ResizeController(outerComponent, editor)
-      outerComponent.addMouseListener(resizeController)
-      outerComponent.addMouseWheelListener(resizeController)
-      outerComponent.addMouseMotionListener(resizeController)
     }
   }
 }
@@ -210,39 +268,18 @@ private class OuterComponent private constructor(
 @TestOnly
 interface NotebookOutputComponentMarker
 
+// Can't inherit Scrollable: if Scrollable.getScrollableTracksViewportWidth returns true, the scrollbar is never shown, even if
+// the content overflows. Without that, Scrollable is not needed.
 private class InnerComponent : JPanel(), NotebookOutputComponentMarker {
-  val fixedWidthLayout = FixedWidthLayout()
-
-  private val childComponentListener = object : ComponentListener {
-    override fun componentResized(e: ComponentEvent): Unit = onChildChange()
-    override fun componentMoved(e: ComponentEvent): Unit = onChildChange()
-    override fun componentShown(e: ComponentEvent): Unit = onChildChange()
-    override fun componentHidden(e: ComponentEvent): Unit = onChildChange()
-  }
+  var minWidth = 0
 
   init {
-    layout = fixedWidthLayout
-
-    addContainerListener(object : ContainerListener {
-      override fun componentAdded(e: ContainerEvent) {
-        e.component?.addComponentListener(childComponentListener)
-      }
-
-      override fun componentRemoved(e: ContainerEvent) {
-        e.component?.removeComponentListener(childComponentListener)
-      }
-    })
+    layout = FixedWidthLayout { minWidth }
   }
 
   override fun updateUI() {
     super.updateUI()
     isOpaque = false
-  }
-
-  private fun onChildChange() {
-    val outerComponent = parent.parent
-    assert(outerComponent is OuterComponent)
-    outerComponent.validate()
   }
 }
 
@@ -258,10 +295,15 @@ private var JComponent.outputComponentFactory: NotebookOutputComponentFactory?
     putClientProperty(NotebookOutputComponentFactory::class.java, value)
   }
 
-private class FixedWidthLayout(var fixedWidth: Int = -1) : LayoutManager {
-  override fun addLayoutComponent(name: String, comp: Component): Unit = Unit
+private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : LayoutManager {
+  override fun addLayoutComponent(name: String?, comp: Component) {
+    require(name == LIMITED_WIDTH || name == UNLIMITED_WIDTH) { name.toString() }
+    comp.constraints = name
+  }
 
-  override fun removeLayoutComponent(comp: Component): Unit = Unit
+  override fun removeLayoutComponent(comp: Component) {
+    comp.constraints = null
+  }
 
   override fun preferredLayoutSize(parent: Container): Dimension =
     foldSize(parent) { preferredSize }
@@ -271,23 +313,48 @@ private class FixedWidthLayout(var fixedWidth: Int = -1) : LayoutManager {
 
   override fun layoutContainer(parent: Container) {
     val parentInsets = parent.insets
+    val desiredWidth = widthGetter(parent)
     var totalY = parentInsets.top
     for (component in parent.components) {
       val preferredSize = component.preferredSize
+      val newWidth = (desiredWidth - parentInsets.left - parentInsets.right).let {
+        when (val c = component.constraints) {
+          LIMITED_WIDTH -> it
+          UNLIMITED_WIDTH -> max(it, preferredSize.width)
+          else -> error(c.toString())
+        }
+      }
       component.setBounds(
         parentInsets.left,
         totalY,
-        (if (fixedWidth >= 0) fixedWidth else preferredSize.width) - parentInsets.left - parentInsets.right,
+        newWidth,
         preferredSize.height,
       )
       totalY += preferredSize.height
     }
   }
 
-  private inline fun foldSize(parent: Container, crossinline handler: Component.() -> Dimension): Dimension =
-    parent.components.fold(Dimension(0, parent.insets.run { top + bottom })) { acc, component ->
-      component.handler().let {
-        Dimension(if (fixedWidth >= 0) fixedWidth else it.width, acc.height + it.height)
-      }
+  private inline fun foldSize(parent: Container, crossinline handler: Component.() -> Dimension): Dimension {
+    val desiredWidth = widthGetter(parent)
+    var acc = Dimension(0, parent.insets.run { top + bottom })
+    for (component in parent.components) {
+      val dimension = component.handler()
+      acc = Dimension(max(desiredWidth, dimension.width), acc.height + dimension.height)
     }
+    return acc
+  }
+
+  companion object Constraints {
+    /** See [NotebookOutputComponentFactory.WidthStretching.LIMITED] */
+    const val LIMITED_WIDTH = "LIMITED_WIDTH"
+
+    /** See [NotebookOutputComponentFactory.WidthStretching.UNLIMITED] */
+    const val UNLIMITED_WIDTH = "UNLIMITED_WIDTH"
+
+    private var Component.constraints: String?
+      get() = castSafelyTo<JComponent>()?.getClientProperty(Constraints) as String?
+      set(value) {
+        castSafelyTo<JComponent>()?.putClientProperty(Constraints, value)
+      }
+  }
 }
