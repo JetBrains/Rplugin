@@ -7,7 +7,6 @@ package org.jetbrains.r.refactoring.inline
 import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.util.CommonRefactoringUtil
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.psi.api.RAssignmentStatement
 
@@ -246,16 +245,8 @@ class RInlineLocalTest : RUsefulTestCase() {
   }
 
   private fun doAssertionTest(runTest: () -> Unit) {
-    assertException(object : ManyDefsErrorCase() {
-      override fun tryClosure() {
+    assertThrows(CommonRefactoringUtil.RefactoringErrorHintException::class.java) {
         runTest()
       }
-    })
-  }
-
-  private abstract inner class ManyDefsErrorCase : AbstractExceptionCase<CommonRefactoringUtil.RefactoringErrorHintException>() {
-    override fun getExpectedExceptionClass(): Class<CommonRefactoringUtil.RefactoringErrorHintException>? {
-      return CommonRefactoringUtil.RefactoringErrorHintException::class.java
-    }
   }
 }

@@ -9,7 +9,6 @@ import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.refactoring.BaseRefactoringProcessor
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase
 import com.intellij.testFramework.fixtures.CodeInsightTestUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.RFileType.DOT_R_EXTENSION
@@ -150,21 +149,13 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
       if (isFunctionCollision) RBundle.message("rename.processor.collision.function.description", newName, scopeString)
       else RBundle.message("rename.processor.collision.variable.description", newName, scopeString)
 
-    assertException(object : CollisionErrorCase() {
-      override fun tryClosure() {
-        doTestWithProject(newName, isInlineAvailable, isRmd, isSourceTest)
-      }
-    }, message)
+    assertThrows(BaseRefactoringProcessor.ConflictsInTestsException::class.java, message) {
+      doTestWithProject(newName, isInlineAvailable, isRmd, isSourceTest)
+    }
   }
 
   private fun getDotExtension(isRmd: Boolean): String {
     val fileExtension = if (isRmd) RMarkdownFileType.defaultExtension.toLowerCase() else DOT_R_EXTENSION.drop(1)
     return ".$fileExtension"
-  }
-
-  private abstract inner class CollisionErrorCase : AbstractExceptionCase<BaseRefactoringProcessor.ConflictsInTestsException>() {
-    override fun getExpectedExceptionClass(): Class<BaseRefactoringProcessor.ConflictsInTestsException>? {
-      return BaseRefactoringProcessor.ConflictsInTestsException::class.java
-    }
   }
 }
