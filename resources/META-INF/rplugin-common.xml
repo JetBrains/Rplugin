@@ -374,6 +374,11 @@ You can find the source code in the following repositories:
         <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerInitializerListener" topic="com.intellij.ide.AppLifecycleListener" activeInHeadlessMode="false"/>
     </applicationListeners>
 
+    <projectListeners>
+      <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionProjectOpenListener"
+                topic="com.intellij.openapi.project.ProjectManagerListener" />
+    </projectListeners>
+
     <extensions defaultExtensionNs="com.intellij">
         <lang.elementManipulator forClass="org.jetbrains.r.psi.api.RStringLiteralExpression"
                                  implementationClass="org.jetbrains.r.psi.impl.RStringLiteralManipulator"/>
@@ -521,6 +526,8 @@ You can find the source code in the following repositories:
         <applicationService serviceImplementation="org.jetbrains.r.settings.MachineLearningCompletionSettings"/>
 
         <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
+
+        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionDownloadModelService"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService"/>
 
