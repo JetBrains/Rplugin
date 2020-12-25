@@ -1,7 +1,11 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.ide.DataManager
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.DataKey
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Document
@@ -26,6 +30,8 @@ import java.awt.Graphics
 import javax.swing.JComponent
 import kotlin.math.max
 import kotlin.math.min
+
+val NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY = DataKey.create<NotebookCellLines.Interval>("NOTEBOOK_CELL_LINES_INTERVAL")
 
 class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val inlays: MutableMap<Inlay<*>, NotebookCellInlayController> = HashMap()
@@ -55,8 +61,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       }
     }
   }
-
-
 
   private fun addViewportChangeListener() {
     editor.scrollPane.viewport.addChangeListener {
@@ -123,7 +127,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       for (factory in factories) {
         val controller = factory.compute(editor, emptyList(), notebookCellLines.getIterator(interval))
         if (controller != null) {
-          rememberController(controller)
+          rememberController(controller, interval)
         }
       }
     }
@@ -223,7 +227,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
           null
         }
         if (actualController != null) {
-          rememberController(actualController)
+          rememberController(actualController, interval)
         }
         for (oldController in controllers) {
           if (oldController != actualController) {
@@ -238,10 +242,25 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     }
   }
 
-  private fun rememberController(controller: NotebookCellInlayController) {
-    if (inlays.put(controller.inlay, controller) !== controller) {
-      Disposer.register(controller.inlay, Disposable {
-        inlays.remove(controller.inlay)
+  private fun rememberController(controller: NotebookCellInlayController, interval: NotebookCellLines.Interval) {
+    val inlay = controller.inlay
+    inlay.renderer.castSafelyTo<JComponent>()?.let { component ->
+      component.putClientProperty(
+        DataManager.CLIENT_PROPERTY_DATA_PROVIDER,
+        DataProvider { key ->
+          when (key) {
+            NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY.name -> interval
+            PlatformDataKeys.CONTEXT_COMPONENT.name -> component
+            PlatformDataKeys.EDITOR.name -> editor
+            else -> null
+          }
+        },
+      )
+    }
+    if (inlays.put(inlay, controller) !== controller) {
+      Disposer.register(inlay, Disposable {
+        inlay.renderer.castSafelyTo<JComponent>()?.putClientProperty(DataManager.CLIENT_PROPERTY_DATA_PROVIDER, null)
+        inlays.remove(inlay)
       })
     }
   }
