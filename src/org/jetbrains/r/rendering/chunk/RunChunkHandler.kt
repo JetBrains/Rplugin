@@ -295,9 +295,8 @@ object RunChunkHandler {
                             isBatchMode: Boolean) {
     logNonEmptyError(rInterop.runAfterChunk())
     val outputs = result?.output
-    val chunkPath = ChunkPath.create(element)
-    if (outputs != null && chunkPath != null) {
-      saveOutputs(outputs, chunkPath)
+    if (outputs != null) {
+      saveOutputs(outputs, element)
     }
     else {
       val notification = Notification(
@@ -366,9 +365,9 @@ object RunChunkHandler {
     }?.forEach { FileUtil.delete(it) }
   }
 
-  private fun saveOutputs(outputs: List<ProcessOutput>, chunkPath: ChunkPath) {
+  private fun saveOutputs(outputs: List<ProcessOutput>, element: PsiElement) {
     if (outputs.any { it.text.isNotEmpty() }) {
-      runReadAction { chunkPath.getOutputFile() }.let {
+      runReadAction { ChunkPath.create(element)?.getOutputFile() }?.let {
         val text = Gson().toJson(outputs.filter { output -> output.text.isNotEmpty() })
         val file = File(it)
         check(FileUtil.createParentDirs(file)) { "cannot create parent directories" }
