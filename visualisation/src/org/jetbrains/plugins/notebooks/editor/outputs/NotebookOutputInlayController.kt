@@ -86,9 +86,9 @@ class NotebookOutputInlayController private constructor(
       isFilled = isFilled || when (factory.match(component, outputDataKey)) {
         NotebookOutputComponentFactory.Match.NONE -> {
           innerComponent.remove(idx)
-          val newComponent = factory.createComponent(editor, outputDataKey)
-          if (newComponent != null) {
-            innerComponent.add(newComponent, idx)
+          val newComponentPair = factory.createComponent(editor, outputDataKey)
+          if (newComponentPair != null) {
+            innerComponent.add(newComponentPair.first, idx)
             true
           }
           else false
@@ -106,17 +106,17 @@ class NotebookOutputInlayController private constructor(
     }
 
     for (outputDataKey in outputDataKeyIterator) {
-      val newComponent =
+      val newComponentPair =
         NotebookOutputComponentFactory.EP_NAME.extensionList.asSequence()
           .mapNotNull { factory ->
-            factory.createComponent(editor, outputDataKey)?.also { component ->
+            factory.createComponent(editor, outputDataKey)?.also { (component, _) ->
               component.outputComponentFactory = factory
             }
           }
           .firstOrNull()
-      if (newComponent != null) {
+      if (newComponentPair != null) {
         isFilled = true
-        innerComponent.add(newComponent)
+        innerComponent.add(newComponentPair.first)
       }
     }
 

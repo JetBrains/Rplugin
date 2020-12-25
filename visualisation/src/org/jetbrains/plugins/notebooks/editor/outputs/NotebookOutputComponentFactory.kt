@@ -8,6 +8,15 @@ interface NotebookOutputComponentFactory {
   /** Result type of [match]. Not intended to be used elsewhere. */
   enum class Match { NONE, COMPATIBLE, SAME }
 
+  /** Instructs how the component should be stretched horizontally. */
+  enum class WidthStretching {
+    /** Even if the component prefers to be wider than the shared size, it will be squeezed. Otherwise, the component is expanded. */
+    LIMITED,
+
+    /** If the component prefers to be wider than the shared size, let it be wider. Otherwise, the component is expanded. */
+    UNLIMITED,
+  }
+
   /**
    * Check if the [component] can update it's content with the [outputDataKey].
    *
@@ -26,7 +35,7 @@ interface NotebookOutputComponentFactory {
   /**
    * May return `null` if the factory can't create any component for specific subtype of [NotebookOutputDataKey].
    */
-  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey): JComponent?
+  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey): Pair<JComponent, WidthStretching>?
 
   companion object {
     @JvmField
