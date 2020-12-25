@@ -87,6 +87,10 @@
       qualifiedName="org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputDataKeyExtractor"
       interface="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputDataKeyExtractor"
       dynamic="true"/>
+    <extensionPoint
+      qualifiedName="org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputComponentWrapper"
+      interface="org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentWrapper"
+      dynamic="true"/>
   </extensionPoints>
   <extensions defaultExtensionNs="com.intellij">
     <registryKey

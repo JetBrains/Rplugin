@@ -216,6 +216,10 @@ private class SurroundingComponent private constructor(innerComponentScrollPane:
         it.presetWidth = editor.textEditingAreaWidth
         it.invalidate()
       }
+
+      for (wrapper in NotebookOutputComponentWrapper.EP_NAME.extensionList) {
+        wrapper.wrap(it)
+      }
     }
   }
 }
