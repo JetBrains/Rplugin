@@ -20,6 +20,7 @@ import com.intellij.refactoring.suggested.endOffset
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.intellij.datavis.r.inlays.*
+import org.intellij.datavis.r.inlays.components.InlayProgressStatus
 import org.intellij.datavis.r.ui.UiCustomizer
 import org.intellij.plugins.markdown.lang.MarkdownTokenTypes
 import org.jetbrains.plugins.notebooks.editor.*
@@ -97,6 +98,16 @@ class RMarkdownOutputInlayController private constructor(
     updateOutputs(resetComponent = true)
   }
 
+  override fun updateProgressStatus(progressStatus: InlayProgressStatus) {
+    invokeLater {
+      if (Disposer.isDisposed(inlay)) {
+        return@invokeLater
+      }
+
+      inlayComponent.updateProgressStatus(progressStatus)
+    }
+  }
+
   private fun updateOutputs(resetComponent: Boolean) {
     invokeLater {
       if (resetComponent) {
@@ -134,6 +145,7 @@ class RMarkdownOutputInlayController private constructor(
     inlay = inlayComponent.inlay!!
     registerDisposable(inlayComponent)
     oldComponent.inlay?.let { Disposer.dispose(it) }
+    inlayComponent.createOutputComponent()
   }
 
   private fun addInlayComponent(editor: EditorImpl, cell: PsiElement, offset: Int): NotebookInlayComponent {
@@ -289,6 +301,8 @@ interface RMarkdownNotebookOutput {
 
   /** do clearOutputs(), load outputs from filesystem */
   fun updateOutputs()
+
+  fun updateProgressStatus(progressStatus: InlayProgressStatus)
 
   fun dispose()
 

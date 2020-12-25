@@ -189,7 +189,10 @@ object RunChunkHandler {
 
     updateProgressBar(editor, inlayElement)
     val prepare = if (isFirstChunk) rInterop.interpreter.prepareForExecution() else resolvedPromise()
-    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.clearOutputs(removeFiles = false)}
+    editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
+      e.clearOutputs(removeFiles = false)
+      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING, statusText = ""))
+    }
     prepare.onProcessed {
       executeCode(request, console, codeElement, beforeChunkPromise) {
         InlaysManager.getEditorManager(editor)?.addTextToInlay(inlayElement, it.text, it.kind)
@@ -283,6 +286,10 @@ object RunChunkHandler {
     val inlaysManager = InlaysManager.getEditorManager(editor)
     inlaysManager?.updateCell(inlayElement, listOf(), createTextOutput = true)
     inlaysManager?.updateInlayProgressStatus(inlayElement, InlayProgressStatus(ProgressStatus.RUNNING, ""))
+    editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
+      e.updateOutputs()
+      e.updateProgressStatus(InlayProgressStatus(ProgressStatus.RUNNING, ""))
+    }
   }
 
   private fun afterRunChunk(element: PsiElement,
@@ -317,8 +324,11 @@ object RunChunkHandler {
     }
     val inlaysManager = InlaysManager.getEditorManager(editor)
     inlaysManager?.updateCell(inlayElement, createTextOutput = !success)
-    editor.rMarkdownNotebook?.let { nb -> nb[inlayElement]?.updateOutputs() }
     inlaysManager?.updateInlayProgressStatus(inlayElement, status)
+    editor.rMarkdownNotebook?.get(inlayElement)?.let { e ->
+      e.updateOutputs()
+      e.updateProgressStatus(status)
+    }
     cleanupOutdatedOutputs(element)
 
     ApplicationManager.getApplication().invokeLater { editor.gutterComponentEx.revalidateMarkup() }
