@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
 import javax.swing.JComponent
@@ -35,7 +36,7 @@ interface NotebookOutputComponentFactory {
   /**
    * May return `null` if the factory can't create any component for specific subtype of [NotebookOutputDataKey].
    */
-  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey): Pair<JComponent, WidthStretching>?
+  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey, disposable: Disposable): Pair<JComponent, WidthStretching>?
 
   companion object {
     @JvmField
