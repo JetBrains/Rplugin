@@ -1,4 +1,4 @@
-package org.jetbrains.r.editor.mlcompletion
+package org.jetbrains.r.editor.mlcompletion.model.updater
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

@@ -375,7 +375,7 @@ You can find the source code in the following repositories:
     </applicationListeners>
 
     <projectListeners>
-      <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionProjectOpenListener"
+      <listener class="org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionProjectOpenListener"
                 topic="com.intellij.openapi.project.ProjectManagerListener" />
     </projectListeners>
 
@@ -527,7 +527,7 @@ You can find the source code in the following repositories:
 
         <codeCompletionConfigurable instance="org.jetbrains.r.settings.MachineLearningCompletionConfigurable"/>
 
-        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionDownloadModelService"/>
+        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService"/>
 
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService"/>
 
@@ -782,6 +782,7 @@ You can find the source code in the following repositories:
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRunChunkStatus" displayType="BALLOON"/>
+      <notificationGroup id="RMachineLearningCompletion" displayType="BALLOON"/>
 
       <iconProvider implementation="org.jetbrains.r.icons.RProjectIconProvider" order="first"/>
 

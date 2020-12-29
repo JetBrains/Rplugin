@@ -1,12 +1,13 @@
-package org.jetbrains.r.editor.mlcompletion
+package org.jetbrains.r.editor.mlcompletion.model.updater
 
-import com.intellij.jarRepository.JarRepositoryManager
-import com.intellij.jarRepository.RemoteRepositoryDescription
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import org.jetbrains.idea.maven.aether.ArtifactKind
-import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
-import java.nio.file.Paths
+import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
+import org.jetbrains.idea.maven.aether.ProgressConsumer
+import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionNotifications.askForUpdate
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -15,6 +16,22 @@ class MachineLearningCompletionDownloadModelService {
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
     val isBeingDownloaded = AtomicBoolean(false)
+
+    val rPluginPath = RPluginUtil.helperPathOrNull!!
+    val remotes = listOf(
+      ArtifactRepositoryManager.createRemoteRepository(MachineLearningCompletionDependencyCoordinates.REPOSITORY_ID,
+                                                       MachineLearningCompletionDependencyCoordinates.REPOSITORY_URL)
+    )
+    val consumer = object : ProgressConsumer {
+      override fun consume(message: String?) {
+        TODO("Not yet implemented")
+      }
+
+      override fun isCanceled(): Boolean {
+        return super.isCanceled()
+      }
+    }
+    val repositoryManager = ArtifactRepositoryManager(File(rPluginPath), remotes, ProgressConsumer.DEAF)  // TODO: Replace deaf consumber
   }
 
   fun checkForUpdatesAndDownloadIfNeeded(project: Project) {
@@ -22,10 +39,14 @@ class MachineLearningCompletionDownloadModelService {
     if (!newVersionIsAvailable(project)) {
       return
     }
-    askForUpdate(project)
+    askForUpdate(project, 10)
   }
 
   private fun newVersionIsAvailable(project: Project): Boolean {
+    val versions = repositoryManager.getAvailableVersions(MachineLearningCompletionDependencyCoordinates.GROUP_ID,
+                                                          MachineLearningCompletionDependencyCoordinates.ARTIFACT_ID,
+                                                          "[0,)",
+                                                          ArtifactKind.ZIP_ARCHIVE)
     return true
   }
 
@@ -43,7 +64,7 @@ class MachineLearningCompletionDownloadModelService {
   }
 
   private fun download(project: Project) {
-    val repositoryDescriptor =
+/*    val repositoryDescriptor =
       RemoteRepositoryDescription("rcompletion-models", "Models for R Machine Learning Completion",
                                   "https://packages.jetbrains.team/maven/p/mlrcc/rcompletion-models")
     val modelDescriptor =
@@ -54,7 +75,7 @@ class MachineLearningCompletionDownloadModelService {
                                             modelDescriptor,
                                             artifactKinds,
                                             Paths.get(System.getProperty("user.home"), "test-maven-download").toString(),
-                                            listOf(repositoryDescriptor))
+                                            listOf(repositoryDescriptor))*/
   }
 
 }
