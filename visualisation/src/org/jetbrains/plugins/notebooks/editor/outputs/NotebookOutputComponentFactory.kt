@@ -11,11 +11,17 @@ interface NotebookOutputComponentFactory {
 
   /** Instructs how the component should be stretched horizontally. */
   enum class WidthStretching {
-    /** Even if the component prefers to be wider than the shared size, it will be squeezed. Otherwise, the component is expanded. */
-    LIMITED,
+    /** The component gets the width of the visible area regardless of its preferred width. */
+    STRETCH_AND_SQUEEZE,
 
-    /** If the component prefers to be wider than the shared size, let it be wider. Otherwise, the component is expanded. */
-    UNLIMITED,
+    /** The component is expanded to the width of the visible area if its preferred width is less. */
+    STRETCH,
+
+    /** The component is shrinked to the width of the visible area if its preferred width is more. */
+    SQUEEZE,
+
+    /** The component has its preferred width. */
+    NOTHING,
   }
 
   /**

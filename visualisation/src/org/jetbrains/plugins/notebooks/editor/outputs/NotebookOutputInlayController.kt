@@ -177,8 +177,10 @@ val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
 
 private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConstraint
   get() = when (this) {
-    NotebookOutputComponentFactory.WidthStretching.UNLIMITED -> FixedWidthLayout.UNLIMITED_WIDTH
-    NotebookOutputComponentFactory.WidthStretching.LIMITED -> FixedWidthLayout.LIMITED_WIDTH
+    NotebookOutputComponentFactory.WidthStretching.STRETCH_AND_SQUEEZE -> FixedWidthLayout.STRETCH_AND_SQUEEZE
+    NotebookOutputComponentFactory.WidthStretching.STRETCH -> FixedWidthLayout.STRETCH
+    NotebookOutputComponentFactory.WidthStretching.SQUEEZE -> FixedWidthLayout.SQUEEZE
+    NotebookOutputComponentFactory.WidthStretching.NOTHING -> FixedWidthLayout.NOTHING
   }
 
 private class SurroundingComponent private constructor(innerComponentScrollPane: InnerComponentScrollPane) : JPanel(BorderLayout()) {
@@ -297,7 +299,14 @@ private var JComponent.outputComponentFactory: NotebookOutputComponentFactory?
 
 private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : LayoutManager {
   override fun addLayoutComponent(name: String?, comp: Component) {
-    require(name == LIMITED_WIDTH || name == UNLIMITED_WIDTH) { name.toString() }
+    require(
+      name == STRETCH_AND_SQUEEZE ||
+      name == STRETCH ||
+      name == SQUEEZE ||
+      name == NOTHING
+    ) {
+      name.toString()
+    }
     comp.constraints = name
   }
 
@@ -319,8 +328,10 @@ private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : La
       val preferredSize = component.preferredSize
       val newWidth = (desiredWidth - parentInsets.left - parentInsets.right).let {
         when (val c = component.constraints) {
-          LIMITED_WIDTH -> it
-          UNLIMITED_WIDTH -> max(it, preferredSize.width)
+          STRETCH_AND_SQUEEZE -> it
+          STRETCH -> max(it, preferredSize.width)
+          SQUEEZE -> min(it, preferredSize.width)
+          NOTHING -> preferredSize.width
           else -> error(c.toString())
         }
       }
@@ -345,11 +356,17 @@ private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : La
   }
 
   companion object Constraints {
-    /** See [NotebookOutputComponentFactory.WidthStretching.LIMITED] */
-    const val LIMITED_WIDTH = "LIMITED_WIDTH"
+    /** See [NotebookOutputComponentFactory.WidthStretching.STRETCH_AND_SQUEEZE] */
+    const val STRETCH_AND_SQUEEZE = "STRETCH_AND_SQUEEZE"
 
-    /** See [NotebookOutputComponentFactory.WidthStretching.UNLIMITED] */
-    const val UNLIMITED_WIDTH = "UNLIMITED_WIDTH"
+    /** See [NotebookOutputComponentFactory.WidthStretching.STRETCH] */
+    const val STRETCH = "STRETCH"
+
+    /** See [NotebookOutputComponentFactory.WidthStretching.SQUEEZE] */
+    const val SQUEEZE = "SQUEEZE"
+
+    /** See [NotebookOutputComponentFactory.WidthStretching.NOTHING] */
+    const val NOTHING = "NOTHING"
 
     private var Component.constraints: String?
       get() = castSafelyTo<JComponent>()?.getClientProperty(Constraints) as String?
