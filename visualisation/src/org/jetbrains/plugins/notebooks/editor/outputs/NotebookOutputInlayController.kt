@@ -9,7 +9,6 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.ResizeController
-import org.jetbrains.annotations.TestOnly
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
@@ -269,12 +268,9 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
   }
 }
 
-@TestOnly
-interface NotebookOutputComponentMarker
-
 // Can't inherit Scrollable: if Scrollable.getScrollableTracksViewportWidth returns true, the scrollbar is never shown, even if
 // the content overflows. Without that, Scrollable is not needed.
-private class InnerComponent : JPanel(), NotebookOutputComponentMarker {
+private class InnerComponent : JPanel() {
   var minWidth = 0
 
   init {
