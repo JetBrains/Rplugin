@@ -529,6 +529,8 @@ You can find the source code in the following repositories:
 
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService"/>
 
+        <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService"/>
+
         <applicationService serviceImplementation="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService"/>
 
         <projectService serviceInterface="org.jetbrains.r.interpreter.RInterpreterManager"
