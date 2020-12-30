@@ -1,12 +1,19 @@
 package org.jetbrains.r.editor.mlcompletion.model.updater
 
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.EmptyProgressIndicator
+import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.util.concurrency.SequentialTaskExecutor
 import org.jetbrains.idea.maven.aether.ArtifactKind
-import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
-import org.jetbrains.idea.maven.aether.ProgressConsumer
-import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionNotifications.askForUpdate
+import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
+import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.ArtifactResolveJob
+import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.CheckUpdateJob
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -15,67 +22,72 @@ class MachineLearningCompletionDownloadModelService {
 
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
+    private val LOG = Logger.getInstance(MachineLearningCompletionModelFilesService::class.java)
     val isBeingDownloaded = AtomicBoolean(false)
-
-    val rPluginPath = RPluginUtil.helperPathOrNull!!
-    val remotes = listOf(
-      ArtifactRepositoryManager.createRemoteRepository(MachineLearningCompletionDependencyCoordinates.REPOSITORY_ID,
-                                                       MachineLearningCompletionDependencyCoordinates.REPOSITORY_URL)
-    )
-    val consumer = object : ProgressConsumer {
-      override fun consume(message: String?) {
-        TODO("Not yet implemented")
-      }
-
-      override fun isCanceled(): Boolean {
-        return super.isCanceled()
-      }
-    }
-    val repositoryManager = ArtifactRepositoryManager(File(rPluginPath), remotes, ProgressConsumer.DEAF)  // TODO: Replace deaf consumber
+    private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
+    private val completionFilesService = MachineLearningCompletionModelFilesService.getInstance()
   }
 
-  fun checkForUpdatesAndDownloadIfNeeded(project: Project) {
-    // Check that project is with RPlugin (or maybe even in listener via separate service)
-    if (!newVersionIsAvailable(project)) {
+  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<JpsMavenRepositoryLibraryDescriptor>) -> Unit) {
+    if (!isBeingDownloaded.compareAndSet(false, true)) {
       return
     }
-    askForUpdate(project, 10)
-  }
 
-  private fun newVersionIsAvailable(project: Project): Boolean {
-    val versions = repositoryManager.getAvailableVersions(MachineLearningCompletionDependencyCoordinates.GROUP_ID,
-                                                          MachineLearningCompletionDependencyCoordinates.ARTIFACT_ID,
-                                                          "[0,)",
-                                                          ArtifactKind.ZIP_ARCHIVE)
-    return true
-  }
-
-  fun downloadModel(project: Project): Boolean {
-    if (!isBeingDownloaded.compareAndSet(false, true)) {
-      return false
+    executor.execute {
+      try {
+        completionFilesService.useTempDirectory { tmpDir ->
+          val startModality = ModalityState.defaultModalityState()
+          val result = listOf(MachineLearningCompletionDependencyCoordinates.MODEL_ARTIFACT_ID,
+                              MachineLearningCompletionDependencyCoordinates.APP_ARTIFACT_ID).mapNotNull { artifactId ->
+            val indicator = EmptyProgressIndicator(startModality)
+            val checkUpdateJob = makeCheckUpdateJob(artifactId!!, tmpDir.toFile())
+            checkUpdateJob.apply(indicator)
+          }
+          onSuccessCallback(result)
+        }
+      }
+      catch (ignored: ProcessCanceledException) {
+        isBeingDownloaded.set(false)
+      }
+      catch (e: Throwable) {
+        LOG.info(e)
+        isBeingDownloaded.set(false)
+      }
     }
-    try {
-      download(project)
-      return true
-    } // Exception processing would be nice, rethrow if progress canceled, notify of something gone wrong
-    finally {
-      isBeingDownloaded.set(false)
+  }
+
+  private fun makeCheckUpdateJob(artifactId: String, localRepository: File): CheckUpdateJob =
+    when (artifactId) {
+      MachineLearningCompletionDependencyCoordinates.MODEL_ARTIFACT_ID -> completionFilesService.modelVersion
+      MachineLearningCompletionDependencyCoordinates.APP_ARTIFACT_ID -> completionFilesService.applicationVersion
+      else -> null
+    }.let { version ->
+      CheckUpdateJob(version,
+                     MachineLearningCompletionDependencyCoordinates.GROUP_ID,
+                     artifactId,
+                     ArtifactKind.ZIP_ARCHIVE,
+                     listOf(MachineLearningCompletionDependencyCoordinates.REPOSITORY_DESCRIPTOR),
+                     localRepository)
     }
-  }
 
-  private fun download(project: Project) {
-/*    val repositoryDescriptor =
-      RemoteRepositoryDescription("rcompletion-models", "Models for R Machine Learning Completion",
-                                  "https://packages.jetbrains.team/maven/p/mlrcc/rcompletion-models")
-    val modelDescriptor =
-      JpsMavenRepositoryLibraryDescriptor("org.jetbrains.r.deps.mlcompletion", "bundled_python_server", "1.0",
-                                          "zip", false, emptyList())
-    val artifactKinds = setOf(ArtifactKind.ZIP_ARCHIVE)
-    JarRepositoryManager.resolveAndDownload(project,
-                                            modelDescriptor,
-                                            artifactKinds,
-                                            Paths.get(System.getProperty("user.home"), "test-maven-download").toString(),
-                                            listOf(repositoryDescriptor))*/
-  }
+  fun createDownloadAndUpdateTask(project: Project,
+                                  descriptors: Collection<JpsMavenRepositoryLibraryDescriptor>,
+                                  onSuccessCallback: () -> Unit,
+                                  onFinishedCallback: () -> Unit) =
+    object : Task.Backgroundable(project, "ML completion update", true) {
+      override fun run(indicator: ProgressIndicator) = descriptors.forEach { desc ->
+        completionFilesService.useTempDirectory { tmpDirPath ->
+          ArtifactResolveJob(desc,
+                             setOf(ArtifactKind.ZIP_ARCHIVE),
+                             listOf(MachineLearningCompletionDependencyCoordinates.REPOSITORY_DESCRIPTOR),
+                             tmpDirPath.toFile())
+            .andThen { completionFilesService.updateArtifacts(it) }
+            .apply(indicator)
+        }
+      }
 
+      override fun onSuccess() = onSuccessCallback()
+
+      override fun onFinished() = onFinishedCallback()
+    }
 }
