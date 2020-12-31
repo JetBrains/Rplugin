@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.castSafelyTo
+import com.intellij.util.ui.UIUtil
 import org.intellij.datavis.r.inlays.MouseWheelUtils
 import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
@@ -236,11 +237,12 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
     super.updateUI()
     isOpaque = false
     viewport.isOpaque = false
-    verticalScrollBar.isOpaque = false
-    horizontalScrollBar.isOpaque = false
-  }
 
-  override fun setScrollBar(scrollBar: JScrollBar): Unit = Unit
+    UIUtil.getEditorPaneBackground().let { background ->
+      verticalScrollBar.background = background
+      horizontalScrollBar.background = background
+    }
+  }
 
   override fun isValidateRoot(): Boolean = false
 

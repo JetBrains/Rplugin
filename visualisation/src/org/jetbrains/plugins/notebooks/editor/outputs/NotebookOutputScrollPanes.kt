@@ -15,9 +15,15 @@ import javax.swing.JScrollPane
 
 /** Default output scroll pane similar to one used in the IDEA editor features no border and corners
  * that respect content background. */
-open class NotebookOutputDefaultScrollPane(private val view: Component) : JBScrollPane(view) {
+open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view) {
+  private val view get() = viewport.view
+
   init {
     border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 0, 0))
+  }
+
+  override fun updateUI() {
+    super.updateUI()
     setScrollBars()
     setCorners()
   }
