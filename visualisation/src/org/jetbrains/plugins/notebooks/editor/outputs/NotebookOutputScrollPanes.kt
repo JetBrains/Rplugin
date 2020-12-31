@@ -52,12 +52,26 @@ open class NotebookOutputDefaultScrollPane(private val view: Component) : JBScro
  *
  * 1. It always shows the scroll bars.
  * 2. It doesn't start scrolling immediately after getting a mouse wheel event thus does not interfere with the editor scrolling.
- * 3. Mouse click inside the scroll pane makes it to handle further mouse wheel events unconditionally.
+ * 3. Mouse click or move inside the scroll pane makes it to handle further mouse wheel events unconditionally.
+ * 4. When top or bottom of the scroll pane is reached, it doesn't continue scrolling the outer scroll pane immediately.
  *
  * */
 open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDefaultScrollPane(view) {
   private var latestMouseWheelEventTime = 0L
   private var mouseEnteredTime = 0L
+
+  private var reachedTopOrBottomTime = 0L
+
+  /** Counting consequential rotation events in the same direction is a hack necessary for more
+   * reliable detection of a scrolling direction than using [MouseWheelEvent.wheelRotation]. The latter property
+   * often returns misleading values, f.e. occasional negative values when scrolling down. To bypass this,
+   * we require [consequentialScrollsSensitivity] consequential events in a direction
+   * to detect we are really scrolling there. */
+  private var consequentialUpRotationEvents = 0
+  private var consequentialDownRotationEvents = 0
+  private val consequentialScrollsSensitivity = 2
+
+  private val threshold = Registry.get("python.ds.jupyter.scrolling.innerScrollCooldownTime").asInteger().toLong()
 
   /** If true, the scroll pane should handle the mouse wheel event unconditionally. */
   private var isScrollCaptured = false
@@ -67,25 +81,78 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
 
   init {
     recursivelyAddMouseListenerToComponent(this, mouseAdapter)
+    recursivelyAddMouseMotionListenerToComponent(this, mouseAdapter)
     recursivelyAddContainerListenerToComponent(this, containerAdapter)
   }
 
   override fun processMouseWheelEvent(e: MouseWheelEvent) {
+    rememberRotationDirection(e)
     val eventTime = e.`when`
-    val threshold = Registry.get("python.ds.jupyter.scrolling.innerScrollCooldownTime").asInteger().toLong()
     when {
       isScrollCaptured -> {
-        super.processMouseWheelEvent(e)
+        handleScrollEventTopBottomAware(e)
       }
       eventTime - mouseEnteredTime < threshold || eventTime - latestMouseWheelEventTime < threshold -> {
         latestMouseWheelEventTime = eventTime
         delegateToParentScrollPane(e)
       }
       else -> {
-        super.processMouseWheelEvent(e)
+        isScrollCaptured = true
+        handleScrollEventTopBottomAware(e)
       }
     }
   }
+
+  /** Handles a scroll event in scroll pane borders aware manner, f.e. when the top of the scroll pane
+   * is reached, scrolling stops and does not immediately continue in the outer scroll pane. This protects
+   * from occasional "dropping out" of a component that currently in use. */
+  private fun handleScrollEventTopBottomAware(e: MouseWheelEvent) {
+    if (hasReachedTop() || hasReachedBottom()) {
+      if (reachedTopOrBottomTime == 0L) {
+        reachedTopOrBottomTime = e.`when`
+      }
+      else {
+        val delta = e.`when` - reachedTopOrBottomTime
+        if (delta > threshold / 10) {
+          super.processMouseWheelEvent(e)
+        }
+        else {
+          reachedTopOrBottomTime = e.`when`
+        }
+      }
+    }
+    else {
+      reachedTopOrBottomTime = 0L
+      super.processMouseWheelEvent(e)
+    }
+  }
+
+  private fun hasReachedTop(): Boolean {
+    if (consequentialDownRotationEvents > consequentialScrollsSensitivity) return false
+    verticalScrollBar ?: return false
+    return verticalScrollBar.value == verticalScrollBar.minimum
+  }
+
+  private fun hasReachedBottom(): Boolean {
+    if (consequentialUpRotationEvents > consequentialScrollsSensitivity) return false
+    verticalScrollBar ?: return false
+    return verticalScrollBar.value == verticalScrollBar.maximum - verticalScrollBar.model.extent
+  }
+
+  private fun rememberRotationDirection(e: MouseWheelEvent) {
+    if (isUpRotation(e)) {
+      consequentialDownRotationEvents = 0
+      consequentialUpRotationEvents++
+    }
+    else if (isDownRotation(e)) {
+      consequentialUpRotationEvents = 0
+      consequentialDownRotationEvents++
+    }
+  }
+
+  private fun isUpRotation(e: MouseWheelEvent) = e.wheelRotation < 0
+
+  private fun isDownRotation(e: MouseWheelEvent) = e.wheelRotation > 0
 
   private fun delegateToParentScrollPane(e: MouseEvent) {
     val parentScrollPane: JScrollPane? = findParentOfType(JScrollPane::class.java)
@@ -133,12 +200,18 @@ open class NotebookOutputNonStickyScrollPane(view: Component) : NotebookOutputDe
       isScrollCaptured = true
       super.mouseClicked(e)
     }
+
+    override fun mouseMoved(e: MouseEvent?) {
+      isScrollCaptured = true
+      super.mouseMoved(e)
+    }
   }
 
   inner class MyContainerAdapter : ContainerAdapter() {
     override fun componentAdded(e: ContainerEvent) {
       (e.source as? JComponent)?.let {
         recursivelyAddMouseListenerToComponent(it, mouseAdapter)
+        recursivelyAddMouseMotionListenerToComponent(it, mouseAdapter)
       }
     }
 
@@ -155,6 +228,15 @@ private fun recursivelyAddMouseListenerToComponent(comp: JComponent, listener: M
   for (c in comp.components) {
     if (c is JComponent) {
       recursivelyAddMouseListenerToComponent(c, listener)
+    }
+  }
+}
+
+private fun recursivelyAddMouseMotionListenerToComponent(comp: JComponent, listener: MouseMotionListener) {
+  comp.addMouseMotionListener(listener)
+  for (c in comp.components) {
+    if (c is JComponent) {
+      recursivelyAddMouseMotionListenerToComponent(c, listener)
     }
   }
 }
