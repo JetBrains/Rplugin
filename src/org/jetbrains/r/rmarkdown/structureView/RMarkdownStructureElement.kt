@@ -22,12 +22,10 @@ import org.jetbrains.r.RLanguage
 import org.jetbrains.r.psi.RStructureViewElement
 import org.jetbrains.r.rmarkdown.RMarkdownPsiUtil
 import org.jetbrains.r.rmarkdown.R_FENCE_ELEMENT_TYPE
-import java.util.*
 import javax.swing.Icon
 
 private val DUMMY_PRESENTATION = object : MarkdownBasePresentation() {
   override fun getPresentableText(): String? = null
-  override fun getLocationString(): String? = null
 }
 
 class RMarkdownStructureElement internal constructor(element: PsiElement) : PsiTreeElementBase<PsiElement>(

@@ -22,7 +22,6 @@ import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RFile
 import org.jetbrains.r.psi.api.RFunctionExpression
 import org.jetbrains.r.psi.api.RIdentifierExpression
-import java.util.*
 import javax.swing.Icon
 
 class RStructureViewElement(private val element: PsiElement) : StructureViewTreeElement, ItemPresentation {
@@ -90,10 +89,6 @@ class RStructureViewElement(private val element: PsiElement) : StructureViewTree
       element is PsiComment -> RPsiUtil.extractNameFromSectionComment(element)
       else -> throw IllegalStateException("Unknown structure node: ${element.javaClass.name}")
     }
-  }
-
-  override fun getLocationString(): String? {
-    return null
   }
 
   override fun getIcon(open: Boolean): Icon? {
