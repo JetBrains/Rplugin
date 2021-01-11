@@ -4,28 +4,28 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.io.isLocalHost
-import org.jetbrains.r.RPluginUtil
+import com.intellij.openapi.util.SystemInfo
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
 import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 
 class MachineLearningCompletionServerService : Disposable {
 
   companion object {
     private val settings = MachineLearningCompletionSettings.getInstance()
+    private val completionFilesService = MachineLearningCompletionModelFilesService.getInstance()
     private val LOG = Logger.getInstance(MachineLearningCompletionServerService::class.java)
     private const val RELAUNCH_TIMEOUT_MS = 30_000L
-    private val LOCAL_SERVER_DIRECTORY = resolveWithNullable(RPluginUtil.helperPathOrNull, "python_server")
-    private val LAUNCH_SERVER_COMMAND = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "dist", "./run_demo")
-    private val LOCAL_SERVER_CONFIG_PATH = resolveWithNullable(LOCAL_SERVER_DIRECTORY, "config.yml")
+
     fun getInstance() = service<MachineLearningCompletionServerService>()
 
-    private fun resolveWithNullable(first: String?, vararg more: String): String? =
-      first?.let {
-        return Paths.get(first, *more).toString()
+    private fun Path.asLaunchCommand(): String =
+      when {
+        SystemInfo.isWindows -> toString()
+        else -> parent.resolve("./$fileName").toString()
       }
   }
 
@@ -75,27 +75,36 @@ class MachineLearningCompletionServerService : Disposable {
     return settings.state.isEnabled
   }
 
-  private fun launchServer(host: String, port: Int) {
-    if (!isLocalHost(host)
-        || LOCAL_SERVER_DIRECTORY == null
-        || LAUNCH_SERVER_COMMAND == null
-        || LOCAL_SERVER_CONFIG_PATH == null) {
-      return
+  private fun launchServer(host: String, port: Int) = completionFilesService.tryRunActionOnFiles { completionFiles ->
+    completionFiles.localServerAppExecutableFile?.let { appFile ->
+      try {
+        setExecutablePermission(appFile)
+        val launchCommand = Paths.get(appFile).asLaunchCommand()
+        val processBuilder = ProcessBuilder(launchCommand,
+                                            "--config=${completionFiles.localServerConfigFile}",
+                                            "--host=$host",
+                                            "--port=$port")
+          .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+          .redirectError(ProcessBuilder.Redirect.DISCARD)
+          .directory(File(completionFiles.localServerModelDirectory!!))
+        processBuilder.environment()
+          .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
+        localServer = processBuilder.start()
+      }
+      catch (e: Exception) {
+        LOG.warn("Exception has occurred in R ML Completion server thread", e)
+      }
     }
-    try {
-      val processBuilder = ProcessBuilder(LAUNCH_SERVER_COMMAND,
-                                          "--config=$LOCAL_SERVER_CONFIG_PATH",
-                                          "--host=$host",
-                                          "--port=$port")
-        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-        .redirectError(ProcessBuilder.Redirect.DISCARD)
-        .directory(File(LOCAL_SERVER_DIRECTORY))
-      processBuilder.environment()
-        .putAll(MachineLearningCompletionLocalServerVariables.SERVER_ENVIRONMENT)
-      localServer = processBuilder.start()
-    }
-    catch (e: Exception) {
-      LOG.warn("Exception has occurred in R ML Completion server thread", e)
+  }
+
+  private fun setExecutablePermission(file: String) {
+    if (SystemInfo.isUnix) {
+      try {
+        val process = ProcessBuilder("chmod", "+x", file).start()
+        process.waitFor()
+      } catch (e: Exception) {
+        LOG.warn("Exception has occurred when trying to set executable permission for R ML Completion server app", e)
+      }
     }
   }
 
