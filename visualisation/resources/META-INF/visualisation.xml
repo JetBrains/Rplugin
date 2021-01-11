@@ -90,7 +90,7 @@
   </extensionPoints>
   <extensions defaultExtensionNs="com.intellij">
     <registryKey
-      defaultValue="all"
+      defaultValue="text, jupyter_table, image"
       description="Which cell output types should be represented in a new way"
       key="ds.editor.new.output.inlays.types"
       restartRequired="true"/>
