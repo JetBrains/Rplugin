@@ -19,10 +19,7 @@ import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.JScrollBar
-import javax.swing.JViewport
+import javax.swing.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -324,38 +321,47 @@ private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : La
 
   override fun layoutContainer(parent: Container) {
     val parentInsets = parent.insets
-    val desiredWidth = widthGetter(parent)
+    val parentDesiredWidth = widthGetter(parent)
     var totalY = parentInsets.top
     for (component in parent.components) {
-      val preferredSize = component.preferredSize
-      val newWidth = (desiredWidth - parentInsets.left - parentInsets.right).let {
-        when (val c = component.constraints) {
-          STRETCH_AND_SQUEEZE -> it
-          STRETCH -> max(it, preferredSize.width)
-          SQUEEZE -> min(it, preferredSize.width)
-          NOTHING -> preferredSize.width
-          else -> error(c.toString())
-        }
-      }
+      val componentPreferedSize = component.preferredSize
+      val newWidth = getComponentWidthByConstraint(parentDesiredWidth, parentInsets, component.constraints, componentPreferedSize.width)
       component.setBounds(
         parentInsets.left,
         totalY,
         newWidth,
-        preferredSize.height,
+        componentPreferedSize.height,
       )
-      totalY += preferredSize.height
+      totalY += componentPreferedSize.height
     }
   }
 
   private inline fun foldSize(parent: Container, crossinline handler: Component.() -> Dimension): Dimension {
-    val desiredWidth = widthGetter(parent)
     var acc = Dimension(0, parent.insets.run { top + bottom })
+
     for (component in parent.components) {
-      val dimension = component.handler()
-      acc = Dimension(max(desiredWidth, dimension.width), acc.height + dimension.height)
+      val componentDimensions = component.handler()
+      val parentPreferedWidth = widthGetter(parent)
+      val componentWidth = getComponentWidthByConstraint(parentPreferedWidth, parent.insets, component.constraints,
+                                                         componentDimensions.width)
+      acc = Dimension(componentWidth, acc.height + componentDimensions.height)
     }
     return acc
   }
+
+  private fun getComponentWidthByConstraint(parentWidth: Int,
+                                            parentInsets: Insets,
+                                            componentConstraints: String?,
+                                            componentDesiredWidth: Int): Int =
+    (parentWidth - parentInsets.left - parentInsets.right).let {
+      when (componentConstraints) {
+        STRETCH_AND_SQUEEZE -> it
+        STRETCH -> max(it, componentDesiredWidth)
+        SQUEEZE -> min(it, componentDesiredWidth)
+        NOTHING -> componentDesiredWidth
+        else -> error(componentConstraints.toString())
+      }
+    }
 
   companion object Constraints {
     /** See [NotebookOutputComponentFactory.WidthStretching.STRETCH_AND_SQUEEZE] */
