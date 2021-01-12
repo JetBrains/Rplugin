@@ -6,6 +6,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import org.jetbrains.r.RBundle
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -15,13 +16,13 @@ object MachineLearningCompletionNotifications {
 
   private val downloadService = MachineLearningCompletionDownloadModelService.getInstance()
 
-  private const val notificationsTitle = "R Machine Learning completion"
+  private val notificationsTitle = RBundle.message("notification.ml.title")
 
   fun askForUpdate(project: Project, descriptors: Collection<JpsMavenRepositoryLibraryDescriptor>) {
     val updateIsInitiated = AtomicBoolean(false)
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      .createNotification(notificationsTitle, "Update is available")
-      .addAction(object : NotificationAction("Update") {
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content"))
+      .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           updateIsInitiated.set(true)
           downloadService.createDownloadAndUpdateTask(project,
@@ -43,7 +44,7 @@ object MachineLearningCompletionNotifications {
 
   fun notifyUpdateCompleted(project: Project) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      .createNotification(notificationsTitle, "Machine learning completion has been successfully updated")
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"))
       .notify(project)
 
 }
