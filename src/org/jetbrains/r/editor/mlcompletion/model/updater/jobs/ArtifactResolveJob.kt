@@ -9,6 +9,7 @@ import org.eclipse.aether.transfer.TransferCancelledException
 import org.jetbrains.idea.maven.aether.ArtifactKind
 import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import org.jetbrains.r.RBundle
 import java.io.File
 
 class ArtifactResolveJob(
@@ -16,7 +17,7 @@ class ArtifactResolveJob(
   private val kinds: Set<ArtifactKind>,
   repositories: List<RemoteRepository>,
   localRepositoryPath: File,
-  override val progressText: String? = "Downloading artifact",
+  override val progressText: String? = RBundle.message("rmlcompletion.job.downloadArtifact"),
   override val defaultResult: Collection<Artifact> = emptyList()
 ) : AetherJob<Collection<Artifact>>(repositories, localRepositoryPath) {
 

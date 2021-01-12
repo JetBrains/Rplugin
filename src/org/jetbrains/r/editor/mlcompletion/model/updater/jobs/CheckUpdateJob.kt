@@ -6,6 +6,7 @@ import org.eclipse.aether.version.Version
 import org.jetbrains.idea.maven.aether.ArtifactKind
 import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import org.jetbrains.r.RBundle
 import java.io.File
 
 class CheckUpdateJob(currentVersion: Version?,
@@ -14,7 +15,7 @@ class CheckUpdateJob(currentVersion: Version?,
                      private val artifactKind: ArtifactKind,
                      repositories: List<RemoteRepository>,
                      localRepositoryPath: File,
-                     override val progressText: String? = "Checking available updates",
+                     override val progressText: String? = RBundle.message("rmlcompletion.job.checkUpdates"),
                      override val defaultResult: JpsMavenRepositoryLibraryDescriptor? = null
 ) : AetherJob<JpsMavenRepositoryLibraryDescriptor?>(repositories, localRepositoryPath) {
 
