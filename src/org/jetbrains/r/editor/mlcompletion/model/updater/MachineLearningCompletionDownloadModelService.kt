@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
 import org.jetbrains.idea.maven.aether.ArtifactKind
 import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.ArtifactResolveJob
 import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.CheckUpdateJob
@@ -74,7 +75,7 @@ class MachineLearningCompletionDownloadModelService {
                                   descriptors: Collection<JpsMavenRepositoryLibraryDescriptor>,
                                   onSuccessCallback: () -> Unit,
                                   onFinishedCallback: () -> Unit) =
-    object : Task.Backgroundable(project, "ML completion update", true) {
+    object : Task.Backgroundable(project, RBundle.message("rmlcompletion.task.downloadAndUpdate"), true) {
       override fun run(indicator: ProgressIndicator) = descriptors.forEach { desc ->
         completionFilesService.useTempDirectory { tmpDirPath ->
           ArtifactResolveJob(desc,
