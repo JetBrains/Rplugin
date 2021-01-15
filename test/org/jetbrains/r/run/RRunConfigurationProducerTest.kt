@@ -1,25 +1,18 @@
 package org.jetbrains.r.run
 
-import com.intellij.execution.Location
-import com.intellij.execution.PsiLocation
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.psi.PsiElement
-import com.intellij.testFramework.MapDataContext
 import org.jetbrains.r.RUsefulTestCase
 import org.jetbrains.r.interpreter.RInterpreterManager
 import org.jetbrains.r.interpreter.RInterpreterUtil
 import org.jetbrains.r.run.configuration.RRunConfiguration
 import org.jetbrains.r.run.configuration.RRunConfigurationProducer
 import org.jetbrains.r.settings.RSettings
-import javax.swing.JComponent
 
 class RRunConfigurationProducerTest : RUsefulTestCase() {
   fun testCreateRunConfiguration() {
@@ -64,7 +57,12 @@ class RRunConfigurationProducerTest : RUsefulTestCase() {
     )
 
     val editorComponent = EditorComponentImpl(myFixture.editor as EditorImpl)
-    val configurationContext = getConfigurationContext(myFixture.file, contextComponent = editorComponent)
+    val element = myFixture.file.findElementAt(myFixture.caretOffset)
+    val configurationContext = object : ConfigurationContext(element!!) {
+      override fun getDataContext(): DataContext {
+        return SimpleDataContext.getSimpleContext(PlatformDataKeys.CONTEXT_COMPONENT, editorComponent, super.getDataContext())
+      }
+    }
     val runConfigurationFromContext = RRunConfigurationProducer().createConfigurationFromContext(configurationContext)
     val runConfiguration = runConfigurationFromContext?.configurationSettings?.configuration
     assertNull(runConfiguration)
@@ -77,26 +75,10 @@ class RRunConfigurationProducerTest : RUsefulTestCase() {
   }
 
   private fun getConfigurationFromCaret(): RunConfiguration? {
-    val templateConfigurationContext = getConfigurationContext(myFixture.file)
+    val element = myFixture.file.findElementAt(myFixture.caretOffset)
+    val templateConfigurationContext = ConfigurationContext(element!!)
 
     val configurationContext = RRunConfigurationProducer().createConfigurationFromContext(templateConfigurationContext)
     return configurationContext?.configurationSettings?.configuration
-  }
-
-  private fun getConfigurationContext(element: PsiElement, contextComponent: JComponent? = null): ConfigurationContext {
-    val dataContext = MapDataContext()
-    dataContext.put(CommonDataKeys.PROJECT, myFixture.project)
-    dataContext.put(LangDataKeys.MODULE, ModuleUtilCore.findModuleForPsiElement(element))
-    if (contextComponent != null) {
-      dataContext.put(PlatformDataKeys.CONTEXT_COMPONENT.name, contextComponent)
-    }
-    val location = PsiLocation.fromPsiElement(element)
-    dataContext.put(Location.DATA_KEY, location)
-
-    return object : ConfigurationContext(myFixture.file.findElementAt(myFixture.caretOffset)) {
-      override fun getDataContext(): DataContext {
-        return dataContext
-      }
-    }
   }
 }
