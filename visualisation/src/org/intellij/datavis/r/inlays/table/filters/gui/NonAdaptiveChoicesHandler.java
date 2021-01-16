@@ -21,7 +21,7 @@ class NonAdaptiveChoicesHandler extends ChoicesHandler {
     private boolean interrupted = true;
     // it is needed to map the filters to its editors
     private Map<IFilter, FilterEditor> filtersMap =
-        new HashMap<IFilter, FilterEditor>();
+      new HashMap<>();
     // entry used to filter rows
     private RowEntry rowEntry;
 
@@ -112,7 +112,7 @@ class NonAdaptiveChoicesHandler extends ChoicesHandler {
                     // table to obtain again the available choices
                     if (eventType == TableModelEvent.INSERT) {
                         editor.addChoices(modelExtract(editor, model, firstRow,
-                                lastRow, new HashSet<Object>()));
+                                lastRow, new HashSet<>()));
                     } else {
                         setChoicesFromModel(editor, model);
                     }

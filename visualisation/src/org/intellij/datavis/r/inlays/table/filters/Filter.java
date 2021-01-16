@@ -17,7 +17,7 @@ import java.util.Set;
 abstract public class Filter extends RowFilter implements IFilter {
 
     /** The set of currently subscribed observers. */
-    private Set<IFilterObserver> observers = new HashSet<IFilterObserver>();
+    private Set<IFilterObserver> observers = new HashSet<>();
 
     /** The enabled state. */
     private boolean enabled = true;
@@ -47,7 +47,7 @@ abstract public class Filter extends RowFilter implements IFilter {
 
     /** Returns all the registered {@link IFilterObserver} instances. */
     public Set<IFilterObserver> getFilterObservers() {
-        return new HashSet<IFilterObserver>(observers);
+        return new HashSet<>(observers);
     }
 
     /**
@@ -55,7 +55,7 @@ abstract public class Filter extends RowFilter implements IFilter {
      * filter has changed.
      */
     public void reportFilterUpdatedToObservers() {
-        for (IFilterObserver obs : new ArrayList<IFilterObserver>(observers)) {
+        for (IFilterObserver obs : new ArrayList<>(observers)) {
             obs.filterUpdated(this);
         }
     }

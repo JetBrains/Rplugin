@@ -18,11 +18,11 @@ abstract public class ComposedFilter extends Filter implements IFilterObserver {
     protected Set<IFilter> filters;
 
     /** disabled filters. */
-    private Set<IFilter> disabledFilters = new HashSet<IFilter>();
+    private Set<IFilter> disabledFilters = new HashSet<>();
 
     /** Default constructor. */
     protected ComposedFilter() {
-        filters = new HashSet<IFilter>();
+        filters = new HashSet<>();
     }
 
     /**
@@ -80,7 +80,7 @@ abstract public class ComposedFilter extends Filter implements IFilterObserver {
      * added.
      */
     public Set<IFilter> getFilters() {
-        return new HashSet<IFilter>(filters);
+        return new HashSet<>(filters);
     }
 
     /** @see  IFilterObserver#filterUpdated(IFilter) */

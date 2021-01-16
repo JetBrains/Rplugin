@@ -21,7 +21,7 @@ class HtmlEntities {
 		return value==null? -1 : value;		
 	}
 	
-	private static Map<String, Integer> ents = new HashMap<String, Integer>();
+	private static Map<String, Integer> ents = new HashMap<>();
 	
 	static {
 		ents.put("Aacute", 193);

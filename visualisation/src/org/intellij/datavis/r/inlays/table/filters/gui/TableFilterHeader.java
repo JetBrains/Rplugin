@@ -567,19 +567,22 @@ public class TableFilterHeader extends JPanel implements PropertyChangeListener 
         @Override public @NotNull Iterator<FilterEditor> iterator() {
             final Iterator<FilterColumnPanel> it = columns.iterator();
 
-            return new Iterator<FilterEditor>() {
+            return new Iterator<>() {
 
-                @Override public void remove() {
-                    // not supported
-                }
+              @Override
+              public void remove() {
+                // not supported
+              }
 
-                @Override public FilterEditor next() {
-                    return it.next().editor;
-                }
+              @Override
+              public FilterEditor next() {
+                return it.next().editor;
+              }
 
-                @Override public boolean hasNext() {
-                    return it.hasNext();
-                }
+              @Override
+              public boolean hasNext() {
+                return it.hasNext();
+              }
             };
         }
 

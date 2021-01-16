@@ -21,10 +21,10 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 public class RPatterns {
 
     public static final PsiElementPattern.Capture<PsiElement> MEMBER_ASSIGNMENT_PATTERN = psiElement()
-            .withParent(psiElement(RAssignmentStatement.class).with(new PatternCondition<RAssignmentStatement>("isMemberAssignee") {
-                @Override
-                public boolean accepts(@NotNull RAssignmentStatement psiElement, ProcessingContext processingContext) {
-                    return psiElement.getAssignee() instanceof RMemberExpression;
-                }
+            .withParent(psiElement(RAssignmentStatement.class).with(new PatternCondition<>("isMemberAssignee") {
+              @Override
+              public boolean accepts(@NotNull RAssignmentStatement psiElement, ProcessingContext processingContext) {
+                return psiElement.getAssignee() instanceof RMemberExpression;
+              }
             }));
 }
