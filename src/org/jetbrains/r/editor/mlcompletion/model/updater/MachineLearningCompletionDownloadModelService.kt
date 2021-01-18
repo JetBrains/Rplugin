@@ -1,21 +1,18 @@
 package org.jetbrains.r.editor.mlcompletion.model.updater
 
-import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
-import org.jetbrains.idea.maven.aether.ArtifactKind
-import org.jetbrains.jps.model.library.JpsMavenRepositoryLibraryDescriptor
+import com.intellij.util.io.HttpRequests
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
+import org.eclipse.aether.util.version.GenericVersionScheme
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
-import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.ArtifactResolveJob
-import org.jetbrains.r.editor.mlcompletion.model.updater.jobs.CheckUpdateJob
-import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -27,62 +24,60 @@ class MachineLearningCompletionDownloadModelService {
     val isBeingDownloaded = AtomicBoolean(false)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
     private val completionFilesService = MachineLearningCompletionModelFilesService.getInstance()
+
+    private fun <T> submitBackgroundJob(job: () -> T, onSuccessCallback: (T) -> Unit) =
+      executor.execute {
+        try {
+          onSuccessCallback(job())
+        }
+        catch (ignored: ProcessCanceledException) {
+          isBeingDownloaded.set(false)
+        }
+        catch (e: Throwable) {
+          LOG.info(e)
+          isBeingDownloaded.set(false)
+        }
+      }
   }
 
-  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<JpsMavenRepositoryLibraryDescriptor>) -> Unit) {
+  private fun getArtifactsToDownload() : List<MachineLearningCompletionDependencyCoordinates.Artifact> =
+    MachineLearningCompletionDependencyCoordinates.Artifact.values().filter { artifact ->
+      val artifactMetadataUrl = artifact.metadataUrl
+      val metadata = HttpRequests.request(artifactMetadataUrl).readString()
+      val latestVersion = GenericVersionScheme().parseVersion(
+        MetadataXpp3Reader().read(metadata.byteInputStream()).versioning.latest
+      )
+      artifact.latestVersion = latestVersion
+      val currentVersion = artifact.currentVersion
+
+      currentVersion == null || currentVersion < latestVersion
+    }
+
+  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<MachineLearningCompletionDependencyCoordinates.Artifact>) -> Unit) {
     if (!isBeingDownloaded.compareAndSet(false, true)) {
       return
     }
 
-    executor.execute {
-      try {
-        completionFilesService.useTempDirectory { tmpDir ->
-          val startModality = ModalityState.defaultModalityState()
-          val result = MachineLearningCompletionDependencyCoordinates.Artifact.values().mapNotNull { artifact ->
-            val indicator = EmptyProgressIndicator(startModality)
-            val checkUpdateJob = makeCheckUpdateJob(artifact, tmpDir.toFile())
-            checkUpdateJob.apply(indicator)
-          }
-          onSuccessCallback(result)
-        }
-      }
-      catch (ignored: ProcessCanceledException) {
-        isBeingDownloaded.set(false)
-      }
-      catch (e: Throwable) {
-        LOG.info(e)
-        isBeingDownloaded.set(false)
-      }
-    }
+    submitBackgroundJob(this::getArtifactsToDownload, onSuccessCallback)
   }
 
-  private fun makeCheckUpdateJob(artifact: MachineLearningCompletionDependencyCoordinates.Artifact, localRepository: File): CheckUpdateJob =
-    when (artifact) {
-      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL -> completionFilesService.modelVersion
-      MachineLearningCompletionDependencyCoordinates.Artifact.APP -> completionFilesService.applicationVersion
-    }.let { version ->
-      CheckUpdateJob(version,
-                     MachineLearningCompletionDependencyCoordinates.GROUP_ID,
-                     artifact.id,
-                     ArtifactKind.ZIP_ARCHIVE,
-                     listOf(MachineLearningCompletionDependencyCoordinates.REPOSITORY_DESCRIPTOR),
-                     localRepository)
-    }
+ fun getArtifactsSize(artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>): Long =
+    artifacts.map { artifact ->
+      val artifactUrl = artifact.getArtifactUrl(artifact.latestVersion.toString())
+      HttpRequests.request(artifactUrl).connect { request ->
+        request.connection.contentLengthLong
+      }
+    }.sum()
 
   fun createDownloadAndUpdateTask(project: Project,
-                                  descriptors: Collection<JpsMavenRepositoryLibraryDescriptor>,
+                                  artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>,
                                   onSuccessCallback: () -> Unit,
                                   onFinishedCallback: () -> Unit) =
     object : Task.Backgroundable(project, RBundle.message("rmlcompletion.task.downloadAndUpdate"), true) {
-      override fun run(indicator: ProgressIndicator) = descriptors.forEach { desc ->
-        completionFilesService.useTempDirectory { tmpDirPath ->
-          ArtifactResolveJob(desc,
-                             setOf(ArtifactKind.ZIP_ARCHIVE),
-                             listOf(MachineLearningCompletionDependencyCoordinates.REPOSITORY_DESCRIPTOR),
-                             tmpDirPath.toFile())
-            .andThen { completionFilesService.updateArtifacts(it) }
-            .apply(indicator)
-        }
+      override fun run(indicator: ProgressIndicator) = artifacts.forEach { artifact ->
+        val artifactLocalPath = Paths.get(completionFilesService.localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
+        HttpRequests.request(artifact.getArtifactUrl(artifact.latestVersion.toString()))
+          .saveToFile(artifactLocalPath, indicator)
       }
 
       override fun onSuccess() = onSuccessCallback()

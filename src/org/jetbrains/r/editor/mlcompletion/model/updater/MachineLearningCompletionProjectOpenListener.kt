@@ -12,8 +12,9 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
 
   override fun projectOpened(project: Project) =
     modelDownloaderService.getArtifactsToDownloadDescriptorsAsync { artifactsToUpdate ->
+      val size = modelDownloaderService.getArtifactsSize(artifactsToUpdate)
       if (artifactsToUpdate.isNotEmpty()) {
-        askForUpdate(project, artifactsToUpdate)
+        askForUpdate(project, artifactsToUpdate, size)
       } else {
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }

@@ -1,8 +1,9 @@
 package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.openapi.components.service
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.io.FileUtil
-import org.eclipse.aether.artifact.Artifact
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDependencyCoordinates
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -39,8 +40,8 @@ class MachineLearningCompletionModelFilesService {
   val applicationVersion
     get() = lock.withLock { files.applicationVersion }
 
-  fun updateArtifacts(artifacts: Collection<Artifact>) = lock.withLock {
-    files.updateArtifacts(artifacts)
+  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionDependencyCoordinates.Artifact>) = lock.withLock {
+    files.updateArtifacts(progress, artifacts)
   }
 
   fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean = lock.withTryLock(false) {

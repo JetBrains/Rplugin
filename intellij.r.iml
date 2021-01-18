@@ -49,5 +49,6 @@
     <orderEntry type="module" module-name="intellij.platform.ide.util.io" />
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" />
     <orderEntry type="module" module-name="intellij.java.aetherDependencyResolver" />
+    <orderEntry type="library" name="jps-build-script-dependencies-bootstrap" level="project" />
   </component>
 </module>

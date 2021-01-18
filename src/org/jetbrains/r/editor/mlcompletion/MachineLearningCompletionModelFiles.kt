@@ -1,12 +1,12 @@
 package org.jetbrains.r.editor.mlcompletion
 
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.platform.templates.github.ZipUtil
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.io.isFile
-import org.eclipse.aether.artifact.Artifact
 import org.eclipse.aether.version.Version
 import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.RPluginUtil
@@ -60,19 +60,20 @@ class MachineLearningCompletionModelFiles {
   val applicationVersion: Version?
     get() = applicationVersionFilePath?.let { getArtifactVersion(it) }
 
-  fun updateArtifacts(artifacts: Collection<Artifact>) = artifacts.forEach { updateArtifactFromArchive(it) }
+  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionDependencyCoordinates.Artifact>) =
+    artifacts.forEach { updateArtifactFromArchive(progress, it) }
 
-  private fun updateArtifactFromArchive(artifact: Artifact) : Boolean {
-    val dstDir = File(when (artifact.artifactId) {
-      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL.id -> localServerModelDirectory
-      MachineLearningCompletionDependencyCoordinates.Artifact.APP.id -> localServerAppDirectory
-      else -> null
+  private fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionDependencyCoordinates.Artifact) : Boolean {
+    val dstDir = File(when (artifact) {
+      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL -> localServerModelDirectory
+      MachineLearningCompletionDependencyCoordinates.Artifact.APP -> localServerAppDirectory
     } ?: return false)
 
     // TODO: shutdown running app prior to this
     dstDir.clearDirectory()
+    val artifactLocalPath = Paths.get(localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
 
-    ZipUtil.unzip(null, dstDir, artifact.file, null, null, true)
+    ZipUtil.unzip(progress, dstDir, artifactLocalPath.toFile(), null, null, true)
     return true
   }
 
