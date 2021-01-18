@@ -13,11 +13,12 @@ object MachineLearningCompletionDependencyCoordinates {
 
   const val GROUP_ID = "org.jetbrains.r.deps.mlcompletion"
 
-  const val MODEL_ARTIFACT_ID = "model"
-  val APP_ARTIFACT_ID = when {
-    SystemInfo.isWindows -> "win"
-    SystemInfo.isMac -> "macos"
-    SystemInfo.isUnix -> "linux"
-    else -> null
-  }?.let { "$it-app" }
+  enum class Artifact(val id: String) {
+    MODEL("model"),
+    APP(when {
+      SystemInfo.isWindows -> "win"
+      SystemInfo.isMac -> "macos"
+      else -> "linux"
+    } + "-app")
+  }
 }

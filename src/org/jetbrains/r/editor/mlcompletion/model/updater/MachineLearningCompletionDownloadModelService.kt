@@ -38,10 +38,9 @@ class MachineLearningCompletionDownloadModelService {
       try {
         completionFilesService.useTempDirectory { tmpDir ->
           val startModality = ModalityState.defaultModalityState()
-          val result = listOf(MachineLearningCompletionDependencyCoordinates.MODEL_ARTIFACT_ID,
-                              MachineLearningCompletionDependencyCoordinates.APP_ARTIFACT_ID).mapNotNull { artifactId ->
+          val result = MachineLearningCompletionDependencyCoordinates.Artifact.values().mapNotNull { artifact ->
             val indicator = EmptyProgressIndicator(startModality)
-            val checkUpdateJob = makeCheckUpdateJob(artifactId!!, tmpDir.toFile())
+            val checkUpdateJob = makeCheckUpdateJob(artifact, tmpDir.toFile())
             checkUpdateJob.apply(indicator)
           }
           onSuccessCallback(result)
@@ -57,15 +56,14 @@ class MachineLearningCompletionDownloadModelService {
     }
   }
 
-  private fun makeCheckUpdateJob(artifactId: String, localRepository: File): CheckUpdateJob =
-    when (artifactId) {
-      MachineLearningCompletionDependencyCoordinates.MODEL_ARTIFACT_ID -> completionFilesService.modelVersion
-      MachineLearningCompletionDependencyCoordinates.APP_ARTIFACT_ID -> completionFilesService.applicationVersion
-      else -> null
+  private fun makeCheckUpdateJob(artifact: MachineLearningCompletionDependencyCoordinates.Artifact, localRepository: File): CheckUpdateJob =
+    when (artifact) {
+      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL -> completionFilesService.modelVersion
+      MachineLearningCompletionDependencyCoordinates.Artifact.APP -> completionFilesService.applicationVersion
     }.let { version ->
       CheckUpdateJob(version,
                      MachineLearningCompletionDependencyCoordinates.GROUP_ID,
-                     artifactId,
+                     artifact.id,
                      ArtifactKind.ZIP_ARCHIVE,
                      listOf(MachineLearningCompletionDependencyCoordinates.REPOSITORY_DESCRIPTOR),
                      localRepository)

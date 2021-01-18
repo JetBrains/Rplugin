@@ -64,8 +64,8 @@ class MachineLearningCompletionModelFiles {
 
   private fun updateArtifactFromArchive(artifact: Artifact) : Boolean {
     val dstDir = File(when (artifact.artifactId) {
-      MachineLearningCompletionDependencyCoordinates.MODEL_ARTIFACT_ID -> localServerModelDirectory
-      MachineLearningCompletionDependencyCoordinates.APP_ARTIFACT_ID -> localServerAppDirectory
+      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL.id -> localServerModelDirectory
+      MachineLearningCompletionDependencyCoordinates.Artifact.APP.id -> localServerAppDirectory
       else -> null
     } ?: return false)
 
