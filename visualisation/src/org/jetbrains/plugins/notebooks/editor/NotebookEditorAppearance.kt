@@ -35,6 +35,7 @@ interface NotebookEditorAppearanceSizes {
   val EXTRA_PADDING_EXECUTION_COUNT: Int
 
   fun getCellLeftLineWidth(): Int
+  fun getLeftBorderWidth(): Int
 }
 
 
@@ -86,7 +87,9 @@ object DefaultNotebookEditorAppearanceSizes: NotebookEditorAppearanceSizes {
   override val JUPYTER_CELL_TOOLBAR_INLAY_PRIORITY = JUPYTER_CELL_SPACERS_INLAY_PRIORITY + 10
   override val NOTEBOOK_OUTPUT_INLAY_PRIORITY: Int = EditorInlaysManager.INLAY_PRIORITY + 5
 
-  override  val EXTRA_PADDING_EXECUTION_COUNT = 25
+  override val EXTRA_PADDING_EXECUTION_COUNT = 25
 
   override fun getCellLeftLineWidth(): Int = EDIT_MODE_CELL_LEFT_LINE_WIDTH
+  override fun getLeftBorderWidth(): Int =
+    Integer.max(COMMAND_MODE_CELL_LEFT_LINE_WIDTH, EDIT_MODE_CELL_LEFT_LINE_WIDTH) + CODE_CELL_LEFT_LINE_PADDING
 }

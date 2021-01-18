@@ -48,7 +48,7 @@ inline fun paintNotebookCellBackgroundGutter(
   crossinline actionBetweenBackgroundAndStripe: () -> Unit = {}
 ) {
   val appearance = editor.notebookAppearance
-  val borderWidth = appearance.getCellLeftLineWidth() + appearance.CODE_CELL_LEFT_LINE_PADDING
+  val borderWidth = appearance.getLeftBorderWidth()
   g.color = appearance.getCodeCellBackground(editor.colorsScheme)
   g.fillRect(r.width - borderWidth, top, borderWidth, height)
   actionBetweenBackgroundAndStripe()
@@ -64,9 +64,8 @@ fun NotebookEditorAppearance.paintCellStripe(
   top: Int,
   height: Int,
 ) {
-  val borderWidth = getCellLeftLineWidth() + CODE_CELL_LEFT_LINE_PADDING
   g.color = stripe
-  g.fillRect(r.width - borderWidth, top, getCellLeftLineWidth(), height)
+  g.fillRect(r.width - getLeftBorderWidth(), top, getCellLeftLineWidth(), height)
 }
 
 /**
