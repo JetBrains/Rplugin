@@ -185,7 +185,7 @@ private class SurroundingComponent private constructor(innerComponentScrollPane:
   private var presetWidth = 0
 
   init {
-    border = IdeBorderFactory.createEmptyBorder(Insets(0, 0, 10, 0))
+    border = IdeBorderFactory.createEmptyBorder(Insets(10, 0, 10, 0))
     add(innerComponentScrollPane, BorderLayout.CENTER)
   }
 
