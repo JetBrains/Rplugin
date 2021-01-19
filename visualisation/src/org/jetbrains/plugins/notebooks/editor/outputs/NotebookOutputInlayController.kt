@@ -33,10 +33,11 @@ class NotebookOutputInlayController private constructor(
 ) : NotebookCellInlayController {
   private val innerComponent = InnerComponent()
   private val innerComponentScrollPane = InnerComponentScrollPane(innerComponent)
+  private val outerComponent = SurroundingComponent.create(editor, innerComponentScrollPane)
 
   override val inlay: Inlay<*> =
     editor.addComponentInlay(
-      SurroundingComponent.create(editor, innerComponentScrollPane),
+      outerComponent,
       isRelatedToPrecedingText = true,
       showAbove = false,
       priority = editor.notebookAppearance.NOTEBOOK_OUTPUT_INLAY_PRIORITY,
@@ -94,6 +95,9 @@ class NotebookOutputInlayController private constructor(
           val newComponentPair = factory.createComponent(editor, outputDataKey, inlay)
           if (newComponentPair != null) {
             innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint, idx)
+            for (wrapper in NotebookOutputComponentWrapper.EP_NAME.extensionList) {
+              wrapper.newOutputComponentCreated(outerComponent, editor, outputDataKey)
+            }
             true
           }
           else false
@@ -122,6 +126,9 @@ class NotebookOutputInlayController private constructor(
       if (newComponentPair != null) {
         isFilled = true
         innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint)
+        for (wrapper in NotebookOutputComponentWrapper.EP_NAME.extensionList) {
+          wrapper.newOutputComponentCreated(outerComponent, editor, outputDataKey)
+        }
       }
     }
 

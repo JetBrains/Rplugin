@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
 import javax.swing.JPanel
 
@@ -12,6 +13,15 @@ interface NotebookOutputComponentWrapper {
    * with additional components.
    */
   fun wrap(component: JPanel)
+
+  /**
+   * Notifies about new output component created and added to [outerComponent]
+   *
+   * If [wrap] method is called only on the [outerComponent] creation, this method is called on every new output added to
+   * the component. It allows to use information from cell's output and show it on [outerComponent].
+   * [outputDataKey] represents corresponding data key for newly added output
+   */
+  fun newOutputComponentCreated(outerComponent: JPanel, editor: EditorImpl, outputDataKey: NotebookOutputDataKey)
 
   companion object {
     @JvmField
