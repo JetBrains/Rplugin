@@ -10,7 +10,6 @@ import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
 import org.eclipse.aether.util.version.GenericVersionScheme
-import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -19,7 +18,7 @@ class MachineLearningCompletionDownloadModelService {
 
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
-    private val LOG = Logger.getInstance(MachineLearningCompletionModelFilesService::class.java)
+    private val LOG = Logger.getInstance(MachineLearningCompletionDownloadModelService::class.java)
     val isBeingDownloaded = AtomicBoolean(false)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
 
