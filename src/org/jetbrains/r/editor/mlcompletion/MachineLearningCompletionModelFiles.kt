@@ -60,10 +60,7 @@ class MachineLearningCompletionModelFiles {
   val applicationVersion: Version?
     get() = applicationVersionFilePath?.let { getArtifactVersion(it) }
 
-  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionRemoteArtifact>) =
-    artifacts.forEach { updateArtifactFromArchive(progress, it) }
-
-  fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact) : Boolean {
+  fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) : Boolean {
     val dstDir = File(when (artifact) {
       MachineLearningCompletionRemoteArtifact.MODEL -> localServerModelDirectory
       MachineLearningCompletionRemoteArtifact.APP -> localServerAppDirectory
@@ -71,9 +68,8 @@ class MachineLearningCompletionModelFiles {
 
     // TODO: shutdown running app prior to this
     dstDir.clearDirectory()
-    val artifactLocalPath = Paths.get(localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
 
-    ZipUtil.unzip(progress, dstDir, artifactLocalPath.toFile(), null, null, true)
+    ZipUtil.unzip(progress, dstDir, zipFile, null, null, true)
     return true
   }
 

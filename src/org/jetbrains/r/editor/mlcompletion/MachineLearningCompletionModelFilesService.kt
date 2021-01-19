@@ -5,6 +5,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
+import java.io.File
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -47,15 +48,24 @@ class MachineLearningCompletionModelFilesService {
 
   open class UpdateArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
+    private val artifactZipFile: File,
     project: Project,
-    progressTitle: String
-  ): Task.Backgroundable(project, progressTitle, true) {
-    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact)
+    progressTitle: String,
+    private val deleteLocalFileOnFinish: Boolean = true,
+    ): Task.Backgroundable(project, progressTitle, true) {
+
+    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact, artifactZipFile)
+
+    override fun onFinished() {
+      if (deleteLocalFileOnFinish) {
+        artifactZipFile.delete()
+      }
+    }
   }
 
-  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact) =
+  fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) =
     artifact.getLock().withLock<Unit> {
-      files.updateArtifactFromArchive(progress, artifact)
+      files.updateArtifactFromArchive(progress, artifact, zipFile)
     }
 
   fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean =

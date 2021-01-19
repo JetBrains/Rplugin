@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
+import java.io.File
 import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -38,12 +39,14 @@ object MachineLearningCompletionNotifications {
             notifyUpdateCompleted(project)
           }
 
+          val localServerDirectory = File(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)
           artifacts.forEach { artifact ->
             val artifactName = artifact.visibleName
+            val artifactTempFile = File.createTempFile(artifact.id, ".zip", localServerDirectory)
 
             val unzipTaskTitle = RBundle.message("rmlcompletion.task.unzip", artifactName)
             val unzipTask =
-              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, project, unzipTaskTitle) {
+              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, artifactTempFile, project, unzipTaskTitle) {
                 override fun onSuccess() = notifyUpdateCompletedCallback()
 
                 override fun onFinished() = releaseFlagCallback()
@@ -51,7 +54,8 @@ object MachineLearningCompletionNotifications {
 
             val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
             val downloadTask =
-              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, project, downloadTaskTitle) {
+              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, artifactTempFile, project,
+                                                                                          downloadTaskTitle) {
                 override fun onSuccess() = unzipTask.queue()
               }
 

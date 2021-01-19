@@ -11,7 +11,7 @@ import com.intellij.util.io.HttpRequests
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
 import org.eclipse.aether.util.version.GenericVersionScheme
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
-import java.nio.file.Paths
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -22,7 +22,6 @@ class MachineLearningCompletionDownloadModelService {
     private val LOG = Logger.getInstance(MachineLearningCompletionModelFilesService::class.java)
     val isBeingDownloaded = AtomicBoolean(false)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
-    private val completionFilesService = MachineLearningCompletionModelFilesService.getInstance()
 
     private fun <T> submitBackgroundJob(job: () -> T, onSuccessCallback: (T) -> Unit) =
       executor.execute {
@@ -70,13 +69,13 @@ class MachineLearningCompletionDownloadModelService {
 
   open class DownloadArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
+    private val artifactLocalFile: File,
     project: Project,
     title: String
   ) : Task.Backgroundable(project, title, true) {
     override fun run(indicator: ProgressIndicator) {
-      val artifactLocalPath = Paths.get(completionFilesService.localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
       HttpRequests.request(artifact.getArtifactUrl(artifact.latestVersion.toString()))
-        .saveToFile(artifactLocalPath, indicator)
+        .saveToFile(artifactLocalFile, indicator)
     }
   }
 
