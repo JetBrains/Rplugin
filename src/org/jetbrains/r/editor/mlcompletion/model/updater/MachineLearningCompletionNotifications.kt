@@ -41,15 +41,19 @@ object MachineLearningCompletionNotifications {
           }
 
           artifacts.forEach { artifact ->
+            val artifactName = artifact.visibleName
+
+            val unzipTaskTitle = RBundle.message("rmlcompletion.task.unzip", artifactName)
             val unzipTask =
-              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, project, "unzip") {
+              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, project, unzipTaskTitle) {
                 override fun onSuccess() = notifyUpdateCompletedCallback()
 
                 override fun onFinished() = releaseFlagCallback()
               }
 
+            val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
             val downloadTask =
-              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, project, "download") {
+              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, project, downloadTaskTitle) {
                 override fun onSuccess() = unzipTask.queue()
               }
 

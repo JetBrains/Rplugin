@@ -4,13 +4,13 @@ import com.intellij.openapi.util.SystemInfo
 import org.eclipse.aether.version.Version
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 
-enum class MachineLearningCompletionRemoteArtifact(val id: String) {
-  MODEL("model"),
+enum class MachineLearningCompletionRemoteArtifact(val id: String, val visibleName: String) {
+  MODEL("model", "model"),
   APP(when {
         SystemInfo.isWindows -> "win"
         SystemInfo.isMac -> "macos"
         else -> "linux"
-      } + "-app");
+      } + "-app", "application");
 
   companion object {
     const val REPOSITORY_URL = "https://packages.jetbrains.team/maven/p/mlrcc/rcompletion-models"
