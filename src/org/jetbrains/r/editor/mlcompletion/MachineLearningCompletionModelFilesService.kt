@@ -2,11 +2,7 @@ package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDependencyCoordinates
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -40,7 +36,7 @@ class MachineLearningCompletionModelFilesService {
   val applicationVersion
     get() = lock.withLock { files.applicationVersion }
 
-  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionDependencyCoordinates.Artifact>) = lock.withLock {
+  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionRemoteArtifact>) = lock.withLock {
     files.updateArtifacts(progress, artifacts)
   }
 
@@ -50,13 +46,5 @@ class MachineLearningCompletionModelFilesService {
       return true
     }
     return false
-  }
-
-  fun useTempDirectory(synchronousAction: (Path) -> Unit): Boolean {
-    val tmpDirectory = files.localServerDirectory?.let { Files.createTempDirectory(Paths.get(it), "tmpDir") }
-                       ?: return false
-    synchronousAction(tmpDirectory)
-    FileUtil.delete(tmpDirectory)
-    return true
   }
 }

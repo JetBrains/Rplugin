@@ -25,7 +25,7 @@ object MachineLearningCompletionNotifications {
   private val sizeFormat = DecimalFormat("#.#")
   private fun showSizeMb(sizeBytes: Long) = sizeFormat.format(sizeBytes / MEGABYTE.toDouble())
 
-  fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>, size: Long) {
+  fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) {
     val updateIsInitiated = AtomicBoolean(false)
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content", showSizeMb(size)))

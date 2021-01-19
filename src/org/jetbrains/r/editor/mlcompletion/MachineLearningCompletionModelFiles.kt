@@ -10,7 +10,7 @@ import com.intellij.util.io.isFile
 import org.eclipse.aether.version.Version
 import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.RPluginUtil
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDependencyCoordinates
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.io.File
 import java.nio.file.Paths
 
@@ -60,13 +60,13 @@ class MachineLearningCompletionModelFiles {
   val applicationVersion: Version?
     get() = applicationVersionFilePath?.let { getArtifactVersion(it) }
 
-  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionDependencyCoordinates.Artifact>) =
+  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionRemoteArtifact>) =
     artifacts.forEach { updateArtifactFromArchive(progress, it) }
 
-  private fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionDependencyCoordinates.Artifact) : Boolean {
+  fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact) : Boolean {
     val dstDir = File(when (artifact) {
-      MachineLearningCompletionDependencyCoordinates.Artifact.MODEL -> localServerModelDirectory
-      MachineLearningCompletionDependencyCoordinates.Artifact.APP -> localServerAppDirectory
+      MachineLearningCompletionRemoteArtifact.MODEL -> localServerModelDirectory
+      MachineLearningCompletionRemoteArtifact.APP -> localServerAppDirectory
     } ?: return false)
 
     // TODO: shutdown running app prior to this

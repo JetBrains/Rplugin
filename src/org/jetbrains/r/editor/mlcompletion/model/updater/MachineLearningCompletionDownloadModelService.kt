@@ -40,8 +40,8 @@ class MachineLearningCompletionDownloadModelService {
       }
   }
 
-  private fun getArtifactsToDownload() : List<MachineLearningCompletionDependencyCoordinates.Artifact> =
-    MachineLearningCompletionDependencyCoordinates.Artifact.values().filter { artifact ->
+  private fun getArtifactsToDownload() : List<MachineLearningCompletionRemoteArtifact> =
+    MachineLearningCompletionRemoteArtifact.values().filter { artifact ->
       val artifactMetadataUrl = artifact.metadataUrl
       val metadata = HttpRequests.request(artifactMetadataUrl).readString()
       val latestVersion = GenericVersionScheme().parseVersion(
@@ -53,7 +53,7 @@ class MachineLearningCompletionDownloadModelService {
       currentVersion == null || currentVersion < latestVersion
     }
 
-  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<MachineLearningCompletionDependencyCoordinates.Artifact>) -> Unit) {
+  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<MachineLearningCompletionRemoteArtifact>) -> Unit) {
     if (!isBeingDownloaded.compareAndSet(false, true)) {
       return
     }
@@ -61,7 +61,7 @@ class MachineLearningCompletionDownloadModelService {
     submitBackgroundJob(this::getArtifactsToDownload, onSuccessCallback)
   }
 
- fun getArtifactsSize(artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>): Long =
+ fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->
       val artifactUrl = artifact.getArtifactUrl(artifact.latestVersion.toString())
       HttpRequests.request(artifactUrl).connect { request ->
@@ -70,7 +70,7 @@ class MachineLearningCompletionDownloadModelService {
     }.sum()
 
   fun createDownloadAndUpdateTask(project: Project,
-                                  artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>,
+                                  artifacts: List<MachineLearningCompletionRemoteArtifact>,
                                   onSuccessCallback: () -> Unit,
                                   onFinishedCallback: () -> Unit) =
     object : Task.Backgroundable(project, RBundle.message("rmlcompletion.task.downloadAndUpdate"), true) {
