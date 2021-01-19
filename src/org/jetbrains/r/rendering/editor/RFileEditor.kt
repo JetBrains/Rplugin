@@ -68,11 +68,12 @@ class RFileEditor(project: Project, textEditor: TextEditor, virtualFile: Virtual
       val file = FileDocumentManager.getInstance().getFile(textEditor.editor.document)
       return AnActionEvent.createFromInputEvent(
         e.inputEvent, "", e.presentation,
-        SimpleDataContext.getSimpleContext(
-          mapOf(CommonDataKeys.EDITOR.name to textEditor.editor,
-                CommonDataKeys.VIRTUAL_FILE.name to file,
-                CommonDataKeys.PSI_FILE.name to file?.let { PsiManager.getInstance(project).findFile(it) }),
-          e.dataContext))
+        SimpleDataContext.builder()
+          .add(CommonDataKeys.EDITOR, textEditor.editor)
+          .add(CommonDataKeys.VIRTUAL_FILE, file)
+          .add(CommonDataKeys.PSI_FILE, file?.let { PsiManager.getInstance(project).findFile(it) })
+          .setParent(e.dataContext)
+          .build())
     }
   }
 }

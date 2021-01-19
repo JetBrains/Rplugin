@@ -233,8 +233,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
       private fun createEvent(e: AnActionEvent): AnActionEvent =
         AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
-                                            SimpleDataContext.getSimpleContext(
-                                              mapOf(RConsoleView.R_CONSOLE_DATA_KEY.name to console), e.dataContext))
+                                           SimpleDataContext.getSimpleContext(RConsoleView.R_CONSOLE_DATA_KEY, console, e.dataContext))
     }
 
   private fun createEofAction(console: RConsoleView): AnAction =
@@ -251,8 +250,7 @@ class RConsoleRunner(private val interpreter: RInterpreter,
 
       private fun createEvent(e: AnActionEvent): AnActionEvent =
         AnActionEvent.createFromInputEvent(e.inputEvent, "", e.presentation,
-                                           SimpleDataContext.getSimpleContext(
-                                             mapOf(RConsoleView.R_CONSOLE_DATA_KEY.name to console), e.dataContext))
+                                           SimpleDataContext.getSimpleContext(RConsoleView.R_CONSOLE_DATA_KEY, console, e.dataContext))
     }
 
 

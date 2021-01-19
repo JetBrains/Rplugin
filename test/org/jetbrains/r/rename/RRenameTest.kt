@@ -113,7 +113,7 @@ class RRenameTest : RLightCodeInsightFixtureTestCase() {
     val element = TargetElementUtil.findTargetElement(myFixture.editor, TargetElementUtil.getInstance().getAllAccepted())
 
     assertNotNull(element)
-    val dataContext = SimpleDataContext.getSimpleContext(CommonDataKeys.PSI_ELEMENT.name, element!!, createDataContext())
+    val dataContext = SimpleDataContext.getSimpleContext(CommonDataKeys.PSI_ELEMENT, element!!, createDataContext())
     val handler = when {
       memberHandler.isRenaming(dataContext) -> memberHandler
       variableHandler.isRenaming(dataContext) -> variableHandler
