@@ -7,8 +7,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
+import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -20,18 +22,19 @@ object MachineLearningCompletionNotifications {
 
   private val notificationsTitle = RBundle.message("notification.ml.title")
 
+  private val sizeFormat = DecimalFormat("#.#")
+  private fun showSizeMb(sizeBytes: Long) = sizeFormat.format(sizeBytes / MEGABYTE.toDouble())
+
   fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionDependencyCoordinates.Artifact>, size: Long) {
     val updateIsInitiated = AtomicBoolean(false)
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
-      //.createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content"))
-      .createNotification(notificationsTitle, "Update is available, ${size / 1_000_000.0} MB")
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content", showSizeMb(size)))
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           updateIsInitiated.set(true)
           val releaseFlagCallback = {
             MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
           }
-
           val filesService = MachineLearningCompletionModelFilesService.getInstance()
           val unzipTask = object : Task.Backgroundable(project, "unzip") {
             override fun run(indicator: ProgressIndicator) = artifacts.forEach { artifact ->
