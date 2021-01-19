@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
 import java.io.File
 import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
@@ -29,14 +30,16 @@ object MachineLearningCompletionNotifications {
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           updateIsInitiated.set(true)
+          MachineLearningCompletionServerService.getInstance().shutdownBlocking()
           val numberOfTasks = artifacts.size
 
           val releaseFlagCallback = TaskUtils.createSharedCallback(numberOfTasks) {
             MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
           }
 
-          val notifyUpdateCompletedCallback = TaskUtils.createSharedCallback(numberOfTasks) {
+          val updateCompletedCallback = TaskUtils.createSharedCallback(numberOfTasks) {
             notifyUpdateCompleted(project)
+            MachineLearningCompletionServerService.getInstance().tryRelaunchServer()
           }
 
           val localServerDirectory = File(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)
@@ -47,7 +50,7 @@ object MachineLearningCompletionNotifications {
             val unzipTaskTitle = RBundle.message("rmlcompletion.task.unzip", artifactName)
             val unzipTask =
               object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, artifactTempFile, project, unzipTaskTitle) {
-                override fun onSuccess() = notifyUpdateCompletedCallback()
+                override fun onSuccess() = updateCompletedCallback()
 
                 override fun onFinished() = releaseFlagCallback()
               }

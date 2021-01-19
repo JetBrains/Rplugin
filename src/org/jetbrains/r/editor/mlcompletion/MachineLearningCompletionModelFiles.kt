@@ -66,7 +66,6 @@ class MachineLearningCompletionModelFiles {
       MachineLearningCompletionRemoteArtifact.APP -> localServerAppDirectory
     } ?: return false)
 
-    // TODO: shutdown running app prior to this
     dstDir.clearDirectory()
 
     ZipUtil.unzip(progress, dstDir, zipFile, null, null, true)

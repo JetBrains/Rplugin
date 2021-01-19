@@ -112,6 +112,11 @@ class MachineLearningCompletionServerService : Disposable {
     localServer?.destroy()
   }
 
+  fun shutdownBlocking() {
+    shutdownServer()
+    localServer?.waitFor()
+  }
+
   override fun dispose() {
     shutdownServer()
   }
