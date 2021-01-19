@@ -6,17 +6,17 @@ import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompleti
 
 class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
 
-  companion object {
-    private val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
-  }
-
-  override fun projectOpened(project: Project) =
+  override fun projectOpened(project: Project) {
+    val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
     modelDownloaderService.getArtifactsToDownloadDescriptorsAsync { artifactsToUpdate ->
       val size = modelDownloaderService.getArtifactsSize(artifactsToUpdate)
       if (artifactsToUpdate.isNotEmpty()) {
         askForUpdate(project, artifactsToUpdate, size)
-      } else {
+      }
+      else {
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
     }
+  }
+
 }
