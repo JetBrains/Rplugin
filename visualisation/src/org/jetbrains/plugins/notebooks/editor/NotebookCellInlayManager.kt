@@ -196,7 +196,7 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     val intervalsToAddHighlightersFor = matchingIntervals.associateByTo(HashMap()) { it.lines }
     for (highlighter in existingHighlighters) {
       val lines = editor.document.run { getLineNumber(highlighter.startOffset)..getLineNumber(highlighter.endOffset) }
-      if (intervalsToAddHighlightersFor.remove(lines) == null) {
+      if (intervalsToAddHighlightersFor.remove(lines)?.shouldHaveHighlighter != true) {
         editor.markupModel.removeHighlighter(highlighter)
       }
     }
@@ -291,10 +291,13 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
       .getBlockElementsInRange(startOffset, endOffset)
       .mapNotNull(inlays::get)
 
+  private val NotebookCellLines.Interval.shouldHaveHighlighter: Boolean
+    get() = type == NotebookCellLines.CellType.CODE
+
   private fun addHighlighters(intervals: Collection<NotebookCellLines.Interval>) {
     val document = editor.document
     for (interval in intervals) {
-      if (interval.type == NotebookCellLines.CellType.CODE) {
+      if (interval.shouldHaveHighlighter) {
         val highlighter = editor.markupModel.addRangeHighlighter(
           document.getLineStartOffset(interval.lines.first),
           document.getLineEndOffset(interval.lines.last),
