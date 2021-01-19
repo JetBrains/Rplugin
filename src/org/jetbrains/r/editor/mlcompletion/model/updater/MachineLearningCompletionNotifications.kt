@@ -16,8 +16,6 @@ object MachineLearningCompletionNotifications {
 
   const val GROUP_NAME = "RMachineLearningCompletion"
 
-  private val downloadService = MachineLearningCompletionDownloadModelService.getInstance()
-
   private val notificationsTitle = RBundle.message("notification.ml.title")
 
   private val sizeFormat = DecimalFormat("#.#")
