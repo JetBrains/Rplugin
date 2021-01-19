@@ -27,9 +27,9 @@ enum class MachineLearningCompletionRemoteArtifact(val id: String, val visibleNa
       APP -> MachineLearningCompletionModelFilesService.getInstance().applicationVersion
     }
 
-  fun getArtifactUrl(version: String): String =
-    listOf(REPOSITORY_URL, *GROUP_ID.split('.').toTypedArray(), id, version, "$id-$version.zip")
+  fun getArtifactUrl(): String =
+    listOf(REPOSITORY_URL, *GROUP_ID.split('.').toTypedArray(), id, latestVersion, "$id-$latestVersion.zip")
       .joinToString("/")
 
-  lateinit var latestVersion: Version
+  var latestVersion: Version? = null
 }

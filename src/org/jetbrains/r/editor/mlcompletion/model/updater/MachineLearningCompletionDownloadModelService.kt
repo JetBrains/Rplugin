@@ -38,7 +38,7 @@ class MachineLearningCompletionDownloadModelService {
       }
   }
 
-  private fun getArtifactsToDownload() : List<MachineLearningCompletionRemoteArtifact> =
+  private fun getArtifactsToDownload(): List<MachineLearningCompletionRemoteArtifact> =
     MachineLearningCompletionRemoteArtifact.values().filter { artifact ->
       val artifactMetadataUrl = artifact.metadataUrl
       val metadata = HttpRequests.request(artifactMetadataUrl).readString()
@@ -59,9 +59,9 @@ class MachineLearningCompletionDownloadModelService {
     submitBackgroundJob(this::getArtifactsToDownload, onSuccessCallback)
   }
 
- fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
+  fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->
-      val artifactUrl = artifact.getArtifactUrl(artifact.latestVersion.toString())
+      val artifactUrl = artifact.getArtifactUrl()
       HttpRequests.request(artifactUrl).connect { request ->
         request.connection.contentLengthLong
       }
@@ -73,10 +73,8 @@ class MachineLearningCompletionDownloadModelService {
     project: Project,
     title: String
   ) : Task.Backgroundable(project, title, true) {
-    override fun run(indicator: ProgressIndicator) {
-      HttpRequests.request(artifact.getArtifactUrl(artifact.latestVersion.toString()))
-        .saveToFile(artifactLocalFile, indicator)
-    }
+    override fun run(indicator: ProgressIndicator) =
+      HttpRequests.request(artifact.getArtifactUrl()).saveToFile(artifactLocalFile, indicator)
   }
 
 }
