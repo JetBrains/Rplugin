@@ -10,7 +10,6 @@ import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
 import org.eclipse.aether.util.version.GenericVersionScheme
-import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
@@ -69,19 +68,16 @@ class MachineLearningCompletionDownloadModelService {
       }
     }.sum()
 
-  fun createDownloadAndUpdateTask(project: Project,
-                                  artifacts: List<MachineLearningCompletionRemoteArtifact>,
-                                  onSuccessCallback: () -> Unit,
-                                  onFinishedCallback: () -> Unit) =
-    object : Task.Backgroundable(project, RBundle.message("rmlcompletion.task.downloadAndUpdate"), true) {
-      override fun run(indicator: ProgressIndicator) = artifacts.forEach { artifact ->
-        val artifactLocalPath = Paths.get(completionFilesService.localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
-        HttpRequests.request(artifact.getArtifactUrl(artifact.latestVersion.toString()))
-          .saveToFile(artifactLocalPath, indicator)
-      }
-
-      override fun onSuccess() = onSuccessCallback()
-
-      override fun onFinished() = onFinishedCallback()
+  open class DownloadArtifactTask(
+    private val artifact: MachineLearningCompletionRemoteArtifact,
+    project: Project,
+    title: String
+  ) : Task.Backgroundable(project, title, true) {
+    override fun run(indicator: ProgressIndicator) {
+      val artifactLocalPath = Paths.get(completionFilesService.localServerDirectory!!, artifact.id + artifact.latestVersion.toString())
+      HttpRequests.request(artifact.getArtifactUrl(artifact.latestVersion.toString()))
+        .saveToFile(artifactLocalPath, indicator)
     }
+  }
+
 }

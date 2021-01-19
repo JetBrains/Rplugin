@@ -2,6 +2,8 @@ package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.Project
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -43,16 +45,18 @@ class MachineLearningCompletionModelFilesService {
   val applicationVersion
     get() = appLock.withLock { files.applicationVersion }
 
+  open class UpdateArtifactTask(
+    private val artifact: MachineLearningCompletionRemoteArtifact,
+    project: Project,
+    progressTitle: String
+  ): Task.Backgroundable(project, progressTitle, true) {
+    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact)
+  }
+
   fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact) =
-    artifact.getLock().withLock {
+    artifact.getLock().withLock<Unit> {
       files.updateArtifactFromArchive(progress, artifact)
     }
-
-  fun updateArtifacts(progress: ProgressIndicator, artifacts: Collection<MachineLearningCompletionRemoteArtifact>) = appLock.withLock {
-    modelLock.withLock {
-      files.updateArtifacts(progress, artifacts)
-    }
-  }
 
   fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean =
     appLock.withTryLock(false) {

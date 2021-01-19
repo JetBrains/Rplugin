@@ -4,8 +4,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
@@ -32,26 +30,32 @@ object MachineLearningCompletionNotifications {
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           updateIsInitiated.set(true)
-          val releaseFlagCallback = {
+          val numberOfTasks = artifacts.size
+
+          val releaseFlagCallback = TaskUtils.createSharedCallback(numberOfTasks) {
             MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
           }
-          val filesService = MachineLearningCompletionModelFilesService.getInstance()
-          val unzipTask = object : Task.Backgroundable(project, "unzip") {
-            override fun run(indicator: ProgressIndicator) = artifacts.forEach { artifact ->
-              filesService.updateArtifacts(indicator, artifacts)
-            }
 
-            override fun onSuccess() {
-              notifyUpdateCompleted(project)
-            }
-
-            override fun onFinished() = releaseFlagCallback()
+          val notifyUpdateCompletedCallback = TaskUtils.createSharedCallback(numberOfTasks) {
+            notifyUpdateCompleted(project)
           }
 
-          downloadService.createDownloadAndUpdateTask(project,
-                                                      artifacts,
-                                                      onSuccessCallback = { unzipTask.queue() },
-                                                      onFinishedCallback = { }).queue()
+          artifacts.forEach { artifact ->
+            val unzipTask =
+              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, project, "unzip") {
+                override fun onSuccess() = notifyUpdateCompletedCallback()
+
+                override fun onFinished() = releaseFlagCallback()
+              }
+
+            val downloadTask =
+              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, project, "download") {
+                override fun onSuccess() = unzipTask.queue()
+              }
+
+            downloadTask.queue()
+          }
+
           notification.expire()
         }
       })
