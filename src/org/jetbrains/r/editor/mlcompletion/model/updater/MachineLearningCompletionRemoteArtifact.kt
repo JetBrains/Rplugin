@@ -31,5 +31,6 @@ enum class MachineLearningCompletionRemoteArtifact(val id: String, val visibleNa
     listOf(REPOSITORY_URL, *GROUP_ID.split('.').toTypedArray(), id, latestVersion, "$id-$latestVersion.zip")
       .joinToString("/")
 
+  @Volatile
   var latestVersion: Version? = null
 }
