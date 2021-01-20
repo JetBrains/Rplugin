@@ -53,7 +53,7 @@ sealed class MachineLearningCompletionRemoteArtifact {
 
 class MachineLearningCompletionModelArtifact : MachineLearningCompletionRemoteArtifact() {
   override val id = "model"
-  override val visibleName = "app"
+  override val visibleName = "model"
 }
 
 class MachineLearningCompletionAppArtifact : MachineLearningCompletionRemoteArtifact() {
