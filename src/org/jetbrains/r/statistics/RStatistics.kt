@@ -6,6 +6,7 @@ package org.jetbrains.r.statistics
 
 import com.intellij.internal.statistic.eventLog.FeatureUsageData
 import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger
+import com.intellij.openapi.project.Project
 import org.jetbrains.r.interpreter.*
 import org.jetbrains.r.rinterop.RCondaUtil
 import java.io.File
@@ -19,24 +20,25 @@ object RStatistics {
   private const val INTERPRETERS_ID = "r.interpreters"
   private const val WORKFLOW_ID = "r.workflow"
 
-  private fun logEvent(groupId: String,
+  private fun logEvent(project: Project?,
+                       groupId: String,
                        eventId: RStatisticsEvent,
                        dataInitializer: FeatureUsageData.() -> Unit = { }) {
     val data = FeatureUsageData()
     dataInitializer(data)
-    FUCounterUsageLogger.getInstance().logEvent(groupId, eventId.id, data)
+    FUCounterUsageLogger.getInstance().logEvent(project, groupId, eventId.id, data)
   }
 
-  fun logConsoleMethodCall(name: String) {
-    logEvent(WORKFLOW_ID, RStatisticsEvent.CALL_METHOD_FROM_CONSOLE) {
+  fun logConsoleMethodCall(project: Project?, name: String) {
+    logEvent(project, WORKFLOW_ID, RStatisticsEvent.CALL_METHOD_FROM_CONSOLE) {
       addData("name", name)
     }
   }
 
-  fun logSetupInterpreter(interpreter: RInterpreter) {
+  fun logSetupInterpreter(project: Project?, interpreter: RInterpreter) {
     val suggestedInterpreters = collectFoundInterpreters(interpreter)
     val isConda = isConda(interpreter.interpreterLocation)
-    logEvent(INTERPRETERS_ID, RStatisticsEvent.SETUP_INTERPRETER) {
+    logEvent(project, INTERPRETERS_ID, RStatisticsEvent.SETUP_INTERPRETER) {
       addData("version", interpreter.version.toCompactString())
       addData("is.conda", isConda)
       addData("suggested", suggestedInterpreters)

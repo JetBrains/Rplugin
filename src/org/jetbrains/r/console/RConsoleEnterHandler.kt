@@ -80,7 +80,7 @@ object RConsoleEnterHandler {
         super.visitCallExpression(call)
         val name = call.expression.text
         if (reportCallsFromConsole.contains(name)) {
-          RStatistics.logConsoleMethodCall(name)
+          RStatistics.logConsoleMethodCall(consoleView.project, name)
         }
       }
     })

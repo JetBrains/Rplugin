@@ -152,7 +152,7 @@ class RInterpreterManagerImpl(private val project: Project): RInterpreterManager
           interpreterOrNull = it
           ensureInterpreterStored(it)
           promise.setResult(it)
-          RStatistics.logSetupInterpreter(it)
+          RStatistics.logSetupInterpreter(project, it)
         }
       } catch (e: Throwable) {
         promise.setError(e)
