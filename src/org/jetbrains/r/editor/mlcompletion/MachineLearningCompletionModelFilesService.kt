@@ -4,6 +4,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.io.File
 import java.util.concurrent.locks.Lock
@@ -35,8 +37,8 @@ class MachineLearningCompletionModelFilesService {
   private val appLock = ReentrantLock()
   private fun MachineLearningCompletionRemoteArtifact.getLock() =
     when (this) {
-      MachineLearningCompletionRemoteArtifact.APP -> appLock
-      MachineLearningCompletionRemoteArtifact.MODEL -> modelLock
+      is MachineLearningCompletionAppArtifact -> appLock
+      is MachineLearningCompletionModelArtifact -> modelLock
     }
 
   val localServerDirectory

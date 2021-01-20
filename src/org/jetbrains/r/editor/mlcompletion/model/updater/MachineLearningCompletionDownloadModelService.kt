@@ -8,8 +8,6 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
-import org.eclipse.aether.util.version.GenericVersionScheme
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -38,14 +36,9 @@ class MachineLearningCompletionDownloadModelService {
   }
 
   private fun getArtifactsToDownload(): List<MachineLearningCompletionRemoteArtifact> =
-    MachineLearningCompletionRemoteArtifact.values().filter { artifact ->
-      val artifactMetadataUrl = artifact.metadataUrl
-      val metadata = HttpRequests.request(artifactMetadataUrl).readString()
-      val latestVersion = GenericVersionScheme().parseVersion(
-        MetadataXpp3Reader().read(metadata.byteInputStream()).versioning.latest
-      )
-      artifact.latestVersion = latestVersion
+    MachineLearningCompletionRemoteArtifact.createSubclassInstances().filter { artifact ->
       val currentVersion = artifact.currentVersion
+      val latestVersion = artifact.latestVersion
 
       currentVersion == null || currentVersion < latestVersion
     }
@@ -60,7 +53,7 @@ class MachineLearningCompletionDownloadModelService {
 
   fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->
-      val artifactUrl = artifact.getArtifactUrl()
+      val artifactUrl = artifact.latestArtifactUrl
       HttpRequests.request(artifactUrl).connect { request ->
         request.connection.contentLengthLong
       }
@@ -73,7 +66,7 @@ class MachineLearningCompletionDownloadModelService {
     title: String
   ) : Task.Backgroundable(project, title, true) {
     override fun run(indicator: ProgressIndicator) =
-      HttpRequests.request(artifact.getArtifactUrl()).saveToFile(artifactLocalFile, indicator)
+      HttpRequests.request(artifact.latestArtifactUrl).saveToFile(artifactLocalFile, indicator)
   }
 
 }

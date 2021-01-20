@@ -10,6 +10,8 @@ import com.intellij.util.io.isFile
 import org.eclipse.aether.version.Version
 import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.RPluginUtil
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.io.File
 import java.nio.file.Paths
@@ -62,8 +64,8 @@ class MachineLearningCompletionModelFiles {
 
   fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) : Boolean {
     val dstDir = File(when (artifact) {
-      MachineLearningCompletionRemoteArtifact.MODEL -> localServerModelDirectory
-      MachineLearningCompletionRemoteArtifact.APP -> localServerAppDirectory
+      is MachineLearningCompletionModelArtifact -> localServerModelDirectory
+      is MachineLearningCompletionAppArtifact -> localServerAppDirectory
     } ?: return false)
 
     dstDir.clearDirectory()
