@@ -30,37 +30,26 @@ object MachineLearningCompletionNotifications {
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
           updateIsInitiated.set(true)
-          MachineLearningCompletionServerService.getInstance().shutdownBlocking()
-          val numberOfTasks = artifacts.size
+          val serverService = MachineLearningCompletionServerService.getInstance()
+          serverService.shutdownBlocking()
 
+          val numberOfTasks = artifacts.size
           val releaseFlagCallback = TaskUtils.createSharedCallback(numberOfTasks) {
             MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
           }
 
           val updateCompletedCallback = TaskUtils.createSharedCallback(numberOfTasks) {
             notifyUpdateCompleted(project)
-            MachineLearningCompletionServerService.getInstance().tryRelaunchServer()
+            serverService.tryRelaunchServer()
           }
 
           val localServerDirectory = File(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)
           artifacts.forEach { artifact ->
-            val artifactName = artifact.visibleName
             val artifactTempFile = File.createTempFile(artifact.id, ".zip", localServerDirectory)
 
-            val unzipTaskTitle = RBundle.message("rmlcompletion.task.unzip", artifactName)
-            val unzipTask =
-              object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, artifactTempFile, project, unzipTaskTitle) {
-                override fun onSuccess() = updateCompletedCallback()
+            val unzipTask = createUnzipTask(artifact, artifactTempFile, project, updateCompletedCallback, releaseFlagCallback)
 
-                override fun onFinished() = releaseFlagCallback()
-              }
-
-            val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
-            val downloadTask =
-              object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, artifactTempFile, project,
-                                                                                          downloadTaskTitle) {
-                override fun onSuccess() = unzipTask.queue()
-              }
+            val downloadTask = createDownloadTask(artifact, artifactTempFile, project, unzipTask, releaseFlagCallback)
 
             downloadTask.queue()
           }
@@ -74,6 +63,38 @@ object MachineLearningCompletionNotifications {
         }
       }
       .notify(project)
+  }
+
+  private fun createUnzipTask(artifact: MachineLearningCompletionRemoteArtifact,
+                              artifactTempFile: File,
+                              project: Project,
+                              updateCompletedCallback: () -> Unit,
+                              releaseFlagCallback: () -> Unit): MachineLearningCompletionModelFilesService.UpdateArtifactTask {
+    val artifactName = artifact.visibleName
+    val unzipTaskTitle = RBundle.message("rmlcompletion.task.unzip", artifactName)
+    return object : MachineLearningCompletionModelFilesService.UpdateArtifactTask(artifact, artifactTempFile, project, unzipTaskTitle) {
+      override fun onSuccess() {
+        updateCompletedCallback()
+        releaseFlagCallback()
+      }
+
+      override fun onCancel() = releaseFlagCallback()
+    }
+  }
+
+  private fun createDownloadTask(artifact: MachineLearningCompletionRemoteArtifact,
+                                 artifactTempFile: File,
+                                 project: Project,
+                                 unzipTask: MachineLearningCompletionModelFilesService.UpdateArtifactTask,
+                                 releaseFlagCallback: () -> Unit): MachineLearningCompletionDownloadModelService.DownloadArtifactTask {
+    val artifactName = artifact.visibleName
+    val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
+    return object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, artifactTempFile, project,
+                                                                                  downloadTaskTitle) {
+        override fun onSuccess() = unzipTask.queue()
+
+        override fun onCancel() = releaseFlagCallback()
+      }
   }
 
   fun notifyUpdateCompleted(project: Project) =
