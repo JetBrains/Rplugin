@@ -98,7 +98,7 @@ class RMarkdownStructureElement internal constructor(element: PsiElement) : PsiT
 
   override fun getLocationSuffix(): String = ""
 
-  override fun putInfo(info: MutableMap<String, String>) {
+  override fun putInfo(info: MutableMap<in String, in String>) {
     info["text"] = presentableText ?: ""
     if (element !is PsiFileImpl) {
       info["location"] = locationString ?: ""
