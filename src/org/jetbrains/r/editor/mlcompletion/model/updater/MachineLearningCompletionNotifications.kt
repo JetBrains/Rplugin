@@ -9,7 +9,8 @@ import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -43,9 +44,9 @@ object MachineLearningCompletionNotifications {
             serverService.tryRelaunchServer()
           }
 
-          val localServerDirectory = File(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)
+          val localServerDirectory = Path.of(MachineLearningCompletionModelFilesService.getInstance().localServerDirectory!!)
           artifacts.forEach { artifact ->
-            val artifactTempFile = File.createTempFile(artifact.id, ".zip", localServerDirectory)
+            val artifactTempFile = Files.createTempFile(localServerDirectory, artifact.id, ".zip")
 
             val unzipTask = createUnzipTask(artifact, artifactTempFile, project, updateCompletedCallback, releaseFlagCallback)
 
@@ -66,7 +67,7 @@ object MachineLearningCompletionNotifications {
   }
 
   private fun createUnzipTask(artifact: MachineLearningCompletionRemoteArtifact,
-                              artifactTempFile: File,
+                              artifactTempFile: Path,
                               project: Project,
                               updateCompletedCallback: () -> Unit,
                               releaseFlagCallback: () -> Unit): MachineLearningCompletionModelFilesService.UpdateArtifactTask {
@@ -88,7 +89,7 @@ object MachineLearningCompletionNotifications {
   }
 
   private fun createDownloadTask(artifact: MachineLearningCompletionRemoteArtifact,
-                                 artifactTempFile: File,
+                                 artifactTempFile: Path,
                                  project: Project,
                                  unzipTask: MachineLearningCompletionModelFilesService.UpdateArtifactTask,
                                  releaseFlagCallback: () -> Unit): MachineLearningCompletionDownloadModelService.DownloadArtifactTask {

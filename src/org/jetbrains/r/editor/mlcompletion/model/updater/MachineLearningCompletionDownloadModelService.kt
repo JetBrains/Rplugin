@@ -8,7 +8,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
-import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -61,7 +61,7 @@ class MachineLearningCompletionDownloadModelService {
 
   open class DownloadArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
-    private val artifactLocalFile: File,
+    private val artifactLocalFile: Path,
     project: Project,
     title: String
   ) : Task.Backgroundable(project, title, true) {

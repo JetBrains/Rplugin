@@ -8,6 +8,8 @@ import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompleti
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -50,17 +52,17 @@ class MachineLearningCompletionModelFilesService {
 
   open class UpdateArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
-    private val artifactZipFile: File,
+    private val artifactZipFile: Path,
     project: Project,
     progressTitle: String,
     private val deleteLocalFileOnFinish: Boolean = true,
     ): Task.Backgroundable(project, progressTitle, true) {
 
-    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact, artifactZipFile)
+    override fun run(indicator: ProgressIndicator) = getInstance().updateArtifact(indicator, artifact, artifactZipFile.toFile())
 
     override fun onFinished() {
       if (deleteLocalFileOnFinish) {
-        artifactZipFile.delete()
+        Files.delete(artifactZipFile)
       }
     }
   }
