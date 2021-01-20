@@ -78,6 +78,11 @@ object MachineLearningCompletionNotifications {
         releaseFlagCallback()
       }
 
+      override fun onThrowable(error: Throwable) {
+        notifyUpdateFailed(project, artifact)
+        releaseFlagCallback()
+      }
+
       override fun onCancel() = releaseFlagCallback()
     }
   }
@@ -90,11 +95,16 @@ object MachineLearningCompletionNotifications {
     val artifactName = artifact.visibleName
     val downloadTaskTitle = RBundle.message("rmlcompletion.task.download", artifactName)
     return object : MachineLearningCompletionDownloadModelService.DownloadArtifactTask(artifact, artifactTempFile, project,
-                                                                                  downloadTaskTitle) {
-        override fun onSuccess() = unzipTask.queue()
+                                                                                       downloadTaskTitle) {
+      override fun onSuccess() = unzipTask.queue()
 
-        override fun onCancel() = releaseFlagCallback()
+      override fun onThrowable(error: Throwable) {
+        notifyUpdateFailed(project, artifact)
+        releaseFlagCallback()
       }
+
+      override fun onCancel() = releaseFlagCallback()
+    }
   }
 
   fun notifyUpdateCompleted(project: Project) =
@@ -102,4 +112,8 @@ object MachineLearningCompletionNotifications {
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"))
       .notify(project)
 
+  fun notifyUpdateFailed(project: Project, artifact: MachineLearningCompletionRemoteArtifact) =
+    NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
+      .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateFailed.content", artifact.visibleName))
+      .notify(project)
 }
