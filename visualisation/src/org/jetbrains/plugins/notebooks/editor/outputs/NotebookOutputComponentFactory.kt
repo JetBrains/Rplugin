@@ -24,6 +24,8 @@ interface NotebookOutputComponentFactory {
     NOTHING,
   }
 
+  data class CreatedComponent(val component: JComponent, val widthStretching: WidthStretching)
+
   /**
    * Check if the [component] can update it's content with the [outputDataKey].
    *
@@ -42,7 +44,7 @@ interface NotebookOutputComponentFactory {
   /**
    * May return `null` if the factory can't create any component for specific subtype of [NotebookOutputDataKey].
    */
-  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey, disposable: Disposable): Pair<JComponent, WidthStretching>?
+  fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey, disposable: Disposable): CreatedComponent?
 
   companion object {
     @JvmField
