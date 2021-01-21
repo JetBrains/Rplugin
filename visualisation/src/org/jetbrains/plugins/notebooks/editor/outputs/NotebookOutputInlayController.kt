@@ -163,20 +163,6 @@ class NotebookOutputInlayController private constructor(
   }
 }
 
-/**
- * A dirty hack which is aware of [com.intellij.openapi.editor.impl.EditorEmbeddedComponentManager] bugs and features.
- *
- * `EditorEmbeddedComponentManager` doesn't react on invalidate. This function forcibly resized a whole cell output component
- * to its preferred size.
- *
- * See also DS-573.
- */
-fun updateOutputInlayComponentSize(grandchild: Component): Boolean {
-  val component = generateSequence(grandchild) { it.parent }.find { it is SurroundingComponent } ?: return false
-  component.size = component.preferredSize
-  return true
-}
-
 val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
   get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<SurroundingComponent>()
 
@@ -203,6 +189,11 @@ private class SurroundingComponent private constructor(innerComponentScrollPane:
 
   override fun getPreferredSize(): Dimension = super.getPreferredSize().also {
     it.width = presetWidth
+  }
+
+  override fun validateTree() {
+    size = preferredSize
+    super.validateTree()
   }
 
   companion object {
