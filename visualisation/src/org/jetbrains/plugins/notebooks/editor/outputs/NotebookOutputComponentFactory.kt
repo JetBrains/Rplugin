@@ -3,6 +3,8 @@ package org.jetbrains.plugins.notebooks.editor.outputs
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.extensions.ExtensionPointName
+import java.awt.Graphics
+import java.awt.Rectangle
 import javax.swing.JComponent
 
 interface NotebookOutputComponentFactory {
@@ -24,7 +26,11 @@ interface NotebookOutputComponentFactory {
     NOTHING,
   }
 
-  data class CreatedComponent(val component: JComponent, val widthStretching: WidthStretching)
+  interface GutterPainter {
+    fun paintGutter(g: Graphics, r: Rectangle)
+  }
+
+  data class CreatedComponent(val component: JComponent, val widthStretching: WidthStretching, val gutterPainter: GutterPainter?)
 
   /**
    * Check if the [component] can update it's content with the [outputDataKey].
