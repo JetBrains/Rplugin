@@ -13,6 +13,7 @@ import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
+import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.GutterPainter
 import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
 import org.jetbrains.plugins.notebooks.editor.ui.registerEditorSizeWatcher
 import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
@@ -129,8 +130,9 @@ class NotebookOutputInlayController private constructor(
 
   private fun createOutput(factory: NotebookOutputComponentFactory,
                            outputDataKey: NotebookOutputDataKey) =
-    factory.createComponent(editor, outputDataKey, inlay)?.also { (component, _) ->
-      component.outputComponentFactory = factory
+    factory.createComponent(editor, outputDataKey, inlay)?.also {
+      it.component.outputComponentFactory = factory
+      it.component.gutterPainter = it.gutterPainter
     }
 
   class Factory : NotebookCellInlayController.Factory {
@@ -301,6 +303,12 @@ private var JComponent.outputComponentFactory: NotebookOutputComponentFactory?
   set(value) {
     putClientProperty(NotebookOutputComponentFactory::class.java, value)
   }
+
+private var JComponent.gutterPainter: GutterPainter?
+  get() =
+    getClientProperty(GutterPainter::class.java) as GutterPainter?
+  set(value) =
+    putClientProperty(GutterPainter::class.java, value)
 
 private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : LayoutManager {
   override fun addLayoutComponent(name: String?, comp: Component) {
