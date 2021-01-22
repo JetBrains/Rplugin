@@ -243,6 +243,14 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
 
   override fun getPreferredSize(): Dimension =
     super.getPreferredSize().also {
+      if (
+        it.width > width
+        // JBScrollPane contradicts with JScrollPane: it adds a vertical padding if the horizontal scrollbar not at the zero position.
+        // Had there been JScrollPane, the condition below wouldn't have been needed.
+        && horizontalScrollBar.value == 0
+      ) {
+        it.height += horizontalScrollBar.height
+      }
       it.height = min(maxHeight, it.height)
     }
 
