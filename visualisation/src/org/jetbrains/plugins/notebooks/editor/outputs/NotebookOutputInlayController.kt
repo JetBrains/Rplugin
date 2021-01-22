@@ -232,6 +232,8 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
     super.updateUI()
     isOpaque = false
     viewport.isOpaque = false
+    horizontalScrollBar.isOpaque = false
+    verticalScrollBar.isOpaque = false
 
     UIUtil.getEditorPaneBackground().let { background ->
       verticalScrollBar.background = background
