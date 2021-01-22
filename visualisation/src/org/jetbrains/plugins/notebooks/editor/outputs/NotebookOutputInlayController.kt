@@ -13,10 +13,11 @@ import org.intellij.datavis.r.inlays.ResizeController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellInlayController
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines
 import org.jetbrains.plugins.notebooks.editor.notebookAppearance
-import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.GutterPainter
+import org.jetbrains.plugins.notebooks.editor.outputs.NotebookOutputComponentFactory.Companion.gutterPainter
 import org.jetbrains.plugins.notebooks.editor.ui.addComponentInlay
 import org.jetbrains.plugins.notebooks.editor.ui.registerEditorSizeWatcher
 import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
+import org.jetbrains.plugins.notebooks.editor.ui.yOffsetFromEditor
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -60,7 +61,19 @@ class NotebookOutputInlayController private constructor(
     }
   }
 
-  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {}
+  override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
+    val bounds = Rectangle()
+    for (component in innerComponent.components) {
+      if (component is JComponent) {
+        component.gutterPainter?.let { painter ->
+          component.yOffsetFromEditor(editor)?.let { yOffset ->
+            bounds.setBounds(r.x, yOffset, r.width, component.height)
+            painter.paintGutter(editor, g, bounds)
+          }
+        }
+      }
+    }
+  }
 
   private fun rankCompatibility(outputDataKeys: List<NotebookOutputDataKey>): Int =
     getComponentsWithFactories().zip(outputDataKeys).sumBy { (pair, outputDataKey) ->
@@ -303,12 +316,6 @@ private var JComponent.outputComponentFactory: NotebookOutputComponentFactory?
   set(value) {
     putClientProperty(NotebookOutputComponentFactory::class.java, value)
   }
-
-private var JComponent.gutterPainter: GutterPainter?
-  get() =
-    getClientProperty(GutterPainter::class.java) as GutterPainter?
-  set(value) =
-    putClientProperty(GutterPainter::class.java, value)
 
 private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : LayoutManager {
   override fun addLayoutComponent(name: String?, comp: Component) {

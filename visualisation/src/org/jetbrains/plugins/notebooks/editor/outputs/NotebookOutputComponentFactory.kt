@@ -27,7 +27,7 @@ interface NotebookOutputComponentFactory {
   }
 
   interface GutterPainter {
-    fun paintGutter(g: Graphics, r: Rectangle)
+    fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle)
   }
 
   data class CreatedComponent(val component: JComponent, val widthStretching: WidthStretching, val gutterPainter: GutterPainter?)
@@ -53,8 +53,13 @@ interface NotebookOutputComponentFactory {
   fun createComponent(editor: EditorImpl, output: NotebookOutputDataKey, disposable: Disposable): CreatedComponent?
 
   companion object {
-    @JvmField
     val EP_NAME: ExtensionPointName<NotebookOutputComponentFactory> =
       ExtensionPointName.create("org.jetbrains.plugins.notebooks.editor.outputs.notebookOutputComponentFactory")
+
+    var JComponent.gutterPainter: GutterPainter?
+      get() =
+        getClientProperty(GutterPainter::class.java) as GutterPainter?
+      internal set(value) =
+        putClientProperty(GutterPainter::class.java, value)
   }
 }
