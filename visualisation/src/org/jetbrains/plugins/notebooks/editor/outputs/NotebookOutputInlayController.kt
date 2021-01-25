@@ -95,9 +95,6 @@ class NotebookOutputInlayController private constructor(
           val newComponentPair = createOutput(factory, outputDataKey)
           if (newComponentPair != null) {
             innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint, idx)
-            for (wrapper in NotebookOutputComponentWrapper.EP_NAME.extensionList) {
-              wrapper.newOutputComponentCreated(outerComponent, editor, outputDataKey)
-            }
             true
           }
           else false
@@ -124,9 +121,6 @@ class NotebookOutputInlayController private constructor(
       if (newComponentPair != null) {
         isFilled = true
         innerComponent.add(newComponentPair.first, newComponentPair.second.fixedWidthLayoutConstraint)
-        for (wrapper in NotebookOutputComponentWrapper.EP_NAME.extensionList) {
-          wrapper.newOutputComponentCreated(outerComponent, editor, outputDataKey)
-        }
       }
     }
 
