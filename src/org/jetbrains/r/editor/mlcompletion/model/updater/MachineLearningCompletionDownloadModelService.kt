@@ -2,6 +2,7 @@ package org.jetbrains.r.editor.mlcompletion.model.updater
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
@@ -9,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
 import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class MachineLearningCompletionDownloadModelService {
@@ -17,7 +17,7 @@ class MachineLearningCompletionDownloadModelService {
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
     private val LOG = Logger.getInstance(MachineLearningCompletionDownloadModelService::class.java)
-    val isBeingDownloaded = AtomicBoolean(false)
+    val isBeingDownloaded = AtomicBooleanProperty(false)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
 
     private fun <T> submitBackgroundJob(job: () -> T, onSuccessCallback: (T) -> Unit) =
