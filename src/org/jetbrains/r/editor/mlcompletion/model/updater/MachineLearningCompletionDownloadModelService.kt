@@ -33,6 +33,60 @@ class MachineLearningCompletionDownloadModelService {
           isBeingDownloaded.set(false)
         }
       }
+
+    private fun <T : Any> submitModalJob(job: () -> T,
+                                         project: Project? = null,
+                                         title: String = "",
+                                         onSuccessCallback: (T) -> Unit) =
+      object : Task.Modal(project, title, true) {
+
+        private lateinit var result: T
+
+        override fun run(indicator: ProgressIndicator) {
+          result = job()
+        }
+
+        override fun onSuccess() = onSuccessCallback(result)
+
+        override fun onThrowable(error: Throwable) = isBeingDownloaded.set(false)
+
+        override fun onCancel() = isBeingDownloaded.set(false)
+      }.queue()
+
+    private fun ((ArtifactsWithSize) -> Unit).ignoreEmpty(): (ArtifactsWithSize) -> Unit = { artifactsWithSize ->
+      if (artifactsWithSize.artifacts.isNotEmpty()) {
+        this(artifactsWithSize)
+      }
+      else {
+        isBeingDownloaded.set(false)
+      }
+    }
+  }
+
+  data class ArtifactsWithSize(val artifacts: List<MachineLearningCompletionRemoteArtifact>, val size: Long)
+
+  fun initiateUpdateCycle(isModal: Boolean,
+                          ignoreEmptyResult: Boolean = true,
+                          onSuccessCallback: (ArtifactsWithSize) -> Unit) {
+    if (!isBeingDownloaded.compareAndSet(false, true)) {
+      return
+    }
+
+    val callback = if (ignoreEmptyResult) onSuccessCallback.ignoreEmpty() else onSuccessCallback
+    if (isModal) {
+      // TODO: Move string literal to bundle
+      submitModalJob(this::getArtifactsToDownloadWithSize, title = "Checking for updates",
+                     onSuccessCallback = callback)
+    }
+    else {
+      submitBackgroundJob(this::getArtifactsToDownloadWithSize, callback)
+    }
+  }
+
+  fun getArtifactsToDownloadWithSize(): ArtifactsWithSize {
+    val artifacts = getArtifactsToDownload()
+    val size = getArtifactsSize(artifacts)
+    return ArtifactsWithSize(artifacts, size)
   }
 
   private fun getArtifactsToDownload(): List<MachineLearningCompletionRemoteArtifact> =
@@ -43,15 +97,7 @@ class MachineLearningCompletionDownloadModelService {
       currentVersion == null || currentVersion < latestVersion
     }
 
-  fun getArtifactsToDownloadDescriptorsAsync(onSuccessCallback: (List<MachineLearningCompletionRemoteArtifact>) -> Unit) {
-    if (!isBeingDownloaded.compareAndSet(false, true)) {
-      return
-    }
-
-    submitBackgroundJob(this::getArtifactsToDownload, onSuccessCallback)
-  }
-
-  fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
+  private fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->
       val artifactUrl = artifact.latestArtifactUrl
       HttpRequests.request(artifactUrl).connect { request ->
