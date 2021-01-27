@@ -3,12 +3,20 @@ package org.jetbrains.r.settings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService
-import javax.swing.JPanel
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
+import java.awt.Component
+import java.awt.event.ActionEvent
+import javax.swing.AbstractAction
+import javax.swing.Action
+import javax.swing.JComponent
 
 class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
 
@@ -46,15 +54,27 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   }
 
-  private fun Cell.createCheckForUpdatesButton() = button("Check for update") {
-    // TODO: remove duplicating code with ...ProjectOpenListener
-    val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
-    modelDownloaderService.getArtifactsToDownloadDescriptorsAsync { artifactsToUpdate ->
-      val size = modelDownloaderService.getArtifactsSize(artifactsToUpdate)
-      if (artifactsToUpdate.isNotEmpty()) {
-        ApplicationManager.getApplication().invokeLater( { dialog("Update title", createCheckUpdatesDialog()).show() }, MODALITY)
+  override fun apply() {
+    val beforeState = settings.copyState()
+    super.apply()
+    notifySettingsChanged(beforeState, settings.state)
+  }
+
+  private fun notifySettingsChanged(beforeState: MachineLearningCompletionSettings.State,
+                                    afterState: MachineLearningCompletionSettings.State) {
+    ApplicationManager.getApplication().messageBus.syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
+      .settingsChanged(beforeState, afterState)
+  }
+
+  private fun Cell.createCheckForUpdatesButton() = button("Check for updates") {
+    MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
+      if (artifacts.isNotEmpty()) {
+        // TODO: get currently opened project:
+        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(null, artifacts, size).show() }, MODALITY)
       }
       else {
+        // TODO: get currently opened project:
+        ApplicationManager.getApplication().invokeLater({ createNoAvailableUpdateDialog(null).show() }, MODALITY)
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
     }
@@ -68,21 +88,73 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
       }
   })
 
-  private fun createCheckUpdatesDialog(): JPanel = panel {
-    row {
-      label("Hello")
+  private fun createUpdateDialog(project: Project?,
+                                 artifacts: List<MachineLearningCompletionRemoteArtifact>,
+                                 size: Long) =
+    UpdateDialogWrapper(project, artifacts, size)
+
+  private class UpdateDialogWrapper(
+    private val project: Project?,
+    private val artifacts: List<MachineLearningCompletionRemoteArtifact>,
+    private val size: Long
+  ) : DialogWrapper(project, true) {
+
+    init {
+      // TODO: verify with MyDialogWrapper
+      init()
+      title = "R Machine Learning completion update"
+    }
+
+    override fun createDefaultActions() {
+      super.createDefaultActions()
+      okAction.putValue(Action.NAME, "Update")
+    }
+
+    override fun createCenterPanel(): JComponent =
+      panel {
+        row {
+          // TODO: make MB
+          label("Update is available $size bytes")
+        }
+      }
+
+    override fun doOKAction() {
+      if (okAction.isEnabled) {
+        val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
+        updateAction.perform()
+        close(OK_EXIT_CODE)
+      }
+    }
+
+    override fun doCancelAction() {
+      if (cancelAction.isEnabled) {
+        MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
+        close(CANCEL_EXIT_CODE)
+      }
     }
   }
 
-  override fun apply() {
-    val beforeState = settings.copyState()
-    super.apply()
-    notifySettingsChanged(beforeState, settings.state)
-  }
+  private fun createNoAvailableUpdateDialog(project: Project?): DialogWrapper =
+    dialog("R Machine Learning completion",
+           panel = panel {
+             row {
+               label("No updates are available")
+             }
+           },
+           project = project,
+           createActions = {
+             listOf(OkButtonAction())
+           }
+    )
 
-  private fun notifySettingsChanged(beforeState: MachineLearningCompletionSettings.State,
-                                    afterState: MachineLearningCompletionSettings.State) {
-    ApplicationManager.getApplication().messageBus.syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
-      .settingsChanged(beforeState, afterState)
+  private class OkButtonAction : AbstractAction("OK") {
+    init {
+      putValue(DialogWrapper.DEFAULT_ACTION, true)
+    }
+
+    override fun actionPerformed(event: ActionEvent) {
+      val wrapper = DialogWrapper.findInstance(event.source as? Component)
+      wrapper?.close(DialogWrapper.OK_EXIT_CODE)
+    }
   }
 }
