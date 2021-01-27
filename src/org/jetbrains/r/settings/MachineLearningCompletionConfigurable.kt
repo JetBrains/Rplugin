@@ -1,5 +1,7 @@
 package org.jetbrains.r.settings
 
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
@@ -22,6 +24,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   companion object {
     private const val PORT_FIELD_WIDTH = 5
+    private const val GET_CURRENT_PROJECT_TIMEOUT_MS = 100
     private val settings = MachineLearningCompletionSettings.getInstance()
   }
 
@@ -68,13 +71,18 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private fun Cell.createCheckForUpdatesButton() = button("Check for updates") {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
+      // TODO: search for similar code in the codebase
+      val focusedProject = try {
+        DataManager.getInstance().dataContextFromFocusAsync.blockingGet(GET_CURRENT_PROJECT_TIMEOUT_MS)
+      } catch (e: Exception) {
+        null
+      }?.getData(PlatformDataKeys.PROJECT)
+
       if (artifacts.isNotEmpty()) {
-        // TODO: get currently opened project:
-        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(null, artifacts, size).show() }, MODALITY)
+        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(focusedProject, artifacts, size).show() }, MODALITY)
       }
       else {
-        // TODO: get currently opened project:
-        ApplicationManager.getApplication().invokeLater({ createNoAvailableUpdateDialog(null).show() }, MODALITY)
+        ApplicationManager.getApplication().invokeLater({ createNoAvailableUpdateDialog(focusedProject).show() }, MODALITY)
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
     }
