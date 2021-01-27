@@ -25,7 +25,7 @@ object MachineLearningCompletionNotifications {
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content", showSizeMb(size)))
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-          updateAction.perform()
+          updateAction.performAsync()
           notification.expire()
         }
       })

@@ -15,7 +15,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
 
   fun isInitiated() = updateIsInitiated.get()
 
-  fun perform() {
+  fun performAsync() {
     if (!updateIsInitiated.compareAndSet(false, true)) {
       // TODO: maybe throw exception or smth like that to warn user that he tries to perform a second time
       return

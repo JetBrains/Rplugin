@@ -129,7 +129,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     override fun doOKAction() {
       if (okAction.isEnabled) {
         val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
-        updateAction.perform()
+        updateAction.performAsync()
         close(OK_EXIT_CODE)
       }
     }
