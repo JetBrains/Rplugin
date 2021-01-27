@@ -1,13 +1,12 @@
 package org.jetbrains.r.settings
 
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import org.jetbrains.r.RBundle
@@ -16,25 +15,51 @@ import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompleti
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
 import java.awt.Component
 import java.awt.event.ActionEvent
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.swing.AbstractAction
 import javax.swing.Action
 import javax.swing.JComponent
+import javax.swing.JLabel
+import kotlin.properties.ObservableProperty
+import kotlin.reflect.KProperty
+
 
 class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
 
   companion object {
     private const val PORT_FIELD_WIDTH = 5
-    private const val GET_CURRENT_PROJECT_TIMEOUT_MS = 100
     private val settings = MachineLearningCompletionSettings.getInstance()
+    private val applicationManager = ApplicationManager.getApplication()
+  }
+
+  private val observableDelegate = object : ObservableProperty<String>("Updating") {
+    // TODO: Maybe should be replaced by a map of <JLabel, Modality>
+    private val listeners = Collections.newSetFromMap(ConcurrentHashMap<JLabel, Boolean>())
+
+    override fun afterChange(property: KProperty<*>, oldValue: String, newValue: String) =
+      listeners.forEach {
+        applicationManager.invokeLater { it.text = newValue }
+      }
+
+    // TODO: Maybe add a little bit more of an abstraction by passing functions as listeners
+    // TODO: (oldValue, newValue) -> Unit
+    fun subscribe(label: JLabel) = listeners.add(label)
+
+    fun unsubscribe(label: JLabel) = listeners.remove(label)
   }
 
   private val MODALITY = ModalityState.current()
+
+  private var infoString by observableDelegate
+  private val infoLabel = JBLabel("").also(observableDelegate::subscribe)
 
   override fun createPanel(): DialogPanel {
     return panel {
       titledRow(displayName) {
         row {
           createCheckForUpdatesButton()
+          component(infoLabel)
         }
         row {
           val enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"),
@@ -71,20 +96,17 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private fun Cell.createCheckForUpdatesButton() = button("Check for updates") {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
-      // TODO: search for similar code in the codebase
-      val focusedProject = try {
-        DataManager.getInstance().dataContextFromFocusAsync.blockingGet(GET_CURRENT_PROJECT_TIMEOUT_MS)
-      } catch (e: Exception) {
-        null
-      }?.getData(PlatformDataKeys.PROJECT)
-
       if (artifacts.isNotEmpty()) {
-        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(focusedProject, artifacts, size).show() }, MODALITY)
+        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(null, artifacts, size).show() }, MODALITY)
       }
       else {
-        ApplicationManager.getApplication().invokeLater({ createNoAvailableUpdateDialog(focusedProject).show() }, MODALITY)
+        ApplicationManager.getApplication().invokeLater({
+                                                          val a = createNoAvailableUpdateDialog(null).showAndGet()
+          a
+                                                        }, MODALITY)
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
+      // TODO: Update lastChecked datetime somewhere
     }
   }.enableIf(object : ComponentPredicate() {
     override fun invoke(): Boolean =
@@ -101,7 +123,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
                                  size: Long) =
     UpdateDialogWrapper(project, artifacts, size)
 
-  private class UpdateDialogWrapper(
+  private inner class UpdateDialogWrapper(
     private val project: Project?,
     private val artifacts: List<MachineLearningCompletionRemoteArtifact>,
     private val size: Long
@@ -130,6 +152,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
       if (okAction.isEnabled) {
         val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
         updateAction.performAsync()
+        infoString = "Updating" // TODO: this should be move inside updateAction
         close(OK_EXIT_CODE)
       }
     }
@@ -150,9 +173,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
              }
            },
            project = project,
-           createActions = {
-             listOf(OkButtonAction())
-           }
+           createActions = { listOf(OkButtonAction()) }
     )
 
   private class OkButtonAction : AbstractAction("OK") {
@@ -164,5 +185,17 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
       val wrapper = DialogWrapper.findInstance(event.source as? Component)
       wrapper?.close(DialogWrapper.OK_EXIT_CODE)
     }
+  }
+
+  private fun Cell.createCheckForUpdatesInfo() = label("Not updating")
+/*    .withBinding(
+      { lab -> lab.text },
+      { lab, name -> lab.text = name },
+      PropertyBinding({ infoString }, {})
+    )*/
+
+  override fun disposeUIResources() {
+    super.disposeUIResources()
+    observableDelegate.unsubscribe(infoLabel)
   }
 }
