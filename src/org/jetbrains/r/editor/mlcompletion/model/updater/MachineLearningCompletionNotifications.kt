@@ -19,7 +19,6 @@ object MachineLearningCompletionNotifications {
   private val sizeFormat = DecimalFormat("#.#")
   private fun showSizeMb(sizeBytes: Long) = sizeFormat.format(sizeBytes / MEGABYTE.toDouble())
 
-  // TODO: make project nullable
   fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) {
     val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
@@ -38,12 +37,12 @@ object MachineLearningCompletionNotifications {
       .notify(project)
   }
 
-  fun notifyUpdateCompleted(project: Project) =
+  fun notifyUpdateCompleted(project: Project?) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateCompleted.content"))
       .notify(project)
 
-  fun notifyUpdateFailed(project: Project, artifact: MachineLearningCompletionRemoteArtifact) =
+  fun notifyUpdateFailed(project: Project?, artifact: MachineLearningCompletionRemoteArtifact) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.updateFailed.content", artifact.visibleName))
       .notify(project)

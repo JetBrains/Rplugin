@@ -108,7 +108,7 @@ class MachineLearningCompletionDownloadModelService {
   open class DownloadArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
     private val artifactLocalFile: Path,
-    project: Project,
+    project: Project?,
     title: String
   ) : Task.Backgroundable(project, title, true) {
     override fun run(indicator: ProgressIndicator) =

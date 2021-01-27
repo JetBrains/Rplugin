@@ -51,7 +51,7 @@ class MachineLearningCompletionModelFilesService {
   open class UpdateArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
     private val artifactZipFile: Path,
-    project: Project,
+    project: Project?,
     progressTitle: String,
     private val deleteLocalFileOnFinish: Boolean = true,
     ): Task.Backgroundable(project, progressTitle, true) {

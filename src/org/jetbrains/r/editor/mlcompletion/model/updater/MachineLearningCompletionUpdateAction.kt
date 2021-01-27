@@ -8,7 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 
-class MachineLearningCompletionUpdateAction(val project: Project,
+class MachineLearningCompletionUpdateAction(val project: Project?,
                                             val artifacts: List<MachineLearningCompletionRemoteArtifact>) {
 
   private val updateIsInitiated = AtomicBoolean(false)
@@ -17,7 +17,7 @@ class MachineLearningCompletionUpdateAction(val project: Project,
 
   fun perform() {
     if (!updateIsInitiated.compareAndSet(false, true)) {
-      // TODO: maybe throw exception or smth like that to warn user that he tries to
+      // TODO: maybe throw exception or smth like that to warn user that he tries to perform a second time
       return
     }
 
@@ -50,7 +50,7 @@ class MachineLearningCompletionUpdateAction(val project: Project,
 
   private fun createUnzipTask(artifact: MachineLearningCompletionRemoteArtifact,
                               artifactTempFile: Path,
-                              project: Project,
+                              project: Project?,
                               updateCompletedCallback: () -> Unit,
                               releaseFlagCallback: () -> Unit): MachineLearningCompletionModelFilesService.UpdateArtifactTask {
     val artifactName = artifact.visibleName
@@ -72,7 +72,7 @@ class MachineLearningCompletionUpdateAction(val project: Project,
 
   private fun createDownloadTask(artifact: MachineLearningCompletionRemoteArtifact,
                                  artifactTempFile: Path,
-                                 project: Project,
+                                 project: Project?,
                                  unzipTask: MachineLearningCompletionModelFilesService.UpdateArtifactTask,
                                  releaseFlagCallback: () -> Unit): MachineLearningCompletionDownloadModelService.DownloadArtifactTask {
     val artifactName = artifact.visibleName
