@@ -18,8 +18,6 @@ import java.awt.event.ActionEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.swing.AbstractAction
-import javax.swing.Action
-import javax.swing.JComponent
 import javax.swing.JLabel
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
@@ -53,6 +51,11 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private var infoString by observableDelegate
   private val infoLabel = JBLabel("").also(observableDelegate::subscribe)
+
+  override fun disposeUIResources() {
+    super.disposeUIResources()
+    observableDelegate.unsubscribe(infoLabel)
+  }
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -97,13 +100,11 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   private fun Cell.createCheckForUpdatesButton() = button("Check for updates") {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
       if (artifacts.isNotEmpty()) {
-        ApplicationManager.getApplication().invokeLater({ createUpdateDialog(null, artifacts, size).show() }, MODALITY)
+        val pressedUpdate = createUpdateDialog(null, artifacts, size).showAndGet()
+        MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(pressedUpdate)
       }
       else {
-        ApplicationManager.getApplication().invokeLater({
-                                                          val a = createNoAvailableUpdateDialog(null).showAndGet()
-          a
-                                                        }, MODALITY)
+        createNoAvailableUpdateDialog(null).show()
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
       // TODO: Update lastChecked datetime somewhere
@@ -121,49 +122,21 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   private fun createUpdateDialog(project: Project?,
                                  artifacts: List<MachineLearningCompletionRemoteArtifact>,
                                  size: Long) =
-    UpdateDialogWrapper(project, artifacts, size)
-
-  private inner class UpdateDialogWrapper(
-    private val project: Project?,
-    private val artifacts: List<MachineLearningCompletionRemoteArtifact>,
-    private val size: Long
-  ) : DialogWrapper(project, true) {
-
-    init {
-      // TODO: verify with MyDialogWrapper
-      init()
-      title = "R Machine Learning completion update"
-    }
-
-    override fun createDefaultActions() {
-      super.createDefaultActions()
-      okAction.putValue(Action.NAME, "Update")
-    }
-
-    override fun createCenterPanel(): JComponent =
-      panel {
-        row {
-          // TODO: make MB
-          label("Update is available $size bytes")
-        }
-      }
-
-    override fun doOKAction() {
-      if (okAction.isEnabled) {
-        val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
-        updateAction.performAsync()
-        infoString = "Updating" // TODO: this should be move inside updateAction
-        close(OK_EXIT_CODE)
-      }
-    }
-
-    override fun doCancelAction() {
-      if (cancelAction.isEnabled) {
-        MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
-        close(CANCEL_EXIT_CODE)
-      }
-    }
-  }
+    dialog("R Machine Learning completion update",
+           panel = panel {
+             row {
+               label("Update is available $size bytes")
+             }
+           },
+           project = project,
+           createActions = {
+             listOf(ButtonAction("Cancel", DialogWrapper.CANCEL_EXIT_CODE),
+                    ButtonAction("Update", DialogWrapper.OK_EXIT_CODE) {
+                      val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
+                      updateAction.performAsync()
+                    })
+           }
+    )
 
   private fun createNoAvailableUpdateDialog(project: Project?): DialogWrapper =
     dialog("R Machine Learning completion",
@@ -173,29 +146,20 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
              }
            },
            project = project,
-           createActions = { listOf(OkButtonAction()) }
+           createActions = { listOf(ButtonAction("OK", DialogWrapper.OK_EXIT_CODE)) }
     )
 
-  private class OkButtonAction : AbstractAction("OK") {
+  private class ButtonAction(name: String,
+                             private val exitCode: Int,
+                             private val action: ((ActionEvent) -> Unit)? = null) : AbstractAction(name) {
     init {
-      putValue(DialogWrapper.DEFAULT_ACTION, true)
+      putValue(DialogWrapper.DEFAULT_ACTION, exitCode == DialogWrapper.OK_EXIT_CODE)
     }
 
     override fun actionPerformed(event: ActionEvent) {
+      action?.invoke(event)
       val wrapper = DialogWrapper.findInstance(event.source as? Component)
-      wrapper?.close(DialogWrapper.OK_EXIT_CODE)
+      wrapper?.close(exitCode)
     }
-  }
-
-  private fun Cell.createCheckForUpdatesInfo() = label("Not updating")
-/*    .withBinding(
-      { lab -> lab.text },
-      { lab, name -> lab.text = name },
-      PropertyBinding({ infoString }, {})
-    )*/
-
-  override fun disposeUIResources() {
-    super.disposeUIResources()
-    observableDelegate.unsubscribe(infoLabel)
   }
 }
