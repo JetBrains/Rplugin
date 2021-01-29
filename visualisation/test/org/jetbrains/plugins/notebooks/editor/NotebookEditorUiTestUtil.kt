@@ -38,3 +38,15 @@ val Editor.prettyText: String
 fun edt(runnable: () -> Unit) {
   runInEdtAndWait(runnable)
 }
+
+val Editor.textWithCarets: String
+  get() {
+    var text = document.text
+    for (caret in caretModel.allCarets.reversed()) {
+      text = insert(text, caretToken, caret.offset)
+    }
+    return text
+  }
+
+private fun insert(s: String, substring: String, pos: Int): String =
+  s.substring(0, pos) + substring + s.substring(pos, s.length)
