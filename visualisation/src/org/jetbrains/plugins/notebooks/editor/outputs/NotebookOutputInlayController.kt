@@ -64,7 +64,10 @@ class NotebookOutputInlayController private constructor(
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
+    val yOffset = innerComponentScrollPane.yOffsetFromEditor(editor) ?: return
     val bounds = Rectangle()
+    val oldClip = g.clipBounds
+    g.clip = Rectangle(oldClip.x, yOffset, oldClip.width, innerComponentScrollPane.height).intersection(oldClip)
     for (component in innerComponent.components) {
       if (component is JComponent) {
         component.gutterPainter?.let { painter ->
@@ -75,6 +78,7 @@ class NotebookOutputInlayController private constructor(
         }
       }
     }
+    g.clip = oldClip
   }
 
   private fun rankCompatibility(outputDataKeys: List<NotebookOutputDataKey>): Int =
