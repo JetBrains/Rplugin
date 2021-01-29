@@ -21,7 +21,9 @@ import org.jetbrains.plugins.notebooks.editor.ui.yOffsetFromEditor
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JViewport
 import kotlin.math.max
 import kotlin.math.min
 
@@ -146,6 +148,7 @@ class NotebookOutputInlayController private constructor(
     factory.createComponent(editor, outputDataKey, inlay)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
+      if (it.hasUnlimitedHeight) it.component.hasUnlimitedHeight = true
     }
 
   class Factory : NotebookCellInlayController.Factory {
@@ -266,7 +269,9 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
       ) {
         it.height += horizontalScrollBar.height
       }
-      it.height = min(maxHeight, it.height)
+      if (!(viewport.view as InnerComponent).components.filterIsInstance<JComponent>().all(JComponent::hasUnlimitedHeight)) {
+        it.height = min(maxHeight, it.height)
+      }
     }
 
   private companion object {
@@ -404,3 +409,9 @@ private class FixedWidthLayout(private val widthGetter: (Container) -> Int) : La
       }
   }
 }
+
+private var JComponent.hasUnlimitedHeight: Boolean
+  get() = getClientProperty("unlimitedHeight") != null
+  set(value) {
+    putClientProperty("unlimitedHeight", if (value) Unit else null)
+  }

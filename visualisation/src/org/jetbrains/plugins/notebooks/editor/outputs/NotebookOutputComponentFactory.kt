@@ -30,7 +30,14 @@ interface NotebookOutputComponentFactory {
     fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle)
   }
 
-  data class CreatedComponent(val component: JComponent, val widthStretching: WidthStretching, val gutterPainter: GutterPainter?)
+  data class CreatedComponent(
+    val component: JComponent,
+    val widthStretching: WidthStretching,
+    val gutterPainter: GutterPainter?,
+
+    /** Experimental. The meaning can be changed, the type can be changed, the field can be removed. */
+    val hasUnlimitedHeight: Boolean = false,
+  )
 
   /**
    * Check if the [component] can update it's content with the [outputDataKey].
