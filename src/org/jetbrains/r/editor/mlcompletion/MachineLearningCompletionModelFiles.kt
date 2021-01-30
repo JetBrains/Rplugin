@@ -16,6 +16,10 @@ import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompleti
 import java.io.File
 import java.nio.file.Paths
 
+/**
+ * Methods are not thread-safe, do not use directly.
+ * Use {@link MachineLearningCompletionModelFilesService} instead.
+ */
 object MachineLearningCompletionModelFiles {
 
   private fun resolveWithNullable(first: String?, vararg more: String): String? =
