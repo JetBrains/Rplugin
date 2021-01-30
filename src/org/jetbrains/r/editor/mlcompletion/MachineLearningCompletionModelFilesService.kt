@@ -19,10 +19,10 @@ class MachineLearningCompletionModelFilesService {
   companion object {
     fun getInstance() = service<MachineLearningCompletionModelFilesService>()
 
-    private inline fun <T> Lock.withTryLock(lockFailedValue: T, block: () -> T): T =
+    private inline fun <T> Lock.withTryLock(lockFailedValue: T, action: () -> T): T =
       if (tryLock()) {
         try {
-          block()
+          action()
         }
         finally {
           unlock()
