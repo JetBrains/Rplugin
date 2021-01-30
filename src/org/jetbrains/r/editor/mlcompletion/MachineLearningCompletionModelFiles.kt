@@ -16,31 +16,29 @@ import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompleti
 import java.io.File
 import java.nio.file.Paths
 
-class MachineLearningCompletionModelFiles {
+object MachineLearningCompletionModelFiles {
 
-  companion object {
-    private fun resolveWithNullable(first: String?, vararg more: String): String? =
-      first?.let {
-        return Paths.get(first, *more).toString()
-      }
-
-    private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
-      ?.run {
-        ArtifactRepositoryManager.asVersion(readText().trim())
-      }
-
-    private fun validateFile(file: String?): Boolean =
-      file != null && Paths.get(file).run { exists() && isFile() }
-
-    private fun validateDirectory(directory: String?): Boolean =
-      directory != null && Paths.get(directory).run { exists() && isDirectory() }
-
-    private fun File.clearDirectory() {
-      if (exists()) {
-        FileUtil.delete(toPath())
-      }
-      mkdir()
+  private fun resolveWithNullable(first: String?, vararg more: String): String? =
+    first?.let {
+      return Paths.get(first, *more).toString()
     }
+
+  private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
+    ?.run {
+      ArtifactRepositoryManager.asVersion(readText().trim())
+    }
+
+  private fun validateFile(file: String?): Boolean =
+    file != null && Paths.get(file).run { exists() && isFile() }
+
+  private fun validateDirectory(directory: String?): Boolean =
+    directory != null && Paths.get(directory).run { exists() && isDirectory() }
+
+  private fun File.clearDirectory() {
+    if (exists()) {
+      FileUtil.delete(toPath())
+    }
+    mkdir()
   }
 
   val localServerDirectory = resolveWithNullable(RPluginUtil.helperPathOrNull, "python_server")

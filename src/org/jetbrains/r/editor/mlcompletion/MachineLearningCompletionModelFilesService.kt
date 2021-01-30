@@ -33,8 +33,6 @@ class MachineLearningCompletionModelFilesService {
       }
   }
 
-  private val files = MachineLearningCompletionModelFiles()
-
   private val modelLock = ReentrantLock()
   private val appLock = ReentrantLock()
   private fun MachineLearningCompletionRemoteArtifact.getLock() =
@@ -44,11 +42,11 @@ class MachineLearningCompletionModelFilesService {
     }
 
   val localServerDirectory
-    get() = files.localServerDirectory
+    get() = MachineLearningCompletionModelFiles.localServerDirectory
   val modelVersion
-    get() = modelLock.withLock { files.modelVersion }
+    get() = modelLock.withLock { MachineLearningCompletionModelFiles.modelVersion }
   val applicationVersion
-    get() = appLock.withLock { files.applicationVersion }
+    get() = appLock.withLock { MachineLearningCompletionModelFiles.applicationVersion }
 
   open class UpdateArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
@@ -69,14 +67,14 @@ class MachineLearningCompletionModelFilesService {
 
   fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) =
     artifact.getLock().withLock<Unit> {
-      files.updateArtifactFromArchive(progress, artifact, zipFile)
+      MachineLearningCompletionModelFiles.updateArtifactFromArchive(progress, artifact, zipFile)
     }
 
   fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean =
     appLock.withTryLock(false) {
       modelLock.withTryLock(false) {
-        if (files.available()) {
-          action(files)
+        if (MachineLearningCompletionModelFiles.available()) {
+          action(MachineLearningCompletionModelFiles)
           return true
         }
         return false
