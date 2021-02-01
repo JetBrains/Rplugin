@@ -62,6 +62,7 @@ class NotebookOutputInlayController private constructor(
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
+    return // https://youtrack.jetbrains.com/issue/DS-1220 disable gutter painters because of bugs
     val yOffset = innerComponentScrollPane.yOffsetFromEditor(editor) ?: return
     val bounds = Rectangle()
     val oldClip = g.clipBounds
