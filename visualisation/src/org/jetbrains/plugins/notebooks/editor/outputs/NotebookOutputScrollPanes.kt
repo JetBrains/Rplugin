@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ComponentUtil
 import com.intellij.ui.IdeBorderFactory
@@ -13,6 +14,8 @@ import javax.swing.JPanel
 import javax.swing.JScrollBar
 import javax.swing.JScrollPane
 
+internal fun getEditorBackground() = EditorColorsManager.getInstance().globalScheme.defaultBackground
+
 /** Default output scroll pane similar to one used in the IDEA editor features no border and corners
  * that respect content background. */
 open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view) {
@@ -24,11 +27,11 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
 
   override fun updateUI() {
     super.updateUI()
-    setScrollBars()
-    setCorners()
+    setupScrollBars()
+    setupCorners()
   }
 
-  private fun setScrollBars() {
+  private fun setupScrollBars() {
     setScrollBar(verticalScrollBar)
     setScrollBar(horizontalScrollBar)
   }
@@ -36,18 +39,18 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
   protected open fun setScrollBar(scrollBar: JScrollBar) {
     scrollBar.apply {
       isOpaque = true
-      background = view.background
+      background = getEditorBackground()
     }
   }
 
-  private fun setCorners() {
+  override fun setupCorners() {
     setCorner(LOWER_RIGHT_CORNER, Corner())
     setCorner(UPPER_RIGHT_CORNER, Corner())
   }
 
-  private inner class Corner : JPanel() {
+  private class Corner : JPanel() {
     init {
-      background = view.background
+      background = getEditorBackground()
     }
   }
 }
