@@ -86,6 +86,7 @@ class MachineLearningCompletionDownloadModelService {
   fun getArtifactsToDownloadWithSize(): ArtifactsWithSize {
     val artifacts = getArtifactsToDownload()
     val size = getArtifactsSize(artifacts)
+    MachineLearningCompletionLastCheckForUpdatesInfo.reportUpdateCheck()
     return ArtifactsWithSize(artifacts, size)
   }
 

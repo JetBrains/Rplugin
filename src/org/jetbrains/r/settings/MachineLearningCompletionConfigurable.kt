@@ -1,25 +1,25 @@
 package org.jetbrains.r.settings
 
+import com.intellij.ide.IdeBundle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
+import com.intellij.util.text.DateFormatUtil
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionLastCheckForUpdatesInfo
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
 import java.awt.Component
 import java.awt.event.ActionEvent
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import javax.swing.AbstractAction
 import javax.swing.JLabel
-import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
 
@@ -28,33 +28,33 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   companion object {
     private const val PORT_FIELD_WIDTH = 5
     private val settings = MachineLearningCompletionSettings.getInstance()
-    private val applicationManager = ApplicationManager.getApplication()
-  }
 
-  private val observableDelegate = object : ObservableProperty<String>("Updating") {
-    // TODO: Maybe should be replaced by a map of <JLabel, Modality>
-    private val listeners = Collections.newSetFromMap(ConcurrentHashMap<JLabel, Boolean>())
-
-    override fun afterChange(property: KProperty<*>, oldValue: String, newValue: String) =
-      listeners.forEach {
-        applicationManager.invokeLater { it.text = newValue }
+    private fun updateLastCheckedLabel(label: JLabel, time: Long): Unit = when {
+      time <= 0 -> label.text = IdeBundle.message("updates.last.check.never")
+      else -> {
+        label.text = DateFormatUtil.formatPrettyDateTime(time)
+        label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
       }
-
-    // TODO: Maybe add a little bit more of an abstraction by passing functions as listeners
-    // TODO: (oldValue, newValue) -> Unit
-    fun subscribe(label: JLabel) = listeners.add(label)
-
-    fun unsubscribe(label: JLabel) = listeners.remove(label)
+    }
   }
 
-  private val MODALITY = ModalityState.current()
+  private val lastCheckedTimeLabel = JLabel().apply {
+    updateLastCheckedLabel(this, MachineLearningCompletionLastCheckForUpdatesInfo.lastUpdateCheckTimeMs)
+  }
 
-  private var infoString by observableDelegate
-  private val infoLabel = JBLabel("").also(observableDelegate::subscribe)
+  private val infoLabelListener: (KProperty<*>, Long, Long) -> Unit
+
+  init {
+    val modality = ModalityState.current()
+    infoLabelListener = { _: KProperty<*>, _: Long, newDate: Long ->
+      ApplicationManager.getApplication().invokeLater({ updateLastCheckedLabel(lastCheckedTimeLabel, newDate) }, modality)
+    }
+    MachineLearningCompletionLastCheckForUpdatesInfo.subscribe(infoLabelListener)
+  }
 
   override fun disposeUIResources() {
     super.disposeUIResources()
-    observableDelegate.unsubscribe(infoLabel)
+    MachineLearningCompletionLastCheckForUpdatesInfo.unsubscribe(infoLabelListener)
   }
 
   override fun createPanel(): DialogPanel {
@@ -62,8 +62,16 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
       titledRow(displayName) {
         row {
           createCheckForUpdatesButton()
-          component(infoLabel)
         }
+
+        row {
+          val filesService = MachineLearningCompletionModelFilesService.getInstance()
+          row(IdeBundle.message("updates.settings.last.check")) { component(lastCheckedTimeLabel).withLeftGap() }
+          row("Application version:") { label(filesService.applicationVersion?.toString() ?: "none").withLeftGap() }
+          row("Model version:") { label(filesService.modelVersion?.toString() ?: "none").withLeftGap() }
+            .largeGapAfter()
+        }
+
         row {
           val enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"),
                                                   settings.state::isEnabled)
@@ -97,7 +105,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
       .settingsChanged(beforeState, afterState)
   }
 
-  private fun Cell.createCheckForUpdatesButton() = button("Check for updates") {
+  private fun Cell.createCheckForUpdatesButton() = button("Check for Updates...") {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
       if (artifacts.isNotEmpty()) {
         val pressedUpdate = createUpdateDialog(null, artifacts, size).showAndGet()
@@ -107,7 +115,6 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         createNoAvailableUpdateDialog(null).show()
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
-      // TODO: Update lastChecked datetime somewhere
     }
   }.enableIf(object : ComponentPredicate() {
     override fun invoke(): Boolean =
