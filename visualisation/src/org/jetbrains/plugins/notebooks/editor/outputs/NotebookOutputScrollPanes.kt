@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.ComponentUtil
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.components.JBScrollPane
+import java.awt.Color
 import java.awt.Component
 import java.awt.Insets
 import java.awt.Point
@@ -14,7 +14,7 @@ import javax.swing.JPanel
 import javax.swing.JScrollBar
 import javax.swing.JScrollPane
 
-internal fun getEditorBackground() = EditorColorsManager.getInstance().globalScheme.defaultBackground
+private val TRANSPARENT_BACKGROUND = Color(255, 255, 255, 0)
 
 /** Default output scroll pane similar to one used in the IDEA editor features no border and corners
  * that respect content background. */
@@ -39,7 +39,7 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
   protected open fun setScrollBar(scrollBar: JScrollBar) {
     scrollBar.apply {
       isOpaque = true
-      background = getEditorBackground()
+      background = TRANSPARENT_BACKGROUND
     }
   }
 
@@ -50,7 +50,8 @@ open class NotebookOutputDefaultScrollPane(view: Component) : JBScrollPane(view)
 
   private class Corner : JPanel() {
     init {
-      background = getEditorBackground()
+      isOpaque = true
+      background = TRANSPARENT_BACKGROUND
     }
   }
 }
