@@ -148,7 +148,7 @@ private fun runInRange(editor: Editor, file: PsiFile, startOffset: Int, endOffse
 }
 
 private fun executeChunk(e: AnActionEvent, isDebug: Boolean = false) {
-  val element = getCodeFenceByEvent(e)!!
+  val element = getCodeFenceByEvent(e) ?: return
   val editor = e.editor as? EditorEx ?: return
   val chunkExecutionState = ChunkExecutionState(editor, currentPsiElement = AtomicReference(element), isDebug = isDebug)
   element.project.chunkExecutionState = chunkExecutionState
