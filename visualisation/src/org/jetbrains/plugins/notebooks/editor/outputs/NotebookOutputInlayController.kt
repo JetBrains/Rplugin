@@ -3,6 +3,7 @@ package org.jetbrains.plugins.notebooks.editor.outputs
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.IdeBorderFactory
@@ -18,6 +19,7 @@ import org.jetbrains.plugins.notebooks.editor.ui.registerEditorSizeWatcher
 import org.jetbrains.plugins.notebooks.editor.ui.textEditingAreaWidth
 import org.jetbrains.plugins.notebooks.editor.ui.yOffsetFromEditor
 import java.awt.*
+import java.awt.event.AdjustmentListener
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JComponent
@@ -60,6 +62,12 @@ class NotebookOutputInlayController private constructor(
       innerComponentScrollPane.maxHeight = (editor.scrollingModel.visibleArea.height * 0.66).toInt()
       innerComponentScrollPane.invalidate()
     }
+
+    innerComponentScrollPane.verticalScrollBar.addAdjustmentListener(
+      AdjustmentListener {
+        val editorEx: EditorEx = editor
+        editorEx.gutterComponentEx.repaint()
+      })
   }
 
   override fun paintGutter(editor: EditorImpl, g: Graphics, r: Rectangle, intervalIterator: ListIterator<NotebookCellLines.Interval>) {
