@@ -79,7 +79,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
             label(RBundle.message("project.settings.ml.completion.server.label"))
           }
           row {
-            cell {
+            cell(isFullWidth = true) {
               label(RBundle.message("project.settings.ml.completion.host.label"))
               textField({ settings.state.host ?: "" }, settings.state::host.setter)
                 .enableIf(enableCompletionCheckbox.selected)
