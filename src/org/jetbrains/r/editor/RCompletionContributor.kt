@@ -63,7 +63,6 @@ class RCompletionContributor : CompletionContributor() {
     addAtAccessCompletion()
     addS4ClassContextCompletion()
     addIdentifierCompletion()
-    addMachineLearningCompletion()
   }
 
   private fun addNamespaceAccessExpression() {
@@ -106,10 +105,6 @@ class RCompletionContributor : CompletionContributor() {
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
       .and(RElementFilters.STRING_EXCEPT_S4_CONTEXT_FILTER), StringLiteralCompletionProvider())
-  }
-
-  private fun addMachineLearningCompletion() {
-    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE), MachineLearningCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {

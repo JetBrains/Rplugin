@@ -468,6 +468,7 @@ You can find the source code in the following repositories:
         <usageTypeProvider implementation="org.jetbrains.r.roxygen.usage.RoxygenUsageTypeProvider"/>
         <targetElementEvaluator language="R" implementationClass="org.jetbrains.r.codeInsight.findUsages.RTargetElementEvaluator"/>
 
+        <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RMachineLearningCompletionContributor"/>
         <completion.contributor language="R" implementationClass="org.jetbrains.r.editor.RCompletionContributor"/>
         <completion.contributor language="Roxygen" implementationClass="org.jetbrains.r.roxygen.RoxygenCompletionContributor"/>
         <completion.contributor language="Markdown" implementationClass="org.jetbrains.r.editor.RMarkdownCompletionContributor"/>
