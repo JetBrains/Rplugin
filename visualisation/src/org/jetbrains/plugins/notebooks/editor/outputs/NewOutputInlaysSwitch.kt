@@ -9,7 +9,7 @@ object NewOutputInlaysSwitch {
     .filterTo(hashSetOf()) { it.isNotEmpty() }
 
   val useNewForAnything: Boolean = types.isNotEmpty()
-  private val useNewForEverything: Boolean = "all" in types
+  val useNewForEverything: Boolean = "all" in types
   val useNewForWeb: Boolean = useNewForEverything || "web" in types
   val useNewForText: Boolean = useNewForEverything || "text" in types
   val useNewForTable: Boolean = useNewForEverything || "jupyter_table" in types
