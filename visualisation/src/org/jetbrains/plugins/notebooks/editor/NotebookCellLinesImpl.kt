@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
@@ -140,6 +141,8 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     oldLength: Int,
     newLength: Int,
   ): UpdateMarkersResult {
+    // TODO: the logic here seems to be too complex,
+    //  it worth to try reparse the whole set of lines affected plus an additional line at the end
     // Reparse from line start to get the whole marker
     val startDocumentOffset = document.run {
       getLineStartOffset(getLineNumber(startOffset))
@@ -184,8 +187,11 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         + 1
       )
 
+    val endNewline = document.getText(TextRange(endDocumentOffset, min(endDocumentOffset + 1, document.textLength))) == "\n"
+    val terminalNewlineSymbol = if (endNewline) 1 else 0
+
     val newMarkers = cellTypeAwareLexerProvider.markerSequence(
-      chars = document.immutableCharSequence.subSequence(startDocumentOffset, endDocumentOffset),
+      chars = document.immutableCharSequence.subSequence(startDocumentOffset, endDocumentOffset + terminalNewlineSymbol),
       ordinalIncrement = markerCacheCutStart,
       offsetIncrement = startDocumentOffset,
     ).toList()
