@@ -7,14 +7,14 @@ import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import com.intellij.util.text.DateFormatUtil
+import org.eclipse.aether.version.Version
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
+import org.jetbrains.r.editor.mlcompletion.model.updater.*
 import java.awt.Component
 import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
@@ -34,15 +34,15 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
       }
     }
-  }
 
-  private val lastCheckedTimeLabel = JLabel().apply {
-    updateLastCheckedLabel(this, settings.state.lastCheckedForUpdatesMs)
+    private fun updateVersionLabel(label: JLabel, version: Version?) {
+      label.text = version?.toString() ?: "None"
+    }
   }
 
   private val modality = ModalityState.current()
 
-  private fun executeUIAction(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
+  private fun invokeLaterWithPaneModality(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -52,11 +52,9 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         }
 
         row {
-          val filesService = MachineLearningCompletionModelFilesService.getInstance()
-          row(IdeBundle.message("updates.settings.last.check")) { component(lastCheckedTimeLabel).withLeftGap() }
-          subscribeToUpdateInfoChanges()
-          row("Application version:") { label(filesService.applicationVersion?.toString() ?: "none").withLeftGap() }
-          row("Model version:") { label(filesService.modelVersion?.toString() ?: "none").withLeftGap() }
+          row(IdeBundle.message("updates.settings.last.check")) { lastCheckedLabel().withLeftGap() }
+          row("Application version:") { versionLabel(MachineLearningCompletionAppArtifact()).withLeftGap() }
+          row("Model version:") { versionLabel(MachineLearningCompletionModelArtifact()).withLeftGap() }
             .largeGapAfter()
         }
 
@@ -81,16 +79,36 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   }
 
-  private fun subscribeToUpdateInfoChanges() =
+  private fun Cell.lastCheckedLabel(): CellBuilder<JLabel> {
+    val label = JBLabel()
+    updateLastCheckedLabel(label, settings.state.lastCheckedForUpdatesMs)
+
     disposable?.let {
       MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
-        executeUIAction {
-          if (beforeState.lastCheckedForUpdatesMs != afterState.lastCheckedForUpdatesMs) {
-            updateLastCheckedLabel(lastCheckedTimeLabel, afterState.lastCheckedForUpdatesMs)
+        if (beforeState.lastCheckedForUpdatesMs != afterState.lastCheckedForUpdatesMs) {
+          invokeLaterWithPaneModality {
+            updateLastCheckedLabel(label, afterState.lastCheckedForUpdatesMs)
           }
         }
       }.subscribeWithDisposable(it)
     }
+
+    return component(label)
+  }
+
+  private fun Cell.versionLabel(artifact: MachineLearningCompletionRemoteArtifact): CellBuilder<JLabel> {
+    val filesService = MachineLearningCompletionModelFilesService.getInstance()
+    val label = JBLabel()
+    updateVersionLabel(label, artifact.currentVersion)
+
+    disposable?.let {
+      filesService.registerVersionChangeListener(artifact, it) { newVersion ->
+        invokeLaterWithPaneModality { updateVersionLabel(label, newVersion) }
+      }
+    }
+
+    return component(label)
+  }
 
   override fun apply() {
     val beforeState = settings.copyState()

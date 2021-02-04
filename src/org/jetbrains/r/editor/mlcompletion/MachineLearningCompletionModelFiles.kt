@@ -7,8 +7,6 @@ import com.intellij.platform.templates.github.ZipUtil
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.io.isFile
-import org.eclipse.aether.version.Version
-import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.RPluginUtil
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
@@ -25,11 +23,6 @@ object MachineLearningCompletionModelFiles {
   private fun resolveWithNullable(first: String?, vararg more: String): String? =
     first?.let {
       return Paths.get(first, *more).toString()
-    }
-
-  private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
-    ?.run {
-      ArtifactRepositoryManager.asVersion(readText().trim())
     }
 
   private fun validateFile(file: String?): Boolean =
@@ -57,12 +50,8 @@ object MachineLearningCompletionModelFiles {
                                                          })
   val localServerConfigFile = resolveWithNullable(localServerAppDirectory, "config.yml")
 
-  private val modelVersionFilePath = resolveWithNullable(localServerModelDirectory, "version.txt")
-  private val applicationVersionFilePath = resolveWithNullable(localServerAppDirectory, "version.txt")
-  val modelVersion: Version?
-    get() = modelVersionFilePath?.let { getArtifactVersion(it) }
-  val applicationVersion: Version?
-    get() = applicationVersionFilePath?.let { getArtifactVersion(it) }
+  val modelVersionFilePath = resolveWithNullable(localServerModelDirectory, "version.txt")
+  val applicationVersionFilePath = resolveWithNullable(localServerAppDirectory, "version.txt")
 
   fun updateArtifactFromArchive(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) : Boolean {
     val dstDir = File(when (artifact) {
@@ -73,6 +62,7 @@ object MachineLearningCompletionModelFiles {
     dstDir.clearDirectory()
 
     ZipUtil.unzip(progress, dstDir, zipFile, null, null, true)
+
     return true
   }
 

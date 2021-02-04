@@ -1,9 +1,13 @@
 package org.jetbrains.r.editor.mlcompletion
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
+import com.intellij.openapi.observable.properties.AtomicLazyProperty
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import org.eclipse.aether.version.Version
+import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
@@ -31,22 +35,41 @@ class MachineLearningCompletionModelFilesService {
       else {
         lockFailedValue
       }
+
+    private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
+      ?.run {
+        ArtifactRepositoryManager.asVersion(readText().trim())
+      }
   }
 
   private val modelLock = ReentrantLock()
   private val appLock = ReentrantLock()
-  private fun MachineLearningCompletionRemoteArtifact.getLock() =
-    when (this) {
+  private val MachineLearningCompletionRemoteArtifact.lock
+    get() = when (this) {
       is MachineLearningCompletionAppArtifact -> appLock
       is MachineLearningCompletionModelArtifact -> modelLock
     }
 
   val localServerDirectory
     get() = MachineLearningCompletionModelFiles.localServerDirectory
+
+  private val _modelVersion = AtomicLazyProperty {
+    MachineLearningCompletionModelFiles.modelVersionFilePath?.let { getArtifactVersion(it) }
+  }
   val modelVersion
-    get() = modelLock.withLock { MachineLearningCompletionModelFiles.modelVersion }
+    get() = _modelVersion.get()
+
+  private val _applicationVersion = AtomicLazyProperty {
+    MachineLearningCompletionModelFiles.applicationVersionFilePath?.let { getArtifactVersion(it) }
+  }
   val applicationVersion
-    get() = appLock.withLock { MachineLearningCompletionModelFiles.applicationVersion }
+    get() = _applicationVersion.get()
+
+  private val MachineLearningCompletionRemoteArtifact.localVersionProperty
+    get() = when (this) {
+      is MachineLearningCompletionModelArtifact -> _modelVersion
+      is MachineLearningCompletionAppArtifact -> _applicationVersion
+    }
 
   open class UpdateArtifactTask(
     private val artifact: MachineLearningCompletionRemoteArtifact,
@@ -66,8 +89,9 @@ class MachineLearningCompletionModelFilesService {
   }
 
   fun updateArtifact(progress: ProgressIndicator, artifact: MachineLearningCompletionRemoteArtifact, zipFile: File) =
-    artifact.getLock().withLock<Unit> {
+    artifact.lock.withLock {
       MachineLearningCompletionModelFiles.updateArtifactFromArchive(progress, artifact, zipFile)
+      artifact.localVersionProperty.reset()
     }
 
   fun tryRunActionOnFiles(action: (MachineLearningCompletionModelFiles) -> Unit): Boolean =
@@ -80,4 +104,17 @@ class MachineLearningCompletionModelFilesService {
         return false
       }
     }
+
+  fun registerVersionChangeListener(artifact: MachineLearningCompletionRemoteArtifact,
+                                    disposable: Disposable? = null,
+                                    listener: (Version?) -> Unit) {
+    val property = artifact.localVersionProperty
+    val newVersionSupplier = { listener(property.get()) }
+
+    if (disposable != null) {
+      property.afterReset(newVersionSupplier, disposable)
+    } else {
+      property.afterReset(newVersionSupplier)
+    }
+  }
 }
