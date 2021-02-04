@@ -7,6 +7,7 @@ package org.intellij.datavis.r.inlays
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import com.intellij.openapi.util.text.StringUtil
 import org.intellij.datavis.r.VisualizationBundle
 import java.awt.Image
 import java.awt.Toolkit
@@ -75,7 +76,10 @@ object ClipboardUtils {
     val builder = StringBuilder()
     for (i in 0 until selectedRowCount) {
       for (j in 0 until selectedColumnCount) {
-        table.getValueAt(selectedRows[i], selectedColumns[j])?.let { builder.append(escape(it, cellBreak)) }
+        table.getValueAt(selectedRows[i], selectedColumns[j])?.let {
+          val cellString = if (selectedColumnCount > 1) escape(it, cellBreak) else it.toString()
+          builder.append(cellString)
+        }
 
         if (j < selectedColumnCount - 1) {
           builder.append(cellBreak)
@@ -94,8 +98,13 @@ object ClipboardUtils {
   }
 
   fun escape(cell: Any, cellBreak: String = CELL_BREAK): String {
-    return cell.toString().replace(LINE_BREAK, " ").replace(
-      cellBreak, " ")
+    val cellString = cell.toString()
+    return if (cellString.contains(LINE_BREAK) || cellString.contains(cellBreak)) {
+      "\"${StringUtil.escapeQuotes(cellString)}\""
+    }
+    else {
+      cellString
+    }
   }
 
   fun copyImageToClipboard(image: Image) {
