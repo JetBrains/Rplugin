@@ -282,12 +282,7 @@ abstract class NotebookInlayComponent(val cell: PsiElement, private val editor: 
       if (state != null) {
         remove(state)
       }
-      MultiOutputProvider.EP.extensionList.firstOrNull()?.let { provider ->
-        state = provider.create(editor, disposable)
-      }
-      if (state == null) {
-        state = TabbedMultiOutput(editor, disposable)
-      }
+      state = MultiOutputProvider.EP.extensionList.firstOrNull()?.create(editor, disposable) ?: TabbedMultiOutput(editor, disposable)
       state?.apply {
         onHeightCalculated = { height ->
           ApplicationManager.getApplication().invokeLater {
