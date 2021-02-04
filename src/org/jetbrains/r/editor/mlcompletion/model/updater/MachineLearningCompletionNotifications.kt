@@ -5,9 +5,8 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtilRt.MEGABYTE
 import org.jetbrains.r.RBundle
-import java.text.DecimalFormat
+import org.jetbrains.r.editor.mlcompletion.model.updater.UpdateUtils.showSizeMb
 
 
 object MachineLearningCompletionNotifications {
@@ -15,9 +14,6 @@ object MachineLearningCompletionNotifications {
   const val GROUP_NAME = "RMachineLearningCompletion"
 
   private val notificationsTitle = RBundle.message("notification.ml.title")
-
-  private val sizeFormat = DecimalFormat("#.#")
-  private fun showSizeMb(sizeBytes: Long) = sizeFormat.format(sizeBytes / MEGABYTE.toDouble())
 
   fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) {
     val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)

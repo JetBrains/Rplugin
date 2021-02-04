@@ -145,7 +145,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     dialog("R Machine Learning completion update",
            panel = panel {
              row {
-               label("Update is available $size bytes")
+               label(RBundle.message("notification.ml.update.askForUpdate.content", UpdateUtils.showSizeMb(size)))
              }
            },
            project = project,

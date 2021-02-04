@@ -1,8 +1,10 @@
 package org.jetbrains.r.editor.mlcompletion.model.updater
 
+import com.intellij.openapi.util.io.FileUtilRt
+import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicInteger
 
-object TaskUtils {
+object UpdateUtils {
 
   fun createSharedCallback(numberOfTasks: Int, callback: () -> Unit): () -> Unit {
     val numberOfTasksFinished = AtomicInteger(0)
@@ -13,4 +15,7 @@ object TaskUtils {
     }
   }
 
+  private val sizeFormat = DecimalFormat("#.#")
+
+  fun showSizeMb(sizeBytes: Long): String = sizeFormat.format(sizeBytes / FileUtilRt.MEGABYTE.toDouble())
 }

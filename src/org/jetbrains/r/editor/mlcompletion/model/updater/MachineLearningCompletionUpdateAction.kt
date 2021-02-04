@@ -17,7 +17,6 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
 
   fun performAsync() {
     if (!updateIsInitiated.compareAndSet(false, true)) {
-      // TODO: maybe throw exception or smth like that to warn user that he tries to perform a second time
       return
     }
 
@@ -25,11 +24,11 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
     serverService.shutdownBlocking()
 
     val numberOfTasks = artifacts.size
-    val releaseFlagCallback = TaskUtils.createSharedCallback(numberOfTasks) {
+    val releaseFlagCallback = UpdateUtils.createSharedCallback(numberOfTasks) {
       MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
     }
 
-    val updateCompletedCallback = TaskUtils.createSharedCallback(numberOfTasks) {
+    val updateCompletedCallback = UpdateUtils.createSharedCallback(numberOfTasks) {
       MachineLearningCompletionNotifications.notifyUpdateCompleted(project)
       serverService.tryRelaunchServer()
     }
