@@ -80,7 +80,8 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   private fun initializeEmptyLists() {
     wrapErrors(null) {
       markerCache.addAll(cellTypeAwareLexerProvider.markerSequence(document.immutableCharSequence, 0, 0))
-      intervalCache.addAll(adjustedMarkers(markerCache, 0, markerCache, document.textLength).asSequence().zipWithNext(markersToInterval(document)))
+      intervalCache.addAll(
+        adjustedMarkers(markerCache, 0, markerCache, document.textLength).asSequence().zipWithNext(markersToInterval(document)))
     }
     checkIntegrity(null)
   }
@@ -96,14 +97,6 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   }
 
   private val documentListener = object : DocumentListener {
-    private var shiftedStartOffsetBefore: Int = -1
-
-    override fun beforeDocumentChange(event: DocumentEvent) {
-      if (!cellTypeAwareLexerProvider.shouldParseWholeFile()) {
-        shiftedStartOffsetBefore = shiftOffsetToMarkerStart(document.immutableCharSequence, event.offset)
-      }
-    }
-
     override fun documentChanged(event: DocumentEvent) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
 
@@ -118,7 +111,6 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         wrapErrors(event) {
           updateIntervals(
             updateMarkers(
-              shiftedStartOffsetBefore = shiftedStartOffsetBefore,
               startOffset = event.offset,
               oldLength = event.oldLength,
               newLength = event.newLength,
@@ -144,16 +136,14 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   )
 
   private fun updateMarkers(
-    shiftedStartOffsetBefore: Int,
     startOffset: Int,
     oldLength: Int,
     newLength: Int,
   ): UpdateMarkersResult {
-    // The document change may cut half of a marker at the start. In such case, rewind a bit to rescan from the marker start.
-    val startDocumentOffset = min(
-      shiftedStartOffsetBefore,
-      shiftOffsetToMarkerStart(document.immutableCharSequence, startOffset)
-    )
+    // Reparse from line start to get the whole marker
+    val startDocumentOffset = document.run {
+      getLineStartOffset(getLineNumber(startOffset))
+    }
 
     val markerCacheCutStart = getMarkerUpperBound(startDocumentOffset)
 
@@ -409,7 +399,10 @@ private fun <T> MutableList<T>.substitute(start: Int, end: Int, pattern: List<T>
   }
 }
 
-private fun adjustedMarkers(markers: List<Marker>, startOrdinal: Int, sublist: List<Marker>, documentTextLength: Int): List<Marker> = mutableListOf<Marker>().also { result ->
+private fun adjustedMarkers(markers: List<Marker>,
+                            startOrdinal: Int,
+                            sublist: List<Marker>,
+                            documentTextLength: Int): List<Marker> = mutableListOf<Marker>().also { result ->
   // markerCache contains real markers, as seen by the lexer. Intervals are constructed by combining two adjacent markers.
   // A bogus interval at the start should be created in order to generate the interval above the first real marker.
   // However, the bogus marker isn't needed if there's a marker right at the document start.
