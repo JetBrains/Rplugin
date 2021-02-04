@@ -113,7 +113,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   override fun apply() {
     val beforeState = settings.copyState()
     super.apply()
-    MachineLearningCompletionSettings.notifySettingsChanged(beforeState, settings.state)
+    MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, settings.state)
   }
 
   private fun Cell.createCheckForUpdatesButton() = button("Check for Updates...") {

@@ -8,8 +8,15 @@ import com.intellij.util.messages.Topic
 fun interface MachineLearningCompletionSettingsChangeListener {
 
   companion object {
-    val R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC =
+    private val R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC =
       Topic.create("RMachineLearningCompletion.Settings", MachineLearningCompletionSettingsChangeListener::class.java)
+
+    fun notifySettingsChanged(beforeState: MachineLearningCompletionSettings.State,
+                              afterState: MachineLearningCompletionSettings.State) {
+      ApplicationManager.getApplication().messageBus
+        .syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
+        .settingsChanged(beforeState, afterState)
+    }
   }
 
   fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,

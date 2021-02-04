@@ -1,6 +1,5 @@
 package org.jetbrains.r.settings
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 
 
@@ -30,13 +29,6 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
     const val DEFAULT_PORT = 7337
     const val DEFAULT_IS_ENABLED = true
     const val DEFAULT_LAST_CHECKED_FOR_UPDATES: Long = -1L
-
-    fun notifySettingsChanged(beforeState: State,
-                              afterState: State) {
-      ApplicationManager.getApplication().messageBus
-        .syncPublisher(MachineLearningCompletionSettingsChangeListener.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
-        .settingsChanged(beforeState, afterState)
-    }
   }
 
   fun copyState(): State {
@@ -46,6 +38,6 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
   fun reportUpdateCheck() {
     val beforeState = copyState()
     state.lastCheckedForUpdatesMs = System.currentTimeMillis()
-    notifySettingsChanged(beforeState, state)
+    MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, state)
   }
 }
