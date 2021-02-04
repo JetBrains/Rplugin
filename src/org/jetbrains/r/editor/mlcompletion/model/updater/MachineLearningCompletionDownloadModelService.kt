@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.SequentialTaskExecutor
 import com.intellij.util.io.HttpRequests
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.nio.file.Path
 
 
@@ -86,7 +87,7 @@ class MachineLearningCompletionDownloadModelService {
   fun getArtifactsToDownloadWithSize(): ArtifactsWithSize {
     val artifacts = getArtifactsToDownload()
     val size = getArtifactsSize(artifacts)
-    MachineLearningCompletionLastCheckForUpdatesInfo.reportUpdateCheck()
+    MachineLearningCompletionSettings.getInstance().reportUpdateCheck()
     return ArtifactsWithSize(artifacts, size)
   }
 

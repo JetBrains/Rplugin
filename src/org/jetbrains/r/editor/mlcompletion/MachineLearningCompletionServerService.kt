@@ -1,13 +1,11 @@
 package org.jetbrains.r.editor.mlcompletion
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import org.jetbrains.r.settings.MachineLearningCompletionSettingsChangeListener
-import org.jetbrains.r.settings.R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -36,11 +34,9 @@ class MachineLearningCompletionServerService : Disposable {
     get() = "http://${settings.state.host}:${settings.state.port}"
 
   init {
-    val settingsListener = object : MachineLearningCompletionSettingsChangeListener {
-      override fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
-                                   afterState: MachineLearningCompletionSettings.State) {
+    MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
         if (beforeState == afterState) {
-          return
+          return@MachineLearningCompletionSettingsChangeListener
         }
         if (beforeState.isEnabled && !afterState.isEnabled) {
           shutdownServer()
@@ -48,12 +44,7 @@ class MachineLearningCompletionServerService : Disposable {
         else {
           tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
         }
-      }
-    }
-
-    ApplicationManager.getApplication().messageBus.connect(this).apply {
-      subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, settingsListener)
-    }
+    }.subscribeWithDisposable(this)
 
     if (settings.state.isEnabled) {
       launchServer(settings.state.hostOrDefault(), settings.state.port)

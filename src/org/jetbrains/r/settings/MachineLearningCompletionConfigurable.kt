@@ -13,14 +13,12 @@ import com.intellij.util.text.DateFormatUtil
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionDownloadModelService
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionLastCheckForUpdatesInfo
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionUpdateAction
 import java.awt.Component
 import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
 import javax.swing.JLabel
-import kotlin.reflect.KProperty
 
 
 class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
@@ -39,23 +37,12 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   }
 
   private val lastCheckedTimeLabel = JLabel().apply {
-    updateLastCheckedLabel(this, MachineLearningCompletionLastCheckForUpdatesInfo.lastUpdateCheckTimeMs)
+    updateLastCheckedLabel(this, settings.state.lastCheckedForUpdatesMs)
   }
 
-  private val infoLabelListener: (KProperty<*>, Long, Long) -> Unit
+  private val modality = ModalityState.current()
 
-  init {
-    val modality = ModalityState.current()
-    infoLabelListener = { _: KProperty<*>, _: Long, newDate: Long ->
-      ApplicationManager.getApplication().invokeLater({ updateLastCheckedLabel(lastCheckedTimeLabel, newDate) }, modality)
-    }
-    MachineLearningCompletionLastCheckForUpdatesInfo.subscribe(infoLabelListener)
-  }
-
-  override fun disposeUIResources() {
-    super.disposeUIResources()
-    MachineLearningCompletionLastCheckForUpdatesInfo.unsubscribe(infoLabelListener)
-  }
+  private fun executeUIAction(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -67,6 +54,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         row {
           val filesService = MachineLearningCompletionModelFilesService.getInstance()
           row(IdeBundle.message("updates.settings.last.check")) { component(lastCheckedTimeLabel).withLeftGap() }
+          subscribeToUpdateInfoChanges()
           row("Application version:") { label(filesService.applicationVersion?.toString() ?: "none").withLeftGap() }
           row("Model version:") { label(filesService.modelVersion?.toString() ?: "none").withLeftGap() }
             .largeGapAfter()
@@ -93,16 +81,21 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   }
 
+  private fun subscribeToUpdateInfoChanges() =
+    disposable?.let {
+      MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
+        executeUIAction {
+          if (beforeState.lastCheckedForUpdatesMs != afterState.lastCheckedForUpdatesMs) {
+            updateLastCheckedLabel(lastCheckedTimeLabel, afterState.lastCheckedForUpdatesMs)
+          }
+        }
+      }.subscribeWithDisposable(it)
+    }
+
   override fun apply() {
     val beforeState = settings.copyState()
     super.apply()
-    notifySettingsChanged(beforeState, settings.state)
-  }
-
-  private fun notifySettingsChanged(beforeState: MachineLearningCompletionSettings.State,
-                                    afterState: MachineLearningCompletionSettings.State) {
-    ApplicationManager.getApplication().messageBus.syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
-      .settingsChanged(beforeState, afterState)
+    MachineLearningCompletionSettings.notifySettingsChanged(beforeState, settings.state)
   }
 
   private fun Cell.createCheckForUpdatesButton() = button("Check for Updates...") {
@@ -120,10 +113,12 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     override fun invoke(): Boolean =
       !MachineLearningCompletionDownloadModelService.isBeingDownloaded.get()
 
-    override fun addListener(listener: (Boolean) -> Unit) =
-      MachineLearningCompletionDownloadModelService.isBeingDownloaded.afterChange { newValue ->
-        listener(!newValue)
+    override fun addListener(listener: (Boolean) -> Unit) {
+      this@MachineLearningCompletionConfigurable.disposable?.let { parentDisposable ->
+        MachineLearningCompletionDownloadModelService.isBeingDownloaded
+          .afterChange({ it -> listener(!it) }, parentDisposable)
       }
+    }
   })
 
   private fun createUpdateDialog(project: Project?,
