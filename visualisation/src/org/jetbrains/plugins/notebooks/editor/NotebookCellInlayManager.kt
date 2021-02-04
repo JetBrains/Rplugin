@@ -36,35 +36,35 @@ val NOTEBOOK_CELL_LINES_INTERVAL_DATA_KEY = DataKey.create<NotebookCellLines.Int
 class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val inlays: MutableMap<Inlay<*>, NotebookCellInlayController> = HashMap()
   private val notebookCellLines = NotebookCellLines.get(editor)
-  private val viewportQueue = MergingUpdateQueue(VIEWPORT_TASK, VIEWPORT_TIME_SPAN, true, null, editor.disposable, null, true)
+  private val viewportQueue = MergingUpdateQueue("NotebookCellInlayManager Viewport Update", 100, true, null, editor.disposable, null, true)
+  private val updateQueue = MergingUpdateQueue("NotebookCellInlayManager Interval Update", 20, true, null, editor.disposable, null, true)
   private var initialized = false
 
   fun inlaysForInterval(interval: NotebookCellLines.Interval): Iterable<NotebookCellInlayController> =
     getMatchingInlaysForLines(interval.lines)
 
-  fun update(interval: NotebookCellLines.Interval) {
-    val actualInterval = notebookCellLines.getIterator(interval).takeIf { it.hasNext() }?.next()
-    if (interval != actualInterval) {
-      LOG.error(
-        "Tried to call update() with outdated interval $interval while the actual interval for the same ordinal is $actualInterval.")
-    }
+  /** It's public, but think twice before using it. Called many times in a row, it can freeze UI. Consider using [update] instead. */
+  fun updateImmediately(lines: IntRange) {
     if (initialized) {
-      updateInlays(interval.lines, listOf(interval))
+      updateConsequentInlays(lines)
     }
   }
 
-  fun updateAll() {
+  /** It's public, but think seven times before using it. Called many times in a row, it can freeze UI. */
+  fun updateAllImmediately() {
     if (initialized) {
-      val intervals = notebookCellLines.intervalsIterator().asSequence().toList()
-      if (intervals.isNotEmpty()) {
-        updateInlays(intervals.first().lines.first..intervals.last().lines.last, intervals)
-      }
+      updateQueue.cancelAllUpdates()
+      updateConsequentInlays(0..editor.document.lineCount)
     }
+  }
+
+  fun update(lines: IntRange) {
+    updateQueue.queue(UpdateInlaysTask(this, lines))
   }
 
   private fun addViewportChangeListener() {
     editor.scrollPane.viewport.addChangeListener {
-      viewportQueue.queue(object : Update(VIEWPORT_TASK) {
+      viewportQueue.queue(object : Update("Viewport change") {
         override fun run() {
           if (Disposer.isDisposed(editor.disposable)) return
           for ((inlay, controller) in inlays) {
@@ -107,17 +107,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
         (highlighter as? RangeHighlighterEx)?.setTextAttributes(textAttributesForHighlighter())
       }
     }
-  }
-
-  data class NotebookUpdateInterval(val matchingCells: List<NotebookCellLines.Interval>, val logicalLines: IntRange)
-
-  fun getUpdateInterval(startOffset: Int, length: Int): NotebookUpdateInterval {
-    val document = editor.document
-    val start = document.getLineNumber(startOffset)
-    val end = document.getLineNumber(min(startOffset + length, document.textLength))
-    val logicalLines = start..end
-    val matchingCells = notebookCellLines.getMatchingCells(logicalLines)
-    return NotebookUpdateInterval(matchingCells, logicalLines)
   }
 
   private fun handleRefreshedDocument() {
@@ -176,22 +165,22 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     editor.document.addDocumentListener(documentListener, editor.disposable)
   }
 
-  fun ensureInlaysAndHighlightersExist(matchingCellsBeforeChange: List<NotebookCellLines.Interval>, logicalLines: IntRange) {
+  private fun ensureInlaysAndHighlightersExist(matchingCellsBeforeChange: List<NotebookCellLines.Interval>, logicalLines: IntRange) {
     val interestingRange =
       matchingCellsBeforeChange
         .map { it.lines }
         .takeIf { it.isNotEmpty() }
         ?.let { min(logicalLines.first, it.first().first)..max(it.last().last, logicalLines.last) }
       ?: logicalLines
+    updateConsequentInlays(interestingRange)
+  }
+
+  private fun updateConsequentInlays(interestingRange: IntRange) {
     val matchingIntervals = notebookCellLines.getMatchingCells(interestingRange)
     val fullInterestingRange =
       if (matchingIntervals.isNotEmpty()) matchingIntervals.first().lines.first..matchingIntervals.last().lines.last
       else interestingRange
 
-    updateInlays(fullInterestingRange, matchingIntervals)
-  }
-
-  private fun updateInlays(fullInterestingRange: IntRange, matchingIntervals: List<NotebookCellLines.Interval>) {
     val existingHighlighters = getMatchingHighlightersForLines(fullInterestingRange)
     val intervalsToAddHighlightersFor = matchingIntervals.associateByTo(HashMap()) { it.lines }
     for (highlighter in existingHighlighters) {
@@ -346,8 +335,6 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
     fun get(editor: Editor): NotebookCellInlayManager? = key.get(editor)
 
     private val key = Key.create<NotebookCellInlayManager>(NotebookCellInlayManager::class.java.name)
-    private const val VIEWPORT_TASK = "Viewport Update"
-    private const val VIEWPORT_TIME_SPAN = 100
   }
 }
 
@@ -374,5 +361,21 @@ private object NotebookCellHighlighterRenderer : CustomHighlighterRenderer {
         g.fillRect(x, y, width, height)
       }
     }
+  }
+}
+
+private class UpdateInlaysTask(private val manager: NotebookCellInlayManager, lines: IntRange) : Update(Any()) {
+  private val linesList = SmartList(lines)
+
+  override fun run() {
+    for (lines in linesList) {
+      manager.updateImmediately(lines)
+    }
+  }
+
+  override fun canEat(update: Update): Boolean {
+    update as UpdateInlaysTask
+    linesList.mergeAndJoinIntersections(update.linesList)
+    return true
   }
 }

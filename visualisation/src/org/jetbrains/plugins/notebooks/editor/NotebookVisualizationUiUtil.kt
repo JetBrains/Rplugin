@@ -5,10 +5,12 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.util.TextRange
+import com.intellij.util.containers.ContainerUtil
 import java.awt.Color
 import java.awt.Graphics
-import kotlin.math.min
 import java.awt.Rectangle
+import kotlin.math.max
+import kotlin.math.min
 
 infix fun IntRange.hasIntersectionWith(other: IntRange): Boolean =
   if (first < other.first) other.first in this || other.last in this
@@ -83,3 +85,20 @@ fun Document.getText(interval: NotebookCellLines.Interval): String =
     getLineStartOffset(interval.lines.first),
     getLineEndOffset(interval.lines.last)
   ))
+
+/** Both lists should be sorted by the [IntRange.first]. */
+fun MutableList<IntRange>.mergeAndJoinIntersections(other: List<IntRange>) {
+  val merged = ContainerUtil.mergeSortedLists(this, other, Comparator { o1, o2 -> o1.first - o2.first }, false)
+  clear()
+  for (current in merged) {
+    val previous = removeLastOrNull()
+    when {
+      previous == null -> add(current)
+      previous.last + 1 >= current.first -> add(previous.first..max(previous.last, current.last))
+      else -> {
+        add(previous)
+        add(current)
+      }
+    }
+  }
+}
