@@ -201,7 +201,7 @@ private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConst
     NotebookOutputComponentFactory.WidthStretching.NOTHING -> FixedWidthLayout.NOTHING
   }
 
-private class SurroundingComponent private constructor(innerComponentScrollPane: InnerComponentScrollPane) : JPanel(BorderLayout()) {
+private class SurroundingComponent private constructor(private val innerComponentScrollPane: InnerComponentScrollPane) : JPanel(BorderLayout()) {
   private var presetWidth = 0
 
   init {
@@ -216,6 +216,10 @@ private class SurroundingComponent private constructor(innerComponentScrollPane:
 
   override fun getPreferredSize(): Dimension = super.getPreferredSize().also {
     it.width = presetWidth
+    // No need to show anything for the empty component
+    if (innerComponentScrollPane.preferredSize.height == 0) {
+      it.height = 0
+    }
   }
 
   override fun validateTree() {
