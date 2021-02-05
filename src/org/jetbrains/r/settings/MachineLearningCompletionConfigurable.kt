@@ -28,8 +28,6 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     private const val PORT_FIELD_WIDTH = 5
     private val settings = MachineLearningCompletionSettings.getInstance()
 
-    private val dialogTitle = RBundle.message("notification.ml.title")
-
     private fun updateLastCheckedLabel(label: JLabel, time: Long): Unit = when {
       time <= 0 -> label.text = IdeBundle.message("updates.last.check.never")
       else -> {
@@ -145,7 +143,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   private fun createUpdateDialog(project: Project?,
                                  artifacts: List<MachineLearningCompletionRemoteArtifact>,
                                  size: Long) =
-    dialog(dialogTitle,
+    dialog(displayName,
            panel = panel {
              row {
                label(RBundle.message("notification.ml.update.askForUpdate.content", UpdateUtils.showSizeMb(size)))
@@ -162,7 +160,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     )
 
   private fun createNoAvailableUpdateDialog(project: Project?): DialogWrapper =
-    dialog(dialogTitle,
+    dialog(displayName,
            panel = panel {
              row {
                label(RBundle.message("project.settings.ml.completion.dialog.noUpdates"))

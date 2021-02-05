@@ -13,7 +13,7 @@ object MachineLearningCompletionNotifications {
 
   const val GROUP_NAME = "RMachineLearningCompletion"
 
-  private val notificationsTitle = RBundle.message("notification.ml.title")
+  private val notificationsTitle = RBundle.message("project.settings.ml.completion.name")
 
   fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) {
     val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)

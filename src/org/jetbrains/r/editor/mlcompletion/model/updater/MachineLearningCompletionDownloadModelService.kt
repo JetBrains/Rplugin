@@ -1,5 +1,6 @@
 package org.jetbrains.r.editor.mlcompletion.model.updater
 
+import com.intellij.ide.IdeBundle
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
@@ -75,8 +76,7 @@ class MachineLearningCompletionDownloadModelService {
 
     val callback = if (ignoreEmptyResult) onSuccessCallback.ignoreEmpty() else onSuccessCallback
     if (isModal) {
-      // TODO: Move string literal to bundle
-      submitModalJob(this::getArtifactsToDownloadWithSize, title = "Checking for updates",
+      submitModalJob(this::getArtifactsToDownloadWithSize, title = IdeBundle.message("updates.checking.progress"),
                      onSuccessCallback = callback)
     }
     else {
