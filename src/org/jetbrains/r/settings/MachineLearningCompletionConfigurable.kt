@@ -98,13 +98,12 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   }
 
   private fun Cell.versionLabel(artifact: MachineLearningCompletionRemoteArtifact): CellBuilder<JLabel> {
-    val filesService = MachineLearningCompletionModelFilesService.getInstance()
     val label = JBLabel()
     updateVersionLabel(label, artifact.currentVersion)
 
-    disposable?.let {
-      filesService.registerVersionChangeListener(artifact, it) { newVersion ->
-        invokeLaterWithPaneModality { updateVersionLabel(label, newVersion) }
+    disposable?.let { disposable ->
+      MachineLearningCompletionModelFilesService.getInstance().registerVersionChangeListener(artifact, disposable) {
+        invokeLaterWithPaneModality { updateVersionLabel(label, it) }
       }
     }
 
