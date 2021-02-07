@@ -11,6 +11,7 @@ import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.RElementFactory
 import org.jetbrains.r.psi.api.RAssignmentStatement
 import org.jetbrains.r.psi.api.RCallExpression
+import org.jetbrains.r.psi.api.RIdentifierExpression
 import org.jetbrains.r.psi.api.RStringLiteralExpression
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
@@ -43,7 +44,7 @@ object R6ClassInfoUtil {
                                   argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): String? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
-    return (argumentInfo.getArgumentPassedToParameter(argumentSuperClass) as? RStringLiteralExpression)?.name
+    return (argumentInfo.getArgumentPassedToParameter(argumentSuperClass) as? RIdentifierExpression)?.name
   }
 
   fun getAssociatedFields(callExpression: RCallExpression,
