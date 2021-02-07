@@ -77,9 +77,6 @@ You can find the source code in the following repositories:
 
       <extensionPoint qualifiedName="com.intellij.rInterpreterSettingsProvider"
                       interface="org.jetbrains.r.settings.RInterpreterSettingsProvider" dynamic="true"/>
-
-      <extensionPoint qualifiedName="com.intellij.rS4ContextProvider"
-                      interface="org.jetbrains.r.classes.s4.context.RS4ContextProvider" dynamic="true"/>
     </extensionPoints>
 
     <resource-bundle>messages.RPluginBundle</resource-bundle>
@@ -432,7 +429,8 @@ You can find the source code in the following repositories:
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentNameIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RAssignmentCompletionIndex"/>
         <stubIndex implementation="org.jetbrains.r.psi.stubs.RInternalAssignmentCompletionIndex"/>
-        <stubIndex implementation="org.jetbrains.r.psi.stubs.RS4ClassNameIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex"/>
+        <stubIndex implementation="org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex"/>
         <stubElementTypeHolder class="org.jetbrains.r.parsing.RElementTypes"/>
 
         <lang.commenter language="R" implementationClass="org.jetbrains.r.editor.RCommenter"/>
@@ -679,13 +677,19 @@ You can find the source code in the following repositories:
                        bundle="messages.RPluginBundle" key="inspection.deprecated.double.starts.name"
                        implementationClass="org.jetbrains.r.inspections.DeprecatedDoubleStarts"/>
 
+      <!-- S4 Inspections -->
         <localInspection shortName="RDeprecatedSetClassArgsInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RPluginBundle" key="inspection.deprecated.setClass.args.name"
-                         implementationClass="org.jetbrains.r.inspections.s4class.DeprecatedSetClassArgsInspection"/>
+                         implementationClass="org.jetbrains.r.inspections.classes.s4.DeprecatedSetClassArgsInspection"/>
 
         <localInspection shortName="RInstanceOfVirtualS4ClassInspection" language="R" enabledByDefault="true" groupName="R"
                          bundle="messages.RPluginBundle" key="inspection.virtual.s4class.instance.name"
-                         implementationClass="org.jetbrains.r.inspections.s4class.InstanceOfVirtualS4ClassInspection"/>
+                         implementationClass="org.jetbrains.r.inspections.classes.s4.InstanceOfVirtualS4ClassInspection"/>
+
+      <!-- R6 Inspections -->
+        <localInspection shortName="UnmatchingR6ClassNameInspection" language="R" enabledByDefault="true" groupName="R"
+                       bundle="messages.RPluginBundle" key="inspection.r6class.naming.convention.classname"
+                       implementationClass="org.jetbrains.r.inspections.classes.r6.UnmatchingR6ClassNameInspection"/>
 
         <intentionAction>
             <category>R</category>
@@ -726,10 +730,6 @@ You can find the source code in the following repositories:
 
         <!-- Interpreter -->
         <rInterpreterSettingsProvider implementation="org.jetbrains.r.settings.RLocalInterpreterSettingsProvider"/>
-
-        <!-- S4 contexts-->
-        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
-        <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4SetClassContextProvider"/>
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>

@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
 import org.jetbrains.r.psi.TableInfo
@@ -33,6 +34,7 @@ interface RConsoleRuntimeInfo {
   fun loadShortS4ClassInfos(): List<RS4ClassInfo>
   fun loadS4ClassInfoByObjectName(objectName: String): RS4ClassInfo?
   fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo?
+  fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo?
   fun getFormalArguments(expression: String) : List<String>
   fun loadTableColumns(expression: String): TableInfo
   val rInterop: RInterop
@@ -61,7 +63,10 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   private val tableColumnsCache by rInterop.Cached { mutableMapOf<String, TableInfo>() }
   private val s4ClassInfosByObjectNameCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
   private val s4ClassInfosByClassNameCache by rInterop.Cached { mutableMapOf<String, RS4ClassInfo?>() }
+  private val r6ClassInfosByObjectNameCache by rInterop.Cached { mutableMapOf<String, R6ClassInfo?>() }
+  private val r6ClassInfosByClassNameCache by rInterop.Cached { mutableMapOf<String, R6ClassInfo?>() }
   private val loadedShortS4ClassInfosCache by rInterop.Cached { AtomicReference<List<RS4ClassInfo>?>(null) }
+  private val loadedShortR6ClassInfosCache by rInterop.Cached { AtomicReference<List<R6ClassInfo>?>(null) }
 
   override val rMarkdownChunkOptions by lazy { rInterop.rMarkdownChunkOptions }
 
@@ -130,6 +135,12 @@ class RConsoleRuntimeInfoImpl(override val rInterop: RInterop) : RConsoleRuntime
   override fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo? {
     return s4ClassInfosByClassNameCache.getOrPut(className) {
       rInterop.getS4ClassInfoByClassName(className)
+    }
+  }
+
+  override fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo? {
+    return r6ClassInfosByObjectNameCache.getOrPut(objectName) {
+      rInterop.getR6ClassInfoByObjectName(RReference.expressionRef(objectName, rInterop))
     }
   }
 

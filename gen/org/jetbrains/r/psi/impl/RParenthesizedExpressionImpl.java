@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RParenthesizedExpressionImpl extends RExpressionImpl implements RParenthesizedExpression {
 
-  public RParenthesizedExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RParenthesizedExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

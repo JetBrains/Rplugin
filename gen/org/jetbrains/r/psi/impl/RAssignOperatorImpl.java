@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RAssignOperatorImpl extends ROperatorImpl implements RAssignOperator {
 
-  public RAssignOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RAssignOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

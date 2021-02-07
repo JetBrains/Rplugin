@@ -10,6 +10,7 @@ import com.intellij.util.ThrowableRunnable
 import org.jetbrains.r.RFileType
 import org.jetbrains.r.RLightCodeInsightFixtureTestCase
 import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.console.RConsoleRuntimeInfo
 import org.jetbrains.r.console.addRuntimeInfo
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -195,6 +196,10 @@ class AutoPopupTest : RLightCodeInsightFixtureTestCase() {
     }
 
     override fun loadS4ClassInfoByClassName(className: String): RS4ClassInfo? {
+      throw NotImplementedError()
+    }
+
+    override fun loadR6ClassInfoByObjectName(objectName: String): R6ClassInfo? {
       throw NotImplementedError()
     }
 

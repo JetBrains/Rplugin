@@ -13,8 +13,8 @@ import org.jetbrains.r.psi.references.RReferenceBase;
 
 public class RIdentifierExpressionImpl extends RExpressionImpl implements RIdentifierExpression {
 
-  public RIdentifierExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RIdentifierExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

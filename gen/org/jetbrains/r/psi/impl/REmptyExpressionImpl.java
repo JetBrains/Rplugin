@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class REmptyExpressionImpl extends RExpressionImpl implements REmptyExpression {
 
-  public REmptyExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public REmptyExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

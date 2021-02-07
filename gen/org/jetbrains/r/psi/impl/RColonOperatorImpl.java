@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RColonOperatorImpl extends ROperatorImpl implements RColonOperator {
 
-  public RColonOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RColonOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

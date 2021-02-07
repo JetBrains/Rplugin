@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNotOperatorImpl extends ROperatorImpl implements RNotOperator {
 
-  public RNotOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNotOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

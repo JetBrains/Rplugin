@@ -29,6 +29,7 @@ const val LOADED_S4_CLASS_NAME = 100.0
 const val VARIABLE_GROUPING = 90
 const val NOT_LOADED_S4_CLASS_NAME = 50.0
 const val LANGUAGE_S4_CLASS_NAME = 25.0
+const val LANGUAGE_R6_CLASS_NAME = 25.0
 const val PACKAGE_PRIORITY = -1.0
 const val GLOBAL_GROUPING = 0
 const val NAMESPACE_NAME_GROUPING = -1
@@ -67,10 +68,12 @@ data class TableManipulationColumnLookup(val column: TableColumnInfo) {
 
 interface RLookupElementInsertHandler {
   fun getInsertHandlerForAssignment(assignment: RAssignmentStatement): InsertHandler<LookupElement>
+  fun getInsertHandlerForLookupString(lookupString: String): InsertHandler<LookupElement>
 }
 
 class REmptyLookupElementInsertHandler : RLookupElementInsertHandler {
   override fun getInsertHandlerForAssignment(assignment: RAssignmentStatement) = BasicInsertHandler<LookupElement>()
+  override fun getInsertHandlerForLookupString(lookupString: String) = BasicInsertHandler<LookupElement>()
 }
 
 class RLookupElementFactory(private val functionInsertHandler: RLookupElementInsertHandler = REmptyLookupElementInsertHandler(),
@@ -98,6 +101,12 @@ class RLookupElementFactory(private val functionInsertHandler: RLookupElementIns
                                            if (isLocal) VARIABLE_GROUPING else GLOBAL_GROUPING)
   }
 
+  fun createFunctionLookupElement(lookupString: String): LookupElement {
+    val icon = AllIcons.Nodes.Function
+    return createLookupElementWithGrouping(RLookupElement(lookupString, false, icon),
+                                           functionInsertHandler.getInsertHandlerForLookupString(lookupString),
+                                           GLOBAL_GROUPING)
+  }
 
   fun createNamespaceAccess(lookupString: String): LookupElement {
     val insertHandler = InsertHandler<LookupElement> { context, _ ->

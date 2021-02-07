@@ -35,6 +35,8 @@ import io.grpc.stub.StreamObserver
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.concurrency.*
 import org.jetbrains.r.RBundle
+import org.jetbrains.r.classes.r6.*
+import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.debugger.RDebuggerUtil
@@ -866,6 +868,43 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       val res = executeWithCheckCancel(asyncStub::getS4ClassInfoByClassName, StringValue.of(className))
       RS4ClassInfo(res.className, res.packageName, res.slotsList.map { RS4ClassSlot(it.name, it.type) }, res.superClassesList,
                    res.isVirtual)
+    } catch (e: RInteropTerminated) {
+      null
+    }
+  }
+
+  /**
+   * @return list of [R6ClassInfo] without information about [R6ClassInfo.fields], [R6ClassInfo.methods] and [R6ClassInfo.activeBindings]
+   */
+  fun getLoadedShortR6ClassInfos(): List<R6ClassInfo>? {
+    return try {
+      executeWithCheckCancel(asyncStub::getLoadedShortR6ClassInfos, Empty.getDefaultInstance()).shortR6ClassInfosList.map {
+        R6ClassInfo(it.name, emptyList(), emptyList(), emptyList(), emptyList())
+      }
+    } catch (e: RInteropTerminated) {
+      null
+    }
+  }
+
+  fun getR6ClassInfoByObjectName(ref: RReference): R6ClassInfo? {
+    return try {
+      val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByObjectName, ref.proto)
+      R6ClassInfo(res.className, res.superClassesList,
+                  res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
+                  res.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
+                  res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
+    } catch (e: RInteropTerminated) {
+      null
+    }
+  }
+
+  fun getR6ClassInfoByClassName(className: String): R6ClassInfo? {
+    return try {
+      val res = executeWithCheckCancel(asyncStub::getR6ClassInfoByClassName, StringValue.of(className))
+      R6ClassInfo(res.className, res.superClassesList,
+                  res.fieldsList.map { R6ClassField(it.name, it.isPublic) },
+                  res.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
+                  res.activeBindingsList.map { R6ClassActiveBinding(it.name) })
     } catch (e: RInteropTerminated) {
       null
     }

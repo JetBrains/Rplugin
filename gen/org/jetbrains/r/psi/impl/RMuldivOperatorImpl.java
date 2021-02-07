@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RMuldivOperatorImpl extends ROperatorImpl implements RMuldivOperator {
 
-  public RMuldivOperatorImpl(@NotNull ASTNode node) {
-    super(node);
+  public RMuldivOperatorImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

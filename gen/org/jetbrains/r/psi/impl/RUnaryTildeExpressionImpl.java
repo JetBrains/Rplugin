@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RUnaryTildeExpressionImpl extends ROperatorExpressionImpl implements RUnaryTildeExpression {
 
-  public RUnaryTildeExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RUnaryTildeExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

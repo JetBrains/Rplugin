@@ -4,9 +4,11 @@
 package org.jetbrains.r.psi.stubs
 
 import com.intellij.psi.stubs.StubElement
+import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RCallExpression
 
 interface RCallExpressionStub : StubElement<RCallExpression> {
   val s4ClassInfo: RS4ClassInfo?
+  val r6ClassInfo: R6ClassInfo?
 }

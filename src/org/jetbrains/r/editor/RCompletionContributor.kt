@@ -20,6 +20,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
+import org.jetbrains.r.classes.r6.*
+import org.jetbrains.r.classes.r6.context.*
 import org.jetbrains.r.classes.s4.*
 import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
@@ -35,7 +37,8 @@ import org.jetbrains.r.parsing.RElementTypes.*
 import org.jetbrains.r.psi.*
 import org.jetbrains.r.psi.api.*
 import org.jetbrains.r.psi.references.RSearchScopeUtil
-import org.jetbrains.r.psi.stubs.RS4ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.R6ClassNameIndex
+import org.jetbrains.r.psi.stubs.classes.RS4ClassNameIndex
 import org.jetbrains.r.refactoring.RNamesValidator
 import org.jetbrains.r.rinterop.RValueFunction
 import org.jetbrains.r.skeleton.psi.RSkeletonAssignmentStatement
@@ -53,6 +56,7 @@ class RCompletionContributor : CompletionContributor() {
     addMemberAccessCompletion()
     addAtAccessCompletion()
     addS4ClassContextCompletion()
+    addR6ClassContextCompletion()
     addIdentifierCompletion()
   }
 
@@ -93,9 +97,14 @@ class RCompletionContributor : CompletionContributor() {
       .and(RElementFilters.S4_CONTEXT_FILTER), S4ClassContextCompletionProvider())
   }
 
+  private fun addR6ClassContextCompletion() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
+      .and(RElementFilters.R6_CONTEXT_FILTER), R6ClassContextCompletionProvider())
+  }
+
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.STRING_EXCEPT_S4_CONTEXT_FILTER), StringLiteralCompletionProvider())
+      .and(RElementFilters.STRING_EXCEPT_OTHER_LIBRARIES_CONTEXT_FILTER), StringLiteralCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -105,14 +114,80 @@ class RCompletionContributor : CompletionContributor() {
       val info = file.runtimeInfo
       val memberAccess = PsiTreeUtil.getParentOfType(position, RMemberExpression::class.java) ?: return
       val leftExpr = memberAccess.leftExpr ?: return
+
+      val shownNames = addStaticRuntimeCompletionDependsOfFile(memberAccess, file, result, MemberStaticRuntimeCompletionProvider)
+
       if (info != null) {
         val noCalls = PsiTreeUtil.processElements(leftExpr) { it !is RCallExpression }
         if (noCalls) {
-          info.loadObjectNames(leftExpr.text).forEach { result.consume(rCompletionElementFactory.createNamespaceAccess(it)) }
+          info.loadObjectNames(leftExpr.text).forEach {
+            if (!shownNames.contains(it)) {
+              result.consume(rCompletionElementFactory.createNamespaceAccess(it))
+            }
+          }
         }
       }
       for (extension in RLibrarySupportProvider.EP_NAME.extensions) {
         extension.completeMembers(leftExpr, rCompletionElementFactory, result)
+      }
+    }
+
+    private object MemberStaticRuntimeCompletionProvider : RStaticRuntimeCompletionProvider<RMemberExpression> {
+      override fun addCompletionFromRuntime(psiElement: RMemberExpression,
+                                            shownNames: MutableSet<String>,
+                                            result: CompletionResultSet,
+                                            runtimeInfo: RConsoleRuntimeInfo): Boolean {
+        val obj = psiElement.leftExpr ?: return false
+        // obj$<caret>
+        // env$obj$<caret>
+        if (obj !is RIdentifierExpression &&
+            (obj !is RMemberExpression || obj.rightExpr !is RIdentifierExpression)) {
+          return false
+        }
+
+        val text = obj.text
+        runtimeInfo.loadR6ClassInfoByObjectName(text)?.let { classInfo ->
+          return addMembersCompletion(classInfo.fields + classInfo.methods + classInfo.activeBindings, shownNames, result)
+        }
+        return false
+      }
+
+      override fun addCompletionStatically(psiElement: RMemberExpression,
+                                           shownNames: MutableSet<String>,
+                                           result: CompletionResultSet): Boolean {
+        val className = R6ClassInfoUtil.getClassNameFromInternalClassMemberUsageExpression(psiElement)
+        if (className != null) {
+          R6ClassNameIndex.findClassDefinitions(className, psiElement.project,
+                                                RSearchScopeUtil.getScope(psiElement)).forEach {
+            return addMembersCompletion(R6ClassInfoUtil.getAllClassMembers(it) + R6ClassKeywordsProvider.predefinedClassMethods, shownNames, result)
+          }
+        }
+
+        return false
+      }
+
+      private fun addMembersCompletion(r6ClassMembers: List<IR6ClassMember>?,
+                                       shownNames: MutableSet<String>,
+                                       result: CompletionResultSet): Boolean {
+        var hasNewResults = false
+        if (r6ClassMembers.isNullOrEmpty()) return hasNewResults
+
+        for (r6Member in r6ClassMembers) {
+          if (r6Member.name in shownNames) continue
+
+          when (r6Member){
+            is R6ClassField,
+            is R6ClassActiveBinding
+              -> result.consume(rCompletionElementFactory.createAtAccess(r6Member.name))
+            is R6ClassMethod
+              -> result.consume(rCompletionElementFactory.createFunctionLookupElement(r6Member.name))
+          }
+
+          shownNames.add(r6Member.name)
+          hasNewResults = true
+        }
+
+        return hasNewResults
       }
     }
   }
@@ -152,7 +227,8 @@ class RCompletionContributor : CompletionContributor() {
           val definition = resolveResult.element as? RAssignmentStatement ?: return@forEach
           (definition.assignedValue as? RCallExpression)?.let { call ->
             val className = RS4ClassInfoUtil.getAssociatedClassName(call) ?: return@forEach
-            RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).forEach {
+            RS4ClassNameIndex.findClassDefinitions(className, psiElement.project,
+                                                   RSearchScopeUtil.getScope(psiElement)).forEach {
               return addSlotsCompletion(RS4ClassInfoUtil.getAllAssociatedSlots(it), shownNames, result)
             }
           }
@@ -201,8 +277,7 @@ class RCompletionContributor : CompletionContributor() {
       val position = if (probableIdentifier != null) {
         // operator surrounded by % or identifier
         PsiTreeUtil.findChildOfType(probableIdentifier, RInfixOperator::class.java) ?: probableIdentifier
-      }
-      else {
+      } else {
         // operator with parser error
         PsiTreeUtil.getParentOfType(parameters.position, RPsiElement::class.java, false) ?: return
       }
@@ -255,8 +330,7 @@ class RCompletionContributor : CompletionContributor() {
             val element =
               RElementFactory.createRPsiElementFromTextOrNull(originFile.project, code) as? RAssignmentStatement ?: return@forEach
             result.consume(elementFactory.createFunctionLookupElement(element, isLocal = true))
-          }
-          else {
+          } else {
             result.consume(elementFactory.createLocalVariableLookupElement(name, false))
           }
         }
@@ -301,8 +375,7 @@ class RCompletionContributor : CompletionContributor() {
         val parent = it.variableDescription.firstDefinition.parent
         if (parent is RAssignmentStatement && parent.isFunctionDeclaration) {
           result.consume(elementFactory.createFunctionLookupElement(parent, true))
-        }
-        else {
+        } else {
           result.consume(elementFactory.createLocalVariableLookupElement(name, parent is RParameter))
         }
       }
@@ -362,8 +435,7 @@ class RCompletionContributor : CompletionContributor() {
           arg.parameterList?.parameterList?.map { it.name }?.forEach {
             consumeParameter(it, shownNames, result)
           }
-        }
-        else {
+        } else {
           arg.reference?.multiResolve(false)?.forEach { resolveResult ->
             (resolveResult.element as? RAssignmentStatement)?.let { assignment ->
               val inhNamedArgs = info?.loadInheritorNamedArguments(assignment.name) ?: emptyList()
@@ -423,9 +495,9 @@ class RCompletionContributor : CompletionContributor() {
       result.addAllElements(lookupElements.map {
         val column = it.column
         if (column.quoteNeeded) {
-          rCompletionElementFactory.createQuotedLookupElement(column.name, TABLE_MANIPULATION_PRIORITY, true, AllIcons.Nodes.Field, column.type)
-        }
-        else {
+          rCompletionElementFactory.createQuotedLookupElement(column.name, TABLE_MANIPULATION_PRIORITY, true, AllIcons.Nodes.Field,
+                                                              column.type)
+        } else {
           PrioritizedLookupElement.withPriority(
             RLookupElement(column.name, true, AllIcons.Nodes.Field, packageName = column.type),
             TABLE_MANIPULATION_PRIORITY
@@ -466,7 +538,8 @@ class RCompletionContributor : CompletionContributor() {
         override fun addCompletionStatically(psiElement: RCallExpression,
                                              shownNames: MutableSet<String>,
                                              result: CompletionResultSet): Boolean {
-          RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(psiElement)).singleOrNull()?.let { definition ->
+          RS4ClassNameIndex.findClassDefinitions(className, psiElement.project, RSearchScopeUtil.getScope(
+            psiElement)).singleOrNull()?.let { definition ->
             RS4ClassInfoUtil.getAllAssociatedSlots(definition).forEach {
               result.consume(RLookupElementFactory.createNamedArgumentLookupElement(it.name, it.type, SLOT_NAME_PRIORITY))
             }
@@ -537,19 +610,80 @@ class RCompletionContributor : CompletionContributor() {
           val projectDir = classDeclaration.project.guessProjectDir()
           if (virtualFile == null || projectDir == null) ""
           else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
-        }
-        else packageName
+        } else packageName
       if (classNameExpression is RStringLiteralExpression) {
         addElement(RLookupElementFactory.createLookupElementWithPriority(
           RLookupElement(escape(className), true, AllIcons.Nodes.Field, packageName = location),
           STRING_LITERAL_INSERT_HANDLER, priority))
-      }
-      else {
+      } else {
         addElement(rCompletionElementFactory.createQuotedLookupElement(className, priority, true, AllIcons.Nodes.Field, location))
       }
     }
   }
 
+  private class R6ClassContextCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
+      val file = parameters.originalFile
+      addR6ClassNameCompletion(expression, file, result)
+      addR6AdditionalMembersAfterCreation(expression, file, result)
+    }
+
+    private fun addR6ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression, R6CreateClassContext::class.java) ?: return
+      val shownNames = HashSet<String>()
+
+      when (r6Context) {
+        is R6CreateClassNameContext -> { // suggestion of name of `<- R6Class("")`
+            result.addR6ClassNameCompletion(classNameExpression, shownNames)
+        }
+
+        else -> return
+      }
+    }
+
+    private fun addR6AdditionalMembersAfterCreation(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet) {
+      val r6Context = R6ContextProvider.getR6Context(classNameExpression, R6SetClassMembersContext::class.java) ?: return
+      val shownNames = HashSet<String>()
+
+      when (r6Context) {
+        is R6SetClassMembersContextVisibility -> { // suggestion of name of `classObject$set("<caret>")`
+          result.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression, shownNames)
+        }
+
+        else -> return
+      }
+    }
+
+    private fun CompletionResultSet.addR6SetAdditionalMembersAfterCreationCompletion(classNameExpression: RExpression, shownNames: MutableSet<String>) {
+      val virtualFile = classNameExpression.containingFile.virtualFile
+      val projectDir = classNameExpression.project.guessProjectDir()
+      val location = if (virtualFile == null || projectDir == null) ""
+      else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
+
+      R6ClassKeywordsProvider.visibilityModifiers.forEach { visibilityModifier ->
+        if (visibilityModifier in shownNames) return
+        shownNames.add(visibilityModifier)
+        addElement(rCompletionElementFactory.createQuotedLookupElement(visibilityModifier, LANGUAGE_R6_CLASS_NAME, true, AllIcons.Nodes.Field, location))
+      }
+    }
+
+    private fun CompletionResultSet.addR6ClassNameCompletion(classNameExpression: RExpression,
+                                                   shownNames: MutableSet<String>) {
+      val classAssignmentExpression = PsiTreeUtil.getParentOfType(classNameExpression,
+                                                                  RAssignmentStatement::class.java) as RAssignmentStatement
+      val classNameToSuggest = classAssignmentExpression.assignee?.text ?: return
+      if (classNameToSuggest in shownNames) return
+      shownNames.add(classNameToSuggest)
+
+      val virtualFile = classNameExpression.containingFile.virtualFile
+      val projectDir = classNameExpression.project.guessProjectDir()
+      val location = if (virtualFile == null || projectDir == null) ""
+                     else VfsUtil.getRelativePath(virtualFile, projectDir) ?: ""
+
+      addElement(rCompletionElementFactory.createQuotedLookupElement(classNameToSuggest, LANGUAGE_R6_CLASS_NAME, true, AllIcons.Nodes.Field, location))
+    }
+  }
 
   private class StringLiteralCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -610,7 +744,7 @@ class RCompletionContributor : CompletionContributor() {
     private fun findParentheses(text: String, offset: Int): Int? {
       var whitespaceNo = 0
       while (offset + whitespaceNo < text.length && text[offset + whitespaceNo] == ' ') whitespaceNo += 1
-      return whitespaceNo.takeIf { (offset + whitespaceNo< text.length && text[offset + whitespaceNo ] == '(') }
+      return whitespaceNo.takeIf { (offset + whitespaceNo < text.length && text[offset + whitespaceNo] == '(') }
     }
 
     private object RFunctionCompletionInsertHandler : RLookupElementInsertHandler {
@@ -623,6 +757,18 @@ class RCompletionContributor : CompletionContributor() {
             document.insertString(context.tailOffset, "()")
           }
           val relativeCaretOffset = (if (noArgs) 2 else 1) + (findParentheses ?: 0)
+          context.editor.caretModel.moveCaretRelatively(relativeCaretOffset, 0, false, false, false)
+        }
+      }
+
+      override fun getInsertHandlerForLookupString(lookupString: String): InsertHandler<LookupElement> {
+        return InsertHandler { context, _ ->
+          val document = context.document
+          val findParentheses = findParentheses(document.text, context.tailOffset)
+          if (findParentheses == null) {
+            document.insertString(context.tailOffset, "()")
+          }
+          val relativeCaretOffset = 2 + (findParentheses ?: 0)
           context.editor.caretModel.moveCaretRelatively(relativeCaretOffset, 0, false, false, false)
         }
       }
@@ -671,19 +817,20 @@ class RCompletionContributor : CompletionContributor() {
     private fun <T : PsiElement> addStaticRuntimeCompletionDependsOfFile(psiElement: T,
                                                                          file: PsiFile,
                                                                          result: CompletionResultSet,
-                                                                         provider: RStaticRuntimeCompletionProvider<T>) {
+                                                                         provider: RStaticRuntimeCompletionProvider<T>) : Set<String> {
       val runtimeInfo = file.runtimeInfo
       val shownNames = HashSet<String>()
       if (file.getUserData(RConsoleView.IS_R_CONSOLE_KEY) == true) {
         if (runtimeInfo == null || !provider.addCompletionFromRuntime(psiElement, shownNames, result, runtimeInfo)) {
           provider.addCompletionStatically(psiElement, shownNames, result)
         }
-      }
-      else {
+      } else {
         if (!provider.addCompletionStatically(psiElement, shownNames, result)) {
           runtimeInfo?.let { provider.addCompletionFromRuntime(psiElement, shownNames, result, it) }
         }
       }
+
+      return shownNames
     }
 
     private fun addArgumentValueCompletion(position: PsiElement, result: CompletionResultSet) {

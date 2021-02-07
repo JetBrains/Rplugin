@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RBlockExpressionImpl extends RExpressionImpl implements RBlockExpression {
 
-  public RBlockExpressionImpl(@NotNull ASTNode node) {
-    super(node);
+  public RBlockExpressionImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override

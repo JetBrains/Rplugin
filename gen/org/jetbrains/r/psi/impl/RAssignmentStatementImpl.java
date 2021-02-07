@@ -15,7 +15,7 @@ import com.intellij.psi.stubs.IStubElementType;
 
 public class RAssignmentStatementImpl extends RAssignmentBase implements RAssignmentStatement {
 
-  public RAssignmentStatementImpl(@NotNull ASTNode node) {
+  public RAssignmentStatementImpl(ASTNode node) {
     super(node);
   }
 

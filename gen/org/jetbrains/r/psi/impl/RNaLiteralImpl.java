@@ -12,8 +12,8 @@ import org.jetbrains.r.psi.api.*;
 
 public class RNaLiteralImpl extends RExpressionImpl implements RNaLiteral {
 
-  public RNaLiteralImpl(@NotNull ASTNode node) {
-    super(node);
+  public RNaLiteralImpl(@NotNull ASTNode astNode) {
+    super(astNode);
   }
 
   @Override
