@@ -8,6 +8,10 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.stubs.BinaryFileStubBuilder
 import com.intellij.psi.stubs.Stub
 import com.intellij.util.indexing.FileContent
+import org.jetbrains.r.classes.r6.R6ClassActiveBinding
+import org.jetbrains.r.classes.r6.R6ClassField
+import org.jetbrains.r.classes.r6.R6ClassInfo
+import org.jetbrains.r.classes.r6.R6ClassMethod
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.hints.parameterInfo.RExtraNamedArgumentsInfo
@@ -31,15 +35,35 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
       LibrarySummary.RLibraryPackage.parseFrom(it)
     }
     for (symbol in binPackage.symbolsList) {
+      when (symbol.representationCase){
+        RepresentationCase.S4CLASSREPRESENTATION -> {
+          val s4ClassRepresentation = symbol.s4ClassRepresentation
+          RSkeletonCallExpressionStub(skeletonFileStub,
+                                      R_SKELETON_CALL_EXPRESSION,
+                                      RS4ClassInfo(symbol.name,
+                                                   s4ClassRepresentation.packageName,
+                                                   s4ClassRepresentation.slotsList.map { RS4ClassSlot(it.name, it.type) },
+                                                   s4ClassRepresentation.superClassesList,
+                                                   s4ClassRepresentation.isVirtual),
+                                      null)
+        }
+
+        RepresentationCase.R6CLASSREPRESENTATION -> {
+          val r6ClassRepresentation = symbol.r6ClassRepresentation
+          RSkeletonCallExpressionStub(skeletonFileStub,
+                                      R_SKELETON_CALL_EXPRESSION,
+                                      null,
+                                      R6ClassInfo(symbol.name,
+                                                  r6ClassRepresentation.packageName,
+                                                  r6ClassRepresentation.superClass,
+                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.any ) },
+                                                  r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, emptyMap()) },
+                                                  r6ClassRepresentation.activeBindingsList.map { R6ClassActiveBinding(it.name) }))
+        }
+      }
+
       if (symbol.representationCase == RepresentationCase.S4CLASSREPRESENTATION) {
-        val s4ClassRepresentation = symbol.s4ClassRepresentation
-        RSkeletonCallExpressionStub(skeletonFileStub,
-                                    R_SKELETON_CALL_EXPRESSION,
-                                    RS4ClassInfo(symbol.name,
-                                                 s4ClassRepresentation.packageName,
-                                                 s4ClassRepresentation.slotsList.map { RS4ClassSlot(it.name, it.type) },
-                                                 s4ClassRepresentation.superClassesList,
-                                                 s4ClassRepresentation.isVirtual))
+
       }
       else {
         val functionRepresentation = symbol.functionRepresentation

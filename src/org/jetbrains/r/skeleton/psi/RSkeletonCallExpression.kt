@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
 import com.intellij.util.IncorrectOperationException
+import org.jetbrains.r.classes.r6.R6ClassInfo
 import org.jetbrains.r.classes.s4.RS4ClassInfo
 import org.jetbrains.r.psi.api.RArgumentList
 import org.jetbrains.r.psi.api.RCallExpression
@@ -27,30 +28,17 @@ class RSkeletonCallExpression(private val myStub: RSkeletonCallExpressionStub) :
 
   override fun getElementType(): IStubElementType<out StubElement<*>, *> = stub.stubType
 
-  override fun getName(): String = myStub.s4ClassInfo.className
+  override fun getName(): String = myStub.s4ClassInfo!!.className
 
   override fun canNavigate(): Boolean = false
 
   override fun getText(): String {
-    val info = stub.s4ClassInfo
+    val s4Info = stub.s4ClassInfo
+    val r6Info = stub.r6ClassInfo
+
     return buildString {
-      append("setClass('").append(info.className).append("', ")
-      append("slots = c(")
-      info.slots.forEachIndexed { ind, slot ->
-        if (ind != 0) append(", ")
-        append(slot.name).append(" = '").append(slot.type).append("'")
-      }
-      append("), ")
-      append("contains = c(")
-      info.superClasses.forEachIndexed { ind, superClass ->
-        if (ind != 0) append(", ")
-        append("'").append(superClass).append("'")
-      }
-      if (info.isVirtual) {
-        if (info.superClasses.isNotEmpty()) append(", ")
-        append("'VIRTUAL'")
-      }
-      append("))")
+      if (s4Info != null) { append(s4Info.toString()) }
+      if (r6Info != null) { append(r6Info.toString()) }
     }
   }
 
@@ -58,7 +46,9 @@ class RSkeletonCallExpression(private val myStub: RSkeletonCallExpressionStub) :
     throw IncorrectOperationException("Operation not supported in: $javaClass")
   }
 
-  override fun getAssociatedS4ClassInfo(): RS4ClassInfo = myStub.s4ClassInfo
+  override fun getAssociatedS4ClassInfo(): RS4ClassInfo? = myStub.s4ClassInfo
+
+  override fun getAssociatedR6ClassInfo(): R6ClassInfo? = myStub.r6ClassInfo
 
   override fun getReference(): RReferenceBase<*>? = null
 

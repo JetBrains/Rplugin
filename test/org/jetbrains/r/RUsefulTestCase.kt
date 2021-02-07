@@ -259,6 +259,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       grDevices
       magrittr
       methods
+      R6
       stats
       utils
       roxygen2

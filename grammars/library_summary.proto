@@ -15,6 +15,7 @@ message RLibrarySymbol {
     PRIMITIVE = 2;
     DATASET = 3;
     S4CLASS = 4;
+    R6CLASS = 5;
   }
   message FunctionRepresentation {
     message ExtraNamedArguments {
@@ -36,12 +37,35 @@ message RLibrarySymbol {
     bool isVirtual = 4;
   }
 
+  message R6ClassRepresentation {
+    message R6ClassField {
+      string name = 1;
+      string Any = 2;
+      bool isPublic = 3;
+    }
+    message R6ClassMethod {
+      string name = 1;
+      string Any = 2;
+      bool isPublic = 3;
+    }
+    message R6ClassActiveBinding {
+      string name = 1;
+      bool isPublic = 3;
+    }
+    string packageName = 1;
+    string superClass = 2;
+    repeated R6ClassField fields = 3;
+    repeated R6ClassField methods = 4;
+    repeated R6ClassField activeBindings = 5;
+  }
+
   string name = 1;
   Type type = 2;
   bool exported = 3;
   oneof representation {
     FunctionRepresentation functionRepresentation = 4;
     S4ClassRepresentation s4ClassRepresentation = 5;
+    R6ClassRepresentation r6ClassRepresentation = 6;
   }
 }
 

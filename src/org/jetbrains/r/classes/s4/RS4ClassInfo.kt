@@ -37,4 +37,26 @@ data class RS4ClassInfo(val className: String,
       return RS4ClassInfo(className, packageName, slots, superClasses, isVirtual)
     }
   }
+
+  override fun toString() : String {
+    return buildString {
+      append("setClass('").append(className).append("', ")
+      append("slots = c(")
+      slots.forEachIndexed { ind, slot ->
+        if (ind != 0) append(", ")
+        append(slot.name).append(" = '").append(slot.type).append("'")
+      }
+      append("), ")
+      append("contains = c(")
+      superClasses.forEachIndexed { ind, superClass ->
+        if (ind != 0) append(", ")
+        append("'").append(superClass).append("'")
+      }
+      if (isVirtual) {
+        if (superClasses.isNotEmpty()) append(", ")
+        append("'VIRTUAL'")
+      }
+      append("))")
+    }
+  }
 }
