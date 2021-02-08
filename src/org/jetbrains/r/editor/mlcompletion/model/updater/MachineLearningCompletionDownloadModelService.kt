@@ -3,8 +3,6 @@ package org.jetbrains.r.editor.mlcompletion.model.updater
 import com.intellij.ide.IdeBundle
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.observable.properties.AtomicBooleanProperty
-import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
@@ -19,7 +17,6 @@ class MachineLearningCompletionDownloadModelService {
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
     private val LOG = Logger.getInstance(MachineLearningCompletionDownloadModelService::class.java)
-    val isBeingDownloaded = AtomicBooleanProperty(false)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
 
     private fun <T> submitBackgroundJob(job: () -> T, onSuccessCallback: (T) -> Unit) =
@@ -27,12 +24,8 @@ class MachineLearningCompletionDownloadModelService {
         try {
           onSuccessCallback(job())
         }
-        catch (ignored: ProcessCanceledException) {
-          isBeingDownloaded.set(false)
-        }
         catch (e: Throwable) {
           LOG.info(e)
-          isBeingDownloaded.set(false)
         }
       }
 
@@ -50,37 +43,20 @@ class MachineLearningCompletionDownloadModelService {
 
         override fun onSuccess() = onSuccessCallback(result)
 
-        override fun onThrowable(error: Throwable) = isBeingDownloaded.set(false)
-
-        override fun onCancel() = isBeingDownloaded.set(false)
+        override fun onThrowable(error: Throwable) = LOG.info(error)
       }.queue()
-
-    private fun ((ArtifactsWithSize) -> Unit).ignoreEmpty(): (ArtifactsWithSize) -> Unit = { artifactsWithSize ->
-      if (artifactsWithSize.artifacts.isNotEmpty()) {
-        this(artifactsWithSize)
-      }
-      else {
-        isBeingDownloaded.set(false)
-      }
-    }
   }
 
   data class ArtifactsWithSize(val artifacts: List<MachineLearningCompletionRemoteArtifact>, val size: Long)
 
   fun initiateUpdateCycle(isModal: Boolean,
-                          ignoreEmptyResult: Boolean = true,
                           onSuccessCallback: (ArtifactsWithSize) -> Unit) {
-    if (!isBeingDownloaded.compareAndSet(false, true)) {
-      return
-    }
-
-    val callback = if (ignoreEmptyResult) onSuccessCallback.ignoreEmpty() else onSuccessCallback
     if (isModal) {
       submitModalJob(this::getArtifactsToDownloadWithSize, title = IdeBundle.message("updates.checking.progress"),
-                     onSuccessCallback = callback)
+                     onSuccessCallback = onSuccessCallback)
     }
     else {
-      submitBackgroundJob(this::getArtifactsToDownloadWithSize, callback)
+      submitBackgroundJob(this::getArtifactsToDownloadWithSize, onSuccessCallback)
     }
   }
 

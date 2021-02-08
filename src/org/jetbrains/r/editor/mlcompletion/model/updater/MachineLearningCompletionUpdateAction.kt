@@ -1,22 +1,22 @@
 package org.jetbrains.r.editor.mlcompletion.model.updater
 
+import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.project.Project
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerService
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.concurrent.atomic.AtomicBoolean
 
 class MachineLearningCompletionUpdateAction(val project: Project?,
                                             val artifacts: List<MachineLearningCompletionRemoteArtifact>) {
 
-  private val updateIsInitiated = AtomicBoolean(false)
-
-  fun isInitiated() = updateIsInitiated.get()
+  companion object {
+    val canInitiateUpdateAction = AtomicBooleanProperty(true)
+  }
 
   fun performAsync() {
-    if (!updateIsInitiated.compareAndSet(false, true)) {
+    if (!canInitiateUpdateAction.compareAndSet(true, false)) {
       return
     }
 
@@ -25,7 +25,7 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
 
     val numberOfTasks = artifacts.size
     val releaseFlagCallback = UpdateUtils.createSharedCallback(numberOfTasks) {
-      MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
+      canInitiateUpdateAction.set(true)
     }
 
     val updateCompletedCallback = UpdateUtils.createSharedCallback(numberOfTasks) {

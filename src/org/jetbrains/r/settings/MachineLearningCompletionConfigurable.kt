@@ -119,24 +119,22 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   }
 
   private fun Cell.checkForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
-    MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
+    MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true) { (artifacts, size) ->
       if (artifacts.isNotEmpty()) {
-        val pressedUpdate = createUpdateDialog(artifacts, size).showAndGet()
-        MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(pressedUpdate)
+        createUpdateDialog(artifacts, size).show()
       }
       else {
         createNoAvailableUpdateDialog().show()
-        MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
     }
   }.enableIf(object : ComponentPredicate() {
     override fun invoke(): Boolean =
-      !MachineLearningCompletionDownloadModelService.isBeingDownloaded.get()
+      MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()
 
     override fun addListener(listener: (Boolean) -> Unit) {
       this@MachineLearningCompletionConfigurable.disposable?.let { parentDisposable ->
-        MachineLearningCompletionDownloadModelService.isBeingDownloaded
-          .afterChange({ listener(!it) }, parentDisposable)
+        MachineLearningCompletionUpdateAction.canInitiateUpdateAction
+          .afterChange(listener, parentDisposable)
       }
     }
   })
