@@ -42,7 +42,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private val modality = ModalityState.current()
 
-  private fun invokeLaterWithPaneModality(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
+  private fun invokeLaterWithTabModality(action: () -> Unit) = ApplicationManager.getApplication().invokeLater(action, modality)
 
   override fun createPanel(): DialogPanel {
     return panel {
@@ -86,7 +86,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     disposable?.let {
       MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
         if (beforeState.lastCheckedForUpdatesMs != afterState.lastCheckedForUpdatesMs) {
-          invokeLaterWithPaneModality {
+          invokeLaterWithTabModality {
             updateLastCheckedLabel(label, afterState.lastCheckedForUpdatesMs)
           }
         }
@@ -102,7 +102,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
     disposable?.let { disposable ->
       MachineLearningCompletionModelFilesService.getInstance().registerVersionChangeListener(artifact, disposable) {
-        invokeLaterWithPaneModality { updateVersionLabel(label, it) }
+        invokeLaterWithTabModality { updateVersionLabel(label, it) }
       }
     }
 
