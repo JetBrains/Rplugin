@@ -15,6 +15,21 @@ fun extractTextAndCaretOffset(text: String): Pair<String, Int?> {
   }
 }
 
+fun extractTextAndCaretOffsets(text: String): Pair<String, List<Int>> {
+  val carets = ArrayList<Int>()
+  val newText = extractTextAndCaretOffsets(text, carets)
+  return Pair(newText, carets)
+}
+
+private tailrec fun extractTextAndCaretOffsets(text: String, result: ArrayList<Int>): String {
+  val (newText, newCaret) = extractTextAndCaretOffset(text)
+  if (newCaret == null) {
+    return text
+  }
+  result.add(newCaret)
+  return extractTextAndCaretOffsets(newText, result)
+}
+
 /* add caretToken into the text */
 val Editor.prettyText: String
   get() = document
