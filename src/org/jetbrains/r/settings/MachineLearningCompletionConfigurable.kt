@@ -5,7 +5,6 @@ import com.intellij.ide.IdeBundle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBLabel
@@ -119,11 +118,11 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   private fun Cell.createCheckForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
       if (artifacts.isNotEmpty()) {
-        val pressedUpdate = createUpdateDialog(null, artifacts, size).showAndGet()
+        val pressedUpdate = createUpdateDialog(artifacts, size).showAndGet()
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(pressedUpdate)
       }
       else {
-        createNoAvailableUpdateDialog(null).show()
+        createNoAvailableUpdateDialog().show()
         MachineLearningCompletionDownloadModelService.isBeingDownloaded.set(false)
       }
     }
@@ -139,8 +138,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   })
 
-  private fun createUpdateDialog(project: Project?,
-                                 artifacts: List<MachineLearningCompletionRemoteArtifact>,
+  private fun createUpdateDialog(artifacts: List<MachineLearningCompletionRemoteArtifact>,
                                  size: Long) =
     dialog(displayName,
            panel = panel {
@@ -148,24 +146,22 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
                label(RBundle.message("notification.ml.update.askForUpdate.content", UpdateUtils.showSizeMb(size)))
              }
            },
-           project = project,
            createActions = {
              listOf(ButtonAction(CommonBundle.getCancelButtonText(), DialogWrapper.CANCEL_EXIT_CODE),
                     ButtonAction(IdeBundle.message("plugins.configurable.update.button"), DialogWrapper.OK_EXIT_CODE) {
-                      val updateAction = MachineLearningCompletionUpdateAction(project, artifacts)
+                      val updateAction = MachineLearningCompletionUpdateAction(null, artifacts)
                       updateAction.performAsync()
                     })
            }
     )
 
-  private fun createNoAvailableUpdateDialog(project: Project?): DialogWrapper =
+  private fun createNoAvailableUpdateDialog(): DialogWrapper =
     dialog(displayName,
            panel = panel {
              row {
                label(RBundle.message("project.settings.ml.completion.dialog.noUpdates"))
              }
            },
-           project = project,
            createActions = { listOf(ButtonAction(CommonBundle.getOkButtonText(), DialogWrapper.OK_EXIT_CODE)) }
     )
 
