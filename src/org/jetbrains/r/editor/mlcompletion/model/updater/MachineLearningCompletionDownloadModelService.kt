@@ -30,10 +30,9 @@ class MachineLearningCompletionDownloadModelService {
       }
 
     private fun <T : Any> submitModalJob(job: () -> T,
-                                         project: Project? = null,
                                          title: String = "",
                                          onSuccessCallback: (T) -> Unit) =
-      object : Task.Modal(project, title, true) {
+      object : Task.Modal(null, title, true) {
 
         private lateinit var result: T
 
@@ -52,8 +51,7 @@ class MachineLearningCompletionDownloadModelService {
   fun initiateUpdateCycle(isModal: Boolean,
                           onSuccessCallback: (ArtifactsWithSize) -> Unit) {
     if (isModal) {
-      submitModalJob(this::getArtifactsToDownloadWithSize, title = IdeBundle.message("updates.checking.progress"),
-                     onSuccessCallback = onSuccessCallback)
+      submitModalJob(this::getArtifactsToDownloadWithSize, IdeBundle.message("updates.checking.progress"), onSuccessCallback)
     }
     else {
       submitBackgroundJob(this::getArtifactsToDownloadWithSize, onSuccessCallback)
