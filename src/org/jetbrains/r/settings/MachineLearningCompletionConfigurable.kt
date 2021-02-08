@@ -48,14 +48,17 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     return panel {
       titledRow(displayName) {
         row {
-          createCheckForUpdatesButton()
+          checkForUpdatesButton()
         }
 
         row {
           row(IdeBundle.message("updates.settings.last.check")) { lastCheckedLabel().withLeftGap() }
-          row(RBundle.message("project.settings.ml.completion.version.app")) { versionLabel(MachineLearningCompletionAppArtifact()).withLeftGap() }
-          row(RBundle.message("project.settings.ml.completion.version.model")) { versionLabel(MachineLearningCompletionModelArtifact()).withLeftGap() }
-            .largeGapAfter()
+          row(RBundle.message("project.settings.ml.completion.version.app")) {
+            versionLabel(MachineLearningCompletionAppArtifact()).withLeftGap()
+          }
+          row(RBundle.message("project.settings.ml.completion.version.model")) {
+            versionLabel(MachineLearningCompletionModelArtifact()).withLeftGap()
+          }.largeGapAfter()
         }
 
         row {
@@ -115,7 +118,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, settings.state)
   }
 
-  private fun Cell.createCheckForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
+  private fun Cell.checkForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
     MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true, false) { (artifacts, size) ->
       if (artifacts.isNotEmpty()) {
         val pressedUpdate = createUpdateDialog(artifacts, size).showAndGet()
@@ -133,7 +136,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     override fun addListener(listener: (Boolean) -> Unit) {
       this@MachineLearningCompletionConfigurable.disposable?.let { parentDisposable ->
         MachineLearningCompletionDownloadModelService.isBeingDownloaded
-          .afterChange({ it -> listener(!it) }, parentDisposable)
+          .afterChange({ listener(!it) }, parentDisposable)
       }
     }
   })
