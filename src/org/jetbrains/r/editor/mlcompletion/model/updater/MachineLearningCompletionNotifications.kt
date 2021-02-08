@@ -15,7 +15,11 @@ object MachineLearningCompletionNotifications {
 
   private val notificationsTitle = RBundle.message("project.settings.ml.completion.name")
 
-  fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) {
+  @Volatile
+  var activeAskForUpdateNotification: Notification? = null
+    private set
+
+  fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)
       .createNotification(notificationsTitle, RBundle.message("notification.ml.update.askForUpdate.content", showSizeMb(size)))
       .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.updateButton")) {
@@ -23,8 +27,9 @@ object MachineLearningCompletionNotifications {
           MachineLearningCompletionUpdateAction(project, artifacts).performAsync()
           notification.expire()
         }
-      }).notify(project)
-  }
+      })
+      .also { activeAskForUpdateNotification = it }
+      .notify(project)
 
   fun notifyUpdateCompleted(project: Project?) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)

@@ -20,6 +20,8 @@ class MachineLearningCompletionUpdateAction(val project: Project?,
       return
     }
 
+    MachineLearningCompletionNotifications.activeAskForUpdateNotification?.expire()
+
     val serverService = MachineLearningCompletionServerService.getInstance()
     serverService.shutdownBlocking()
 
