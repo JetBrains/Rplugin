@@ -37,6 +37,8 @@ class NotebookCellInlayManager private constructor(val editor: EditorImpl) {
   private val inlays: MutableMap<Inlay<*>, NotebookCellInlayController> = HashMap()
   private val notebookCellLines = NotebookCellLines.get(editor)
   private val viewportQueue = MergingUpdateQueue("NotebookCellInlayManager Viewport Update", 100, true, null, editor.disposable, null, true)
+
+  /** 20 is 1000 / 50, two times faster than the eye refresh rate. Actually, the value has been chosen randomly, without experiments. */
   private val updateQueue = MergingUpdateQueue("NotebookCellInlayManager Interval Update", 20, true, null, editor.disposable, null, true)
   private var initialized = false
 
