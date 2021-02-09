@@ -33,6 +33,9 @@ class MachineLearningCompletionServerService : Disposable {
   val serverAddress
     get() = "http://${settings.state.host}:${settings.state.port}"
 
+  val requestTimeoutMs
+    get() = settings.state.requestTimeoutMs
+
   init {
     MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
         if (beforeState == afterState) {

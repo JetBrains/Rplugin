@@ -11,11 +11,13 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
   class State(host: String? = DEFAULT_HOST,
               port: Int = DEFAULT_PORT,
               isEnabled: Boolean = DEFAULT_IS_ENABLED,
-              lastCheckedForUpdatesMs: Long = DEFAULT_LAST_CHECKED_FOR_UPDATES) : BaseState() {
+              lastUpdateCheckTimestampMs: Long = DEFAULT_LAST_CHECKED_FOR_UPDATES,
+              requestTimeoutMs: Int = DEFAULT_REQUEST_TIMEOUT_MS) : BaseState() {
     var host by string(host)
     var port by property(port)
     var isEnabled by property(isEnabled)
-    var lastCheckedForUpdatesMs by property(lastCheckedForUpdatesMs)
+    var lastUpdateCheckTimestampMs by property(lastUpdateCheckTimestampMs)
+    var requestTimeoutMs by property(requestTimeoutMs)
 
     fun hostOrDefault(): String {
       return host ?: DEFAULT_HOST
@@ -29,6 +31,7 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
     const val DEFAULT_PORT = 7337
     const val DEFAULT_IS_ENABLED = true
     const val DEFAULT_LAST_CHECKED_FOR_UPDATES: Long = -1L
+    const val DEFAULT_REQUEST_TIMEOUT_MS = 300
   }
 
   fun copyState(): State {
@@ -37,7 +40,7 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
 
   fun reportUpdateCheck() {
     val beforeState = copyState()
-    state.lastCheckedForUpdatesMs = System.currentTimeMillis()
+    state.lastUpdateCheckTimestampMs = System.currentTimeMillis()
     MachineLearningCompletionSettingsChangeListener.notifySettingsChanged(beforeState, state)
   }
 }

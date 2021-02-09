@@ -25,6 +25,9 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   companion object {
     private const val PORT_FIELD_WIDTH = 5
+    private val PORT_RANGE = IntRange(1024, 65353)
+    private const val TIMEOUT_FIELD_WIDTH = 4
+    private val TIMEOUT_RANGE_MS = IntRange(0, 2000)
     private val settings = MachineLearningCompletionSettings.getInstance()
 
     private fun updateLastCheckedLabel(label: JLabel, time: Long): Unit = when {
@@ -37,6 +40,11 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
     private fun updateVersionLabel(label: JLabel, version: Version?) {
       label.text = version?.toString() ?: RBundle.message("project.settings.ml.completion.version.none")
+    }
+
+    private fun Row.enableSubRowsIf(predicate: ComponentPredicate) {
+      subRowsEnabled = predicate.invoke()
+      predicate.addListener { subRowsEnabled = it }
     }
   }
 
@@ -64,17 +72,26 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
         row {
           val enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"),
                                                   settings.state::isEnabled)
+          enableSubRowsIf(enableCompletionCheckbox.selected)
+
           row {
             label(RBundle.message("project.settings.ml.completion.server.label"))
           }
+
           row {
             cell(isFullWidth = true) {
               label(RBundle.message("project.settings.ml.completion.host.label"))
               textField({ settings.state.host ?: "" }, settings.state::host.setter)
-                .enableIf(enableCompletionCheckbox.selected)
               label(RBundle.message("project.settings.ml.completion.port.label"))
-              intTextField(settings.state::port, columns = PORT_FIELD_WIDTH)
-                .enableIf(enableCompletionCheckbox.selected)
+              intTextField(settings.state::port, columns = PORT_FIELD_WIDTH, range = PORT_RANGE)
+            }
+          }
+
+          row {
+            cell {
+              label(RBundle.message("project.settings.ml.completion.timeout.label"))
+              intTextField(settings.state::requestTimeoutMs, columns = TIMEOUT_FIELD_WIDTH, range = TIMEOUT_RANGE_MS)
+              label(IdeBundle.message("label.milliseconds"))
             }
           }
         }
@@ -84,13 +101,13 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private fun Cell.lastCheckedLabel(): CellBuilder<JLabel> {
     val label = JBLabel()
-    updateLastCheckedLabel(label, settings.state.lastCheckedForUpdatesMs)
+    updateLastCheckedLabel(label, settings.state.lastUpdateCheckTimestampMs)
 
     disposable?.let {
       MachineLearningCompletionSettingsChangeListener { beforeState, afterState ->
-        if (beforeState.lastCheckedForUpdatesMs != afterState.lastCheckedForUpdatesMs) {
+        if (beforeState.lastUpdateCheckTimestampMs != afterState.lastUpdateCheckTimestampMs) {
           invokeLaterWithTabModality {
-            updateLastCheckedLabel(label, afterState.lastCheckedForUpdatesMs)
+            updateLastCheckedLabel(label, afterState.lastUpdateCheckTimestampMs)
           }
         }
       }.subscribeWithDisposable(it)

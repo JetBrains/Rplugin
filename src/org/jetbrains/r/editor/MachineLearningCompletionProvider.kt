@@ -26,7 +26,6 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     private val serverService = MachineLearningCompletionServerService.getInstance()
     private val GSON = Gson()
     private val LOG = Logger.getInstance(MachineLearningCompletionProvider::class.java)
-    private const val REQUEST_TIMEOUT_MS = 300L
   }
 
   private fun constructRequest(parameters: CompletionParameters): MachineLearningCompletionHttpRequest {
@@ -97,7 +96,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
     }
 
     // After all contributors executed we can add our completion whenever we want, so we get value of Future in a blocking way with timeout
-    val timeToWait = startTime - System.currentTimeMillis() + REQUEST_TIMEOUT_MS
+    val timeToWait = startTime - System.currentTimeMillis() + serverService.requestTimeoutMs
     // If request has been received then add completions anyway otherwise wait for result with checkCanceled
     val mlCompletionResult =
       when {
