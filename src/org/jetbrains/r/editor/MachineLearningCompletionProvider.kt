@@ -110,6 +110,7 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       mlCompletionResult.remove(key)
     }
     result.addAllElements(mlCompletionResult.values.map { it.asLookupElement() })
+    result.restartCompletionWhenNothingMatches()
   }
 
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
