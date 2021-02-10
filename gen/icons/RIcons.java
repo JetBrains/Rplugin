@@ -26,6 +26,8 @@ public final class RIcons {
     /** 16x16 */ public static final @NotNull Icon Shiny = load("icons/fileTypes/shiny.svg", 4980048309059873208L, 0);
   }
 
+  /** 16x16 */ public static final @NotNull Icon MachineLearning = load("icons/machineLearning.svg", -8009780749136285150L, 0);
+
   public static final class Packages {
     /** 16x16 */ public static final @NotNull Icon DocumentsRoot = load("icons/packages/documentsRoot.svg", -3396331434957873358L, 0);
     /** 16x16 */ public static final @NotNull Icon RTest = load("icons/packages/rTest.svg", -5886307400377395340L, 0);
