@@ -6,4 +6,8 @@ class MachineLearningCompletionServerInitializerListener : AppLifecycleListener 
   override fun appStarted() {
     MachineLearningCompletionServerService.getInstance()
   }
+
+  override fun appClosing() {
+    MachineLearningCompletionServerService.getInstance().shutdownServer()
+  }
 }

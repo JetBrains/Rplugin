@@ -102,7 +102,7 @@ class MachineLearningCompletionServerService : Disposable {
     }
   }
 
-  private fun shutdownServer() {
+  fun shutdownServer() {
     localServer?.destroy()
   }
 
