@@ -3,6 +3,7 @@ package org.jetbrains.r.editor.mlcompletion.model.updater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.askForUpdate
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
@@ -12,6 +13,9 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
   }
 
   override fun projectOpened(project: Project) {
+    if (!MachineLearningCompletionSettings.getInstance().state.isEnabled) {
+      return;
+    }
     if (!notifiedAnyProject.compareAndSet(false, true)) {
       return
     }
