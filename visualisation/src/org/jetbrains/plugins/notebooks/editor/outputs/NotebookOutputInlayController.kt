@@ -116,7 +116,7 @@ class NotebookOutputInlayController private constructor(
     for ((idx, pair1) in outputDataKeyIterator.zip(componentsWithFactories).withIndex()) {
       val (outputDataKey, pair2) = pair1
       val (component, factory) = pair2
-      isFilled = isFilled || when (factory.match(component, outputDataKey)) {
+      isFilled = when (factory.match(component, outputDataKey)) {
         NotebookOutputComponentFactory.Match.NONE -> {
           innerComponent.remove(idx)
           val newComponent = createOutput(factory, outputDataKey)
@@ -131,7 +131,7 @@ class NotebookOutputInlayController private constructor(
           true
         }
         NotebookOutputComponentFactory.Match.SAME -> true
-      }
+      } || isFilled
     }
 
     for (ignored in componentsWithFactories) {
