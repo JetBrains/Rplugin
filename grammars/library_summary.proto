@@ -40,17 +40,14 @@ message RLibrarySymbol {
   message R6ClassRepresentation {
     message R6ClassField {
       string name = 1;
-      string Any = 2;
       bool isPublic = 3;
     }
     message R6ClassMethod {
       string name = 1;
-      string Any = 2;
       bool isPublic = 3;
     }
     message R6ClassActiveBinding {
       string name = 1;
-      bool isPublic = 3;
     }
     string packageName = 1;
     string superClass = 2;

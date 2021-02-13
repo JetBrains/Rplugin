@@ -9,12 +9,11 @@ import com.intellij.psi.stubs.StubInputStream
 import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.util.io.StringRef
 
-data class R6ClassField(val name: String, val defaultValue: Any, val isPublic: Boolean = true)
-data class R6ClassMethod(val name: String, val parameters: Map<String, Any>, val isPublic: Boolean = true)
-data class R6ClassActiveBinding(val name: String, val isPublic: Boolean = true)
-
-// initialize() and print() and finalize() methods override ???
-// inherit ???
+// no need to care about overloads because R6 lib doesn't support it:
+// "All items in public, private, and active must have unique names."
+data class R6ClassField(val name: String, val isPublic: Boolean = true)
+data class R6ClassMethod(val name: String, val isPublic: Boolean = true)
+data class R6ClassActiveBinding(val name: String)
 
 // PUBLIC PRIVATE !!!
 data class R6ClassInfo(val className: String,
@@ -41,7 +40,6 @@ data class R6ClassInfo(val className: String,
 
     DataInputOutputUtilRt.writeSeq(dataStream, activeBindings) {
       dataStream.writeName(it.name)
-      dataStream.writeBoolean(it.isPublic);
     }
   }
 
@@ -72,19 +70,19 @@ data class R6ClassInfo(val className: String,
       val fields = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
         val isPublic = dataStream.readBoolean()
-        R6ClassField(name, defaultValue = 0, isPublic = isPublic)
+        R6ClassField(name, isPublic = isPublic)
       }
 
       val methods = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
         val isPublic = dataStream.readBoolean()
-        R6ClassMethod(name, parameters = emptyMap<String, Any>(), isPublic = isPublic)
+        R6ClassMethod(name, isPublic = isPublic)
       }
 
       val activeBindings = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
         val isPublic = dataStream.readBoolean()
-        R6ClassActiveBinding(name, isPublic = isPublic)
+        R6ClassActiveBinding(name)
       }
 
       return R6ClassInfo(className, packageName, superClass, fields, methods, activeBindings)

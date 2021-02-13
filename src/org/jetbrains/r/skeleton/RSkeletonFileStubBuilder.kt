@@ -56,8 +56,8 @@ class RSkeletonFileStubBuilder : BinaryFileStubBuilder {
                                       R6ClassInfo(symbol.name,
                                                   r6ClassRepresentation.packageName,
                                                   r6ClassRepresentation.superClass,
-                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.any ) },
-                                                  r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, emptyMap()) },
+                                                  r6ClassRepresentation.fieldsList.map { R6ClassField(it.name, it.isPublic ) },
+                                                  r6ClassRepresentation.methodsList.map { R6ClassMethod(it.name, it.isPublic) },
                                                   r6ClassRepresentation.activeBindingsList.map { R6ClassActiveBinding(it.name) }))
         }
       }
