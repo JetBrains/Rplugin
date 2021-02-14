@@ -64,7 +64,15 @@ object R6ClassInfoUtil {
                            argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<R6ClassMethod>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
-    return emptyList()
+
+    var r6ClassMethods = mutableListOf<R6ClassMethod>()
+    val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
+    val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+
+    if (!publicContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, publicContents, true)
+    if (!privateContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, privateContents, false)
+
+    return r6ClassMethods
   }
 
   fun getAssociatedActiveBindings(callExpression: RCallExpression,
@@ -97,7 +105,7 @@ object R6ClassInfoUtil {
     return R6ClassInfo.createDummyFromCoupleParameters(className, packageName)
   }
 
-  private fun getFieldsFromExpressionList(r6ClassFields: MutableList<R6ClassField>, callExpressions: List<RExpression>, isPublicScope: Boolean){
+  private fun getFieldsFromExpressionList(r6ClassFields: MutableList<R6ClassField>, callExpressions: List<RExpression>, isFromPublicScope: Boolean){
     callExpressions.forEach {
       var isField = true
       for (child in it.children){
@@ -106,10 +114,20 @@ object R6ClassInfoUtil {
           break
         }
       }
+      if (isField && !it.name.isNullOrEmpty()) { r6ClassFields.add(R6ClassField(it.name!!, isFromPublicScope)) }
+    }
+  }
 
-      if (isField && !it.name.isNullOrEmpty()){
-        r6ClassFields.add(R6ClassField(it.name!!, isPublicScope))
+  private fun getMethodsFromExpressionList(r6ClassMethods: MutableList<R6ClassMethod>, callExpressions: List<RExpression>, isFromPublicScope: Boolean){
+    callExpressions.forEach {
+      var isMethod = false
+      for (child in it.children){
+        if (child is RFunctionExpression) {
+          isMethod = true
+          break
+        }
       }
+      if (isMethod && !it.name.isNullOrEmpty()) { r6ClassMethods.add(R6ClassMethod(it.name!!, isFromPublicScope)) }
     }
   }
 }

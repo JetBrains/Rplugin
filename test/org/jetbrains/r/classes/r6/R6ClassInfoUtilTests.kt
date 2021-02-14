@@ -55,5 +55,24 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
 
     TestCase.assertNotNull(classFields)
     assertEquals(classFields!!.size, 3)
+
+    val classFieldsNames = classFields.map { it.name }
+    assertContainsElements(classFieldsNames, "weight")
+    assertContainsElements(classFieldsNames, "speed")
+    assertContainsElements(classFieldsNames, "engine_rpm")
+  }
+
+  fun testGetAssociatedMethods(){
+    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
+    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
+
+    TestCase.assertNotNull(classMethods)
+    assertEquals(classMethods!!.size, 3)
+
+    val classMethodsNames = classMethods.map { it.name }
+    assertContainsElements(classMethodsNames, "accelerate")
+    assertContainsElements(classMethodsNames, "slowDown")
+    assertContainsElements(classMethodsNames, "maximize")
   }
 }
