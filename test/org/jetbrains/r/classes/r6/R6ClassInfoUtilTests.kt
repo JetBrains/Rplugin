@@ -54,6 +54,6 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
 
     TestCase.assertNotNull(classFields)
-    assertEquals(classFields!!.size, 2)
+    assertEquals(classFields!!.size, 3)
   }
 }

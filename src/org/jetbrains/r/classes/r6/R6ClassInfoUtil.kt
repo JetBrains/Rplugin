@@ -9,10 +9,8 @@ import org.jetbrains.r.hints.parameterInfo.RArgumentInfo
 import org.jetbrains.r.hints.parameterInfo.RParameterInfoUtil
 import org.jetbrains.r.packages.RPackageProjectManager
 import org.jetbrains.r.psi.RElementFactory
-import org.jetbrains.r.psi.api.RAssignmentStatement
-import org.jetbrains.r.psi.api.RCallExpression
-import org.jetbrains.r.psi.api.RIdentifierExpression
-import org.jetbrains.r.psi.api.RStringLiteralExpression
+import org.jetbrains.r.psi.api.*
+import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 object R6ClassInfoUtil {
@@ -51,7 +49,15 @@ object R6ClassInfoUtil {
                           argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<R6ClassField>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
-    return emptyList()
+
+    var r6ClassFields = mutableListOf<R6ClassField>()
+    val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
+    val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
+
+    if (!publicContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, publicContents, true)
+    if (!privateContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, privateContents, false)
+
+    return r6ClassFields
   }
 
   fun getAssociatedMethods(callExpression: RCallExpression,
@@ -89,5 +95,21 @@ object R6ClassInfoUtil {
     val packageName = RPackageProjectManager.getInstance(project).getProjectPackageDescriptionInfo()?.packageName ?: ""
     // return R6ClassInfo(className, packageName, superClassName, fields, methods, activeBindings)
     return R6ClassInfo.createDummyFromCoupleParameters(className, packageName)
+  }
+
+  private fun getFieldsFromExpressionList(r6ClassFields: MutableList<R6ClassField>, callExpressions: List<RExpression>, isPublicScope: Boolean){
+    callExpressions.forEach {
+      var isField = true
+      for (child in it.children){
+        if (child is RFunctionExpression) {
+          isField = false
+          break
+        }
+      }
+
+      if (isField && !it.name.isNullOrEmpty()){
+        r6ClassFields.add(R6ClassField(it.name!!, isPublicScope))
+      }
+    }
   }
 }
