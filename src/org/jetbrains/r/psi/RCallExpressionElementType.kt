@@ -47,13 +47,8 @@ class RCallExpressionElementType(debugName: String) : RStubElementType<RCallExpr
   }
 
   override fun indexStub(stub: RCallExpressionStub, sink: IndexSink) {
-    stub.s4ClassInfo?.className?.let {
-       RS4ClassNameIndex.sink(sink, it)
-    }
-
-    stub.r6ClassInfo?.className?.let {
-      R6ClassNameIndex.sink(sink, it)
-    }
+    stub.s4ClassInfo?.className?.let { RS4ClassNameIndex.sink(sink, it) }
+    stub.r6ClassInfo?.className?.let { R6ClassNameIndex.sink(sink, it) }
   }
 
   override fun shouldCreateStub(node: ASTNode?): Boolean {

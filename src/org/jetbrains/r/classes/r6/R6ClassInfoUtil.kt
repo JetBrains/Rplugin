@@ -14,13 +14,14 @@ import org.jetbrains.r.psi.impl.RCallExpressionImpl
 import org.jetbrains.r.psi.isFunctionFromLibrarySoft
 
 object R6ClassInfoUtil {
-  public const val R6PackageName = "R6"
-  public const val R6CreateClassMethod = "R6Class"
+  const val R6PackageName = "R6"
+  const val R6CreateClassMethod = "R6Class"
 
   private const val argumentClassName = "classname"
   private const val argumentSuperClass = "inherit"
   private const val argumentPublic = "public"
   private const val argumentPrivate = "private"
+  private const val argumentActive = "active"
 
   private val INSTANTIATE_CLASS_DEFINITION_KEY: Key<RAssignmentStatement> = Key.create("R6_INSTANTIATE_CLASS_DEFINITION")
 
@@ -50,13 +51,12 @@ object R6ClassInfoUtil {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
 
-    var r6ClassFields = mutableListOf<R6ClassField>()
+    val r6ClassFields = mutableListOf<R6ClassField>()
     val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
     val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
 
     if (!publicContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, publicContents, true)
     if (!privateContents.isNullOrEmpty()) getFieldsFromExpressionList(r6ClassFields, privateContents, false)
-
     return r6ClassFields
   }
 
@@ -65,13 +65,12 @@ object R6ClassInfoUtil {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
 
-    var r6ClassMethods = mutableListOf<R6ClassMethod>()
+    val r6ClassMethods = mutableListOf<R6ClassMethod>()
     val publicContents = (argumentInfo.getArgumentPassedToParameter(argumentPublic) as? RCallExpressionImpl)?.argumentList?.expressionList
     val privateContents = (argumentInfo.getArgumentPassedToParameter(argumentPrivate) as? RCallExpressionImpl)?.argumentList?.expressionList
 
     if (!publicContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, publicContents, true)
     if (!privateContents.isNullOrEmpty()) getMethodsFromExpressionList(r6ClassMethods, privateContents, false)
-
     return r6ClassMethods
   }
 
@@ -79,7 +78,11 @@ object R6ClassInfoUtil {
                                   argumentInfo: RArgumentInfo? = RParameterInfoUtil.getArgumentInfo(callExpression)): List<R6ClassActiveBinding>? {
     argumentInfo ?: return null
     if (!callExpression.isFunctionFromLibrarySoft(R6CreateClassMethod, R6PackageName)) return null
-    return emptyList()
+    val r6ClassActiveBindings = mutableListOf<R6ClassActiveBinding>()
+
+    val activeBindings = (argumentInfo.getArgumentPassedToParameter(argumentActive) as? RCallExpressionImpl)?.argumentList?.expressionList
+    if (!activeBindings.isNullOrEmpty()) getActiveBindingsFromExpressionList(r6ClassActiveBindings, activeBindings)
+    return r6ClassActiveBindings
   }
 
   fun parseR6ClassInfo(callExpression: RCallExpression): R6ClassInfo? {
@@ -101,33 +104,24 @@ object R6ClassInfoUtil {
     val activeBindings = getAssociatedActiveBindings(callExpression, argumentInfo) ?: emptyList()
 
     val packageName = RPackageProjectManager.getInstance(project).getProjectPackageDescriptionInfo()?.packageName ?: ""
-    // return R6ClassInfo(className, packageName, superClassName, fields, methods, activeBindings)
-    return R6ClassInfo.createDummyFromCoupleParameters(className, packageName)
+    return R6ClassInfo(className, packageName, superClassName, fields, methods, activeBindings)
   }
 
   private fun getFieldsFromExpressionList(r6ClassFields: MutableList<R6ClassField>, callExpressions: List<RExpression>, isFromPublicScope: Boolean){
     callExpressions.forEach {
-      var isField = true
-      for (child in it.children){
-        if (child is RFunctionExpression) {
-          isField = false
-          break
-        }
-      }
-      if (isField && !it.name.isNullOrEmpty()) { r6ClassFields.add(R6ClassField(it.name!!, isFromPublicScope)) }
+      if (it.lastChild !is RFunctionExpression && !it.name.isNullOrEmpty()) { r6ClassFields.add(R6ClassField(it.name!!, isFromPublicScope)) }
     }
   }
 
   private fun getMethodsFromExpressionList(r6ClassMethods: MutableList<R6ClassMethod>, callExpressions: List<RExpression>, isFromPublicScope: Boolean){
     callExpressions.forEach {
-      var isMethod = false
-      for (child in it.children){
-        if (child is RFunctionExpression) {
-          isMethod = true
-          break
-        }
-      }
-      if (isMethod && !it.name.isNullOrEmpty()) { r6ClassMethods.add(R6ClassMethod(it.name!!, isFromPublicScope)) }
+      if (it.lastChild is RFunctionExpression && !it.name.isNullOrEmpty()) { r6ClassMethods.add(R6ClassMethod(it.name!!, isFromPublicScope)) }
+    }
+  }
+
+  private fun getActiveBindingsFromExpressionList(r6ClassActiveBindings: MutableList<R6ClassActiveBinding>, callExpressions: List<RExpression>){
+    callExpressions.forEach {
+      if (it.lastChild is RFunctionExpression && !it.name.isNullOrEmpty()) { r6ClassActiveBindings.add(R6ClassActiveBinding(it.name!!)) }
     }
   }
 }

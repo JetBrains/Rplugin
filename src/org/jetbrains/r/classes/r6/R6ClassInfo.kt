@@ -44,24 +44,6 @@ data class R6ClassInfo(val className: String,
   }
 
   companion object {
-    fun createDummyFromCoupleParameters(className: String, packageName: String = "test_package"): R6ClassInfo {
-      return R6ClassInfo(className = className,
-                         packageName = packageName,
-                         superClass = "",
-                         fields = emptyList(),
-                         methods = emptyList(),
-                         activeBindings = emptyList())
-    }
-
-    fun empty(): R6ClassInfo {
-      return R6ClassInfo(className = "",
-                         packageName = "",
-                         superClass = "",
-                         fields = emptyList(),
-                         methods = emptyList(),
-                         activeBindings = emptyList())
-    }
-
     fun deserialize(dataStream: StubInputStream): R6ClassInfo {
       val className = StringRef.toString(dataStream.readName())
       val packageName = StringRef.toString(dataStream.readName())
@@ -70,18 +52,17 @@ data class R6ClassInfo(val className: String,
       val fields = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
         val isPublic = dataStream.readBoolean()
-        R6ClassField(name, isPublic = isPublic)
+        R6ClassField(name, isPublic)
       }
 
       val methods = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
         val isPublic = dataStream.readBoolean()
-        R6ClassMethod(name, isPublic = isPublic)
+        R6ClassMethod(name, isPublic)
       }
 
       val activeBindings = DataInputOutputUtilRt.readSeq(dataStream) {
         val name = StringRef.toString(dataStream.readName())
-        val isPublic = dataStream.readBoolean()
         R6ClassActiveBinding(name)
       }
 

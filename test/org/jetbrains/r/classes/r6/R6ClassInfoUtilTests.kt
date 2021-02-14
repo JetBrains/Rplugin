@@ -30,6 +30,34 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
             self${"$"}engine_rpm <- self${"$"}engine_rpm + rmp
             invisible(self)
           }
+        ),
+        active = list(
+          asd = 0,
+          random = function(value) {
+            if (missing(value)) {
+              runif(1)  
+            } else {
+              stop("Can't set `${"$"}random`", call. = FALSE)
+            }
+          }
+        )
+      )
+      """.trimIndent()
+
+  private val shortedClassCodeDefinition = """
+      Car <- R6Class("Car",
+        inherit = Vehicle,
+        list(
+          weight = 0,
+          speed = 0,
+          accelerate = function(acc = 1){
+            self${"$"}speed <- self${"$"}speed + acc
+            invisible(self)
+          },
+          slowDown = function(neg_acc = 1){
+            self${"$"}speed <- self${"$"}speed - acc
+            invisible(self)
+          }
         )
       )
       """.trimIndent()
@@ -74,5 +102,45 @@ class R6ClassInfoUtilTests : RClassesUtilTestsBase() {
     assertContainsElements(classMethodsNames, "accelerate")
     assertContainsElements(classMethodsNames, "slowDown")
     assertContainsElements(classMethodsNames, "maximize")
+  }
+
+  fun testGetAssociatedActiveBindings(){
+    val rAssignmentStatement = getRootElementOfPsi(fullClassCodeDefinition) as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
+    val classActiveBindings = R6ClassInfoUtil.getAssociatedActiveBindings(rCallExpression!!)
+
+    TestCase.assertNotNull(classActiveBindings)
+    assertEquals(classActiveBindings!!.size, 1)
+
+    val classActiveBindingsNames = classActiveBindings.map { it.name }
+    assertContainsElements(classActiveBindingsNames, "random")
+  }
+
+  fun testGetShortenedClassAssociatedFields(){
+    val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
+    val classFields = R6ClassInfoUtil.getAssociatedFields(rCallExpression!!)
+
+    TestCase.assertNotNull(classFields)
+    assertEquals(classFields!!.size, 2)
+
+    val classFieldsNames = classFields.map { it.name }
+    assertContainsElements(classFieldsNames, "weight")
+    assertContainsElements(classFieldsNames, "speed")
+    classFields.forEach { assertEquals(true, it.isPublic) }
+  }
+
+  fun testGetShortenedClassAssociatedMethods(){
+    val rAssignmentStatement = getRootElementOfPsi(shortedClassCodeDefinition) as RAssignmentStatement
+    val rCallExpression = getRCallExpressionFromAssignment(rAssignmentStatement)
+    val classMethods = R6ClassInfoUtil.getAssociatedMethods(rCallExpression!!)
+
+    TestCase.assertNotNull(classMethods)
+    assertEquals(classMethods!!.size, 2)
+
+    val classMethodsNames = classMethods.map { it.name }
+    assertContainsElements(classMethodsNames, "accelerate")
+    assertContainsElements(classMethodsNames, "slowDown")
+    classMethods.forEach { assertEquals(true, it.isPublic) }
   }
 }
