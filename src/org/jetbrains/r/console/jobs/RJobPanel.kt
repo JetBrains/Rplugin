@@ -21,9 +21,9 @@ import com.intellij.psi.PsiManager
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.PopupHandler
+import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.uiDesigner.core.Spacer
 import com.intellij.util.PathUtil
@@ -99,7 +99,7 @@ class RJobPanel(private val project: Project) : BorderLayoutPanel() {
         foreground = infoColor()
         horizontalAlignment = SwingConstants.CENTER
       }, GridBag().weighty(0.0).apply { gridy = 1 })
-      add(LinkLabel.create(RBundle.message("jobs.panel.start.new.job.label.text")) {
+      add(ActionLink(RBundle.message("jobs.panel.start.new.job.label.text")) {
         if (RJobRunner.getInstance(project).canRun()) {
           RunRJobAction.showDialog(project)
         }

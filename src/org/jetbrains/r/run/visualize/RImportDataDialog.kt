@@ -22,8 +22,7 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
-import com.intellij.ui.components.labels.LinkLabel
-import com.intellij.ui.components.labels.LinkListener
+import com.intellij.ui.components.ActionLink
 import com.intellij.util.PathUtil
 import com.intellij.util.ui.JBUI
 import org.intellij.datavis.r.inlays.components.BorderlessDialogWrapper
@@ -59,13 +58,15 @@ abstract class RImportDataDialog(
     filePath = chooseFile() ?: filePath
   }
 
-  private val openFileLinkLabel = LinkLabel<Any>(OPEN_FILE_TEXT, null, LinkListener<Any> { _, _ ->
+  private val openFileLinkLabel = ActionLink(OPEN_FILE_TEXT) {
     filePath = chooseFile() ?: filePath
-  })
+  }
 
-  private val previewHeadLinkLabel = LinkLabel<Any>("$DEFAULT_PREVIEW_HEAD", COMBO_ICON, LinkListener<Any> { _, _ ->
+  private val previewHeadLinkLabel = ActionLink("$DEFAULT_PREVIEW_HEAD") {
     choosePreviewHead()
-  })
+  }.apply {
+    icon = COMBO_ICON
+  }
 
   private val form = RImportDataDialogForm().apply {
     contentPane.preferredSize = DialogUtil.calculatePreferredSize(DialogUtil.SizePreference.WIDE)

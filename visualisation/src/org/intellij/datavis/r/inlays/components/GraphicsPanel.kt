@@ -19,8 +19,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.BinaryLightVirtualFile
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.JreHiDpiUtil
+import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLoadingPanel
-import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.messages.Topic
 import com.intellij.util.ui.UIUtil
@@ -323,7 +323,7 @@ class GraphicsPanel(private val project: Project, private val disposableParent: 
       }
       add(infoLabel)
       add(Box.createRigidArea(Dimension(0, JBUIScale.scale(6))))
-      val linkLabel = LinkLabel.create(linkText, linkAction).apply {
+      val linkLabel = ActionLink(linkText) { linkAction() }.apply {
         alignmentX = Component.CENTER_ALIGNMENT
       }
       add(linkLabel)

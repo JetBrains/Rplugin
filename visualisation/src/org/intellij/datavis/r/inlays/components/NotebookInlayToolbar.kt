@@ -4,7 +4,7 @@
 
 package org.intellij.datavis.r.inlays.components
 
-import com.intellij.ui.components.labels.LinkLabel
+import com.intellij.ui.components.ActionLink
 import org.intellij.datavis.r.VisualizationBundle
 import java.awt.FlowLayout
 import javax.swing.JLabel
@@ -19,7 +19,7 @@ class NotebookInlayToolbar : JPanel(FlowLayout(FlowLayout.LEFT)) {
 
   fun setDefaultState(runAction: (() -> Unit)) {
     removeAll()
-    add(LinkLabel.create(VisualizationBundle.message("notebook.inlay.run.cell")) { runAction.invoke() })
+    add(ActionLink(VisualizationBundle.message("notebook.inlay.run.cell")) { runAction.invoke() })
     add(JLabel(VisualizationBundle.message("notebook.inlay.to.see.results")))
     repaint()
   }
