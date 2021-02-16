@@ -150,7 +150,7 @@ class NotebookOutputInlayController private constructor(
     return isFilled
   }
 
-  private fun createOutputGuessingFactory(outputDataKey: NotebookOutputDataKey) =
+  private fun createOutputGuessingFactory(outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
     NotebookOutputComponentFactory.EP_NAME.extensionList.asSequence()
       .mapNotNull { factory ->
         createOutput(factory, outputDataKey)
@@ -158,7 +158,7 @@ class NotebookOutputInlayController private constructor(
       .firstOrNull()
 
   private fun createOutput(factory: NotebookOutputComponentFactory,
-                           outputDataKey: NotebookOutputDataKey) =
+                           outputDataKey: NotebookOutputDataKey): NotebookOutputComponentFactory.CreatedComponent? =
     factory.createComponent(editor, outputDataKey, inlay)?.also {
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
@@ -281,7 +281,7 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
       ) {
         it.height += horizontalScrollBar.height
       }
-      if (!(viewport.view as InnerComponent).components.filterIsInstance<JComponent>().all(JComponent::hasUnlimitedHeight)) {
+      if (!(viewport.view as InnerComponent).components.filterIsInstance<JComponent>().any(JComponent::hasUnlimitedHeight)) {
         it.height = min(maxHeight, it.height)
       }
     }
