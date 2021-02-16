@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.notebooks.editor.outputs
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.EditorEx
@@ -28,6 +29,8 @@ import javax.swing.JViewport
 import kotlin.math.max
 import kotlin.math.min
 
+private const val DEFAULT_INLAY_HEIGHT = 200
+
 /**
  * Shows outputs for intervals using [NotebookOutputDataKeyExtractor] and [NotebookOutputComponentFactory].
  */
@@ -50,17 +53,18 @@ class NotebookOutputInlayController private constructor(
     )
 
   init {
+    innerComponentScrollPane.maxHeight = if (!ApplicationManager.getApplication().isUnitTestMode) {
+      (Toolkit.getDefaultToolkit().screenSize.height * 0.3).toInt()
+    } else {
+      DEFAULT_INLAY_HEIGHT
+    }
+
     Disposer.register(inlay) {
       for (disposable in innerComponent.components) {
         if (disposable is Disposable) {
           Disposer.dispose(disposable)
         }
       }
-    }
-
-    registerEditorSizeWatcher(innerComponentScrollPane) {
-      innerComponentScrollPane.maxHeight = (Toolkit.getDefaultToolkit().screenSize.height * 0.3).toInt()
-      innerComponentScrollPane.invalidate()
     }
 
     innerComponentScrollPane.verticalScrollBar.addAdjustmentListener(
