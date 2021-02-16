@@ -37,6 +37,7 @@ interface NotebookOutputComponentFactory {
 
     /** Experimental. The meaning can be changed, the type can be changed, the field can be removed. */
     val hasUnlimitedHeight: Boolean = false,
+    val forceHeightLimitForComplexOutputs: Boolean = false
   )
 
   /**

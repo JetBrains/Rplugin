@@ -163,6 +163,7 @@ class NotebookOutputInlayController private constructor(
       it.component.outputComponentFactory = factory
       it.component.gutterPainter = it.gutterPainter
       if (it.hasUnlimitedHeight) it.component.hasUnlimitedHeight = true
+      if (it.forceHeightLimitForComplexOutputs) it.component.forceHeightLimitForComplexOutputs = true
     }
 
   class Factory : NotebookCellInlayController.Factory {
@@ -281,7 +282,8 @@ private class InnerComponentScrollPane(innerComponent: InnerComponent) : Noteboo
       ) {
         it.height += horizontalScrollBar.height
       }
-      if (!(viewport.view as InnerComponent).components.filterIsInstance<JComponent>().any(JComponent::hasUnlimitedHeight)) {
+      val outputComponents = (viewport.view as InnerComponent).components.filterIsInstance<JComponent>()
+      if (outputComponents.none(JComponent::hasUnlimitedHeight) || outputComponents.any(JComponent::forceHeightLimitForComplexOutputs)) {
         it.height = min(maxHeight, it.height)
       }
     }
@@ -426,4 +428,10 @@ private var JComponent.hasUnlimitedHeight: Boolean
   get() = getClientProperty("unlimitedHeight") != null
   set(value) {
     putClientProperty("unlimitedHeight", if (value) Unit else null)
+  }
+
+private var JComponent.forceHeightLimitForComplexOutputs: Boolean
+  get() = getClientProperty("forceHeightLimitForComplexOutputs") != null
+  set(value) {
+    putClientProperty("forceHeightLimitForComplexOutputs", if (value) Unit else null)
   }
