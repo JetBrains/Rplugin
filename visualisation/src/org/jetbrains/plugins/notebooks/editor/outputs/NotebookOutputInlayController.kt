@@ -59,7 +59,7 @@ class NotebookOutputInlayController private constructor(
     }
 
     registerEditorSizeWatcher(innerComponentScrollPane) {
-      innerComponentScrollPane.maxHeight = (editor.scrollingModel.visibleArea.height * 0.66).toInt()
+      innerComponentScrollPane.maxHeight = (Toolkit.getDefaultToolkit().screenSize.height * 0.3).toInt()
       innerComponentScrollPane.invalidate()
     }
 
