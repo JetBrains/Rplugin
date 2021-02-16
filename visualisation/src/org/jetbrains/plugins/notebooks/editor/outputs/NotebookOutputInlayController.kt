@@ -109,42 +109,38 @@ class NotebookOutputInlayController private constructor(
     }
   }
 
-  private fun updateData(outputDataKeys: List<NotebookOutputDataKey>): Boolean {
-    val outputDataKeyIterator = outputDataKeys.iterator()
-    val componentsWithFactories = getComponentsWithFactories().iterator()
+  private fun updateData(newDataKeys: List<NotebookOutputDataKey>): Boolean {
+    val newDataKeyIterator = newDataKeys.iterator()
+    val oldComponentsWithFactories = getComponentsWithFactories().iterator()
     var isFilled = false
-    for ((idx, pair1) in outputDataKeyIterator.zip(componentsWithFactories).withIndex()) {
-      val (outputDataKey, pair2) = pair1
-      val (component, factory) = pair2
-      isFilled = when (factory.match(component, outputDataKey)) {
-        NotebookOutputComponentFactory.Match.NONE -> {
-          innerComponent.remove(idx)
-          val newComponent = createOutput(factory, outputDataKey)
-          if (newComponent != null) {
-            innerComponent.add(newComponent.component, newComponent.widthStretching.fixedWidthLayoutConstraint, idx)
+    for ((idx, pair1) in newDataKeyIterator.zip(oldComponentsWithFactories).withIndex()) {
+      val (newDataKey, pair2) = pair1
+      val (oldComponent, oldFactory: NotebookOutputComponentFactory) = pair2
+      isFilled =
+        when (oldFactory.match(oldComponent, newDataKey)) {
+          NotebookOutputComponentFactory.Match.NONE -> {
+            innerComponent.remove(idx)
+            val newComponent = createOutputGuessingFactory(newDataKey)
+            if (newComponent != null) {
+              innerComponent.add(newComponent.component, newComponent.widthStretching.fixedWidthLayoutConstraint, idx)
+              true
+            }
+            else false
+          }
+          NotebookOutputComponentFactory.Match.COMPATIBLE -> {
+            oldFactory.updateComponent(editor, oldComponent, newDataKey)
             true
           }
-          else false
-        }
-        NotebookOutputComponentFactory.Match.COMPATIBLE -> {
-          factory.updateComponent(editor, component, outputDataKey)
-          true
-        }
-        NotebookOutputComponentFactory.Match.SAME -> true
-      } || isFilled
+          NotebookOutputComponentFactory.Match.SAME -> true
+        } || isFilled
     }
 
-    for (ignored in componentsWithFactories) {
+    for (ignored in oldComponentsWithFactories) {
       innerComponent.remove(innerComponent.componentCount - 1)
     }
 
-    for (outputDataKey in outputDataKeyIterator) {
-      val newComponent =
-        NotebookOutputComponentFactory.EP_NAME.extensionList.asSequence()
-          .mapNotNull { factory ->
-            createOutput(factory, outputDataKey)
-          }
-          .firstOrNull()
+    for (outputDataKey in newDataKeyIterator) {
+      val newComponent = createOutputGuessingFactory(outputDataKey)
       if (newComponent != null) {
         isFilled = true
         innerComponent.add(newComponent.component, newComponent.widthStretching.fixedWidthLayoutConstraint)
@@ -153,6 +149,13 @@ class NotebookOutputInlayController private constructor(
 
     return isFilled
   }
+
+  private fun createOutputGuessingFactory(outputDataKey: NotebookOutputDataKey) =
+    NotebookOutputComponentFactory.EP_NAME.extensionList.asSequence()
+      .mapNotNull { factory ->
+        createOutput(factory, outputDataKey)
+      }
+      .firstOrNull()
 
   private fun createOutput(factory: NotebookOutputComponentFactory,
                            outputDataKey: NotebookOutputDataKey) =
@@ -201,7 +204,8 @@ private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConst
     NotebookOutputComponentFactory.WidthStretching.NOTHING -> FixedWidthLayout.NOTHING
   }
 
-private class SurroundingComponent private constructor(private val innerComponentScrollPane: InnerComponentScrollPane) : JPanel(BorderLayout()) {
+private class SurroundingComponent private constructor(private val innerComponentScrollPane: InnerComponentScrollPane) : JPanel(
+  BorderLayout()) {
   private var presetWidth = 0
 
   init {
