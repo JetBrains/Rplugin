@@ -136,14 +136,15 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   }
 
   private fun Cell.checkForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
-    MachineLearningCompletionDownloadModelService.getInstance().initiateUpdateCycle(true) { (artifacts, size) ->
-      if (artifacts.isNotEmpty()) {
-        createUpdateDialog(artifacts, size).show()
+    MachineLearningCompletionDownloadModelService.getInstance()
+      .initiateUpdateCycle(true, { showFailedToCheckForUpdatesDialog() }) { (artifacts, size) ->
+        if (artifacts.isNotEmpty()) {
+          showUpdateDialog(artifacts, size)
+        }
+        else {
+          showNoAvailableUpdateDialog()
+        }
       }
-      else {
-        createNoAvailableUpdateDialog().show()
-      }
-    }
   }.enableIf(object : ComponentPredicate() {
     override fun invoke(): Boolean =
       MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()
@@ -156,8 +157,8 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
     }
   })
 
-  private fun createUpdateDialog(artifacts: List<MachineLearningCompletionRemoteArtifact>,
-                                 size: Long) =
+  private fun showUpdateDialog(artifacts: List<MachineLearningCompletionRemoteArtifact>,
+                               size: Long) =
     dialog(displayName,
            panel = panel {
              row {
@@ -171,17 +172,23 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
                       updateAction.performAsync()
                     })
            }
-    )
+    ).show()
 
-  private fun createNoAvailableUpdateDialog(): DialogWrapper =
+  private fun showInfoDialog(text: String) =
     dialog(displayName,
            panel = panel {
              row {
-               label(RBundle.message("project.settings.ml.completion.dialog.noUpdates"))
+               label(text)
              }
            },
            createActions = { listOf(ButtonAction(CommonBundle.getOkButtonText(), DialogWrapper.OK_EXIT_CODE)) }
-    )
+    ).show()
+
+  private fun showNoAvailableUpdateDialog() =
+    showInfoDialog(RBundle.message("project.settings.ml.completion.dialog.noUpdates"))
+
+  private fun showFailedToCheckForUpdatesDialog() =
+    showInfoDialog(IdeBundle.message("error.occurred.please.check.your.internet.connection"))
 
   private class ButtonAction(name: String,
                              private val exitCode: Int,

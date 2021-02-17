@@ -19,18 +19,22 @@ class MachineLearningCompletionDownloadModelService {
     private val LOG = Logger.getInstance(MachineLearningCompletionDownloadModelService::class.java)
     private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
 
-    private fun <T> submitBackgroundJob(job: () -> T, onSuccessCallback: (T) -> Unit) =
+    private fun <T> submitBackgroundJob(job: () -> T,
+                                        onThrowableCallback: ((Throwable) -> Unit)?,
+                                        onSuccessCallback: (T) -> Unit) =
       executor.execute {
         try {
           onSuccessCallback(job())
         }
         catch (e: Throwable) {
           LOG.info(e)
+          onThrowableCallback?.invoke(e)
         }
       }
 
     private fun <T : Any> submitModalJob(job: () -> T,
                                          title: String = "",
+                                         onThrowableCallback: ((Throwable) -> Unit)?,
                                          onSuccessCallback: (T) -> Unit) =
       object : Task.Modal(null, title, true) {
 
@@ -42,19 +46,23 @@ class MachineLearningCompletionDownloadModelService {
 
         override fun onSuccess() = onSuccessCallback(result)
 
-        override fun onThrowable(error: Throwable) = LOG.info(error)
+        override fun onThrowable(error: Throwable) {
+          LOG.info(error)
+          onThrowableCallback?.invoke(error)
+        }
       }.queue()
   }
 
   data class ArtifactsWithSize(val artifacts: List<MachineLearningCompletionRemoteArtifact>, val size: Long)
 
   fun initiateUpdateCycle(isModal: Boolean,
+                          onThrowableCallback: ((Throwable) -> Unit)? = null,
                           onSuccessCallback: (ArtifactsWithSize) -> Unit) {
     if (isModal) {
-      submitModalJob(this::getArtifactsToDownloadWithSize, IdeBundle.message("updates.checking.progress"), onSuccessCallback)
+      submitModalJob(this::getArtifactsToDownloadWithSize, IdeBundle.message("updates.checking.progress"), onThrowableCallback, onSuccessCallback)
     }
     else {
-      submitBackgroundJob(this::getArtifactsToDownloadWithSize, onSuccessCallback)
+      submitBackgroundJob(this::getArtifactsToDownloadWithSize, onThrowableCallback, onSuccessCallback)
     }
   }
 
