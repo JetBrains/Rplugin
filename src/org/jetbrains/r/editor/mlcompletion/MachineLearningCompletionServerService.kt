@@ -102,8 +102,9 @@ class MachineLearningCompletionServerService : Disposable {
     }
   }
 
-  fun shutdownServer() {
-    localServer?.destroy()
+  fun shutdownServer() = localServer?.run {
+    descendants().forEach(ProcessHandle::destroy)
+    destroy()
   }
 
   fun shutdownBlocking() {
