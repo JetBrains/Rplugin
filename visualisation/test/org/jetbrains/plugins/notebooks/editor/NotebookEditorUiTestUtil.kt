@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
+import com.intellij.openapi.editor.CaretState
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.testFramework.runInEdtAndWait
@@ -20,18 +21,17 @@ data class CaretWithSelection(val caret: Int, val selection: TextRange) {
 
 data class ExtractedInfo(val text: String, val carets: List<CaretWithSelection>, val folds: List<TextRange>) {
   fun setCaretsInEditor(editor: Editor) {
-    editor.caretModel.runBatchCaretOperation {
-      for(offset in 0 until editor.document.textLength) {
-        if (editor.caretModel.caretCount >= carets.size) {
-          break
-        }
-        editor.caretModel.addCaret(editor.offsetToVisualPosition(offset), false)
-      }
+    editor.caretModel.setCaretsAndSelections(carets.map { caret ->
+      CaretState(editor.offsetToLogicalPosition(caret.caret),
+                 editor.offsetToLogicalPosition(caret.selection.startOffset),
+                 editor.offsetToLogicalPosition(caret.selection.endOffset))
+    })
 
-      for((editorCaret, caretInfo) in editor.caretModel.allCarets.zip(carets)) {
-        editorCaret.moveToOffset(caretInfo.caret)
-        editorCaret.setSelection(caretInfo.selection.startOffset, caretInfo.selection.endOffset)
-      }
+    for((editorCaret, caret) in editor.caretModel.allCarets.zip(carets)) {
+      require(editorCaret.offset == caret.caret)
+      val errorMsg = { "can't set selection ${caret} to ${editorCaret.offset}, may be folded region exists" }
+      require(editorCaret.selectionStart == caret.selection.startOffset, errorMsg)
+      require(editorCaret.selectionEnd == caret.selection.endOffset, errorMsg)
     }
   }
 
