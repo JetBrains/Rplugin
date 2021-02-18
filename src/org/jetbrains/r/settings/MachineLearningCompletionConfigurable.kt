@@ -7,10 +7,12 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.*
 import com.intellij.util.text.DateFormatUtil
+import com.intellij.util.ui.JBUI
 import org.eclipse.aether.version.Version
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
@@ -24,17 +26,21 @@ import javax.swing.JLabel
 class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message("project.settings.ml.completion.name")) {
 
   companion object {
+    private const val TOP_PANEL_OFFSET = 20
     private const val PORT_FIELD_WIDTH = 5
     private val PORT_RANGE = IntRange(1024, 65353)
     private const val TIMEOUT_FIELD_WIDTH = 4
     private val TIMEOUT_RANGE_MS = IntRange(0, 2000)
     private val settings = MachineLearningCompletionSettings.getInstance()
 
-    private fun updateLastCheckedLabel(label: JLabel, time: Long): Unit = when {
-      time <= 0 -> label.text = IdeBundle.message("updates.last.check.never")
-      else -> {
-        label.text = DateFormatUtil.formatPrettyDateTime(time)
-        label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
+    private fun updateLastCheckedLabel(label: JLabel, time: Long) {
+      val prefix = IdeBundle.message("updates.settings.last.check")
+      when {
+        time <= 0 -> label.text = prefix + ' ' + IdeBundle.message("updates.last.check.never")
+        else -> {
+          label.text = prefix + ' ' + DateFormatUtil.formatPrettyDateTime(time)
+          label.toolTipText = DateFormatUtil.formatDate(time) + ' ' + DateFormatUtil.formatTimeWithSeconds(time)
+        }
       }
     }
 
@@ -55,19 +61,22 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
   override fun createPanel(): DialogPanel {
     return panel {
       titledRow(displayName) {
+
         row {
-          checkForUpdatesButton()
+          cell {
+            label(RBundle.message("project.settings.ml.completion.version.app"))
+            versionLabel(MachineLearningCompletionAppArtifact())
+            label(RBundle.message("project.settings.ml.completion.version.model")).withLargeLeftGap()
+            versionLabel(MachineLearningCompletionModelArtifact())
+          }
         }
 
         row {
-          row(IdeBundle.message("updates.settings.last.check")) { lastCheckedLabel().withLeftGap() }
-          row(RBundle.message("project.settings.ml.completion.version.app")) {
-            versionLabel(MachineLearningCompletionAppArtifact()).withLeftGap()
+          cell {
+            checkForUpdatesButton()
+            lastCheckedLabel().withLargeLeftGap()
           }
-          row(RBundle.message("project.settings.ml.completion.version.model")) {
-            versionLabel(MachineLearningCompletionModelArtifact()).withLeftGap()
-          }.largeGapAfter()
-        }
+        }.largeGapAfter()
 
         row {
           val enableCompletionCheckbox = checkBox(RBundle.message("project.settings.ml.completion.checkbox"),
@@ -96,11 +105,13 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
           }
         }
       }
-    }
+    }.withBorder(JBUI.Borders.emptyTop(TOP_PANEL_OFFSET))
   }
 
   private fun Cell.lastCheckedLabel(): CellBuilder<JLabel> {
     val label = JBLabel()
+    label.foreground = JBColor.GRAY
+
     updateLastCheckedLabel(label, settings.state.lastUpdateCheckTimestampMs)
 
     disposable?.let {
