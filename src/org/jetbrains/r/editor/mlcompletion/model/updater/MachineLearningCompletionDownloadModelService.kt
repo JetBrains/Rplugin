@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.util.concurrency.SequentialTaskExecutor
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.io.HttpRequests
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.nio.file.Path
@@ -17,12 +17,11 @@ class MachineLearningCompletionDownloadModelService {
   companion object {
     fun getInstance() = service<MachineLearningCompletionDownloadModelService>()
     private val LOG = Logger.getInstance(MachineLearningCompletionDownloadModelService::class.java)
-    private val executor = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("MachineLearningCompletionUpdateChecker")
 
     private fun <T> submitBackgroundJob(job: () -> T,
                                         onThrowableCallback: ((Throwable) -> Unit)?,
                                         onSuccessCallback: (T) -> Unit) =
-      executor.execute {
+      AppExecutorUtil.getAppExecutorService().execute {
         try {
           onSuccessCallback(job())
         }
