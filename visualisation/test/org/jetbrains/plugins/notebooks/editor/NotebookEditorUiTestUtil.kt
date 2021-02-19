@@ -138,12 +138,10 @@ private fun extractCarets(text: String, ranges: List<TextRange>): Pair<String, L
   val tags = SmartList<Pair<String, Int>>()
 
   var start = 0
-  var tagsTextLength = 0
   for (range in ranges) {
     textWithoutTags.append(text.subSequence(start, range.startOffset))
-    tags.add(Pair(text.substring(range.startOffset, range.endOffset), range.startOffset - tagsTextLength))
+    tags += range.substring(text) to textWithoutTags.length
     start = range.endOffset
-    tagsTextLength += range.length
   }
   textWithoutTags.append(text.subSequence(start, text.length))
 
