@@ -59,7 +59,7 @@ fun extractTextAndCaretOffset(text: String): Pair<String, Int?> {
 fun extractCaretsAndFoldings(text: String): ExtractedInfo {
   val tagTokens = listOf(caretToken, selectionBegin, selectionEnd, foldBegin, foldEnd)
   val (textWithoutTags, tags) = extractCarets(text, findAllTags(text, tagTokens))
-  return ExtractedInfo(textWithoutTags, extractCaretsInfo(tags), extractFoldings(tags))
+  return ExtractedInfo(textWithoutTags, parseCaretsInfo(tags), parseFoldings(tags))
 }
 
 /* add caretToken into the text */
@@ -150,7 +150,7 @@ private fun extractCarets(text: String, ranges: List<TextRange>): Pair<String, L
   return Pair(textWithoutTags.toString(), tags)
 }
 
-private fun extractCaretsInfo(tags: List<Pair<String, Int>>): List<CaretWithSelection> {
+private fun parseCaretsInfo(tags: List<Pair<String, Int>>): List<CaretWithSelection> {
   val caretsTags = tags.filter { it.first in setOf(caretToken, selectionBegin, selectionEnd) }
   val result = SmartList<CaretWithSelection>()
 
@@ -181,7 +181,7 @@ private fun extractCaretsInfo(tags: List<Pair<String, Int>>): List<CaretWithSele
   return result
 }
 
-private fun extractFoldings(tags: List<Pair<String, Int>>): List<TextRange> {
+private fun parseFoldings(tags: List<Pair<String, Int>>): List<TextRange> {
   val result = SmartList<TextRange>()
   val foldingsTags = tags.filter { it.first in setOf(foldBegin, foldEnd) }
   var tagNo = 0
