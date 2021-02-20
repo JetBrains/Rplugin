@@ -4,8 +4,6 @@ import com.intellij.lexer.Lexer
 import com.intellij.psi.tree.IElementType
 
 interface NotebookCellLinesLexer {
-  val longestTokenLength: Int
-
   fun shouldParseWholeFile(): Boolean = false
 
   fun markerSequence(chars: CharSequence, ordinalIncrement: Int, offsetIncrement: Int): Sequence<NotebookCellLines.Marker>

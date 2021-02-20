@@ -88,16 +88,29 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   }
 
   private fun shiftOffsetToMarkerStart(text: CharSequence, initialOffset: Int): Int {
-    val interestingTextAbsoluteOffset = max(0, initialOffset - cellTypeAwareLexerProvider.longestTokenLength + 1)
+    val line = document.getLineNumber(initialOffset)
     val interestingText = text.subSequence(
-      interestingTextAbsoluteOffset,
-      min(text.length, initialOffset + cellTypeAwareLexerProvider.longestTokenLength - 1)
+      document.getLineStartOffset(line),
+      // +1 -- to handle \n, and another +1 -- to include the last character.
+      min(document.textLength, document.getLineEndOffset(line) + 2),
     )
-    return cellTypeAwareLexerProvider.markerSequence(interestingText, 0, interestingTextAbsoluteOffset)
-             .firstOrNull()?.offset?.takeIf { it < initialOffset } ?: initialOffset
+    return cellTypeAwareLexerProvider
+             .markerSequence(interestingText, 0, document.getLineStartOffset(line))
+             .map { it.offset }
+             .takeWhile { it < initialOffset }
+             .lastOrNull()
+           ?: initialOffset
   }
 
   private val documentListener = object : DocumentListener {
+    private var shiftedStartOffsetBefore: Int = -1
+
+    override fun beforeDocumentChange(event: DocumentEvent) {
+      if (!cellTypeAwareLexerProvider.shouldParseWholeFile()) {
+        shiftedStartOffsetBefore = shiftOffsetToMarkerStart(document.immutableCharSequence, event.offset)
+      }
+    }
+
     override fun documentChanged(event: DocumentEvent) {
       ApplicationManager.getApplication().assertWriteAccessAllowed()
 
@@ -112,6 +125,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         wrapErrors(event) {
           updateIntervals(
             updateMarkers(
+              shiftedStartOffsetBefore = shiftedStartOffsetBefore,
               startOffset = event.offset,
               oldLength = event.oldLength,
               newLength = event.newLength,
@@ -137,16 +151,16 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
   )
 
   private fun updateMarkers(
+    shiftedStartOffsetBefore: Int,
     startOffset: Int,
     oldLength: Int,
     newLength: Int,
   ): UpdateMarkersResult {
-    // TODO: the logic here seems to be too complex,
-    //  it worth to try reparse the whole set of lines affected plus an additional line at the end
-    // Reparse from line start to get the whole marker
-    val startDocumentOffset = document.run {
-      getLineStartOffset(getLineNumber(startOffset))
-    }
+    // The document change may cut half of a marker at the start. In such case, rewind a bit to rescan from the marker start.
+    val startDocumentOffset = min(
+      shiftedStartOffsetBefore,
+      shiftOffsetToMarkerStart(document.immutableCharSequence, startOffset)
+    )
 
     val markerCacheCutStart = getMarkerUpperBound(startDocumentOffset)
 

@@ -14,8 +14,6 @@ import org.jetbrains.plugins.notebooks.editor.NotebookCellLinesProvider
 import org.jetbrains.r.rmarkdown.RMarkdownLanguage
 
 class RMarkdownCellLinesProvider : NotebookCellLinesProvider, NotebookCellLinesLexer {
-  override val longestTokenLength: Int = 0
-
   private fun getCellType(tokenType: IElementType): NotebookCellLines.CellType? =
     when (tokenType) {
       RMarkdownCellType.HEADER_CELL.elementType -> NotebookCellLines.CellType.MARKDOWN
