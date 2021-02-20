@@ -2,6 +2,8 @@ package org.jetbrains.r.editor.mlcompletion.model.updater
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.roots.ProjectFileIndex
+import org.jetbrains.r.RFileType
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.askForUpdate
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicBoolean
@@ -13,8 +15,9 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
   }
 
   override fun projectOpened(project: Project) {
-    if (!MachineLearningCompletionSettings.getInstance().state.isEnabled) {
-      return;
+    if (!MachineLearningCompletionSettings.getInstance().state.isEnabled
+        || isNotRProject(project)) {
+      return
     }
     if (!notifiedAnyProject.compareAndSet(false, true)) {
       return
@@ -28,4 +31,6 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
     }
   }
 
+  private fun isNotRProject(project: Project) =
+    ProjectFileIndex.getInstance(project).iterateContent { it.fileType != RFileType }
 }
