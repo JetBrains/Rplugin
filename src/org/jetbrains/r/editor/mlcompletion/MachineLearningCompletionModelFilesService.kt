@@ -7,10 +7,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import org.eclipse.aether.version.Version
-import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionAppArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionModelArtifact
 import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionRemoteArtifact
+import org.jetbrains.r.editor.mlcompletion.model.updater.VersionConverter
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,9 +37,7 @@ class MachineLearningCompletionModelFilesService {
       }
 
     private fun getArtifactVersion(versionFile: String): Version? = File(versionFile).takeIf { it.exists() }
-      ?.run {
-        ArtifactRepositoryManager.asVersion(readText().trim())
-      }
+      ?.run { VersionConverter.fromString(readText().trim()) }
   }
 
   private val modelLock = ReentrantLock()

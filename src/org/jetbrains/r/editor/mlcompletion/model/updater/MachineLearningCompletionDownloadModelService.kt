@@ -55,18 +55,24 @@ class MachineLearningCompletionDownloadModelService {
   data class ArtifactsWithSize(val artifacts: List<MachineLearningCompletionRemoteArtifact>, val size: Long)
 
   fun initiateUpdateCycle(isModal: Boolean,
+                          reportIgnored: Boolean,
                           onThrowableCallback: ((Throwable) -> Unit)? = null,
                           onSuccessCallback: (ArtifactsWithSize) -> Unit) {
+    val job = if (reportIgnored) ::getAllArtifactsToDownloadWithSize else ::getArtifactsToDownloadWithSize
     if (isModal) {
-      submitModalJob(this::getArtifactsToDownloadWithSize, IdeBundle.message("updates.checking.progress"), onThrowableCallback, onSuccessCallback)
+      submitModalJob(job, IdeBundle.message("updates.checking.progress"), onThrowableCallback, onSuccessCallback)
     }
     else {
-      submitBackgroundJob(this::getArtifactsToDownloadWithSize, onThrowableCallback, onSuccessCallback)
+      submitBackgroundJob(job, onThrowableCallback, onSuccessCallback)
     }
   }
 
-  fun getArtifactsToDownloadWithSize(): ArtifactsWithSize {
-    val artifacts = getArtifactsToDownload()
+  private fun getAllArtifactsToDownloadWithSize() = getArtifactsToDownloadWithSize(true)
+
+  private fun getArtifactsToDownloadWithSize() = getArtifactsToDownloadWithSize(false)
+
+  private fun getArtifactsToDownloadWithSize(reportIgnored: Boolean): ArtifactsWithSize {
+    val artifacts = getArtifactsToDownload().takeIf { reportIgnored || anyIsNotIgnored(it) } ?: emptyList()
     val size = getArtifactsSize(artifacts)
     MachineLearningCompletionSettings.getInstance().reportUpdateCheck()
     return ArtifactsWithSize(artifacts, size)
@@ -79,6 +85,9 @@ class MachineLearningCompletionDownloadModelService {
 
       currentVersion == null || currentVersion < latestVersion
     }
+
+  private fun anyIsNotIgnored(artifacts: List<MachineLearningCompletionRemoteArtifact>) =
+    artifacts.any { it.latestVersion != it.ignoredVersion }
 
   private fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->

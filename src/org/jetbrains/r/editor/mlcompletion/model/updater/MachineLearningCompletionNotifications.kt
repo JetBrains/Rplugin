@@ -28,6 +28,12 @@ object MachineLearningCompletionNotifications {
           notification.expire()
         }
       })
+     .addAction(object : NotificationAction(RBundle.message("notification.ml.update.askForUpdate.ignoreButton")) {
+        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+          artifacts.forEach { it.ignoreLatestVersion() }
+          notification.expire()
+        }
+      })
       .also { activeAskForUpdateNotification = it }
       .notify(project)
 

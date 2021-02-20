@@ -6,6 +6,7 @@ import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader
 import org.eclipse.aether.util.version.GenericVersionScheme
 import org.eclipse.aether.version.Version
 import org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionModelFilesService
+import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import kotlin.reflect.full.primaryConstructor
 
 sealed class MachineLearningCompletionRemoteArtifact {
@@ -49,6 +50,23 @@ sealed class MachineLearningCompletionRemoteArtifact {
   val latestArtifactUrl: String
     get() = listOf(REPOSITORY_URL, *GROUP_ID.split('.').toTypedArray(), id, latestVersion, "$id-$latestVersion.zip")
       .joinToString("/")
+
+  fun ignoreLatestVersion() {
+    val settings = MachineLearningCompletionSettings.getInstance()
+    when (this) {
+      is MachineLearningCompletionModelArtifact -> settings.state.modelLastIgnoredVersion = latestVersion
+      is MachineLearningCompletionAppArtifact -> settings.state.appLastIgnoredVersion = latestVersion
+    }
+  }
+
+  val ignoredVersion: Version?
+    get() {
+      val settings = MachineLearningCompletionSettings.getInstance()
+      return when (this) {
+        is MachineLearningCompletionModelArtifact -> settings.state.modelLastIgnoredVersion
+        is MachineLearningCompletionAppArtifact -> settings.state.appLastIgnoredVersion
+      }
+    }
 }
 
 class MachineLearningCompletionModelArtifact : MachineLearningCompletionRemoteArtifact() {

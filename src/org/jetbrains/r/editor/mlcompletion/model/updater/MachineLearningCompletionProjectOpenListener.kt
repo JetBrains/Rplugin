@@ -24,7 +24,7 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
     }
 
     val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
-    modelDownloaderService.initiateUpdateCycle(false) { (artifactsToUpdate, size) ->
+    modelDownloaderService.initiateUpdateCycle(isModal = false, reportIgnored = false) { (artifactsToUpdate, size) ->
       if (artifactsToUpdate.isNotEmpty()) {
         askForUpdate(project, artifactsToUpdate, size)
       }

@@ -148,7 +148,7 @@ class MachineLearningCompletionConfigurable : BoundConfigurable(RBundle.message(
 
   private fun Cell.checkForUpdatesButton() = button(RBundle.message("project.settings.ml.completion.button.checkForUpdates")) {
     MachineLearningCompletionDownloadModelService.getInstance()
-      .initiateUpdateCycle(true, { showFailedToCheckForUpdatesDialog() }) { (artifacts, size) ->
+      .initiateUpdateCycle(isModal = true, reportIgnored = true, { showFailedToCheckForUpdatesDialog() }) { (artifacts, size) ->
         if (artifacts.isNotEmpty()) {
           showUpdateDialog(artifacts, size)
         }

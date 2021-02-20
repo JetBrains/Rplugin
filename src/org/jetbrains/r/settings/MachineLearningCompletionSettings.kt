@@ -1,6 +1,9 @@
 package org.jetbrains.r.settings
 
 import com.intellij.openapi.components.*
+import com.intellij.util.xmlb.annotations.OptionTag
+import org.eclipse.aether.version.Version
+import org.jetbrains.r.editor.mlcompletion.model.updater.VersionConverter
 
 
 @State(
@@ -18,6 +21,12 @@ class MachineLearningCompletionSettings : SimplePersistentStateComponent<Machine
     var isEnabled by property(isEnabled)
     var lastUpdateCheckTimestampMs by property(lastUpdateCheckTimestampMs)
     var requestTimeoutMs by property(requestTimeoutMs)
+
+    @get:OptionTag("modelLastIgnoredVersion", converter = VersionConverter::class)
+    var modelLastIgnoredVersion by property<Version?>(null) { it == null }
+
+    @get:OptionTag("appLastIgnoredVersion", converter = VersionConverter::class)
+    var appLastIgnoredVersion by property<Version?>(null) { it == null }
 
     fun hostOrDefault(): String {
       return host ?: DEFAULT_HOST
