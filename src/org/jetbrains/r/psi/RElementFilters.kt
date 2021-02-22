@@ -11,6 +11,7 @@ import com.intellij.psi.filters.NotFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
+import org.jetbrains.r.classes.r6.context.R6ContextProvider
 import org.jetbrains.r.classes.s4.context.RS4ContextProvider
 import org.jetbrains.r.parsing.RElementTypes
 import org.jetbrains.r.psi.api.*
@@ -26,7 +27,8 @@ object RElementFilters {
   val IDENTIFIER_OR_STRING_FILTER = FilterPattern(IdentifierOrStringFilter())
   val STRING_FILTER = FilterPattern(StringFilter())
   val S4_CONTEXT_FILTER = FilterPattern(S4ContextFilter())
-  val STRING_EXCEPT_S4_CONTEXT_FILTER = FilterPattern(AndFilter(StringFilter(), NotFilter(S4ContextFilter())))
+  val R6_CONTEXT_FILTER = FilterPattern(R6ContextFilter())
+  val STRING_EXCEPT_OTHER_LIBRARIES_CONTEXT_FILTER = FilterPattern(AndFilter(StringFilter(), NotFilter(S4ContextFilter()), NotFilter(R6ContextFilter())))
 }
 
 class MemberFilter : ElementFilter {
@@ -120,6 +122,15 @@ class S4ContextFilter : ElementFilter {
   override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
     val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false) ?: return false
     return RS4ContextProvider.getS4Context(expression) != null
+  }
+
+  override fun isClassAcceptable(hintClass: Class<*>?) = true
+}
+
+class R6ContextFilter : ElementFilter {
+  override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+    val expression = PsiTreeUtil.getParentOfType(context, RExpression::class.java, false) ?: return false
+    return R6ContextProvider.getR6Context(expression) != null
   }
 
   override fun isClassAcceptable(hintClass: Class<*>?) = true

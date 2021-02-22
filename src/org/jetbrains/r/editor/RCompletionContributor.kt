@@ -53,6 +53,7 @@ class RCompletionContributor : CompletionContributor() {
     addMemberAccessCompletion()
     addAtAccessCompletion()
     addS4ClassContextCompletion()
+    addR6ClassContextCompletion()
     addIdentifierCompletion()
   }
 
@@ -93,9 +94,14 @@ class RCompletionContributor : CompletionContributor() {
       .and(RElementFilters.S4_CONTEXT_FILTER), S4ClassContextCompletionProvider())
   }
 
+  private fun addR6ClassContextCompletion() {
+    extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
+      .and(RElementFilters.R6_CONTEXT_FILTER), R6ClassContextCompletionProvider())
+  }
+
   private fun addStringLiteralCompletion() {
     extend(CompletionType.BASIC, psiElement().withLanguage(RLanguage.INSTANCE)
-      .and(RElementFilters.STRING_EXCEPT_S4_CONTEXT_FILTER), StringLiteralCompletionProvider())
+      .and(RElementFilters.STRING_EXCEPT_OTHER_LIBRARIES_CONTEXT_FILTER), StringLiteralCompletionProvider())
   }
 
   private class MemberAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
@@ -550,6 +556,22 @@ class RCompletionContributor : CompletionContributor() {
     }
   }
 
+  private class R6ClassContextCompletionProvider : CompletionProvider<CompletionParameters>() {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+      val expression = PsiTreeUtil.getParentOfType(parameters.position, RExpression::class.java, false) ?: return
+      val file = parameters.originalFile
+      addR6ClassNameCompletion(expression, file, result)
+      addR6SlotNameCompletion(expression, file, result)
+    }
+
+    private fun addR6ClassNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
+      // TODO fill completion
+    }
+
+    private fun addR6SlotNameCompletion(classNameExpression: RExpression, file: PsiFile, result: CompletionResultSet){
+      // TODO fill completion
+    }
+  }
 
   private class StringLiteralCompletionProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {

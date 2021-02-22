@@ -80,6 +80,9 @@ You can find the source code in the following repositories:
 
       <extensionPoint qualifiedName="com.intellij.rS4ContextProvider"
                       interface="org.jetbrains.r.classes.s4.context.RS4ContextProvider" dynamic="true"/>
+
+      <extensionPoint qualifiedName="com.intellij.r6ContextProvider"
+                      interface="org.jetbrains.r.classes.r6.context.R6ContextProvider" dynamic="true"/>
     </extensionPoints>
 
     <resource-bundle>messages.RPluginBundle</resource-bundle>
@@ -731,6 +734,10 @@ You can find the source code in the following repositories:
         <!-- S4 contexts-->
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4NewObjectContextProvider"/>
         <rS4ContextProvider implementation="org.jetbrains.r.classes.s4.context.RS4SetClassContextProvider"/>
+
+        <!-- R6 contexts -->
+        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6NewObjectContextProvider" />
+        <r6ContextProvider implementation="org.jetbrains.r.classes.r6.context.R6SetClassContextProvider" />
 
       <notificationGroup id="RDataFrameViewer" displayType="BALLOON"/>
       <notificationGroup id="RMarkdownRenderError" displayType="BALLOON"/>
