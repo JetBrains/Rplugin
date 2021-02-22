@@ -719,7 +719,7 @@ class RInterop(val interpreter: RInterpreter, val processHandler: ProcessHandler
       // Also it's not sorted by package names
       val name2Packages = TreeMap<String, RInstalledPackage>(String.CASE_INSENSITIVE_ORDER)
       for (rPackage in obtained) {
-        name2Packages.putIfAbsent(rPackage.packageName, rPackage)
+        name2Packages.putIfAbsent(rPackage.name, rPackage)
       }
       name2Packages.values.toList()
     }

@@ -204,7 +204,7 @@ interface RInterpreterState {
   private fun doUpdateState() {
     updateEpoch.incrementAndGet()
     val installedPackages = makeExpiring(rInterop.loadInstalledPackages())
-    val name2installedPackages = installedPackages.map { it.packageName to it }.toMap()
+    val name2installedPackages = installedPackages.map { it.name to it }.toMap()
     val (libraryPaths, userLibraryPath) = loadPaths()
     val name2libraryPaths = mapNamesToLibraryPaths(installedPackages, libraryPaths)
     val skeletonFiles = installedPackages.mapNotNull {
@@ -238,7 +238,7 @@ interface RInterpreterState {
   private fun mapNamesToLibraryPaths(packages: List<RInstalledPackage>,
                                      libraryPaths: List<RInterpreterState.LibraryPath>): Map<String, RInterpreterState.LibraryPath> {
     return packages.mapNotNull { rPackage ->
-      libraryPaths.find { it.path == rPackage.libraryPath }?.let { libraryPath -> Pair(rPackage.packageName, libraryPath) }
+      libraryPaths.find { it.path == rPackage.libraryPath }?.let { libraryPath -> Pair(rPackage.name, libraryPath) }
     }.toMap()
   }
 

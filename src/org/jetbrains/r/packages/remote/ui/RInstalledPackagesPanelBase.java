@@ -38,6 +38,7 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.util.CatchingConsumer;
 import com.intellij.util.IJSwingUtilities;
 import com.intellij.util.ObjectUtils;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.GraphicsUtil;
 import com.intellij.util.ui.StatusText;
@@ -207,7 +208,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       private void loadUnloadPackage(Point columnRow) {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
         if (aPackage != null) {
-          var packageName = aPackage.getPackageName();
+          var packageName = aPackage.getName();
           if (myPackageManagementService.isPackageLoaded(packageName)) {
             myPackageManagementService.unloadPackage(packageName, false);
           } else {
@@ -227,8 +228,10 @@ public class RInstalledPackagesPanelBase extends JPanel {
         RInstalledPackage aPackage = getInstalledPackageAt(columnRow.y);
         if (aPackage != null && myPackageManagementService.canUninstallPackage(aPackage)) {
           int yesNo = Messages.showYesNoDialog(myPackagesTable,
-                                               RBundle.INSTANCE.message("install.package.dialog.message.are.you.sure.you.wish.to.uninstall.package", aPackage.getPackageName()),
-                                               RBundle.INSTANCE.message("install.package.dialog.title.uninstall", aPackage.getPackageName()),
+                                               RBundle.INSTANCE
+                                                 .message("install.package.dialog.message.are.you.sure.you.wish.to.uninstall.package",
+                                                          aPackage.getName()),
+                                               RBundle.INSTANCE.message("install.package.dialog.title.uninstall", aPackage.getName()),
                                                AllIcons.Diff.Remove);
           if (yesNo == Messages.YES) {
             doRecorded(UNINSTALL_ACTION_ID, e, () -> uninstallAction(Collections.singletonList(aPackage)));
@@ -250,7 +253,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
             }
           }
           if (link == null) {
-            link = "https://cran.r-project.org/package=" + installedPackage.getPackageName();
+            link = "https://cran.r-project.org/package=" + installedPackage.getName();
           }
           BrowserLauncher.getInstance().browse(link, null);
         }
@@ -533,23 +536,33 @@ public class RInstalledPackagesPanelBase extends JPanel {
 
   public void doUpdatePackages(@NotNull final RPackageManagementService packageManagementService) {
     onUpdateStarted();
-    ProgressManager progressManager = ProgressManager.getInstance();
-    progressManager.run(new Task.Backgroundable(myProject, LOADING_PACKAGES_LIST_TITLE, true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+    ProgressManager.getInstance().run(new Task.Backgroundable(myProject,
+                                                              LOADING_PACKAGES_LIST_TITLE,
+                                                              true,
+                                                              PerformInBackgroundOption.ALWAYS_BACKGROUND) {
       @Override
       public void run(@NotNull ProgressIndicator indicator) {
-        Collection<RInstalledPackage> packages = Lists.newArrayList();
+        List<RInstalledPackage> packages = List.of();
         try {
-          packages = packageManagementService.getInstalledPackages();
+          packages = packageManagementService.getInstalledPackagesList();
         }
         finally {
-          final Collection<RInstalledPackage> finalPackages = packages;
+          List<Object[]> rows = ContainerUtil.map(packages,
+                                                  pkg -> new Object[]{
+                                                    "",
+                                                    pkg,
+                                                    pkg.getDescription().get(TITLE),
+                                                    pkg.getVersion(),
+                                                    "",
+                                                    ""
+                                                  });
+
           final boolean shouldFetchLatestVersionsForOnlyInstalledPackages = shouldFetchLatestVersionsForOnlyInstalledPackages();
           UIUtil.invokeLaterIfNeeded(() -> {
             if (packageManagementService == myPackageManagementService) {
               myPackagesTableModel.getDataVector().clear();
-              for (RInstalledPackage pkg : finalPackages) {
-                myPackagesTableModel
-                  .addRow(new Object[] {"", pkg, pkg.getDescription().get(TITLE), pkg.getVersion(), "", ""});
+              for (Object[] row : rows) {
+                myPackagesTableModel.addRow(row);
               }
               onUpdateFinished();
               if (shouldFetchLatestVersionsForOnlyInstalledPackages) {
@@ -667,7 +680,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
       if (column == IS_LOADED_COLUMN) {
         myIsLoadedCheckBox.setText("");
         myIsLoadedCheckBox.setBackground(myPackagesTable.getBackground());
-        myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage.getPackageName()));
+        myIsLoadedCheckBox.setSelected(myPackageManagementService.isPackageLoaded(aPackage.getName()));
         return myIsLoadedCheckBox;
       }
       return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -762,7 +775,7 @@ public class RInstalledPackagesPanelBase extends JPanel {
         RInstalledPackage aPackage = (RInstalledPackage)myOriginalModel.getValueAt(i, PACKAGE_NAME_COLUMN);
         String title = aPackage.getDescription().get(TITLE);
         if (myText == null ||
-            StringUtil.containsIgnoreCase(aPackage.getPackageName(), myText) ||
+            StringUtil.containsIgnoreCase(aPackage.getName(), myText) ||
             StringUtil.containsIgnoreCase(aPackage.getVersion(), myText) ||
             (title != null && StringUtil.containsIgnoreCase(title, myText))) {
           List<Object> elements = Lists.newArrayListWithCapacity(myOriginalModel.getColumnCount());

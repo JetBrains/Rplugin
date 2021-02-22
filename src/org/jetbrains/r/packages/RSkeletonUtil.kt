@@ -142,7 +142,7 @@ object RSkeletonUtil {
   }
 
   fun installedPackageToSkeletonPath(skeletonsDirectory: String, installedPackage: RInstalledPackage): Path {
-    val dirName = installedPackage.packageName + "-" + installedPackage.version
+    val dirName = installedPackage.name + "-" + installedPackage.version
     return Path.of(skeletonsDirectory, dirName, hash(installedPackage.canonicalPackagePath) + "." + RSkeletonFileType.EXTENSION)
   }
 

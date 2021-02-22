@@ -13,8 +13,17 @@ enum class RPackagePriority {
   NA
 }
 
-class RInstalledPackage(val packageName: String, val packageVersion: String, val priority: RPackagePriority?, val libraryPath: String,
-                        val canonicalPackagePath: String, val description: Map<String, String>) : InstalledPackage(packageName, packageVersion) {
+class RInstalledPackage(
+  packageName: String,
+  version: String,
+  val priority: RPackagePriority?,
+  val libraryPath: String,
+  val canonicalPackagePath: String,
+  val description: Map<String, String>,
+) : InstalledPackage(packageName, version) {
+
   val isBase: Boolean
     get() = priority == RPackagePriority.BASE
+
+  override fun getVersion(): String = super.getVersion()!!
 }

@@ -20,7 +20,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.intellij.util.Processor
 import org.jetbrains.r.RLanguage
-import org.jetbrains.r.classes.s4.*
+import org.jetbrains.r.classes.s4.RS4ClassInfo
+import org.jetbrains.r.classes.s4.RS4ClassInfoUtil
+import org.jetbrains.r.classes.s4.RS4ClassSlot
 import org.jetbrains.r.classes.s4.context.*
 import org.jetbrains.r.codeInsight.libraries.RLibrarySupportProvider
 import org.jetbrains.r.codeInsight.table.RTableColumnCollectProcessor
@@ -178,7 +180,7 @@ class RCompletionContributor : CompletionContributor() {
       val position = parameters.position
       val installedPackages = RInterpreterStateManager.getCurrentStateOrNull(position.project)?.installedPackages ?: return
       installedPackages.filter { !it.isBase }.forEach {
-        result.consume(rCompletionElementFactory.createPackageLookupElement(it.packageName, true))
+        result.consume(rCompletionElementFactory.createPackageLookupElement(it.name, true))
       }
     }
   }

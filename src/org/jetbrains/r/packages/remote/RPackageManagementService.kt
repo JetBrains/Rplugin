@@ -110,10 +110,9 @@ class RPackageManagementService(private val project: Project,
     }
   }
 
-  override fun getInstalledPackages(): List<RInstalledPackage> {
-    return lastInstalledPackages?.takeIf { it.hasNotExpired } ?: loadInstalledPackages().also { installed ->
-      lastInstalledPackages = installed
-    }
+  override fun getInstalledPackagesList(): List<RInstalledPackage> {
+    return lastInstalledPackages?.takeIf { it.hasNotExpired }
+           ?: loadInstalledPackages().also { lastInstalledPackages = it }
   }
 
   private fun loadInstalledPackages(): ExpiringList<RInstalledPackage> {

@@ -25,7 +25,7 @@ object RPackageCompletionUtil {
   fun addPackageCompletion(position: PsiElement, result: CompletionResultSet) {
     val state = RInterpreterStateManager.getCurrentStateOrNull(position.project) ?: return
     for (installedPackage in state.installedPackages) {
-      addPackageCompletion(installedPackage.packageName, result)
+      addPackageCompletion(installedPackage.name, result)
     }
     // Note: a package project can be loaded into current global environment
     // (e.g. via `devtools::load_all()`, see R-762) but not installed

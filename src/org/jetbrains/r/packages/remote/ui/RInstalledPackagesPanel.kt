@@ -99,9 +99,9 @@ class RInstalledPackagesPanel(private val project: Project, area: PackagesNotifi
   private fun canUpgradeAllPackages() = isReady
 
   private fun findOutdatedPackages(service: RPackageManagementService): List<RPackageUpdateInfo> {
-    return service.installedPackages.mapNotNull { installed ->
-      service.fetchLatestVersion(installed.packageName)?.let { latestVersion ->
-        if (RPackageVersion.isOlder(installed.packageVersion, latestVersion)) RPackageUpdateInfo(installed, latestVersion) else null
+    return service.installedPackagesList.mapNotNull { installed ->
+      service.fetchLatestVersion(installed.version)?.let { latestVersion ->
+        if (RPackageVersion.isOlder(installed.version, latestVersion)) RPackageUpdateInfo(installed, latestVersion) else null
       }
     }
   }

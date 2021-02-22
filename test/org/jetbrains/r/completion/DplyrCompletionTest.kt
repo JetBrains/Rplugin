@@ -326,7 +326,7 @@ tbl1 %>% inner_join(tbl2) %>% filter(colu<caret>)
 
   fun testStaticCompletionForRelocate() {
     val packages = rInterop.state.installedPackages
-    val dplyrPackage = packages.find { it.packageName == "dplyr" }
+    val dplyrPackage = packages.find { it.name == "dplyr" }
 
     if (dplyrPackage == null || VersionComparatorUtil.compare(dplyrPackage.version, "1.0.0") < 0) {
       return

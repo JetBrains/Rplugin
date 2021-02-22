@@ -67,9 +67,9 @@ class MockInterpreterState(override val project: Project, var provider: MockInte
     Path.of(RUsefulTestCase.SKELETON_LIBRARY_PATH, version).toString()
   }
 
-  override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.packageName == name }
+  override fun getPackageByName(name: String): RInstalledPackage? = installedPackages.firstOrNull { it.name == name }
 
-  override fun getLibraryPathByName(name: String): RInterpreterState.LibraryPath? = throw NotImplementedError()
+  override fun getLibraryPathByName(name: String): Nothing = throw NotImplementedError()
 
   override fun getSkeletonFileByPackageName(name: String): PsiFile? {
     val installedPackage = getPackageByName(name) ?: return null

@@ -199,7 +199,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
       // Mock skeleton
       val mockPath = Path.of(versionedSkeletonLibraryPath, it).toString()
       val mockInstalledPackage =
-        RInstalledPackage(installedPackage.packageName, installedPackage.packageVersion, null, versionedSkeletonLibraryPath, mockPath, emptyMap())
+        RInstalledPackage(installedPackage.name, installedPackage.version, null, versionedSkeletonLibraryPath, mockPath, emptyMap())
       val mockSkeletonPath = RSkeletonUtil.installedPackageToSkeletonPath(versionedSkeletonLibraryPath, mockInstalledPackage)
       packagesForTest.add(rPackage to mockSkeletonPath)
     }

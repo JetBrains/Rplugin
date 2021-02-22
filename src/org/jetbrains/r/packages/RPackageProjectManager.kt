@@ -122,7 +122,7 @@ class RPackageProjectManager(private val project: Project) {
 
   private fun loadMissingPackagesToConsoles(consoles: List<RConsoleView>, packageInfo: PackageDescriptionInfo): List<DependencyPackage> {
     if (consoles.isEmpty()) return emptyList()
-    val installedPackages = consoles.first().rInterop.state.installedPackages.map { it.name to it.packageVersion }.toMap()
+    val installedPackages = consoles.first().rInterop.state.installedPackages.map { it.name to it.version }.toMap()
     val allPackagesToLoad = packageInfo.depends + packageInfo.imports + packageInfo.suggests
     val possibleToLoad = allPackagesToLoad.filter { rPackage ->
       val name = rPackage.name
