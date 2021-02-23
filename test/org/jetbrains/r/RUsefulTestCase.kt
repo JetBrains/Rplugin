@@ -8,7 +8,7 @@ import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.ide.DataManager
 import com.intellij.ide.IdeView
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.actionSystem.ex.ActionUtil.performActionDumbAwareWithCallbacks
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.runWriteAction
@@ -238,7 +238,7 @@ abstract class RUsefulTestCase : BasePlatformTestCase() {
     DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
       TransactionGuard.submitTransaction(project, Runnable {
         val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
-        ActionUtil.performActionDumbAwareWithCallbacks(action, event, dataContext)
+        performActionDumbAwareWithCallbacks(action, event)
       })
     }
     myFixture.checkResult(expected)

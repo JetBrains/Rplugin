@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx
-import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.actionSystem.ex.ActionUtil.performActionDumbAwareWithCallbacks
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
@@ -35,7 +35,7 @@ object RActionUtil {
       DataManager.getInstance().dataContextFromFocusAsync.onSuccess { dataContext ->
         TransactionGuard.submitTransaction(project, Runnable {
           val event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN, dataContext)
-          ActionUtil.performActionDumbAwareWithCallbacks(action, event, dataContext)
+          performActionDumbAwareWithCallbacks(action, event)
         })
       }
     }
