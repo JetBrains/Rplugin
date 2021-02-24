@@ -47,7 +47,7 @@ class MachineLearningCompletionServerService : Disposable {
         else {
           tryRelaunchServer(afterState.hostOrDefault(), afterState.port)
         }
-    }.subscribeWithDisposable(this)
+    }.subscribe(this)
 
     if (settings.state.isEnabled) {
       launchServer(settings.state.hostOrDefault(), settings.state.port)

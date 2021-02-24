@@ -5,8 +5,10 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper
 import org.jetbrains.r.RBundle
 import org.jetbrains.r.editor.mlcompletion.model.updater.UpdateUtils.showSizeMb
+import java.util.concurrent.atomic.AtomicReference
 
 
 object MachineLearningCompletionNotifications {
@@ -15,17 +17,22 @@ object MachineLearningCompletionNotifications {
 
   private val notificationsTitle = RBundle.message("project.settings.ml.completion.name")
 
-  @Volatile
-  var activeAskForUpdateNotification: Notification? = null
-    private set
+  private val activeAskForUpdateNotification = AtomicReference<Notification?>(null)
 
-  fun showPopup(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
+  fun showPopup(project: Project?, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
     when {
       artifacts.any(MachineLearningCompletionRemoteArtifact::localIsMissing) -> askToDownload(project, artifacts, size)
       else -> askForUpdate(project, artifacts, size)
     }
 
-  private fun createBasicUpdateNotification(project: Project,
+  fun DialogWrapper.showUpdateDialog() {
+    val agreedToUpdate = showAndGet()
+    if (agreedToUpdate) {
+      activeAskForUpdateNotification.get()?.expire()
+    }
+  }
+
+  private fun createBasicUpdateNotification(project: Project?,
                                             artifacts: List<MachineLearningCompletionRemoteArtifact>,
                                             text: String,
                                             actionText: String) =
@@ -38,17 +45,27 @@ object MachineLearningCompletionNotifications {
         }
       })
 
-  private fun Notification.notifyAndSetAsActive(project: Project) =
-    also { activeAskForUpdateNotification = it }.notify(project)
+  private fun Notification.tryNotifyAndSetAsActive(project: Project?) =
+    activeAskForUpdateNotification.get().let { oldNotification ->
+      val swapped = activeAskForUpdateNotification.compareAndSet(oldNotification, this)
+      if (!swapped) {
+        return@let
+      }
 
-  private fun askToDownload(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
+      oldNotification?.expire()
+      if (MachineLearningCompletionUpdateAction.canInitiateUpdateAction.get()) {
+        notify(project)
+      }
+    }
+
+  private fun askToDownload(project: Project?, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
     createBasicUpdateNotification(project,
                                   artifacts,
                                   RBundle.message("notification.ml.update.askToDownload.content", showSizeMb(size)),
                                   RBundle.message("notification.ml.update.askToDownload.downloadButton"))
-      .notifyAndSetAsActive(project)
+      .tryNotifyAndSetAsActive(project)
 
-  private fun askForUpdate(project: Project, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
+  private fun askForUpdate(project: Project?, artifacts: List<MachineLearningCompletionRemoteArtifact>, size: Long) =
     createBasicUpdateNotification(project,
                                   artifacts,
                                   RBundle.message("notification.ml.update.askForUpdate.content", showSizeMb(size)),
@@ -59,7 +76,7 @@ object MachineLearningCompletionNotifications {
           notification.expire()
         }
       })
-      .notifyAndSetAsActive(project)
+      .tryNotifyAndSetAsActive(project)
 
   fun notifyUpdateCompleted(project: Project?) =
     NotificationGroupManager.getInstance().getNotificationGroup(GROUP_NAME)

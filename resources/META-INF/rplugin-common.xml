@@ -371,7 +371,7 @@ You can find the source code in the following repositories:
     </extensions>
 
     <applicationListeners>
-        <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionServerInitializerListener" topic="com.intellij.ide.AppLifecycleListener" activeInHeadlessMode="false"/>
+        <listener class="org.jetbrains.r.editor.mlcompletion.MachineLearningCompletionInitializerListener" topic="com.intellij.ide.AppLifecycleListener" activeInHeadlessMode="false"/>
     </applicationListeners>
 
     <projectListeners>

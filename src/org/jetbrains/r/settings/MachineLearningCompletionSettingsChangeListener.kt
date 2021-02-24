@@ -17,13 +17,18 @@ fun interface MachineLearningCompletionSettingsChangeListener {
         .syncPublisher(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC)
         .settingsChanged(beforeState, afterState)
     }
+
+    private fun subscribeToDefaultTopic(listener: MachineLearningCompletionSettingsChangeListener,
+                                        parentDisposable: Disposable?) =
+      ApplicationManager.getApplication().messageBus.run {
+        if (parentDisposable == null) connect() else connect(parentDisposable)
+      }.subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, listener)
   }
 
   fun settingsChanged(beforeState: MachineLearningCompletionSettings.State,
                       afterState: MachineLearningCompletionSettings.State)
 
-  fun subscribeWithDisposable(parentDisposable: Disposable) =
-    ApplicationManager.getApplication().messageBus
-      .connect(parentDisposable)
-      .subscribe(R_MACHINE_LEARNING_COMPLETION_SETTINGS_TOPIC, this)
+  fun subscribe() = subscribeToDefaultTopic(this, null)
+
+  fun subscribe(parentDisposable: Disposable) = subscribeToDefaultTopic(this, parentDisposable)
 }
