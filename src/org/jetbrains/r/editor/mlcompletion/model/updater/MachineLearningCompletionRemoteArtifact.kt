@@ -67,6 +67,8 @@ sealed class MachineLearningCompletionRemoteArtifact {
         is MachineLearningCompletionAppArtifact -> settings.state.appLastIgnoredVersion
       }
     }
+
+  fun localIsMissing() = !MachineLearningCompletionModelFilesService.getInstance().validate(this)
 }
 
 class MachineLearningCompletionModelArtifact : MachineLearningCompletionRemoteArtifact() {

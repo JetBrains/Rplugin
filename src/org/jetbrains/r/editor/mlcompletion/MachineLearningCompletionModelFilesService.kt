@@ -115,4 +115,12 @@ class MachineLearningCompletionModelFilesService {
       property.afterReset(newVersionSupplier)
     }
   }
+
+  fun validate(artifact: MachineLearningCompletionRemoteArtifact) =
+    artifact.lock.withLock {
+      when (artifact) {
+        is MachineLearningCompletionModelArtifact -> MachineLearningCompletionModelFiles.modelAvailable()
+        is MachineLearningCompletionAppArtifact -> MachineLearningCompletionModelFiles.applicationAvailable()
+      }
+    }
 }

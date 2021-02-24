@@ -68,10 +68,10 @@ object MachineLearningCompletionModelFiles {
 
   fun available(): Boolean = modelAvailable() && applicationAvailable()
 
-  private fun modelAvailable(): Boolean =
+  fun modelAvailable(): Boolean =
     validateDirectory(localServerModelDirectory)
 
-  private fun applicationAvailable(): Boolean =
+  fun applicationAvailable(): Boolean =
     validateDirectory(localServerAppDirectory) &&
     validateFile(localServerConfigFile) &&
     validateFile(localServerAppExecutableFile)

@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.roots.ProjectFileIndex
 import org.jetbrains.r.RFileType
-import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.askForUpdate
+import org.jetbrains.r.editor.mlcompletion.model.updater.MachineLearningCompletionNotifications.showPopup
 import org.jetbrains.r.settings.MachineLearningCompletionSettings
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -26,7 +26,7 @@ class MachineLearningCompletionProjectOpenListener : ProjectManagerListener {
     val modelDownloaderService = MachineLearningCompletionDownloadModelService.getInstance()
     modelDownloaderService.initiateUpdateCycle(isModal = false, reportIgnored = false) { (artifactsToUpdate, size) ->
       if (artifactsToUpdate.isNotEmpty()) {
-        askForUpdate(project, artifactsToUpdate, size)
+        showPopup(project, artifactsToUpdate, size)
       }
     }
   }

@@ -72,7 +72,11 @@ class MachineLearningCompletionDownloadModelService {
   private fun getArtifactsToDownloadWithSize() = getArtifactsToDownloadWithSize(false)
 
   private fun getArtifactsToDownloadWithSize(reportIgnored: Boolean): ArtifactsWithSize {
-    val artifacts = getArtifactsToDownload().takeIf { reportIgnored || anyIsNotIgnored(it) } ?: emptyList()
+    val artifacts = getArtifactsToDownload().takeIf { artifacts ->
+      reportIgnored
+      || artifacts.any { it.latestVersion != it.ignoredVersion }
+      || artifacts.any(MachineLearningCompletionRemoteArtifact::localIsMissing)
+    } ?: emptyList()
     val size = getArtifactsSize(artifacts)
     MachineLearningCompletionSettings.getInstance().reportUpdateCheck()
     return ArtifactsWithSize(artifacts, size)
@@ -83,11 +87,8 @@ class MachineLearningCompletionDownloadModelService {
       val currentVersion = artifact.currentVersion
       val latestVersion = artifact.latestVersion
 
-      currentVersion == null || currentVersion < latestVersion
+      currentVersion == null || currentVersion < latestVersion || artifact.localIsMissing()
     }
-
-  private fun anyIsNotIgnored(artifacts: List<MachineLearningCompletionRemoteArtifact>) =
-    artifacts.any { it.latestVersion != it.ignoredVersion }
 
   private fun getArtifactsSize(artifacts: List<MachineLearningCompletionRemoteArtifact>): Long =
     artifacts.map { artifact ->
