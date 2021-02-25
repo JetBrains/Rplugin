@@ -7,10 +7,10 @@ package org.jetbrains.r.settings
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.PermanentInstallationID
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.updateSettings.impl.PluginDownloader
 import com.intellij.openapi.util.JDOMUtil
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.CharsetToolkit
@@ -47,7 +47,7 @@ class RUpdateComponent : EditorFactoryListener {
           val pluginVersion = plugin.getVersion()
           val pluginId = plugin.getPluginId().getIdString()
           val os = URLEncoder.encode(SystemInfo.OS_NAME + " " + SystemInfo.OS_VERSION, CharsetToolkit.UTF8)
-          val uid = PermanentInstallationID.get()
+          val uid = PluginDownloader.getMarketplaceDownloadsUUID()
           val url = "https://plugins.jetbrains.com/plugins/list" +
                     "?pluginId=" + pluginId +
                     "&build=" + buildNumber +
