@@ -80,13 +80,13 @@ internal class MachineLearningCompletionProvider : CompletionProvider<Completion
       // except maybe for some small amount of time (e.g. 20 milliseconds total), so we use a non-blocking way to get value of Future
       if (!mlCompletionVariantsMap.isDone) {
         otherCompletionVariants.add(lookupElement.lookupString)
-        result.addElement(lookupElement)
+        result.passResult(it)
         return@runRemainingContributors
       }
 
       val mlVariant = mlCompletionVariantsMap.get().remove(lookupElement.lookupString)
       if (mlVariant == null) {
-        result.addElement(lookupElement)
+        result.passResult(it)
         return@runRemainingContributors
       }
 
