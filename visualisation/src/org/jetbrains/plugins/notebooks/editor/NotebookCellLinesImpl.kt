@@ -1,7 +1,6 @@
 package org.jetbrains.plugins.notebooks.editor
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Attachment
 import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
 import com.intellij.openapi.diagnostic.logger
@@ -15,19 +14,18 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.addIfNotNull
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.Promise
 import org.jetbrains.plugins.notebooks.editor.NotebookCellLines.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
 
 class NotebookCellLinesImpl private constructor(private val document: Document,
-                                                private val cellTypeAwareLexerProvider: NotebookCellLinesLexer) : NotebookCellLines {
+                                                private val cellTypeAwareLexerProvider: NotebookCellLinesLexer,
+                                                useDocumentListener: Boolean = true) : NotebookCellLines {
   private val markerCache = mutableListOf<Marker>()
   private val intervalCache = mutableListOf<Interval>()
+  private val documentListener = createDocumentListener()
 
   override val intervalListeners = EventDispatcher.create(IntervalListener::class.java)
 
@@ -62,20 +60,17 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
     return intervalCache.listIterator(interval.ordinal)
   }
 
-  private fun initialize(it: AsyncPromise<NotebookCellLines>, useDocumentListener: Boolean) {
-    runReadAction {
-      if (useDocumentListener)
-        document.addDocumentListener(documentListener)
+  init {
+    if (useDocumentListener)
+      document.addDocumentListener(documentListener)
 
-      initializeEmptyLists()
-    }
+    initializeEmptyLists()
     LOG.trace {
       commonErrorAttachments(null)
         .joinToString(separator = "\n", prefix = "NotebookCellLines has been initialised for ${document}\n", postfix = "=== end") {
           "=== ${it.name}:\n${it.displayText}\n"
         }
     }
-    it.setResult(this)
   }
 
   private fun initializeEmptyLists() {
@@ -102,7 +97,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
            ?: initialOffset
   }
 
-  private val documentListener = object : DocumentListener {
+  private fun createDocumentListener() = object : DocumentListener {
     private var shiftedStartOffsetBefore: Int = -1
 
     override fun beforeDocumentChange(event: DocumentEvent) {
@@ -372,7 +367,7 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
 
   companion object {
     private val LOG = logger<NotebookCellLinesImpl>()
-    private val map = ContainerUtil.createConcurrentWeakMap<Document, Promise<NotebookCellLines>>()
+    private val map = ContainerUtil.createConcurrentWeakMap<Document, NotebookCellLines>()
 
     // TODO Maybe get rid of the linear or binary search? It looks like an over-optimization.
     private val BINARY_SEARCH_THRESHOLD: Int
@@ -380,18 +375,14 @@ class NotebookCellLinesImpl private constructor(private val document: Document,
         NotebookCellLines.overriddenBinarySearchThreshold
         ?: Registry.intValue("pycharm.ds.notebook.editor.ui.binary.search.threshold")
 
-    fun get(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines {
-      val promise = AsyncPromise<NotebookCellLines>()
-      val actualPromise = map.putIfAbsent(document, promise)
-                          ?: promise.also { NotebookCellLinesImpl(document, lexerProvider).initialize(it, useDocumentListener = true) }
-      return actualPromise.blockingGet(1, TimeUnit.MILLISECONDS)!!
-    }
+    fun get(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines =
+      map.computeIfAbsent(document) {
+        NotebookCellLinesImpl(document, lexerProvider)
+      }
 
     @TestOnly
     fun getForSingleUsage(document: Document, lexerProvider: NotebookCellLinesLexer): NotebookCellLines {
-      val promise = AsyncPromise<NotebookCellLines>()
-      NotebookCellLinesImpl(document, lexerProvider).initialize(promise, useDocumentListener = false)
-      return promise.blockingGet(1, TimeUnit.MILLISECONDS)!!
+      return NotebookCellLinesImpl(document, lexerProvider, false)
     }
   }
 }
