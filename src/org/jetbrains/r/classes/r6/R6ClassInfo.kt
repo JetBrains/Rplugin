@@ -15,7 +15,6 @@ data class R6ClassField(val name: String, val isPublic: Boolean = true)
 data class R6ClassMethod(val name: String, val isPublic: Boolean = true)
 data class R6ClassActiveBinding(val name: String)
 
-// PUBLIC PRIVATE !!!
 data class R6ClassInfo(val className: String,
                        val packageName: String,
                        val superClass: String,
