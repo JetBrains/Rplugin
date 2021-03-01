@@ -12,5 +12,5 @@ object MachineLearningCompletionLocalServerVariables {
            "NUMEXPR_NUM_THREADS")
 
   val SERVER_ENVIRONMENT: Map<String, String> =
-    THREAD_VARIABLES.associateBy({ it }, { NUM_THREADS.toString() })
+    THREAD_VARIABLES.associateWith { NUM_THREADS.toString() }
 }
