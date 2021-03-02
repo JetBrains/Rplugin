@@ -44,7 +44,6 @@ import org.jetbrains.r.run.visualize.RDataFrameViewer
 import org.jetbrains.r.run.visualize.RVisualizeTableUtil
 import org.jetbrains.r.util.PromiseUtil
 import java.util.*
-import kotlin.collections.HashSet
 
 class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
   : BaseConsoleExecuteActionHandler(false), Condition<LanguageConsoleView> {
@@ -169,7 +168,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
           showStackTraceHandler = null
         } else {
           val handler = object : HyperlinkInfo {
-            override fun navigate(project: Project?) {
+            override fun navigate(project: Project) {
               if (this != showStackTraceHandler) {
                 RNotificationUtil.notifyConsoleError(consoleView.project, RBundle.message("console.show.stack.trace.error"))
                 return
@@ -186,7 +185,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
         when (val details = exception.details) {
           is RNoSuchPackageError -> {
             consoleView.printHyperlink(RBundle.message("console.install.package.message", details.packageName), object : HyperlinkInfo {
-              override fun navigate(project: Project?) {
+              override fun navigate(project: Project) {
                 RequiredPackageInstaller.getInstance(consoleView.project).installPackagesWithUserPermission(
                   RBundle.message("console.utility.name"), listOf(RequiredPackage(details.packageName)), false)
                   .onError { DependencyManagementFix.showErrorNotification(consoleView.project, it) }
@@ -583,8 +582,7 @@ class RConsoleExecuteActionHandler(private val consoleView: RConsoleView)
     }
 
     private class SourcePositionHyperlink(private val position: XSourcePosition) : HyperlinkInfo {
-      override fun navigate(project: Project?) {
-        if (project == null) return
+      override fun navigate(project: Project) {
         position.createNavigatable(project).navigate(true)
       }
 
