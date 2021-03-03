@@ -124,6 +124,9 @@ class NotebookOutputInlayController private constructor(
         when (oldFactory.match(oldComponent, newDataKey)) {
           NotebookOutputComponentFactory.Match.NONE -> {
             innerComponent.remove(idx)
+            if (oldComponent is Disposable) {
+              Disposer.dispose(oldComponent)
+            }
             val newComponent = createOutputGuessingFactory(newDataKey)
             if (newComponent != null) {
               innerComponent.add(newComponent.component, newComponent.widthStretching.fixedWidthLayoutConstraint, idx)
@@ -140,7 +143,12 @@ class NotebookOutputInlayController private constructor(
     }
 
     for (ignored in oldComponentsWithFactories) {
-      innerComponent.remove(innerComponent.componentCount - 1)
+      val idx = innerComponent.componentCount - 1
+      val old = innerComponent.components[idx]
+      innerComponent.remove(idx)
+      if (old is Disposable) {
+        Disposer.dispose(old)
+      }
     }
 
     for (outputDataKey in newDataKeyIterator) {
@@ -200,6 +208,9 @@ class NotebookOutputInlayController private constructor(
 
 val EditorCustomElementRenderer.notebookInlayOutputComponent: JComponent?
   get() = castSafelyTo<JComponent>()?.components?.firstOrNull()?.castSafelyTo<SurroundingComponent>()
+
+val EditorCustomElementRenderer.notebookInlayInnerComponent: JComponent?
+  get() = notebookInlayOutputComponent?.components?.firstOrNull()?.castSafelyTo<InnerComponentScrollPane>()
 
 private val NotebookOutputComponentFactory.WidthStretching.fixedWidthLayoutConstraint
   get() = when (this) {
