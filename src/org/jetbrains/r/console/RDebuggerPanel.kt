@@ -463,7 +463,7 @@ class RSourceChangedEditorNotificationProvider : EditorNotifications.Provider<Ed
 
   override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
     if (file.getUserData(FILE_KEY) != true) return null
-    return EditorNotificationPanel().text(RBundle.message("debugger.file.has.changed.notification"))
+    return EditorNotificationPanel(fileEditor).text(RBundle.message("debugger.file.has.changed.notification"))
   }
 
   companion object {

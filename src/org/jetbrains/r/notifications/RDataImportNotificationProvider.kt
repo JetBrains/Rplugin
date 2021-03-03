@@ -40,7 +40,7 @@ class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotif
         return null
       }
       filterActions(project, file).takeIf { it.isNotEmpty() }?.let { actions ->
-        return createPanel(project, file, actions)
+        return createPanel(project, file, fileEditor, actions)
       }
     }
     return null
@@ -50,8 +50,8 @@ class RDataImportNotificationProvider : EditorNotifications.Provider<EditorNotif
     return availableActions.filter { it.isSuggestedFor(file) && it.isEnabled(project) }
   }
 
-  private fun createPanel(project: Project, file: VirtualFile, actions: List<RImportDataContextAction>): EditorNotificationPanel {
-    return EditorNotificationPanel().apply {
+  private fun createPanel(project: Project, file: VirtualFile, fileEditor: FileEditor, actions: List<RImportDataContextAction>): EditorNotificationPanel {
+    return EditorNotificationPanel(fileEditor).apply {
       text = createNotificationText(file)
       createActionLabel { label ->
         if (actions.size != 1) {
